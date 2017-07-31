@@ -196,8 +196,8 @@ const appState = createReducer(initialState, {
         //     pendingActions: state.get('pendingActions').delete(actionId),
         // }),
 
-    [types.PENDING_ACTION_UPDATE]: (state, { data }) =>
-        state.setIn(['pendingActions', data.entityId], new PendingActionRecord(data)),
+    [types.PENDING_ACTION_UPDATE]: (state, { actionId, updates }) =>
+        state.setIn(['pendingActions', actionId, 'status'], updates.status),
 });
 
 export default appState;

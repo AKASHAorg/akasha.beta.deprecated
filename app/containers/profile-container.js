@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { profileGetData, profileIsFollower, profileFollow, profileUnfollow, profileSendTip } from '../local-flux/actions/profile-actions';
-import { DataLoader } from '../shared-components';
-import { ProfileDetails } from '../components';
-import { selectProfile } from '../local-flux/selectors';
+import { profileGetData, profileIsFollower, profileAddFollowAction,
+     profileAddUnfollowAction, profileAddTipAction } from '../local-flux/actions/profile-actions';
+import { entryProfileIterator, entryMoreProfileIterator } from '../local-flux/actions/entry-actions';
+import { DataLoader, ProfileActivity, ProfileDetails } from '../components';
+import { selectProfile, selectProfileEntries } from '../local-flux/selectors';
 
 class ProfileContainer extends Component {
     componentWillMount () {
@@ -25,27 +26,24 @@ class ProfileContainer extends Component {
     // }
 
     followProfile = (akashaId, gas) => {
-        this.props.profileFollow(akashaId, gas);
+        const payload = { akashaId, gas };
+        this.props.profileAddFollowAction(payload);
     }
 
     unfollowProfile = (akashaId, gas) => {
-        this.props.profileUnfollow(akashaId, gas);
-    }
-
-    selectProfile = (address) => {
-        const { router } = this.context;
-        const loggedAkashaId = this.props.loggedProfile.get('akashaId');
-        router.push(`/${loggedAkashaId}/profile/${address}`);
+        const payload = { akashaId, gas };
+        this.props.profileAddUnfollowAction(payload);
     }
 
     sendTip = (profileData) => {
         const { akashaId, firstName, lastName, profile } = profileData;
-        this.props.profileSendTip({ akashaId, firstName, lastName, profile });
+        const payload = { akashaId, firstName, lastName, profile };
+        this.props.profileAddTipAction(payload);
     };
 
     render () {
-        const { profileData, followPending, followerList,
-            loggedProfile, sendingTip } = this.props;
+        const { profileData, profileEntries, followPending, followerList, moreProfileEntries,
+            fetchingMoreProfileEntries, fetchingProfileEntries, loggedProfile, sendingTip, profiles } = this.props;
         const isFollower = followerList.get(profileData.akashaId);
 
         return (<DataLoader
@@ -54,7 +52,7 @@ class ProfileContainer extends Component {
           size={80}
           style={{ paddingTop: '120px' }}
         >
-          <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
             <ProfileDetails
               followPending={followPending}
               followProfile={this.followProfile}
@@ -65,21 +63,40 @@ class ProfileContainer extends Component {
               sendTip={this.sendTip}
               unfollowProfile={this.unfollowProfile}
             />
+
+            <ProfileActivity
+              akashaId={profileData.akashaId}
+              entryProfileIterator={this.props.entryProfileIterator}
+              entryMoreProfileIterator={this.props.entryMoreProfileIterator}
+              profileEntries={profileEntries}
+              profiles={profiles}
+              fetchingProfileEntries={fetchingProfileEntries}
+              fetchingMoreProfileEntries={fetchingMoreProfileEntries}
+              firstName={profileData.firstName}
+              moreProfileEntries={moreProfileEntries}
+            />
           </div>
         </DataLoader>);
     }
 }
 
 ProfileContainer.propTypes = {
+    entryMoreProfileIterator: PropTypes.func,
+    entryProfileIterator: PropTypes.func,
     followPending: PropTypes.shape(),
     followerList: PropTypes.shape(),
+    fetchingMoreProfileEntries: PropTypes.bool,
+    fetchingProfileEntries: PropTypes.bool,
+    moreProfileEntries: PropTypes.bool,
     params: PropTypes.shape(),
     profileData: PropTypes.shape(),
+    profileEntries: PropTypes.shape(),
     profileGetData: PropTypes.func,
     profileIsFollower: PropTypes.func,
-    profileFollow: PropTypes.func,
-    profileUnfollow: PropTypes.func,
-    profileSendTip: PropTypes.func,
+    profileAddFollowAction: PropTypes.func,
+    profileAddUnfollowAction: PropTypes.func,
+    profileAddTipAction: PropTypes.func,
+    profiles: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     sendingTip: PropTypes.shape(),
     match: PropTypes.shape()
@@ -95,12 +112,17 @@ function mapStateToProps (state, ownProps) {
     return {
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
+        fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
+        fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
         followPending: state.profileState.getIn(['flags', 'followPending']),
         followerList: state.profileState.get('isFollower'),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         profileData: selectProfile(state, akashaId),
+        profileEntries: selectProfileEntries(state, akashaId),
+        profiles: state.profileState.get('byId'),
+        moreProfileEntries: state.entryState.get('moreProfileEntries'),
         sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
     };
 }
@@ -109,10 +131,12 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        entryMoreProfileIterator,
+        entryProfileIterator,
         profileGetData,
         profileIsFollower,
-        profileFollow,
-        profileUnfollow,
-        profileSendTip
+        profileAddFollowAction,
+        profileAddUnfollowAction,
+        profileAddTipAction
     }
 )(ProfileContainer);

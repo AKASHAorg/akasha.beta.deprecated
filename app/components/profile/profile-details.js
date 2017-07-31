@@ -1,18 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { Avatar } from '../';
+import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { getInitials } from '../../utils/dataModule';
-
-const imageWrapperStyle = {
-    height: '200px',
-    width: '400px',
-    overflow: 'hidden',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-};
 
 class ProfileDetails extends Component {
 
@@ -36,10 +29,9 @@ class ProfileDetails extends Component {
 
     render () {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
-        console.log(profileData);
         const { about, avatar, akashaId, backgroundImage, links, firstName, lastName,
         followersCount, followingCount } = profileData;
-        const { isFollower, followProfile, unfollowProfile } = this.props;
+        const { isFollower, intl, followProfile, unfollowProfile, sendTip, followPending, sendingTip } = this.props;
         const isOwnProfile = akashaId === this.props.loggedProfile.akashaId;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
@@ -48,30 +40,19 @@ class ProfileDetails extends Component {
         const userInitials = profileData.firstName || profileData.lastName ?
             getInitials(profileData.firstName, profileData.lastName) :
             '';
-        return (<div style={{ height: '100%' }}>
-          <div
-            style={{
-                maxWidth: '400px', overflowY: 'auto', overflowX: 'hidden'
-            }}
-          >
-            <div style={imageWrapperStyle}>
+        return (<div className="profile-details">
+            <div className="profile-details__background-image">
               {imageUrl ?
                 <img
                   src={imageUrl}
                   style={this.getBackgroundImageStyle(backgroundImage[bestMatch])}
                   alt=""
                 /> :
-                <div style={{ height: '200px', width: '400px', backgroundColor: '#6c747f' }} />
+                <div className="profile-details__background-image profile-details__background-image_default" />
               }
             </div>
 
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: '-70px'
-            }}
-            >
+            <div className="profile-details__avatar-wrapper">
               <Avatar
                 image={avatar}
                 radius={100}
@@ -84,38 +65,55 @@ class ProfileDetails extends Component {
                 }}
                 style={{ paddingLeft: '20px' }}
               />
-              <div style={{ paddingRight: '20px' }}>
+              <div className="profile-details__follow-button">
                 {isOwnProfile ? 
-                  <Button type="primary" ghost>Edit</Button> :
+                  <Button type="primary" ghost>{intl.formatMessage(generalMessages.edit)}</Button> :
                   isFollower ?
-                    <Button type="primary" ghost onClick={() => unfollowProfile(akashaId)}>Unfollow</Button> :
-                    <Button type="primary" ghost onClick={() => followProfile(akashaId)}>Follow</Button>
+                    <Button
+                      type="primary"
+                      ghost
+                      onClick={() => unfollowProfile(akashaId)}
+                      disabled={followPending.get(akashaId)}
+                    >{intl.formatMessage(profileMessages.unfollow)}</Button> :
+                    <Button
+                      type="primary"
+                      ghost
+                      onClick={() => followProfile(akashaId)}
+                      disabled={followPending.get(akashaId)}
+                    >{intl.formatMessage(profileMessages.follow)}</Button>
                 }
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '16px', fontWeight: 500 }}>{firstName} {lastName}</span>
+            <div className="profile-details__name-wrapper">
+              <span className="profile-details__name">{firstName} {lastName}</span>
               {!isOwnProfile &&
-                <Button type="primary" ghost>Send Tip</Button>
+                <Button
+                  type="primary"
+                  ghost
+                  onClick={() => sendTip(profileData)}
+                  disabled={sendingTip.get(akashaId)}
+                >{intl.formatMessage(profileMessages.sendTip)}</Button>
               }
             </div>
 
-            <div style={{ }}>
-              @{akashaId}
-            </div>
+            <div className="profile-details__akashaid-wrapper">
+              <div className="profile-details__akashaid">
+                @{akashaId}
+              </div>
 
-            <div style={{ }}>
-              {followersCount} Followers | {followingCount} Following
+              <div className="profile-details__follow-info">
+                {followersCount} {intl.formatMessage(profileMessages.followers)} | {followingCount} {intl.formatMessage(profileMessages.following)}
+              </div>
             </div>
 
 
             {about &&
-              <div style={{ paddingBottom: '15px' }}>
-                <div style={{ fontSize: '16px', fontWeight: 500 }}>
-                  About
+              <div className="profile-details__about-wrapper">
+                <div className="profile-details__about-title">
+                  {intl.formatMessage(profileMessages.aboutMeTitle)}
                 </div>
-                <div style={{ fontSize: '16px', fontWeight: 300, wordWrap: 'break-word' }}>
+                <div className="profile-details__about-info">
                   {about.split('\n').map((text, key) =>
                     (<span key={key}>
                       {text}
@@ -127,37 +125,22 @@ class ProfileDetails extends Component {
             }
 
             {links && !!links.length &&
-              <div style={{ paddingBottom: '15px' }}>
-                <div style={{ fontSize: '16px', fontWeight: 500 }}>
-                  Links
+              <div className="profile-details__links-wrapper">
+                <div className="profile-details__links-title">
+                  {intl.formatMessage(profileMessages.linksTitle)}
                 </div>
                 {links.map(link =>
                   (<div
                     key={link.id}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        fontSize: '16px',
-                        fontWeight: 300,
-                    }}
+                    className="profile-details__links-info"
                   >
-                    <div
-                      style={{
-                          width: '292px',
-                          display: 'flex',
-                          alignItems: 'center'
-                      }}
-                    >
-                      <div>
-                        {link.title}
-                      </div>
+                    <div>
+                      {link.url}
                     </div>
                   </div>)
                 )}
               </div>
             }
-          </div>
         </div>);
     }
 }
@@ -166,6 +149,7 @@ ProfileDetails.propTypes = {
     followPending: PropTypes.shape(),
     followProfile: PropTypes.func,
     isFollower: PropTypes.bool,
+    intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     profileData: PropTypes.shape(),
     sendingTip: PropTypes.shape(),
@@ -173,4 +157,4 @@ ProfileDetails.propTypes = {
     unfollowProfile: PropTypes.func,
 };
 
-export default ProfileDetails;
+export default injectIntl(ProfileDetails);

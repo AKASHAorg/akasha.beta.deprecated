@@ -16,6 +16,7 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
+import { Runners } from '../components/runners';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
     SetupPages, TermsPanel, TopBar } from '../components';
@@ -115,6 +116,7 @@ class AppContainer extends Component {
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
+                      <Runners />
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />

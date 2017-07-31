@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { selectTagGetEntriesCount } from '../../local-flux/selectors';
-import { TagList } from '../../shared-components';
+import { TagList } from '../../components';
 import { tagSearchMore } from '../../local-flux/actions/tag-actions';
 import { SEARCH } from '../../constants/context-types';
 

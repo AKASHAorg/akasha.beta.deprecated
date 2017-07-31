@@ -8,10 +8,10 @@ const Runners = () => (
     <CommentsPublisher /> */}
     <CommonRunner />
     <FollowRunner />
+    <TipRunner />
     {/* <ProfileUpdater /> */}
     {/* <PublishEntryRunner />
     <TagRunner />
-    <TipRunner />
     <VoteRunner /> */}
   </div>
 );
