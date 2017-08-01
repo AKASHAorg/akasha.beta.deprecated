@@ -40,6 +40,7 @@ const TopBarRightSide = ({
       <Avatar
         image={loggedProfileData.avatar}
         style={{ cursor: 'pointer' }}
+        size="small"
         userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
         userInitialsStyle={{ fontSize: '20px' }}
         onClick={

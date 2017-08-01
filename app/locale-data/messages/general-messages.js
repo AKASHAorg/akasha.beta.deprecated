@@ -10,7 +10,12 @@ const generalMessages = defineMessages({
     addImage: {
         id: 'app.general.addImage',
         description: 'placeholder for image uploader component',
-        defaultMessage: 'Add photo by dropping here or click.'
+        defaultMessage: 'Drag and drop to add an image.'
+    },
+    addImageDragged: {
+        id: 'app.general.addImageDragged',
+        description: 'message to show when user is dragging an image over',
+        defaultMessage: 'Cool! Drop it just here!'
     },
     addNewEntry: {
         id: 'app.general.addNewEntry',
@@ -46,6 +51,16 @@ const generalMessages = defineMessages({
         id: 'app.general.chat',
         description: 'tooltip for sidebar chat button',
         defaultMessage: 'Chat'
+    },
+    chooseImage: {
+        id: 'app.general.chooseImage',
+        description: 'tooltip to show when user hovers image uploader component and no image selected',
+        defaultMessage: 'Choose an image'
+    },
+    chooseAnotherImage: {
+        id: 'app.general.chooseAnotherImage',
+        description: 'tooltip to show when user hovers image uploader and an image is already selected',
+        defaultMessage: 'Choose another image'
     },
     comingSoon: {
         id: 'app.general.comingSoon',

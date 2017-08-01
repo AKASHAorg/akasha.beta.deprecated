@@ -103,7 +103,6 @@ class ProfileList extends Component {
           <div className="profile-list__card-header">
             <Avatar
               image={avatar}
-              size="large"
               style={{ flex: '0 0 auto', marginRight: '16px' }}
               firstName={profile.get('firstName')}
               lastName={profile.get('lastName')}
