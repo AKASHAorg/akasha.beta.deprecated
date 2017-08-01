@@ -22,7 +22,7 @@ const AvatarPresenter = props => (
 AvatarPresenter.propTypes = {
     className: PropTypes.string,
     image: PropTypes.string,
-    size: PropTypes.oneOf(['large', 'undefined', 'small']),
+    size: PropTypes.oneOf(['large', 'standard', undefined, 'small']),
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     onClick: PropTypes.func,

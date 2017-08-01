@@ -4,7 +4,6 @@ import AvatarEditor from 'react-avatar-editor/dist';
 import { Slider, Button, Row, Col } from 'antd';
 import SvgIcon from '../svg-icon/svg-icon';
 import { AddImage } from '../svg';
-import styles from './avatar.scss';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -137,14 +136,20 @@ class AvatarEditr extends Component {
                 onChange={this._handleImageAdd}
               />
               <div
-                className="avatar__avatar-empty"
+                className={
+                    `avatar__avatar-empty
+                    avatar__avatar-empty${this.state.highlightDropZone ? '_dragEnter' : ''}`
+                }
                 style={{
                     width: size,
                     height: size
                 }}
               />
               <div
-                className={`avatar__add-image-icon-wrapper avatar__add-image-icon-wrapper${this.state.highlightDropZone ? '_dragEnter' : ''}`}
+                className={
+                    `avatar__add-image-icon-wrapper
+                    avatar__add-image-icon-wrapper${this.state.highlightDropZone ? '_dragEnter' : ''}`
+                }
               >
                 <SvgIcon
                   viewBox="0 0 36 36"
@@ -155,7 +160,10 @@ class AvatarEditr extends Component {
                 </SvgIcon>
               </div>
               <div
-                className={`avatar__add-image-help-text avatar__add-image-help-text${this.state.highlightDropZone ? '_dragEnter' : ''}`}
+                className={
+                    `avatar__add-image-help-text
+                    avatar__add-image-help-text${this.state.highlightDropZone ? '_dragEnter' : ''}`
+                }
               >
                 {!this.state.highlightDropZone && 'Drag and drop to add image'}
                 {this.state.highlightDropZone && 'Cool! Drop It Here!'}
@@ -192,7 +200,6 @@ class AvatarEditr extends Component {
                     </Col>
                     <Col
                       span={4}
-                      className={styles.rotateButton}
                     >
                       <Button
                         ghost
@@ -242,17 +249,6 @@ AvatarEditr.contextTypes = {
 
 AvatarEditr.defaultProps = {
     size: 200,
-    userInitialsAlignStyle: {
-        height: '100%',
-        display: 'inline-block',
-        verticalAlign: 'middle'
-    },
-    userInitialsWrapperStyle: {
-        display: 'inline-block',
-        verticalAlign: 'middle',
-        textAlign: 'center',
-        width: '100%'
-    },
 };
 
 export default AvatarEditr;
