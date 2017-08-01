@@ -1,21 +1,34 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'antd';
 import { LogoButton } from './';
-import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon,
+import { ChatIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
 import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
 
 class Sidebar extends Component {
-    handleSearch = () => this.handlePanelShow(panels.search);
-    _handleNewEntry = () => {
-        console.log('new entry');
+    state = {
+        overlayVisible: false,
+        showEntryMenu: false,
     }
+
+    handleSearch = () => this.handlePanelShow(panels.search);
+
+    _toggleEntryMenu = (ev) => {
+        ev.preventDefault();
+        this.setState(prevState => ({
+            overlayVisible: !prevState.overlayVisible,
+            showEntryMenu: !prevState.showEntryMenu
+        }));
+    }
+
     getWrapperProps = message => ({
         'data-tip': this.props.intl.formatMessage(message),
         'data-place': 'right'
     });
+
     _isSidebarVisible = (location) => {
         /**
          * specify blacklisted routes
@@ -24,34 +37,45 @@ class Sidebar extends Component {
         const blackList = ['setup'];
         return !blackList.every(route => location.pathname.includes(route));
     }
+
     _checkActiveIcon = (name) => {
         const { location } = this.props;
         return location.pathname.includes(name);
     }
 
     render () {
-        const { activeDashboard, draftsCount, loggedProfileData, location } = this.props;
-        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
+        const { activeDashboard, loggedProfileData, location } = this.props;
         const isLoggedIn = !!loggedProfileData.get('akashaId');
+
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
             <div className="sidebar__entry-icon" >
-              {(entriesCount > 0 || draftsCount > 0) ?
-                <div {...this.getWrapperProps(generalMessages.myEntries)}>
-                  <EntriesIcon
-                    disabled={!isLoggedIn}
-                    isActive={false}
-                    onClick={this._handleNewEntry}
-                  />
-                </div> :
-                <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
-                  <AddEntryIcon
-                    disabled={!isLoggedIn}
-                    isActive={this._checkActiveIcon('draft/new')}
-                    onClick={this._handleNewEntry}
-                  />
+              <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
+                <Button
+                  icon="edit"
+                  type="sidebar-icon"
+                  size="large"
+                  className="borderless sidebar__button "
+                  ghost
+                  onClick={this._toggleEntryMenu}
+                />
+                {/* <AddEntryIcon
+                  disabled={!isLoggedIn}
+                  isActive={this._checkActiveIcon('draft/new')}
+                  onClick={this._toggleEntryMenu}
+                /> */}
+                <div
+                  className={
+                      `sidebar__entry-menu
+                      sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
+                  }
+                >
+                  <ul className="sidebar__entry-menu-buttons">
+                    <li>TE</li>
+                    <li>LE</li>
+                  </ul>
                 </div>
-              }
+              </div>
               <div {...this.getWrapperProps(generalMessages.search)}>
                 <SearchIcon
                   onClick={this.handleSearch}
@@ -79,6 +103,12 @@ class Sidebar extends Component {
             <div className="sidebar__logo">
               <LogoButton />
             </div>
+            <div
+              className={
+                  `sidebar__overlay
+                  sidebar__overlay${this.state.overlayVisible ? '_visible' : ''}`
+              }
+            />
           </div>
         );
     }

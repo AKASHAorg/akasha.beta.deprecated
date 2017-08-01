@@ -13,6 +13,10 @@
     max-width: 64px;
     background-color: #f3f3f3;
 
+    &__button {
+        color: @text-color;
+    }
+
     &_shown {
         left: 0;
         transition: left 0.175s ease-in-out;
@@ -34,5 +38,29 @@
         padding: 14px 8px;
         display: flex;
         align-items: flex-end;
+    }
+    &__entry-menu {
+        position: absolute;
+        left: 34px;
+        top: 0;
+        &-buttons {
+            display: block;
+        }
+        &_active {
+
+        }
+    }
+    &__overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 100%;
+        background: fadeout(@sidebar-overlay-bg, 20%);
+        transition: right 0.213s ease-in-out;
+        &_visible {
+            right: 0;
+            transition: right 0.213s ease-in-out;
+        }
     }
 }
