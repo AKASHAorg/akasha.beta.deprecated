@@ -23,7 +23,7 @@ const formMessages = defineMessages({
     },
     passphrase: {
         id: 'app.form.passphrase',
-        description: 'Placeholder for passphrase input',
+        description: 'label for passphrase input',
         defaultMessage: 'Passphrase'
     },
     passphrasePlaceholder: {
@@ -33,7 +33,7 @@ const formMessages = defineMessages({
     },
     confirmPassphrase: {
         id: 'app.form.confirmPassphrase',
-        description: 'label for passphrase confirmation input',
+        description: 'label for passphrase fghfgconfirmation input',
         defaultMessage: 'Confirm passphrase'
     },
     confirmPassphraseToContinue: {
@@ -50,6 +50,11 @@ const formMessages = defineMessages({
         id: 'app.passphraseVerify',
         description: 'Placeholder for passphrase verify input',
         defaultMessage: 'Verify passphrase'
+    },
+    requiredError: {
+        id: 'app.form.requiredError',
+        description: 'error message for required fields',
+        defaultMessage: 'This field is required'
     },
     title: {
         id: 'app.inputField.title',
