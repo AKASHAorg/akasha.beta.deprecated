@@ -35,16 +35,23 @@ class TagList extends Component {
 
     throttledHandler = throttle(this.checkTrigger, 500);
 
-    handleSwitch = (checked) => {
-        console.log(`switch to ${checked}`);
+    handleSwitch = (tag, checked) => {
+        console.log(`switch to ${checked} and tag is ${tag.tagName}`);
+        this.props.toggleInterest(tag);
     }
 
     renderTagListItem = (tag) => {
         return (
-          <div key={tag.tagName}>
-            <span>#{tag.tagName}</span>
-            <span>{tag.count}</span>
-            <Switch defaultChecked={false} onChange={this.handleSwitch} />
+          <div key={tag.tagName} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px inset lightgrey' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontWeight: 'bold' }}>#{tag.tagName}</span>
+              <span style={{ fontSize: '12px', fontWeight: '150', paddingBottom: '5px' }}>{tag.count} entries</span>
+            </div>
+            <Switch
+              defaultChecked={false}
+              onChange={(checked) => this.handleSwitch(tag, checked)}
+              size="small"
+            />
           </div>
         );
     }
@@ -117,7 +124,8 @@ TagList.propTypes = {
     fetchMoreTags: PropTypes.func,
     fetchingMoreTags: PropTypes.bool,
     fetchingTags: PropTypes.bool,
-    moreTags: PropTypes.bool
+    moreTags: PropTypes.bool,
+    toggleInterest: PropTypes.func
 };
 
 TagList.contextTypes = {
