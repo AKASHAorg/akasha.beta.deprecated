@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Switch, Icon } from 'antd';
+import { injectIntl } from 'react-intl';
+import { Row, Col, Switch } from 'antd';
 import { profileMessages } from '../../locale-data/messages';
 import styles from './user-settings-panel.scss';
 
@@ -13,7 +14,7 @@ class UserSettingsPanel extends Component {
         }
     }
     render () {
-        const { intl, onPanelNavigate } = this.props;
+        const { intl } = this.props;
         return (
           <div className={`${styles.root} row`}>
             <div className={`${styles.settingsWrapper} col-xs-12`}>
@@ -34,7 +35,6 @@ class UserSettingsPanel extends Component {
 
 UserSettingsPanel.propTypes = {
     intl: PropTypes.shape(),
-    onPanelNavigate: PropTypes.func,
 };
 
-export default UserSettingsPanel;
+export default injectIntl(UserSettingsPanel);

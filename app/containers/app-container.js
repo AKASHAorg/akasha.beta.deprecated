@@ -19,7 +19,6 @@ import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
     SetupPages, TermsPanel, TopBar } from '../components';
-import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -85,7 +84,7 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState, fullEntry,
+        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
             hideNotification, hideTerms, hideReportModal, history, intl, location,
             theme } = this.props;
         /* eslint-enable no-shadow */
@@ -127,12 +126,7 @@ class AppContainer extends Component {
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         }
                       </PageContent>
-                      <TopBar
-                        fullEntryPage={!!fullEntry}
-                        location={location}
-                        history={history}
-                        intl={intl}
-                      />
+                      <TopBar />
                     </div>
                   </DataLoader>
                 }
@@ -189,7 +183,6 @@ AppContainer.propTypes = {
     errorDeleteFatal: PropTypes.func.isRequired,
     errorDeleteNonFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
-    fullEntry: PropTypes.bool,
     gethGetStatus: PropTypes.func,
     hideNotification: PropTypes.func.isRequired,
     hideReportModal: PropTypes.func.isRequired,
@@ -206,7 +199,6 @@ function mapStateToProps (state) {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         appState: state.appState,
         errorState: state.errorState,
-        fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
         theme: state.settingsState.getIn(['general', 'theme']),
     };
 }

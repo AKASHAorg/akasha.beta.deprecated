@@ -59,12 +59,8 @@ export const selectCommentsFlag = (state, flag, id) => {
 export const selectDashboardId = (state, name) =>
     state.dashboardState.getIn(['dashboardById', name, 'id']);
 
-export const selectDashboards = (state) => {
-    const akashaId = selectLoggedAkashaId(state);
-    return state.dashboardState
-        .get('dashboardById')
-        .filter(dashboard => dashboard.get('akashaId') === akashaId);
-};
+export const selectDashboards = state =>
+    state.dashboardState.get('dashboardById');
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
@@ -106,6 +102,8 @@ export const selectLastIpfsLog = state =>
 
 export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
+export const selectLists = state => state.listState.get('byId');
+
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')
@@ -116,6 +114,8 @@ export const selectLoggedAccount = state =>
 
 export const selectLoggedAkashaId = state =>
     state.profileState.getIn(['loggedProfile', 'akashaId']);
+
+export const selectLoggedProfile = state => state.profileState.get('loggedProfile');
 
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
