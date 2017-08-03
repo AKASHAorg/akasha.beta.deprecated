@@ -7,13 +7,16 @@ import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
 import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardAddColumn, dashboardDelete,
     dashboardSetActive } from '../../local-flux/actions/dashboard-actions';
-import { searchQuery, searchHandshake } from '../../local-flux/actions/search-actions';
+import { listAdd, listAddEntry, listDelete, listDeleteEntry } from '../../local-flux/actions/list-actions';
 import { selectDashboards } from '../../local-flux/selectors';
 import * as columnTypes from '../../constants/columns';
 import styles from './dashboard-secondary-sidebar.scss';
 
 let input;
-let queryInput;
+let listDescr;
+let listInput;
+let selectRef;
+let entryIdInput;
 
 const buttonStyle = {
     position: 'absolute',
@@ -76,10 +79,22 @@ const DashboardSecondarySidebar = props => (
     <button onClick={() => props.dashboardAddColumn(columnTypes.tag)}>Add tag column</button>
     <button onClick={() => props.dashboardAddColumn(columnTypes.profile)}>Add profile column</button>
     <button onClick={() => props.dashboardAddColumn(columnTypes.stream)}>Add stream column</button>
-    <input ref={el => (queryInput = el)} />
-    <button onClick={() => props.searchQuery(queryInput.value)}> Search </button>
-    <button onClick={() => props.searchHandshake()}> Handshake </button>
-    <div>{ props.handshakePending && 'Handshaking'} </div>
+    <div style={{ marginTop: '20px' }}>List title</div>
+    <input ref={el => (listInput = el)} />
+    <div>List description</div>
+    <textarea ref={el => (listDescr = el)} />
+    <button onClick={() => props.listAdd(listInput.value, listDescr.value)}>Add list</button>
+    <button onClick={() => props.listDelete(listInput.value)}>Delete list</button>    
+    <input ref={el => (entryIdInput = el)} />
+    <select style={{ display: 'block' }} ref={el => (selectRef = el)}>
+      {props.lists.toList().map(list => (
+        <option key={list.get('id')} value={list.get('id')}>
+          {list.get('name')}
+        </option>
+      ))}
+    </select>
+    <button onClick={() => props.listAddEntry(selectRef.value, entryIdInput.value) }>Add to list</button>    
+    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value) }>Remove from list</button>  
   </div>
 );
 
@@ -95,16 +110,18 @@ DashboardSecondarySidebar.propTypes = {
     dashboards: PropTypes.shape(),
     dashboardSetActive: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    searchQuery: PropTypes.func.isRequired,
-    searchHandshake: PropTypes.func.isRequired,
-    handshakePending: PropTypes.bool
+    listAdd: PropTypes.func.isRequired,
+    listAddEntry: PropTypes.func.isRequired,
+    listDelete: PropTypes.func.isRequired,
+    listDeleteEntry: PropTypes.func.isRequired,
+    lists: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         dashboards: selectDashboards(state),
-        handshakePending: state.searchState.getIn(['flags','handshakePending'])
+        lists: state.listState.get('byId')
     };
 }
 
@@ -115,7 +132,9 @@ export default connect(
         dashboardAddColumn,
         dashboardDelete,
         dashboardSetActive,
-        searchQuery,
-        searchHandshake
+        listAdd,
+        listAddEntry,
+        listDelete,
+        listDeleteEntry
     }
 )(injectIntl(DashboardSecondarySidebar));

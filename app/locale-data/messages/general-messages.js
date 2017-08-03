@@ -62,6 +62,11 @@ const generalMessages = defineMessages({
         description: 'tooltip to show when user hovers image uploader and an image is already selected',
         defaultMessage: 'Choose another image'
     },
+    close: {
+        id: 'app.general.close',
+        description: 'close',
+        defaultMessage: 'Close'
+    },
     comingSoon: {
         id: 'app.general.comingSoon',
         description: 'tooltip for sidebar disabled button',
@@ -87,10 +92,10 @@ const generalMessages = defineMessages({
         description: 'connected status',
         defaultMessage: 'connected'
     },
-    close: {
-        id: 'app.general.close',
-        description: 'close',
-        defaultMessage: 'Close'
+    created: {
+        id: 'app.general.created',
+        description: 'created',
+        defaultMessage: 'Created'
     },
     delete: {
         id: 'app.general.delete',

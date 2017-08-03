@@ -2,7 +2,6 @@
 import { fromJS, List, Map, Record } from 'immutable';
 import * as tagTypes from '../constants/TagConstants';
 import * as appTypes from '../constants/AppConstants';
-import * as entryTypes from '../constants/EntryConstants';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -201,15 +200,6 @@ const tagState = createReducer(initialState, {
         state.merge({
             newestTags: new List()
         }),
-
-    [entryTypes.GET_ENTRIES_STREAM_SUCCESS]: (state, { data }) => {
-        if (state.get('selectedTag') === null) {
-            return state.merge({
-                selectedTag: data.tags[0].tagName
-            });
-        }
-        return state;
-    },
 
     [tagTypes.SUBSCRIBE_TAG]: subscribeFlagHandler,
 

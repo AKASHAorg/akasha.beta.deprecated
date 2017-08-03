@@ -11,7 +11,7 @@ const AvatarPresenter = props => (
     shape="square"
     size={props.size}
     src={props.image}
-    style={{ cursor: props.onClick ? 'pointer' : 'default' }}
+    style={{ cursor: props.onClick ? 'pointer' : 'inherit' }}
   >
     {(props.firstName || props.lastName) &&
         getInitials(props.firstName, props.lastName).toUpperCase()
@@ -22,7 +22,7 @@ const AvatarPresenter = props => (
 AvatarPresenter.propTypes = {
     className: PropTypes.string,
     image: PropTypes.string,
-    size: PropTypes.oneOf(['large', 'standard', undefined, 'small']),
+    size: PropTypes.oneOf(['large', 'standard', 'small']),
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     onClick: PropTypes.func,

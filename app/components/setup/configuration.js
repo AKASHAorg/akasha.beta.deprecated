@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Radio, Select as AntdSelect } from 'antd';
@@ -18,7 +18,7 @@ const syncSettings = {
     express: 'express'
 };
 
-class Config extends PureComponent {
+class Config extends Component {
     state = {
         cache: '512',
         gethDataDir: null,
