@@ -12,20 +12,26 @@
     will-change: left;
     max-width: 64px;
     background-color: #f3f3f3;
+    padding-top: 24px;
 
-    &__button {
+    &__entry-icon {
+        position: relative;
+        text-align: center;
+    }
+
+    &__icon-button {
+        font-size: 24px;
+        padding: 0 12px;
         color: @text-color;
+        &.active {
+            background-color: @avatar-bg;
+        }
     }
 
     &_shown {
         left: 0;
         transition: left 0.175s ease-in-out;
         will-change: left;
-    }
-
-    &__entry-icon {
-        flex-grow: 1;
-        padding: 14px;
     }
 
     &__stream-icon {
@@ -41,13 +47,16 @@
     }
     &__entry-menu {
         position: absolute;
-        left: 34px;
+        left: 0;
         top: 0;
+        display: none;
+        padding: 0 14px;
         &-buttons {
-            display: block;
+            display: flex;
         }
         &_active {
-
+            left: 64px;
+            display: block;
         }
     }
     &__overlay {
@@ -58,6 +67,7 @@
         right: 100%;
         background: fadeout(@sidebar-overlay-bg, 20%);
         transition: right 0.213s ease-in-out;
+        cursor: pointer;
         &_visible {
             right: 0;
             transition: right 0.213s ease-in-out;

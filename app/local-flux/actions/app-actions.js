@@ -85,6 +85,11 @@ export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
+// toggle secondary sidebar visibility. this affects topBar, secondarySidebar and pageContent components.
+// when forceToggle is defined it takes priority.
+export const secondarySidebarToggle = ({ forceToggle }) =>
+    action(types.SECONDARY_SIDEBAR_TOGGLE, { forceToggle });
+
 export const showAuthDialog = actionId => action(types.SHOW_AUTH_DIALOG, { actionId });
 export const showLoginDialog = akashaId =>
     action(types.SHOW_LOGIN_DIALOG, { akashaId });

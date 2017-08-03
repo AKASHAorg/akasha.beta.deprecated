@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { LogoButton } from './';
 import { ChatIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
@@ -37,68 +37,129 @@ class Sidebar extends Component {
         const blackList = ['setup'];
         return !blackList.every(route => location.pathname.includes(route));
     }
-
+    _navigateTo = (path) => {
+        const { history } = this.props;
+        return () => {
+            this.setState({
+                overlayVisible: false,
+                showEntryMenu: false,
+            }, () => {
+                history.push(path);
+            });
+        };
+    }
     _checkActiveIcon = (name) => {
         const { location } = this.props;
         return location.pathname.includes(name);
     }
 
+    _toggleOverlay = () => {
+        this.setState({
+            overlayVisible: false,
+            showEntryMenu: false,
+        });
+    }
+
     render () {
-        const { activeDashboard, loggedProfileData, location } = this.props;
-        const isLoggedIn = !!loggedProfileData.get('akashaId');
+        const { activeDashboard, intl, loggedProfileData, location } = this.props;
+        const { showEntryMenu } = this.state;
+        const hasAkashaId = !!loggedProfileData.get('akashaId');
 
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
-            <div className="sidebar__entry-icon" >
-              <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
+            <div className="sidebar__entry-icon" style={{ zIndex: showEntryMenu ? 5 : 0 }} >
+              <Tooltip
+                placement={showEntryMenu ? 'bottom' : 'right'}
+                title={
+                    intl.formatMessage(showEntryMenu ? generalMessages.close : generalMessages.addNewEntry)
+                }
+              >
                 <Button
-                  icon="edit"
+                  icon={showEntryMenu ? 'close' : 'edit'}
                   type="sidebar-icon"
                   size="large"
-                  className="borderless sidebar__button "
+                  className="borderless sidebar__icon-button"
+                  disabled={!hasAkashaId}
                   ghost
                   onClick={this._toggleEntryMenu}
                 />
-                {/* <AddEntryIcon
-                  disabled={!isLoggedIn}
-                  isActive={this._checkActiveIcon('draft/new')}
-                  onClick={this._toggleEntryMenu}
-                /> */}
-                <div
-                  className={
-                      `sidebar__entry-menu
-                      sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
-                  }
-                >
-                  <ul className="sidebar__entry-menu-buttons">
-                    <li>TE</li>
-                    <li>LE</li>
-                  </ul>
-                </div>
+              </Tooltip>
+              <div
+                className={
+                    `sidebar__entry-menu
+                    sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
+                }
+              >
+                <ul className="sidebar__entry-menu-buttons">
+                  <li>
+                    <Tooltip
+                      title="Text Entry"
+                      placement="bottom"
+                    >
+                      <Button
+                        type="entry-menu-button"
+                        size="large"
+                        className="borderless"
+                        icon="file"
+                        ghost
+                        onClick={this._navigateTo('/draft/text/new')}
+                      />
+                    </Tooltip>
+                  </li>
+                  <li>
+                    <Tooltip
+                      title="Link Entry"
+                      placement="bottom"
+                    >
+                      <Button
+                        type="entry-menu-button"
+                        size="large"
+                        className="borderless"
+                        icon="link"
+                        ghost
+                        onClick={this._navigateTo('/draft/link/new')}
+                      />
+                    </Tooltip>
+                  </li>
+                </ul>
               </div>
-              <div {...this.getWrapperProps(generalMessages.search)}>
+            </div>
+            <div className="sidebar__search-icon">
+              <Tooltip
+                placement="right"
+                title={intl.formatMessage(generalMessages.search)}
+              >
                 <SearchIcon
                   onClick={this.handleSearch}
                   isActive={false}
                 />
-              </div>
+              </Tooltip>
             </div>
             <div className="sidebar__stream-icon" >
-              <div {...this.getWrapperProps(generalMessages.stream)}>
-                <Link to={`/dashboard/${activeDashboard || ''}`}>
+              <Tooltip
+                title={intl.formatMessage(generalMessages.stream)}
+                placement="right"
+              >
+                <Link to={`${activeDashboard ? `/dashboard/${activeDashboard}` : '/dashboard'}`}>
                   <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
                 </Link>
-              </div>
-              <div {...this.getWrapperProps(generalMessages.people)}>
+              </Tooltip>
+              <Tooltip
+                title={intl.formatMessage(generalMessages.people)}
+                placement="right"
+              >
                 <Link to="/people">
                   <PeopleIcon isActive={this._checkActiveIcon('people')} />
                 </Link>
-              </div>
-              <div {...this.getWrapperProps(generalMessages.chat)}>
+              </Tooltip>
+              <Tooltip
+                title={intl.formatMessage(generalMessages.chat)}
+                placement="right"
+              >
                 <Link to="/chat">
                   <ChatIcon isActive={this._checkActiveIcon('chat')} />
                 </Link>
-              </div>
+              </Tooltip>
             </div>
             <div className="sidebar__logo">
               <LogoButton />
@@ -108,6 +169,7 @@ class Sidebar extends Component {
                   `sidebar__overlay
                   sidebar__overlay${this.state.overlayVisible ? '_visible' : ''}`
               }
+              onClick={this._toggleOverlay}
             />
           </div>
         );
@@ -117,6 +179,7 @@ class Sidebar extends Component {
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftsCount: PropTypes.number,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

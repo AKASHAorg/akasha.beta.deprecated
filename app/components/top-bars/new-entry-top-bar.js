@@ -1,25 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { IconButton, SvgIcon } from 'material-ui';
-import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
-import { dashboardAddNewColumn } from '../../local-flux/actions/dashboard-actions';
+import { Button } from 'antd';
+import { TopBarRightSide } from '../';
 import { selectBalance, selectLoggedProfileData } from '../../local-flux/selectors';
-import { Navigation, TopBarRightSide } from '../';
+import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
 
-const DashboardTopBar = props => (
+const NewEntryTopBar = props => (
   <div style={{ display: 'flex', height: '32px', fontSize: '16px' }}>
     <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>
-      <Navigation />
-      <IconButton
-        iconStyle={{ width: '24px', height: '24px' }}
-        onClick={props.dashboardAddNewColumn}
-        style={{ width: '32px', height: '32px', padding: '0px', margin: '0 10px' }}
-      >
-        <SvgIcon viewBox="0 0 18 18">
-          <AddIcon />
-        </SvgIcon>
-      </IconButton>
+      <Button
+        icon={props.showSecondarySidebar ? 'double-left' : 'double-right'}
+        onClick={props.secondarySidebarToggle}
+      />
     </div>
     <TopBarRightSide
       balance={props.balance}
@@ -32,12 +25,12 @@ const DashboardTopBar = props => (
   </div>
 );
 
-DashboardTopBar.propTypes = {
+NewEntryTopBar.propTypes = {
     balance: PropTypes.string,
-    dashboardAddNewColumn: PropTypes.func.isRequired,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     onPanelNavigate: PropTypes.func,
+    secondarySidebarToggle: PropTypes.func,
     history: PropTypes.shape(),
     location: PropTypes.shape()
 };
@@ -47,12 +40,13 @@ function mapStateToProps (state) {
         balance: selectBalance(state),
         loggedProfileData: selectLoggedProfileData(state),
         loggedProfile: state.profileState.get('loggedProfile'),
+        showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        dashboardAddNewColumn
+        secondarySidebarToggle
     }
-)(DashboardTopBar);
+)(NewEntryTopBar);

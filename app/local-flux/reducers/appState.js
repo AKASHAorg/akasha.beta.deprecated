@@ -171,7 +171,12 @@ const appState = createReducer(initialState, {
 
     [types.AUTH_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),
-
+    [types.SECONDARY_SIDEBAR_TOGGLE]: (state, { forceToggle }) => {
+        if (typeof forceToggle === 'boolean') {
+            return state.set('showSecondarySidebar', forceToggle);
+        }
+        return state.set('showSecondarySidebar', !state.get('showSecondarySidebar'));
+    },
     [types.SHOW_LOGIN_DIALOG]: (state, { akashaId }) =>
         state.set('showLoginDialog', akashaId),
 

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const PageContent = ({ children }, { muiTheme }) => (
-  <div className="page-content" style={{ backgroundColor: muiTheme.palette.pageBackgroundColor }}>
+const PageContent = ({ children, showSecondarySidebar }) => (
+  <div className={`page-content page-content${showSecondarySidebar ? '' : '_full'}`}>
     {children}
   </div>
 );

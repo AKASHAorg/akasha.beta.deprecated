@@ -14,11 +14,11 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
+import { DashboardPage, EntryPageContainer, SidebarContainer, NewTextEntryPage } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
-    SetupPages, TermsPanel, TopBar } from '../components';
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NewEntrySecondarySidebar, NotificationBar,
+    PageContent, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -115,12 +115,16 @@ class AppContainer extends Component {
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
-                      <SecondarySidebar>
-                        <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                      <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
+                        <div>
+                          <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                          <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
+                        </div>
                       </SecondarySidebar>
-                      <PageContent>
+                      <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                          <Route path="/draft/text/:draftId" component={NewTextEntryPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
@@ -128,6 +132,7 @@ class AppContainer extends Component {
                         }
                       </PageContent>
                       <TopBar
+                        showSecondarySidebar={appState.get('showSecondarySidebar')}
                         fullEntryPage={!!fullEntry}
                         location={location}
                         history={history}

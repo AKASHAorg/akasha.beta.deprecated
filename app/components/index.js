@@ -38,6 +38,8 @@ export LogoButton from './logo-button';
 export Navigation from './navigation';
 export NewColumn from './columns/new-column';
 export NewColumnFooter from './columns/new-column-footer';
+export NewEntrySecondarySidebar from './secondary-sidebars/new-entry-secondary-sidebar';
+export NewEntryTopBar from './top-bars/new-entry-top-bar';
 export NewProfileForm from './forms/new-profile-form';
 export NewProfileStatus from './new-profile-status/new-profile-status';
 export NewProfileComplete from './new-profile-complete/new-profile-complete';

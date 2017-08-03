@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
-import { PanelContainer, ProfilePanelsHeader, Panels, CommonTopBar, DashboardTopBar } from '../';
+import { PanelContainer, ProfilePanelsHeader, Panels, CommonTopBar, DashboardTopBar,
+    NewEntryTopBar } from '../';
 import { profileLogout } from '../../local-flux/actions/profile-actions';
-import styles from './top-bar.scss';
 
 class TopBar extends PureComponent {
     constructor (props) {
@@ -66,7 +66,7 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { fullEntryPage, loggedProfile, loggedProfileData, intl } = this.props;
+        const { fullEntryPage, loggedProfile, loggedProfileData, intl, showSecondarySidebar } = this.props;
         const { muiTheme } = this.context;
         let loginName = loggedProfile.get('account');
 
@@ -77,13 +77,25 @@ class TopBar extends PureComponent {
         return (
           <div>
             <div
-              className={`${styles.root} ${fullEntryPage ? styles.full : styles.normal} flex-center-y`}
+              className={
+                  `top-bar
+                  top-bar${showSecondarySidebar ? '' : '_full'}
+                  top-bar${fullEntryPage ? '_full' : '_default'}
+                  flex-center-y`
+              }
               style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
             >
-              <div className={styles.inner}>
+              <div className="top-bar__inner">
                 <Route
                   path="/dashboard/:dashboardName?"
                   render={this._renderComponent(DashboardTopBar, {
+                      onPanelNavigate: this._navigateToPanel,
+                      onNotificationPanelOpen: this._handleNotificationOpen
+                  })}
+                />
+                <Route
+                  path="/draft/:type/:draftId"
+                  render={this._renderComponent(NewEntryTopBar, {
                       onPanelNavigate: this._navigateToPanel,
                       onNotificationPanelOpen: this._handleNotificationOpen
                   })}
@@ -97,8 +109,10 @@ class TopBar extends PureComponent {
                 />
                 <div
                   id="panelWrapper"
-                  className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
-                  style={{ paddingRight: 0 }}
+                  className={
+                      `top-bar__panel-wrapper
+                      top-bar__panel-wrapper${this._checkIsPanel() ? '_open' : ''}`
+                  }
                 >
                   <ProfilePanelsHeader
                     account={loggedProfile.get('account')}
@@ -122,7 +136,10 @@ class TopBar extends PureComponent {
               </div>
             </div>
             <div
-              className={`${styles.panelWrapperOverlay} ${this._checkIsPanel() && styles.overlayVisible}`}
+              className={
+                  `top-bar__panel-wrapper-overlay
+                  top-bar__panel-wrapper-overlay${this._checkIsPanel() ? '_visible' : ''}`
+              }
               style={{ width: 'calc(100% - 64%)' }}
               onClick={this._closePanel}
             />
@@ -136,15 +153,14 @@ TopBar.contextTypes = {
 };
 
 TopBar.propTypes = {
-    children: PropTypes.node,
     fullEntryPage: PropTypes.bool,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    match: PropTypes.shape(),
     profileLogout: PropTypes.func,
+    showSecondarySidebar: PropTypes.bool,
 };
 
 const mapStateToProps = state => ({

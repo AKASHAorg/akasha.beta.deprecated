@@ -45,6 +45,7 @@ const AppRecord = Record({
     showIpfsDetailsModal: false,
     showLoginDialog: null,
     showReportModal: null,
+    showSecondarySidebar: true, // must default to true
     showTerms: false,
     transferConfirmDialog: null,
     weightConfirmDialog: null,

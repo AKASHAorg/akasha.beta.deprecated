@@ -1,0 +1,32 @@
+.text-entry {
+    position: relative;
+    &__publish-options {
+        position: fixed;
+        top: 72px;
+        right: 16px;
+        display: inline-block;
+        cursor: pointer;
+        z-index: 5;
+    }
+    &__publish-options-panel {
+        position: fixed;
+        right: -100%;
+        bottom: 0;
+        top: 50px;
+        background-color: #FFF;
+        padding: 14px 24px;
+        z-index: 10;
+        &_open {
+            right: 0;
+        }
+    }
+    &__editor-wrapper {
+        padding-top: 48px;
+        text-align: center;
+    }
+    &__editor {
+        text-align: left;
+        width: 550px;
+        display: inline-block;
+    }
+}
