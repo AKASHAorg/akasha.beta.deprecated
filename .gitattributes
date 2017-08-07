@@ -2,4 +2,7 @@
 *.jpg binary
 *.data binary
 *.woff2 binary
+*.woff binary
+*.ttf binary
+*.eot binary
 *.png binary
