@@ -7,29 +7,24 @@ import { generalMessages } from '../../locale-data/messages';
 import { Breadcrumbs, PanelLink } from '../';
 
 const ProfilePanelsHeader = (props) => {
-    const { canEditProfile, loginName, onLogout, intl } = props;
+    const { canEditProfile, location, loginName, match, onLogout, intl } = props;
+
+    if (!location.pathname.includes('/panel')) {
+        return null;
+    }
 
     return (
       <div style={{ height: 48, background: '#FAFAFA', padding: '0 24px' }}>
         <Row type="flex" align="middle" justify="center">
           <Col span={16}>
             <div style={{ lineHeight: '48px' }}>
-              <Route
-                path="/:rootPath+/panel/:panelName/:others*"
-                render={
-                  ({ match }) => {
-                      if (!canEditProfile && match.params.panelName === 'editprofile') {
-                          return (
-                            <span>
-                              {loginName} &gt;
-                                <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b>
-                            </span>
-                          );
-                      }
-                      return <Breadcrumbs panel />;
-                  }
-                }
-              />
+              {!canEditProfile && match.params.panelName === 'editprofile' ?
+                <span>
+                  {loginName} &gt;
+                    <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b>
+                </span> :
+                <Breadcrumbs panel />
+              }
             </div>
           </Col>
           <Col span={8}>
@@ -72,7 +67,9 @@ const ProfilePanelsHeader = (props) => {
 ProfilePanelsHeader.propTypes = {
     canEditProfile: PropTypes.bool,
     intl: PropTypes.shape(),
+    location: PropTypes.shape(),
     loginName: PropTypes.string,
+    match: PropTypes.shape(),
     onLogout: PropTypes.func,
 };
 

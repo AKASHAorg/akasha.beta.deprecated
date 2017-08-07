@@ -169,6 +169,8 @@ const entryState = createReducer(initialState, {
         });
     },
 
+    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,

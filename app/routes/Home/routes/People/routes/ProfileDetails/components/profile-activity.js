@@ -179,7 +179,6 @@ class ProfileActivity extends Component {
           fetchingMoreEntries={fetchingMoreProfileEntries}
           getTriggerRef={(el) => { this.trigger = el; }}
           moreEntries={moreProfileEntries}
-          style={{ alignItems: 'flex-start' }}
         />);
     }
 

@@ -1,10 +1,10 @@
 import listDB from './db/list';
 
-export const addEntry = ({ listId, entryId }) =>
+export const addEntry = ({ account, name, entryId }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('id')
-            .equals(listId)
+            .where('[account+name]')
+            .equals([account, name])
             .toArray()
             .then((lists) => {
                 const list = lists[0];
@@ -35,11 +35,11 @@ export const addList = payload =>
             .catch(err => reject(err));
     });
 
-export const deleteEntry = ({ listId, entryId }) =>
+export const deleteEntry = ({ account, name, entryId }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('id')
-            .equals(listId)
+            .where('[account+name]')
+            .equals([account, name])
             .toArray()
             .then((lists) => {
                 const list = lists[0];
@@ -75,5 +75,29 @@ export const getAllLists = account =>
             .equals(account)
             .toArray()
             .then(resolve)
+            .catch(reject);
+    });
+
+export const getList = ({ account, name }) =>
+    new Promise((resolve, reject) => {
+        listDB.lists
+            .where('[account+name]')
+            .equals([account, name])
+            .first()
+            .then(resolve)
+            .catch(reject);
+    });
+
+export const searchList = ({ account, search }) =>
+    new Promise((resolve, reject) => {
+        listDB.lists
+            .where('account')
+            .equals(account)
+            .filter((list) => {
+                const { name = '', description = '' } = list;
+                return name.includes(search) || description.includes(search);
+            })
+            .toArray()
+            .then(data => resolve(data.map(list => list.name)))
             .catch(reject);
     });

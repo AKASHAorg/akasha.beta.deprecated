@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { ColumnHeader } from '../';
+import { ColumnHeader, EntryList } from '../';
 import { ColumnProfile } from '../svg';
-import { EntryListContainer } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
 import { dashboardGetProfileSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
@@ -32,7 +31,7 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, profiles, suggestions } = this.props;
+        const { column, entries, intl, suggestions } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchProfile);
@@ -45,7 +44,7 @@ class ProfileColumn extends Component {
               icon={<ColumnProfile />}
               suggestions={suggestions}
             />
-            <EntryListContainer
+            <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
@@ -54,7 +53,6 @@ class ProfileColumn extends Component {
               fetchMoreEntries={this.entryMoreProfileIterator}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={placeholderMessage}
-              profiles={profiles}
             />
           </div>
         );
@@ -68,7 +66,6 @@ ProfileColumn.propTypes = {
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    profiles: PropTypes.shape().isRequired,
     suggestions: PropTypes.shape().isRequired
 };
 
@@ -76,7 +73,6 @@ function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
-        profiles: state.profileState.get('byId'),
         suggestions: selectColumnSuggestions(state, columnId)
     };
 }

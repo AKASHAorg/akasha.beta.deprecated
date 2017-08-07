@@ -1,14 +1,10 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import styles from './panels.scss';
-import ListPanel from './list-panel';
-import ProfileDetailsPanel from './user-profile-details';
-import ProfileEditPanel from './profile-edit';
-import UserSettingsPanel from './user-settings-panel';
-import UserWalletPanel from './user-wallet-panel';
+import { ListEntriesPanel, ListPanel, ProfileDetailsPanel, ProfileEditPanel,
+    UserSettingsPanel, UserWalletPanel } from '../';
 
 const Panels = () => (
-  <div className={`${styles.root} col-xs-12`}>
+  <div style={{ height: '100%' }}>
     <Switch>
       <Route
         component={ProfileDetailsPanel}
@@ -36,11 +32,8 @@ const Panels = () => (
         path="/:rootPath*/panel/lists"
       />
       <Route
+        component={ListEntriesPanel}
         path="/:rootPath*/panel/lists/:listName?"
-        render={
-          routeProps =>
-            <div>A list {routeProps.match.params.listName}</div>
-        }
       />
     </Switch>
   </div>
