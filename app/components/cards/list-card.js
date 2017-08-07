@@ -15,11 +15,11 @@ const ListCard = (props) => {
         year="numeric"
       />
     );
-
+    const listUrl = `lists/${list.get('name')}`;
     const title = (
       <div className="list-card__title">
         <div className="heading flex-center-y content-link list-card__list-name">
-          <PanelLink to={`lists/${list.get('name')}`}>
+          <PanelLink to={listUrl}>
             {list.get('name')}
           </PanelLink>
         </div>
@@ -39,15 +39,14 @@ const ListCard = (props) => {
         title={title}
       >
         <div className="content-link">
-          <PanelLink to={`lists/${list.get('name')}`}>
-            {list.get('description') ?
-              list.get('description') :
-              'PLACEHOLDER: This should be a long description. This should be a long description. This should be a long description. This should be a long description.'
-            }
+          <PanelLink to={listUrl}>
+            <div>
+              {list.get('description')}
+            </div>
           </PanelLink>
         </div>
         <div className="list-card__footer">
-          <PanelLink to={`lists/${list.get('name')}`}>
+          <PanelLink to={listUrl}>
             <div className="content-link list-card__left-actions">
               <Icon type="file-text list-card__icon" />
               <div>{list.get('entryIds').size}</div>
@@ -57,7 +56,7 @@ const ListCard = (props) => {
             <Icon className="content-link list-card__icon" type="edit" />
             <Icon
               className="content-link list-card__icon"
-              onClick={() => deleteList(list.get('id'))}
+              onClick={() => deleteList(list.get('id'), list.get('name'))}
               type="delete"
             />
           </div>

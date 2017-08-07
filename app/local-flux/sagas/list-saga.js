@@ -15,27 +15,29 @@ function* listAdd ({ name, description }) {
     }
 }
 
-function* listAddEntry ({ listId, entryId }) {
+function* listAddEntry ({ name, entryId }) {
     try {
-        const list = yield apply(listService, listService.addEntry, [{ listId, entryId }]);
+        const account = yield select(selectLoggedAccount);
+        const list = yield apply(listService, listService.addEntry, [{ account, name, entryId }]);
         yield put(actions.listAddEntrySuccess(list));
     } catch (error) {
         yield put(actions.listAddEntryError(error));
     }
 }
 
-function* listDelete ({ listId }) {
+function* listDelete ({ listId, name }) {
     try {
         yield apply(listService, listService.deleteList, [listId]);
-        yield put(actions.listDeleteSuccess(listId));
+        yield put(actions.listDeleteSuccess(name));
     } catch (error) {
         yield put(actions.listDeleteError(error));
     }
 }
 
-function* listDeleteEntry ({ listId, entryId }) {
+function* listDeleteEntry ({ name, entryId }) {
     try {
-        const list = yield apply(listService, listService.deleteEntry, [{ listId, entryId }]);
+        const account = yield select(selectLoggedAccount);
+        const list = yield apply(listService, listService.deleteEntry, [{ account, name, entryId }]);
         yield put(actions.listDeleteEntrySuccess(list));
     } catch (error) {
         yield put(actions.listDeleteEntryError(error));
@@ -52,6 +54,26 @@ export function* listGetAll () {
     }
 }
 
+function* listGetFull ({ name }) {
+    try {
+        const account = yield select(selectLoggedAccount);
+        const data = yield apply(listService, listService.getList, [{ account, name }]);
+        yield put(actions.listGetFullSucess(data));
+    } catch (error) {
+        yield put(actions.listGetFullError(error));
+    }
+}
+
+function* listSearch ({ search }) {
+    try {
+        const account = yield select(selectLoggedAccount);
+        const data = yield apply(listService, listService.searchList, [{ account, search }]);
+        yield put(actions.listSearchSuccess(data));
+    } catch (error) {
+        yield put(actions.listSearchError(error));
+    }
+}
+
 // Action watchers
 
 export function* watchListActions () {
@@ -59,4 +81,6 @@ export function* watchListActions () {
     yield takeEvery(types.LIST_ADD_ENTRY, listAddEntry);
     yield takeEvery(types.LIST_DELETE, listDelete);
     yield takeEvery(types.LIST_DELETE_ENTRY, listDeleteEntry);
+    yield takeEvery(types.LIST_GET_FULL, listGetFull);
+    yield takeEvery(types.LIST_SEARCH, listSearch);
 }

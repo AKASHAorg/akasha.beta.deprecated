@@ -102,7 +102,26 @@ export const selectLastIpfsLog = state =>
 
 export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
-export const selectLists = state => state.listState.get('byId');
+export const selectListByName = (state, name) => state.listState.getIn(['byName', name]);
+
+export const selectListNextEntries = (state, name, limit) => {
+    const startIndex = state.listState.getIn(['byName', name, 'startIndex']);
+    return state.listState
+        .getIn(['byName', name, 'entryIds'])
+        .slice(startIndex, startIndex + limit)
+        .map(id => ({ entryId: id }))
+        .toJS();
+};
+
+export const selectLists = (state) => {
+    const searchResults = state.listState.get('searchResults');
+    if (state.listState.get('search')) {
+        return searchResults.map(name => state.listState.getIn(['byName', name]));
+    }
+    return state.listState.get('byName').toList();
+};
+
+export const selectListSearch = state => state.listState.get('search');
 
 export const selectLocalProfiles = state =>
     state.profileState

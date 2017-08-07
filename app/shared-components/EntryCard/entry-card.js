@@ -37,7 +37,7 @@ class EntryCard extends Component {
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
             !publisher.equals(this.props.publisher) ||
-            style.width !== this.props.style.width ||
+            (style && style.width !== this.props.style.width) ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||
             nextState.showVotes !== this.state.showVotes ||
@@ -186,7 +186,7 @@ class EntryCard extends Component {
         const { intl } = this.props;
         const { palette } = this.context.muiTheme;
         return (
-          <Card style={{ margin: '5px 10px 10px 5px', width: '340px' }}>
+          <Card style={{ margin: '5px 10px 10px 5px', width: '340px', height: '300px' }}>
             <CardText style={{ position: 'relative' }}>
               <div style={{ maxWidth: '175px' }}>
                 {intl.formatMessage(entryMessages.unresolvedEntry)}
@@ -320,6 +320,7 @@ class EntryCard extends Component {
                 >
                   <Avatar
                     image={avatar}
+                    size="small"
                     style={{ display: 'inline-block' }}
                     userInitials={userInitials}
                     userInitialsStyle={{
@@ -377,7 +378,7 @@ class EntryCard extends Component {
                 </div>
               }
               {!content && !entryResolvingIpfsHash &&
-                <div>
+                <div style={{ height: '240px' }}>
                   <div
                     data-tip="Bookmark"
                     style={{

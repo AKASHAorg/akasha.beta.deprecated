@@ -94,6 +94,16 @@ export const entryIsActiveError = (error) => {
 };
 
 export const entryIsActiveSuccess = data => action(types.ENTRY_IS_ACTIVE_SUCCESS, { data });
+export const entryListIterator = name => action(types.ENTRY_LIST_ITERATOR, { name });
+
+export const entryListIteratorError = (error) => {
+    error.code = 'ELIE01';
+    error.messageId = 'entryListIterator';
+    return action(types.ENTRY_LIST_ITERATOR_ERROR, { error });
+};
+
+export const entryListIteratorSuccess = (data, request) =>
+    action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 export const entryMoreNewestIterator = columnId => action(types.ENTRY_MORE_NEWEST_ITERATOR, { columnId });
 
 export const entryMoreNewestIteratorError = (error, req) => {

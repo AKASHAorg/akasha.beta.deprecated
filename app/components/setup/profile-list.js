@@ -106,7 +106,6 @@ class ProfileList extends Component {
               firstName={profile.get('firstName')}
               image={avatar}
               lastName={profile.get('lastName')}
-              size="large"
             />
             <div className="profile-list__header-text">
               <div className="overflow-ellipsis heading profile-list__name">

@@ -6,14 +6,14 @@ import * as actions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { profileSaveAkashaIds } from './profile-saga';
-import { selectColumnLastEntry, selectColumnLastBlock, selectIsFollower, selectLoggedAkashaId,
-    selectToken } from '../selectors';
+import { selectColumnLastEntry, selectColumnLastBlock, selectIsFollower, selectListNextEntries,
+    selectLoggedAkashaId, selectToken } from '../selectors';
 import actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const ALL_STREAM_LIMIT = 11;
 const ENTRY_ITERATOR_LIMIT = 6;
+const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
 function* enableExtraChannels () {
     const getVoteOf = Channel.server.entry.getVoteOf;
@@ -156,6 +156,13 @@ function* entryIsActive ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
+function* entryListIterator ({ name }) {
+    const channel = Channel.server.entry.getEntryList;
+    const entryIds = yield select(state => selectListNextEntries(state, name, ENTRY_LIST_ITERATOR_LIMIT));
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [{ entryIds, listName: name }]);
+}
+
 function* entryMoreNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
     const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
@@ -229,100 +236,6 @@ function* entryVoteCost () {
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const weight = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     yield apply(channel, channel.send, [{ weight }]);
-}
-
-// Action watchers
-
-function* watchEntryCanClaim () {
-    yield takeEvery(types.ENTRY_CAN_CLAIM, entryCanClaim);
-}
-
-function* watchEntryClaim () {
-    yield takeEvery(types.ENTRY_CLAIM, entryClaim);
-}
-
-function* watchEntryClaimSuccess () {
-    yield takeEvery(types.ENTRY_CLAIM_SUCCESS, entryClaimSuccess);
-}
-
-function* watchEntryDownvote () {
-    yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
-}
-
-function* watchEntryDownvoteSuccess () {
-    yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
-}
-
-function* watchEntryGetBalance () {
-    yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);
-}
-
-function* watchEntryGetFull () {
-    yield takeLatest(types.ENTRY_GET_FULL, entryGetFull);
-}
-
-function* watchEntryGetLatestVersion () {
-    yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
-}
-
-function* watchEntryGetScore () {
-    yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
-}
-
-function* watchEntryGetVoteOf () {
-    yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
-}
-
-function* watchEntryIsActive () {
-    yield takeEvery(types.ENTRY_IS_ACTIVE, entryIsActive);
-}
-
-function* watchEntryMoreNewestIterator () {
-    yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
-}
-
-function* watchEntryMoreProfileIterator () {
-    yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
-}
-
-function* watchEntryMoreStreamIterator () {
-    yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);
-}
-
-function* watchEntryMoreTagIterator () {
-    yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
-}
-
-function* watchEntryNewestIterator () {
-    yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
-}
-
-function* watchEntryProfileIterator () {
-    yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
-}
-
-function* watchEntryResolveIpfsHash () {
-    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
-}
-
-function* watchEntryStreamIterator () {
-    yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
-}
-
-function* watchEntryTagIterator () {
-    yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
-}
-
-function* watchEntryUpvote () {
-    yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);
-}
-
-function* watchEntryUpvoteSuccess () {
-    yield takeEvery(types.ENTRY_UPVOTE_SUCCESS, entryUpvoteSuccess);
-}
-
-function* watchEntryVoteCost () {
-    yield takeEvery(types.ENTRY_VOTE_COST, entryVoteCost);
 }
 
 // Channel watchers
@@ -451,6 +364,19 @@ function* watchEntryIsActiveChannel () {
         } else {
             yield put(actions.entryIsActiveSuccess(resp.data));
         }
+    }
+}
+
+function* watchEntryListIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.getEntryList);
+        if (resp.error) {
+            yield put(actions.entryListIteratorError(resp.error));
+        } else {
+            yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
+        }
+        const { listName } = resp.request;
+        yield fork(entryGetExtraOfList, resp.data.collection, null, listName);
     }
 }
 
@@ -595,6 +521,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
     yield fork(watchEntryIsActiveChannel);
+    yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);
     yield fork(watchEntryResolveIpfsHashChannel);
@@ -605,29 +532,30 @@ export function* registerEntryListeners () {
 }
 
 export function* watchEntryActions () { // eslint-disable-line max-statements
-    yield fork(watchEntryCanClaim);
-    yield fork(watchEntryClaim);
-    yield fork(watchEntryClaimSuccess);
-    yield fork(watchEntryDownvote);
-    yield fork(watchEntryDownvoteSuccess);
-    yield fork(watchEntryGetBalance);
-    yield fork(watchEntryGetFull);
-    yield fork(watchEntryGetLatestVersion);
-    yield fork(watchEntryGetScore);
-    yield fork(watchEntryGetVoteOf);
-    yield fork(watchEntryIsActive);
-    yield fork(watchEntryMoreNewestIterator);
-    yield fork(watchEntryMoreProfileIterator);
-    yield fork(watchEntryMoreStreamIterator);
-    yield fork(watchEntryMoreTagIterator);
-    yield fork(watchEntryNewestIterator);
-    yield fork(watchEntryProfileIterator);
-    yield fork(watchEntryResolveIpfsHash);
-    yield fork(watchEntryStreamIterator);
-    yield fork(watchEntryTagIterator);
-    yield fork(watchEntryUpvote);
-    yield fork(watchEntryUpvoteSuccess);
-    yield fork(watchEntryVoteCost);
+    yield takeEvery(types.ENTRY_CAN_CLAIM, entryCanClaim);
+    yield takeEvery(types.ENTRY_CLAIM, entryClaim);
+    yield takeEvery(types.ENTRY_CLAIM_SUCCESS, entryClaimSuccess);
+    yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
+    yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
+    yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);
+    yield takeLatest(types.ENTRY_GET_FULL, entryGetFull);
+    yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
+    yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
+    yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
+    yield takeEvery(types.ENTRY_IS_ACTIVE, entryIsActive);
+    yield takeEvery(types.ENTRY_LIST_ITERATOR, entryListIterator);
+    yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
+    yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
+    yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);
+    yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
+    yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
+    yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
+    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
+    yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
+    yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
+    yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);
+    yield takeEvery(types.ENTRY_UPVOTE_SUCCESS, entryUpvoteSuccess);
+    yield takeEvery(types.ENTRY_VOTE_COST, entryVoteCost);
 }
 
 export function* registerWatchers () {

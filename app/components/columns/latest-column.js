@@ -2,9 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { ColumnHeader } from '../';
+import { ColumnHeader, EntryList } from '../';
 import { ColumnLatest } from '../svg';
-import { EntryListContainer } from '../../shared-components';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreNewestIterator,
     entryNewestIterator } from '../../local-flux/actions/entry-actions';
@@ -25,7 +24,7 @@ class LatestColumn extends Component {
     }
 
     render () {
-        const { column, entries, intl, profiles } = this.props;
+        const { column, entries, intl } = this.props;
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -35,7 +34,7 @@ class LatestColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.columnLatest)}
             />
-            <EntryListContainer
+            <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
@@ -44,7 +43,6 @@ class LatestColumn extends Component {
               fetchMoreEntries={this.entryMoreNewestIterator}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
-              profiles={profiles}
             />
           </div>
         );
@@ -57,13 +55,11 @@ LatestColumn.propTypes = {
     entryMoreNewestIterator: PropTypes.func.isRequired,
     entryNewestIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    profiles: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id')),
-        profiles: state.profileState.get('byId'),
+        entries: selectColumnEntries(state, ownProps.column.get('id'))
     };
 }
 

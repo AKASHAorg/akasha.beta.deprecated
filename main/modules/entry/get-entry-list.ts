@@ -5,8 +5,8 @@ import getEntry from './get-entry';
  * Resolve a list of entries
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { entryId: string }[]) {
-    const pool = data.map((entryObj) => {
+const execute = Promise.coroutine(function*(data: { entryIds: { entryId: string }[] }) {
+    const pool = data.entryIds.map((entryObj) => {
         return getEntry.execute(entryObj);
     });
     const resolved = yield Promise.all(pool);

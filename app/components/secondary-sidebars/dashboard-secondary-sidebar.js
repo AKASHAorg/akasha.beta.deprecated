@@ -88,13 +88,13 @@ const DashboardSecondarySidebar = props => (
     <input ref={el => (entryIdInput = el)} />
     <select style={{ display: 'block' }} ref={el => (selectRef = el)}>
       {props.lists.toList().map(list => (
-        <option key={list.get('id')} value={list.get('id')}>
+        <option key={list.get('id')} value={list.get('name')}>
           {list.get('name')}
         </option>
       ))}
     </select>
-    <button onClick={() => props.listAddEntry(selectRef.value, entryIdInput.value) }>Add to list</button>    
-    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value) }>Remove from list</button>  
+    <button onClick={() => props.listAddEntry(selectRef.value, entryIdInput.value)}>Add to list</button>    
+    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value)}>Remove from list</button>  
   </div>
 );
 
@@ -121,7 +121,7 @@ function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         dashboards: selectDashboards(state),
-        lists: state.listState.get('byId')
+        lists: state.listState.get('byName')
     };
 }
 
