@@ -10,7 +10,12 @@ const generalMessages = defineMessages({
     addImage: {
         id: 'app.general.addImage',
         description: 'placeholder for image uploader component',
-        defaultMessage: 'Add photo by dropping here or click.'
+        defaultMessage: 'Drag and drop to add an image.'
+    },
+    addImageDragged: {
+        id: 'app.general.addImageDragged',
+        description: 'message to show when user is dragging an image over',
+        defaultMessage: 'Cool! Drop it just here!'
     },
     addNewEntry: {
         id: 'app.general.addNewEntry',
@@ -47,6 +52,21 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar chat button',
         defaultMessage: 'Chat'
     },
+    chooseImage: {
+        id: 'app.general.chooseImage',
+        description: 'tooltip to show when user hovers image uploader component and no image selected',
+        defaultMessage: 'Choose an image'
+    },
+    chooseAnotherImage: {
+        id: 'app.general.chooseAnotherImage',
+        description: 'tooltip to show when user hovers image uploader and an image is already selected',
+        defaultMessage: 'Choose another image'
+    },
+    close: {
+        id: 'app.general.close',
+        description: 'close',
+        defaultMessage: 'Close'
+    },
     comingSoon: {
         id: 'app.general.comingSoon',
         description: 'tooltip for sidebar disabled button',
@@ -72,10 +92,10 @@ const generalMessages = defineMessages({
         description: 'connected status',
         defaultMessage: 'connected'
     },
-    close: {
-        id: 'app.general.close',
-        description: 'close',
-        defaultMessage: 'Close'
+    created: {
+        id: 'app.general.created',
+        description: 'created',
+        defaultMessage: 'Created'
     },
     delete: {
         id: 'app.general.delete',
@@ -91,6 +111,11 @@ const generalMessages = defineMessages({
         id: 'app.general.edit',
         description: 'Edit something button label',
         defaultMessage: 'Edit'
+    },
+    editProfile: {
+        id: 'app.general.editProfile',
+        description: 'Edit profile button label',
+        defaultMessage: 'Edit Profile'
     },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
@@ -154,6 +179,11 @@ const generalMessages = defineMessages({
         id: 'app.general.logs',
         description: 'Services logs',
         defaultMessage: 'Logs'
+    },
+    logout: {
+        id: 'app.general.logout',
+        description: 'Logout button label',
+        defaultMessage: 'Logout'
     },
     minCount: {
         id: 'app.general.minutesCount',

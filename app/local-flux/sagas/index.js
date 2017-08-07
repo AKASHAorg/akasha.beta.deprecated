@@ -9,6 +9,7 @@ import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
 import * as licenseSaga from './license-saga';
+import * as listSaga from './list-saga';
 import * as profileSaga from './profile-saga';
 import * as publisherSaga from './publisher-saga';
 import * as searchSaga from './search-saga';
@@ -51,6 +52,7 @@ function* launchHomeActions () {
     yield fork(dashboardSaga.dashboardGetActive);
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(dashboardSaga.dashboardGetColumns);
+    yield fork(listSaga.listGetAll);
     yield fork(tagSaga.tagGetMargins);
     if (yield select(selectLoggedAkashaId)) {
         yield put(transactionActions.transactionGetMined());
@@ -82,6 +84,7 @@ export default function* rootSaga () {
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);
     yield fork(licenseSaga.watchLicenseActions);
+    yield fork(listSaga.watchListActions);
     yield fork(profileSaga.watchProfileActions);
     yield fork(publisherSaga.watchPublishActions);
     yield fork(searchSaga.watchSearchActions);

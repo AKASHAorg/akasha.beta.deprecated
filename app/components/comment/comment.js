@@ -150,7 +150,7 @@ class Comment extends Component {
                       <Avatar
                         image={authorAvatar}
                         onMouseEnter={this.handleMouseEnter}
-                        size={40}
+                        size="small"
                         style={{
                             display: 'inline-block',
                             cursor: 'pointer',

@@ -96,7 +96,7 @@ class CommentEditor extends Component {
             <div className={`${styles.avatar_image} col-xs-1 start-xs`}>
               <Avatar
                 image={loggedProfileData.get('avatar')}
-                size={48}
+                size="small"
                 userInitials={userInitials}
                 userInitialsStyle={{ fontSize: 22 }}
               />

@@ -104,7 +104,7 @@ class EntryPageHeader extends Component {
     renderAvatar = () => {
         const { publisher } = this.props;
         if (!publisher) {
-            return <Avatar size={40} style={{ cursor: 'pointer' }} />;
+            return <Avatar size="large" style={{ cursor: 'pointer' }} />;
         }
         const userInitials = getInitials(publisher.firstName, publisher.lastName);
 
@@ -113,7 +113,7 @@ class EntryPageHeader extends Component {
             <Avatar
               image={publisher.avatar}
               onMouseEnter={this.showProfileHoverCard}
-              size={40}
+              size="large"
               style={{ cursor: 'pointer' }}
               userInitials={userInitials}
               userInitialsStyle={{ fontSize: '12px', margin: '0px' }}

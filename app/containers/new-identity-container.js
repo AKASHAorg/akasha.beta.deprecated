@@ -1,14 +1,23 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
-import { setupMessages } from '../locale-data/messages';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Button, Form, Input } from 'antd';
+import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
 import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
 import { showTerms } from '../local-flux/actions/app-actions';
 import { selectLoggedAccount, selectProfileFlag } from '../local-flux/selectors';
-import { NewIdentityForm } from '../components';
+
+const FormItem = Form.Item;
+
+const hasErrors = fieldsError =>
+    Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class NewIdentity extends Component {
+    state = {
+        confirmDirty: false
+    };
+
     componentWillReceiveProps (nextProps) {
         const { loggedAccount, history } = this.props;
         if (!loggedAccount && nextProps.loggedAccount) {
@@ -16,22 +25,146 @@ class NewIdentity extends Component {
         }
     }
 
+    onConfirmBlur = (e) => {
+        const value = e.target.value;
+        this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+    };
+
+    onConfirmChange = () => {
+        const { setFields } = this.props.form;
+        setFields({ confirm: { errors: null } });
+    };
+
+    checkConfirm = (rule, value, callback) => {
+        const { intl } = this.props;
+        const form = this.props.form;
+        if (value && value !== form.getFieldValue('passphrase')) {
+            callback(intl.formatMessage(formMessages.passphraseConfirmError));
+        } else {
+            callback();
+        }
+    };
+
+    checkPassphrase = (rule, value, callback) => {
+        const form = this.props.form;
+        if (value && this.state.confirmDirty) {
+            form.validateFields(['confirm'], { force: true });
+        }
+        callback();
+    };
+
+    handleSubmit = (ev) => {
+        ev.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                this.props.profileCreateEthAddress(new TextEncoder('utf-8').encode(values.passphrase));
+            }
+        });
+    };
+
+    showTerms = (ev) => {
+        ev.preventDefault();
+        this.props.showTerms();
+    }
+
+    renderForm = () => {
+        const { intl } = this.props;
+        const { getFieldDecorator } = this.props.form;
+        return (
+          <div className="new-identity__form-wrapper">
+            <FormItem colon={false} label={intl.formatMessage(formMessages.passphrase)}>
+              {getFieldDecorator('passphrase', {
+                  rules: [{
+                      required: true,
+                      whitespace: true,
+                      message: intl.formatMessage(formMessages.requiredError)
+                  }, {
+                      validator: this.checkPassphrase
+                  }]
+              })(
+                <Input
+                  autoFocus
+                  placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
+                  size="large"
+                  type="password"
+                />
+              )}
+            </FormItem>
+            <FormItem colon={false} label={intl.formatMessage(formMessages.confirmPassphrase)}>
+              {getFieldDecorator('confirm', {
+                  rules: [{
+                      required: true,
+                      whitespace: true,
+                      message: intl.formatMessage(formMessages.requiredError)
+                  }, {
+                      validator: this.checkConfirm
+                  }],
+                  validateTrigger: 'onBlur'
+              })(
+                <Input
+                  onBlur={this.onConfirmBlur}
+                  onChange={this.onConfirmChange}
+                  placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
+                  size="large"
+                  type="password"
+                />
+              )}
+            </FormItem>
+          </div>
+        );
+    };
+
     render () {
         const { ethAddressPending, history, intl, loginPending } = this.props;
+        const { getFieldsError } = this.props.form;
         const buttonsDisabled = loginPending || ethAddressPending;
+        const termsLink = (
+          <a href="#" onClick={this.showTerms}>
+            {intl.formatMessage(generalMessages.termsOfService)}
+          </a>
+        );
+
         return (
-          <div className="setup-content setup-content__column_full">
-            <div style={{ width: '60%', margin: '40px auto 0', maxWidth: '800px' }}>
-              <div style={{ fontSize: '22px', fontWeight: '600' }}>
-                {intl.formatMessage(setupMessages.createIdentity)}
+          <div className="setup-content setup-content__column_full new-identity">
+            <Form hideRequiredMark onSubmit={this.handleSubmit}>
+              <div className="setup-content__column-content new-identity__content">
+                <div className="heading new-identity__title">
+                  {intl.formatMessage(setupMessages.createIdentity)}
+                </div>
+                <div className="new-identity__subtitle">
+                  {intl.formatMessage(setupMessages.newIdentitySubtitle)}
+                </div>
+                {this.renderForm()}
+                <div className="content-link new-identity__terms">
+                  <small>
+                    <FormattedMessage
+                      {...generalMessages.terms}
+                      values={{ termsLink }}
+                    />
+                  </small>
+                </div>
               </div>
-              <NewIdentityForm
-                buttonsDisabled={buttonsDisabled}
-                onCancel={history.goBack}
-                onSubmit={this.props.profileCreateEthAddress}
-                showTerms={this.props.showTerms}
-              />
-            </div>
+              <div className="setup-content__column-footer new-identity__footer">
+                <Button
+                  className="new-identity__button"
+                  disabled={buttonsDisabled}
+                  onClick={history.goBack}
+                  size="large"
+                >
+                  {intl.formatMessage(generalMessages.cancel)}
+                </Button>
+                <Button
+                  className="new-identity__button"
+                  disabled={hasErrors(getFieldsError()) || buttonsDisabled}
+                  htmlType="submit"
+                  onClick={this.handleSubmit}
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.submit)}
+                </Button>
+              </div>
+            </Form>
           </div>
         );
     }
@@ -39,6 +172,7 @@ class NewIdentity extends Component {
 
 NewIdentity.propTypes = {
     ethAddressPending: PropTypes.bool,
+    form: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     loggedAccount: PropTypes.string,
@@ -51,7 +185,7 @@ function mapStateToProps (state) {
     return {
         ethAddressPending: selectProfileFlag(state, 'ethAddressPending'),
         loggedAccount: selectLoggedAccount(state),
-        loginPending: selectProfileFlag(state, 'loginPending'),        
+        loginPending: selectProfileFlag(state, 'loginPending')
     };
 }
 
@@ -61,4 +195,4 @@ export default connect(
         profileCreateEthAddress,
         showTerms
     }
-)(injectIntl(NewIdentity));
+)(injectIntl(Form.create()(NewIdentity)));

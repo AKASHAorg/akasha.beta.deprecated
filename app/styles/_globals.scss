@@ -17,17 +17,15 @@ html, body {
 
 .fill-height > div:first-child {
     width: 100%;
-    // flex-grow: 1;
-    // flex-shrink: 1;
-    // flex-basis: auto;
-    // display: inline-flex;
 }
+
 .full-page {
     margin: 0;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 .user-icon {
     visibility: hidden;
     &:hover, .active {
@@ -52,6 +50,7 @@ html, body {
     border-top: 10px solid;
     border-top-color: #000;
 }
+
 .caret-up {
     width: 0;
     height: 0;
@@ -60,6 +59,7 @@ html, body {
     border-bottom: 10px solid;
     border-bottom-color: #000;
 }
+
 .link-button {
     cursor: pointer;
     user-select: none;
@@ -67,6 +67,7 @@ html, body {
         opacity: 0.7;
     }
 }
+
 .hand-icon {
     &:hover {
         cursor: pointer;
@@ -88,6 +89,11 @@ html, body {
     font-weight: 500;
     text-decoration: underline;
     color: #008B8B;
+}
+
+.unstyled-link {
+    color: inherit !important;
+    text-decoration: none !important;
 }
 
 .has-hidden-action {
