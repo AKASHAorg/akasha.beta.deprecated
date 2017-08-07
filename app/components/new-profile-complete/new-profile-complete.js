@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { RaisedButton, TextField } from 'material-ui';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { PanelContainerFooter } from '../';
 
-class NewProfileComplete extends PureComponent {
+class NewProfileComplete extends Component {
     componentWillMount () {
         const { tempProfile, tempProfileGetRequest } = this.props;
         if (!tempProfile.get('akashaId')) {

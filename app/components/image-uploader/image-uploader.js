@@ -6,7 +6,6 @@ import { SvgIcon } from '../';
 import AddImage from '../svg/add-image';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
-import styles from './image-uploader.scss';
 
 const INITIAL_PROGRESS_VALUE = 20;
 
@@ -30,7 +29,8 @@ class ImageUploader extends Component {
             !R.equals(nextState.imageLoaded, this.state.imageLoaded) ||
             !R.equals(nextState.processingFinished, this.state.processingFinished) ||
             !R.equals(nextState.progress, this.state.progress) ||
-            !R.equals(nextState.error, this.state.error);
+            !R.equals(nextState.error, this.state.error) ||
+            !R.equals(nextState.highlightDropZone, this.state.highlightDropZone);
     }
     componentDidMount () {
         const { initialImage } = this.props;
@@ -39,6 +39,20 @@ class ImageUploader extends Component {
     componentWillReceiveProps (nextProps) {
         const { initialImage } = nextProps;
         this._setIpfsImage(initialImage);
+    }
+    _highlightDropZone = (ev) => {
+        ev.preventDefault();
+        if (ev.target.className === 'image-uploader__upload-button') {
+            this.setState({
+                highlightDropZone: true
+            });
+        }
+    }
+    _diminishDropZone = (ev) => {
+        ev.preventDefault();
+        this.setState({
+            highlightDropZone: false
+        });
     }
     _setIpfsImage = (initialImage) => {
         const hasIpfsBgImage = initialImage &&
@@ -54,7 +68,7 @@ class ImageUploader extends Component {
 
     _handleResizeProgress = (totalProgress) => {
         this.setState({
-            progress: totalProgress + INITIAL_PROGRESS_VALUE
+            progress: Math.round(totalProgress + INITIAL_PROGRESS_VALUE)
         });
         this.forceUpdate();
     }
@@ -124,64 +138,57 @@ class ImageUploader extends Component {
             processingFinished: true,
             progress: INITIAL_PROGRESS_VALUE,
             error: null,
-            imageLoaded: false
+            imageLoaded: false,
+            highlightDropZone: false,
         });
     }
     _handleImageLoad = () => {
         this.setState({
-            imageLoaded: true
+            imageLoaded: true,
+            highlightDropZone: false,
         });
     }
     render () {
         const {
-            clearImageButtonStyle,
-            errorStyle,
             multiFiles,
             intl,
-            muiTheme
         } = this.props;
         const { imageFile, imageLoaded } = this.state;
-        /* eslint-disable react/no-array-index-key, no-console */
-        if (multiFiles) {
-            return console.error('sorry multiple files is not implemented yet!');
-        }
         return (
           <div
             ref={(container) => { this.container = container; }}
-            style={{
-                position: 'relative',
-                backgroundColor: muiTheme.palette.avatarBackground,
-                border: `1px dashed ${muiTheme.palette.textColor}`
-            }}
+            className="image-uploader"
+            onDragEnter={this._highlightDropZone}
+            onDragLeave={this._diminishDropZone}
           >
             <div>
               {this.state.processingFinished && !R.isEmpty(imageFile) &&
                 <img
                   src={this._getImageSrc(this.state.imageFile)}
-                  className={`${styles.image} ${this.state.imageLoaded && styles.loaded}`}
+                  className={`image-uploader__img image-uploader__img${this.state.imageLoaded && '_loaded'}`}
                   onLoad={this._handleImageLoad}
                   alt=""
                 />
               }
               {this.state.processingFinished && !R.isEmpty(imageFile) && !imageLoaded &&
                 <div
-                  className={`${styles.generatingPreview}`}
+                  className="image-uploader__generating-preview"
                 >
                   {intl.formatMessage(generalMessages.generatingPreview)}...
                 </div>
               }
               {!this.state.processingFinished && R.isEmpty(imageFile) &&
                 <div
-                  className={`${styles.emptyContainer} ${styles.processingLoader}`}
+                  className="image-uploader__empty-container image-uploader__processing-loader"
                 >
                   <div
-                    className={`${styles.processingLoaderText}`}
+                    className="image-uploader__processing-loader-text"
                   >
                     {intl.formatMessage(generalMessages.processingImage)}...
                   </div>
-                  <div className={`${styles.loadingBar}`}>
+                  <div className="image-uploader__loading-bar">
                     <Progress
-                      style={{ display: 'inline-block' }}
+                      className="image-uploader__progress-bar"
                       strokeWidth={5}
                       percent={this.state.progress}
                       status="active"
@@ -190,10 +197,10 @@ class ImageUploader extends Component {
                 </div>
               }
               {this.state.processingFinished && !R.isEmpty(imageFile) &&
-                <div className={`${styles.clearImageButton}`} style={clearImageButtonStyle}>
+                <div className="image-uploader__clear-image-button">
                   <Button
-                    type="secondary"
-                    icon="delete"
+                    type="standard"
+                    icon="close-circle"
                     onClick={this._handleClearImage}
                   />
                 </div>
@@ -201,43 +208,41 @@ class ImageUploader extends Component {
             </div>
             {R.isEmpty(imageFile) && this.state.processingFinished &&
               <div
-                className={`${styles.emptyContainer}`}
+                className={
+                    `image-uploader__empty-container
+                    image-uploader__empty-container${this.state.highlightDropZone ? '_dragEnter' : ''}`
+                }
               >
                 <SvgIcon style={{ height: 48, width: 48 }} >
                   <AddImage />
                 </SvgIcon>
-                <text style={{ display: 'block' }}>
-                  {intl.formatMessage(generalMessages.addImage)}
+                <text className="image-uploader__helper-text">
+                  {!this.state.highlightDropZone && intl.formatMessage(generalMessages.addImage)}
+                  {this.state.highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
                 </text>
               </div>
-              }
+            }
             <input
               ref={(fileInput) => { this.fileInput = fileInput; }}
               type="file"
-              className={`${styles.uploadButton}`}
+              className="image-uploader__upload-button"
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
               accept="image/*"
+              title={R.isEmpty(imageFile) ?
+                intl.formatMessage(generalMessages.chooseImage) :
+                intl.formatMessage(generalMessages.chooseAnotherImage)}
             />
             {this.state.error &&
-              <div style={errorStyle}>{this.state.error}</div>
+              <div className="image-uploader__error">{this.state.error}</div>
             }
           </div>
         );
     }
 }
-ImageUploader.defaultProps = {
-    errorStyle: {
-        position: 'absolute',
-        width: '80%',
-        bottom: '8px',
-        left: '10%',
-        padding: '8px 16px',
-        backgroundColor: '#FFF',
-        color: '#D40202',
-        boxShadow: '0px 0px 3px 0 rgba(0,0,0,0.6)'
-    },
-};
+
+ImageUploader.defaultProps = {};
+
 ImageUploader.propTypes = {
     // used in profile update
     baseUrl: PropTypes.string,

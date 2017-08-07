@@ -7,12 +7,11 @@ class UserWalletPanel extends Component {
             <div>
                 This is my wallet!
             </div>
-        )
+        );
     }
 }
 
 UserWalletPanel.propTypes = {
-    onPanelNavigate: PropTypes.func,
 };
 
 export default UserWalletPanel;

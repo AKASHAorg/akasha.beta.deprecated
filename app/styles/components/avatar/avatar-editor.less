@@ -1,0 +1,56 @@
+.avatar {
+    position: relative;
+    &__dialog-handler {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        cursor: pointer;
+        opacity: 0;
+        left: 0;
+        z-index: 10;
+    }
+    &__avatar-empty {
+        min-width: 200px;
+        min-height: 200px;
+        position: relative;
+        border: 1px dashed @text-color;
+        background: @avatar-editor-bg;
+        &_dragEnter {
+            background: darken(@avatar-editor-bg, 5%);
+        }
+    }
+    &__placeholder {
+        top: 50%;
+        left: 50%;
+        margin-top: -16px;
+        margin-left: -16px;
+        position: absolute;
+    }
+    &__add-image-icon-wrapper {
+        position: absolute;
+        top: 50%;
+        margin-top: -24px;
+        left: 50%;
+        margin-left: -18px;
+        svg {
+            fill: #8c8c8c;
+        }
+        &_dragEnter {
+            svg {
+                fill: @primary-color;
+            }
+        }
+    }
+    &__add-image-help-text {
+        position: absolute;
+        top: 50%;
+        margin-top: 16px;
+        width: 100%;
+        text-align: center;
+        color: #8c8c8c;
+        &_dragEnter {
+            color: @primary-color;
+            font-style: bold;
+        }
+    }
+}

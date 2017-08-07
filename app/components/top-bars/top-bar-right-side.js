@@ -2,16 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import { IconButton, SvgIcon } from 'material-ui';
-import { Avatar, Balance, ServiceStatusBar } from '../';
+import { Avatar, Balance, PanelLink, ServiceStatusBar } from '../';
 import { getInitials } from '../../utils/dataModule';
 
 const TopBarRightSide = ({
     balance,
     canEditProfile,
     loggedProfileData,
-    history,
-    location,
-    onPanelNavigate,
     openNotificationPanel
 }, { muiTheme }) => (
   <div style={{ display: 'flex', flex: '0 0 auto' }}>
@@ -31,22 +28,20 @@ const TopBarRightSide = ({
       </IconButton>
     </div>
     <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
-      <Balance
-        balance={balance}
-        onClick={onPanelNavigate('wallet')}
-      />
+      <PanelLink to="wallet">
+        <Balance balance={balance} />
+      </PanelLink>
     </div>
     <div style={{ flex: '0 0 auto' }}>
-      <Avatar
-        image={loggedProfileData.avatar}
-        size={32}
-        style={{ cursor: 'pointer' }}
-        userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
-        userInitialsStyle={{ fontSize: '20px' }}
-        onClick={
-            onPanelNavigate(canEditProfile ? 'uprofile' : 'editprofile', history, location)
-        }
-      />
+      <PanelLink to={canEditProfile ? 'uprofile' : 'editProfile'}>
+        <Avatar
+          image={loggedProfileData.avatar}
+          size="small"
+          style={{ cursor: 'pointer' }}
+          userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
+          userInitialsStyle={{ fontSize: '20px' }}
+        />
+      </PanelLink>
     </div>
   </div>
 );
@@ -58,10 +53,7 @@ TopBarRightSide.contextTypes = {
 TopBarRightSide.propTypes = {
     balance: PropTypes.string,
     canEditProfile: PropTypes.bool,
-    history: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    location: PropTypes.shape(),
-    onPanelNavigate: PropTypes.func,
     openNotificationPanel: PropTypes.func,
 };
 

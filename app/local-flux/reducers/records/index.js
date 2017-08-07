@@ -8,6 +8,7 @@ import ErrorRecord, { ErrorState } from './error-record';
 import { GethRecord, GethStatus, GethSyncStatus } from './geth-record';
 import { IpfsRecord, IpfsStatus } from './ipfs-record';
 import { LicenseRecord, LicenseState } from './license-record';
+import { ListRecord, ListState } from './list-record';
 import LogRecord from './log-record';
 import { PanelState } from './panel-record';
 import ProfileState, { LoggedProfile, ProfileRecord } from './profile-record';
@@ -45,6 +46,8 @@ export {
     IpfsStatus,
     LicenseRecord,
     LicenseState,
+    ListRecord,
+    ListState,
     LoggedProfile,
     LogRecord,
     MinedTransaction,
