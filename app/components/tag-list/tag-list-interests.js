@@ -5,14 +5,21 @@ import { Switch } from 'antd';
 import throttle from 'lodash.throttle';
 import { DataLoader } from '../';
 import { isInViewport } from '../../utils/domUtils';
+import * as columnTypes from '../../constants/columns';
 
-class TagList extends Component {
+class TagListInterests extends Component {
 
     componentDidMount () {
         if (this.container) {
             this.container.addEventListener('scroll', this.throttledHandler);
         }
         window.addEventListener('resize', this.throttledHandler);
+    }
+
+    componentWillReceiveProps (nextProps) {
+        if (!this.props.tags.equals(nextProps.tags)) {
+            this.checkTrigger();
+        }
     }
 
     componentWillUnmount () {
@@ -35,41 +42,33 @@ class TagList extends Component {
 
     throttledHandler = throttle(this.checkTrigger, 500);
 
-    handleSwitch = (tag, checked) => {
-        console.log(`switch to ${checked} and tag is ${tag.tagName}`);
-        this.props.toggleInterest(tag);
-    }
+    handleSwitch = tag => this.props.toggleInterest(tag.tagName, columnTypes.tag);
 
     renderTagListItem = (tag) => {
+        const hasTag = this.props.profileInterests.get(columnTypes.tag).includes(tag.tagName);
         return (
-          <div key={tag.tagName} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px inset lightgrey' }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontWeight: 'bold' }}>#{tag.tagName}</span>
-              <span style={{ fontSize: '12px', fontWeight: '150', paddingBottom: '5px' }}>{tag.count} entries</span>
+          <div key={tag.tagName} className="tag-list-interests__tag-list-item">
+            <div className="tag-list-interests__tag-list-item-text-wrapper">
+              <span className="tag-list-interests__tag-list-tag-name">#{tag.tagName}</span>
+              <span className="tag-list-interests__tag-list-entry-count">{tag.count} entries</span>
             </div>
-            <Switch
-              defaultChecked={false}
-              onChange={(checked) => this.handleSwitch(tag, checked)}
-              size="small"
-            />
+            <div className="tag-list-interests__tag-list-switch">
+              <Switch
+                checked={hasTag}
+                onChange={() => this.handleSwitch(tag)}
+                size="small"
+              />
+            </div>
           </div>
         );
     }
 
 
     render () {
-        const { tags, style, defaultTimeout, fetchingTags, fetchingMoreTags, moreTags } = this.props;
-        const { palette } = this.context.muiTheme;
+        const { tags, defaultTimeout, fetchingTags, fetchingMoreTags, moreTags } = this.props;
         return (
           <div
-            style={Object.assign({}, {
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                minHeight: '500px'
-            }, style)}
+            className="tag-list-interests"
             ref={this.getContainerRef}
           >
             <DataLoader
@@ -78,35 +77,19 @@ class TagList extends Component {
               size={60}
               style={{ paddingTop: '80px' }}
             >
-              <div style={{ width: '100%' }}>
+              <div>
                 {tags.size === 0 &&
-                  <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        color: palette.disabledColor,
-                        paddingTop: '10px'
-                    }}
-                  >
+                  <div className="tag-list-interests__no-tags">
                     No Tags
                   </div>
                 }
 
-                {tags && tags.map((tag) => {
-                    if (!tag) {
-                        return null;
-                    }
-                    return this.renderTagListItem(tag);
-                })}
+                {tags && tags.map(tag => this.renderTagListItem(tag))}
 
                 {moreTags &&
-                  <div style={{ height: '35px' }}>
+                  <div className="tag-list-interests__more-tags">
                     <DataLoader flag={fetchingMoreTags} size={30}>
-                      <div
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
-                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
-                      </div>
+                      <div ref={this.getTriggerRef} />
                     </DataLoader>
                   </div>
                 }
@@ -117,19 +100,16 @@ class TagList extends Component {
     }
 }
 
-TagList.propTypes = {
-    tags: PropTypes.shape(),
+TagListInterests.propTypes = {
     defaultTimeout: PropTypes.number,
-    style: PropTypes.shape(),
     fetchMoreTags: PropTypes.func,
     fetchingMoreTags: PropTypes.bool,
     fetchingTags: PropTypes.bool,
     moreTags: PropTypes.bool,
+    profileInterests: PropTypes.shape(),
+    tags: PropTypes.shape(),
     toggleInterest: PropTypes.func
 };
 
-TagList.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
-export default TagList;
+export default TagListInterests;

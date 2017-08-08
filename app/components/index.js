@@ -42,7 +42,6 @@ export LoginForm from './forms/login-form';
 export LogoButton from './logo-button';
 export NewColumn from './columns/new-column';
 export NewColumnFooter from './columns/new-column-footer';
-export NewIdentityForm from './forms/new-identity-form';
 export NewIdentityInterests from './setup/new-identity-interests';
 export NewProfileForm from './forms/new-profile-form';
 export NewProfileStatus from './new-profile-status/new-profile-status';
