@@ -1,11 +1,12 @@
 import { delay } from 'redux-saga';
-import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as profileService from '../services/profile-service';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
+import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboardId,
     selectLoggedAccount } from '../selectors';
 
@@ -38,6 +39,20 @@ function* dashboardAddColumn ({ columnType, value }) {
     } catch (error) {
         yield put(actions.dashboardAddColumnError(error));
     }
+}
+
+function* dashboardAddFirst ({ interests }) {
+    const interestsMap = interests.toJS();
+    const addTagColumns = interestsMap[columnTypes.tag].map(interest =>
+        put(actions.dashboardAddColumn(columnTypes.tag, interest))
+    );
+    const addPeopleColumns = interestsMap[columnTypes.profile].map(interest =>
+        put(actions.dashboardAddColumn(columnTypes.profile, interest))
+    );
+    const addColumns = addTagColumns.concat(addPeopleColumns);
+    yield call(dashboardAdd, { name: 'first' });
+    yield all(addColumns);
+    yield put(actions.dashboardAddFirstSuccess());
 }
 
 function* dashboardDelete ({ name }) {
@@ -166,6 +181,10 @@ function* watchDashboardAddColumn () {
     yield takeEvery(types.DASHBOARD_ADD_COLUMN, dashboardAddColumn);
 }
 
+function* watchDashboardAddFirst () {
+    yield takeEvery(types.DASHBOARD_ADD_FIRST, dashboardAddFirst);
+}
+
 function* watchDashboardDelete () {
     yield takeEvery(types.DASHBOARD_DELETE, dashboardDelete);
 }
@@ -197,6 +216,7 @@ function* watchDashboardUpdateNewColumn () {
 export function* watchDashboardActions () {
     yield fork(watchDashboardAdd);
     yield fork(watchDashboardAddColumn);
+    yield fork(watchDashboardAddFirst);
     yield fork(watchDashboardDelete);
     yield fork(watchDashboardDeleteColumn);
     yield fork(watchDashboardGetProfileSuggestions);

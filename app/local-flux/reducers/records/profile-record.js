@@ -43,6 +43,11 @@ const Flags = Record({
     sendingTip: new Map()
 });
 
+const Interests = Record({
+    tag: new List(),
+    profile: new List()
+});
+
 const ProfileState = Record({
     balance: null,
     byId: new Map(),
@@ -54,6 +59,7 @@ const ProfileState = Record({
     followersList: new List(), // to be removed
     followings: new Map(),
     followingsList: new List(), // to be removed
+    interests: new Interests(),
     isFollower: new Map(),
     lastFollower: new Map(),
     lastFollowing: new Map(),

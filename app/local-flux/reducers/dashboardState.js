@@ -102,6 +102,8 @@ const dashboardState = createReducer(initialState, {
             )
         }),
 
+    [types.DASHBOARD_ADD_FIRST_SUCCESS]: state => state.set('firstDashboard', true),
+
     [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
         state.set('newColumn', new NewColumnRecord()),
 

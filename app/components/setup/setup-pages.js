@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { AuthContainer, ConfigurationContainer, NewIdentityContainer,
-    NewIdentityInterestsContainer, SynchronizationContainer } from '../../containers';
-import { SetupHeader, SetupHeaderSplit } from '../';
+    SynchronizationContainer } from '../../containers';
+import { NewIdentityInterests, SetupHeader, SetupHeaderSplit } from '../';
 
 const SetupPages = () => (
   <div className="setup-pages">
@@ -18,7 +18,7 @@ const SetupPages = () => (
       <Route path="/setup/synchronization" component={SynchronizationContainer} />
       <Route path="/setup/authenticate" component={AuthContainer} />
       <Route path="/setup/new-identity" component={NewIdentityContainer} />
-      <Route path="/setup/new-identity-interests" component={NewIdentityInterestsContainer} />
+      <Route path="/setup/new-identity-interests" component={NewIdentityInterests} />
     </div>
   </div>
 );

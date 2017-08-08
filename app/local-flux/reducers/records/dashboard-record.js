@@ -3,7 +3,7 @@ import { List, Map, Record } from 'immutable';
 export const Flags = Record({
     fetchingEntries: false,
     fetchingMoreEntries: false,
-    moreEntries: false,
+    moreEntries: false
 });
 
 export const ColumnRecord = Record({
@@ -35,5 +35,6 @@ export const DashboardState = Record({
     allDashboards: new List(),
     columnById: new Map(),
     dashboardById: new Map(),
-    newColumn: null
+    newColumn: null,
+    firstDashboard: false
 });
