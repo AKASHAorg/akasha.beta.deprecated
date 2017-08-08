@@ -66,7 +66,7 @@ export ProfileList from './setup/profile-list';
 export ProfilePanelsHeader from './panels/profile-panels-header';
 export RememberPassphrase from './forms/remember-passphrase';
 export SearchInput from './search-input';
-export ProfilesList from './profiles-list';
+export ProfilesList from './setup/profile-list';
 export SearchSecondarySidebar from './secondary-sidebars/search-secondary-sidebar';
 export SecondarySidebar from './secondary-sidebars/secondary-sidebar';
 export Select from './common/select';
