@@ -5,7 +5,6 @@ import { Button } from 'antd';
 import { Avatar } from '../';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
-import { getInitials } from '../../utils/dataModule';
 
 class ProfileDetails extends Component {
 
@@ -31,16 +30,15 @@ class ProfileDetails extends Component {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
         const { about, avatar, akashaId, backgroundImage, links, firstName, lastName,
         followersCount, followingCount } = profileData;
-        const { isFollower, intl, followProfile, unfollowProfile, sendTip, followPending, sendingTip } = this.props;
+        const { isFollower, intl, followProfile, unfollowProfile,
+           sendTip, followPending, sendingTip } = this.props;
         const isOwnProfile = akashaId === this.props.loggedProfile.akashaId;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
-        const userInitials = profileData.firstName || profileData.lastName ?
-            getInitials(profileData.firstName, profileData.lastName) :
-            '';
-        return (<div className="profile-details">
+        return (
+          <div className="profile-details">
             <div className="profile-details__background-image">
               {imageUrl ?
                 <img
@@ -52,19 +50,15 @@ class ProfileDetails extends Component {
               }
             </div>
 
-            <div className="profile-details__avatar-wrapper">
-              <Avatar
-                image={avatar}
-                radius={100}
-                userInitials={userInitials}
-                userInitialsStyle={{
-                    textTransform: 'uppercase',
-                    fontSize: '36px',
-                    fontWeight: '600',
-                    margin: '0px'
-                }}
-                style={{ paddingLeft: '20px' }}
-              />
+            <div className="profile-details__avatar-button-wrapper">
+              <div className="profile-details__avatar-wrapper">
+                <Avatar
+                  image={avatar}
+                  size={'large'}
+                  firstName={firstName}
+                  lastName={lastName}
+                />
+              </div>
               <div className="profile-details__follow-button">
                 {isOwnProfile ? 
                   <Button type="primary" ghost>{intl.formatMessage(generalMessages.edit)}</Button> :
@@ -141,7 +135,7 @@ class ProfileDetails extends Component {
                 )}
               </div>
             }
-        </div>);
+          </div>);
     }
 }
 

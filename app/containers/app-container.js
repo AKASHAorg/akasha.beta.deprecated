@@ -14,12 +14,13 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer, ProfileContainer } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage,
+     TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { Runners } from '../components/runners';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
-    SetupPages, TermsPanel, TopBar } from '../components';
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
+    SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
