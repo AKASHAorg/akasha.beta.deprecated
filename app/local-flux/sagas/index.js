@@ -53,6 +53,7 @@ function* launchHomeActions () {
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(dashboardSaga.dashboardGetColumns);
     yield fork(listSaga.listGetAll);
+    yield fork(settingsSaga.userSettingsRequest);
     yield fork(tagSaga.tagGetMargins);
     if (yield select(selectLoggedAkashaId)) {
         yield put(transactionActions.transactionGetMined());

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { entryCanClaim, entryClaim, entryClaimError, entryClaimSuccess,
     entryGetBalance } from '../../local-flux/actions/entry-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -19,7 +19,7 @@ class ClaimRunner extends Component {
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish' && action.get('type') === actionTypes.claim);
         actions.forEach((action) => {
-            this.props.updateAction(action.get('id'), { status: 'publishing' });
+            this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
             this.props.entryClaim(
                 action.getIn(['payload', 'entryId']),
                 action.getIn(['payload', 'entryTitle']),
@@ -57,7 +57,7 @@ class ClaimRunner extends Component {
             this.props.entryCanClaim(entryId);
             this.props.entryGetBalance(entryId);
             if (correspondingAction) {
-                this.props.deletePendingAction(correspondingAction.get('id'));
+                this.props.pendingActionDelete(correspondingAction.get('id'));
             }
         });
     };
@@ -67,7 +67,7 @@ class ClaimRunner extends Component {
 }
 
 ClaimRunner.propTypes = {
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     deletingPendingTx: PropTypes.shape(),
     entryCanClaim: PropTypes.func.isRequired,
     entryClaim: PropTypes.func.isRequired,
@@ -81,7 +81,7 @@ ClaimRunner.propTypes = {
     pendingActions: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -99,13 +99,13 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        pendingActionDelete,
         entryCanClaim,
         entryClaim,
         entryClaimError,
         entryClaimSuccess,
         entryGetBalance,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(ClaimRunner);

@@ -63,9 +63,6 @@ const appState = createReducer(initialState, {
         }));
     },
 
-    [types.DELETE_PENDING_ACTION]: (state, { actionId }) =>
-        state.set('pendingActions', state.get('pendingActions').delete(actionId)),
-
     [types.ENTRY_ADD_CLAIM_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({
@@ -106,6 +103,15 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
+
+    [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
+        state.set('weightConfirmDialog', null),
+
+    [types.PENDING_ACTION_DELETE]: (state, { actionId }) =>
+        state.deleteIn(['pendingActions', actionId]),
+
+    [types.PENDING_ACTION_UPDATE]: (state, { data }) =>
+        state.setIn(['pendingActions', data.entityId], new PendingActionRecord(data)),
 
     [types.PROFILE_ADD_FOLLOW_ACTION]: (state, { payload }) => {
         id += 1;
@@ -175,6 +181,9 @@ const appState = createReducer(initialState, {
     [types.SHOW_LOGIN_DIALOG]: (state, { akashaId }) =>
         state.set('showLoginDialog', akashaId),
 
+    [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
+        state.set('weightConfirmDialog', actionId),
+
     [types.PUBLISH_CONFIRM_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('publishConfirmDialog', actionId),
 
@@ -189,15 +198,6 @@ const appState = createReducer(initialState, {
 
     [types.SHOW_DIALOG]: (state, { dialogType, data }) =>
         state.set(dialogType, data),
-
-    [types.PENDING_ACTION_DELETE]: (state, { actionId }) =>
-        state.deleteIn(['pendingActions', actionId]),
-        // state.merge({
-        //     pendingActions: state.get('pendingActions').delete(actionId),
-        // }),
-
-    [types.PENDING_ACTION_UPDATE]: (state, { data }) =>
-        state.setIn(['pendingActions', data.entityId], new PendingActionRecord(data)),
 });
 
 export default appState;

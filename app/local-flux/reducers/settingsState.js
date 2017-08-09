@@ -7,6 +7,11 @@ import { ErrorRecord, GeneralSettings, GethSettings, IpfsSettings, PasswordPrefe
 
 const initialState = new SettingsRecord();
 
+const getUserSettings = (data) => {
+    const preference = new PasswordPreference(data.passwordPreference);
+    return new UserSettings(data).set('passwordPreference', preference);
+};
+
 const settingsState = createReducer(initialState, {
 
     [types.GETH_SETTINGS_SUCCESS]: (state, { data }) => {
@@ -69,14 +74,6 @@ const settingsState = createReducer(initialState, {
             flags: state.get('flags').merge({ savingIpfsSettings: false })
         }),
 
-    [settingsTypes.GET_USER_SETTINGS_SUCCESS]: (state, { data }) =>
-        state.merge({
-            userSettings: data ? new UserSettings(data) : new UserSettings()
-        }),
-
-    [settingsTypes.CLEAN_USER_SETTINGS]: state =>
-        state.set('userSettings', new UserSettings()),
-
     [settingsTypes.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
         state.merge({
             userSettings: state.get('userSettings').merge({
@@ -88,11 +85,6 @@ const settingsState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
-
-    [settingsTypes.SAVE_PASSWORD_PREFERENCE_SUCCESS]: (state, { data }) => {
-        const userSettings = state.get('userSettings').set('passwordPreference', data);
-        return state.set('userSettings', userSettings);
-    },
 
     [settingsTypes.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
@@ -176,14 +168,19 @@ const settingsState = createReducer(initialState, {
         state.set('userSettings', new UserSettings()),
 
     [types.USER_SETTINGS_SUCCESS]: (state, { data }) =>
-        state.set('userSettings', new UserSettings(data)),
+        state.set('userSettings', getUserSettings(data)),
 
-    [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) => {
-        if (data.passwordPrefence) {
-            data.passwordPrefence = new PasswordPreference(data.passwordPrefence);
-        }
-        return state.set('userSettings', new UserSettings(data));
-    },
+    [types.USER_SETTINGS_SAVE]: state =>
+        state.setIn(['flags', 'savingUserSettings'], true),
+
+    [types.USER_SETTINGS_SAVE_ERROR]: state =>
+        state.setIn(['flags', 'savingUserSettings'], false),
+
+    [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
+        state.merge({
+            flags: state.get('flags').set('savingUserSettings', false),
+            userSettings: getUserSettings(data)
+        }),
 
     [appTypes.CLEAN_STORE]: state =>
         state.merge({

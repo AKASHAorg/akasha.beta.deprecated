@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
-import { deletePendingAction, hideTransferConfirmDialog,
-    updateAction } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, hideTransferConfirmDialog,
+    pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { selectPendingAction } from '../../local-flux/selectors';
 import { confirmMessages, generalMessages } from '../../locale-data/messages';
 import { SendTipForm } from '../';
@@ -87,12 +87,12 @@ class TransferConfirmDialog extends Component {
             status: 'checkAuth'
         };
         this.props.hideTransferConfirmDialog();
-        this.props.updateAction(resource.get('id'), updates);
+        this.props.pendingActionUpdate(resource.get('id'), updates);
     };
 
     handleAbort = () => {
         const { resource } = this.props;
-        this.props.deletePendingAction(resource.get('id'));
+        this.props.pendingActionDelete(resource.get('id'));
         this.props.hideTransferConfirmDialog();
     };
 
@@ -146,11 +146,11 @@ class TransferConfirmDialog extends Component {
 
 TransferConfirmDialog.propTypes = {
     balance: PropTypes.string,
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     hideTransferConfirmDialog: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     resource: PropTypes.shape(),
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -163,8 +163,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        pendingActionDelete,
         hideTransferConfirmDialog,
-        updateAction
+        pendingActionUpdate
     }
 )(TransferConfirmDialog);

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dashboard, DataLoader } from '../components';
-import { Runners } from '../components/runners';
 import { dashboardSetActive, dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 
@@ -42,7 +41,6 @@ class DashboardPage extends Component {
                   newColumn={newColumn}
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
                 />
-                <Runners />
               </div>
             </DataLoader>
           </div>

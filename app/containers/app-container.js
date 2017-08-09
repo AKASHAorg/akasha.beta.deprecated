@@ -6,6 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { notification } from 'antd';
 import { PublishConfirmDialog, TransferConfirmDialog,
     WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms, hideReportModal, bootstrapHome,
@@ -14,11 +15,13 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
+import { notificationMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
-    SetupPages, TermsPanel, TopBar } from '../components';
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
+    SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
+import { Runners } from '../components/runners';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -82,11 +85,22 @@ class AppContainer extends Component {
         }
     }
 
+    renderNotifications = () => {
+        // const { appState, intl } = this.props;
+        // const notifications = appState.get('notifications');
+        // notifications.forEach((notif) => {
+        //     notification.success({
+        //         message: 'Success',
+        //         description: intl.formatMessage(notificationMessages[notif.get('id')]),
+        //         onClose: () => this.props.hideNotification(notif.get('id'))
+        //     });
+        // });
+    };
+
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
-            hideNotification, hideTerms, hideReportModal, history, intl, location,
-            theme } = this.props;
+            hideTerms, hideReportModal, intl, location, theme } = this.props;
         /* eslint-enable no-shadow */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
@@ -127,18 +141,13 @@ class AppContainer extends Component {
                         }
                       </PageContent>
                       <TopBar />
+                      <Runners />
                     </div>
                   </DataLoader>
                 }
                 <SidebarContainer {...this.props} />
                 <Route path="/setup" component={SetupPages} />
-                {!!appState.get('notifications').size &&
-                  <NotificationBar
-                    hideNotification={hideNotification}
-                    intl={intl}
-                    notification={appState.get('notifications').first()}
-                  />
-                }
+                {this.renderNotifications()}
                 {!!errorState.get('nonFatalErrors').size &&
                   <ErrorBar
                     deleteError={errorDeleteNonFatal}

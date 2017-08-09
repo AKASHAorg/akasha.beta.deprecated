@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { entryCanClaim, entryDownvote, entryDownvoteError, entryDownvoteSuccess, entryGetBalance,
     entryGetScore, entryGetVoteOf, entryUpvote, entryUpvoteError,
     entryUpvoteSuccess } from '../../local-flux/actions/entry-actions';
@@ -23,7 +23,7 @@ class VoteRunner extends Component {
             const actionType = action.get('type');
             switch (actionType) {
                 case actionTypes.upvote:
-                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
                     this.props.entryUpvote(
                         action.getIn(['payload', 'entryId']),
                         action.getIn(['payload', 'entryTitle']),
@@ -33,7 +33,7 @@ class VoteRunner extends Component {
                     );
                     break;
                 case actionTypes.downvote:
-                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
                     this.props.entryDownvote(
                         action.getIn(['payload', 'entryId']),
                         action.getIn(['payload', 'entryTitle']),
@@ -91,7 +91,7 @@ class VoteRunner extends Component {
                 this.props.entryGetBalance(entryId);
             }
             if (correspondingAction) {
-                this.props.deletePendingAction(correspondingAction.get('id'));
+                this.props.pendingActionDelete(correspondingAction.get('id'));
             }
         });
     };
@@ -101,7 +101,7 @@ class VoteRunner extends Component {
 }
 
 VoteRunner.propTypes = {
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     deletingPendingTx: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryCanClaim: PropTypes.func.isRequired,
@@ -122,7 +122,7 @@ VoteRunner.propTypes = {
     pendingActions: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -142,7 +142,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        pendingActionDelete,
         entryCanClaim,
         entryDownvote,
         entryDownvoteError,
@@ -154,6 +154,6 @@ export default connect(
         entryUpvoteError,
         entryUpvoteSuccess,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(VoteRunner);
