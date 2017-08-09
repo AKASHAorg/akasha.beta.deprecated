@@ -48,8 +48,8 @@ class AppActions {
     updatePendingAction = data =>
         this.dispatch(appActionCreators.updatePendingAction(data));
 
-    deletePendingAction = actionId =>
-        this.dispatch(appActionCreators.deletePendingAction(actionId));
+    pendingActionDelete = actionId =>
+        this.dispatch(appActionCreators.pendingActionDelete(actionId));
 
     showNotification = notification =>
         this.dispatch(appActionCreators.showNotification(notification));
@@ -67,7 +67,6 @@ class AppActions {
 export const appReady = () => action(types.APP_READY);
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
-export const deletePendingAction = actionId => action(types.DELETE_PENDING_ACTION, { actionId });
 export const hideAuthDialog = () => action(types.HIDE_AUTH_DIALOG);
 export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
 export const hideNotification = notification =>
@@ -78,6 +77,10 @@ export const hideTransferConfirmDialog = () => action(types.HIDE_TRANSFER_CONFIR
 export const hideWeightConfirmDialog = () => action(types.HIDE_WEIGHT_CONFIRM_DIALOG);
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
+
+export const pendingActionDelete = actionId => action(types.PENDING_ACTION_DELETE, { actionId });
+export const pendingActionUpdate = (actionId, updates) =>
+    action(types.PENDING_ACTION_UPDATE, { actionId, updates });
 
 // for publishing to blockchain
 export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
@@ -100,6 +103,5 @@ export const showWeightConfirmDialog = actionId =>
     action(types.SHOW_WEIGHT_CONFIRM_DIALOG, { actionId });
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
-export const updateAction = (actionId, updates) =>
-    action(types.UPDATE_ACTION, { actionId, updates });
+
 export { AppActions };

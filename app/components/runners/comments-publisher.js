@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, pendingActionUpdate } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { commentsPublish, commentsPublishError,
     commentsPublishSuccess } from '../../local-flux/actions/comments-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -18,8 +18,6 @@ class CommentsPublisher extends Component {
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish' && action.get('type') === actionTypes.comment);
         actions.forEach((action) => {
-            debugger;
-            console.log('comm publisher - update action');
             const id = action.get('id');
             this.props.pendingActionUpdate(id, { status: 'publishing' });
             this.props.commentsPublish(action.get('payload').set('actionId', id), action.get('gas'));
@@ -53,7 +51,7 @@ class CommentsPublisher extends Component {
                 this.props.commentsPublishError({});
             }
             if (tx.extra.actionId) {
-                this.props.deletePendingAction(tx.extra.actionId);
+                this.props.pendingActionDelete(tx.extra.actionId);
             }
         });
     };
@@ -67,7 +65,7 @@ CommentsPublisher.propTypes = {
     commentsPublish: PropTypes.func.isRequired,
     commentsPublishError: PropTypes.func.isRequired,
     commentsPublishSuccess: PropTypes.func.isRequired,
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     deletingPendingTx: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
@@ -97,7 +95,7 @@ export default connect(
         commentsPublish,
         commentsPublishError,
         commentsPublishSuccess,
-        deletePendingAction,
+        pendingActionDelete,
         transactionDeletePending,
         pendingActionUpdate
     }

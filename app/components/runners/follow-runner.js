@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, showNotification,
-    updateAction } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, showNotification,
+    pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { profileFollow, profileFollowError, profileFollowSuccess, profileUnfollow,
     profileUnfollowError, profileUnfollowSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -25,11 +25,11 @@ class FollowRunner extends Component {
             const payload = action.get('payload') ? action.get('payload').toJS() : {};
             switch (actionType) {
                 case actionTypes.follow:
-                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
                     this.props.profileFollow(payload.akashaId, action.gas, payload.profile);
                     break;
                 case actionTypes.unfollow:
-                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
                     this.props.profileUnfollow(payload.akashaId, action.gas, payload.profile);
                     break;
                 default:
@@ -79,7 +79,7 @@ class FollowRunner extends Component {
                 this.props.profileUnfollowError({}, tx.extra.akashaId);
             }
             if (correspondingAction) {
-                this.props.deletePendingAction(correspondingAction.get('id'));
+                this.props.pendingActionDelete(correspondingAction.get('id'));
             }
         });
     };
@@ -90,7 +90,7 @@ class FollowRunner extends Component {
 }
 
 FollowRunner.propTypes = {
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     deletingPendingTx: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
@@ -106,7 +106,7 @@ FollowRunner.propTypes = {
     profileUnfollowSuccess: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired,
+    pendingActionUpdate: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -124,7 +124,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        pendingActionDelete,
         profileFollow,
         profileFollowError,
         profileFollowSuccess,
@@ -133,6 +133,6 @@ export default connect(
         profileUnfollowSuccess,
         showNotification,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(FollowRunner);

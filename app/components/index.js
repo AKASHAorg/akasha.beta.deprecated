@@ -62,6 +62,7 @@ export ProfileHoverCard from './profile-hover-card/profile-hover-card';
 export ProfileList from './setup/profile-list';
 export ProfilePanelsHeader from './panels/profile-panels-header';
 export RememberPassphrase from './forms/remember-passphrase';
+export RememberPassphraseSelect from './forms/remember-passphrase-select';
 export SearchInput from './search-input';
 export SecondarySidebar from './secondary-sidebars/secondary-sidebar';
 export Select from './common/select';

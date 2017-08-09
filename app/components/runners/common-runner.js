@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionStatus from '../../constants/action-status';
 import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
-    showWeightConfirmDialog, updateAction } from '../../local-flux/actions/app-actions';
+    showWeightConfirmDialog, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 
 class CommonRunner extends Component {
 
@@ -30,7 +30,7 @@ class CommonRunner extends Component {
             const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
             if (isLoggedIn) {
                 confirmedActions.forEach(action =>
-                    this.props.updateAction(action.get('id'), {
+                    this.props.pendingActionUpdate(action.get('id'), {
                         status: actionStatus.readyToPublish
                     }));
             } else {
@@ -53,7 +53,7 @@ CommonRunner.propTypes = {
     showPublishConfirmDialog: PropTypes.func.isRequired,
     showTransferConfirmDialog: PropTypes.func.isRequired,
     showWeightConfirmDialog: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -72,6 +72,6 @@ export default connect(
         showPublishConfirmDialog,
         showTransferConfirmDialog,
         showWeightConfirmDialog,
-        updateAction
+        pendingActionUpdate
     }
 )(CommonRunner);

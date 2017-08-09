@@ -63,7 +63,7 @@ class PublishEntryRunner extends Component {
             } else {
                 draftActions[`${tx.type}Success`](tx.draftId);
                 if (correspondingAction) {
-                    appActions.deletePendingAction(correspondingAction.get('id'));
+                    appActions.pendingActionDelete(correspondingAction.get('id'));
                 }
                 entryActions.getEntriesStream(loggedProfile.get('akashaId'));
 

@@ -41,8 +41,6 @@ export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 
-export const deletePendingAction = actionId => action(types.DELETE_PENDING_ACTION, { actionId });
-
 export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
 
 export const hideNotification = notification =>
