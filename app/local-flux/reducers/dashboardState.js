@@ -2,6 +2,7 @@ import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
+import { COLUMN } from '../../constants/context-types';
 
 const initialState = new DashboardState();
 
@@ -76,12 +77,15 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
 };
 
 const handleSuggestions = (state, { data, request }) => {
-    const { columnId } = request;
-    const suggestions = new List(data);
-    if (columnId) {
-        return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+    const { context, columnId } = request;
+    if (context === COLUMN) {
+        const suggestions = new List(data);
+        if (columnId && state.hasIn(['columnById', columnId])) {
+            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+        }
+        return state.setIn(['newColumn', 'suggestions'], suggestions);
     }
-    return state.setIn(['newColumn', 'suggestions'], suggestions);
+    return state;
 };
 
 const dashboardState = createReducer(initialState, {
@@ -97,6 +101,8 @@ const dashboardState = createReducer(initialState, {
                 state.getIn(['dashboardById', data.dashboardName, 'columns']).push(data.id)
             )
         }),
+
+    [types.DASHBOARD_ADD_FIRST_SUCCESS]: state => state.setIn(['flags', 'firstDashboardReady'], true),
 
     [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
         state.set('newColumn', new NewColumnRecord()),

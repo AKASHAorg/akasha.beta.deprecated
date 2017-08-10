@@ -197,7 +197,7 @@ const appState = createReducer(initialState, {
         state.set('weightConfirmDialog', actionId),
 
     [types.SHOW_DIALOG]: (state, { dialogType, data }) =>
-        state.set(dialogType, data),
+        state.set(dialogType, data)
 });
 
 export default appState;

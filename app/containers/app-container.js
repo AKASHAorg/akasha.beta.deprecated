@@ -16,12 +16,13 @@ import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { notificationMessages } from '../locale-data/messages';
-import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage,
+     TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
+import { Runners } from '../components/runners';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
-    SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
-import { Runners } from '../components/runners';
+    SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -122,23 +123,28 @@ class AppContainer extends Component {
                 }}
               >
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
+                {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
                     <div>
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
+                      <Runners />
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent>
+                        <Route path="/search/entries/:query?" component={EntrySearchPage} />
+                        <Route path="/search/tags/:query?" component={TagSearchPage} />
+                        <Route path="/@:akashaId" component={ProfileContainer} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
-                        {isOverlay &&
-                          <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
-                        }
+                        {isOverlay && <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />}
+                        {isOverlay && <Route path="/@:akashaId" component={ProfileContainer} />}
                       </PageContent>
                       <TopBar />
                       <Runners />

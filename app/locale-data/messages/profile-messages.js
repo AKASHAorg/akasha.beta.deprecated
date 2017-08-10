@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 export const profileMessages = defineMessages({
+    activity: {
+        id: 'app.activity',
+        description: 'Activity section title',
+        defaultMessage: 'activity'
+    },
     createProfileTitle: {
         id: 'app.profileTitle',
         description: 'Modal title for new identity form',

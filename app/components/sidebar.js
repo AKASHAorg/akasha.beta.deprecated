@@ -8,7 +8,6 @@ import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
 
 class Sidebar extends Component {
-    handleSearch = () => this.handlePanelShow(panels.search);
     _handleNewEntry = () => {
         console.log('new entry');
     }
@@ -53,10 +52,11 @@ class Sidebar extends Component {
                 </div>
               }
               <div {...this.getWrapperProps(generalMessages.search)}>
-                <SearchIcon
-                  onClick={this.handleSearch}
-                  isActive={false}
-                />
+                <Link to="/search/entries">
+                  <SearchIcon
+                    isActive={this._checkActiveIcon('search')}
+                  />
+                </Link>
               </div>
             </div>
             <div className="sidebar__stream-icon" >
