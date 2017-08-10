@@ -82,10 +82,26 @@ class SearchSecondarySidebar extends Component {
               >
                 <MenuSearch />
               </SvgIcon>
-              <input type="text" className="search-secondary-sidebar__input" value={this.state.queryInput} onChange={this.handleChange} placeholder="Search something..." />
+              <input
+                type="text"
+                className="search-secondary-sidebar__input"
+                value={this.state.queryInput}
+                onChange={this.handleChange}
+                placeholder="Search something..."
+              />
             </div>
-            { this.props.handshakePending || this.props.searchService ? null : <button onClick={() => this.props.searchHandshake()}>Handshake</button> }
-            <button onClick={() => this.props.history.push(`/search/${this.props.match.params.topic}/${this.state.queryInput}`)}>Search</button>
+            { this.props.handshakePending ||
+                 this.props.searchService ?
+                    null :
+                    <button onClick={() => this.props.searchHandshake()}>Handshake</button>
+            }
+            <button
+              onClick={() => 
+                this.props.history.push(`/search/${this.props.match.params.topic}/${this.state.queryInput}`)
+              }
+            >
+              Search
+            </button>
             <div>{ this.props.handshakePending && 'Handshaking'} </div>
             <div>
               <SelectableList defaultValue={topics.indexOf(this.props.match.params.topic)}>
