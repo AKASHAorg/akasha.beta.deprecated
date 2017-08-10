@@ -131,5 +131,10 @@ const formMessages = defineMessages({
         description: 'login page title',
         defaultMessage: 'Log in'
     },
+    updateSettings: {
+        id: 'app.form.updateSettings',
+        description: 'label for update settings button',
+        defaultMessage: 'Update settings'
+    }
 });
 export { formMessages };

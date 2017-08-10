@@ -229,6 +229,11 @@ const notificationMessages = defineMessages({
         defaultMessage: `You have successfully set the IPFS ports. You need to restart your IPFS
                         service for your changes to be applied.`
     },
+    userSettingsSaveSuccess: {
+        id: 'app.notification.userSettingsSaveSuccess',
+        description: 'User settings successfully saved',
+        defaultMessage: 'You have successfully saved your personal settings'
+    },
 
 });
 export { notificationMessages };

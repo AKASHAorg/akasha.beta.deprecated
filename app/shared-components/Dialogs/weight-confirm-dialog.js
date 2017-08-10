@@ -5,8 +5,8 @@ import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, TextField, SvgIcon, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import { EntryUpvote, EntryDownvote } from '../../components/svg';
-import { deletePendingAction, hideWeightConfirmDialog,
-    updateAction } from '../../local-flux/actions/app-actions';
+import { hideWeightConfirmDialog, pendingActionDelete,
+    pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { entryIsActive } from '../../local-flux/actions/entry-actions';
 import { selectPendingAction } from '../../local-flux/selectors';
 import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
@@ -114,12 +114,12 @@ class WeightConfirmDialog extends Component {
             status: 'checkAuth'
         };
         this.props.hideWeightConfirmDialog();
-        this.props.updateAction(resource.get('id'), updates);
+        this.props.pendingActionUpdate(resource.get('id'), updates);
     };
 
     handleCancel = () => {
         const { resource } = this.props;
-        this.props.deletePendingAction(resource.get('id'));
+        this.props.pendingActionDelete(resource.get('id'));
         this.props.hideWeightConfirmDialog();
     };
 
@@ -267,15 +267,15 @@ class WeightConfirmDialog extends Component {
 
 WeightConfirmDialog.propTypes = {
     balance: PropTypes.string.isRequired,
-    deletePendingAction: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryIsActive: PropTypes.func.isRequired,
     fullEntry: PropTypes.shape(),
     hideWeightConfirmDialog: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     isActivePending: PropTypes.bool,
+    pendingActionDelete: PropTypes.func.isRequired,
+    pendingActionUpdate: PropTypes.func.isRequired,
     resource: PropTypes.shape().isRequired,
-    updateAction: PropTypes.func.isRequired,
     voteCost: PropTypes.shape().isRequired,
 };
 
@@ -297,9 +297,9 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
         entryIsActive,
         hideWeightConfirmDialog,
-        updateAction
+        pendingActionDelete,
+        pendingActionUpdate
     }
 )(WeightConfirmDialog);

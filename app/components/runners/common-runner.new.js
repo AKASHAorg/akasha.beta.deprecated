@@ -8,7 +8,7 @@ import {
     transferConfirmDialogToggle,
     weightConfirmDialogToggle,
     otherConfirmDialogToggle,
-    updateAction } from '../../local-flux/actions/app-actions';
+    pendingActionUpdate } from '../../local-flux/actions/app-actions';
 
 const GAS_CONFIRMATION_ENTITIES = ['tempProfile'];
 const WEIGHT_CONFIRMATION_ENTITIES = ['upvote', 'downvote'];
