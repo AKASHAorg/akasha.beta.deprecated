@@ -34,7 +34,7 @@ class CommonRunner extends Component {
                         status: actionStatus.readyToPublish
                     }));
             } else {
-                this.props.showAuthDialog(confirmedActions.first().get('id'));
+                this.props.authDialogToggle(confirmedActions.first().get('id'));
             }
         }
     }
@@ -49,7 +49,7 @@ CommonRunner.propTypes = {
     loggedProfile: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     publishConfirmDialog: PropTypes.shape(),
-    showAuthDialog: PropTypes.func.isRequired,
+    authDialogToggle: PropTypes.func.isRequired,
     showPublishConfirmDialog: PropTypes.func.isRequired,
     showTransferConfirmDialog: PropTypes.func.isRequired,
     showWeightConfirmDialog: PropTypes.func.isRequired,
@@ -68,7 +68,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        showAuthDialog,
+        authDialogToggle,
         showPublishConfirmDialog,
         showTransferConfirmDialog,
         showWeightConfirmDialog,

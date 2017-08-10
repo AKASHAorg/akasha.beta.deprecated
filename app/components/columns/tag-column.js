@@ -8,6 +8,7 @@ import { entryMessages } from '../../locale-data/messages';
 import { dashboardGetTagSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
+import { COLUMN } from '../../constants/context-types';
 
 class TagColumn extends Component {
 
@@ -41,7 +42,7 @@ class TagColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               column={column}
-              onInputChange={val => this.props.dashboardGetTagSuggestions(val, column.get('id'))}
+              onInputChange={val => this.props.dashboardGetTagSuggestions(val, COLUMN, column.get('id'))}
               icon={<ColumnTag />}
               suggestions={suggestions}
             />

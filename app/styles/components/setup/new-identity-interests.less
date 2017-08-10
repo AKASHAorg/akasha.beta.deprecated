@@ -1,0 +1,60 @@
+.new-identity-interests {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    max-width: 1000px;
+    margin: 40px auto 0;
+    padding-bottom: 0px !important;
+
+    &__footer {
+        justify-content: space-between !important;
+        border-top: 0.5px outset lightgrey !important;
+    }
+
+    &__left {
+        width: 390px;
+        padding-right: 120px;
+    }
+
+    &__left-bold-text {
+        font-size: 16px;
+        font-weight: bold;
+        padding-bottom: 10px;
+    }
+
+    &__left-interests {
+        padding: 15px 0px;
+    }
+
+    &__right {
+        height: 100%;
+        width: 600px;
+
+        .ant-input-prefix {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            width: 30px;
+            align-items: center;
+            border-right: 1px inset lightgrey;
+        }
+
+        .ant-input-affix-wrapper .ant-input {
+            padding-left: 45px;
+        }
+
+        .ant-tabs-bar {
+            margin-bottom: 0px;
+            margin-top: 10px;
+            height: 40.5px;
+        }
+
+        .ant-tabs.ant-tabs-top.ant-tabs-line {
+            height: ~'calc(100% - 36px)';
+        }
+
+        .ant-tabs-content.ant-tabs-content-animated {
+            height: ~'calc(100% - 50.5px)';
+        }
+    }
+}

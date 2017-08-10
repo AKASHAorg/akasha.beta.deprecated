@@ -86,7 +86,7 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     }
 }
 
-function* entryGetExtraOfList (collection, limit, columnId) {
+export function* entryGetExtraOfList (collection, limit, columnId) {
     // requests are made for n+1 entries, but the last one
     // should be ignored if the limit is fulfilled
     const entries = collection.length === limit ?

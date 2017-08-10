@@ -748,6 +748,14 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_SEND_TIP_SUCCESS]: (state, { data }) =>
         state.setIn(['flags', 'sendingTip', data.akashaId], false),
 
+    [types.PROFILE_TOGGLE_INTEREST]: (state, { interest, interestType }) => {
+        const interestState = state.getIn(['interests', interestType]);
+        const newList = interestState.includes(interest) ?
+                        interestState.delete(interestState.indexOf(interest)) :
+                        interestState.push(interest);
+        return state.setIn(['interests', interestType], newList);
+    },
+
     [types.PROFILE_UNFOLLOW]: (state, { akashaId }) =>
         state.setIn(['flags', 'followPending', akashaId], true),
 
@@ -782,6 +790,10 @@ const profileState = createReducer(initialState, {
             isFollower: state.get('isFollower').set(data, false)
         });
     },
+
+    [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
+
+    [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler
 });
 
 export default profileState;

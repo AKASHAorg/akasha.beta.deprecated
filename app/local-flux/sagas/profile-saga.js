@@ -28,11 +28,11 @@ function* profileDeleteLogged () {
     }
 }
 
-function* profileFollow ({ akashaId, gas, profile }) {
+function* profileFollow ({ akashaId, gas }) {
     const channel = Channel.server.profile.followProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, gas, profile }]);
+    yield apply(channel, channel.send, [{ token, akashaId, gas }]);
 }
 
 function* profileFollowersIterator ({ akashaId }) {
@@ -62,9 +62,9 @@ export function* profileGetCurrent () {
     yield apply(channel, channel.send, [{}]);
 }
 
-function* profileGetData (profile, full = false) {
+function* profileGetData ({ akashaId, full = false }) {
     const channel = Channel.server.profile.getProfileData;
-    yield apply(channel, channel.send, [{ profile, full }]);
+    yield apply(channel, channel.send, [{ akashaId, full }]);
 }
 
 function* profileGetList ({ profileAddresses }) {
@@ -89,7 +89,7 @@ export function* profileGetLogged () {
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
         if (profile && profile.profile) {
-            yield call(profileGetData, profile.profile, true);
+            yield call(profileGetData, { akashaId: profile.akashaId, full: true });
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));
@@ -162,11 +162,11 @@ function* profileSendTip ({ akashaId, receiver, value, gas }) {
     yield apply(channel, channel.send, [{ token, akashaId, receiver, value, gas }]);
 }
 
-function* profileUnfollow ({ akashaId, gas, profile }) {
+function* profileUnfollow ({ akashaId, gas }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, gas, profile }]);
+    yield apply(channel, channel.send, [{ token, akashaId, gas }]);
 }
 
 function* profileUpdateLogged (loggedProfile) {
@@ -274,12 +274,12 @@ function* watchProfileCreateEthAddressChannel () {
 function* watchProfileFollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followProfile);
-        const { akashaId, gas, profile } = resp.request;
+        const { akashaId, gas } = resp.request;
         if (resp.error) {
             yield put(actions.profileFollowError(resp.error, resp.request));
         } else {
             const payload = [{
-                extra: { akashaId, profile },
+                extra: { akashaId },
                 gas,
                 tx: resp.data.tx,
                 type: actionTypes.follow,

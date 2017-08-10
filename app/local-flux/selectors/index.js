@@ -164,9 +164,22 @@ export const selectProfileByAccount = (state, account) => {
     return state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 };
 
+export const selectProfileEntries = (state, akashaId) => 
+    state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
+        .toList();
+
+
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
+export const selectSearchEntries = state =>
+    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+
+export const selectSearchQuery = state => state.searchState.get('query');
+
 export const selectTagMargins = state => state.tagState.get('margins');
+
+export const selectTagGetEntriesCount = state =>
+    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 

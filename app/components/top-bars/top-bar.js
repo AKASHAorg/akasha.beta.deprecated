@@ -54,6 +54,14 @@ class TopBar extends Component {
                       component={Breadcrumbs}
                       path="/@:akashaId/:entryId(\d+)"
                     />
+                    <Route
+                      component={Breadcrumbs}
+                      path="/search/:topic/:query?"
+                    />
+                    <Route
+                      component={Breadcrumbs}
+                      path="/@:akashaId"
+                    />
                   </div>
                   <TopBarRightSide
                     balance={balance}
