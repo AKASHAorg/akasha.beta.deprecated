@@ -30,6 +30,8 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 
 export const selectAllComments = state => state.commentsState.get('byId').toList();
 
+export const selectAllLicenses = state => state.licenseState.get('byId');
+
 export const selectBalance = state => state.profileState.get('balance');
 
 export const selectBaseUrl = state =>

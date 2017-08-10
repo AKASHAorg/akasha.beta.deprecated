@@ -73,7 +73,7 @@ class TagRunner extends Component {
                 console.error(`There is no action "${tx.type}Success" in tagActions!! Please implement "${tx.type}Success" action!!`);
             } else {
                 tagActions[`${tx.type}Success`](tx.tagName);
-                appActions.deletePendingAction(correspondingAction.get('id'));
+                appActions.pendingActionDelete(correspondingAction.get('id'));
                 entryActions.getEntriesStream(loggedProfile.get('akashaId'));
             }
         });

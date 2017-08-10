@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, showNotification,
-    updateAction } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, showNotification,
+    pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { profileSendTip, profileSendTipError,
     profileSendTipSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -24,7 +24,7 @@ class TipRunner extends Component {
         );
         actions.forEach((action) => {
             const payload = action.payload ? action.payload.toJS() : {};
-            this.props.updateAction(action.id, { status: 'publishing' });
+            this.props.pendingActionUpdate(action.id, { status: 'publishing' });
             this.props.profileSendTip(
                 payload.akashaId,
                 payload.profile,
@@ -62,7 +62,7 @@ class TipRunner extends Component {
                 this.props.profileSendTipError({}, tx.extra.akashaId);
             }
             if (correspondingAction) {
-                this.props.deletePendingAction(correspondingAction.get('id'));
+                this.props.pendingActionDelete(correspondingAction.get('id'));
             }
         });
     };
@@ -73,7 +73,7 @@ class TipRunner extends Component {
 }
 
 TipRunner.propTypes = {
-    deletePendingAction: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     deletingPendingTx: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
@@ -86,7 +86,7 @@ TipRunner.propTypes = {
     profileSendTipSuccess: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -104,12 +104,12 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        pendingActionDelete,
         profileSendTip,
         profileSendTipError,
         profileSendTipSuccess,
         showNotification,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(TipRunner);

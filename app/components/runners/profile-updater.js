@@ -47,7 +47,7 @@ class ProfileUpdater extends Component {
             profileActions.updateProfileDataSuccess();
             profileActions.getProfileData([{ profile: loggedProfile }], true);
             if (correspondingAction) {
-                appActions.deletePendingAction(correspondingAction.get('id'));
+                appActions.pendingActionDelete(correspondingAction.get('id'));
             }
         });
     };
