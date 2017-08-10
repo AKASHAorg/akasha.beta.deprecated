@@ -54,6 +54,11 @@ const entryMessages = defineMessages({
         description: 'published',
         defaultMessage: 'Published'
     },
+    publishOptions: {
+        id: 'app.entry.publishOptions',
+        description: 'publish options panel title',
+        defaultMessage: 'Publish Options'
+    },
     wordsCount: {
         id: 'app.entry.wordsCount',
         description: 'number of words in an entry',

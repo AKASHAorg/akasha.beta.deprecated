@@ -27,12 +27,13 @@ const NewEntryTopBar = props => (
 
 NewEntryTopBar.propTypes = {
     balance: PropTypes.string,
+    history: PropTypes.shape(),
+    location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     onPanelNavigate: PropTypes.func,
     secondarySidebarToggle: PropTypes.func,
-    history: PropTypes.shape(),
-    location: PropTypes.shape()
+    showSecondarySidebar: PropTypes.bool,
 };
 
 function mapStateToProps (state) {

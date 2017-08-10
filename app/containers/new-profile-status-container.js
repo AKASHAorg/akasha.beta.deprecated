@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
 import { showReportModal } from '../local-flux/actions/app-actions';
 import { tempProfileUpdate, tempProfileGetRequest,
-    tempProfileCreate, tempProfileDelete, tempProfileStatusReset } from '../local-flux/actions/temp-profile-actions';
+    tempProfileCreate, tempProfileDelete,
+    tempProfileStatusReset } from '../local-flux/actions/temp-profile-actions';
 import { NewProfileStatus } from '../components';
 
 function mapStateToProps (state) {

@@ -1,5 +1,10 @@
-.text-entry {
+.text-entry-page {
     position: relative;
+    overflow-y: auto;
+    height: ~"calc(100% - 64px)";
+    &__content {
+        height: 100%;
+    }
     &__publish-options {
         position: fixed;
         top: 72px;
@@ -8,25 +13,66 @@
         cursor: pointer;
         z-index: 5;
     }
-    &__publish-options-panel {
+    &__publish-options-panel-wrapper {
         position: fixed;
         right: -100%;
-        bottom: 0;
+        bottom: 64px;
         top: 50px;
         background-color: #FFF;
-        padding: 14px 24px;
+        padding: 14px 20px;
         z-index: 10;
+        transition: right 0.218s @ease-in-out;
         &_open {
             right: 0;
+            transition: right 0.218s @ease-in-out;
         }
     }
     &__editor-wrapper {
         padding-top: 48px;
         text-align: center;
+        transition: width 0.218s @ease-in-out;
     }
     &__editor {
+        min-height: ~"calc(100% - 64px)";
+    }
+    &__editor,
+    &__tag-editor {
         text-align: left;
-        width: 550px;
-        display: inline-block;
+        width: 700px;
+        display: block;
+        margin: 0 auto;
+    }
+    &__footer-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: calc(200px + 64px);
+        right: 0;
+        height: 64px;
+        border-top: 1px solid #DDD;
+        background: #FFF;
+        transition: left 0.218s @ease-in-out;
+        z-index: 10;
+        &_full {
+            left: 64px;
+            transition: left 0.218s @ease-in-out;
+        }
+    }
+    &__footer {
+        padding: 8px 24px;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        height: 100%;
+    }
+    &__footer-messages-wrapper {
+        display: flex;
+        flex: 100%;
+    }
+    &__footer-message {}
+    &__footer-actions {
+        display: flex;
+        button {
+            margin-left: 8px;
+        }
     }
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import './styles/ant-icons/iconfont.css';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
@@ -12,6 +11,7 @@ import ro from 'react-intl/locale-data/ro';
 import ch from 'react-intl/locale-data/zh';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
+import './styles/ant-icons/iconfont.css';
 import rootSaga from './local-flux/sagas';
 import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
