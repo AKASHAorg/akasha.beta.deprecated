@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionStatus from '../../constants/action-status';
-import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
+import { authDialogToggle, showPublishConfirmDialog, showTransferConfirmDialog,
     showWeightConfirmDialog, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 
 class CommonRunner extends Component {
