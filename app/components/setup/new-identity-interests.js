@@ -22,7 +22,7 @@ class NewIdentityInterests extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.firstDashboard === true) {
+        if (nextProps.firstDashboardReady === true) {
             const { history } = this.props;
             history.push('/dashboard/first');
         }
@@ -37,37 +37,44 @@ class NewIdentityInterests extends Component {
         this.props.tagSearch(event.target.value);
     };
 
-    handleTagInterestButton = (interest) => {
-        this.props.profileToggleInterest(interest, columnTypes.tag);
-    }
-
     handleSkipStep = () => {
         const { history } = this.props;
         history.push('/dashboard');
-    }
+    };
 
     handleSubmit = () => {
         this.props.dashboardAddFirst(this.props.profileInterests);
         this.setState({ disableSubmit: true });
-    }
+    };
 
     render () {
-        const { entriesCount, intl, fetchingTags, fetchingMoreTags, query, profileInterests, resultsCount } = this.props;
+        const { entriesCount, intl, fetchingTags, fetchingMoreTags,
+            query, profileInterests, resultsCount } = this.props;
         const checkMoreTags = resultsCount > entriesCount.size;
         const TabPane = Tabs.TabPane;
+        const disabledSubmit = (profileInterests.get(columnTypes.tag).size === 0 &&
+            profileInterests.get(columnTypes.profile).size === 0) || this.state.disableSubmit;
 
         return (
           <div className="setup-content setup-content__column_full">
             <div className="setup-content__column-content new-identity-interests">
               <div className="new-identity-interests__left">
                 <div>
-                  <div className="new-identity-interests__left-bold-text">{intl.formatMessage(setupMessages.interestedIn)}</div>
+                  <div className="new-identity-interests__left-bold-text">
+                    {intl.formatMessage(setupMessages.interestedIn)}
+                  </div>
                   <span>{intl.formatMessage(setupMessages.interestSuggestion)}</span>
                 </div>
                 <div className="new-identity-interests__left-interests">
                   {profileInterests.get(columnTypes.tag) &&
                     profileInterests[columnTypes.tag].map(interest =>
-                      (<Button key={interest} icon="close" onClick={() => this.handleTagInterestButton(interest)}>{interest}</Button>)
+                      (<Button
+                        key={interest}
+                        icon="close"
+                        onClick={() => this.props.profileToggleInterest(interest, columnTypes.tag)}
+                      >
+                        {interest}
+                      </Button>)
                     )}
                 </div>
               </div>
@@ -98,13 +105,13 @@ class NewIdentityInterests extends Component {
                 </Tabs>
               </div>
             </div>
-            <div className="setup-content__column-footer setup-content__column-footer_interests new-identity__footer">
+            <div className="setup-content__column-footer new-identity-interests__footer">
               <div className="content-link" onClick={this.handleSkipStep}>
                   Skip this step <Icon type="arrow-right" />
               </div>
               <Button
                 className="new-identity__button"
-                disabled={(profileInterests.get(columnTypes.tag).size === 0 && profileInterests.get(columnTypes.profile).size === 0) || this.state.disableSubmit}
+                disabled={disabledSubmit}
                 onClick={this.handleSubmit}
                 size="large"
                 type="primary"
@@ -120,7 +127,7 @@ class NewIdentityInterests extends Component {
 NewIdentityInterests.propTypes = {
     dashboardAddFirst: PropTypes.func,
     entriesCount: PropTypes.shape(),
-    firstDashboard: PropTypes.bool,
+    firstDashboardReady: PropTypes.bool,
     intl: PropTypes.shape(),
     fetchingMoreTags: PropTypes.bool,
     fetchingTags: PropTypes.bool,
@@ -138,7 +145,7 @@ function mapStateToProps (state) {
         entriesCount: selectTagGetEntriesCount(state),
         fetchingTags: state.searchState.getIn(['flags', 'queryPending']),
         fetchingMoreTags: state.searchState.getIn(['flags', 'moreQueryPending']),
-        firstDashboard: state.dashboardState.get('firstDashboard'),
+        firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         resultsCount: state.searchState.get('resultsCount'),
         query: state.searchState.get('query'),
         profileInterests: state.profileState.get('interests')

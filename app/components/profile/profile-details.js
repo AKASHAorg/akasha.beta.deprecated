@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
 import { Button } from 'antd';
 import { Avatar } from '../';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
+import { profileIsFollower, profileAddFollowAction,
+    profileAddUnfollowAction, profileAddTipAction } from '../../local-flux/actions/profile-actions';
 
 class ProfileDetails extends Component {
 
@@ -26,17 +29,39 @@ class ProfileDetails extends Component {
         };
     }
 
+    followProfile = (akashaId, gas) => {
+        const payload = { akashaId, gas };
+        this.props.profileAddFollowAction(payload);
+    }
+
+    unfollowProfile = (akashaId, gas) => {
+        const payload = { akashaId, gas };
+        this.props.profileAddUnfollowAction(payload);
+    }
+
+    sendTip = (profileData) => {
+        const { akashaId, firstName, lastName, profile } = profileData;
+        const payload = { akashaId, firstName, lastName, profile };
+        this.props.profileAddTipAction(payload);
+    };
+
     render () {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
         const { about, avatar, akashaId, backgroundImage, links, firstName, lastName,
         followersCount, followingCount } = profileData;
-        const { isFollower, intl, followProfile, unfollowProfile,
-           sendTip, followPending, sendingTip } = this.props;
+        const { intl, followPending, followerList, sendingTip } = this.props;
         const isOwnProfile = akashaId === this.props.loggedProfile.akashaId;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
+        const followersCountMessage = intl.formatMessage(profileMessages.followersCount, {
+            followers: followersCount
+        });
+        const followingCountMessage = intl.formatMessage(profileMessages.followingsCount, {
+            followings: followingCount
+        });
+        const isFollower = followerList.get(profileData.akashaId);
         return (
           <div className="profile-details">
             <div className="profile-details__background-image">
@@ -49,7 +74,6 @@ class ProfileDetails extends Component {
                 <div className="profile-details__background-image profile-details__background-image_default" />
               }
             </div>
-
             <div className="profile-details__avatar-button-wrapper">
               <div className="profile-details__avatar-wrapper">
                 <Avatar
@@ -66,13 +90,13 @@ class ProfileDetails extends Component {
                     <Button
                       type="primary"
                       ghost
-                      onClick={() => unfollowProfile(akashaId)}
+                      onClick={() => this.unfollowProfile(akashaId)}
                       disabled={followPending.get(akashaId)}
                     >{intl.formatMessage(profileMessages.unfollow)}</Button> :
                     <Button
                       type="primary"
                       ghost
-                      onClick={() => followProfile(akashaId)}
+                      onClick={() => this.followProfile(akashaId)}
                       disabled={followPending.get(akashaId)}
                     >{intl.formatMessage(profileMessages.follow)}</Button>
                 }
@@ -85,23 +109,20 @@ class ProfileDetails extends Component {
                 <Button
                   type="primary"
                   ghost
-                  onClick={() => sendTip(profileData)}
+                  onClick={() => this.sendTip(profileData)}
                   disabled={sendingTip.get(akashaId)}
                 >{intl.formatMessage(profileMessages.sendTip)}</Button>
               }
             </div>
-
             <div className="profile-details__akashaid-wrapper">
               <div className="profile-details__akashaid">
                 @{akashaId}
               </div>
 
               <div className="profile-details__follow-info">
-                {followersCount} {intl.formatMessage(profileMessages.followers)} | {followingCount} {intl.formatMessage(profileMessages.following)}
+                {followersCountMessage} | {followingCountMessage}
               </div>
             </div>
-
-
             {about &&
               <div className="profile-details__about-wrapper">
                 <div className="profile-details__about-title">
@@ -117,7 +138,6 @@ class ProfileDetails extends Component {
                 </div>
               </div>
             }
-
             {links && !!links.length &&
               <div className="profile-details__links-wrapper">
                 <div className="profile-details__links-title">
@@ -141,14 +161,35 @@ class ProfileDetails extends Component {
 
 ProfileDetails.propTypes = {
     followPending: PropTypes.shape(),
-    followProfile: PropTypes.func,
-    isFollower: PropTypes.bool,
+    followerList: PropTypes.shape(),
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     profileData: PropTypes.shape(),
+    profileAddFollowAction: PropTypes.func,
+    profileAddUnfollowAction: PropTypes.func,
+    profileAddTipAction: PropTypes.func,
     sendingTip: PropTypes.shape(),
-    sendTip: PropTypes.func,
-    unfollowProfile: PropTypes.func,
 };
 
-export default injectIntl(ProfileDetails);
+function mapStateToProps (state) {
+    return {
+        fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
+        fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
+        followPending: state.profileState.getIn(['flags', 'followPending']),
+        followerList: state.profileState.get('isFollower'),
+        isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
+        sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        profileIsFollower,
+        profileAddFollowAction,
+        profileAddUnfollowAction,
+        profileAddTipAction
+    }
+)(injectIntl(ProfileDetails));

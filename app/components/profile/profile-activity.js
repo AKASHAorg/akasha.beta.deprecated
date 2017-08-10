@@ -1,33 +1,39 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { EntryListContainer } from '../../shared-components';
+import { profileMessages } from '../../locale-data/messages';
+import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { ACTIVITY } from '../../constants/context-types';
+import { selectProfileEntries } from '../../local-flux/selectors';
 
 class ProfileActivity extends Component {
-    componentWillMount () {
-        const { akashaId, entryProfileIterator } = this.props;
-        entryProfileIterator(null, akashaId);
+    componentDidMount () {
+        const { akashaId } = this.props;
+        this.props.entryProfileIterator(null, akashaId);
     }
 
-    componentWillUpdate (nextProps) {
-        const { akashaId, entryProfileIterator } = this.props;
+    componentWillReceiveProps (nextProps) {
+        const { akashaId } = this.props;
         if (akashaId !== nextProps.akashaId) {
-            entryProfileIterator(null, nextProps.akashaId);
+            this.props.entryProfileIterator(null, nextProps.akashaId);
         }
     }
 
     fetchMoreProfileEntries = () => {
-        const { akashaId, entryMoreProfileIterator } = this.props;
-        entryMoreProfileIterator(null, akashaId);
+        const { akashaId } = this.props;
+        this.props.entryMoreProfileIterator(null, akashaId);
     }
 
     render () {
-        const { profileEntries, fetchingProfileEntries, moreProfileEntries,
+        const { intl, profileEntries, fetchingProfileEntries, moreProfileEntries,
             fetchingMoreProfileEntries, firstName, profiles } = this.props;
         return (
           <div className="profile-activity">
-            <div className="profile-activity__name">{firstName}&#8217;s activity </div>
+            <div className="profile-activity__name">
+              {firstName}&#8217;s {intl.formatMessage(profileMessages.activity)}
+            </div>
             <EntryListContainer
               style={{ height: '100%', flexFlow: 'row wrap' }}
               cardStyle={{ width: '400px' }}
@@ -48,6 +54,7 @@ ProfileActivity.propTypes = {
     akashaId: PropTypes.string,
     entryMoreProfileIterator: PropTypes.func,
     entryProfileIterator: PropTypes.func,
+    intl: PropTypes.shape(),
     profileEntries: PropTypes.shape(),
     fetchingProfileEntries: PropTypes.bool,
     fetchingMoreProfileEntries: PropTypes.bool,
@@ -56,5 +63,22 @@ ProfileActivity.propTypes = {
     profiles: PropTypes.shape()
 };
 
+function mapStateToProps (state, ownProps) {
+    const akashaId = ownProps.akashaId;
+    return {
+        fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
+        fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
+        profileEntries: selectProfileEntries(state, akashaId),
+        profiles: state.profileState.get('byId'),
+        moreProfileEntries: state.entryState.get('moreProfileEntries'),
+    };
+}
 
-export default injectIntl(ProfileActivity);
+
+export default connect(
+    mapStateToProps,
+    {
+        entryMoreProfileIterator,
+        entryProfileIterator
+    }
+)(injectIntl(ProfileActivity));

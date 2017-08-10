@@ -838,7 +838,7 @@ export const profileSendTipError = (error, request) => {
 export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCESS, { data });
 
 export const profileToggleInterest = (interest, interestType) =>
-     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
+    action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
 
 export const profileUnfollow = (akashaId, gas) =>
     action(types.PROFILE_UNFOLLOW, { akashaId, gas });
