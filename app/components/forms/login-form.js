@@ -80,7 +80,7 @@ class LoginForm extends Component {
 
     handleLogin = (ev) => {
         ev.preventDefault();
-        const { account } = this.props;
+        const { account, akashaId, profile } = this.props;
         let unlockTime = 1;
         if (this.state.isChecked) {
             unlockTime = this.state.unlockTime;
@@ -92,7 +92,9 @@ class LoginForm extends Component {
         this.props.userSettingsSave(account, { passwordPreference });
         this.props.profileLogin({
             account,
+            akashaId,
             password: this.state.passphrase,
+            profile,
             rememberTime: unlockTime
         });
     };
@@ -162,6 +164,7 @@ class LoginForm extends Component {
 
 LoginForm.propTypes = {
     account: PropTypes.string.isRequired,
+    akashaId: PropTypes.string,
     gethStatus: PropTypes.shape().isRequired,
     getInputRef: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
@@ -172,6 +175,7 @@ LoginForm.propTypes = {
     loginPending: PropTypes.bool,
     onCancel: PropTypes.func.isRequired,
     passwordPreference: PropTypes.shape(),
+    profile: PropTypes.string,
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
     userSettingsClear: PropTypes.func.isRequired,

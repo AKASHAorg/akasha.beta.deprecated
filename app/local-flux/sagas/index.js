@@ -1,10 +1,11 @@
 import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
-import * as transactionActions from '../actions/transaction-actions';
 import { searchHandshake } from '../actions/search-actions';
 import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
+import * as actionSaga from './action-saga';
 import * as commentsSaga from './comments-saga';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
@@ -12,7 +13,6 @@ import * as externalProcSaga from './external-process-saga';
 import * as licenseSaga from './license-saga';
 import * as listSaga from './list-saga';
 import * as profileSaga from './profile-saga';
-import * as publisherSaga from './publisher-saga';
 import * as searchSaga from './search-saga';
 import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
@@ -57,8 +57,7 @@ function* launchHomeActions () {
     yield fork(settingsSaga.userSettingsRequest);
     yield fork(tagSaga.tagGetMargins);
     if (yield select(selectLoggedAkashaId)) {
-        yield put(transactionActions.transactionGetMined());
-        yield put(transactionActions.transactionGetPending());
+        yield put(actionActions.actionGetPending());
     }
     yield put(searchHandshake());
 }
@@ -82,6 +81,7 @@ function* watchBootstrapHome () {
 export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
+    yield fork(actionSaga.watchActionActions);
     yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(entrySaga.watchEntryActions);
@@ -89,7 +89,6 @@ export default function* rootSaga () {
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(listSaga.watchListActions);
     yield fork(profileSaga.watchProfileActions);
-    yield fork(publisherSaga.watchPublishActions);
     yield fork(searchSaga.watchSearchActions);
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tagSaga.watchTagActions);

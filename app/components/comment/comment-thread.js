@@ -14,7 +14,7 @@ class CommentThread extends Component {
     }
 
     render () {
-        const { comments, commentsAddPublishAction, depth, entryAuthorProfile, entryId, intl,
+        const { actionAdd, comments, depth, entryAuthorProfile, entryId, intl,
             loggedProfile, onReply, onReplyCancel, parentId, pendingComments, profileAvatar,
             profiles, profileUserInitials, replyTo } = this.props;
         const loggedProfileData = profiles.get(loggedProfile.get('akashaId'));
@@ -46,8 +46,8 @@ class CommentThread extends Component {
             showReplyButton={(depth <= 2)}
           >
             <CommentThread
+              actionAdd={actionAdd}
               comments={comments}
-              commentsAddPublishAction={commentsAddPublishAction}
               depth={(depth + 1)}
               entryAuthorProfile={entryAuthorProfile}
               entryId={entryId}
@@ -67,7 +67,7 @@ class CommentThread extends Component {
                 return (
                   <div>
                     <CommentEditor
-                      commentsAddPublishAction={commentsAddPublishAction}
+                      actionAdd={actionAdd}
                       entryId={entryId}
                       intl={intl}
                       loggedProfileData={loggedProfileData}
@@ -97,8 +97,8 @@ class CommentThread extends Component {
 }
 
 CommentThread.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    commentsAddPublishAction: PropTypes.func.isRequired,
     depth: PropTypes.number,
     entryAuthorProfile: PropTypes.string,
     entryId: PropTypes.string,

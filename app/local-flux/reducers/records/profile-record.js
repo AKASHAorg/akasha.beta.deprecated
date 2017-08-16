@@ -26,7 +26,6 @@ export const LoggedProfile = Record({
 });
 
 const Flags = Record({
-    currentProfilePending: false,
     ethAddressPending: false,
     fetchingFollowers: new Map(),
     fetchingFollowings: new Map(),

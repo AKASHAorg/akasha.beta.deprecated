@@ -23,9 +23,7 @@ class CreateProfileStatus extends Component {
         transactionActions.getPendingTransactions();
     }
     componentWillReceiveProps (nextProps) {
-        const { transactionActions, pendingTransactions, minedTransactions, fetchingPendingTx,
-            fetchingMinedTx } = nextProps;
-        const fetchingTransactions = fetchingPendingTx || fetchingMinedTx;
+        const { transactionActions } = nextProps;
         if (nextProps.tempProfile.get('akashaId') === '') {
             return this.context.router.push('/authenticate');
         }
@@ -334,10 +332,6 @@ CreateProfileStatus.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     loginRequested: PropTypes.bool,
-    minedTransactions: PropTypes.shape(),
-    pendingTransactions: PropTypes.shape(),
-    fetchingMinedTx: PropTypes.bool,
-    fetchingPendingTx: PropTypes.bool,
     loggedProfile: PropTypes.shape()
 };
 

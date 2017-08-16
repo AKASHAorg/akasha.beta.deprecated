@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { deletePendingAction, authDialogToggle } from '../../local-flux/actions/app-actions';
+import { toggleAuthDialog } from '../../local-flux/actions/app-actions';
+import { actionDelete } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
+import { selectNeedAuthAction } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 
 class AuthDialog extends Component {
@@ -46,19 +48,20 @@ class AuthDialog extends Component {
         const { unlockIsChecked, unlockTimer, userPassword } = this.state;
         const account = loggedProfile.get('account');
         const akashaId = loggedProfile.get('akashaId');
+        const profile = loggedProfile.get('profile');
         const rememberTime = unlockIsChecked ? unlockTimer : 1;
         const passwordPreference = { remember: unlockIsChecked, time: unlockTimer };
         this.props.userSettingsSave(loggedProfile.get('account'), { passwordPreference });
         this.props.profileLogin({
-            account, password: userPassword, rememberTime, akashaId, reauthenticate: true
+            account, akashaId, password: userPassword, profile, reauthenticate: true, rememberTime
         });
     };
 
     onCancel = () => {
-        const { showAuthDialog } = this.props;
+        const { action } = this.props;
         this.props.profileClearLoginErrors();
-        this.props.deletePendingAction(showAuthDialog);
-        this.props.authDialogToggle(null);
+        this.props.actionDelete(action.get('id'));
+        this.props.toggleAuthDialog();
     };
 
     handleSubmit = (ev) => {
@@ -81,7 +84,6 @@ class AuthDialog extends Component {
             onTouchTap={this.onSubmit}
           />
         ];
-        const minute = 'min';
         return (
           <Dialog
             contentStyle={{ width: '40%', maxWidth: '520px' }}
@@ -144,20 +146,21 @@ class AuthDialog extends Component {
 }
 
 AuthDialog.propTypes = {
-    authDialogToggle: PropTypes.func.isRequired,
-    deletePendingAction: PropTypes.func.isRequired,
+    action: PropTypes.shape(),
+    actionDelete: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loginErrors: PropTypes.shape(),
     passwordPreference: PropTypes.shape(),
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
-    showAuthDialog: PropTypes.number,
+    toggleAuthDialog: PropTypes.func.isRequired,
     userSettingsSave: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
     return {
+        action: selectNeedAuthAction(state),
         loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('errors').filter(err => err.get('type') === 'login'),
         passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
@@ -168,10 +171,10 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
-        authDialogToggle,
+        actionDelete,
         profileClearLoginErrors,
         profileLogin,
+        toggleAuthDialog,
         userSettingsSave
     }
 )(AuthDialog);

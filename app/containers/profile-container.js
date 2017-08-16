@@ -21,8 +21,8 @@ class ProfileContainer extends Component {
     }
 
     render () {
-        const { profileData } = this.props;
-
+        const { match, profileData } = this.props;
+        console.log('profile container');
         return (<DataLoader
           flag={!profileData}
           timeout={300}
@@ -31,11 +31,10 @@ class ProfileContainer extends Component {
         >
           <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
             <ProfileDetails
-              profileData={profileData}
+              akashaId={match.params.akashaId}
             />
-
             <ProfileActivity
-              akashaId={profileData.akashaId}
+              akashaId={match.params.akashaId}
               firstName={profileData.firstName}
             />
           </div>
@@ -44,13 +43,11 @@ class ProfileContainer extends Component {
 }
 
 ProfileContainer.propTypes = {
-    params: PropTypes.shape(),
     profileData: PropTypes.shape(),
     profileGetData: PropTypes.func,
     profileIsFollower: PropTypes.func,
     match: PropTypes.shape()
 };
-
 
 function mapStateToProps (state, ownProps) {
     const akashaId = ownProps.match.params.akashaId;
@@ -58,7 +55,6 @@ function mapStateToProps (state, ownProps) {
         profileData: selectProfile(state, akashaId),
     };
 }
-
 
 export default connect(
     mapStateToProps,
