@@ -290,10 +290,10 @@ export function* watchTempProfileActions () {
     yield takeLatest(types.ETH_ADDRESS_CREATE_SUCCESS, faucetRequest);
     yield takeEvery(types.FUND_FROM_FAUCET_SUCCESS, addFaucetTxToQueue);
     // faucet tx successfully mined
-    yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfileLogin);
+    // yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfileLogin);
     yield takeLatest(types.TEMP_PROFILE_LOGIN_SUCCESS, tempProfilePublish);
     yield takeLatest(types.TEMP_PROFILE_PUBLISH, tempProfilePublish);
     yield takeLatest(types.TEMP_PROFILE_PUBLISH_SUCCESS, addPublishTxToQueue);
-    yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfilePublishDone);
+    // yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfilePublishDone);
     yield takeLatest(types.TEMP_PROFILE_DELETE, tempProfileRemove);
 }

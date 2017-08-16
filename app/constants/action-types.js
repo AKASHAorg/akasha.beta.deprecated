@@ -1,11 +1,10 @@
-const actionTypes = {
-    claim: 'claim',
-    comment: 'comment',
-    downvote: 'downvote',
-    follow: 'follow',
-    sendTip: 'sendTip',
-    unfollow: 'unfollow',
-    upvote: 'upvote'
-};
-
-export default actionTypes;
+export const claim = 'claim';
+export const comment = 'comment';
+export const createTag = 'createTag';
+export const downvote = 'downvote';
+export const follow = 'follow';
+export const profileRegister = 'profileRegister';
+export const profileUpdate = 'profileUpdate';
+export const sendTip = 'sendTip';
+export const unfollow = 'unfollow';
+export const upvote = 'upvote';

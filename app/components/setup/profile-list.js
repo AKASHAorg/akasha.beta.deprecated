@@ -142,9 +142,11 @@ class ProfileList extends Component {
               {isSelected &&
                 <LoginForm
                   account={account}
+                  akashaId={akashaId}
                   getInputRef={this.getInputRef}
                   onCancel={this.onCancelLogin}
                   onSubmit={this.onSubmitLogin}
+                  profile={profile.get('profile')}
                 />
               }
             </ReactCSSTransitionGroup>

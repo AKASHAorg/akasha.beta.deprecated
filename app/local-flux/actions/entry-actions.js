@@ -1,10 +1,6 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const entryAddClaimAction = payload => action(types.ENTRY_ADD_CLAIM_ACTION, { payload });
-export const entryAddDownvoteAction = payload =>
-    action(types.ENTRY_ADD_DOWNVOTE_ACTION, { payload });
-export const entryAddUpvoteAction = payload => action(types.ENTRY_ADD_UPVOTE_ACTION, { payload });
 export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
 
 export const entryCanClaimError = (error) => {
@@ -14,8 +10,8 @@ export const entryCanClaimError = (error) => {
 };
 
 export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
-export const entryClaim = (entryId, entryTitle, gas) =>
-    action(types.ENTRY_CLAIM, { entryId, entryTitle, gas });
+export const entryClaim = ({ actionId, entryId, entryTitle }) =>
+    action(types.ENTRY_CLAIM, { actionId, entryId, entryTitle });
 
 export const entryClaimError = (error, entryId, entryTitle) => {
     error.code = 'ECE01';
@@ -26,8 +22,8 @@ export const entryClaimError = (error, entryId, entryTitle) => {
 
 export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { data });
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
-export const entryDownvote = (entryId, entryTitle, weight, value, gas) =>
-    action(types.ENTRY_DOWNVOTE, { entryId, entryTitle, weight, value, gas });
+export const entryDownvote = ({ actionId, entryId, entryTitle, weight, value }) =>
+    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, weight, value });
 
 export const entryDownvoteError = (error, entryId, entryTitle) => {
     error.code = 'EDE01';
@@ -202,8 +198,8 @@ export const entryTagIteratorError = (error, req) => {
 
 export const entryTagIteratorSuccess = (data, req) =>
     action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
-export const entryUpvote = (entryId, entryTitle, weight, value, gas) =>
-    action(types.ENTRY_UPVOTE, { entryId, entryTitle, weight, value, gas });
+export const entryUpvote = ({ actionId, entryId, entryTitle, weight, value }) =>
+    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, weight, value });
 
 export const entryUpvoteError = (error, entryId, entryTitle) => {
     error.code = 'EUE01';

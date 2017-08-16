@@ -1,13 +1,15 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
+import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
-    selectToken } from '../selectors';
-import actionTypes from '../../constants/action-types';
+    selectNeedAuthAction, selectToken } from '../selectors';
+import * as actionStatus from '../../constants/action-status';
+import * as actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
@@ -28,11 +30,18 @@ function* profileDeleteLogged () {
     }
 }
 
-function* profileFollow ({ akashaId, gas }) {
+function* profileFollow ({ actionId, akashaId }) {
     const channel = Channel.server.profile.followProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, gas }]);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+}
+
+function* profileFollowSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'followProfileSuccess',
+        values: { akashaId: data.akashaId },
+    }));
 }
 
 function* profileFollowersIterator ({ akashaId }) {
@@ -55,11 +64,6 @@ function* profileGetBalance ({ unit = 'ether' }) {
     }
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(channel, channel.send, [{ etherBase: account, unit }]);
-}
-
-export function* profileGetCurrent () {
-    const channel = Channel.server.registry.getCurrentProfile;
-    yield apply(channel, channel.send, [{}]);
 }
 
 function* profileGetData ({ akashaId, full = false }) {
@@ -155,18 +159,38 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
-function* profileSendTip ({ akashaId, receiver, value, gas }) {
+function* profileSendTip ({ actionId, akashaId, receiver, value }) {
     const channel = Channel.server.profile.tip;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, receiver, value, gas }]);
+    yield apply(channel, channel.send, [{
+        token,
+        actionId,
+        akashaId,
+        receiver,
+        value
+    }]);
 }
 
-function* profileUnfollow ({ akashaId, gas }) {
+function* profileSendTipSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'sendTipSuccess',
+        values: { akashaId: data.akashaId },
+    }));
+}
+
+function* profileUnfollow ({ actionId, akashaId }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, gas }]);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+}
+
+function* profileUnfollowSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'unfollowProfileSuccess',
+        values: { akashaId: data.akashaId },
+    }));
 }
 
 function* profileUpdateLogged (loggedProfile) {
@@ -175,84 +199,6 @@ function* profileUpdateLogged (loggedProfile) {
     } catch (error) {
         yield put(actions.profileUpdateLoggedError(error));
     }
-}
-
-// Action watchers
-
-function* watchProfileCreateEthAddress () {
-    yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
-}
-
-function* watchProfileDeleteLogged () {
-    yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
-}
-
-function* watchProfileFollow () {
-    yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
-}
-
-function* watchProfileFollowersIterator () {
-    yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
-}
-
-function* watchProfileFollowingsIterator () {
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
-}
-
-function* watchProfileGetBalance () {
-    yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
-}
-
-function* watchProfileGetCurrent () {
-    yield takeLatest(types.PROFILE_GET_CURRENT, profileGetCurrent);
-}
-
-function* watchProfileGetData () {
-    yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
-}
-
-function* watchProfileGetList () {
-    yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
-}
-
-function* watchProfileGetLocal () {
-    yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
-}
-
-function* watchProfileGetLogged () {
-    yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
-}
-
-function* watchProfileIsFollower () {
-    yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
-}
-
-function* watchProfileLogin () {
-    yield takeLatest(types.PROFILE_LOGIN, profileLogin);
-}
-
-function* watchProfileLogout () {
-    yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
-}
-
-function* watchProfileMoreFollowersIterator () {
-    yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
-}
-
-function* watchProfileMoreFollowingsIterator () {
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
-}
-
-function* watchProfileResolveIpfsHash () {
-    yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
-}
-
-function* watchProfileSendTip () {
-    yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
-}
-
-function* watchProfileUnfollow () {
-    yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
 }
 
 // Channel watchers
@@ -274,22 +220,13 @@ function* watchProfileCreateEthAddressChannel () {
 function* watchProfileFollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followProfile);
-        const { akashaId, gas } = resp.request;
+        const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileFollowError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
         } else {
-            const payload = [{
-                extra: { akashaId },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.follow,
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'followingProfile',
-                values: { akashaId },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -335,27 +272,6 @@ function* watchProfileGetBalanceChannel () {
             yield put(actions.profileGetBalanceError(resp.error));
         } else {
             yield put(actions.profileGetBalanceSuccess(resp.data));
-        }
-    }
-}
-
-function* watchProfileGetCurrentChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.registry.getCurrentProfile);
-        if (resp.error) {
-            yield put(actions.profileGetCurrentError(resp.error));
-            yield call(profileDeleteLogged);
-        } else {
-            yield put(actions.profileGetCurrentSuccess(resp.data));
-            yield put(actions.profileGetBalance());
-            if (resp.data.profileAddress) {
-                yield call(profileGetData, resp.data.profileAddress, true);
-            }
-            const loggedProfile = yield select(state =>
-                state.profileState.get('loggedProfile').toJS());
-            if (loggedProfile.account) {
-                yield call(profileSaveLogged, loggedProfile);
-            }
         }
     }
 }
@@ -417,12 +333,23 @@ function* watchProfileLoginChannel () {
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
-        if (!resp.request.reauthenticate) {
-            yield put(actions.profileGetCurrent());
-        } else {
+        const { akashaId, profile, reauthenticate } = resp.request;
+        if (akashaId && profile) {
+            resp.data.akashaId = akashaId;
+            resp.data.profile = profile;
+            yield call(profileGetData, { akashaId, reauthenticate: true });
+        }
+        if (reauthenticate) {
+            const needAuthAction = yield select(selectNeedAuthAction);
             yield call(profileUpdateLogged, resp.data);
+            if (needAuthAction) {
+                yield put(actionActions.actionPublish(needAuthAction.get('id')));
+            }
+        } else {
+            yield call(profileSaveLogged, resp.data);
         }
         yield put(actions.profileLoginSuccess(resp.data));
+        yield put(actions.profileGetBalance());
     }
 }
 
@@ -456,22 +383,12 @@ function* watchProfileResolveIpfsHashChannel () {
 function* watchProfileSendTipChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.tip);
-        const { akashaId, gas, value } = resp.request;
+        const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
         } else {
-            const payload = [{
-                extra: { akashaId, value },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.sendTip
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'sendingTip',
-                values: { akashaId },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -479,33 +396,22 @@ function* watchProfileSendTipChannel () {
 function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
-        const { akashaId, gas, profile } = resp.request;
+        const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileUnfollowError(resp.error, resp.request));
         } else {
-            const payload = [{
-                extra: { akashaId, profile },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.unfollow,
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'unfollowingProfile',
-                values: { akashaId },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
 
 export function* registerProfileListeners () {
-    yield fork(watchProfileCreateEthAddressChannel);    
+    yield fork(watchProfileCreateEthAddressChannel);
     yield fork(watchProfileFollowChannel);
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
     yield fork(watchProfileGetBalanceChannel);
-    yield fork(watchProfileGetCurrentChannel);
     yield fork(watchProfileGetDataChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
@@ -516,26 +422,28 @@ export function* registerProfileListeners () {
     yield fork(watchProfileUnfollowChannel);
 }
 
-export function* watchProfileActions () {
-    yield fork(watchProfileCreateEthAddress);
-    yield fork(watchProfileDeleteLogged);
-    yield fork(watchProfileFollow);
-    yield fork(watchProfileFollowersIterator);
-    yield fork(watchProfileFollowingsIterator);
-    yield fork(watchProfileGetBalance);
-    yield fork(watchProfileGetCurrent);
-    yield fork(watchProfileGetData);
-    yield fork(watchProfileGetList);
-    yield fork(watchProfileGetLocal);
-    yield fork(watchProfileGetLogged);
-    yield fork(watchProfileIsFollower);
-    yield fork(watchProfileLogin);
-    yield fork(watchProfileLogout);
-    yield fork(watchProfileMoreFollowersIterator);
-    yield fork(watchProfileMoreFollowingsIterator);
-    yield fork(watchProfileResolveIpfsHash);
-    yield fork(watchProfileSendTip);
-    yield fork(watchProfileUnfollow);
+export function* watchProfileActions () { // eslint-disable-line max-statements
+    yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
+    yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
+    yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
+    yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
+    yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
+    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
+    yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
+    yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
+    yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
+    yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
+    yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
+    yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
+    yield takeLatest(types.PROFILE_LOGIN, profileLogin);
+    yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
+    yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
+    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+    yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
+    yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
+    yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
+    yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
 }
 
 export function* registerWatchers () {

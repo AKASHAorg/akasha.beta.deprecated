@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
+import * as actionTypes from '../../constants/action-types';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote,
     ToolbarEthereum } from '../svg';
-import { entryAddClaimAction, entryAddDownvoteAction,
-    entryAddUpvoteAction } from '../../local-flux/actions/entry-actions';
-import { selectEntryBalance, selectEntryCanClaim, selectEntryVote,
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLoggedAkashaId,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -30,23 +30,23 @@ class EntryPageAction extends Component {
     };
 
     handleUpvote = () => {
-        const { entry, publisher } = this.props;
+        const { entry, loggedAkashaId, publisher } = this.props;
         const payload = {
             publisherAkashaId: publisher && publisher.get('akashaId'),
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };
-        this.props.entryAddUpvoteAction(payload);
+        this.props.actionAdd(loggedAkashaId, actionTypes.upvote, payload);
     };
 
     handleDownvote = () => {
-        const { entry, publisher } = this.props;
+        const { entry, loggedAkashaId, publisher } = this.props;
         const payload = {
             publisherAkashaId: publisher && publisher.get('akashaId'),
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };
-        this.props.entryAddDownvoteAction(payload);
+        this.props.actionAdd(loggedAkashaId, actionTypes.downvote, payload);
     };
 
     // handleBookmark = () => {
@@ -63,7 +63,7 @@ class EntryPageAction extends Component {
     // };
 
     handleClaim = () => {
-        const { canClaim, entry } = this.props;
+        const { canClaim, entry, loggedAkashaId } = this.props;
         if (!canClaim) {
             return;
         }
@@ -71,7 +71,7 @@ class EntryPageAction extends Component {
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };
-        this.props.entryAddClaimAction(payload);
+        this.props.actionAdd(loggedAkashaId, actionTypes.claim, payload);
     };
 
     render () { // eslint-disable-line complexity
@@ -215,18 +215,17 @@ EntryPageAction.defaultProps = {
 };
 
 EntryPageAction.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
     balance: PropTypes.string,
     canClaim: PropTypes.bool,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     entry: PropTypes.shape().isRequired,
-    entryAddClaimAction: PropTypes.func.isRequired,
-    entryAddDownvoteAction: PropTypes.func.isRequired,
-    entryAddUpvoteAction: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,
     intl: PropTypes.shape(),
     isOwnEntry: PropTypes.bool,
     isSaved: PropTypes.bool,
+    loggedAkashaId: PropTypes.string,
     publisher: PropTypes.shape(),
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
@@ -236,17 +235,18 @@ function mapStateToProps (state, ownProps) {
     const entry = ownProps.entry;
     const claimPending = state.entryState.getIn(['flags', 'claimPending', entry.get('entryId')]);
     const votePending = state.entryState.getIn(['flags', 'votePending', entry.get('entryId')]);
-    const loggedProfile = state.profileState.getIn(['loggedProfile', 'profile']);
+    const loggedAkashaId = selectLoggedAkashaId(state);
     return {
         balance: selectEntryBalance(state, entry.get('entryId')),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending,
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        isOwnEntry: loggedProfile === entry.getIn(['entryEth', 'publisher']),
+        isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
         isSaved: !!state.entryState
             .get('savedEntries')
             .find(entr => entr.get('entryId') === entry.get('entryId')),
+        loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
         votePending,
         voteWeight: selectEntryVote(state, entry.get('entryId'))
@@ -256,8 +256,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryAddClaimAction,
-        entryAddDownvoteAction,
-        entryAddUpvoteAction
+        actionAdd,
     }
 )(injectIntl(EntryPageAction));

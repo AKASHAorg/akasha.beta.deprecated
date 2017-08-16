@@ -269,6 +269,8 @@ class TagActions {
 }
 export { TagActions };
 
+export const tagCreate = ({ tagName }) => action(types.TAG_CREATE, { tagName });
+
 export const tagGetEntriesCount = tags => action(types.TAG_GET_ENTRIES_COUNT, { tags });
 
 export const tagGetEntriesCountError = (error) => {

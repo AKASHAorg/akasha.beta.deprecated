@@ -1,4 +1,5 @@
 // keep this alphabetically sorted
+import { ActionRecord, ActionState } from './action-record';
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
 import { CommentData, CommentRecord, CommentsState } from './comments-record';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
@@ -15,12 +16,12 @@ import ProfileState, { LoggedProfile, ProfileRecord } from './profile-record';
 import SettingsRecord, { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, UserSettings } from './settings-record';
 import TempProfileRecord, { TempProfileStatus } from './temp-profile-record';
-import { MinedTransaction, PendingTransaction, TransactionFlags,
-    TransactionState } from './transaction-record';
 import UtilsState from './utils-record';
 
 // keep this alphabetically sorted
 export {
+    ActionRecord,
+    ActionState,
     AppRecord,
     ColumnRecord,
     CommentData,
@@ -50,21 +51,17 @@ export {
     ListState,
     LoggedProfile,
     LogRecord,
-    MinedTransaction,
     NewColumnRecord,
     NotificationRecord,
     PanelState,
     PasswordPreference,
     PendingActionRecord,
-    PendingTransaction,
     PortsRecord,
     ProfileRecord,
     ProfileState,
     SettingsRecord,
     TempProfileRecord,
     TempProfileStatus,
-    TransactionFlags,
-    TransactionState,
     UserSettings,
     UtilsState
 };

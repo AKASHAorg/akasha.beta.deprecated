@@ -22,14 +22,15 @@ class EditProfile extends Component {
         const { tempProfile, pendingActions } = this.props;
         // Delete temp profile if it`s not pending to publish
         // debugger;
-        const isTempProfilePending = pendingActions.find(action =>
-            action.get('entityType') === 'tempProfile'
-        );
-        if (!isTempProfilePending) {
-            this.props.tempProfileDelete({
-                akashaId: tempProfile.get('akashaId')
-            });
-        }
+        // TODO Replace this logic using "actions" instead of "pendingActions"        
+        // const isTempProfilePending = pendingActions.find(action =>
+        //     action.get('entityType') === 'tempProfile'
+        // );
+        // if (!isTempProfilePending) {
+        //     this.props.tempProfileDelete({
+        //         akashaId: tempProfile.get('akashaId')
+        //     });
+        // }
     }
     _createTempProfile = (props) => {
         const { tempProfile, loggedProfileData } = props;
@@ -40,13 +41,14 @@ class EditProfile extends Component {
         }
     }
     _handleSubmit = () => {
-        const { tempProfile, pendingActions } = this.props;
-        if (tempProfile.get('localId') && pendingActions.has(tempProfile.get('localId'))) {
-            return console.warn('profile upgrade is in progress. Wait untill it`s finished!');
-        }
-        if (pendingActions.find(action => action.entityType === 'tempProfile')) {
-            return console.warn('There is already a profile update in progress. Please wait until it`s finished.');
-        }
+        const { actions, tempProfile } = this.props;
+        // TODO Replace this logic using "actions" instead of "pendingActions"
+        // if (tempProfile.get('localId') && pendingActions.has(tempProfile.get('localId'))) {
+        //     return console.warn('profile upgrade is in progress. Wait untill it`s finished!');
+        // }
+        // if (pendingActions.find(action => action.entityType === 'tempProfile')) {
+        //     return console.warn('There is already a profile update in progress. Please wait until it`s finished.');
+        // }
         return this.props.publishEntity({
             entityType: 'tempProfile',
             actionType: 'update',
@@ -114,11 +116,11 @@ EditProfile.contextTypes = {
 };
 
 EditProfile.propTypes = {
+    actions: PropTypes.shape().isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    pendingActions: PropTypes.shape(),
     publishEntity: PropTypes.func,
     setTempProfile: PropTypes.func,
     tempProfileDelete: PropTypes.func,
@@ -127,7 +129,7 @@ EditProfile.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    pendingActions: state.appState.get('pendingActions'),
+    actions: state.actionState.get('byId'),
     loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),
     tempProfile: state.tempProfileState.get('tempProfile')

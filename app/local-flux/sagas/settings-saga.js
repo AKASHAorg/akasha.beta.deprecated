@@ -105,7 +105,7 @@ function* userSettingsSave (account, payload) {
             settingsService, settingsService.userSettingsSave, [account, payload]
         );
         yield put(actions.userSettingsSaveSuccess(resp));
-        yield put(appActions.showNotification({ id: 'userSettingsSaveSuccess' }));
+        // yield put(appActions.showNotification({ id: 'userSettingsSaveSuccess' }));
     } catch (error) {
         yield put(actions.userSettingsSaveError(error));
     }

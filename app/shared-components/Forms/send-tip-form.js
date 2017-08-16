@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { TextField, IconButton } from 'material-ui';
-import InfoIcon from 'material-ui/svg-icons/action/info-outline';
+import { TextField } from 'material-ui';
 import { confirmMessages, formMessages } from '../../locale-data/messages';
 
 const ENTER = 'Enter';
@@ -16,11 +15,10 @@ class SendTipForm extends Component {
     };
 
     render () {
-        const { balance, disableReceiverField, ethAmount, ethAmountError, gasAmount,
-            gasAmountError, handleEthChange, handleGasChange, intl, onSubmit,
-            profileData } = this.props;
-        const { akashaId, firstName, lastName } = profileData.toJS();
-        const receiver = `@${akashaId} (${firstName} ${lastName})`;
+        const { balance, disableReceiverField, ethAmount, ethAmountError, handleEthChange,
+            intl, onSubmit, profileData } = this.props;
+        const { firstName, lastName, receiver } = profileData;
+        const receiverFull = `@${receiver} (${firstName} ${lastName})`;
         return (
           <form onSubmit={onSubmit}>
             <div className="row middle-xs">
@@ -30,7 +28,7 @@ class SendTipForm extends Component {
                 floatingLabelText={intl.formatMessage(confirmMessages.receiverLabel)}
                 fullWidth
                 className="col-xs-10"
-                value={receiver}
+                value={receiverFull}
               />
               <TextField
                 type="number"
@@ -62,30 +60,6 @@ class SendTipForm extends Component {
               {ethAmountError &&
                 <div style={{ height: '24px', width: '100%' }} />
               }
-              {/* <TextField
-                type="number"
-                floatingLabelFixed
-                floatingLabelText={intl.formatMessage(confirmMessages.gasInputLabel)}
-                fullWidth
-                className="col-xs-10"
-                value={gasAmount}
-                onChange={handleGasChange}
-                errorText={gasAmountError &&
-                    intl.formatMessage(formMessages.gasAmountError, { min: 2000000, max: 4700000 })
-                }
-                min={2000000}
-                max={4700000}
-              />
-              <div
-                className="col-xs-2"
-                style={{ marginTop: 24 }}
-                data-tip={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
-              >
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </div>
-              */}
             </div>
           </form>
         );
@@ -97,10 +71,7 @@ SendTipForm.propTypes = {
     disableReceiverField: PropTypes.bool,
     ethAmount: PropTypes.string,
     ethAmountError: PropTypes.shape(),
-    gasAmount: PropTypes.number,
-    gasAmountError: PropTypes.bool,
     handleEthChange: PropTypes.func,
-    handleGasChange: PropTypes.func,
     intl: PropTypes.shape(),
     onSubmit: PropTypes.func,
     profileData: PropTypes.shape()
