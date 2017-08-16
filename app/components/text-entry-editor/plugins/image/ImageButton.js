@@ -4,6 +4,7 @@ import { insertDataBlock } from 'megadraft';
 import { IconButton } from 'material-ui';
 import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
 import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
+import { genId } from '../../../../utils/dataModule';
 
 export default class BlockButton extends Component {
     constructor (props) {
@@ -23,11 +24,19 @@ export default class BlockButton extends Component {
             error: ''
         });
     }
-
+    _handleImageProgress = (currentProgress) => {
+        console.log(currentProgress, 'currentProgress');
+        const { onImageProgress } = this.props;
+        if (onImageProgress) onImageProgress(currentProgress);
+    }
     _handleImageAdd = (ev) => {
         ev.persist();
         const files = this.fileInput.files;
-        const filePromises = getResizedImages(files, { minWidth: 320 });
+        const filePromises = getResizedImages(files, {
+            minWidth: 320,
+            progressHandler: this._handleImageProgress,
+            maxProgress: 100
+        });
         Promise.all(filePromises).then((results) => {
             let bestKey = findClosestMatch(768, results[0]);
             if (bestKey === 'xl' || bestKey === 'xxl') {
@@ -39,6 +48,7 @@ export default class BlockButton extends Component {
                 bestKey = findClosestMatch(results[0].gif.width, res);
             }
             const data = {
+                imgId: genId(),
                 files: results[0],
                 type: 'image',
                 media: bestKey,
@@ -53,12 +63,12 @@ export default class BlockButton extends Component {
                 isAddingImage: false,
                 dialogOpen: false
             });
-            // verify if editor is in focus and blur;
+            // verify if editor is in focus, and blur it;
             if (document.activeElement.contentEditable === 'true') {
                 document.activeElement.blur();
             }
         }).catch((reason) => {
-            this.props.onError(reason);
+            this.props.onImageError(reason);
         });
     }
 
@@ -99,5 +109,7 @@ BlockButton.propTypes = {
     onChange: PropTypes.func,
     editorState: PropTypes.shape(),
     onClick: PropTypes.func,
-    onError: PropTypes.func
+    onImageError: PropTypes.func,
+    onImageProgress: PropTypes.func,
+
 };

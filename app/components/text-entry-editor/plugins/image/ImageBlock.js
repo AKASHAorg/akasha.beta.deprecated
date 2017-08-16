@@ -159,6 +159,7 @@ class ImageBlock extends Component {
         } else {
             imageSource = imageSrc;
         }
+        console.log(this.props, 'image block props');
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}

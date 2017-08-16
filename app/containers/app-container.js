@@ -11,6 +11,7 @@ import { PublishConfirmDialog, TransferConfirmDialog,
 import { hideNotification, hideTerms, hideReportModal, bootstrapHome,
     showLoginDialog } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
+import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
@@ -85,7 +86,7 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState, fullEntry,
+        const { activeDashboard, appState, draftCreate, errorDeleteFatal, errorDeleteNonFatal, errorState, fullEntry,
             hideNotification, hideTerms, hideReportModal, history, intl, location,
             theme } = this.props;
         /* eslint-enable no-shadow */
@@ -190,6 +191,7 @@ AppContainer.propTypes = {
     activeDashboard: PropTypes.string,
     appState: PropTypes.shape().isRequired,
     bootstrapHome: PropTypes.func,
+    draftCreate: PropTypes.func,
     entryVoteCost: PropTypes.func,
     errorDeleteFatal: PropTypes.func.isRequired,
     errorDeleteNonFatal: PropTypes.func.isRequired,
@@ -221,6 +223,7 @@ export default connect(
     mapStateToProps,
     {
         bootstrapHome,
+        draftCreate,
         entryVoteCost,
         errorDeleteFatal,
         errorDeleteNonFatal,

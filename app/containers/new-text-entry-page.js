@@ -5,32 +5,77 @@ import { injectIntl } from 'react-intl';
 import { Icon, Row, Col, Button } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
+import { draftCreate, draftGetById, draftUpdate, draftAutosave } from '../local-flux/actions/draft-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 
 class NewEntryPage extends Component {
     state = {
-        showPublishPanel: false
+        showPublishPanel: false,
+    }
+    componentWillMount () {
+        const { match, draftObj } = this.props;
+        const { draftId } = match.params;
+        if (!draftObj && draftId === 'new') {
+            this.props.draftCreate({
+                id: 'new',
+                type: 'article',
+            });
+        } else if (!draftObj) {
+            this.props.draftGetById(draftId);
+        }
     }
     _showPublishOptionsPanel = () => {
         this.setState({
             showPublishPanel: true
         });
     }
-    _handleEditorChange = () => {
+    _handleEditorChange = (editorState) => {
+        const { match } = this.props;
         // const tagsField = this.tagsField;
         // tagsField.scrollIntoViewIfNeeded(true);
+        this.props.draftUpdate({
+            id: match.params.draftId,
+            editorState
+        });
+    }
+    _handleTitleChange = (ev) => {
+        this.setState({
+            title: ev.target.value
+        });
     }
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
         });
     }
+    _handleAutosave = (editorState) => {
+        console.log('save', editorState);
+    }
+    _createRef = nodeName =>
+        (node) => { this[nodeName] = node; };
+
+    _handleForceSave = () => {
+        console.log('handle save', this.editor.getRawContent());
+    }
+    _handlePublish = () => {
+        console.log(this.editor.getContent());
+    }
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
     render () {
         const { showPublishPanel } = this.state;
-        const { showSecondarySidebar, intl } = this.props;
+        const { showSecondarySidebar, intl, draftObj, match } = this.props;
+
+        if (!draftObj && match.params.draftId !== 'new') {
+            return <div>Finding Draft</div>;
+        } else if (!draftObj) {
+            return <div>Generating Draft</div>;
+        }
+
+        const { content, tags } = draftObj;
+        const { title, excerpt, licence, draft } = content;
+
         return (
           <div className="text-entry-page">
             <div
@@ -52,8 +97,17 @@ class NewEntryPage extends Component {
                 className="text-entry-page__editor-wrapper"
               >
                 <div className="text-entry-page__editor">
+                  <textarea
+                    className="text-entry-page__title-input-field"
+                    placeholder="Title"
+                    onChange={this._handleTitleChange}
+                    value={this.state.title}
+                  />
                   <TextEntryEditor
+                    ref={this._createRef('editor')}
                     onChange={this._handleEditorChange}
+                    onAutosave={this._handleAutosave}
+                    content={draft}
                   />
                 </div>
                 <div className="text-entry-page__tag-editor">
@@ -72,6 +126,8 @@ class NewEntryPage extends Component {
                 <PublishOptionsPanel
                   intl={intl}
                   onClose={this._handlePublishPanelClose}
+                  title={title}
+                  excerpt={excerpt}
                 />
               </Col>
               <div
@@ -89,6 +145,7 @@ class NewEntryPage extends Component {
                   <div className="text-entry-page__footer-actions">
                     <Button
                       size="large"
+                      onClick={this._handleForceSave}
                     >
                       {intl.formatMessage(generalMessages.save)}
                     </Button>
@@ -108,18 +165,32 @@ class NewEntryPage extends Component {
 }
 
 NewEntryPage.propTypes = {
+    draftObj: PropTypes.shape(),
+    draftCreate: PropTypes.func,
+    draftGetById: PropTypes.func,
+    draftUpdate: PropTypes.func,
+    draftAutosave: PropTypes.func,
     intl: PropTypes.shape(),
+    match: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
 };
 
-const mapStateToProps = state => ({
-    showSecondarySidebar: state.appState.get('showSecondarySidebar')
-});
+const mapStateToProps = (state, ownProps) => {
+    const { draftId } = ownProps.match.params;
+    return {
+        showSecondarySidebar: state.appState.get('showSecondarySidebar'),
+        draftObj: state.draftState.getIn(['drafts', draftId]),
+    };
+};
 
 export default connect(
     mapStateToProps,
     {
         secondarySidebarToggle,
+        draftCreate,
+        draftGetById,
+        draftUpdate,
+        draftAutosave,
     }
 )(injectIntl(NewEntryPage));

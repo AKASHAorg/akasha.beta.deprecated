@@ -38,13 +38,21 @@ class Sidebar extends Component {
         return !blackList.every(route => location.pathname.includes(route));
     }
     _navigateTo = (path) => {
-        const { history } = this.props;
+        const { history, draftCreate } = this.props;
         return () => {
             this.setState({
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
-                history.push(path);
+                if (path === '/draft/text/new') {
+                    const draftId = 'new';
+                    draftCreate({
+                        type: 'article',
+                        id: draftId
+                    });
+                    return history.push(`draft/text/${draftId}`);
+                }
+                return history.push(path);
             });
         };
     }
@@ -178,7 +186,7 @@ class Sidebar extends Component {
 
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
-    draftsCount: PropTypes.number,
+    draftCreate: PropTypes.func,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),

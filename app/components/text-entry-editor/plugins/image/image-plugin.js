@@ -1,8 +1,11 @@
+import React from 'react';
 import ImageButton from './ImageButton';
 import ImageBlock from './ImageBlock';
 
-export default {
+const imagePlugin = otherProps => ({
     type: 'image',
-    buttonComponent: ImageButton,
-    blockComponent: ImageBlock
-};
+    buttonComponent: props => <ImageButton {...otherProps} {...props} />,
+    blockComponent: props => <ImageBlock {...otherProps} {...props} />
+});
+
+export default imagePlugin;
