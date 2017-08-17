@@ -43,7 +43,9 @@ const UserSettings = Record({
 
 const GeneralSettings = Record({
     theme: 'light',
-    configurationSaved: false
+    configurationSaved: false,
+    darkTheme: false,
+    locale: 'en'
 });
 
 const Flags = Record({
