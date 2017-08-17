@@ -139,7 +139,7 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { commentsLoadNew, entry, fetchingFullEntry, intl, licenses, loggedProfileData,
+        const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, intl, licenses, loggedProfileData,
             newComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, showInHeader } = this.state;
@@ -160,7 +160,7 @@ class EntryPage extends Component {
               <div className={styles.entry_infos}>
                 {entry.content && <EntryPageActions entry={entry} />}
                 <CommentEditor
-                  commentsAddPublishAction={this.props.commentsAddPublishAction}
+                  actionAdd={actionAdd}
                   entryId={entry.get('entryId')}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
@@ -218,7 +218,7 @@ EntryPage.contextTypes = {
 };
 
 EntryPage.propTypes = {
-    commentsAddPublishAction: PropTypes.func.isRequired,
+    actionAdd: PropTypes.func.isRequired,
     commentsCheckNew: PropTypes.func.isRequired,
     commentsClean: PropTypes.func.isRequired,
     commentsIterator: PropTypes.func.isRequired,

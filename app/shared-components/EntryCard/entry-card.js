@@ -318,18 +318,20 @@ class EntryCard extends Component {
                   }}
                   onClick={this.selectProfile}
                 >
-                  <Avatar
-                    image={avatar}
-                    size="small"
-                    style={{ display: 'inline-block' }}
-                    userInitials={userInitials}
-                    userInitialsStyle={{
-                        textTransform: 'uppercase',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        margin: '0px'
-                    }}
-                  />
+                  <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}`}>
+                    <Avatar
+                      image={avatar}
+                      size="small"
+                      style={{ display: 'inline-block' }}
+                      userInitials={userInitials}
+                      userInitialsStyle={{
+                          textTransform: 'uppercase',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          margin: '0px'
+                      }}
+                    />
+                  </Link>
                 </button>
               }
               textStyle={{ paddingRight: '0px' }}

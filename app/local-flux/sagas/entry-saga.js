@@ -1,14 +1,16 @@
 import { all, apply, call, fork, put, select, take, takeEvery,
     takeLatest } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
+import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectColumnLastEntry, selectColumnLastBlock, selectIsFollower, selectListNextEntries,
-    selectLoggedAkashaId, selectToken } from '../selectors';
-import actionTypes from '../../constants/action-types';
+import { selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
+    selectIsFollower, selectListNextEntries, selectLoggedAkashaId, selectToken } from '../selectors';
+import * as actionStatus from '../../constants/action-status';
+import * as actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const ALL_STREAM_LIMIT = 11;
@@ -32,28 +34,32 @@ function* entryCanClaim ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId: [entryId] }]);
 }
 
-function* entryClaim ({ entryId, entryTitle, gas }) {
+function* entryClaim ({ actionId, entryId, entryTitle }) {
     const channel = Channel.server.entry.claim;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, entryId, entryTitle, gas }]);
+    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle }]);
 }
 
 function* entryClaimSuccess ({ data }) {
+    const { entryId } = data;
+    yield put(actions.entryCanClaim(entryId));
+    yield put(actions.entryGetBalance(entryId));
     yield put(appActions.showNotification({
         id: 'claimSuccess',
         values: { entryTitle: data.entryTitle }
     }));
 }
 
-function* entryDownvote ({ entryId, entryTitle, weight, value, gas }) {
+function* entryDownvote ({ actionId, entryId, entryTitle, weight, value }) {
     const channel = Channel.server.entry.downvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, entryId, entryTitle, weight, value, gas }]);
+    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
 }
 
 function* entryDownvoteSuccess ({ data }) {
+    yield call(entryVoteSuccess, data.entryId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({
         id: 'downvoteEntrySuccess',
         values: { entryTitle: data.entryTitle }
@@ -86,7 +92,7 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     }
 }
 
-function* entryGetExtraOfList (collection, limit, columnId) {
+export function* entryGetExtraOfList (collection, limit, columnId) {
     // requests are made for n+1 entries, but the last one
     // should be ignored if the limit is fulfilled
     const entries = collection.length === limit ?
@@ -217,14 +223,32 @@ function* entryTagIterator ({ columnId, tagName }) {
     yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName }]);
 }
 
-function* entryUpvote ({ entryId, entryTitle, weight, value, gas }) {
+function* entryVoteSuccess (entryId) {
+    const loggedAkashaId = yield select(selectLoggedAkashaId);
+    let entry = yield select(state => selectEntry(state, entryId));
+    const fullEntry = yield select(selectFullEntry);
+    if (!entry && fullEntry && fullEntry.get('entryId') === entryId) {
+        entry = fullEntry;
+    }
+    const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
+    if (publisher && publisher === loggedAkashaId) {
+        console.log('is own entry');
+        yield put(actions.entryCanClaim(entryId));
+        yield put(actions.entryGetBalance(entryId));
+    }
+    yield put(actions.entryGetScore(entryId));
+    yield put(actions.entryGetVoteOf(entryId));
+}
+
+function* entryUpvote ({ actionId, entryId, entryTitle, weight, value }) {
     const channel = Channel.server.entry.upvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, entryId, entryTitle, weight, value, gas }]);
+    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
 }
 
 function* entryUpvoteSuccess ({ data }) {
+    yield call(entryVoteSuccess, data.entryId);
     yield put(appActions.showNotification({
         id: 'upvoteEntrySuccess',
         values: { entryTitle: data.entryTitle }
@@ -254,25 +278,12 @@ function* watchEntryCanClaimChannel () {
 function* watchEntryClaimChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.claim);
-        const { entryId, entryTitle, gas } = resp.request;
+        const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
         } else {
-            const payload = [{
-                extra: {
-                    entryId,
-                    entryTitle
-                },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.claim
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'claiming',
-                values: { entryTitle },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -280,26 +291,12 @@ function* watchEntryClaimChannel () {
 function* watchEntryDownvoteChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.downvote);
-        const { entryId, entryTitle, gas, weight } = resp.request;
+        const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
         } else {
-            const payload = [{
-                extra: {
-                    entryId,
-                    entryTitle,
-                    weight
-                },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.downvote,
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'downvotingEntry',
-                values: { entryTitle },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -478,26 +475,12 @@ function* watchEntryTagIteratorChannel () {
 function* watchEntryUpvoteChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.upvote);
-        const { entryId, entryTitle, gas, weight } = resp.request;
+        const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
         } else {
-            const payload = [{
-                extra: {
-                    entryId,
-                    entryTitle,
-                    weight
-                },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.upvote,
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'upvotingEntry',
-                values: { entryTitle },
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }

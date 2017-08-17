@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { IconButton, Paper, RaisedButton, SvgIcon } from 'material-ui';
+import * as actionTypes from '../../constants/action-types';
 import { profileMessages } from '../../locale-data/messages';
-import { profileAddFollowAction, profileAddTipAction,
-    profileAddUnfollowAction } from '../../local-flux/actions/profile-actions';
+import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectLoggedAkashaId } from '../../local-flux/selectors';
 import { Avatar, DataLoader } from '../';
 import { getInitials } from '../../utils/dataModule';
@@ -33,32 +33,25 @@ class ProfileHoverCard extends Component {
     };
 
     onTip = () => {
-        const { profile } = this.props;
-        ReactTooltip.hide();
-        this.props.profileAddTipAction({
+        const { loggedAkashaId, profile } = this.props;
+        this.props.actionAdd(loggedAkashaId, actionTypes.sendTip, {
             akashaId: profile.akashaId,
             firstName: profile.firstName,
             lastName: profile.lastName,
-            profile: profile.profile
+            receiver: profile.profile,
         });
     };
 
     onFollow = () => {
-        const { profile } = this.props;
-        const payload = {
-            akashaId: profile.akashaId,
-            profile: profile.profile
-        };
-        this.props.profileAddFollowAction(payload);
+        const { loggedAkashaId, profile } = this.props;
+        const payload = { akashaId: profile.akashaId };
+        this.props.actionAdd(loggedAkashaId, actionTypes.follow, payload);
     };
 
     onUnfollow = () => {
-        const { profile } = this.props;
-        const payload = {
-            akashaId: profile.akashaId,
-            profile: profile.profile
-        };
-        this.props.profileAddUnfollowAction(payload);
+        const { loggedAkashaId, profile } = this.props;
+        const payload = { akashaId: profile.akashaId };
+        this.props.actionAdd(loggedAkashaId, actionTypes.unfollow, payload);
     };
 
     getPosition = () => {
@@ -111,7 +104,6 @@ class ProfileHoverCard extends Component {
                         <Avatar
                           userInitials={profileInitials}
                           image={profile.avatar}
-                          size={60}
                           style={{ cursor: 'pointer' }}
                         />
                       </Link>
@@ -173,6 +165,7 @@ ProfileHoverCard.defaultProps = {
 };
 
 ProfileHoverCard.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
     anchorHovered: PropTypes.bool,
     anchorNode: PropTypes.shape(),
     containerNode: PropTypes.shape(),
@@ -182,9 +175,6 @@ ProfileHoverCard.propTypes = {
     loading: PropTypes.bool,
     loggedAkashaId: PropTypes.string,
     profile: PropTypes.shape(),
-    profileAddFollowAction: PropTypes.func.isRequired,
-    profileAddTipAction: PropTypes.func,
-    profileAddUnfollowAction: PropTypes.func.isRequired,
     sendingTip: PropTypes.bool,
 };
 
@@ -202,8 +192,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        profileAddFollowAction,
-        profileAddTipAction,
-        profileAddUnfollowAction,
+        actionAdd,
     }
 )(injectIntl(ProfileHoverCard));
