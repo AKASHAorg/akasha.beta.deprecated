@@ -5,9 +5,10 @@ import Link from 'megadraft/lib/components/Link';
 import { RaisedButton } from 'material-ui';
 import { MentionDecorators, MentionSuggestions } from 'shared-components';
 import { Avatar } from '../';
+import * as actionTypes from '../../constants/action-types';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getInitials } from '../../utils/dataModule';
 import { getMentionsFromEditorState } from '../../utils/editorUtils';
-import { entryMessages, generalMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -53,7 +54,7 @@ class CommentEditor extends Component {
     };
 
     handleCommentCreate = () => {
-        const { commentsAddPublishAction, entryId, parent = '0' } = this.props;
+        const { actionAdd, entryId, loggedProfileData, parent = '0' } = this.props;
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const payload = {
@@ -61,9 +62,10 @@ class CommentEditor extends Component {
             date: new Date().toISOString(),
             entryId,
             mentions,
-            parent
+            parent,
+            nonPersistentFields: ['content', 'mentions']
         };
-        commentsAddPublishAction(payload);
+        actionAdd(loggedProfileData.get('akashaId'), actionTypes.comment, payload);
     };
 
     handleCommentCancel = () => {
@@ -142,7 +144,7 @@ class CommentEditor extends Component {
 }
 
 CommentEditor.propTypes = {
-    commentsAddPublishAction: PropTypes.func.isRequired,
+    actionAdd: PropTypes.func.isRequired,
     entryId: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

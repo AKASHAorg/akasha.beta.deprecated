@@ -1,7 +1,9 @@
+import { List } from 'immutable';
 import { ProfileRecord } from '../reducers/records';
-import actionTypes from '../../constants/action-types';
 
 /* eslint-disable no-use-before-define */
+
+export const selectAction = (state, id) => state.actionState.getIn(['byId', id]);
 
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
@@ -141,20 +143,28 @@ export const selectLoggedProfile = state => state.profileState.get('loggedProfil
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
 
+export const selectNeedAuthAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
+
+export const selectNeedTransferAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needTransferConfirm')]);
+
+export const selectNeedWeightAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needWeightConfirm')]);
+
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
 export const selectPendingComments = (state, entryId) => {
-    const pendingComments = state.appState
-        .get('pendingActions')
-        .filter(act =>
-            act.get('type') === actionTypes.comment &&
-            act.get('status') === 'publishing' &&
-            act.getIn(['payload', 'entryId']) === entryId);
-    return pendingComments;
+    // const pendingComments = state.appState
+    //     .get('pendingActions')
+    //     .filter(act =>
+    //         act.get('type') === actionTypes.comment &&
+    //         act.get('status') === 'publishing' &&
+    //         act.getIn(['payload', 'entryId']) === entryId);
+    // return pendingComments;
+    return new List();
 };
-
-export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pending', tx]);
 
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
@@ -164,10 +174,25 @@ export const selectProfileByAccount = (state, account) => {
     return state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 };
 
+export const selectProfileEntries = (state, akashaId) =>
+    state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
+        .toList();
+
+
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectSearchEntries = state =>
+    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+
+export const selectSearchQuery = state => state.searchState.get('query');
 
 export const selectTagMargins = state => state.tagState.get('margins');
 
+export const selectTagGetEntriesCount = state =>
+    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
+
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
+
+export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
 
 /* eslint-enable no-use-before-define */

@@ -6,22 +6,19 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { notification } from 'antd';
-import { PublishConfirmDialog, TransferConfirmDialog,
-    WeightConfirmDialog } from '../shared-components';
-import { hideNotification, hideTerms, hideReportModal, bootstrapHome,
-    showLoginDialog } from '../local-flux/actions/app-actions';
+import { TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
+import { hideNotification, hideTerms, hideReportModal,
+    bootstrapHome } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { notificationMessages } from '../locale-data/messages';
-import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
-import { AuthDialog, LoginDialog } from '../components/dialogs';
+import { DashboardPage, EntryPageContainer, EntrySearchPage,
+     TagSearchPage, SidebarContainer, ProfileContainer } from './';
+import { AuthDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
-    SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
-import { Runners } from '../components/runners';
+    SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -64,6 +61,7 @@ class AppContainer extends Component {
 
         // check if wee need to bootstrap home
         if (shouldBootstrapHome && !this.bootstrappingHome && !appState.get('homeReady')) {
+            console.log('should bootstrap home');
             this.props.bootstrapHome();
             this.props.entryVoteCost();
             this.props.licenseGetAll();
@@ -100,13 +98,9 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
-            hideTerms, hideReportModal, intl, location, theme } = this.props;
+            hideTerms, hideReportModal, hideNotification,intl, location, needAuth, needTransferConfirm,
+            needWeightConfirm, theme } = this.props;
         /* eslint-enable no-shadow */
-        const isAuthDialogVisible = !!appState.get('showAuthDialog');
-        const weightConfirmDialog = appState.get('weightConfirmDialog');
-        const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
-        const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
-        const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
@@ -122,6 +116,7 @@ class AppContainer extends Component {
                 }}
               >
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
+                {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
                     <div>
@@ -130,8 +125,12 @@ class AppContainer extends Component {
                       }
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent>
+                        <Route path="/search/entries/:query?" component={EntrySearchPage} />
+                        <Route path="/search/tags/:query?" component={TagSearchPage} />
+                        <Route exact path="/@:akashaId" component={ProfileContainer} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
@@ -141,13 +140,18 @@ class AppContainer extends Component {
                         }
                       </PageContent>
                       <TopBar />
-                      <Runners />
                     </div>
                   </DataLoader>
                 }
                 <SidebarContainer {...this.props} />
                 <Route path="/setup" component={SetupPages} />
-                {this.renderNotifications()}
+                {appState.get('notifications').size &&
+                  <NotificationBar
+                    hideNotification={hideNotification}
+                    intl={intl}
+                    notification={appState.get('notifications').first()}
+                  />
+                }
                 {!!errorState.get('nonFatalErrors').size &&
                   <ErrorBar
                     deleteError={errorDeleteNonFatal}
@@ -168,13 +172,11 @@ class AppContainer extends Component {
                   intl={intl}
                   onClose={hideReportModal}
                 />
-                {appState.get('showLoginDialog') && <LoginDialog />}
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
-                {isAuthDialogVisible && <AuthDialog intl={intl} />}
-                {isWeightConfirmationDialogVisible && <WeightConfirmDialog intl={intl} />}
-                {isPublishConfirmationDialogVisible && <PublishConfirmDialog intl={intl} />}
-                {isTransferConfirmationDialogVisible && <TransferConfirmDialog intl={intl} />}
+                {needAuth && appState.get('showAuthDialog') && <AuthDialog intl={intl} />}
+                {needWeightConfirm && <WeightConfirmDialog intl={intl} />}
+                {needTransferConfirm && <TransferConfirmDialog intl={intl} />}
                 {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
                 <ReactTooltip delayShow={300} class="generic-tooltip" place="bottom" effect="solid" />
               </div>
@@ -200,6 +202,9 @@ AppContainer.propTypes = {
     intl: PropTypes.shape(),
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
+    needAuth: PropTypes.string,
+    needTransferConfirm: PropTypes.string,
+    needWeightConfirm: PropTypes.string,
     theme: PropTypes.string,
 };
 
@@ -208,6 +213,9 @@ function mapStateToProps (state) {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         appState: state.appState,
         errorState: state.errorState,
+        needAuth: state.actionState.get('needAuth'),
+        needTransferConfirm: state.actionState.get('needTransferConfirm'),
+        needWeightConfirm: state.actionState.get('needWeightConfirm'),
         theme: state.settingsState.getIn(['general', 'theme']),
     };
 }
@@ -225,6 +233,5 @@ export default connect(
         hideTerms,
         hideReportModal,
         licenseGetAll,
-        showLoginDialog,
     }
 )(injectIntl(AppContainer));

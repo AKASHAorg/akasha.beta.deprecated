@@ -1,20 +1,14 @@
-import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { searchLimit } from '../../constants/iterator-limits';
+import { SearchRecord } from './records/search-record';
 
 
-const initialState = fromJS({
-    consecutiveQueryErrors: 0,
-    currentPage: null,
-    errors: new List(),
-    flags: new Map(),
-    query: '',
-    resultsCount: null,
-    searchService: null,
-    showResults: false,
-    totalPages: null,
-});
+const initialState = new SearchRecord();
+
+function getEntryIds (entries) {
+    return entries.map(entry => entry.entryId);
+}
 
 
 const searchState = createReducer(initialState, {
@@ -34,10 +28,9 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').set('handshakePending', false)
         }),
 
-    [types.SEARCH_MORE_QUERY]: (state, { query }) =>
+    [types.SEARCH_MORE_QUERY]: (state, { text }) =>
         state.merge({
-            query,
-            errors: new List(),
+            query: text,
             flags: state.get('flags').merge({ moreQueryPending: true })
         }),
 
@@ -47,16 +40,20 @@ const searchState = createReducer(initialState, {
             currentPage: state.get('currentPage') + 1,
             totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
-            flags: state.get('flags').merge({ moreQueryMorePending: false })
+            flags: state.get('flags').merge({ moreQueryPending: false }),
+            entryIds: state.get('entryIds').concat(getEntryIds(data.collection))
         }),
 
     [types.SEARCH_MORE_QUERY_ERROR]: state =>
-        state.setIn(['flags', 'moreQueryPending'], false),
-
-
-    [types.SEARCH_QUERY]: (state, { query }) =>
         state.merge({
-            query,
+            consecutiveQueryErrors: state.get('consecutiveQueryErrors') + 1,
+            flags: state.get('flags').merge({ moreQueryPending: false })
+        }),
+
+
+    [types.SEARCH_QUERY]: (state, { text }) =>
+        state.merge({
+            query: text,
             flags: state.get('flags').merge({ queryPending: true })
         }),
 
@@ -66,8 +63,8 @@ const searchState = createReducer(initialState, {
             currentPage: 1,
             totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
-            showResults: true,
-            flags: state.get('flags').merge({ queryPending: false })
+            flags: state.get('flags').merge({ queryPending: false }),
+            entryIds: getEntryIds(data.collection)
         }),
 
     [types.SEARCH_QUERY_ERROR]: state =>
@@ -77,12 +74,52 @@ const searchState = createReducer(initialState, {
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: null,
-            errors: new List(),
             query: '',
+            entryIds: [],
             totalPages: null,
             resultsCount: null,
-            showResults: false
+            tags: []
         }),
+
+    [types.TAG_SEARCH]: (state, { tag }) =>
+        state.merge({
+            query: tag,
+            flags: state.get('flags').merge({ queryPending: true })
+        }),
+
+    [types.TAG_SEARCH_SUCCESS]: (state, { tags, tagCount }) =>
+        state.merge({
+            consecutiveQueryErrors: 0,
+            currentPage: null,
+            totalPages: null,
+            resultsCount: tagCount,
+            flags: state.get('flags').merge({ queryPending: false }),
+            entryIds: [],
+            tags
+        }),
+
+    [types.TAG_SEARCH_ERROR]: state =>
+        state.setIn(['flags', 'queryPending'], false),
+
+    [types.TAG_SEARCH_MORE]: (state, { tag }) =>
+        state.merge({
+            query: tag,
+            flags: state.get('flags').merge({ moreQueryPending: true })
+        }),
+
+    [types.TAG_SEARCH_MORE_SUCCESS]: (state, { tags, tagCount }) =>
+        state.merge({
+            consecutiveQueryErrors: 0,
+            currentPage: null,
+            totalPages: null,
+            resultsCount: tagCount,
+            flags: state.get('flags').merge({ moreQueryPending: false }),
+            entryIds: [],
+            tags: state.get('tags').concat(tags)
+        }),
+
+    [types.TAG_SEARCH_MORE_ERROR]: state =>
+        state.setIn(['flags', 'moreQueryPending'], false),
 });
 
 export default searchState;

@@ -14,6 +14,7 @@ export ProfileCard from './ProfileCard/profile-card';
 export SendTipForm from './Forms/send-tip-form';
 export SyncProgressLoader from './Loaders/sync-progress';
 export TagChip from './TagChip/tag-chip';
+export TagList from './TagList/tag-list';
 export TransferConfirmDialog from './Dialogs/transfer-confirm-dialog';
 export Tutorials from './Tutorials/tutorials';
 export WeightConfirmDialog from './Dialogs/weight-confirm-dialog';

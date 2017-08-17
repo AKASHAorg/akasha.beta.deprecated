@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
 import { EntryPage } from '../components';
-import { commentsAddPublishAction, commentsCheckNew, commentsClean, commentsIterator,
-    commentsLoadNew, commentsMoreIterator } from '../local-flux/actions/comments-actions';
+import { actionAdd } from '../local-flux/actions/action-actions';
+import { commentsCheckNew, commentsClean, commentsIterator, commentsLoadNew,
+    commentsMoreIterator } from '../local-flux/actions/comments-actions';
 import { entryCleanFull, entryGetFull,
     entryGetLatestVersion } from '../local-flux/actions/entry-actions';
 import { selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
@@ -21,7 +22,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        commentsAddPublishAction,
+        actionAdd,
         commentsCheckNew,
         commentsClean,
         commentsIterator,
