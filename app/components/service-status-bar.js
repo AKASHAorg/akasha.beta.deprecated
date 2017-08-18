@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Tooltip } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import { StatusBarEthereum, StatusBarIpfs } from './svg';
 import serviceState from '../constants/serviceState';
-import { generalMessages } from '../locale-data/messages';
-import { toggleGethDetailsModal,
+import { generalMessages, settingsMessages } from '../locale-data/messages';
+import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 
 class ServiceStatusBar extends Component {
@@ -77,7 +77,7 @@ class ServiceStatusBar extends Component {
     }
 
     render () {
-        const { toggleGethDetails, toggleIpfsDetails } = this.props;
+        const { intl, toggleGethDetails, toggleIpfsDetails } = this.props;
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
 
@@ -93,12 +93,21 @@ class ServiceStatusBar extends Component {
               </Tooltip>
             </div>
             <div className={`service-status-bar__container ${this.getContainerClass(ipfsState)}`}>
-              <Tooltip title={this.getTooltip(gethState)}>
+              <Tooltip title={this.getTooltip(ipfsState)}>
                 <div className="service-status-bar__button" onClick={toggleIpfsDetails}>
                   <svg className="service-status-bar__icon" viewBox="0 0 16 16">
                     <StatusBarIpfs />
                   </svg>
                 </div>
+              </Tooltip>
+            </div>
+            <div className="service-status-bar__button">
+              <Tooltip title={intl.formatMessage(settingsMessages.title)}>
+                <Icon
+                  type="setting"
+                  style={{ fontSize: 28 }}
+                  onClick={this.props.appSettingsToggle}
+                />
               </Tooltip>
             </div>
           </div>
@@ -107,6 +116,7 @@ class ServiceStatusBar extends Component {
 }
 
 ServiceStatusBar.propTypes = {
+    appSettingsToggle: PropTypes.func,
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
@@ -129,6 +139,7 @@ export { ServiceStatusBar };
 export default connect(
     mapStateToProps,
     {
+        appSettingsToggle,
         toggleGethDetails: toggleGethDetailsModal,
         toggleIpfsDetails: toggleIpfsDetailsModal
     },

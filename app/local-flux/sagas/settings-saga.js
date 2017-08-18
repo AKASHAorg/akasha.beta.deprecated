@@ -9,6 +9,7 @@ export function* generalSettingsRequest () {
     yield put(actions.generalSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.generalSettingsRequest);
+        localStorage.setItem('theme', resp.darkTheme ? '1' : '0');
         yield put(actions.generalSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.generalSettingsError({ message: error.toString() }));
@@ -41,10 +42,11 @@ export function* getSettings () {
     yield fork(ipfsSettingsRequest);
 }
 
-export function* saveGeneralSettings (payload) {
+export function* saveGeneralSettings ({ type, ...payload }) {
     try {
         const resp = yield apply(settingsService, settingsService.generalSettingsSave, [payload]);
         yield put(actions.saveGeneralSettingsSuccess(resp));
+        localStorage.setItem('theme', payload.darkTheme ? '1' : '0');
     } catch (error) {
         yield put(actions.saveGeneralSettingsError({ message: error.toString() }));
     }

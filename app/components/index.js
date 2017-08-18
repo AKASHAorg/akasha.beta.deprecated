@@ -1,4 +1,5 @@
 /* eslint-disable import/no-named-as-default */
+export AppSettings from './app-settings';
 export Auth from './setup/auth';
 export Avatar from './avatar/avatar';
 export AvatarEditor from './avatar/avatar-editor';
