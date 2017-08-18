@@ -10,6 +10,7 @@ import * as commentsSaga from './comments-saga';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
+import * as highlightSaga from './highlight-saga';
 import * as licenseSaga from './license-saga';
 import * as listSaga from './list-saga';
 import * as profileSaga from './profile-saga';
@@ -86,6 +87,7 @@ export default function* rootSaga () {
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);
+    yield fork(highlightSaga.watchHighlightActions);
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(listSaga.watchListActions);
     yield fork(profileSaga.watchProfileActions);

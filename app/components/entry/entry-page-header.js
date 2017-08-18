@@ -298,7 +298,6 @@ function mapStateToProps (state) {
     return {
         entry,
         existingDraft,
-        latestVersion: state.entryState.get('fullEntryLatestVersion'),
         loggedAkashaId: selectLoggedAkashaId(state),
         publisher: state.profileState.getIn(['byId', akashaId]),
     };

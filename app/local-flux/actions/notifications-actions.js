@@ -13,7 +13,7 @@ class NotificationsActions {
         this.emitEvent = false;
         this.currentProfile = null;
         this.notificationsService = new NotificationsService();
-        this.profileActions = new ProfileActions(dispatch);
+        // this.profileActions = new ProfileActions(dispatch);
         this.settingsActions = new SettingsActions(dispatch);
         notificationsInstance = this;
     }

@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import { MegadraftEditor, editorStateFromRaw, DraftJS, createTypeStrategy } from 'megadraft';
+import { editorStateFromRaw, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { IconButton, SvgIcon } from 'material-ui';
 import { MentionDecorators, TagChip } from '../../shared-components';
-import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from '../svg';
+import { SelectableEditor } from '../';
 import styles from './entry-page-content.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -33,6 +33,17 @@ class EntryPageContent extends Component {
     navigateToTag = (ev, tagName) => {
         const { history } = this.props;
         history.push(`/tag/${tagName}`);
+    };
+
+    highlightSave = (text) => {
+        const { entry, highlightSave, latestVersion } = this.props;
+        highlightSave({
+            content: text,
+            entryId: entry.get('entryId'),
+            entryTitle: entry.getIn(['content', 'title']),
+            entryVersion: latestVersion,
+            publisher: entry.getIn(['entryEth', 'publisher'])
+        });
     };
 
     renderLicenseIcons = () => {
@@ -85,8 +96,6 @@ class EntryPageContent extends Component {
 
     render () {
         const { entry, licenses } = this.props;
-        const newEditorState = editorStateFromRaw(entry.getIn(['content', 'draft']));
-        const editorState = EditorState.push(this.editorState, newEditorState.getCurrentContent());
         const license = licenses.get(entry.content.licence.id);
         const licenseLabel = license.parent ?
             licenses.get(license.parent).label :
@@ -98,11 +107,9 @@ class EntryPageContent extends Component {
                 {entry.getIn(['content', 'title'])}
               </h1>
               <div className={styles.entry_content}>
-                <MegadraftEditor
-                  readOnly
-                  editorState={editorState}
-                  onChange={() => {}}
-                  plugins={[readOnlyImagePlugin]}
+                <SelectableEditor
+                  draft={entry.getIn(['content', 'draft'])}
+                  highlightSave={this.highlightSave}
                 />
               </div>
             </div>
@@ -133,7 +140,9 @@ class EntryPageContent extends Component {
 
 EntryPageContent.propTypes = {
     entry: PropTypes.shape(),
+    highlightSave: PropTypes.func.isRequired,
     history: PropTypes.shape(),
+    latestVersion: PropTypes.number,
     licenses: PropTypes.shape()
 };
 
