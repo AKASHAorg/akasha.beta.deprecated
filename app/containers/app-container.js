@@ -16,7 +16,7 @@ import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/err
 import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog } from '../components/dialogs';
-import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
+import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -172,6 +172,9 @@ class AppContainer extends Component {
                   intl={intl}
                   onClose={hideReportModal}
                 />
+                {appState.get('showAppSettings') &&
+                  <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
+                }
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && appState.get('showAuthDialog') && <AuthDialog intl={intl} />}
