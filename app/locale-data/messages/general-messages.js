@@ -32,51 +32,6 @@ const generalMessages = defineMessages({
         description: 'AKASHA',
         defaultMessage: 'AKASHA'
     },
-    appSettingsChinese: {
-        id: 'app.general.appSettingsChinese',
-        description: 'app language',
-        defaultMessage: 'Chinese'
-    },
-    appSettingsDarkTheme: {
-        id: 'app.general.appSettingsDarkTheme',
-        description: 'theme switch',
-        defaultMessage: 'Dark Theme'
-    },
-    appSettingsDescription: {
-        id: 'app.general.appSettingsDescription',
-        description: 'Description for app settings',
-        defaultMessage: 'Customize your app preferences'
-    },
-    appSettingsEnglish: {
-        id: 'app.general.appSettingsEnglish',
-        description: 'app language',
-        defaultMessage: 'English'
-    },
-    appSettingsRussian: {
-        id: 'app.general.appSettingsRussian',
-        description: 'app language',
-        defaultMessage: 'Russian'
-    },
-    appSettingsSelectLanguage: {
-        id: 'app.general.appSettingsSelectLanguage',
-        description: 'title for language selector',
-        defaultMessage: 'Select Language'
-    },
-    appSettingsTheme: {
-        id: 'app.general.appSettingsTheme',
-        description: 'theme switch title',
-        defaultMessage: 'Theme'
-    },
-    appSettingsTitle: {
-        id: 'app.general.appSettingsTitle',
-        description: 'Title for app settings',
-        defaultMessage: 'App Settings'
-    },
-    appSettingsUpdate: {
-        id: 'app.general.appSettingsUpdate',
-        description: 'description for update buton',
-        defaultMessage: 'update settings'
-    },
     back: {
         id: 'app.general.back',
         description: 'navigate back',

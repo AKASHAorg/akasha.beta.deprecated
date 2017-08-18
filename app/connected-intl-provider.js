@@ -37,8 +37,9 @@ ConnectedIntlProvider.propTypes = {
 
 
 function mapStateToProps (state) {
-    const locale = state.settingsState.getIn(['general', 'locale']);
-    return { locale, messages: localeMessages[locale] };
+    return {
+        locale: state.settingsState.getIn(['general', 'locale'])
+    };
 }
 
 export default connect(mapStateToProps)(ConnectedIntlProvider);

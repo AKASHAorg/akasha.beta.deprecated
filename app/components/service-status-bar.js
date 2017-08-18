@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Icon, Tooltip } from 'antd';
 import { StatusBarEthereum, StatusBarIpfs } from './svg';
 import serviceState from '../constants/serviceState';
-import { generalMessages } from '../locale-data/messages';
+import { generalMessages, settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 
@@ -102,7 +102,7 @@ class ServiceStatusBar extends Component {
               </Tooltip>
             </div>
             <div className="service-status-bar__button">
-              <Tooltip title={intl.formatMessage(generalMessages.appSettingsTitle)}>
+              <Tooltip title={intl.formatMessage(settingsMessages.title)}>
                 <Icon
                   type="setting"
                   style={{ fontSize: 28 }}
