@@ -5,6 +5,7 @@ import { commentsCheckNew, commentsClean, commentsIterator, commentsLoadNew,
     commentsMoreIterator } from '../local-flux/actions/comments-actions';
 import { entryCleanFull, entryGetFull,
     entryGetLatestVersion } from '../local-flux/actions/entry-actions';
+import { highlightSave } from '../local-flux/actions/highlight-actions';
 import { selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
@@ -12,6 +13,7 @@ function mapStateToProps (state) {
     return {
         entry,
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
+        latestVersion: state.entryState.get('fullEntryLatestVersion'),
         licenses: state.licenseState.get('byId'),
         loggedProfileData: selectLoggedProfileData(state),
         newComments: state.commentsState.get('newComments'),
@@ -30,6 +32,7 @@ export default connect(
         commentsMoreIterator,
         entryCleanFull,
         entryGetFull,
-        entryGetLatestVersion
+        entryGetLatestVersion,
+        highlightSave
     }
 )(EntryPage);

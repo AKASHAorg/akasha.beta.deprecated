@@ -7,6 +7,7 @@ import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
 import { GethRecord, GethStatus, GethSyncStatus } from './geth-record';
+export { HighlightRecord, HighlightState } from './highlight-record';
 import { IpfsRecord, IpfsStatus } from './ipfs-record';
 import { LicenseRecord, LicenseState } from './license-record';
 import { ListRecord, ListState } from './list-record';

@@ -139,8 +139,8 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, intl, licenses, loggedProfileData,
-            newComments } = this.props;
+        const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
+            licenses, loggedProfileData, newComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, showInHeader } = this.state;
         const buttonClassName = showInHeader ? styles.button_fixed : styles.button_absolute;
@@ -149,8 +149,18 @@ class EntryPage extends Component {
             null :
             (<div className={styles.entry_page_inner}>
               <div id="content-section" className={styles.content_section}>
-                <EntryPageHeader publisherTitleShadow={publisherTitleShadow} />
-                {entry.content && <EntryPageContent entry={entry} licenses={licenses} />}
+                <EntryPageHeader
+                  latestVersion={latestVersion}
+                  publisherTitleShadow={publisherTitleShadow}
+                />
+                {entry.content &&
+                  <EntryPageContent
+                    entry={entry}
+                    highlightSave={highlightSave}
+                    latestVersion={latestVersion}
+                    licenses={licenses}
+                  />
+                }
                 {!entry.content &&
                   <div className={styles.unresolved_entry} style={{ color: palette.disabledColor }}>
                     {intl.formatMessage(entryMessages.unresolvedEntry)}
@@ -229,8 +239,10 @@ EntryPage.propTypes = {
     entryGetFull: PropTypes.func.isRequired,
     entryGetLatestVersion: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
+    highlightSave: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
+    latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
