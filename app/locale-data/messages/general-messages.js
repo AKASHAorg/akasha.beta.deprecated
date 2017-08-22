@@ -205,6 +205,11 @@ const generalMessages = defineMessages({
         description: 'placeholder for empty error list',
         defaultMessage: 'No errors'
     },
+    notes: {
+        id: 'app.general.notes',
+        description: 'notes',
+        defaultMessage: 'Notes'
+    },
     ok: {
         id: 'app.general.ok',
         description: 'Ok',

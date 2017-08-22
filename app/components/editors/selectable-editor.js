@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { createTypeStrategy, DraftJS, editorStateFromRaw, editorStateToJSON,
-    MegadraftEditor } from 'megadraft';
+import { injectIntl } from 'react-intl';
+import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { Popover } from 'antd';
+import { entryMessages } from '../../locale-data/messages';
 import { MentionDecorators } from '../../shared-components';
 import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import { getContentStateFragment } from '../../utils/editorUtils';
@@ -130,11 +131,11 @@ class SelectableEditor extends Component {
             range: null,
             showPopover: false
         });
-        console.log('text', text);
         highlightSave(text);
     };
 
     renderPopover = () => {
+        const { intl } = this.props;
         if (!this.editorWrapper) {
             return null;
         }
@@ -146,7 +147,7 @@ class SelectableEditor extends Component {
               className="content-link"
               onClick={this.saveHighlight}
             >
-              Save highlight
+              {intl.formatMessage(entryMessages.saveHighlight)}
             </div>
           </div>
         );
@@ -194,6 +195,7 @@ class SelectableEditor extends Component {
 SelectableEditor.propTypes = {
     draft: PropTypes.shape().isRequired,
     highlightSave: PropTypes.func.isRequired,
+    intl: PropTypes.shape()
 };
 
-export default SelectableEditor;
+export default injectIntl(SelectableEditor);

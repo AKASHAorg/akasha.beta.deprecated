@@ -54,6 +54,7 @@ function* launchHomeActions () {
     yield fork(dashboardSaga.dashboardGetActive);
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(dashboardSaga.dashboardGetColumns);
+    yield fork(highlightSaga.highlightGetAll);
     yield fork(listSaga.listGetAll);
     yield fork(settingsSaga.userSettingsRequest);
     yield fork(tagSaga.tagGetMargins);

@@ -6,6 +6,7 @@ export { entryMessages } from './entry-messages';
 export { errorMessages } from './error-messages';
 export { formMessages } from './form-items-messages';
 export { generalMessages } from './general-messages';
+export { highlightMessages } from './highlight-messages';
 export { notificationMessages } from './notification-messages';
 export { profileMessages } from './profile-messages';
 export { searchMessages } from './search-messages';

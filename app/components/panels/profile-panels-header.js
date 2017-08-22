@@ -1,13 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Route } from 'react-router-dom';
+import { injectIntl } from 'react-intl';
 import { Row, Col } from 'antd';
+import { profileLogout } from '../../local-flux/actions/profile-actions';
+import { selectLoggedProfile } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { Breadcrumbs, PanelLink } from '../';
 
 const ProfilePanelsHeader = (props) => {
-    const { canEditProfile, location, loginName, match, onLogout, intl } = props;
+    const { location, loggedProfile, match, intl } = props;
+    const loggedAkashaId = loggedProfile.get('akashaId');
+    const loggedAccount = loggedProfile.get('account');
 
     if (!location.pathname.includes('/panel')) {
         return null;
@@ -18,9 +23,9 @@ const ProfilePanelsHeader = (props) => {
         <Row type="flex" align="middle" justify="center">
           <Col span={16}>
             <div style={{ lineHeight: '48px' }}>
-              {!canEditProfile && match.params.panelName === 'editprofile' ?
+              {!loggedAkashaId && match.params.panelName === 'editprofile' ?
                 <span>
-                  {loginName} &gt;
+                  {loggedAkashaId || loggedAccount} &gt;
                     <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b>
                 </span> :
                 <Breadcrumbs panel />
@@ -38,7 +43,7 @@ const ProfilePanelsHeader = (props) => {
                   {intl.formatMessage(generalMessages.settings)}
                 </PanelLink>
               </Col>
-              {canEditProfile &&
+              {!!loggedAkashaId &&
                 <Col
                   span={8}
                   className="link-button"
@@ -53,7 +58,7 @@ const ProfilePanelsHeader = (props) => {
                 span={8}
                 className="link-button"
                 style={{ textAlign: 'center' }}
-                onClick={onLogout}
+                onClick={props.profileLogout}
               >
                 {intl.formatMessage(generalMessages.logout)}
               </Col>
@@ -65,12 +70,24 @@ const ProfilePanelsHeader = (props) => {
 };
 
 ProfilePanelsHeader.propTypes = {
-    canEditProfile: PropTypes.bool,
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
-    loginName: PropTypes.string,
+    loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
-    onLogout: PropTypes.func,
+    profileLogout: PropTypes.func.isRequired,
 };
 
-export default withRouter(ProfilePanelsHeader);
+function mapStateToProps (state) {
+    return {
+        loggedProfile: selectLoggedProfile(state),
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        profileLogout
+    },
+    null,
+    { pure: false }
+)(withRouter(injectIntl(ProfilePanelsHeader)));

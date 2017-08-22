@@ -1,4 +1,4 @@
-import { Map, Record } from 'immutable';
+import { List, Map, Record } from 'immutable';
 
 export const HighlightRecord = Record({
     account: null,
@@ -13,5 +13,7 @@ export const HighlightRecord = Record({
 });
 
 export const HighlightState = Record({
-    byId: new Map()
+    byId: new Map(),
+    search: null,
+    searchResults: new List()
 });

@@ -90,6 +90,20 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectIsFollower = (state, akashaId) => state.profileState.getIn(['isFollower', akashaId]);
 
+export const selectHighlight = (state, id) => state.highlightState.getIn(['byId', id]);
+
+export const selectHighlights = (state) => {
+    const searchResults = state.highlightState.get('searchResults');
+    if (state.highlightState.get('search')) {
+        return searchResults.map(id => state.highlightState.getIn(['byId', id]));
+    }
+    return state.highlightState.get('byId').toList();
+};
+
+export const selectHighlightsCount = state => state.highlightState.get('byId').size;
+
+export const selectHighlightSearch = state => state.highlightState.get('search');
+
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
 export const selectLastFollower = (state, akashaId) =>
@@ -124,6 +138,8 @@ export const selectLists = (state) => {
     }
     return state.listState.get('byName').toList();
 };
+
+export const selectListsCount = state => state.listState.get('byName').size;
 
 export const selectListSearch = state => state.listState.get('search');
 

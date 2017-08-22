@@ -267,6 +267,11 @@ export const profileMessages = defineMessages({
         description: 'Label for all entries tab',
         defaultMessage: 'All entries'
     },
+    highlights: {
+        id: 'app.profile.highlights',
+        description: 'title for highlights card',
+        defaultMessage: 'Highlights'
+    },
     interestingPeople: {
         id: 'app.profile.interestingPeople',
         description: 'Label for interesting people tab',

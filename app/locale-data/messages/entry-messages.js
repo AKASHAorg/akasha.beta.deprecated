@@ -54,6 +54,11 @@ const entryMessages = defineMessages({
         description: 'published',
         defaultMessage: 'Published'
     },
+    saveHighlight: {
+        id: 'app.entry.saveHighlight',
+        description: 'save highlight button label',
+        defaultMessage: 'Save highlight'
+    },
     wordsCount: {
         id: 'app.entry.wordsCount',
         description: 'number of words in an entry',
