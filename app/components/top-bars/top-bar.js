@@ -74,19 +74,7 @@ class TopBar extends Component {
                   className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
                   style={{ paddingRight: 0 }}
                 >
-                  <ProfilePanelsHeader
-                    canEditProfile={!!loggedProfile.get('akashaId')}
-                    intl={intl}
-                    loginName={loginName}
-                    onLogout={this.props.profileLogout}
-                  />
-                  <PanelContainer
-                    maxWidth="100%"
-                    width="100%"
-                    style={{ height: 'calc(100% - 48px)', background: '#EBEBEB' }}
-                  >
-                    <Panels {...this.props} />
-                  </PanelContainer>
+                  <Panels />
                 </div>
               </div>
             </div>

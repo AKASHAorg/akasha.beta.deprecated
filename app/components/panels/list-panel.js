@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Masonry from 'react-masonry-component';
 import { Input } from 'antd';
-import { ListCard } from '../';
+import { ListCard, ProfilePanelsHeader } from '../';
 import { listDelete, listSearch } from '../../local-flux/actions/list-actions';
 import { selectLists, selectListSearch } from '../../local-flux/selectors';
 
@@ -23,25 +23,28 @@ class ListPanel extends Component {
         const { lists, search } = this.props;
 
         return (
-          <div style={{ padding: '0px 50px 20px' }}>
-            <div
-              className="flex-center-y"
-              style={{ justifyContent: 'flex-end', height: '50px', width: '100%' }}
-            >
-              <Search onChange={this.onSearchChange} style={{ width: '200px' }} value={search} />
+          <div className="panel">
+            <ProfilePanelsHeader />
+            <div className="panel__content" style={{ padding: '0px 50px 20px' }}>
+              <div
+                className="flex-center-y"
+                style={{ justifyContent: 'flex-end', height: '50px', width: '100%' }}
+              >
+                <Search onChange={this.onSearchChange} style={{ width: '200px' }} value={search} />
+              </div>
+              <Masonry
+                className="list-panel__masonry"
+                options={{ transitionDuration: 0 }}
+              >
+                {lists.map(list => (
+                  <ListCard
+                    deleteList={this.props.listDelete}
+                    key={list.get('id')}
+                    list={list}
+                  />
+                ))}
+              </Masonry>
             </div>
-            <Masonry
-              className="list-panel__masonry"
-              options={{ transitionDuration: 0 }}
-            >
-              {lists.map(list => (
-                <ListCard
-                  deleteList={this.props.listDelete}
-                  key={list.get('id')}
-                  list={list}
-                />
-              ))}
-            </Masonry>
           </div>
         );
     }

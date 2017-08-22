@@ -33,11 +33,7 @@ const ListCard = (props) => {
     );
 
     return (
-      <Card
-        className="list-card"
-        style={{ marginBottom: '20px', width: '340px' }}
-        title={title}
-      >
+      <Card className="list-card" title={title}>
         <div className="content-link">
           <PanelLink to={listUrl}>
             <div>

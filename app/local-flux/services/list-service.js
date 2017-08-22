@@ -94,7 +94,9 @@ export const searchList = ({ account, search }) =>
             .where('account')
             .equals(account)
             .filter((list) => {
-                const { name = '', description = '' } = list;
+                let { name = '', description = '' } = list;
+                name = name.toLowerCase();
+                description = description.toLowerCase();
                 return name.includes(search) || description.includes(search);
             })
             .toArray()

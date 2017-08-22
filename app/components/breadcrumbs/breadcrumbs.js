@@ -29,6 +29,8 @@ const Breadcrumbs = (props, { muiTheme }) => {
                 return 'Edit Profile';
             case 'lists':
                 return 'Lists';
+            case 'highlights':
+                return 'Highlights';
             case 'settings':
                 return 'Settings';
             case 'uprofile':
@@ -84,10 +86,16 @@ function mapStateToProps (state) {
     if (fullEntry && !entryMap.get(fullEntry.get('entryId'))) {
         entryMap = entryMap.set(fullEntry.get('entryId'), fullEntry.getIn(['content', 'title']));
     }
+    const highlightsMap = state.highlightState.get('byId').map((highlight) => {
+        const content = highlight.get('content');
+        const result = content.length > 20 ? `"${content.slice(0, 20)}...` : `"${content}"`;
+        return result;
+    });
     return {
         loginName: selectLoggedAkashaId(state) || selectLoggedAccount(state),
         paramsMapping: {
-            entryId: entryMap.toJS()
+            entryId: entryMap.toJS(),
+            highlightId: highlightsMap.toJS()
         }
     };
 }

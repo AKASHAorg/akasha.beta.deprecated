@@ -67,6 +67,7 @@ function* listGetFull ({ name }) {
 function* listSearch ({ search }) {
     try {
         const account = yield select(selectLoggedAccount);
+        search = search.toLowerCase();
         const data = yield apply(listService, listService.searchList, [{ account, search }]);
         yield put(actions.listSearchSuccess(data));
     } catch (error) {

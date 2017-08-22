@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { ListEntriesPanel, ListPanel, ProfileDetailsPanel, ProfileEditPanel,
-    UserSettingsPanel, UserWalletPanel } from '../';
+import { HighlightEditPanel, HighlightsPanel, ListEntriesPanel, ListPanel, ProfileDetailsPanel,
+    ProfileEditPanel, UserSettingsPanel, UserWalletPanel } from '../';
 
 const Panels = () => (
   <div style={{ height: '100%' }}>
@@ -25,6 +25,15 @@ const Panels = () => (
         component={UserWalletPanel}
         exact
         path="/:rootPath*/panel/wallet"
+      />
+      <Route
+        component={HighlightsPanel}
+        exact
+        path="/:rootPath*/panel/highlights"
+      />
+      <Route
+        component={HighlightEditPanel}
+        path="/:rootPath*/panel/highlights/:highlightId?"
       />
       <Route
         component={ListPanel}

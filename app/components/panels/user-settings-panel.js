@@ -6,7 +6,7 @@ import { Button, Form, Select } from 'antd';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { selectAllLicenses, selectLoggedAccount } from '../../local-flux/selectors';
 import { formMessages } from '../../locale-data/messages';
-import { RememberPassphraseSelect } from '../';
+import { ProfilePanelsHeader, RememberPassphraseSelect } from '../';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -53,59 +53,62 @@ class UserSettingsPanel extends Component {
         const { defaultLicense, isDirty, unlockTime } = this.state;
 
         return (
-          <div className="user-settings-panel">
-            <div className="user-settings-panel__form">
-              <Form>
-                <FormItem
-                  colon={false}
-                  label="Passphrase report"
-                >
-                  <Select value="1">
-                    <Option key="1" value="1">
-                      first Option
-                    </Option>
-                    <Option key="2" value="2">
-                      second Option
-                    </Option>
-                  </Select>
-                </FormItem>
-                <FormItem
-                  colon={false}
-                  label="Remember passphrase for"
-                >
-                  <RememberPassphraseSelect
-                    handleTimeChange={this.handleTimeChange}
-                    size="large"
-                    unlockTime={unlockTime.toString()}
-                  />
-                </FormItem>
-                <FormItem
-                  colon={false}
-                  label="Default license"
-                >
-                  <Select
-                    onChange={this.handleLicenseChange}
-                    size="large"
-                    value={defaultLicense}
+          <div className="panel">
+            <ProfilePanelsHeader />
+            <div className="panel__content user-settings-panel">
+              <div className="user-settings-panel__form">
+                <Form>
+                  <FormItem
+                    colon={false}
+                    label="Passphrase report"
                   >
-                    {licenses.toList().map(license => (
-                      <Option key={license.get('id')} value={license.get('id')}>
-                        {license.get('label')}
+                    <Select value="1">
+                      <Option key="1" value="1">
+                        first Option
                       </Option>
-                    ))}
-                  </Select>
-                </FormItem>
-              </Form>
-            </div>
-            <div className="user-settings-panel__actions">
-              <Button
-                disabled={savingUserSettings || !isDirty}
-                onClick={this.onSaveSettings}
-                size="large"
-                type="primary"
-              >
-                {intl.formatMessage(formMessages.updateSettings)}
-              </Button>
+                      <Option key="2" value="2">
+                        second Option
+                      </Option>
+                    </Select>
+                  </FormItem>
+                  <FormItem
+                    colon={false}
+                    label="Remember passphrase for"
+                  >
+                    <RememberPassphraseSelect
+                      handleTimeChange={this.handleTimeChange}
+                      size="large"
+                      unlockTime={unlockTime.toString()}
+                    />
+                  </FormItem>
+                  <FormItem
+                    colon={false}
+                    label="Default license"
+                  >
+                    <Select
+                      onChange={this.handleLicenseChange}
+                      size="large"
+                      value={defaultLicense}
+                    >
+                      {licenses.toList().map(license => (
+                        <Option key={license.get('id')} value={license.get('id')}>
+                          {license.get('label')}
+                        </Option>
+                      ))}
+                    </Select>
+                  </FormItem>
+                </Form>
+              </div>
+              <div className="user-settings-panel__actions">
+                <Button
+                  disabled={savingUserSettings || !isDirty}
+                  onClick={this.onSaveSettings}
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(formMessages.updateSettings)}
+                </Button>
+              </div>
             </div>
           </div>
         );

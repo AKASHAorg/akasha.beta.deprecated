@@ -8,7 +8,7 @@ import { setTempProfile, tempProfileDelete, tempProfileUpdate,
     publishEntity } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/new-profile-form';
 import { generalMessages } from '../../locale-data/messages';
-import { PanelContainerFooter } from '../';
+import { PanelContainerFooter, ProfilePanelsHeader } from '../';
 import styles from './profile-edit.scss';
 
 class EditProfile extends Component {
@@ -70,42 +70,45 @@ class EditProfile extends Component {
         const { intl, tempProfile, loggedProfile } = this.props;
         const { muiTheme } = this.context;
         return (
-          <div className={`${styles.root} row`}>
-            <ProfileForm
-              intl={intl}
-              muiTheme={muiTheme}
-              isUpdate={!!loggedProfile.get('akashaId')}
-              tempProfile={tempProfile}
-              onProfileUpdate={this._updateTempProfile}
-            />
-            <PanelContainerFooter
-              className="profile-panel-footer paper"
-              leftActions={
+          <div className="panel">
+            <ProfilePanelsHeader />
+            <div className={`panel__content ${styles.root} row`}>
+              <ProfileForm
+                intl={intl}
+                muiTheme={muiTheme}
+                isUpdate={!!loggedProfile.get('akashaId')}
+                tempProfile={tempProfile}
+                onProfileUpdate={this._updateTempProfile}
+              />
+              <PanelContainerFooter
+                className="profile-panel-footer paper"
+                leftActions={
+                  <Button
+                    className="standard-button"
+                    ghost
+                  >
+                    Skip this step
+                  </Button>
+                }
+              >
                 <Button
+                  key="cancel"
+                  onClick={this._handleCancel}
                   className="standard-button"
                   ghost
                 >
-                    Skip this step
+                  {intl.formatMessage(generalMessages.saveForLater)}
                 </Button>
-              }
-            >
-              <Button
-                key="cancel"
-                onClick={this._handleCancel}
-                className="standard-button"
-                ghost
-              >
-                {intl.formatMessage(generalMessages.saveForLater)}
-              </Button>
-              <Button
-                key="submit"
-                type="primary"
-                onClick={this._handleSubmit}
-                style={{ marginLeft: 8 }}
-              >
-                {intl.formatMessage(generalMessages.nextButtonLabel)}
-              </Button>
-            </PanelContainerFooter>
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={this._handleSubmit}
+                  style={{ marginLeft: 8 }}
+                >
+                  {intl.formatMessage(generalMessages.nextButtonLabel)}
+                </Button>
+              </PanelContainerFooter>
+            </div>
           </div>
         );
     }
