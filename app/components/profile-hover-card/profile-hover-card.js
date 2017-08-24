@@ -100,7 +100,7 @@ class ProfileHoverCard extends Component {
                   <div className="caret-up" />
                   <div className={`${styles.hoverCardHeader} row`}>
                     <div className={`${styles.avatar} col-xs-3 start-xs`}>
-                      <Link to={`/${profile.akashaId}`}>
+                      <Link to={`/@${profile.akashaId}`}>
                         <Avatar
                           userInitials={profileInitials}
                           image={profile.avatar}
@@ -141,7 +141,7 @@ class ProfileHoverCard extends Component {
                   </div>
                   <div className={`${styles.cardBody} row`}>
                     <div className="col-xs-12">
-                      <Link to={`/${profile.akashaId}`}>
+                      <Link to={`/@${profile.akashaId}`}>
                         <div className={styles.profileName}>
                           {profile.firstName} {profile.lastName}
                         </div>

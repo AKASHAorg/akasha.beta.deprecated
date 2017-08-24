@@ -15,8 +15,6 @@ import styles from './dashboard-secondary-sidebar.scss';
 let input;
 let listDescr;
 let listInput;
-let selectRef;
-let entryIdInput;
 
 const buttonStyle = {
     position: 'absolute',
@@ -83,10 +81,9 @@ const DashboardSecondarySidebar = props => (
     <input ref={el => (listInput = el)} />
     <div>List description</div>
     <textarea ref={el => (listDescr = el)} />
-    <button onClick={() => props.listAdd(listInput.value, listDescr.value)}>Add list</button>
-    <button onClick={() => props.listDelete(listInput.value)}>Delete list</button>    
-    <input ref={el => (entryIdInput = el)} />
-    <select style={{ display: 'block' }} ref={el => (selectRef = el)}>
+    <button onClick={() => props.listAdd({ name: listInput.value, description: listDescr.value })}>Add list</button>
+    <button onClick={() => props.listDelete(listInput.value)}>Delete list</button>
+    {/* <select style={{ display: 'block' }} ref={el => (selectRef = el)}>
       {props.lists.toList().map(list => (
         <option key={list.get('id')} value={list.get('name')}>
           {list.get('name')}
@@ -94,13 +91,13 @@ const DashboardSecondarySidebar = props => (
       ))}
     </select>
     <button onClick={() => props.listAddEntry(selectRef.value, entryIdInput.value)}>Add to list</button>    
-    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value)}>Remove from list</button>  
+    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value)}>Remove from list</button>   */}
   </div>
 );
 
 DashboardSecondarySidebar.contextTypes = {
     muiTheme: PropTypes.shape()
-};
+}; 
 
 DashboardSecondarySidebar.propTypes = {
     activeDashboard: PropTypes.string,
@@ -111,10 +108,7 @@ DashboardSecondarySidebar.propTypes = {
     dashboardSetActive: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     listAdd: PropTypes.func.isRequired,
-    listAddEntry: PropTypes.func.isRequired,
     listDelete: PropTypes.func.isRequired,
-    listDeleteEntry: PropTypes.func.isRequired,
-    lists: PropTypes.shape()
 };
 
 function mapStateToProps (state) {

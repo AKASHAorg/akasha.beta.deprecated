@@ -291,18 +291,17 @@ class EntryCard extends Component {
           >
             <CardHeader
               title={publisher ?
-                <button
-                  className="content-link"
-                  style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
-                  onClick={this.selectProfile}
+                <Link
+                  className="unstyled-link"
+                  to={`/@${entry.getIn(['entryEth', 'publisher'])}`}
                 >
                   <div
-                    className="overflow-ellipsis"
+                    className="overflow-ellipsis content-link"
                     style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
                     {publisher.get('akashaId')}
                   </div>
-                </button> :
+                </Link> :
                 <div style={{ height: '22px' }} />
               }
               subtitle={this.renderSubtitle()}

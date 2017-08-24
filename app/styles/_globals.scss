@@ -97,12 +97,21 @@ html, body {
 }
 
 .has-hidden-action {
-    &:not(:hover) .hidden_action {
+    &:not(:hover) .hidden-action {
         display: none !important;
     }
     &:hover {
-        .hidden_action {
+        .hidden-action {
             display: block;
+        }
+    }
+
+    &:not(:hover) .hidden-action-reverse {
+        display: block;
+    }
+    &:hover {
+        .hidden-action-reverse {
+            display: none !important;
         }
     }
 }
@@ -176,17 +185,17 @@ html, body {
 }
 
 .flex-center-x {
-    display: flex;
+    display: flex !important;
     justify-content: center;
 }
 
 .flex-center-y {
-    display: flex;
+    display: flex !important;
     align-items: center;
 }
 
 .flex-center {
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
 }

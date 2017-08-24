@@ -109,7 +109,7 @@ class EntryPageHeader extends Component {
         const userInitials = getInitials(publisher.firstName, publisher.lastName);
 
         return (
-          <Link to={`/${publisher.get('akashaId')}`}>
+          <Link to={`/@${publisher.get('akashaId')}`}>
             <Avatar
               image={publisher.avatar}
               onMouseEnter={this.showProfileHoverCard}
@@ -208,7 +208,7 @@ class EntryPageHeader extends Component {
                 subtitle={this.renderSubtitle()}
                 style={{ zIndex: 5, padding: 0 }}
                 title={publisher ?
-                  <Link to={`/${publisher.get('akashaId')}`}>
+                  <Link to={`/@${publisher.get('akashaId')}`}>
                     <div
                       className={`content-link ${styles.entry_publisher_name}`}
                       onMouseEnter={this.showProfileHoverCard}

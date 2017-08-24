@@ -1,18 +1,8 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const listAdd = (name, description) => action(types.LIST_ADD, { name, description });
-
-export const listAddEntry = (name, entryId) =>
-    action(types.LIST_ADD_ENTRY, { name, entryId });
-
-export const listAddEntryError = (error) => {
-    error.code = 'LAEE01';
-    error.messageId = 'listAddEntry';
-    return action(types.LIST_ADD_ENTRY_ERROR, { error });
-};
-
-export const listAddEntrySuccess = data => action(types.LIST_ADD_ENTRY_SUCCESS, { data });
+export const listAdd = ({ name, description, entryIds }) =>
+    action(types.LIST_ADD, { name, description, entryIds });
 
 export const listAddError = (error) => {
     error.code = 'LAE01';
@@ -66,3 +56,14 @@ export const listSearchError = (error) => {
 };
 
 export const listSearchSuccess = data => action(types.LIST_SEARCH_SUCCESS, { data });
+
+export const listUpdateEntryIds = (listNames, entryId) =>
+    action(types.LIST_UPDATE_ENTRY_IDS, { listNames, entryId });
+
+export const listUpdateEntryIdsError = (error) => {
+    error.code = 'LUEIE01';
+    error.messageId = 'listUpdateEntryIds';
+    return action(types.LIST_UPDATE_ENTRY_IDS_ERROR, { error });
+};
+
+export const listUpdateEntryIdsSuccess = data => action(types.LIST_UPDATE_ENTRY_IDS_SUCCESS, { data });

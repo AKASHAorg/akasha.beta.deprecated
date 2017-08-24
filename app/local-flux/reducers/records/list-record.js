@@ -2,7 +2,8 @@ import { List, Map, Record } from 'immutable';
 
 export const Flags = Record({
     fetchingLists: false,
-    searching: false
+    searching: false,
+    updatingLists: false
 });
 
 export const ListRecord = Record({
@@ -18,6 +19,7 @@ export const ListRecord = Record({
 
 export const ListState = Record({
     byName: new Map(),
+    entryLists: new Map(),
     flags: new Flags(),
     search: '',
     searchResults: new List()
