@@ -4,24 +4,14 @@ import * as types from '../constants';
 import { selectLoggedAccount } from '../selectors';
 import * as listService from '../services/list-service';
 
-function* listAdd ({ name, description }) {
+function* listAdd ({ name, description, entryIds = [] }) {
     try {
         const account = yield select(selectLoggedAccount);
-        const list = { account, name, description };
+        const list = { account, name, description, entryIds };
         const { id, timestamp } = yield apply(listService, listService.addList, [list]);
         yield put(actions.listAddSuccess({ id, timestamp, ...list }));
     } catch (error) {
         yield put(actions.listAddError(error));
-    }
-}
-
-function* listAddEntry ({ name, entryId }) {
-    try {
-        const account = yield select(selectLoggedAccount);
-        const list = yield apply(listService, listService.addEntry, [{ account, name, entryId }]);
-        yield put(actions.listAddEntrySuccess(list));
-    } catch (error) {
-        yield put(actions.listAddEntryError(error));
     }
 }
 
@@ -75,13 +65,26 @@ function* listSearch ({ search }) {
     }
 }
 
-// Action watchers
+function* listUpdateEntryIds ({ listNames, entryId }) {
+    try {
+        const account = yield select(selectLoggedAccount);
+        const lists = yield apply(
+            listService,
+            listService.updateEntryIds,
+            [{ account, listNames, entryId }]
+        );
+        yield put(actions.listUpdateEntryIdsSuccess(lists));
+    } catch (error) {
+        yield put(actions.listUpdateEntryIdsError(error));
+    }
+}
 
+// Action watchers
 export function* watchListActions () {
     yield takeEvery(types.LIST_ADD, listAdd);
-    yield takeEvery(types.LIST_ADD_ENTRY, listAddEntry);
     yield takeEvery(types.LIST_DELETE, listDelete);
     yield takeEvery(types.LIST_DELETE_ENTRY, listDeleteEntry);
     yield takeEvery(types.LIST_GET_FULL, listGetFull);
     yield takeEvery(types.LIST_SEARCH, listSearch);
+    yield takeEvery(types.LIST_UPDATE_ENTRY_IDS, listUpdateEntryIds);
 }

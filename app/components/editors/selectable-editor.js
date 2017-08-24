@@ -4,9 +4,11 @@ import { injectIntl } from 'react-intl';
 import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { Popover } from 'antd';
+import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import { MentionDecorators } from '../../shared-components';
 import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
+import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
 
 const { CompositeDecorator, ContentState, EditorState } = DraftJS;
@@ -24,6 +26,33 @@ class SelectableEditor extends Component {
             editorState
         };
     }
+
+    componentDidMount () {
+        document.addEventListener('selectionchange', this.throttledHandler);
+    }
+
+    componentWillUnmount () {
+        document.removeEventListener('selectionchange', this.throttledHandler);
+    }
+
+    componentClickAway = () => {
+        this.setState({
+            range: null,
+            showPopover: false
+        });
+    };
+
+    onSelectionChange = () => {
+        const { anchorNode, focusNode } = window.getSelection();
+        if (!anchorNode || !focusNode) {
+            this.setState({
+                range: null,
+                showPopover: null
+            });
+        }
+    };
+
+    throttledHandler = throttle(this.onSelectionChange, 500);
 
     getSelectionState = (editorState) => {
         const { range } = this.state;
@@ -45,7 +74,6 @@ class SelectableEditor extends Component {
             if (node.attributes['data-block'] && node.attributes['data-block'].value === 'true') {
                 const [key, x, y] = node.attributes['data-offset-key'].value.split('-');
                 if (x !== '0' || y !== '0') {
-                    console.log(node, node.attributes['data-offset-key']);
                     return null;
                 }
                 return key;
@@ -198,4 +226,4 @@ SelectableEditor.propTypes = {
     intl: PropTypes.shape()
 };
 
-export default injectIntl(SelectableEditor);
+export default injectIntl(clickAway(SelectableEditor));

@@ -5,11 +5,12 @@ import { injectIntl } from 'react-intl';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import * as actionTypes from '../../constants/action-types';
-import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote,
-    ToolbarEthereum } from '../svg';
+import { ListPopover } from '../';
+import { EntryDownvote, EntryUpvote, ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLoggedAkashaId,
-    selectProfile } from '../../local-flux/selectors';
+import { listAdd, listDelete, listSearch, listUpdateEntryIds } from '../../local-flux/actions/list-actions';
+import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
+    selectLoggedAkashaId, selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
 class EntryPageAction extends Component {
@@ -49,19 +50,6 @@ class EntryPageAction extends Component {
         this.props.actionAdd(loggedAkashaId, actionTypes.downvote, payload);
     };
 
-    // handleBookmark = () => {
-    //     const { entry, entryActions, loggedProfile, savedEntries } = this.props;
-    //     const loggedAkashaId = loggedProfile.get('akashaId');
-    //     const isSaved = !!savedEntries.find(id => id === entry.entryId);
-
-    //     if (isSaved) {
-    //         entryActions.deleteEntry(loggedAkashaId, entry.entryId);
-    //         entryActions.moreSavedEntriesList(1);
-    //     } else {
-    //         entryActions.saveEntry(loggedAkashaId, entry.entryId);
-    //     }
-    // };
-
     handleClaim = () => {
         const { canClaim, entry, loggedAkashaId } = this.props;
         if (!canClaim) {
@@ -75,8 +63,8 @@ class EntryPageAction extends Component {
     };
 
     render () { // eslint-disable-line complexity
-        const { balance, canClaim, canClaimPending, claimPending, entry, fetchingEntryBalance,
-            intl, isOwnEntry, isSaved, votePending, voteWeight } = this.props;
+        const { balance, canClaim, canClaimPending, claimPending, containerRef, entry, fetchingEntryBalance,
+            intl, isOwnEntry, lists, listSearchKeyword, updatingLists, votePending, voteWeight } = this.props;
         const { palette } = this.context.muiTheme;
         const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
@@ -148,16 +136,17 @@ class EntryPageAction extends Component {
               </div>
               <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
                 {!isOwnEntry &&
-                  <div data-tip="Bookmark" style={{ display: 'inline-block' }}>
-                    <IconButton iconStyle={{ width: '24px', height: '24px' }}>
-                      <SvgIcon viewBox="0 0 20 20">
-                        {isSaved ?
-                          <EntryBookmarkOn /> :
-                          <EntryBookmarkOff />
-                        }
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
+                  <ListPopover
+                    containerRef={containerRef}
+                    entryId={entry.entryId}
+                    listAdd={this.props.listAdd}
+                    listDelete={this.props.listDelete}
+                    lists={lists}
+                    listSearch={this.props.listSearch}
+                    listUpdateEntryIds={this.props.listUpdateEntryIds}
+                    search={listSearchKeyword}
+                    updatingLists={updatingLists}
+                  />
                 }
                 {showBalance &&
                   <div
@@ -220,13 +209,20 @@ EntryPageAction.propTypes = {
     canClaim: PropTypes.bool,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape().isRequired,
     fetchingEntryBalance: PropTypes.bool,
-    intl: PropTypes.shape(),
+    intl: PropTypes.shape().isRequired,
     isOwnEntry: PropTypes.bool,
-    isSaved: PropTypes.bool,
+    listAdd: PropTypes.func.isRequired,
+    listDelete: PropTypes.func.isRequired,
+    lists: PropTypes.shape().isRequired,
+    listSearch: PropTypes.func.isRequired,
+    listSearchKeyword: PropTypes.string,
+    listUpdateEntryIds: PropTypes.func.isRequired,
     loggedAkashaId: PropTypes.string,
     publisher: PropTypes.shape(),
+    updatingLists: PropTypes.bool,
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
 };
@@ -243,11 +239,11 @@ function mapStateToProps (state, ownProps) {
         claimPending,
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
-        isSaved: !!state.entryState
-            .get('savedEntries')
-            .find(entr => entr.get('entryId') === entry.get('entryId')),
+        lists: selectLists(state),
+        listSearchKeyword: selectListSearch(state),
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
+        updatingLists: state.listState.getIn(['flags', 'updatingLists']),
         votePending,
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };
@@ -257,5 +253,9 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
+        listAdd,
+        listDelete,
+        listSearch,
+        listUpdateEntryIds,
     }
 )(injectIntl(EntryPageAction));

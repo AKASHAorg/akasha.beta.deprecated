@@ -23,7 +23,7 @@ class DraftCard extends Component {
               style={{ paddingBottom: '4px', cursor: 'default', userSelect: 'none' }}
             >
               <IconButton
-                className="hidden_action"
+                className="hidden-action"
                 onClick={isPublishing ? noop : onDelete}
                 style={{ position: 'absolute', top: 10, right: 10 }}
               >

@@ -168,7 +168,7 @@ class EntryPage extends Component {
                 }
               </div>
               <div className={styles.entry_infos}>
-                {entry.content && <EntryPageActions entry={entry} />}
+                {entry.content && <EntryPageActions entry={entry} containerRef={this.container} />}
                 <CommentEditor
                   actionAdd={actionAdd}
                   entryId={entry.get('entryId')}
@@ -212,6 +212,7 @@ class EntryPage extends Component {
         return (
           <div
             className={styles.root}
+            id="entry-page-root"
             ref={this.getContainerRef}
             style={{ backgroundColor: palette.entryPageBackground }}
           >

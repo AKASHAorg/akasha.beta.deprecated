@@ -16,7 +16,6 @@ function* highlightDelete ({ id }) {
 function* highlightEditNotes ({ type, ...payload }) {
     try {
         const highlight = yield apply(highlightService, highlightService.editNotes, [payload]);
-        console.log('highlight', highlight);
         yield put(actions.highlightEditNotesSuccess(highlight));
     } catch (error) {
         yield put(actions.highlightEditNotesError(error));

@@ -60,6 +60,7 @@ class TopBar extends Component {
                     />
                     <Route
                       component={Breadcrumbs}
+                      exact
                       path="/@:akashaId"
                     />
                   </div>
