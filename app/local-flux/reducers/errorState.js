@@ -5,15 +5,17 @@ import { ErrorModel } from './models';
 import * as types from '../constants';
 
 const initialState = new ErrorModel();
-const newError = (error) => {
+const newError = (state, error) => {
     const err = new ErrorRecord(error);
-    return err.set('id', err.hashCode());
+    const lastErr = state.get('byId').last();
+    const id = lastErr ? lastErr.get('id') + 1 : 1;
+    return err.set('id', id);
 };
 const addNewError = (state, { error }) => {
-    const err = newError(error);
+    const err = newError(state, error);
     const extra = err.fatal ?
-        { fatalErrors: state.get('fatalErrors').push(err.id) } :
-        { nonFatalErrors: state.get('nonFatalErrors').push(err.id) };
+        { fatalErrors: state.get('fatalErrors').push(err.displayId) } :
+        null;
 
     return state.merge({
         allIds: state.get('allIds').push(err.id),
@@ -43,11 +45,15 @@ const errorState = createReducer(initialState, {
         });
     },
     [types.ERROR_DELETE_NON_FATAL]: (state, { id }) => {
-        const index = state.get('nonFatalErrors').findIndex(err => err.id === id);
+        const index = state.get('nonFatalErrors').findIndex(err => err === id);
         return state.merge({
             nonFatalErrors: state.get('nonFatalErrors').delete(index)
         });
     },
+    [types.ERROR_DISPLAY]: (state, { err }) =>
+        state.merge({
+            nonFatalErrors: state.get('nonFatalErrors').push(err.id)
+        }),
     [types.SHOW_REPORT_MODAL]: (state, { data }) => {
         console.log(data);
         return state.merge({

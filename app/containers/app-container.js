@@ -3,24 +3,30 @@ import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { notification } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
-import { hideNotification, hideTerms, hideReportModal,
+import { hideTerms, hideReportModal,
     bootstrapHome } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
-import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
+import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog } from '../components/dialogs';
-import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
+import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorNotification, ErrorReportingModal,
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, Notification, PageContent,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
+
+notification.config({
+    top: 60,
+    duration: 0
+});
 
 class AppContainer extends Component {
     bootstrappingHome = false;
@@ -97,8 +103,8 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
-            hideTerms, hideReportModal, hideNotification,intl, location, needAuth, needTransferConfirm,
+        const { activeDashboard, appState, errorDeleteFatal, errorState,
+            hideTerms, hideReportModal, intl, location, needAuth, needTransferConfirm,
             needWeightConfirm, theme } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
@@ -145,20 +151,8 @@ class AppContainer extends Component {
                 }
                 <SidebarContainer {...this.props} />
                 <Route path="/setup" component={SetupPages} />
-                {appState.get('notifications').size &&
-                  <NotificationBar
-                    hideNotification={hideNotification}
-                    intl={intl}
-                    notification={appState.get('notifications').first()}
-                  />
-                }
-                {!!errorState.get('nonFatalErrors').size &&
-                  <ErrorBar
-                    deleteError={errorDeleteNonFatal}
-                    error={errorState.getIn(['byId', errorState.get('nonFatalErrors').first()])}
-                    intl={intl}
-                  />
-                }
+                <Notification />
+                <ErrorNotification />
                 {!!errorState.get('fatalErrors').size &&
                   <FatalErrorModal
                     deleteError={errorDeleteFatal}
@@ -195,10 +189,8 @@ AppContainer.propTypes = {
     bootstrapHome: PropTypes.func,
     entryVoteCost: PropTypes.func,
     errorDeleteFatal: PropTypes.func.isRequired,
-    errorDeleteNonFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     gethGetStatus: PropTypes.func,
-    hideNotification: PropTypes.func.isRequired,
     hideReportModal: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     history: PropTypes.shape(),
@@ -230,9 +222,7 @@ export default connect(
         bootstrapHome,
         entryVoteCost,
         errorDeleteFatal,
-        errorDeleteNonFatal,
         gethGetStatus,
-        hideNotification,
         hideTerms,
         hideReportModal,
         licenseGetAll,

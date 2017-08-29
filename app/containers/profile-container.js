@@ -22,7 +22,6 @@ class ProfileContainer extends Component {
 
     render () {
         const { match, profileData } = this.props;
-        console.log('profile container');
         return (<DataLoader
           flag={!profileData}
           timeout={300}

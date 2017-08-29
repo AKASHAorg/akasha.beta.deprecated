@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 const notificationMessages = defineMessages({
+    highlightSaveSuccess: {
+        id: 'app.notification.highlightSaveSuccess',
+        description: 'Notification to be displayed when a highlight has been saved',
+        defaultMessage: 'The highlight has been saved!'
+    },
+    highlightSaveSuccessInputPlaceholder: {
+        id: 'app.notification.highlightSaveSuccessInputPlaceholder',
+        description: 'Placeholder for note input after highlight save',
+        defaultMessage: 'Do you want to type a note?'
+    },
     updatingProfile: {
         id: 'app.notification.updatingProfile',
         description: 'Notification to be displayed when update profile transaction is sent',
