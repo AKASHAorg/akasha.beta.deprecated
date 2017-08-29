@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Breadcrumbs, DashboardTopBar, PanelContainer, Panels, ProfilePanelsHeader,
-    TopBarRightSide } from '../';
+import { Breadcrumbs, DashboardTopBar, PanelLink, Panels, TopBarRightSide } from '../';
 import { profileLogout } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
@@ -29,13 +28,13 @@ class TopBar extends Component {
     _closePanel = () => {
         const { history, location } = this.props;
         const rootPath = location.pathname.split('/panel/')[0];
-        return history.push(`${rootPath}${location.search}`);
+        console.log('location state', location.state);
+        return history.replace(`${rootPath}${location.search}`, { ...location.state });
     }
 
     render () {
-        const { balance, fullEntryPage, intl, loggedProfile, loggedProfileData } = this.props;
+        const { balance, fullEntryPage, loggedProfile, loggedProfileData } = this.props;
         const { muiTheme } = this.context;
-        const loginName = loggedProfile.get('akashaId') || loggedProfile.get('account');
 
         return (
           <div>
@@ -82,8 +81,9 @@ class TopBar extends Component {
             <div
               className={`${styles.panelWrapperOverlay} ${this._checkIsPanel() && styles.overlayVisible}`}
               style={{ width: 'calc(100% - 64%)' }}
-              onClick={this._closePanel}
-            />
+            >
+              <PanelLink to=""><div style={{ width: '100%', height: '100%' }} /></PanelLink>
+            </div>
           </div>
         );
     }
@@ -97,11 +97,9 @@ TopBar.propTypes = {
     balance: PropTypes.string,
     fullEntryPage: PropTypes.bool,
     history: PropTypes.shape(),
-    intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    profileLogout: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
