@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ProfileHoverCard } from '../../components';
 
 const Channel = global.Channel;
 const existsClient = Channel.client.registry.profileExists;
@@ -19,7 +18,6 @@ class MentionComponent extends Component {
         this.state = {
             exists: false,
             fetchingData: true,
-            anchorHovered: false,
             profileAddress: null,
             profileData: null
         };
@@ -110,34 +108,11 @@ class MentionComponent extends Component {
         }
     };
 
-    handleMouseEnter = () => {
-        this.timeout = setTimeout(() => {
-            this.setState({
-                anchorHovered: true,
-            });
-        }, 500);
-    };
-
-    handleMouseLeave = () => {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-        this.setState({
-            anchorHovered: false
-        });
-    };
-
     render () {
         const { children, nonEditable } = this.props;
         const { palette } = this.context.muiTheme;
         return (
-          <div
-            style={{ display: 'inline-block' }}
-            ref={this.setContainerRef}
-            onMouseEnter={nonEditable && this.handleMouseEnter}
-            onMouseLeave={nonEditable && this.handleMouseLeave}
-          >
+          <div style={{ display: 'inline-block' }} ref={this.setContainerRef}>
             <span
               style={{
                   color: this.state.exists ? palette.primary1Color : '',
@@ -147,14 +122,6 @@ class MentionComponent extends Component {
             >
               {children}
             </span>
-            {nonEditable && this.state.exists &&
-              <ProfileHoverCard
-                anchorHovered={this.state.anchorHovered}
-                anchorNode={this.container}
-                loading={this.state.fetchingData}
-                profile={this.state.profileData || {}}
-              />
-            }
           </div>
         );
     }

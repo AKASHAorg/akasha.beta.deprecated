@@ -34,7 +34,7 @@ class CommentsList extends Component {
     };
 
     render () {
-        const { comments, entry, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
+        const { comments, containerRef, entry, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
             loggedProfileData, moreComments, pendingComments, profiles } = this.props;
         const initials = getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
         return (
@@ -43,6 +43,7 @@ class CommentsList extends Component {
               <CommentThread
                 actionAdd={this.props.actionAdd}
                 comments={comments}
+                containerRef={containerRef}
                 depth={1}
                 entryAuthorProfile={entry.getIn(['entryEth', 'publisher'])}
                 entryId={entry.get('entryId')}
@@ -79,6 +80,7 @@ class CommentsList extends Component {
 CommentsList.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
+    containerRef: PropTypes.shape().isRequired,
     entry: PropTypes.shape(),
     fetchingComments: PropTypes.bool,
     fetchingMoreComments: PropTypes.bool,

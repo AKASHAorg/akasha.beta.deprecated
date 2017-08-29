@@ -37,7 +37,7 @@ const listMessages = defineMessages({
         defaultMessage: 'Type list name'
     },
     searchForList: {
-        id: 'app.entry.searchForList',
+        id: 'app.list.searchForList',
         description: 'placeholder for list search input',
         defaultMessage: 'Search for list...'
     },

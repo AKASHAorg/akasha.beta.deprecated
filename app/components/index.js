@@ -68,9 +68,9 @@ export ProfileColumn from './columns/profile-column';
 export ProfileDetailsPanel from './panels/user-profile-details';
 export ProfileEditPanel from './panels/profile-edit';
 export ProfileDetails from './profile/profile-details';
-export ProfileHoverCard from './profile-hover-card/profile-hover-card';
 export ProfileList from './setup/profile-list';
 export ProfilePanelsHeader from './panels/profile-panels-header';
+export ProfilePopover from './profile/profile-popover';
 export RememberPassphrase from './forms/remember-passphrase';
 export RememberPassphraseSelect from './forms/remember-passphrase-select';
 export SearchInput from './search-input';
@@ -78,6 +78,7 @@ export SearchSecondarySidebar from './secondary-sidebars/search-secondary-sideba
 export SecondarySidebar from './secondary-sidebars/secondary-sidebar';
 export Select from './common/select';
 export SelectableEditor from './editors/selectable-editor';
+export SendTipForm from './forms/send-tip-form';
 export ServiceDetailsModal from './modals/service-details-modal';
 export ServiceStatusBar from './service-status-bar';
 export Setup from './setup';

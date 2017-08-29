@@ -307,6 +307,11 @@ export const profileMessages = defineMessages({
         description: 'tooltip for send tip button when waiting for transaction',
         defaultMessage: 'Sending tip ...'
     },
+    sendTipTo: {
+        id: 'app.profile.sendTipTo',
+        description: 'title for send tip form',
+        defaultMessage: 'Send tip to {name}'
+    },
     disableNotifications: {
         id: 'app.profile.disableNotifications',
         description: 'tooltip for disable notifications button',

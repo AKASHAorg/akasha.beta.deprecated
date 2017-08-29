@@ -83,21 +83,12 @@ const DashboardSecondarySidebar = props => (
     <textarea ref={el => (listDescr = el)} />
     <button onClick={() => props.listAdd({ name: listInput.value, description: listDescr.value })}>Add list</button>
     <button onClick={() => props.listDelete(listInput.value)}>Delete list</button>
-    {/* <select style={{ display: 'block' }} ref={el => (selectRef = el)}>
-      {props.lists.toList().map(list => (
-        <option key={list.get('id')} value={list.get('name')}>
-          {list.get('name')}
-        </option>
-      ))}
-    </select>
-    <button onClick={() => props.listAddEntry(selectRef.value, entryIdInput.value)}>Add to list</button>    
-    <button onClick={() => props.listDeleteEntry(selectRef.value, entryIdInput.value)}>Remove from list</button>   */}
   </div>
 );
 
 DashboardSecondarySidebar.contextTypes = {
     muiTheme: PropTypes.shape()
-}; 
+};
 
 DashboardSecondarySidebar.propTypes = {
     activeDashboard: PropTypes.string,

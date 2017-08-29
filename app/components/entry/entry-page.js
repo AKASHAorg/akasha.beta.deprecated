@@ -12,7 +12,7 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import styles from './entry-page.scss';
-
+import { Tooltip } from 'antd';
 const COMMENT_FETCH_LIMIT = 25;
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
@@ -171,6 +171,7 @@ class EntryPage extends Component {
                 {entry.content && <EntryPageActions entry={entry} containerRef={this.container} />}
                 <CommentEditor
                   actionAdd={actionAdd}
+                  containerRef={this.container}
                   entryId={entry.get('entryId')}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
@@ -204,7 +205,7 @@ class EntryPage extends Component {
                     }
                     <Divider />
                   </div>
-                  <CommentsList getTriggerRef={this.getTriggerRef} />
+                  <CommentsList containerRef={this.container} getTriggerRef={this.getTriggerRef} />
                 </div>
               </div>
             </div>);

@@ -194,7 +194,6 @@ export const selectProfileEntries = (state, akashaId) =>
     state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
         .toList();
 
-
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
 export const selectSearchEntries = state =>
