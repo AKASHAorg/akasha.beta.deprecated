@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class TagEditor extends Component {
+    getTags = () => {
+        return [];
+    }
     render () {
         return (
           <div className="tag-editor" ref={this.props.nodeRef}>

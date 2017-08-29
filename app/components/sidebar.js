@@ -44,8 +44,8 @@ class Sidebar extends Component {
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
-                if (path === '/draft/text/new') {
-                    const draftId = 'new';
+                if (path === '/draft/text/newArticle') {
+                    const draftId = 'newArticle';
                     draftCreate({
                         type: 'article',
                         id: draftId
@@ -110,7 +110,7 @@ class Sidebar extends Component {
                         className="borderless"
                         icon="file"
                         ghost
-                        onClick={this._navigateTo('/draft/text/new')}
+                        onClick={this._navigateTo('/draft/text/newArticle')}
                       />
                     </Tooltip>
                   </li>

@@ -159,7 +159,6 @@ class ImageBlock extends Component {
         } else {
             imageSource = imageSrc;
         }
-        console.log(this.props, 'image block props');
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
@@ -168,6 +167,7 @@ class ImageBlock extends Component {
             <div
               className={`${styles.rootInner}`}
             >
+              {files &&
               <Toolbar
                 className={`${styles.toolbar}`}
                 style={{
@@ -217,6 +217,7 @@ class ImageBlock extends Component {
                   </SelectField>
                 </ToolbarGroup>
               </Toolbar>
+              }
               <CardMedia
 
                 onClick={this._handleImageClick}
@@ -227,7 +228,7 @@ class ImageBlock extends Component {
                       position: 'relative'
                   }}
                 >
-                  {files.gif &&
+                  {files && files.gif &&
                     <div
                       style={{
                           position: 'absolute',

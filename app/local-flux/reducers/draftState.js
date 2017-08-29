@@ -1,65 +1,11 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record } from 'immutable';
+import { Map } from 'immutable';
+import { DraftModel } from './models';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 
-const DraftLicence = Record({
-    parent: '2',
-    id: '4'
-});
+const initialState = new DraftModel();
 
-/**
- * Draft/Entry types => article, link, image, video, book, etc..
- * defaults to article
- */
 
-const DraftContent = Record({
-    draft: null,
-    title: '',
-    excerpt: '',
-    wordCount: 0,
-    licence: new DraftLicence(),
-    type: 'article'
-});
-
-const Draft = Record({
-    id: null,
-    content: new DraftContent(),
-    tags: new List(),
-    akashaId: null,
-    created_at: null,
-    updated_at: null,
-});
-
-const initialState = fromJS({
-    drafts: new Map(),
-    draftsCount: 0
-});
-
-const createDraftRecord = (draftObj) => {
-    const { content = new DraftContent(), tags, id, akashaId, entryId, tx,
-        created_at, updated_at, type } = draftObj;
-    const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
-    const createdDraft = new Draft({
-        id,
-        akashaId,
-        entryId,
-        tx,
-        created_at,
-        updated_at,
-        content: new DraftContent({
-            draft,
-            title,
-            licence: new DraftLicence(licence),
-            excerpt,
-            featuredImage,
-            wordCount,
-            type,
-        }),
-        tags: fromJS(tags)
-    });
-    return createdDraft;
-};
 // const publishDraftHandler = (state, { flags }) => {
 //     const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
 //     if (publishPendingDrafts === undefined) {
@@ -82,20 +28,65 @@ const createDraftRecord = (draftObj) => {
 //     });
 // };
 const draftState = createReducer(initialState, {
-    [types.DRAFT_CREATE]: (state, { data }) =>
+    [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
-            drafts: state.get('drafts').set(data.id, createDraftRecord(data))
+            drafts: state.get('drafts').set(data.id, DraftModel.createDraft(data)),
+            selection: state.get('selection').setIn([data.id, data.akashaId], new Map({
+                selectionState: data.selectionState
+            }))
         }),
 
-    [types.DRAFT_UPDATE]: (state, { data }) => {
-        const newState = state.setIn(['drafts', data.id, 'content', 'draft'], data.editorState);
+    [types.DRAFT_UPDATE_SUCCESS]: (state, { data }) =>
+        state.merge({
+            drafts: state.get('drafts').mergeIn([data.draft.id], {
+                saved: false,
+                ...data.draft
+            }),
+            selection: state.get('selection').setIn(
+                [data.draft.id, data.draft.akashaId],
+                data.selectionState
+            ),
+        }),
 
-        console.log(newState);
+    [types.DRAFTS_GET_SUCCESS]: (state, { data }) =>
+        state.set('drafts', data.drafts),
 
-        return newState;
-    }
-        ,
-    // [types.DRAFT_SAVE]: (state, { flags }) =>
+    [types.DRAFT_SAVE]: (state, { data }) =>
+        state.updateIn(['drafts', `${data.id}`], draft =>
+            draft.merge({
+                saved: false,
+                saving: true,
+            })),
+
+    [types.DRAFT_SAVE_SUCCESS]: (state, { data }) =>
+        state.updateIn(['drafts', `${data.id}`], draft =>
+            draft.merge({
+                saved: true,
+                saving: false,
+                updated_at: data.updated_at
+            })),
+
+    [types.DRAFT_AUTOSAVE]: (state, { data }) =>
+        state.updateIn(['drafts', data.id], draft =>
+            draft.merge({
+                saved: false,
+                saving: true
+            })),
+
+    [types.DRAFT_AUTOSAVE_SUCCESS]: (state, { data }) =>
+        state.updateIn(['drafts', data.id], draft =>
+            draft.merge({
+                saved: true,
+                saving: false,
+                updated_at: data.updated_at
+            })),
+
+    [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { data }) =>
+        state.setIn(['drafts', data.draft.id], data.draft),
+
+    [types.DRAFTS_GET_COUNT_SUCCESS]: (state, { data }) =>
+        state.set('draftsCount', data.count),
+        // [types.DRAFT_SAVE]: (state, { flags }) =>
     //     state.merge({
     //         flags: state.get('flags').merge(flags)
     //     }),

@@ -49,6 +49,7 @@ class SideBar extends Component {
             }
             node = node.parentNode;
         } while (node != null);
+        return null;
     }
     getValidSidebarPlugins () {
         const plugins = [];
@@ -100,7 +101,14 @@ class SideBar extends Component {
         }
         return (
           <div ref={(container) => { this.container = container; }} >
-            <div style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, zIndex: 9 }} className="sidebar__menu">
+            <div
+              style={{
+                  top: `${this.state.top}px`,
+                  left: `${this.state.left}px`,
+                  zIndex: 9
+              }}
+              className="sidebar__menu"
+            >
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
                   sidebarVisible={isVisible}

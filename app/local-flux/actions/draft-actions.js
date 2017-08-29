@@ -13,13 +13,22 @@ export const draftCreateSuccess = data => action(types.DRAFT_CREATE_SUCCESS, { d
 export const draftCreateError = data => action(types.DRAFT_CREATE_ERROR, { data });
 
 /**
+ * Get all drafts of an akashaId
+ */
+
+export const draftsGet = data => action(types.DRAFTS_GET, { data });
+export const draftsGetSuccess = data => action(types.DRAFTS_GET_SUCCESS, { data });
+export const draftsGetError = error => action(types.DRAFTS_GET_ERROR, { error });
+
+/**
  * Get draft by id. Must perform a db search by provided id.
  * This action must be executed only if draftId is not 'new'
  * My girlfriend, Leila, is pretty :D
  */
+
 export const draftGetById = data => action(types.DRAFT_GET_BY_ID, { data });
-export const draftGeByIdSuccess = data => action(types.DRAFT_GET_BY_ID_SUCCESS, { data });
-export const draftGetByIdError = data => action(types.DRAFT_GET_BY_ID_ERROR, { data });
+export const draftGetByIdSuccess = data => action(types.DRAFT_GET_BY_ID_SUCCESS, { data });
+export const draftGetByIdError = error => action(types.DRAFT_GET_BY_ID_ERROR, { error });
 
 /**
  * Update a draft in reducer only
@@ -28,13 +37,17 @@ export const draftGetByIdError = data => action(types.DRAFT_GET_BY_ID_ERROR, { d
  */
 
 export const draftUpdate = data => action(types.DRAFT_UPDATE, { data });
+export const draftUpdateSuccess = data => action(types.DRAFT_UPDATE_SUCCESS, { data });
+export const draftUpdateError = error => action(types.DRAFT_UPDATE_ERROR, { error });
 
 /**
  * Autosave draft in db only. Do not update the data in reducer
  * because it may be outdated. This action is throttled!
  */
 
-export const draftAutosave = () => {};
+export const draftAutosave = data => action(types.DRAFT_AUTOSAVE, { data });
+export const draftAutosaveSuccess = data => action(types.DRAFT_AUTOSAVE_SUCCESS, { data });
+export const draftAutosaveError = error => action(types.DRAFT_AUTOSAVE_ERROR, { error });
 
 /**
  * Delete draft in db and reducer. We must check if the draft is in database
@@ -49,6 +62,14 @@ export const draftDelete = () => {};
  */
 
 export const draftPublish = () => {};
+
+/**
+ * Get drafts count for an akashaId
+ */
+
+export const draftsGetCount = data => action(types.DRAFTS_GET_COUNT, { data });
+export const draftsGetCountSuccess = data => action(types.DRAFTS_GET_COUNT_SUCCESS, { data });
+export const draftsGetCountError = error => action(types.DRAFTS_GET_COUNT_ERROR, { error });
 
 /** ******* TO BE DELETED ***********/
 // let draftActions = null;

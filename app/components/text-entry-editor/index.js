@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, editorStateFromRaw, DraftJS,
+import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS,
     createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from '../';
@@ -9,29 +9,21 @@ import imagePlugin from './plugins/image/image-plugin';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
-const getEditorState = (props) => {
-    const { content } = props;
-
-    const decorators = new CompositeDecorator([MentionDecorators.editableDecorator, {
-        strategy: createTypeStrategy('LINK'),
-        component: Link
-    }]);
-
-    if (content) {
-        return content;
-    }
-    return editorStateFromRaw(content, decorators);
-};
-
+const getUpdatedEditorState = (editorState, rawContent) =>
+    EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
 
 class EntryEditor extends Component {
     constructor (props) {
         super(props);
+        this.decorators = new CompositeDecorator([MentionDecorators.editableDecorator, {
+            strategy: createTypeStrategy('LINK'),
+            component: Link
+        }]);
         this.state = {
             sidebarOpen: false,
+            selectionState: null
         };
     }
-
     // componentWillReceiveProps (nextProps) {
     //     let { content } = nextProps;
     //     if (typeof content === 'string') {
@@ -46,18 +38,16 @@ class EntryEditor extends Component {
     //     }
     // }
 
-    shouldComponentUpdate (nextProps, nextState) {
-        return (nextProps.title !== this.props.title) ||
-            (nextProps.content !== this.props.content) ||
-            (nextState.sidebarOpen !== this.state.sidebarOpen);
-    }
+    // shouldComponentUpdate (nextProps, nextState) {
+    //     return (nextProps.title !== this.props.title) ||
+    //         (nextProps.content !== this.props.content) ||
+    //         (nextProps.selectionState !== this.props.selectionState) ||
+    //         (nextState.sidebarOpen !== this.state.sidebarOpen);
+    // }
 
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
     };
-
-    getUpdatedEditorState = (editorState, rawContent) =>
-        EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
 
     _handleImageError = (imageBlockKey, err) => {
         this.setState(prevState => ({
@@ -72,12 +62,10 @@ class EntryEditor extends Component {
         if (editorState.getLastChangeType() === 'split-block' && isOpen) {
             return;
         }
-        if (this.props.onAutosave) {
-            this.props.onAutosave(editorState);
-        }
-        if (this.props.onChange) {
-            this.props.onChange(editorState);
-        }
+        /**
+         * Save selectionState locally and contentState in reduxs` state;
+         */
+        this.props.onChange(editorState);
     };
     _handleKeyPress = (ev) => {
         ev.preventDefault();
@@ -125,12 +113,14 @@ class EntryEditor extends Component {
         return null;
     };
     render () {
-        const { editorPlaceholder, readOnly } = this.props;
+        const { editorPlaceholder, readOnly, editorState } = this.props;
+        const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
           <div className="text-entry-editor">
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
+              onClick={this._focusEditor}
             >
               <MegadraftEditor
                 ref={(edtr) => {
@@ -141,21 +131,21 @@ class EntryEditor extends Component {
                 }}
                 readOnly={readOnly}
                 sidebarRendererFn={this._renderSidebar}
-                editorState={getEditorState(this.props)}
+                editorState={editrState}
                 onChange={this._handleEditorChange}
                 plugins={[
                     imagePlugin({
                         onAutosave: this.props.onAutosave,
                         onImageError: this._handleImageError
-                    })]
-                }
+                    })
+                ]}
                 placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
                 tabIndex="0"
                 hasFocus={this._checkEditorFocus()}
               />
               <MentionSuggestions
                 ref={this.setSuggestionsRef}
-                editorState={this.state.editorState}
+                editorState={editorState}
                 onChange={this._handleEditorChange}
                 parentRef={this.container}
               />
@@ -174,8 +164,8 @@ EntryEditor.defaultProps = {
 
 EntryEditor.propTypes = {
     showTerms: PropTypes.func,
-    title: PropTypes.string,
     editorRef: PropTypes.func,
+    editorState: PropTypes.shape(),
     readOnly: PropTypes.bool,
     content: PropTypes.oneOfType([
         PropTypes.string,

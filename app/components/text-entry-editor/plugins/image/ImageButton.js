@@ -1,16 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { insertDataBlock } from 'megadraft';
+import { insertDataBlock, DraftJS } from 'megadraft';
 import { IconButton } from 'material-ui';
 import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
 import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
 import { genId } from '../../../../utils/dataModule';
 
+const { RichUtils } = DraftJS;
+
 export default class BlockButton extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            error: ''
+            error: '',
+            isAddingImage: false,
+            dialogOpen: false,
+            creatingIPFSHash: false,
         };
     }
 
@@ -29,13 +34,19 @@ export default class BlockButton extends Component {
         const { onImageProgress } = this.props;
         if (onImageProgress) onImageProgress(currentProgress);
     }
+    _convertToIpfs = files =>
+        new Promise((resolve, reject) => {
+            resolve(files);
+        });
+
     _handleImageAdd = (ev) => {
         ev.persist();
         const files = this.fileInput.files;
         const filePromises = getResizedImages(files, {
             minWidth: 320,
             progressHandler: this._handleImageProgress,
-            maxProgress: 100
+            maxProgress: 100,
+            idGenerator: genId,
         });
         Promise.all(filePromises).then((results) => {
             let bestKey = findClosestMatch(768, results[0]);
@@ -47,7 +58,7 @@ export default class BlockButton extends Component {
                 delete res.gif;
                 bestKey = findClosestMatch(results[0].gif.width, res);
             }
-            const data = {
+            return {
                 imgId: genId(),
                 files: results[0],
                 type: 'image',
@@ -56,17 +67,22 @@ export default class BlockButton extends Component {
                 licence: 'CC BY',
                 caption: ''
             };
-            this.props.onChange(insertDataBlock(this.props.editorState, data));
-        }).then(() => {
-            this.fileInput.value = '';
-            this.setState({
-                isAddingImage: false,
-                dialogOpen: false
+        }).then((data) => {
+            this._convertToIpfs(data.files).then((imgHashes) => {
+                this.fileInput.value = '';
+                this.setState({
+                    isAddingImage: false,
+                    dialogOpen: false
+                });
+                // verify if editor is in focus, and blur it;
+                if (document.activeElement.contentEditable === 'true') {
+                    document.activeElement.blur();
+                }
+                this.props.onChange(insertDataBlock(this.props.editorState, {
+                    files: imgHashes,
+                    ...data
+                }));
             });
-            // verify if editor is in focus, and blur it;
-            if (document.activeElement.contentEditable === 'true') {
-                document.activeElement.blur();
-            }
         }).catch((reason) => {
             this.props.onImageError(reason);
         });

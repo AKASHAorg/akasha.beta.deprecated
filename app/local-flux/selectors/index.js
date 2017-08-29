@@ -66,6 +66,9 @@ export const selectDashboards = (state) => {
         .filter(dashboard => dashboard.get('akashaId') === akashaId);
 };
 
+export const selectDraftById = (state, draftId) =>
+    state.draftState.getIn(['drafts', draftId]);
+
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
 export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id]);

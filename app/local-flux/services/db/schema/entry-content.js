@@ -7,7 +7,7 @@ const draftJSContent = {
 
 const entryContent = {
     title: String,
-    draft: draftJSContent,
+    draft: {},
     tags: Array,
     excerpt: String,
     // featuredImage: MultiResImage,

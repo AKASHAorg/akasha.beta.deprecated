@@ -1,6 +1,6 @@
 import Pica from 'pica/dist/pica';
-import StreamReader from './stream-reader';
 import R from 'ramda';
+import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -175,7 +175,7 @@ const resizeImage = (image, options) => {
             const targetHeight = (actualHeight * widthObj.res) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
-            ctx.fillStyle = 'white'; 
+            ctx.fillStyle = 'white';
             /**
              * pica.resizeCanvas(from, to, options, cb)
              */
@@ -192,6 +192,10 @@ const resizeImage = (image, options) => {
                         }
                         const currentProgress = index * (maxProgress / (imageWidths.length - 1));
                         options.progressHandler(currentProgress);
+                    }
+                    if (options.idGenerator && typeof options.idGenerator === 'function') {
+                        result.id = options.idGenerator();
+                        console.log('generated id', result.id, 'for an image');
                     }
                     imageObject[widthObj.key] = result;
                     return imageObject;
