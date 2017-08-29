@@ -59,7 +59,7 @@ class NewListForm extends Component {
               className="new-list-form__form-item"
               colon={false}
               label={
-                <span className="new-list-form__label">
+                <span className="uppercase">
                   {intl.formatMessage(listMessages.listName)}
                 </span>
               }

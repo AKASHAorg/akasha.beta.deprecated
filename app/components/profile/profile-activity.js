@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { EntryListContainer } from '../../shared-components';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { ACTIVITY } from '../../constants/context-types';
 import { selectProfileEntries } from '../../local-flux/selectors';
+import { EntryList } from '../';
 
 class ProfileActivity extends Component {
     componentDidMount () {
@@ -34,7 +34,7 @@ class ProfileActivity extends Component {
             <div className="profile-activity__name">
               {firstName}&#8217;s {intl.formatMessage(profileMessages.activity)}
             </div>
-            <EntryListContainer
+            <EntryList
               style={{ height: '100%', flexFlow: 'row wrap' }}
               cardStyle={{ width: '400px' }}
               contextId={ACTIVITY}

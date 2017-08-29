@@ -80,6 +80,7 @@ class EntryList extends Component {
             const entryIpfsHash = entry.getIn(['entryEth', 'ipfsHash']);
             const resolvingEntry = entryResolvingIpfsHash &&
                 entryResolvingIpfsHash.get(entryIpfsHash);
+
             return (<EntryCard
               blockNr={blockNr}
               canClaimPending={canClaimPending}
@@ -98,6 +99,7 @@ class EntryList extends Component {
               style={cardStyle}
               voteEntryPending={voteEntryPending && voteEntryPending.value}
 
+              containerRef={this.container}
               publisher={publisher}
               entryPageShow={this.props.entryPageShow}
             />);

@@ -3,7 +3,6 @@ import React from 'react';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import { IconButton, SvgIcon } from 'material-ui';
 import { Avatar, Balance, PanelLink, ServiceStatusBar } from '../';
-import { getInitials } from '../../utils/dataModule';
 
 const TopBarRightSide = ({
     balance,
@@ -35,11 +34,10 @@ const TopBarRightSide = ({
     <div style={{ flex: '0 0 auto' }}>
       <PanelLink to={canEditProfile ? 'uprofile' : 'editProfile'}>
         <Avatar
-          image={loggedProfileData.avatar}
+          firstName={loggedProfileData.get('firstName')}
+          image={loggedProfileData.get('avatar')}
+          lastName={loggedProfileData.get('lastName')}
           size="small"
-          style={{ cursor: 'pointer' }}
-          userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
-          userInitialsStyle={{ fontSize: '20px' }}
         />
       </PanelLink>
     </div>

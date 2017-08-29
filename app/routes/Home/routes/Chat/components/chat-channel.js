@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
 import { List } from 'immutable';
 import { chatMessages } from '../../../../../locale-data/messages';
-import { Avatar, ProfileHoverCard } from '../../../../../components';
+import { Avatar } from '../../../../../components';
 import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from '../../../../../components/svg';
 import ChatMessagesList from './chat-messages-list';
 
@@ -17,7 +17,6 @@ class ChatChannel extends Component {
         this.chatInput = null;
         this.messagesContainer = null;
         this.timeout = null;
-        this.profileHoverTimeout = null;
         this.state = {
             currentMessage: '',
             inputFocused: null,
@@ -46,9 +45,6 @@ class ChatChannel extends Component {
         if (params.channel !== this.props.params.channel) {
             chatActions.saveRecentChannel(params.channel || defaultChannel);
             this.setState({
-                anchorHovered: false,
-                hoverNode: null,
-                hoverProfile: null,
                 inputFocused: null,
                 isScrollable: false,
                 loadingData: true,
@@ -91,9 +87,6 @@ class ChatChannel extends Component {
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
-        if (this.profileHoverTimeout) {
-            clearTimeout(this.profileHoverTimeout);
-        }
     }
 
     onInputFocus = () => {
@@ -111,28 +104,6 @@ class ChatChannel extends Component {
     getActiveChannel = () => {
         const { defaultChannel, params } = this.props;
         return params.channel || defaultChannel;
-    };
-
-    showProfileHoverCard = (target, profile) => {
-        this.setState({
-            hoverNode: target,
-            hoverProfile: profile
-        });
-        this.profileHoverTimeout = setTimeout(() => {
-            this.setState({
-                anchorHovered: true,
-            });
-        }, 500);
-    };
-
-    hideProfileHoverCard = () => {
-        if (this.profileHoverTimeout) {
-            clearTimeout(this.profileHoverTimeout);
-            this.profileHoverTimeout = null;
-        }
-        this.setState({
-            anchorHovered: false,
-        });
     };
 
     isActive = (channel) => {
@@ -177,7 +148,6 @@ class ChatChannel extends Component {
             currentMessage: ev.target.value.slice(0, CHARACTER_LIMIT)
         });
     };
-
 
     navigateToProfile = (profileAddress) => {
         const { loggedProfileAkashaId } = this.props;
@@ -288,8 +258,6 @@ class ChatChannel extends Component {
                   messages={this.state.messages}
                   navigateToChannel={navigateToChannel}
                   onAuthorClick={this.navigateToProfile}
-                  showProfileHoverCard={this.showProfileHoverCard}
-                  hideProfileHoverCard={this.hideProfileHoverCard}
                 />
               </div>
             </div>
@@ -363,12 +331,6 @@ class ChatChannel extends Component {
                 />
               </div>
             </div>
-            <ProfileHoverCard
-              profile={this.state.hoverProfile}
-              anchorHovered={this.state.anchorHovered}
-              anchorNode={this.state.hoverNode}
-              containerNode={this.container}
-            />
           </div>
         );
     }

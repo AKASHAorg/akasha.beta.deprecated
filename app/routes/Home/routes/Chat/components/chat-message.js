@@ -38,8 +38,7 @@ class ChatMessage extends Component {
     };
 
     render () {
-        const { data, isOwnMessage, onAuthorClick, showProfileHoverCard,
-            hideProfileHoverCard } = this.props;
+        const { data, isOwnMessage, onAuthorClick } = this.props;
         const { akashaId, avatar, baseUrl, firstName, lastName, profileAddress,
             timeStamp } = data;
         const { palette } = this.context.muiTheme;
@@ -64,8 +63,6 @@ class ChatMessage extends Component {
               userInitialsStyle={{ fontSize: '20px' }}
               size={40}
               onClick={() => { onAuthorClick(profileAddress); }}
-              onMouseEnter={ev => showProfileHoverCard(ev.currentTarget, profile)}
-              onMouseLeave={hideProfileHoverCard}
             />
             <div
               style={{
@@ -84,8 +81,6 @@ class ChatMessage extends Component {
                       paddingRight: '5px',
                       color: isOwnMessage ? palette.commentViewerIsAuthorColor : palette.textColor
                   }}
-                  onMouseEnter={ev => showProfileHoverCard(ev.currentTarget, profile)}
-                  onMouseLeave={hideProfileHoverCard}
                 >
                   {akashaId}
                 </div>
@@ -109,8 +104,6 @@ ChatMessage.propTypes = {
     isOwnMessage: PropTypes.bool,
     navigateToChannel: PropTypes.func,
     onAuthorClick: PropTypes.func,
-    showProfileHoverCard: PropTypes.func,
-    hideProfileHoverCard: PropTypes.func,
 };
 
 export default ChatMessage;

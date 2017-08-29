@@ -14,7 +14,7 @@ class ChatMessagesList extends Component {
 
     render () {
         const { loadingData, loggedProfileAkashaId, messages, navigateToChannel,
-            onAuthorClick, showProfileHoverCard, hideProfileHoverCard } = this.props;
+            onAuthorClick } = this.props;
         if (loadingData) {
             return <DataLoader flag style={{ paddingTop: '100px' }} />;
         }
@@ -35,13 +35,11 @@ class ChatMessagesList extends Component {
                 data={data}
                 navigateToChannel={navigateToChannel}
                 onAuthorClick={onAuthorClick}
-                showProfileHoverCard={showProfileHoverCard}
-                hideProfileHoverCard={hideProfileHoverCard}
               />
             )}
           </div>
         );
-    };
+    }
 }
 
 ChatMessagesList.propTypes = {
@@ -50,8 +48,6 @@ ChatMessagesList.propTypes = {
     messages: PropTypes.shape(),
     navigateToChannel: PropTypes.func,
     onAuthorClick: PropTypes.func,
-    showProfileHoverCard: PropTypes.func,
-    hideProfileHoverCard: PropTypes.func,
 };
 
 export default ChatMessagesList;

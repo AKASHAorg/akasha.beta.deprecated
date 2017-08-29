@@ -275,6 +275,11 @@ const generalMessages = defineMessages({
         description: 'send feedback button label',
         defaultMessage: 'Send feedback'
     },
+    send: {
+        id: 'app.general.send',
+        description: 'send button label',
+        defaultMessage: 'Send'
+    },
     serviceStoppedWarning: {
         id: 'app.createProfile.serviceStoppedWarning',
         description: 'message to be displayed when geth and/or IPFS are/is stopped',

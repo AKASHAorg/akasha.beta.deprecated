@@ -10,9 +10,8 @@ import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from '../../components/svg';
 import { EntryVotesPanel, TagChip } from '../';
-import { Avatar, EntryVersionsPanel } from '../../components';
-import { calculateReadingTime, getInitials } from '../../utils/dataModule';
-import imageCreator from '../../utils/imageUtils';
+import { Avatar, EntryVersionsPanel, ProfilePopover } from '../../components';
+import { calculateReadingTime } from '../../utils/dataModule';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 
 class EntryCard extends Component {
@@ -253,7 +252,7 @@ class EntryCard extends Component {
     };
 
     render () {
-        const { canClaimPending, claimPending, entry, entryResolvingIpfsHash, existingDraft,
+        const { canClaimPending, claimPending, containerRef, entry, entryResolvingIpfsHash, existingDraft,
             fetchingEntryBalance, intl, isSaved, selectedTag, style, voteEntryPending,
             publisher } = this.props;
         const { palette } = this.context.muiTheme;
@@ -266,10 +265,6 @@ class EntryCard extends Component {
         if (!publisher) {
             return this.renderUnresolvedPlaceholder();
         }
-        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
-        const avatar = publisher.get('avatar') ?
-            imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
-            null;
         const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
 
@@ -291,17 +286,14 @@ class EntryCard extends Component {
           >
             <CardHeader
               title={publisher ?
-                <Link
-                  className="unstyled-link"
-                  to={`/@${entry.getIn(['entryEth', 'publisher'])}`}
-                >
+                <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>                
                   <div
                     className="overflow-ellipsis content-link"
                     style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
                     {publisher.get('akashaId')}
                   </div>
-                </Link> :
+                </ProfilePopover> :
                 <div style={{ height: '22px' }} />
               }
               subtitle={this.renderSubtitle()}
@@ -317,20 +309,14 @@ class EntryCard extends Component {
                   }}
                   onClick={this.selectProfile}
                 >
-                  <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}`}>
+                  <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
                     <Avatar
-                      image={avatar}
+                      firstName={publisher.get('firstName')}
+                      image={publisher.get('avatar')}
+                      lastName={publisher.get('lastName')}
                       size="small"
-                      style={{ display: 'inline-block' }}
-                      userInitials={userInitials}
-                      userInitialsStyle={{
-                          textTransform: 'uppercase',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          margin: '0px'
-                      }}
                     />
-                  </Link>
+                  </ProfilePopover>
                 </button>
               }
               textStyle={{ paddingRight: '0px' }}
@@ -649,6 +635,7 @@ EntryCard.propTypes = {
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
 
+    containerRef: PropTypes.shape().isRequired,
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.bool,
     publisher: PropTypes.shape()
