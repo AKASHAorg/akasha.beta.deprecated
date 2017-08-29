@@ -5,6 +5,7 @@ import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { selectFullEntry, selectLoggedAccount, selectLoggedAkashaId } from '../../local-flux/selectors';
 import { getBreadcrumbs } from '../../utils/url-utils';
+import { PanelLink } from '../';
 
 const Breadcrumbs = (props, { muiTheme }) => {
     const { location, loginName, match, panel, paramsMapping } = props;
@@ -44,18 +45,27 @@ const Breadcrumbs = (props, { muiTheme }) => {
       <div className="flex-center-y" style={{ height: '100%' }}>
         {parts.map((part, index) => {
             const isLast = index === parts.length - 1;
+            const breadcrumb = (
+              <span
+                style={{
+                    fontWeight: isLast && '600',
+                    color: isLast ? palette.textColor : palette.disabledColor
+                }}
+              >
+                {beautifyName(part)}
+              </span>
+            );
+
             return (
               <span key={routes[index]}>
-                <Link className="unstyled-link" to={routes[index]}>
-                  <span
-                    style={{
-                        fontWeight: isLast && '600',
-                        color: isLast ? palette.textColor : palette.disabledColor
-                    }}
-                  >
-                    {beautifyName(part)}
-                  </span>
-                </Link>
+                {panel ?
+                  <PanelLink to={routes[index]}>
+                    {breadcrumb}
+                  </PanelLink> :
+                  <Link className="unstyled-link" to={routes[index]}>
+                    {breadcrumb}
+                  </Link>
+                }
                 {!isLast &&
                   <span style={{ cursor: 'default', color: palette.disabledColor, padding: '0 10px' }}>
                     {'>'}

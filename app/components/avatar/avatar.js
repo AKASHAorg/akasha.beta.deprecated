@@ -19,13 +19,13 @@ const AvatarPresenter = (props) => {
       <Avatar
         className={`avatar ${className}`}
         icon={(firstName || lastName) ? '' : 'user'}
-        onClick={(onClick || link) && clickHandler}
+        onClick={clickHandler}
         shape="square"
         size={size}
         src={image}
         style={{ cursor: onClick || link ? 'pointer' : 'inherit' }}
       >
-        {(firstName || lastName) &&
+        {!image && (firstName || lastName) &&
             getInitials(firstName, lastName).toUpperCase()
         }
       </Avatar>

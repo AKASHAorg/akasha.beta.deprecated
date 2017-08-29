@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 const PanelLink = ({ children, className, location, to }) => {
     const { pathname, search } = location;
     const root = pathname.split('/panel/')[0];
-    const href = `${root}/panel/${to}${search}`;
+    const href = to ? `${root}/panel/${to}${search}` : `${root}${search}`;
     return (
-      <Link className={`unstyled-link ${className}`} to={{ pathname: href, state: location.state }}>
+      <Link className={`unstyled-link ${className}`} replace to={{ pathname: href, state: location.state }}>
         {children}
       </Link>
     );
