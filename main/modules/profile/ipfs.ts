@@ -1,7 +1,6 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { profiles } from '../models/records';
-import { isEmpty } from 'ramda';
-import { is } from 'ramda';
+import { is, isEmpty } from 'ramda';
 import * as Promise from 'bluebird';
 
 export const ProfileSchema = {
@@ -15,7 +14,7 @@ export const ProfileSchema = {
  *
  * @type {Function}
  */
-export const create = Promise.coroutine(function*(data: IpfsProfileCreateRequest) {
+export const create = Promise.coroutine(function* (data: IpfsProfileCreateRequest) {
     let saved, tmp, targetHash, keys, pool;
     let i = 0;
     const simpleLinks = [ProfileSchema.AVATAR, ProfileSchema.ABOUT, ProfileSchema.LINKS];
@@ -79,13 +78,16 @@ export const create = Promise.coroutine(function*(data: IpfsProfileCreateRequest
  *
  * @type {Function}
  */
-export const getShortProfile = Promise.coroutine(function*(hash: string, resolveAvatar = false) {
+export const getShortProfile = Promise.coroutine(function* (hash: string, resolveAvatar = false) {
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }
     const avatarPath = { [ProfileSchema.AVATAR]: '' };
+    const aboutPath = { [ProfileSchema.ABOUT]: '' };
+
     const profileBase = yield IpfsConnector.getInstance().api.get(hash);
     const avatar = yield IpfsConnector.getInstance().api.findLinks(hash, [ProfileSchema.AVATAR]);
+    const about = yield IpfsConnector.getInstance().api.findLinks(hash, [ProfileSchema.ABOUT]);
     if (avatar.length) {
         if (!resolveAvatar) {
             avatarPath[ProfileSchema.AVATAR] = avatar[0].multihash;
@@ -93,7 +95,10 @@ export const getShortProfile = Promise.coroutine(function*(hash: string, resolve
             avatarPath[ProfileSchema.AVATAR] = yield IpfsConnector.getInstance().api.getFile(avatar[0].multihash);
         }
     }
-    const fetched = Object.assign({}, profileBase, avatarPath);
+    if (about.length) {
+        aboutPath[ProfileSchema.ABOUT] = yield IpfsConnector.getInstance().api.get(about[0].multihash);
+    }
+    const fetched = Object.assign({}, profileBase, avatarPath, aboutPath);
     profiles.setShort(hash, fetched);
     return fetched;
 });
@@ -102,7 +107,7 @@ export const getShortProfile = Promise.coroutine(function*(hash: string, resolve
  *
  * @type {Function}
  */
-export const resolveProfile = Promise.coroutine(function*(hash: string, resolveImages = false) {
+export const resolveProfile = Promise.coroutine(function* (hash: string, resolveImages = false) {
     if (profiles.getFull(hash)) {
         return Promise.resolve(profiles.getFull(hash));
     }
@@ -113,7 +118,7 @@ export const resolveProfile = Promise.coroutine(function*(hash: string, resolveI
     };
     const shortProfile = yield getShortProfile(hash, resolveImages);
     const pool = yield IpfsConnector.getInstance()
-        .api.findLinks(hash, [ProfileSchema.LINKS, ProfileSchema.ABOUT, ProfileSchema.BACKGROUND_IMAGE]);
+        .api.findLinks(hash, [ProfileSchema.LINKS, ProfileSchema.BACKGROUND_IMAGE]);
     for (let i = 0; i < pool.length; i++) {
         constructed[pool[i].name] = yield IpfsConnector.getInstance().api.get(pool[i].multihash);
     }
