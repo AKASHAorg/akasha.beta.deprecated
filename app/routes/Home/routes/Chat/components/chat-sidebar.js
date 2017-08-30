@@ -242,7 +242,7 @@ class ChatSidebar extends Component {
                 onClick={() => navigateToChannel(channel)}
               >
                 <div
-                  className="hidden_action"
+                  className="hidden-action"
                   style={{
                       position: 'absolute',
                       right: '20px',

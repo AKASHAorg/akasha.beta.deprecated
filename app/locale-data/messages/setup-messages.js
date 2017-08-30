@@ -166,6 +166,16 @@ const setupMessages = defineMessages({
         description: 'panel header for new identity page',
         defaultMessage: 'Create new identity'
     },
+    interestedIn: {
+        id: 'app.setup.interestedIn',
+        description: 'question for new identity interests',
+        defaultMessage: 'What are you interested in?'
+    },
+    interestSuggestion: {
+        id: 'app.setup.interestSuggestion',
+        description: 'suggestion text',
+        defaultMessage: 'We\'ll suggest incredible stuff to read based on your interests.'
+    },
     akashaNextGenNetwork: {
         id: 'app.setup.akashaNextGenNetwork',
         description: 'akasha next gen description',

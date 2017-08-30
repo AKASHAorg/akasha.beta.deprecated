@@ -27,72 +27,6 @@ describe('profile saga', function test () {
     afterEach(() => {
         sagaTester.reset(true);
     });
-    describe(types.PROFILE_GET_CURRENT, () => {
-        let spy;
-        let stub;
-        before(() => {
-            spy = sinon.spy();
-        });
-        afterEach(() => {
-            spy.reset();
-            if (stub) {
-                stub.restore();
-            }
-        });
-        it('should make the request to getCurrentProfile', () => {
-            stub = sinon.stub(service, 'profileSaveLogged');
-            sagaTester.dispatch(actions.profileGetCurrent());
-            const channel = global.Channel.server.registry.getCurrentProfile;
-            expect(channel.send.calledOnce).to.be.true;
-        });
-        it('should dispatch PROFILE_GET_CURRENT_SUCCESS', () => {
-            stub = sinon.stub(service, 'profileSaveLogged', spy);
-            sagaTester.dispatch(actions.profileGetCurrent());
-            const clientChannel = global.Channel.client.registry.getCurrentProfile;
-            const resp = { data: { akashaId: 'test', profileAddress: '0xtest' } };
-            clientChannel.triggerResponse(resp);
-            expect(sagaTester.numCalled(types.PROFILE_GET_CURRENT_SUCCESS)).to.equal(1,
-                'PROFILE_GET_CURRENT_SUCCESS was not called once');
-            expect(sagaTester.getLatestCalledAction())
-                .to.deep.equal(actions.profileGetCurrentSuccess(resp.data));
-        });
-        it('should call profileSaveLogged', () => {
-            stub = sinon.stub(service, 'profileSaveLogged', spy);
-            sagaTester.dispatch(actions.profileGetCurrent());
-            const clientChannel = global.Channel.client.registry.getCurrentProfile;
-            const resp = { data: { akashaId: 'test', profileAddress: '0xtest' } };
-            clientChannel.triggerResponse(resp);
-            expect(spy.callCount).to.be.equal(1, 'profileSaveLogged was not called once');
-            const expected = {
-                account: null,
-                akashaId: 'test',
-                expiration: null,
-                profile: '0xtest',
-                token: null
-            };
-            expect(spy.calledWith(expected)).to.be.true;
-        });
-        it('should dispatch PROFILE_SAVE_LOGGED_ERROR', () => {
-            stub = sinon.stub(service, 'profileSaveLogged').throws(new Error());
-            sagaTester.dispatch(actions.profileGetCurrent());
-            const clientChannel = global.Channel.client.registry.getCurrentProfile;
-            const resp = { data: { akashaId: 'test', profileAddress: '0xtest' } };
-            clientChannel.triggerResponse(resp);
-            expect(sagaTester.numCalled(types.PROFILE_SAVE_LOGGED_ERROR)).to.equal(1,
-                'PROFILE_SAVE_LOGGED_ERROR was not called once');
-        });
-        it('should dispatch PROFILE_GET_CURRENT_ERROR', () => {
-            stub = sinon.stub(service, 'profileSaveLogged', spy);
-            sagaTester.dispatch(actions.profileGetCurrent());
-            const clientChannel = global.Channel.client.registry.getCurrentProfile;
-            const resp = { error: { message: 'test error' }, data: {} };
-            clientChannel.triggerResponse(resp);
-            expect(sagaTester.numCalled(types.PROFILE_GET_CURRENT_ERROR)).to.equal(1,
-                'PROFILE_GET_CURRENT_ERROR was not called once');
-            expect(sagaTester.getLatestCalledAction())
-                .to.deep.equal(actions.profileGetCurrentError(resp.error));
-        });
-    });
 
     describe(types.PROFILE_GET_LOCAL, () => {
         it('should make the request to getLocalIdentities', () => {
@@ -219,16 +153,6 @@ describe('profile saga', function test () {
                 'PROFILE_LOGIN_SUCCESS was not called once');
             expect(sagaTester.getLatestCalledAction())
                 .to.deep.equal(actions.profileLoginSuccess(resp.data));
-        });
-        it('should dispatch PROFILE_GET_CURRENT', () => {
-            sagaTester.dispatch(actions.profileLogin(payload));
-            const clientChannel = global.Channel.client.auth.login;
-            const resp = { data: { account: '0xeth', expiration: '01/01/90', token: 'abcd' } };
-            clientChannel.triggerResponse(resp);
-            expect(sagaTester.numCalled(types.PROFILE_GET_CURRENT)).to.equal(1,
-                'PROFILE_GET_CURRENT was not called once');
-            expect(sagaTester.getLatestCalledActions(2)[0])
-                .to.deep.equal(actions.profileGetCurrent());
         });
         it('should dispatch PROFILE_LOGIN_ERROR', () => {
             sagaTester.dispatch(actions.profileLogin(payload));

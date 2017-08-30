@@ -36,20 +36,23 @@ const UserSettings = Record({
     akashaId: null,
     lastBlockNr: null,
     latestMention: null,
-    defaultLicence: null,
+    defaultLicense: null,
     notifications: new Notifications(),
     passwordPreference: new PasswordPreference()
 });
 
 const GeneralSettings = Record({
     theme: 'light',
-    configurationSaved: false
+    configurationSaved: false,
+    darkTheme: false,
+    locale: 'en'
 });
 
 const Flags = Record({
     generalSettingsPending: false,
     savingGethSettings: false,
-    savingIpfsSettings: false
+    savingIpfsSettings: false,
+    savingUserSettings: false
 });
 
 const SettingsRecord = Record({

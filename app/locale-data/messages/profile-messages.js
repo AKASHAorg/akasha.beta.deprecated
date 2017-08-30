@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 export const profileMessages = defineMessages({
+    activity: {
+        id: 'app.activity',
+        description: 'Activity section title',
+        defaultMessage: 'activity'
+    },
     createProfileTitle: {
         id: 'app.profileTitle',
         description: 'Modal title for new identity form',
@@ -262,6 +267,11 @@ export const profileMessages = defineMessages({
         description: 'Label for all entries tab',
         defaultMessage: 'All entries'
     },
+    highlights: {
+        id: 'app.profile.highlights',
+        description: 'title for highlights card',
+        defaultMessage: 'Highlights'
+    },
     interestingPeople: {
         id: 'app.profile.interestingPeople',
         description: 'Label for interesting people tab',
@@ -296,6 +306,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.sendingTip',
         description: 'tooltip for send tip button when waiting for transaction',
         defaultMessage: 'Sending tip ...'
+    },
+    sendTipTo: {
+        id: 'app.profile.sendTipTo',
+        description: 'title for send tip form',
+        defaultMessage: 'Send tip to {name}'
     },
     disableNotifications: {
         id: 'app.profile.disableNotifications',

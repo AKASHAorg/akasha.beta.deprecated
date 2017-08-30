@@ -1,6 +1,26 @@
 import { defineMessages } from 'react-intl';
 
 const formMessages = defineMessages({
+    aethAmountLabel: {
+        id: 'app.form.aethAmount',
+        description: 'aeth amount input label',
+        defaultMessage: 'AETH amount'
+    },
+    aethAmountRequired: {
+        id: 'app.form.aethAmountRequired',
+        description: 'aeth amount input required error message',
+        defaultMessage: 'AETH amount is required'
+    },
+    maxAethAmountLabel: {
+        id: 'app.form.maxAethAmount',
+        description: 'max aeth amount label',
+        defaultMessage: 'max. {balance}'
+    },
+    messageOptional: {
+        id: 'app.form.messageOptional',
+        description: 'tip message input label',
+        defaultMessage: 'Message (Optional)'
+    },
     firstName: {
         id: 'app.firstName',
         description: 'Placeholder for first name input',
@@ -131,5 +151,10 @@ const formMessages = defineMessages({
         description: 'login page title',
         defaultMessage: 'Log in'
     },
+    updateSettings: {
+        id: 'app.form.updateSettings',
+        description: 'label for update settings button',
+        defaultMessage: 'Update settings'
+    }
 });
 export { formMessages };

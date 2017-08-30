@@ -138,10 +138,11 @@ class Sidebar extends Component {
                 placement="right"
                 title={intl.formatMessage(generalMessages.search)}
               >
-                <SearchIcon
-                  onClick={this.handleSearch}
-                  isActive={false}
-                />
+                <Link to="/search/entries">
+                  <SearchIcon
+                    isActive={this._checkActiveIcon('search')}
+                  />
+                </Link>
               </Tooltip>
             </div>
             <div className="sidebar__stream-icon" >

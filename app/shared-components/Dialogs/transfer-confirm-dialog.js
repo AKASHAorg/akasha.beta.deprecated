@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
-import { deletePendingAction, hideTransferConfirmDialog,
-    updateAction } from '../../local-flux/actions/app-actions';
-import { selectPendingAction } from '../../local-flux/selectors';
+import * as actionStatus from '../../constants/action-status';
+import { actionDelete, actionUpdate } from '../../local-flux/actions/action-actions';
+import { hideTransferConfirmDialog, pendingActionUpdate } from '../../local-flux/actions/app-actions';
+import { selectNeedTransferAction } from '../../local-flux/selectors';
 import { confirmMessages, generalMessages } from '../../locale-data/messages';
 import { SendTipForm } from '../';
 
@@ -21,8 +22,6 @@ class TransferConfirmDialog extends Component {
         this.state = {
             ethAmount: '0.0001',
             ethAmountError: null,
-            gasAmount: props.resource.get('gas'),
-            gasAmountError: null
         };
     }
 
@@ -33,21 +32,6 @@ class TransferConfirmDialog extends Component {
     onSubmit = (ev) => {
         ev.preventDefault();
         this.handleConfirm();
-    };
-
-    handleGasChange = (ev) => {
-        const gasAmount = ev.target.value;
-        if (gasAmount < 2000000 || gasAmount > 4700000) {
-            this.setState({
-                gasAmountError: true,
-                gasAmount
-            });
-        } else {
-            this.setState({
-                gasAmountError: false,
-                gasAmount
-            });
-        }
     };
 
     handleEthChange = (ev) => {
@@ -78,28 +62,27 @@ class TransferConfirmDialog extends Component {
     };
 
     handleConfirm = () => {
-        const { resource } = this.props;
-        const updates = {
-            gas: this.state.gasAmount || resource.get('gas'),
+        const { action } = this.props;
+        const changes = {
+            id: action.get('id'),
             payload: {
-                eth: this.state.ethAmount
+                ...action.get('payload').toJS(),
+                value: this.state.ethAmount
             },
-            status: 'checkAuth'
+            status: actionStatus.needAuth
         };
-        this.props.hideTransferConfirmDialog();
-        this.props.updateAction(resource.get('id'), updates);
+        this.props.actionUpdate(changes);
     };
 
     handleAbort = () => {
-        const { resource } = this.props;
-        this.props.deletePendingAction(resource.get('id'));
-        this.props.hideTransferConfirmDialog();
+        const { action } = this.props;
+        this.props.actionDelete(action.get('id'));
     };
 
     render () {
-        const { balance, resource, intl } = this.props;
-        const { ethAmount, ethAmountError, gasAmount, gasAmountError } = this.state;
-        if (!resource) {
+        const { action, balance, intl } = this.props;
+        const { ethAmount, ethAmountError } = this.state;
+        if (!action) {
             return null;
         }
         const dialogActions = [
@@ -112,7 +95,7 @@ class TransferConfirmDialog extends Component {
             label={intl.formatMessage(generalMessages.confirm)}
             primary
             onClick={this.handleConfirm}
-            disabled={gasAmountError || !!ethAmountError}
+            disabled={!!ethAmountError}
           />
         ];
         return (
@@ -121,7 +104,7 @@ class TransferConfirmDialog extends Component {
             modal
             title={
               <div style={{ fontSize: 24 }}>
-                {intl.formatMessage(confirmMessages[resource.get('titleId')])}
+                {intl.formatMessage(confirmMessages.sendTipTitle)}
               </div>
             }
             open
@@ -132,12 +115,9 @@ class TransferConfirmDialog extends Component {
               disableReceiverField
               ethAmount={ethAmount}
               ethAmountError={ethAmountError}
-              gasAmount={gasAmount}
-              gasAmountError={gasAmountError}
               handleEthChange={this.handleEthChange}
-              handleGasChange={this.handleGasChange}
               onSubmit={this.onSubmit}
-              profileData={resource.payload}
+              profileData={action.get('payload').toJS()}
             />
           </Dialog>
         );
@@ -145,26 +125,26 @@ class TransferConfirmDialog extends Component {
 }
 
 TransferConfirmDialog.propTypes = {
+    action: PropTypes.shape(),
+    actionDelete: PropTypes.func.isRequired,
+    actionUpdate: PropTypes.func.isRequired,
     balance: PropTypes.string,
-    deletePendingAction: PropTypes.func.isRequired,
-    hideTransferConfirmDialog: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    resource: PropTypes.shape(),
-    updateAction: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
     return {
+        action: selectNeedTransferAction(state),
         balance: state.profileState.get('balance'),
-        resource: selectPendingAction(state, state.appState.get('transferConfirmDialog')),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
+        actionDelete,
+        actionUpdate,
         hideTransferConfirmDialog,
-        updateAction
+        pendingActionUpdate
     }
 )(TransferConfirmDialog);

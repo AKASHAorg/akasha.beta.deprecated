@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import { Checkbox, Select as AntdSelect } from 'antd';
-import { Select } from '../';
+import { RememberPassphraseSelect } from '../';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 
 const { Option } = AntdSelect;
@@ -10,16 +10,16 @@ const { Option } = AntdSelect;
 const RememberPassphrase = (props) => {
     const { handleCheck, handleTimeChange, intl, isChecked, unlockTime } = props;
 
-    const renderOption = (value) => {
-        const message = value < 60 ?
-            intl.formatMessage(generalMessages.minCount, { minutes: value }) :
-            intl.formatMessage(generalMessages.hoursCount, { hours: value / 60 });
-        return (
-          <Option key={value} value={value}>
-            {message}
-          </Option>
-        );
-    };
+    // const renderOption = (value) => {
+    //     const message = value < 60 ?
+    //         intl.formatMessage(generalMessages.minCount, { minutes: value }) :
+    //         intl.formatMessage(generalMessages.hoursCount, { hours: value / 60 });
+    //     return (
+    //       <Option key={value} value={value}>
+    //         {message}
+    //       </Option>
+    //     );
+    // };
 
     return (
       <div className="remember-passphrase">
@@ -31,14 +31,13 @@ const RememberPassphrase = (props) => {
             {intl.formatMessage(formMessages.rememberPassFor)}
           </Checkbox>
         </div>
-        <Select
-          getPopupContainer={() => document.getElementById('select-popup-container')}
-          onChange={handleTimeChange}
-          value={unlockTime}
-          wrapperStyle={{ margin: '0px 0px 0px 5px', width: '80px', position: 'relative' }}
-        >
-          {['5', '10', '15', '30', '60'].map(mins => renderOption(mins))}
-        </Select>
+        <div style={{ margin: '0px 0px 0px 5px', width: '80px', position: 'relative' }}>
+          <RememberPassphraseSelect
+            getPopupContainer={() => document.getElementById('select-popup-container')}
+            handleTimeChange={handleTimeChange}
+            unlockTime={unlockTime}
+          />
+        </div>
       </div>
     );
 };

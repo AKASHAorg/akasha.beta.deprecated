@@ -1,0 +1,76 @@
+.app-settings {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 20;
+    background: white;
+
+    &_sidebar {
+        left: 64px;
+    }
+
+    &__close-wrapper {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px 20px;
+        color: @lighter-color;
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 auto;
+        width: 50%;
+        padding-top: 30px;
+    }
+
+    &__title {
+        font-size: 20px;
+        font-weight: 500;
+        padding-bottom: 10px;
+    }
+
+    &__description {
+        font-size: 14px;
+        font-weight: 500;
+        padding-bottom: 30px;
+        color: @lighter-color;
+    }
+
+    &__lang-title {
+        font-size: 12px;
+        padding-bottom: 5px;
+        color: @lighter-color;
+    }
+
+    &__theme {
+        padding-top: 20px;
+    }
+
+    &__theme-title {
+        font-size: 12px;
+        padding-bottom: 15px;
+        color: @lighter-color;
+    }
+
+    &__theme-switch-wrapper {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500;
+    }
+
+    &__update {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 150px;
+    }
+
+    &__update-title {
+        font-weight: 400;
+        font-size: 18px;
+        color: @lighter-color;
+    }
+}

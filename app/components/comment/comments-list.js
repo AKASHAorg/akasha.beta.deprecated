@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader } from '../';
-import { commentsAddPublishAction } from '../../local-flux/actions/comments-actions';
+import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectAllComments, selectCommentsFlag, selectLoggedProfileData,
     selectPendingComments } from '../../local-flux/selectors';
 import { getInitials } from '../../utils/dataModule';
@@ -34,15 +34,16 @@ class CommentsList extends Component {
     };
 
     render () {
-        const { comments, entry, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
+        const { comments, containerRef, entry, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
             loggedProfileData, moreComments, pendingComments, profiles } = this.props;
         const initials = getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
         return (
           <div>
             {comments.size > 0 &&
               <CommentThread
+                actionAdd={this.props.actionAdd}
                 comments={comments}
-                commentsAddPublishAction={this.props.commentsAddPublishAction}
+                containerRef={containerRef}
                 depth={1}
                 entryAuthorProfile={entry.getIn(['entryEth', 'publisher'])}
                 entryId={entry.get('entryId')}
@@ -77,8 +78,9 @@ class CommentsList extends Component {
 }
 
 CommentsList.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    commentsAddPublishAction: PropTypes.func.isRequired,
+    containerRef: PropTypes.shape().isRequired,
     entry: PropTypes.shape(),
     fetchingComments: PropTypes.bool,
     fetchingMoreComments: PropTypes.bool,
@@ -107,6 +109,6 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        commentsAddPublishAction
+        actionAdd
     }
 )(injectIntl(CommentsList));

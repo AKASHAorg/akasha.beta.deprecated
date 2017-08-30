@@ -1,18 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
 import { CardHeader, Divider, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { Avatar, ProfileHoverCard } from '../';
+import { Avatar, ProfilePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import { MentionDecorators } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
-import { getInitials } from '../../utils/dataModule';
 import style from './comment.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -28,9 +26,7 @@ class Comment extends Component {
         this.editorState = EditorState.createEmpty(decorators);
         this.state = {
             isExpanded: null,
-            anchorHovered: false,
         };
-        this.timeout = null;
     }
 
     componentDidMount () {
@@ -49,21 +45,6 @@ class Comment extends Component {
         return this.setState({ // eslint-disable-line react/no-did-mount-set-state
             isExpanded
         });
-    }
-
-    componentDidUpdate (prevProps, prevState) {
-        if (this.state.anchorHovered && !prevState.anchorHovered) {
-            ReactTooltip.rebuild();
-        }
-        if (!this.state.anchorHovered && prevState.anchorHovered) {
-            ReactTooltip.hide();
-        }
-    }
-
-    componentWillUnmount () {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
     }
 
     getAuthorNameColor = () => {
@@ -92,28 +73,6 @@ class Comment extends Component {
         return {};
     };
 
-    handleMouseEnter = (ev) => {
-        this.setState({
-            hoverNode: ev.currentTarget
-        });
-        this.timeout = setTimeout(() => {
-            this.setState({
-                anchorHovered: true,
-            });
-        }, 500);
-    };
-
-    handleMouseLeave = () => {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-        this.setState({
-            anchorHovered: false,
-            hoverNode: null
-        });
-    };
-
     toggleExpanded = (ev, isExpanded) => {
         ev.preventDefault();
         this.setState({
@@ -122,7 +81,7 @@ class Comment extends Component {
     };
 
     render () {
-        const { comment, children, intl, onReply, profiles, showReplyButton } = this.props;
+        const { comment, containerRef, children, intl, onReply, profiles, showReplyButton } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { date, content } = data;
@@ -130,7 +89,6 @@ class Comment extends Component {
         const author = profiles.get(data.profile);
         const { palette } = this.context.muiTheme;
         const authorAkashaId = author.get('akashaId');
-        const authorInitials = getInitials(author.get('firstName'), author.get('lastName'));
         const authorAvatar = author.get('avatar');
 
         return (
@@ -147,21 +105,15 @@ class Comment extends Component {
                 <div className={`col-xs-5 ${style.commentAuthor}`}>
                   <CardHeader
                     avatar={
-                      <Avatar
-                        image={authorAvatar}
-                        onMouseEnter={this.handleMouseEnter}
-                        size={40}
-                        style={{
-                            display: 'inline-block',
-                            cursor: 'pointer',
-                            opacity: !content ? 0.5 : 1
-                        }}
-                        userInitials={authorInitials}
-                        // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                        userInitialsStyle={{ fontSize: '20px' }}
-                      />
+                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
+                        <Avatar
+                          firstName={author.get('firstName')}
+                          image={authorAvatar}
+                          lastName={author.get('lastName')}
+                          size="small"
+                        />
+                      </ProfilePopover>
                     }
-                    onMouseLeave={this.handleMouseLeave}
                     style={{ padding: 0 }}
                     subtitle={
                       <div style={{ opacity: !content ? 0.5 : 1 }}>
@@ -170,10 +122,7 @@ class Comment extends Component {
                     }
                     subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                     title={
-                      <div
-                        onMouseEnter={this.handleMouseEnter}
-                        style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
-                      >
+                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
                         <FlatButton
                           className={style.author_name}
                           hoverColor="transparent"
@@ -187,16 +136,10 @@ class Comment extends Component {
                           // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
                           style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
                         />
-                      </div>
+                      </ProfilePopover>
                     }
                     titleStyle={{ fontSize: '100%', height: 24 }}
-                  >
-                    <ProfileHoverCard
-                      anchorHovered={this.state.anchorHovered}
-                      anchorNode={this.state.hoverNode}
-                      profile={author.toJS()}
-                    />
-                  </CardHeader>
+                  />
                 </div>
                 {showReplyButton && content &&
                   <div className="col-xs-7 end-xs">
@@ -270,6 +213,7 @@ Comment.contextTypes = {
 Comment.propTypes = {
     children: PropTypes.node,
     comment: PropTypes.shape(),
+    containerRef: PropTypes.shape().isRequired,
     entryAuthorProfile: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),

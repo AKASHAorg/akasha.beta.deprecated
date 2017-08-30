@@ -1,13 +1,15 @@
-import { all, apply, call, fork, put, take } from 'redux-saga/effects';
-import * as settingsService from '../services/settings-service';
+import { all, apply, call, fork, put, select, take } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
+import { selectLoggedAccount } from '../selectors';
+import * as settingsService from '../services/settings-service';
 
 export function* generalSettingsRequest () {
     yield put(actions.generalSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.generalSettingsRequest);
+        localStorage.setItem('theme', resp.darkTheme ? '1' : '0');
         yield put(actions.generalSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.generalSettingsError({ message: error.toString() }));
@@ -40,10 +42,11 @@ export function* getSettings () {
     yield fork(ipfsSettingsRequest);
 }
 
-export function* saveGeneralSettings (payload) {
+export function* saveGeneralSettings ({ type, ...payload }) {
     try {
         const resp = yield apply(settingsService, settingsService.generalSettingsSave, [payload]);
         yield put(actions.saveGeneralSettingsSuccess(resp));
+        localStorage.setItem('theme', payload.darkTheme ? '1' : '0');
     } catch (error) {
         yield put(actions.saveGeneralSettingsError({ message: error.toString() }));
     }
@@ -86,8 +89,11 @@ function* saveConfiguration (action) {
     yield call(saveGeneralSettings, { configurationSaved: true });
 }
 
-function* userSettingsRequest (account) {
+export function* userSettingsRequest (account) {
     try {
+        if (!account) {
+            account = yield select(selectLoggedAccount);
+        }
         const resp = yield apply(settingsService, settingsService.userSettingsRequest, [account]);
         yield put(actions.userSettingsSuccess(resp));
     } catch (error) {
@@ -101,6 +107,7 @@ function* userSettingsSave (account, payload) {
             settingsService, settingsService.userSettingsSave, [account, payload]
         );
         yield put(actions.userSettingsSaveSuccess(resp));
+        // yield put(appActions.showNotification({ id: 'userSettingsSaveSuccess' }));
     } catch (error) {
         yield put(actions.userSettingsSaveError(error));
     }

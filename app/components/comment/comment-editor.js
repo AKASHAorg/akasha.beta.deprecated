@@ -4,10 +4,10 @@ import { createTypeStrategy, DraftJS, editorStateToJSON, MegadraftEditor } from 
 import Link from 'megadraft/lib/components/Link';
 import { RaisedButton } from 'material-ui';
 import { MentionDecorators, MentionSuggestions } from 'shared-components';
-import { Avatar } from '../';
-import { getInitials } from '../../utils/dataModule';
+import { Avatar, ProfilePopover } from '../';
+import * as actionTypes from '../../constants/action-types';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getMentionsFromEditorState } from '../../utils/editorUtils';
-import { entryMessages, generalMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -53,7 +53,7 @@ class CommentEditor extends Component {
     };
 
     handleCommentCreate = () => {
-        const { commentsAddPublishAction, entryId, parent = '0' } = this.props;
+        const { actionAdd, entryId, loggedProfileData, parent = '0' } = this.props;
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const payload = {
@@ -61,9 +61,10 @@ class CommentEditor extends Component {
             date: new Date().toISOString(),
             entryId,
             mentions,
-            parent
+            parent,
+            nonPersistentFields: ['content', 'mentions']
         };
-        commentsAddPublishAction(payload);
+        actionAdd(loggedProfileData.get('akashaId'), actionTypes.comment, payload);
     };
 
     handleCommentCancel = () => {
@@ -80,8 +81,7 @@ class CommentEditor extends Component {
     };
 
     render () {
-        const { intl, loggedProfileData, showPublishActions } = this.props;
-        const userInitials = getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
+        const { containerRef, intl, loggedProfileData, showPublishActions } = this.props;
         let { placeholder } = this.props;
 
         if (!placeholder) {
@@ -94,12 +94,17 @@ class CommentEditor extends Component {
             ref={baseNode => (this.baseNodeRef = baseNode)}
           >
             <div className={`${styles.avatar_image} col-xs-1 start-xs`}>
-              <Avatar
-                image={loggedProfileData.get('avatar')}
-                size={48}
-                userInitials={userInitials}
-                userInitialsStyle={{ fontSize: 22 }}
-              />
+              <ProfilePopover
+                akashaId={loggedProfileData.get('akashaId')}
+                containerRef={containerRef}
+              >
+                <Avatar
+                  firstName={loggedProfileData.get('firstName')}
+                  image={loggedProfileData.get('avatar')}
+                  lastName={loggedProfileData.get('lastName')}
+                  size="small"
+                />
+              </ProfilePopover>
             </div>
             <div className={`${styles.comment_editor} col-xs-11`}>
               <div
@@ -142,7 +147,8 @@ class CommentEditor extends Component {
 }
 
 CommentEditor.propTypes = {
-    commentsAddPublishAction: PropTypes.func.isRequired,
+    actionAdd: PropTypes.func.isRequired,
+    containerRef: PropTypes.shape().isRequired,
     entryId: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

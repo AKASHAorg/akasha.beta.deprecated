@@ -1,0 +1,69 @@
+.list-card {
+    margin: 15px;
+    width: 330px;
+
+    .ant-card-head {
+        height: 52px;
+        line-height: 1;
+        border-bottom: none;
+        padding: 0px 16px;
+    }
+
+    .ant-card-body {
+        padding: 16px;
+    }
+
+    &__title {
+        padding: 12px 0px 0px;
+    }
+
+    &__list-name {
+        height: 24px;
+        font-size: 15px;
+    }
+
+    &__date {
+        height: 16px;
+        font-size: 12px;
+        font-weight: 400;
+        color: @text-color-secondary;
+        vertical-align: middle;
+
+        span {
+            margin-right: 5px;
+        }
+    }
+
+    &__footer {
+        padding-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__left-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    &__left-actions &__icon {
+        margin-right: 10px;
+    }
+
+    &__right-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    &__right-actions &__icon {
+        margin-left: 15px;
+    }
+
+    &__icon {
+        height: 18px;
+        width: 18px;
+        font-size: 18px;
+    }
+}

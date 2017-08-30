@@ -72,7 +72,7 @@ class Notification extends Component {
             className="has-hidden-action"
             rightIcon={
               <SvgIcon
-                className={!showActions && 'hidden_action'}
+                className={!showActions && 'hidden-action'}
                 viewBox="0 0 18 18"
                 onClick={this.toggleShowActions}
                 style={{
@@ -92,19 +92,19 @@ class Notification extends Component {
                 {isMuted ?
                   !isOwnNotif &&
                     <NotificationsActiveIcon
-                      className={!showActions && 'hidden_action'}
+                      className={!showActions && 'hidden-action'}
                       onClick={() => enableNotifications(profile.akashaId, profile.profile)}
                       style={iconStyle}
                     /> :
                   !isOwnNotif &&
                     <NotificationsDisabledIcon
-                      className={!showActions && 'hidden_action'}
+                      className={!showActions && 'hidden-action'}
                       onClick={() => disableNotifications(profile.akashaId, profile.profile)}
                       style={iconStyle}
                     />
                 }
                 <ActionDelete
-                  className={!showActions && 'hidden_action'}
+                  className={!showActions && 'hidden-action'}
                   style={iconStyle}
                   onClick={deleteNotif}
                 />

@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
 import { CardHeader, CircularProgress, Divider, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { MentionDecorators } from '../../shared-components';
-import { Avatar, ProfileHoverCard } from '../';
-import { getInitials } from '../../utils/dataModule';
+import { Avatar } from '../';
 import style from './comment.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -25,9 +23,7 @@ class OptimisticComment extends Component {
         this.editorState = EditorState.createEmpty(decorators);
         this.state = {
             isExpanded: null,
-            anchorHovered: false,
         };
-        this.timeout = null;
     }
 
     componentDidMount () {
@@ -44,21 +40,6 @@ class OptimisticComment extends Component {
         });
     }
 
-    componentDidUpdate (prevProps, prevState) {
-        if (this.state.anchorHovered && !prevState.anchorHovered) {
-            ReactTooltip.rebuild();
-        }
-        if (!this.state.anchorHovered && prevState.anchorHovered) {
-            ReactTooltip.hide();
-        }
-    }
-
-    componentWillUnmount () {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
-    }
-
     getExpandedStyle = () => {
         const { isExpanded } = this.state;
         if (isExpanded === false) {
@@ -68,28 +49,6 @@ class OptimisticComment extends Component {
             return { maxHeight: 'none', overflow: 'visible' };
         }
         return {};
-    };
-
-    handleMouseEnter = (ev) => {
-        this.setState({
-            hoverNode: ev.currentTarget
-        });
-        this.timeout = setTimeout(() => {
-            this.setState({
-                anchorHovered: true,
-            });
-        }, 500);
-    };
-
-    handleMouseLeave = () => {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-        this.setState({
-            anchorHovered: false,
-            hoverNode: null
-        });
     };
 
     toggleExpanded = (ev, isExpanded) => {
@@ -107,7 +66,6 @@ class OptimisticComment extends Component {
         const parsedContent = JSON.parse(content);
         const editorState = editorStateFromRaw(parsedContent).getCurrentContent();
         const akashaId = loggedProfileData.get('akashaId');
-        const initials = getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
         const avatar = loggedProfileData.get('avatar');
 
         return (
@@ -118,16 +76,12 @@ class OptimisticComment extends Component {
                   <CardHeader
                     avatar={
                       <Avatar
+                        firstName={loggedProfileData.get('firstName')}
                         image={avatar}
-                        onMouseEnter={this.handleMouseEnter}
-                        size={40}
-                        // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                        style={{ display: 'inline-block', cursor: 'pointer' }}
-                        userInitials={initials}
-                        userInitialsStyle={{ fontSize: '20px' }}
+                        lastName={loggedProfileData.get('lastName')}
+                        size="small"
                       />
                     }
-                    onMouseLeave={this.handleMouseLeave}
                     style={{ padding: 0 }}
                     subtitle={
                       <div>
@@ -136,10 +90,7 @@ class OptimisticComment extends Component {
                     }
                     subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                     title={
-                      <div
-                        onMouseEnter={this.handleMouseEnter}
-                        style={{ position: 'relative' }}
-                      >
+                      <div style={{ position: 'relative' }}>
                         <FlatButton
                           className={`${style.viewer_is_author} ${style.author_name}`}
                           hoverColor="transparent"
@@ -156,13 +107,7 @@ class OptimisticComment extends Component {
                       </div>
                     }
                     titleStyle={{ fontSize: '100%', height: 24 }}
-                  >
-                    <ProfileHoverCard
-                      anchorHovered={this.state.anchorHovered}
-                      profile={loggedProfileData.toJS()}
-                      anchorNode={this.state.hoverNode}
-                    />
-                  </CardHeader>
+                  />
                 </div>
                 <div className={'col-xs-7 end-xs'}>
                   <CircularProgress size={32} />

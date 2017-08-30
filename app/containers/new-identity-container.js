@@ -21,7 +21,7 @@ class NewIdentity extends Component {
     componentWillReceiveProps (nextProps) {
         const { loggedAccount, history } = this.props;
         if (!loggedAccount && nextProps.loggedAccount) {
-            history.push('/dashboard/');
+            history.push('/setup/new-identity-interests');
         }
     }
 
@@ -135,7 +135,7 @@ class NewIdentity extends Component {
                   {intl.formatMessage(setupMessages.newIdentitySubtitle)}
                 </div>
                 {this.renderForm()}
-                <div className="new-identity__terms">
+                <div className="content-link new-identity__terms">
                   <small>
                     <FormattedMessage
                       {...generalMessages.terms}

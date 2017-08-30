@@ -7,10 +7,9 @@ import {
     Tab } from 'material-ui';
 import throttle from 'lodash.throttle';
 import { injectIntl } from 'react-intl';
-import { DataLoader } from '../../components';
+import { DataLoader, EntryList } from '../../components';
 import { isInViewport } from '../../utils/domUtils';
 import DraftCard from '../DraftCard/draft-card';
-import EntryListContainer from '../EntryList/new-entry-list-container';
 
 const LIMIT = 6;
 
@@ -167,7 +166,7 @@ class NewEntryFormPanel extends Component {
                 </DataLoader>);
             case 'listed':
                 return (
-                  <EntryListContainer
+                  <EntryList
                     entries={publishedEntries}
                     cardStyle={{ width: 'auto' }}
                     fetchingEntries={fetchingPublishedEntries}

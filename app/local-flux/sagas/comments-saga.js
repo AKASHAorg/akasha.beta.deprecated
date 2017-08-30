@@ -1,10 +1,9 @@
 import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
-import * as appActions from '../actions/app-actions';
+import * as actionActions from '../actions/action-actions';
 import * as actions from '../actions/comments-actions';
-import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import actionTypes from '../../constants/action-types';
+import * as actionStatus from '../../constants/action-status';
 import { selectFirstComment, selectLastComment, selectToken } from '../selectors';
 
 const Channel = global.Channel;
@@ -31,16 +30,16 @@ function* commentsMoreIterator ({ entryId }) {
     yield call(commentsIterator, { entryId, start });
 }
 
-function* commentsPublish ({ payload, gas }) {
+function* commentsPublish ({ actionId, ...payload }) {
     const channel = Channel.server.comments.comment;
     yield call(enableChannel, channel, Channel.client.comments.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, gas, ...payload.toJS() }]);
+    yield apply(channel, channel.send, [{ actionId, token, ...payload }]);
 }
 
 function* commentsPublishSuccess ({ data }) {
     const entry = yield select(state => state.entryState.get('fullEntry'));
-    if (!entry || entry.get('entryId') !== data.extra.entryId) {
+    if (!entry || entry.get('entryId') !== data.entryId) {
         return;
     }
     const lastComm = yield select(selectLastComment);
@@ -122,26 +121,12 @@ function* watchCommentsIteratorChannel () {
 function* watchCommentsPublishChannel () {
     while (true) {
         const resp = yield take(actionChannels.comments.comment);
-        const { actionId, entryId, gas, mentions } = resp.request;
+        const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.commentsPublishError(resp.error));
         } else {
-            const payload = [{
-                extra: {
-                    actionId,
-                    entryId,
-                    mentions,
-                    parent: resp.data.parent
-                },
-                gas,
-                tx: resp.data.tx,
-                type: actionTypes.comment
-            }];
-            yield put(transactionActions.transactionAddToQueue(payload));
-            yield put(appActions.showNotification({
-                id: 'publishingComment',
-                duration: 3000
-            }));
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }

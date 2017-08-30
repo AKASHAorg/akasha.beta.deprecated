@@ -62,6 +62,11 @@ const generalMessages = defineMessages({
         description: 'tooltip to show when user hovers image uploader and an image is already selected',
         defaultMessage: 'Choose another image'
     },
+    close: {
+        id: 'app.general.close',
+        description: 'close',
+        defaultMessage: 'Close'
+    },
     comingSoon: {
         id: 'app.general.comingSoon',
         description: 'tooltip for sidebar disabled button',
@@ -87,10 +92,10 @@ const generalMessages = defineMessages({
         description: 'connected status',
         defaultMessage: 'connected'
     },
-    close: {
-        id: 'app.general.close',
-        description: 'close',
-        defaultMessage: 'Close'
+    created: {
+        id: 'app.general.created',
+        description: 'created',
+        defaultMessage: 'Created'
     },
     delete: {
         id: 'app.general.delete',
@@ -200,6 +205,11 @@ const generalMessages = defineMessages({
         description: 'placeholder for empty error list',
         defaultMessage: 'No errors'
     },
+    notes: {
+        id: 'app.general.notes',
+        description: 'notes',
+        defaultMessage: 'Notes'
+    },
     ok: {
         id: 'app.general.ok',
         description: 'Ok',
@@ -264,6 +274,11 @@ const generalMessages = defineMessages({
         id: 'app.general.sendFeedback',
         description: 'send feedback button label',
         defaultMessage: 'Send feedback'
+    },
+    send: {
+        id: 'app.general.send',
+        description: 'send button label',
+        defaultMessage: 'Send'
     },
     serviceStoppedWarning: {
         id: 'app.createProfile.serviceStoppedWarning',

@@ -1,48 +1,51 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Route from 'react-router-dom/Route';
-import styles from './panels.scss';
-import ProfileDetailsPanel from './user-profile-details';
-import ProfileEditPanel from './profile-edit';
-import UserSettingsPanel from './user-settings-panel';
-import UserWalletPanel from './user-wallet-panel';
+import { Route, Switch } from 'react-router-dom';
+import { HighlightEditPanel, HighlightsPanel, ListEntriesPanel, ListPanel, ProfileDetailsPanel,
+    ProfileEditPanel, UserSettingsPanel, UserWalletPanel } from '../';
 
-const renderComponent = (Component, props) =>
-    otherProps => <Component {...props} {...otherProps} />;
-
-const Panels = props => (
-  <div className={`${styles.root} col-xs-12`}>
-    <Route
-      exact
-      path="/:rootPath*/panel/uprofile"
-      render={renderComponent(ProfileDetailsPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
-    />
-    <Route
-      exact
-      path="/:rootPath*/panel/editProfile"
-      component={renderComponent(ProfileEditPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
-    />
-    <Route
-      exact
-      path="/:rootPath*/panel/settings"
-      render={renderComponent(UserSettingsPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
-    />
-    <Route
-      exact
-      path="/:rootPath*/panel/wallet"
-      render={renderComponent(UserWalletPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
-    />
-    <Route
-      path="/:rootPath*/panel/lists/:listName?"
-      render={
-        routeProps =>
-          <div>A list {routeProps.match.params.listName}</div>
-      }
-    />
+const Panels = () => (
+  <div style={{ height: '100%' }}>
+    <Switch>
+      <Route
+        component={ProfileDetailsPanel}
+        exact
+        path="/:rootPath*/panel/uprofile"
+      />
+      <Route
+        component={ProfileEditPanel}
+        exact
+        path="/:rootPath*/panel/editProfile"
+      />
+      <Route
+        component={UserSettingsPanel}
+        exact
+        path="/:rootPath*/panel/settings"
+      />
+      <Route
+        component={UserWalletPanel}
+        exact
+        path="/:rootPath*/panel/wallet"
+      />
+      <Route
+        component={HighlightsPanel}
+        exact
+        path="/:rootPath*/panel/highlights"
+      />
+      <Route
+        component={HighlightEditPanel}
+        path="/:rootPath*/panel/highlights/:highlightId?"
+      />
+      <Route
+        component={ListPanel}
+        exact
+        path="/:rootPath*/panel/lists"
+      />
+      <Route
+        component={ListEntriesPanel}
+        path="/:rootPath*/panel/lists/:listName?"
+      />
+    </Switch>
   </div>
 );
-Panels.propTypes = {
-    onPanelNavigate: PropTypes.func,
-};
 
 export default Panels;

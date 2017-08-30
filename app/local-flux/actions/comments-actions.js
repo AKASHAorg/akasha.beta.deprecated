@@ -178,8 +178,6 @@ class CommentsActions {
     }
 }
 
-export const commentsAddPublishAction = payload =>
-    action(types.COMMENTS_ADD_PUBLISH_ACTION, { payload });
 export const commentsCheckNew = entryId => action(types.COMMENTS_CHECK_NEW, { entryId });
 
 export const commentsCheckNewError = (error) => {
@@ -221,7 +219,8 @@ export const commentsMoreIteratorError = (error) => {
 
 export const commentsMoreIteratorSuccess = (data, request) =>
     action(types.COMMENTS_MORE_ITERATOR_SUCCESS, { data, request });
-export const commentsPublish = (payload, gas) => action(types.COMMENTS_PUBLISH, { payload, gas });
+export const commentsPublish = ({ actionId, ...payload }) =>
+    action(types.COMMENTS_PUBLISH, { actionId, ...payload });
 
 export const commentsPublishError = (error) => {
     error.code = 'CPE01';

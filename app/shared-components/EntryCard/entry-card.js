@@ -10,9 +10,8 @@ import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from '../../components/svg';
 import { EntryVotesPanel, TagChip } from '../';
-import { Avatar, EntryVersionsPanel } from '../../components';
-import { calculateReadingTime, getInitials } from '../../utils/dataModule';
-import imageCreator from '../../utils/imageUtils';
+import { Avatar, EntryVersionsPanel, ProfilePopover } from '../../components';
+import { calculateReadingTime } from '../../utils/dataModule';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 
 class EntryCard extends Component {
@@ -37,7 +36,7 @@ class EntryCard extends Component {
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
             !publisher.equals(this.props.publisher) ||
-            style.width !== this.props.style.width ||
+            (style && style.width !== this.props.style.width) ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||
             nextState.showVotes !== this.state.showVotes ||
@@ -186,7 +185,7 @@ class EntryCard extends Component {
         const { intl } = this.props;
         const { palette } = this.context.muiTheme;
         return (
-          <Card style={{ margin: '5px 10px 10px 5px', width: '340px' }}>
+          <Card style={{ margin: '5px 10px 10px 5px', width: '340px', height: '300px' }}>
             <CardText style={{ position: 'relative' }}>
               <div style={{ maxWidth: '175px' }}>
                 {intl.formatMessage(entryMessages.unresolvedEntry)}
@@ -253,7 +252,7 @@ class EntryCard extends Component {
     };
 
     render () {
-        const { canClaimPending, claimPending, entry, entryResolvingIpfsHash, existingDraft,
+        const { canClaimPending, claimPending, containerRef, entry, entryResolvingIpfsHash, existingDraft,
             fetchingEntryBalance, intl, isSaved, selectedTag, style, voteEntryPending,
             publisher } = this.props;
         const { palette } = this.context.muiTheme;
@@ -266,10 +265,6 @@ class EntryCard extends Component {
         if (!publisher) {
             return this.renderUnresolvedPlaceholder();
         }
-        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
-        const avatar = publisher.get('avatar') ?
-            imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
-            null;
         const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
 
@@ -291,18 +286,14 @@ class EntryCard extends Component {
           >
             <CardHeader
               title={publisher ?
-                <button
-                  className="content-link"
-                  style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
-                  onClick={this.selectProfile}
-                >
+                <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>                
                   <div
-                    className="overflow-ellipsis"
+                    className="overflow-ellipsis content-link"
                     style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
                     {publisher.get('akashaId')}
                   </div>
-                </button> :
+                </ProfilePopover> :
                 <div style={{ height: '22px' }} />
               }
               subtitle={this.renderSubtitle()}
@@ -318,18 +309,14 @@ class EntryCard extends Component {
                   }}
                   onClick={this.selectProfile}
                 >
-                  <Avatar
-                    image={avatar}
-                    style={{ display: 'inline-block' }}
-                    size={40}
-                    userInitials={userInitials}
-                    userInitialsStyle={{
-                        textTransform: 'uppercase',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        margin: '0px'
-                    }}
-                  />
+                  <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
+                    <Avatar
+                      firstName={publisher.get('firstName')}
+                      image={publisher.get('avatar')}
+                      lastName={publisher.get('lastName')}
+                      size="small"
+                    />
+                  </ProfilePopover>
                 </button>
               }
               textStyle={{ paddingRight: '0px' }}
@@ -378,7 +365,7 @@ class EntryCard extends Component {
                 </div>
               }
               {!content && !entryResolvingIpfsHash &&
-                <div>
+                <div style={{ height: '240px' }}>
                   <div
                     data-tip="Bookmark"
                     style={{
@@ -648,6 +635,7 @@ EntryCard.propTypes = {
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
 
+    containerRef: PropTypes.shape().isRequired,
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.bool,
     publisher: PropTypes.shape()

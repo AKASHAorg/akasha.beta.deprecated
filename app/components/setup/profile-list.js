@@ -102,9 +102,9 @@ class ProfileList extends Component {
         const header = (
           <div className="profile-list__card-header">
             <Avatar
-              image={avatar}
-              style={{ flex: '0 0 auto', marginRight: '16px' }}
+              className="profile-list__avatar"
               firstName={profile.get('firstName')}
+              image={avatar}
               lastName={profile.get('lastName')}
             />
             <div className="profile-list__header-text">
@@ -129,7 +129,6 @@ class ProfileList extends Component {
             onMouseEnter={() => this.onMouseEnter(account)}
             onMouseLeave={this.onMouseLeave}
             style={{
-                cursor: isHovered ? 'pointer' : 'auto',
                 backgroundColor: isHovered ? '#fcfcfc' : '#fff',
                 opacity: selectedAccount && !isSelected ? 0.3 : 1
             }}
@@ -143,9 +142,11 @@ class ProfileList extends Component {
               {isSelected &&
                 <LoginForm
                   account={account}
+                  akashaId={akashaId}
                   getInputRef={this.getInputRef}
                   onCancel={this.onCancelLogin}
                   onSubmit={this.onSubmitLogin}
+                  profile={profile.get('profile')}
                 />
               }
             </ReactCSSTransitionGroup>

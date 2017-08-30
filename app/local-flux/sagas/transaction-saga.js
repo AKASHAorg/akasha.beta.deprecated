@@ -1,117 +1,32 @@
 import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
+import * as actionActions from '../actions/action-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as actions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectLoggedAkashaId } from '../selectors';
-import * as transactionService from '../services/transaction-service';
+import { selectAction, selectLoggedAkashaId } from '../selectors';
+import * as actionService from '../services/action-service';
+import * as actionStatus from '../../constants/action-status';
 
 const Channel = global.Channel;
-
-function* getMinedTransactionInfo (txs) {
-    const pendingTxs = yield select(state => state.transactionState.get('pending'));
-    const result = [];
-    txs.forEach((tx) => { // eslint-disable-line consistent-return
-        const hash = tx && (tx.mined || tx.transactionHash);
-        if (!tx || !pendingTxs.get(hash)) {
-            return null;
-        }
-        const pending = pendingTxs.get(hash).toJS();
-        pending.blockNr = tx.blockNumber;
-        pending.cumulativeGasUsed = tx.cumulativeGasUsed;
-        result.push(pending);
-    });
-    return result;
-}
 
 function* transactionAddToQueue ({ txs }) {
     const channel = Channel.server.tx.addToQueue;
     yield call(enableChannel, channel, Channel.client.tx.manager);
     const akashaId = yield select(selectLoggedAkashaId);
-    txs.forEach(tx => (tx.akashaId = akashaId));
+    txs.forEach((tx) => { tx.akashaId = akashaId; });
     yield apply(channel, channel.send, [txs]);
 }
 
-function* transactionDeletePending ({ tx }) {
-    try {
-        yield apply(transactionService, transactionService.transactionDeletePending, [tx]);
-        yield put(actions.transactionDeletePendingSuccess(tx));
-    } catch (err) {
-        yield put(actions.transactionDeletePendingError(err, tx));
-    }
-}
-
-export function* transactionGetMined () {
-    try {
-        const akashaId = yield select(selectLoggedAkashaId);
-        const mined = yield apply(
-            transactionService,
-            transactionService.transactionGetMined,
-            [akashaId]
-        );
-        yield put(actions.transactionGetMinedSuccess(mined));
-    } catch (err) {
-        yield put(actions.transactionGetMinedError(err));
-    }
-}
-
-export function* transactionGetPending () {
-    try {
-        const akashaId = yield select(selectLoggedAkashaId);
-        const pending = yield apply(
-            transactionService,
-            transactionService.transactionGetPending,
-            [akashaId]
-        );
-        yield put(actions.transactionGetPendingSuccess(pending));
-        if (pending.length) {
-            const txs = pending.map(tx => tx.tx);
-            yield put(actions.transactionGetStatus(txs));
-        }
-    } catch (err) {
-        yield put(actions.transactionGetPendingError(err));
-    }
-}
-
-export function* transactionGetStatus ({ txs }) {
+export function* transactionGetStatus ({ txs, ids }) {
     const channel = Channel.server.tx.getTransaction;
-    yield apply(channel, channel.send, [{ transactionHash: txs }]);
-}
-
-function* transactionSaveMined (txs) {
-    try {
-        yield apply(transactionService, transactionService.transactionSaveMined, [txs]);
-        yield put(actions.transactionEmitMinedSuccess(txs));
-    } catch (err) {
-        yield put(actions.transactionSaveMinedError(err));
-    }
-}
-
-function* transactionSavePending (txs) {
-    try {
-        yield apply(transactionService, transactionService.transactionSavePending, [txs]);
-        yield put(actions.transactionAddToQueueSuccess(txs));
-    } catch (err) {
-        yield put(actions.transactionSavePendingError(err));
-    }
+    yield apply(channel, channel.send, [{ transactionHash: txs, actionIds: ids }]);
 }
 
 // Action watchers
 
 function* watchTransactionAddToQueue () {
     yield takeEvery(types.TRANSACTION_ADD_TO_QUEUE, transactionAddToQueue);
-}
-
-function* watchTransactionDeletePeding () {
-    yield takeEvery(types.TRANSACTION_DELETE_PENDING, transactionDeletePending);
-}
-
-function* watchTransactionGetMined () {
-    yield takeEvery(types.TRANSACTION_GET_MINED, transactionGetMined);
-}
-
-function* watchTransactionGetPending () {
-    yield takeEvery(types.TRANSACTION_GET_PENDING, transactionGetPending);
 }
 
 function* watchTransactionGetStatus () {
@@ -125,8 +40,6 @@ function* watchTransactionAddToQueueChannel () {
         const resp = yield take(actionChannels.tx.addToQueue);
         if (resp.error) {
             yield put(actions.transactionAddToQueueError(resp.error));
-        } else {
-            yield fork(transactionSavePending, resp.request);
         }
     }
 }
@@ -137,8 +50,15 @@ function* watchTransactionEmitMinedChannel () {
         if (resp.error) {
             yield put(actions.transactionEmitMinedError(resp.error));
         } else {
-            const txs = yield call(getMinedTransactionInfo, [resp.data]);
-            yield fork(transactionSaveMined, txs);
+            const { blockNumber, cumulativeGasUsed } = resp.data;
+            const loggedAkashaId = yield select(selectLoggedAkashaId);
+            const actionId = yield apply(actionService, actionService.getActionByTx, [resp.data.mined]);
+            const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+            if (!action || action.get('akashaId') !== loggedAkashaId) {
+                return null;
+            }
+            const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+            yield put(actionActions.actionUpdate(changes));
             yield put(profileActions.profileGetBalance());
         }
     }
@@ -150,8 +70,18 @@ function* watchTransactionGetStatusChannel () {
         if (resp.error) {
             yield put(actions.transactionGetStatusError(resp.error));
         } else {
-            const txs = yield call(getMinedTransactionInfo, resp.data);
-            yield fork(transactionSaveMined, txs);
+            const updates = [];
+            resp.data.forEach((tx, index) => {
+                if (tx) {
+                    const { blockNumber, cumulativeGasUsed } = tx;
+                    const id = resp.request.actionIds[index];
+                    const changes = { id, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+                    updates.push(changes);
+                }
+            });
+            for (let i = 0; i < updates.length; i++) {
+                yield put(actionActions.actionUpdate(updates[i]));
+            }
         }
     }
 }
@@ -164,8 +94,5 @@ export function* registerTransactionListeners () {
 
 export function* watchTransactionActions () {
     yield fork(watchTransactionAddToQueue);
-    yield fork(watchTransactionDeletePeding);
-    yield fork(watchTransactionGetMined);
-    yield fork(watchTransactionGetPending);
     yield fork(watchTransactionGetStatus);
 }

@@ -128,12 +128,12 @@ const confirmMessages = defineMessages({
                 meaning a total of {total} AETH excluding gas cost
                 which will be deducted from your {balance} AETH balance.`
     },
-    upvote_title: {
+    upvoteTitle: {
         id: 'app.confirm.upvoteTitle',
         description: 'confirm dialog title for voting an entry',
         defaultMessage: 'Upvote'
     },
-    downvote_title: {
+    downvoteTitle: {
         id: 'app.confirm.downvoteTitle',
         description: 'confirm dialog title for voting an entry',
         defaultMessage: 'Downvote'
@@ -168,16 +168,6 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.sendTip',
         description: 'confirm dialog message for sending a tip to someone',
         defaultMessage: 'Are you sure you want to blabla?'
-    },
-    ethAmountLabel: {
-        id: 'app.confirm.ethAmount',
-        description: 'eth amount input label',
-        defaultMessage: 'AETH amount'
-    },
-    maxEthAmountLabel: {
-        id: 'app.confirm.maxEthAmount',
-        description: 'max eth amount label',
-        defaultMessage: 'max. {balance}'
     },
     receiverLabel: {
         id: 'app.confirm.receiverLabel',

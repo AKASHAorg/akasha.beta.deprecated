@@ -14,7 +14,7 @@ class CommentThread extends Component {
     }
 
     render () {
-        const { comments, commentsAddPublishAction, depth, entryAuthorProfile, entryId, intl,
+        const { actionAdd, comments, containerRef, depth, entryAuthorProfile, entryId, intl,
             loggedProfile, onReply, onReplyCancel, parentId, pendingComments, profileAvatar,
             profiles, profileUserInitials, replyTo } = this.props;
         const loggedProfileData = profiles.get(loggedProfile.get('akashaId'));
@@ -38,6 +38,7 @@ class CommentThread extends Component {
         const comms = filteredComments.map(comment => (
           <Comment
             comment={comment}
+            containerRef={containerRef}
             entryAuthorProfile={entryAuthorProfile}
             key={`${comment.commentId}-fetchedComments`}
             loggedProfile={loggedProfile}
@@ -46,8 +47,9 @@ class CommentThread extends Component {
             showReplyButton={(depth <= 2)}
           >
             <CommentThread
+              actionAdd={actionAdd}
               comments={comments}
-              commentsAddPublishAction={commentsAddPublishAction}
+              containerRef={containerRef}
               depth={(depth + 1)}
               entryAuthorProfile={entryAuthorProfile}
               entryId={entryId}
@@ -67,7 +69,8 @@ class CommentThread extends Component {
                 return (
                   <div>
                     <CommentEditor
-                      commentsAddPublishAction={commentsAddPublishAction}
+                      actionAdd={actionAdd}
+                      containerRef={containerRef}
                       entryId={entryId}
                       intl={intl}
                       loggedProfileData={loggedProfileData}
@@ -97,8 +100,9 @@ class CommentThread extends Component {
 }
 
 CommentThread.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    commentsAddPublishAction: PropTypes.func.isRequired,
+    containerRef: PropTypes.shape().isRequired,
     depth: PropTypes.number,
     entryAuthorProfile: PropTypes.string,
     entryId: PropTypes.string,

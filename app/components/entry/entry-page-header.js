@@ -2,18 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
 import { parse } from 'querystring';
 import { CardHeader, IconButton, SvgIcon } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
-import { Avatar, EntryVersionsPanel, ProfileHoverCard } from '../';
+import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedAkashaId } from '../../local-flux/selectors';
-import { calculateReadingTime, getInitials } from '../../utils/dataModule';
+import { calculateReadingTime } from '../../utils/dataModule';
 import styles from './entry-page-header.scss';
 
 const buttonStyle = {
@@ -26,18 +24,7 @@ const buttonStyle = {
 class EntryPageHeader extends Component {
     state = {
         showVersions: false,
-        anchorHovered: false,
     };
-
-    componentDidMount () {
-        ReactTooltip.rebuild();
-    }
-
-    componentWillUnmount () {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
-    }
 
     openVersionsPanel = () => {
         this.setState({
@@ -49,17 +36,6 @@ class EntryPageHeader extends Component {
         this.setState({
             showVersions: false
         });
-    };
-
-    showProfileHoverCard = (ev) => {
-        this.setState({
-            hoverNode: ev.currentTarget
-        });
-        this.timeout = setTimeout(() => {
-            this.setState({
-                anchorHovered: true,
-            });
-        }, 500);
     };
 
     getCurrentVersion = () => {
@@ -79,17 +55,6 @@ class EntryPageHeader extends Component {
         history.replace(`${match.url}${query}`);
     };
 
-    hideProfileHoverCard = () => {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-        this.setState({
-            anchorHovered: false,
-            hoverNode: null
-        });
-    };
-
     handleEdit = () => {
         const { entry, existingDraft, history } = this.props;
         if (existingDraft) {
@@ -104,21 +69,18 @@ class EntryPageHeader extends Component {
     renderAvatar = () => {
         const { publisher } = this.props;
         if (!publisher) {
-            return <Avatar size={40} style={{ cursor: 'pointer' }} />;
+            return <Avatar style={{ cursor: 'pointer' }} />;
         }
-        const userInitials = getInitials(publisher.firstName, publisher.lastName);
 
         return (
-          <Link to={`/${publisher.get('akashaId')}`}>
+          <ProfilePopover akashaId={publisher.get('akashaId')}>
             <Avatar
+              firstName={publisher.get('firstName')}
               image={publisher.avatar}
-              onMouseEnter={this.showProfileHoverCard}
-              size={40}
-              style={{ cursor: 'pointer' }}
-              userInitials={userInitials}
-              userInitialsStyle={{ fontSize: '12px', margin: '0px' }}
+              lastName={publisher.get('lastName')}
+              size="small"
             />
-          </Link>
+          </ProfilePopover>
         );
     };
 
@@ -205,30 +167,20 @@ class EntryPageHeader extends Component {
             >
               <CardHeader
                 avatar={this.renderAvatar()}
-                onMouseLeave={this.hideProfileHoverCard}
                 subtitle={this.renderSubtitle()}
                 style={{ zIndex: 5, padding: 0 }}
                 title={publisher ?
-                  <Link to={`/${publisher.get('akashaId')}`}>
+                  <ProfilePopover akashaId={publisher.get('akashaId')}>
                     <div
                       className={`content-link ${styles.entry_publisher_name}`}
-                      onMouseEnter={this.showProfileHoverCard}
                       style={{ color: palette.textColor }}
                     >
                       {publisher.akashaId}
                     </div>
-                  </Link> :
+                  </ProfilePopover> :
                   <div style={{ height: '22px' }} />
                 }
-              >
-                {publisher &&
-                  <ProfileHoverCard
-                    anchorHovered={this.state.anchorHovered}
-                    anchorNode={this.state.hoverNode}
-                    profile={publisher}
-                  />
-                }
-              </CardHeader>
+              />
               <div className={styles.entry_header_actions}>
                 {isOwnEntry &&
                   <div
@@ -299,7 +251,6 @@ function mapStateToProps (state) {
     return {
         entry,
         existingDraft,
-        latestVersion: state.entryState.get('fullEntryLatestVersion'),
         loggedAkashaId: selectLoggedAkashaId(state),
         publisher: state.profileState.getIn(['byId', akashaId]),
     };

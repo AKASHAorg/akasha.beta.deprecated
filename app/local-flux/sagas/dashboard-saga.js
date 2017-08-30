@@ -1,11 +1,12 @@
 import { delay } from 'redux-saga';
-import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as profileService from '../services/profile-service';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
+import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboardId,
     selectLoggedAccount } from '../selectors';
 
@@ -38,6 +39,20 @@ function* dashboardAddColumn ({ columnType, value }) {
     } catch (error) {
         yield put(actions.dashboardAddColumnError(error));
     }
+}
+
+function* dashboardAddFirst ({ interests }) {
+    const interestsMap = interests.toJS();
+    const addTagColumns = interestsMap[columnTypes.tag].map(interest =>
+        put(actions.dashboardAddColumn(columnTypes.tag, interest))
+    );
+    const addPeopleColumns = interestsMap[columnTypes.profile].map(interest =>
+        put(actions.dashboardAddColumn(columnTypes.profile, interest))
+    );
+    const addColumns = addTagColumns.concat(addPeopleColumns);
+    yield call(dashboardAdd, { name: 'first' });
+    yield all(addColumns);
+    yield put(actions.dashboardAddFirstSuccess());
 }
 
 function* dashboardDelete ({ name }) {
@@ -107,8 +122,12 @@ export function* dashboardGetProfileSuggestions (request) {
 }
 
 function* dashboardGetTagSuggestions (request) {
+    const { tag } = request;
+    const START = 0;
+    const LIMIT = 5;
     try {
-        const suggestions = yield apply(tagService, tagService.getTagSuggestions, [request.tag]);
+        const tags = yield apply(tagService, tagService.tagSearch, [tag, START, LIMIT]);
+        const suggestions = tags.tags;
         yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
         return { suggestions };
     } catch (error) {
@@ -143,7 +162,7 @@ function* dashboardUpdateColumn ({ id, changes }) {
 
 function* dashboardUpdateNewColumn ({ changes }) {
     if (changes && changes.value) {
-        const { suggestions } = yield call(dashboardGetTagSuggestions, { tag: changes.value });
+        const { suggestions } = yield call(dashboardGetTagSuggestions, { tag: changes.value, context: 'column' });
         if (suggestions) {
             const request = suggestions.map(tagName => ({ tagName }));
             yield call(delay, 200);
@@ -160,6 +179,10 @@ function* watchDashboardAdd () {
 
 function* watchDashboardAddColumn () {
     yield takeEvery(types.DASHBOARD_ADD_COLUMN, dashboardAddColumn);
+}
+
+function* watchDashboardAddFirst () {
+    yield takeEvery(types.DASHBOARD_ADD_FIRST, dashboardAddFirst);
 }
 
 function* watchDashboardDelete () {
@@ -193,6 +216,7 @@ function* watchDashboardUpdateNewColumn () {
 export function* watchDashboardActions () {
     yield fork(watchDashboardAdd);
     yield fork(watchDashboardAddColumn);
+    yield fork(watchDashboardAddFirst);
     yield fork(watchDashboardDelete);
     yield fork(watchDashboardDeleteColumn);
     yield fork(watchDashboardGetProfileSuggestions);

@@ -11,7 +11,6 @@ export { RegistryService } from './registry-service';
 export { SearchService } from './search-service';
 export { SettingsService } from './settings-service';
 export { TagService } from './tag-service';
-export { TransactionService } from './transaction-service';
 export { UtilsService } from './utils-service';
 export { ValidationService } from './validation-service';
 

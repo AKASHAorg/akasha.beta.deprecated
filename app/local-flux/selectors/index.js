@@ -1,7 +1,9 @@
+import { List } from 'immutable';
 import { ProfileRecord } from '../reducers/records';
-import actionTypes from '../../constants/action-types';
 
 /* eslint-disable no-use-before-define */
+
+export const selectAction = (state, id) => state.actionState.getIn(['byId', id]);
 
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
@@ -29,6 +31,8 @@ export const selectActiveDashboardId = (state) => {
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
 export const selectAllComments = state => state.commentsState.get('byId').toList();
+
+export const selectAllLicenses = state => state.licenseState.get('byId');
 
 export const selectBalance = state => state.profileState.get('balance');
 
@@ -59,12 +63,8 @@ export const selectCommentsFlag = (state, flag, id) => {
 export const selectDashboardId = (state, name) =>
     state.dashboardState.getIn(['dashboardById', name, 'id']);
 
-export const selectDashboards = (state) => {
-    const akashaId = selectLoggedAkashaId(state);
-    return state.dashboardState
-        .get('dashboardById')
-        .filter(dashboard => dashboard.get('akashaId') === akashaId);
-};
+export const selectDashboards = state =>
+    state.dashboardState.get('dashboardById');
 
 export const selectDraftById = (state, draftId) =>
     state.draftState.getIn(['drafts', draftId]);
@@ -93,6 +93,20 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectIsFollower = (state, akashaId) => state.profileState.getIn(['isFollower', akashaId]);
 
+export const selectHighlight = (state, id) => state.highlightState.getIn(['byId', id]);
+
+export const selectHighlights = (state) => {
+    const searchResults = state.highlightState.get('searchResults');
+    if (state.highlightState.get('search')) {
+        return searchResults.map(id => state.highlightState.getIn(['byId', id]));
+    }
+    return state.highlightState.get('byId').toList();
+};
+
+export const selectHighlightsCount = state => state.highlightState.get('byId').size;
+
+export const selectHighlightSearch = state => state.highlightState.get('search');
+
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
 export const selectLastFollower = (state, akashaId) =>
@@ -109,6 +123,29 @@ export const selectLastIpfsLog = state =>
 
 export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
+export const selectListByName = (state, name) => state.listState.getIn(['byName', name]);
+
+export const selectListNextEntries = (state, name, limit) => {
+    const startIndex = state.listState.getIn(['byName', name, 'startIndex']);
+    return state.listState
+        .getIn(['byName', name, 'entryIds'])
+        .slice(startIndex, startIndex + limit)
+        .map(id => ({ entryId: id }))
+        .toJS();
+};
+
+export const selectLists = (state) => {
+    const searchResults = state.listState.get('searchResults');
+    if (state.listState.get('search')) {
+        return searchResults.map(name => state.listState.getIn(['byName', name]));
+    }
+    return state.listState.get('byName').toList();
+};
+
+export const selectListsCount = state => state.listState.get('byName').size;
+
+export const selectListSearch = state => state.listState.get('search');
+
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')
@@ -120,23 +157,33 @@ export const selectLoggedAccount = state =>
 export const selectLoggedAkashaId = state =>
     state.profileState.getIn(['loggedProfile', 'akashaId']);
 
+export const selectLoggedProfile = state => state.profileState.get('loggedProfile');
+
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
+
+export const selectNeedAuthAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
+
+export const selectNeedTransferAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needTransferConfirm')]);
+
+export const selectNeedWeightAction = state =>
+    state.actionState.getIn(['byId', state.actionState.get('needWeightConfirm')]);
 
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
 export const selectPendingComments = (state, entryId) => {
-    const pendingComments = state.appState
-        .get('pendingActions')
-        .filter(act =>
-            act.get('type') === actionTypes.comment &&
-            act.get('status') === 'publishing' &&
-            act.getIn(['payload', 'entryId']) === entryId);
-    return pendingComments;
+    // const pendingComments = state.appState
+    //     .get('pendingActions')
+    //     .filter(act =>
+    //         act.get('type') === actionTypes.comment &&
+    //         act.get('status') === 'publishing' &&
+    //         act.getIn(['payload', 'entryId']) === entryId);
+    // return pendingComments;
+    return new List();
 };
-
-export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pending', tx]);
 
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
@@ -146,10 +193,24 @@ export const selectProfileByAccount = (state, account) => {
     return state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 };
 
+export const selectProfileEntries = (state, akashaId) =>
+    state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
+        .toList();
+
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectSearchEntries = state =>
+    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+
+export const selectSearchQuery = state => state.searchState.get('query');
 
 export const selectTagMargins = state => state.tagState.get('margins');
 
+export const selectTagGetEntriesCount = state =>
+    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
+
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
+
+export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
 
 /* eslint-enable no-use-before-define */

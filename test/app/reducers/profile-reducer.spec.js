@@ -24,56 +24,6 @@ describe('profile reducer tests:', () => {
             expect(modifiedState).to.eql(initialState);
         });
     });
-    describe(types.PROFILE_GET_CURRENT, () => {
-        it('should set the correct flag', () => {
-            modifiedState = ProfileReducer(initialState, actions.profileGetCurrent());
-            expect(modifiedState.getIn(['flags', 'currentProfilePending'])).to.be.true;
-        });
-    });
-    describe(types.PROFILE_GET_CURRENT_ERROR, () => {
-        it('should set the correct flag', () => {
-            modifiedState = ProfileReducer(initialState, actions.profileGetCurrent());
-            modifiedState = ProfileReducer(initialState, actions.profileGetCurrentError({}));
-            expect(modifiedState.getIn(['flags', 'currentProfilePending'])).to.be.false;
-        });
-    });
-    describe(types.PROFILE_GET_CURRENT_SUCCESS, () => {
-        it('should set the correct flag', () => {
-            modifiedState = ProfileReducer(initialState, actions.profileGetCurrent());
-            modifiedState = ProfileReducer(initialState, actions.profileGetCurrentSuccess({}));
-            expect(modifiedState.getIn(['flags', 'currentProfilePending'])).to.be.false;
-        });
-        it('should set logged profile', () => {
-            const akashaId = 'test';
-            const profile = '0xblablabla';
-            const resp = { akashaId, profileAddress: profile };
-            const expected = new LoggedProfile({ akashaId, profile });
-            modifiedState = ProfileReducer(
-                initialState,
-                actions.profileGetCurrentSuccess(resp)
-            );
-            expect(modifiedState.get('loggedProfile')).to.eql(expected,
-                'loggedProfile was not set correctly');
-        });
-        it('should update logged profile', () => {
-            const akashaId = 'test';
-            const profile = '0xblablabla';
-            const resp = { akashaId, profileAddress: profile };
-            const existing = {
-                account: '0xexisting',
-                expiration: '02/02/1600',
-                token: 'efgh'
-            };
-            const state = initialState.set('loggedProfile', new LoggedProfile(existing));
-            modifiedState = ProfileReducer(
-                state,
-                actions.profileGetCurrentSuccess(resp)
-            );
-            const expected = new LoggedProfile({ akashaId, profile, ...existing });
-            expect(modifiedState.get('loggedProfile')).to.eql(expected,
-                'loggedProfile was not updated correctly');
-        });
-    });
     describe(types.PROFILE_GET_LIST, () => {
         it('should set the correct flag', () => {
             modifiedState = ProfileReducer(initialState, actions.profileGetList());
