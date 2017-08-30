@@ -125,7 +125,7 @@ class AppContainer extends Component {
                       <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
-                          <Route path="/draft/text/:draftId" component={NewTextEntryPage} />
+                          <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&

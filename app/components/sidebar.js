@@ -7,6 +7,7 @@ import { ChatIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
 import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
+import { genId } from '../utils/dataModule';
 
 class Sidebar extends Component {
     state = {
@@ -44,13 +45,13 @@ class Sidebar extends Component {
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
-                if (path === '/draft/text/newArticle') {
-                    const draftId = 'newArticle';
+                if (path === '/draft/article/new') {
+                    const draftId = genId();
                     draftCreate({
                         type: 'article',
                         id: draftId
                     });
-                    return history.push(`draft/text/${draftId}`);
+                    return history.push(`/draft/article/${draftId}`);
                 }
                 return history.push(path);
             });
@@ -110,7 +111,7 @@ class Sidebar extends Component {
                         className="borderless"
                         icon="file"
                         ghost
-                        onClick={this._navigateTo('/draft/text/newArticle')}
+                        onClick={this._navigateTo('/draft/article/new')}
                       />
                     </Tooltip>
                   </li>

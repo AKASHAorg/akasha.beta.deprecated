@@ -3,65 +3,53 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Icon, Row, Col, Button } from 'antd';
-import { DraftJS } from 'megadraft';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
-import { draftCreate, draftGetById, draftUpdate, draftAutosave,
+import { draftCreate, draftsGet, draftUpdate, draftAutosave,
     draftsGetCount } from '../local-flux/actions/draft-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 
-const { convertToRaw } = DraftJS;
 class NewEntryPage extends Component {
     state = {
         showPublishPanel: false,
     }
-    componentWillMount () {
-        const { match, draftObj, akashaId } = this.props;
-        const { draftId } = match.params;
-        if (!draftObj && draftId === 'newArticle') {
+
+    componentWillReceiveProps (nextProps) {
+        const { match, draftObj, draftsFetched } = nextProps;
+        const { akashaId } = this.props;
+        if (!draftObj && draftsFetched) {
             this.props.draftCreate({
-                id: 'newArticle',
+                id: match.params.draftId,
                 type: 'article',
                 akashaId,
             });
-        } else if (!draftObj) {
-            this.props.draftGetById({ draftId });
         }
     }
-    componentDidMount () {
-        const { akashaId } = this.props;
-        this.props.draftsGetCount({ akashaId });
-    }
+
     _showPublishOptionsPanel = () => {
         this.setState({
             showPublishPanel: true
         });
     }
-    _handleDraftUpdate = (field, data) => {
+    _handleTitleChange = (ev) => {
+        const { match, akashaId, draftObj } = this.props;
         this.props.draftUpdate({
             akashaId,
-
-        })
+            content: draftObj.get('content').merge({
+                title: ev.target.value
+            }),
+            id: match.params.draftId,
+        });
     }
     _handleEditorChange = (editorState) => {
         const { match, akashaId, draftObj } = this.props;
-        const title = this.titleInput.value;
-        const tags = this.tagEditor.getTags();
         this.props.draftUpdate({
             akashaId,
             content: draftObj.get('content').mergeDeep({
                 draft: editorState,
-                title,
             }),
             id: match.params.draftId,
-            tags
-        });
-    }
-
-    _handleTitleChange = (ev) => {
-        this.setState({
-            title: ev.target.value
         });
     }
 
@@ -88,12 +76,10 @@ class NewEntryPage extends Component {
 
     render () {
         const { showPublishPanel } = this.state;
-        const { showSecondarySidebar, intl, draftObj, match } = this.props;
+        const { showSecondarySidebar, intl, draftObj } = this.props;
 
-        if (!draftObj && match.params.draftId !== 'newArticle') {
+        if (!draftObj) {
             return <div>Finding Draft</div>;
-        } else if (!draftObj) {
-            return <div>Generating Draft</div>;
         }
 
         const { content, tags } = draftObj;
@@ -137,6 +123,7 @@ class NewEntryPage extends Component {
                   <TagEditor
                     ref={this._createRef('tagEditor')}
                     nodeRef={(node) => { this.tagsField = node; }}
+                    tags={tags}
                   />
                 </div>
               </Col>
@@ -152,6 +139,7 @@ class NewEntryPage extends Component {
                   onClose={this._handlePublishPanelClose}
                   title={title}
                   excerpt={excerpt}
+                  licence={licence}
                 />
               </Col>
               <div
@@ -192,10 +180,9 @@ NewEntryPage.propTypes = {
     akashaId: PropTypes.string,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
-    draftGetById: PropTypes.func,
+    draftsGet: PropTypes.func,
     draftUpdate: PropTypes.func,
-    draftsGetCount: PropTypes.func,
-    draftsCount: PropTypes.number,
+    draftsFetched: PropTypes.bool,
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
@@ -207,6 +194,7 @@ const mapStateToProps = (state, ownProps) => ({
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
     akashaId: selectLoggedAkashaId(state),
     draftsCount: state.draftState.get('draftsCount'),
+    draftsFetched: state.draftState.get('draftsFetched'),
 });
 
 export default connect(
@@ -214,7 +202,7 @@ export default connect(
     {
         secondarySidebarToggle,
         draftCreate,
-        draftGetById,
+        draftsGet,
         draftUpdate,
         draftAutosave,
         draftsGetCount,

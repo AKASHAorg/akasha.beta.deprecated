@@ -5,6 +5,7 @@ const DraftModelRecord = Record({
     drafts: new Map(),
     draftsCount: 0,
     selection: new Map(),
+    draftsFetched: false,
 });
 
 export default class DraftModel extends DraftModelRecord {

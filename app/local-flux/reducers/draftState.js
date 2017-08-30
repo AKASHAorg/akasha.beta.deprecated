@@ -49,7 +49,11 @@ const draftState = createReducer(initialState, {
         }),
 
     [types.DRAFTS_GET_SUCCESS]: (state, { data }) =>
-        state.set('drafts', data.drafts),
+        state.withMutations(stateMap =>
+            stateMap.merge({ drafts: data.drafts })
+                .set('draftsFetched', true)
+                .set('draftsCount', data.drafts.size)
+        ),
 
     [types.DRAFT_SAVE]: (state, { data }) =>
         state.updateIn(['drafts', `${data.id}`], draft =>
@@ -74,12 +78,14 @@ const draftState = createReducer(initialState, {
             })),
 
     [types.DRAFT_AUTOSAVE_SUCCESS]: (state, { data }) =>
-        state.updateIn(['drafts', data.id], draft =>
+    state.withMutations(stateMap =>
+        stateMap.updateIn(['drafts', data.id], draft =>
             draft.merge({
                 saved: true,
                 saving: false,
                 updated_at: data.updated_at
-            })),
+            })).set('draftsCount', state.get('drafts').size)
+    ),
 
     [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { data }) =>
         state.setIn(['drafts', data.draft.id], data.draft),
