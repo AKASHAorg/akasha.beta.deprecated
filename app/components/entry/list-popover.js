@@ -160,6 +160,7 @@ class ListPopover extends Component {
                 placeholder={intl.formatMessage(listMessages.searchForList)}
                 prefix={<Icon className="list-popover__search-icon" type="search" />}
                 ref={this.getSearchInputRef}
+                size="large"
                 value={search}
               />
             </div>
@@ -207,9 +208,8 @@ class ListPopover extends Component {
                   );
               })}
             </div>
-            <div className="list-popover__divider" />
             {this.isListDirty() ?
-              <div className="content-link list-popover__row" onClick={this.listUpdateEntryIds}>
+              <div className="content-link list-popover__button" onClick={this.listUpdateEntryIds}>
                 <Icon
                   className="list-popover__left-item"
                   style={{ position: 'relative', top: '2px' }}
@@ -219,7 +219,7 @@ class ListPopover extends Component {
                   {intl.formatMessage(generalMessages.submit)}
                 </div>
               </div> :
-              <div className="content-link list-popover__row" onClick={this.toggleNewList}>
+              <div className="content-link list-popover__button" onClick={this.toggleNewList}>
                 <Icon
                   className="list-popover__left-item"
                   type="plus"

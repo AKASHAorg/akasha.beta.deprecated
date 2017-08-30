@@ -88,7 +88,7 @@ class SendTipForm extends Component {
             </FormItem>
             <div className="send-tip-form__actions">
               <Button className="send-tip-form__button" onClick={onCancel}>
-                <span className="send-tip-form__button-label">                
+                <span className="send-tip-form__button-label">
                   {intl.formatMessage(generalMessages.cancel)}
                 </span>
               </Button>

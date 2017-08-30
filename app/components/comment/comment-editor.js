@@ -148,7 +148,7 @@ class CommentEditor extends Component {
 
 CommentEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entryId: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

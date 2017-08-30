@@ -20,10 +20,12 @@ const errorHandler = (state, { error, flags }) =>
         flags: state.get('flags').merge(flags)
     });
 
-const addProfileData = (byId, profileData) => {
+const addProfileData = (byId, { ...profileData }) => {
     if (!profileData) {
         return byId;
     }
+    profileData.followersCount = Number(profileData.followersCount);
+    profileData.followingCount = Number(profileData.followingCount);
     const { avatar, baseUrl } = profileData;
     if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;

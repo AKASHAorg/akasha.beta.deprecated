@@ -102,7 +102,7 @@ class CommentThread extends Component {
 CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     depth: PropTypes.number,
     entryAuthorProfile: PropTypes.string,
     entryId: PropTypes.string,

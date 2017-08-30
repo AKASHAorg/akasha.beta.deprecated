@@ -25,6 +25,12 @@ class ProfilePopover extends Component {
         }
     }
 
+    componentWillUnmount () {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
     onFollow = () => {
         const { akashaId, isFollower, loggedAkashaId } = this.props;
         if (isFollower) {
@@ -40,7 +46,8 @@ class ProfilePopover extends Component {
         });
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
+                this.timeout = null;
                 this.setState({
                     sendTip: false,
                 });
@@ -73,9 +80,6 @@ class ProfilePopover extends Component {
             `${profile.get('firstName')} ${profile.get('lastName')}` :
             profile.get('akashaId');
         const isLoggedProfile = akashaId === loggedAkashaId;
-
-        // TODO Remove this
-        const about = 'Nothing to see here. Just random stuff';
 
         if (this.state.sendTip) {
             return (
@@ -129,9 +133,9 @@ class ProfilePopover extends Component {
                   {profile.get('commentsCount') || 3}
                 </div>
               </div>
-              {about &&
+              {profile.get('about') &&
                 <div className="profile-popover__about">
-                  {about}
+                  {profile.get('about')}
                 </div>
               }
             </div>
