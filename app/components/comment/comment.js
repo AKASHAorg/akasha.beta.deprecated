@@ -213,7 +213,7 @@ Comment.contextTypes = {
 Comment.propTypes = {
     children: PropTypes.node,
     comment: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entryAuthorProfile: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),

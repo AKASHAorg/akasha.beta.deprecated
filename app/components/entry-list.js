@@ -28,9 +28,9 @@ class EntryList extends Component {
         ReactTooltip.hide();
     }
 
-    getContainerRef = el => (this.container = el);
+    getContainerRef = (el) => { this.container = el; };
 
-    getTriggerRef = el => (this.trigger = el);
+    getTriggerRef = (el) => { this.trigger = el; };
 
     checkTrigger = () => {
         if (this.trigger && isInViewport(this.trigger)) {

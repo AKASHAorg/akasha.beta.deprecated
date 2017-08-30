@@ -99,7 +99,9 @@ class NewListForm extends Component {
             </FormItem>
             <div className="new-list-form__actions">
               <Button className="new-list-form__button" onClick={onCancel}>
-                {intl.formatMessage(generalMessages.cancel)}
+                <span className="new-list-form__button-label">
+                  {intl.formatMessage(generalMessages.cancel)}
+                </span>
               </Button>
               <Button
                 className="new-list-form__button"
@@ -108,7 +110,9 @@ class NewListForm extends Component {
                 onClick={this.onSubmit}
                 type="primary"
               >
-                {intl.formatMessage(generalMessages.save)}
+                <span className="new-list-form__button-label">
+                  {intl.formatMessage(generalMessages.save)}
+                </span>
               </Button>
             </div>
           </Form>

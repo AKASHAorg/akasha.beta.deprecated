@@ -80,7 +80,7 @@ class CommentsList extends Component {
 CommentsList.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     fetchingComments: PropTypes.bool,
     fetchingMoreComments: PropTypes.bool,
