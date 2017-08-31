@@ -37,11 +37,6 @@ const generalMessages = defineMessages({
         description: 'navigate back',
         defaultMessage: 'Back'
     },
-    by: {
-        id: 'app.general.by',
-        description: 'entry is written `by`',
-        defaultMessage: 'by'
-    },
     cancel: {
         id: 'app.general.cancel',
         description: 'cancel button label',
@@ -67,16 +62,6 @@ const generalMessages = defineMessages({
         description: 'close',
         defaultMessage: 'Close'
     },
-    comingSoon: {
-        id: 'app.general.comingSoon',
-        description: 'tooltip for sidebar disabled button',
-        defaultMessage: 'Coming soon'
-    },
-    completed: {
-        id: 'app.general.completed',
-        description: 'completed button label',
-        defaultMessage: 'Completed'
-    },
     completeProfileCrumb: {
         id: 'app.general.completeProfileCrumb',
         description: 'breadcrumb to display when a profile is created',
@@ -86,11 +71,6 @@ const generalMessages = defineMessages({
         id: 'app.general.confirm',
         description: 'confirm button label',
         defaultMessage: 'Confirm'
-    },
-    connected: {
-        id: 'app.general.connected',
-        description: 'connected status',
-        defaultMessage: 'connected'
     },
     created: {
         id: 'app.general.created',
@@ -150,11 +130,6 @@ const generalMessages = defineMessages({
             other {hours}
         }`
     },
-    importIdentityLabel: {
-        id: 'app.general.importIdentityLabel',
-        description: 'Import identity button label',
-        defaultMessage: 'Import identity'
-    },
     ipfsServiceOff: {
         id: 'app.general.ipfsServiceOff',
         description: 'ipfs client service is stopped',
@@ -195,15 +170,10 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar my entries button',
         defaultMessage: 'My entries'
     },
-    nextButtonLabel: {
-        id: 'app.general.nextButtonLabel',
+    next: {
+        id: 'app.general.next',
         description: 'Label for Next button',
-        defaultMessage: 'next'
-    },
-    noErrors: {
-        id: 'app.general.noErrors',
-        description: 'placeholder for empty error list',
-        defaultMessage: 'No errors'
+        defaultMessage: 'Next'
     },
     notes: {
         id: 'app.general.notes',
@@ -235,11 +205,6 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
-    refresh: {
-        id: 'app.general.refresh',
-        description: 'refresh button label',
-        defaultMessage: 'Refresh'
-    },
     reset: {
         id: 'app.general.reset',
         description: 'Reset form',
@@ -270,35 +235,15 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar search button',
         defaultMessage: 'Search'
     },
-    sendFeedback: {
-        id: 'app.general.sendFeedback',
-        description: 'send feedback button label',
-        defaultMessage: 'Send feedback'
-    },
     send: {
         id: 'app.general.send',
         description: 'send button label',
         defaultMessage: 'Send'
     },
-    serviceStoppedWarning: {
-        id: 'app.createProfile.serviceStoppedWarning',
-        description: 'message to be displayed when geth and/or IPFS are/is stopped',
-        defaultMessage: 'Geth and IPFS must be started'
-    },
     settings: {
         id: 'app.general.settings',
         description: 'settings button label',
         defaultMessage: 'Settings'
-    },
-    showMore: {
-        id: 'app.general.showMore',
-        description: 'label for button that loads more data',
-        defaultMessage: 'Show more'
-    },
-    signOut: {
-        id: 'app.general.signOut',
-        description: 'sign out button label',
-        defaultMessage: 'Sign out'
     },
     start: {
         id: 'app.general.start',

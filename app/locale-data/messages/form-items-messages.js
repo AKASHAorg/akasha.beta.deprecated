@@ -156,16 +156,6 @@ const formMessages = defineMessages({
         description: 'Error displayed when the tip amount is smaller than the minimum allowed value',
         defaultMessage: 'The amount should be at least {minAmount} AETH'
     },
-    tipDecimalsError: {
-        id: 'app.form.tipDecimalsError',
-        description: 'Error displayed when the tip amount has more decimals than the maximum allowed',
-        defaultMessage: 'The amount should not have more than {maxDecimals} decimals'
-    },
-    logInTitle: {
-        id: 'app.form.logInTitle',
-        description: 'login page title',
-        defaultMessage: 'Log in'
-    },
     updateSettings: {
         id: 'app.form.updateSettings',
         description: 'label for update settings button',
