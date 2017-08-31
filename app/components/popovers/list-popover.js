@@ -36,6 +36,15 @@ class ListPopover extends Component {
         }
     }
 
+    componentWillUnmount () {
+        if (this.focusTimeout) {
+            clearInterval(this.focusTimeout);
+        }
+        if (this.resetTimeout) {
+            clearInterval(this.resetTimeout);
+        }
+    }
+
     getSearchInputRef = (el) => { this.searchInput = el; };
 
     getEntryLists = (lists) => {
@@ -86,7 +95,8 @@ class ListPopover extends Component {
         });
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
-            setTimeout(() => {
+            this.resetTimeout = setTimeout(() => {
+                this.resetTimeout = null;
                 this.searchList('');
                 this.setState({
                     addNewList: false,
@@ -97,7 +107,8 @@ class ListPopover extends Component {
     };
 
     setInputFocusAsync = () => {
-        setTimeout(() => {
+        this.focusTimeout = setTimeout(() => {
+            this.focusTimeout = null;
             const input = document.getElementById('list-popover-search');
             if (input) {
                 input.focus();
@@ -216,7 +227,7 @@ class ListPopover extends Component {
                   type="save"
                 />
                 <div style={{ flex: '1 1 auto' }}>
-                  {intl.formatMessage(generalMessages.submit)}
+                  {intl.formatMessage(generalMessages.save)}
                 </div>
               </div> :
               <div className="content-link list-popover__button" onClick={this.toggleNewList}>
@@ -239,7 +250,7 @@ class ListPopover extends Component {
         return (
           <Popover
             content={this.renderContent()}
-            getPopupContainer={() => containerRef}
+            getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="list-popover"
             placement="bottom"

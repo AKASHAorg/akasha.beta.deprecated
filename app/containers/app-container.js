@@ -98,8 +98,7 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
-            hideTerms, hideReportModal, hideNotification,intl, location, needAuth, needTransferConfirm,
-            needWeightConfirm, theme } = this.props;
+            hideTerms, hideReportModal, hideNotification, intl, location, needAuth, theme } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -178,8 +177,6 @@ class AppContainer extends Component {
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && appState.get('showAuthDialog') && <AuthDialog intl={intl} />}
-                {needWeightConfirm && <WeightConfirmDialog intl={intl} />}
-                {needTransferConfirm && <TransferConfirmDialog intl={intl} />}
                 {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
                 <ReactTooltip delayShow={300} class="generic-tooltip" place="bottom" effect="solid" />
               </div>
@@ -206,8 +203,6 @@ AppContainer.propTypes = {
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
     needAuth: PropTypes.string,
-    needTransferConfirm: PropTypes.string,
-    needWeightConfirm: PropTypes.string,
     theme: PropTypes.string,
 };
 
@@ -217,8 +212,6 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         needAuth: state.actionState.get('needAuth'),
-        needTransferConfirm: state.actionState.get('needTransferConfirm'),
-        needWeightConfirm: state.actionState.get('needWeightConfirm'),
         theme: state.settingsState.getIn(['general', 'theme']),
     };
 }

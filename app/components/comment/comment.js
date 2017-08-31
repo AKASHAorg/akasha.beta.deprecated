@@ -88,8 +88,8 @@ class Comment extends Component {
         const currentContent = editorStateFromRaw(content).getCurrentContent();
         const author = profiles.get(data.profile);
         const { palette } = this.context.muiTheme;
-        const authorAkashaId = author.get('akashaId');
-        const authorAvatar = author.get('avatar');
+        const authorAkashaId = author && author.get('akashaId');
+        const authorAvatar = author && author.get('avatar');
 
         return (
           <div
@@ -103,43 +103,48 @@ class Comment extends Component {
                 style={{ marginBottom: !content ? '8px' : '0px' }}
               >
                 <div className={`col-xs-5 ${style.commentAuthor}`}>
-                  <CardHeader
-                    avatar={
-                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
-                        <Avatar
-                          firstName={author.get('firstName')}
-                          image={authorAvatar}
-                          lastName={author.get('lastName')}
-                          size="small"
-                        />
-                      </ProfilePopover>
-                    }
-                    style={{ padding: 0 }}
-                    subtitle={
-                      <div style={{ opacity: !content ? 0.5 : 1 }}>
-                        {date && intl.formatRelative(new Date(date))}
-                      </div>
-                    }
-                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
-                    title={
-                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
-                        <FlatButton
-                          className={style.author_name}
-                          hoverColor="transparent"
-                          label={authorAkashaId}
-                          labelStyle={{
-                              textTransform: 'initial',
-                              paddingLeft: 4,
-                              paddingRight: 4,
-                              color: this.getAuthorNameColor()
-                          }}
-                          // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                        />
-                      </ProfilePopover>
-                    }
-                    titleStyle={{ fontSize: '100%', height: 24 }}
-                  />
+                  {author &&
+                    <CardHeader
+                      avatar={
+                        <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
+                          <Avatar
+                            firstName={author.get('firstName')}
+                            image={authorAvatar}
+                            lastName={author.get('lastName')}
+                            size="small"
+                          />
+                        </ProfilePopover>
+                      }
+                      style={{ padding: 0 }}
+                      subtitle={
+                        <div style={{ opacity: !content ? 0.5 : 1 }}>
+                          {date && intl.formatRelative(new Date(date))}
+                        </div>
+                      }
+                      subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
+                      title={
+                        <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
+                          <FlatButton
+                            className={style.author_name}
+                            hoverColor="transparent"
+                            label={authorAkashaId}
+                            labelStyle={{
+                                textTransform: 'initial',
+                                paddingLeft: 4,
+                                paddingRight: 4,
+                                color: this.getAuthorNameColor()
+                            }}
+                            // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                            style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
+                          />
+                        </ProfilePopover>
+                      }
+                      titleStyle={{ fontSize: '100%', height: 24 }}
+                    />
+                  }
+                  {!author &&
+                    <CardHeader avatar={<Avatar size="small" />} title="Cannot load author data" />
+                  }
                 </div>
                 {showReplyButton && content &&
                   <div className="col-xs-7 end-xs">

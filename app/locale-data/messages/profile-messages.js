@@ -312,6 +312,11 @@ export const profileMessages = defineMessages({
         description: 'title for send tip form',
         defaultMessage: 'Send tip to {name}'
     },
+    tipAmount: {
+        id: 'app.profile.tipAmount',
+        description: 'placeholder for tip amount input',
+        defaultMessage: 'Tip amount'
+    },
     disableNotifications: {
         id: 'app.profile.disableNotifications',
         description: 'tooltip for disable notifications button',

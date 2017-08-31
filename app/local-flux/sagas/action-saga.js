@@ -11,7 +11,6 @@ import { selectAction, selectLoggedAkashaId, selectTokenExpiration } from '../se
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
-import { getInitialStatus } from '../../utils/action-utils';
 
 /**
  * Mapping actionType to Action Creator (AC) that launches a "publishing" action
@@ -69,14 +68,10 @@ function* checkAuthentication () {
 }
 
 /**
- * This saga is used as a hook. If a new action was added and it's initial status
- * is "needAuth", check for authentication
- * Note: if a new action type is needed, add support for it in getInitialStatus (action-utils.js)
+ * This saga is used as a hook. If a new action was added, check for authentication
  */
-function* actionAdd ({ actionType }) {
-    if (getInitialStatus(actionType) === actionStatus.needAuth) {
-        yield call(checkAuthentication);
-    }
+function* actionAdd () {
+    yield call(checkAuthentication);
 }
 
 /**

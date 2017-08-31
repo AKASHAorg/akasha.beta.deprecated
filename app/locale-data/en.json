@@ -150,7 +150,7 @@
   "app.inputField.url": "URL",
   "app.inputField.name": "Name",
   "app.form.gasAmountError": "Gas amount must be between {min} and {max}",
-  "app.form.voteWeightError": "Vote weight must be between {minWeight} and {maxWeight}",
+  "app.form.voteWeightError": "Vote weight must be between {min} and {max}",
   "app.form.notEnoughFunds": "You don't have enough funds in your balance",
   "app.form.alphanumericError": "Tags can contain only letters, numbers, and one dash ( - ) or underscore ( _ ) between characters.",
   "app.form.tooShortError": "Tags should have at least 4 characters.",
