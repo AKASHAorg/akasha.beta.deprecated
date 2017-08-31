@@ -64,7 +64,7 @@ class ImageBlock extends Component {
         if (typeof imageFiles[imageKey].src === 'string') {
             return this.setState({
                 previewImage: imageKey,
-                imageSrc: `${window.entry__baseUrl}/${imageFiles[imageKey].src}`
+                imageSrc: `${this.props.baseUrl}/${imageFiles[imageKey].src}`
             });
         }
         return this.setState({
@@ -150,7 +150,7 @@ class ImageBlock extends Component {
         let imageSource;
         if (isCardEnabled && files.gif) {
             if (typeof files.gif.src === 'string') {
-                imageSource = imageCreator(files.gif.src, window.entry__baseUrl);
+                imageSource = imageCreator(files.gif.src, this.props.baseUrl);
             } else if (typeof files.gif.src === 'object') {
                 imageSource = imageCreator(files.gif.src);
             } else {
@@ -301,7 +301,8 @@ ImageBlock.propTypes = {
         licence: PropTypes.string,
         termsAccepted: PropTypes.bool
     }),
-    blockProps: PropTypes.shape()
+    blockProps: PropTypes.shape(),
+    baseUrl: PropTypes.string,
 };
 
 export default withWidth({

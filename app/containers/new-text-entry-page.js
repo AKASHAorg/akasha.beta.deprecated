@@ -76,12 +76,11 @@ class NewEntryPage extends Component {
 
     render () {
         const { showPublishPanel } = this.state;
-        const { showSecondarySidebar, intl, draftObj } = this.props;
+        const { baseUrl, showSecondarySidebar, intl, draftObj } = this.props;
 
         if (!draftObj) {
             return <div>Finding Draft</div>;
         }
-
         const { content, tags } = draftObj;
         const { title, excerpt, licence, draft } = content;
         return (
@@ -117,6 +116,7 @@ class NewEntryPage extends Component {
                     onChange={this._handleEditorChange}
                     editorState={draft}
                     selectionState={this.state.editorState}
+                    baseUrl={baseUrl}
                   />
                 </div>
                 <div className="text-entry-page__tag-editor">
@@ -178,9 +178,9 @@ class NewEntryPage extends Component {
 
 NewEntryPage.propTypes = {
     akashaId: PropTypes.string,
+    baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
-    draftsGet: PropTypes.func,
     draftUpdate: PropTypes.func,
     draftsFetched: PropTypes.bool,
     intl: PropTypes.shape(),
@@ -195,6 +195,7 @@ const mapStateToProps = (state, ownProps) => ({
     akashaId: selectLoggedAkashaId(state),
     draftsCount: state.draftState.get('draftsCount'),
     draftsFetched: state.draftState.get('draftsFetched'),
+    baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl'])
 });
 
 export default connect(

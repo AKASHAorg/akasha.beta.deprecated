@@ -44,6 +44,13 @@ const appState = createReducer(initialState, {
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('homeReady', false),
 
+    [types.SECONDARY_SIDEBAR_TOGGLE]: (state, { forceToggle }) => {
+        if (typeof forceToggle === 'boolean') {
+            return state.set('showSecondarySidebar', forceToggle);
+        }
+        return state.set('showSecondarySidebar', !state.get('showSecondarySidebar'));
+    },
+
     [types.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
         notifications: state.get('notifications').push(new NotificationRecord(notification))
     }),

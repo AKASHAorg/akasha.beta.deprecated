@@ -14,21 +14,13 @@ import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-<<<<<<< HEAD
-import { DashboardPage, EntryPageContainer, SidebarContainer, NewTextEntryPage } from './';
-import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NewEntrySecondarySidebar, NotificationBar,
-    PageContent, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
-import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
-=======
-import { DashboardPage, EntryPageContainer, EntrySearchPage,
+import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog } from '../components/dialogs';
 import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent,
-    SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
->>>>>>> develop
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NewEntrySecondarySidebar, NotificationBar,
+    PageContent, SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel,
+    TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -107,7 +99,7 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, draftCreate, errorDeleteFatal, errorDeleteNonFatal, errorState,
+        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
             hideTerms, hideReportModal, hideNotification, intl, location, needAuth, needTransferConfirm,
             needWeightConfirm, theme } = this.props;
         /* eslint-enable no-shadow */
@@ -133,24 +125,17 @@ class AppContainer extends Component {
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
-<<<<<<< HEAD
                       <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
                         <div>
                           <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
                           <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
+                          <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                         </div>
                       </SecondarySidebar>
                       <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
-=======
-                      <SecondarySidebar>
-                        <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
-                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
-                      </SecondarySidebar>
-                      <PageContent>
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Route exact path="/@:akashaId" component={ProfileContainer} />
->>>>>>> develop
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
@@ -160,17 +145,12 @@ class AppContainer extends Component {
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         }
                       </PageContent>
-<<<<<<< HEAD
                       <TopBar
                         showSecondarySidebar={appState.get('showSecondarySidebar')}
-                        fullEntryPage={!!fullEntry}
                         location={location}
                         history={history}
                         intl={intl}
                       />
-=======
-                      <TopBar />
->>>>>>> develop
                     </div>
                   </DataLoader>
                 }
@@ -224,7 +204,6 @@ AppContainer.propTypes = {
     activeDashboard: PropTypes.string,
     appState: PropTypes.shape().isRequired,
     bootstrapHome: PropTypes.func,
-    draftCreate: PropTypes.func,
     entryVoteCost: PropTypes.func,
     errorDeleteFatal: PropTypes.func.isRequired,
     errorDeleteNonFatal: PropTypes.func.isRequired,

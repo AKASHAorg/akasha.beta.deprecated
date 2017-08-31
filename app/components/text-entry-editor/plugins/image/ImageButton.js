@@ -34,10 +34,35 @@ export default class BlockButton extends Component {
         const { onImageProgress } = this.props;
         if (onImageProgress) onImageProgress(currentProgress);
     }
-    _convertToIpfs = files =>
-        new Promise((resolve, reject) => {
-            resolve(files);
+    _convertToIpfs = (files, imgId) => {
+        const serverChannel = window.Channel.server.utils.uploadImage;
+        const clientChannel = window.Channel.client.utils.uploadImage;
+        const managerChannel = window.Channel.client.utils.manager;
+        console.log(files, 'the files to convert');
+
+        return new Promise((resolve, reject) => {
+            clientChannel.on((ev, { data }) => {
+                if (data.error) return reject(data.error);
+                const filesArr = data.collection;
+                filesArr.forEach((file) => {
+                    files[file.size].src = file.hash;
+                });
+                console.log(files, 'the new files with ipfs hash');
+                return resolve(files);
+            });
+            managerChannel.on(() => {
+                serverChannel.send(
+                    Object.keys(files)
+                        .map(fileKey => ({
+                            size: fileKey,
+                            id: imgId,
+                            source: files[fileKey].src
+                        })));
+            });
+            serverChannel.enable();
+            // resolve(files);
         });
+    }
 
     _handleImageAdd = (ev) => {
         ev.persist();
@@ -46,7 +71,6 @@ export default class BlockButton extends Component {
             minWidth: 320,
             progressHandler: this._handleImageProgress,
             maxProgress: 100,
-            idGenerator: genId,
         });
         Promise.all(filePromises).then((results) => {
             let bestKey = findClosestMatch(768, results[0]);
@@ -68,7 +92,7 @@ export default class BlockButton extends Component {
                 caption: ''
             };
         }).then((data) => {
-            this._convertToIpfs(data.files).then((imgHashes) => {
+            this._convertToIpfs(data.files, data.imgId).then((imgHashes) => {
                 this.fileInput.value = '';
                 this.setState({
                     isAddingImage: false,
@@ -78,6 +102,7 @@ export default class BlockButton extends Component {
                 if (document.activeElement.contentEditable === 'true') {
                     document.activeElement.blur();
                 }
+                console.log('the img hashes are:', imgHashes);
                 this.props.onChange(insertDataBlock(this.props.editorState, {
                     files: imgHashes,
                     ...data

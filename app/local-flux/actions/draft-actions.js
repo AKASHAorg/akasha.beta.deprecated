@@ -54,7 +54,9 @@ export const draftAutosaveError = error => action(types.DRAFT_AUTOSAVE_ERROR, { 
  * to avoid errors.
  */
 
-export const draftDelete = () => {};
+export const draftDelete = data => action(types.DRAFT_DELETE, { data });
+export const draftDeleteSuccess = data => action(types.DRAFT_DELETE_SUCCESS, { data });
+export const draftDeleteError = data => action(types.DRAFT_DELETE_ERROR, { data });
 
 /**
  * This should be the first action in publishing process.

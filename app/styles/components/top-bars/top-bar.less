@@ -2,7 +2,7 @@
     position: fixed;
     right: 0;
     top: 0;
-    height: 50px;
+    height: @top-bar-height;
     padding: 10px 20px;
     transition: left 0.218s @ease-in-out;
     &_default {
@@ -31,7 +31,7 @@
     }
     &__panel-wrapper {
         position: fixed;
-        top: 50px;
+        top: @top-bar-height;
         right: -64px;
         bottom: 0;
         transition: right, width 150ms ease-in-out;

@@ -92,6 +92,12 @@ const draftState = createReducer(initialState, {
 
     [types.DRAFTS_GET_COUNT_SUCCESS]: (state, { data }) =>
         state.set('draftsCount', data.count),
+
+    [types.DRAFT_DELETE_SUCCESS]: (state, { data }) =>
+        state.merge({
+            drafts: state.get('drafts').delete(data.draftId),
+            draftsCount: state.get('draftsCount') - 1
+        }),
         // [types.DRAFT_SAVE]: (state, { flags }) =>
     //     state.merge({
     //         flags: state.get('flags').merge(flags)

@@ -1,15 +1,14 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Breadcrumbs, DashboardTopBar, PanelLink, Panels, TopBarRightSide, NewEntryTopBar } from '../';
-import { profileLogout } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
 
-class TopBar extends Component {
+class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
         const { history, loggedProfile } = nextProps;
         const oldLoggedProfileAccount = this.props.loggedProfile.get('account');
@@ -30,9 +29,11 @@ class TopBar extends Component {
         console.log('location state', location.state);
         return history.replace(`${rootPath}${location.search}`, { ...location.state });
     }
+    _renderComponent = (Component, injectedProps) =>
+        props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, fullEntryPage, loggedProfile, loggedProfileData, showSecondarySidebar } = this.props;
+        const { balance, fullEntry, loggedProfile, loggedProfileData, showSecondarySidebar } = this.props;
         const { muiTheme } = this.context;
 
         return (
@@ -41,7 +42,7 @@ class TopBar extends Component {
               className={
                   `top-bar
                   top-bar${showSecondarySidebar ? '' : '_full'}
-                  top-bar${fullEntryPage ? '_full' : '_default'}
+                  top-bar${fullEntry ? '_full' : '_default'}
                   flex-center-y`
               }
               style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
@@ -113,12 +114,11 @@ TopBar.contextTypes = {
 
 TopBar.propTypes = {
     balance: PropTypes.string,
-    fullEntryPage: PropTypes.bool,
+    fullEntry: PropTypes.bool,
     history: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    profileLogout: PropTypes.func,
     showSecondarySidebar: PropTypes.bool,
 };
 
@@ -131,9 +131,7 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    {
-        profileLogout,
-    },
+    {},
     null,
     { pure: false }
 )(withRouter(injectIntl(TopBar)));

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
-import { TopBarRightSide } from '../';
 import { selectBalance, selectLoggedProfileData } from '../../local-flux/selectors';
 import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
 
@@ -14,24 +13,10 @@ const NewEntryTopBar = props => (
         onClick={props.secondarySidebarToggle}
       />
     </div>
-    <TopBarRightSide
-      balance={props.balance}
-      history={props.history}
-      onPanelNavigate={props.onPanelNavigate}
-      location={props.location}
-      canEditProfile={!!props.loggedProfile.get('akashaId')}
-      loggedProfileData={props.loggedProfileData}
-    />
   </div>
 );
 
 NewEntryTopBar.propTypes = {
-    balance: PropTypes.string,
-    history: PropTypes.shape(),
-    location: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
-    onPanelNavigate: PropTypes.func,
     secondarySidebarToggle: PropTypes.func,
     showSecondarySidebar: PropTypes.bool,
 };

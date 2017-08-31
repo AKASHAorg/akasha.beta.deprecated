@@ -136,7 +136,8 @@ class EntryEditor extends Component {
                 plugins={[
                     imagePlugin({
                         onAutosave: this.props.onAutosave,
-                        onImageError: this._handleImageError
+                        onImageError: this._handleImageError,
+                        baseUrl: this.props.baseUrl,
                     })
                 ]}
                 placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
@@ -175,7 +176,8 @@ EntryEditor.propTypes = {
     editorPlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,
     onChange: PropTypes.func,
-    onError: PropTypes.func
+    onError: PropTypes.func,
+    baseUrl: PropTypes.string,
 };
 
 export default EntryEditor;

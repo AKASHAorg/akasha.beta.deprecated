@@ -48,7 +48,6 @@ export LoginForm from './forms/login-form';
 export LogoButton from './logo-button';
 export MentionDecorators from './mention-decorator/mention-decorator';
 export MentionSuggestions from './mention-suggestions/mention-suggestions';
-export Navigation from './navigation';
 export NewColumn from './columns/new-column';
 export NewColumnFooter from './columns/new-column-footer';
 export NewEntrySecondarySidebar from './secondary-sidebars/new-entry-secondary-sidebar';

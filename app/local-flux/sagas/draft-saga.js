@@ -26,7 +26,9 @@ function* draftCreate ({ data }) {
     const editorState = EditorState.acceptSelection(newEditorState, newSelectionState);
     yield put(draftActions.draftCreateSuccess({
         content: {
-            draft: editorState
+            draft: editorState,
+            title: '',
+            excerpt: '',
         },
         selectionState: newSelectionState,
         ...data
@@ -91,10 +93,6 @@ function* draftAutoSave ({ data }) {
         yield put(draftActions.draftAutosaveError({ error: ex }));
     }
 }
-/**
- * generate a ipfs hash for an image
- */
-function* draftImageSave () {}
 
 function* draftUpdate ({ data }) {
     const draftObj = data;
@@ -115,13 +113,22 @@ function* draftsGetCount ({ data }) {
     }
 }
 
+function* draftDelete ({ data }) {
+    try {
+        const response = yield call([draftService, draftService.draftDelete], { draftId: data.draftId });
+        yield put(draftActions.draftDeleteSuccess({ draftId: response }));
+    } catch (ex) {
+        yield put(draftActions.draftDeleteError({ error: ex, draftId: data.draftId }));
+    }
+}
+
 export function* watchDraftActions () {
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_GET_BY_ID, draftGetById);
     yield takeLatest(types.DRAFT_SAVE, draftSave);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
     yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
-    yield takeEvery(types.DRAFT_IMAGE_SAVE, draftImageSave);
     yield takeLatest(types.DRAFTS_GET, draftsGet);
     yield takeLatest(types.DRAFTS_GET_COUNT, draftsGetCount);
+    yield takeEvery(types.DRAFT_DELETE, draftDelete);
 }
