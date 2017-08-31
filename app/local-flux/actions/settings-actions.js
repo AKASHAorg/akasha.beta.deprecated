@@ -176,7 +176,7 @@ export const ipfsSaveSettingsSuccess = data => action(types.IPFS_SAVE_SETTINGS_S
 
 export const ipfsSettingsError = (error) => {
     error.code = 'ISE01';
-    error.message = 'ipfsSettings';
+    error.messageId = 'ipfsSettings';
     return action(types.IPFS_SETTINGS_ERROR, { error });
 };
 

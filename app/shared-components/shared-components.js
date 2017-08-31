@@ -11,7 +11,6 @@ export PanelContainer from './PanelContainer/panel-container';
 export PanelHeader from './PanelHeader/panel-header';
 export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
 export ProfileCard from './ProfileCard/profile-card';
-export SendTipForm from './Forms/send-tip-form';
 export SyncProgressLoader from './Loaders/sync-progress';
 export TagChip from './TagChip/tag-chip';
 export TagList from './TagList/tag-list';

@@ -139,7 +139,7 @@ class PublishConfirmDialog extends Component {
                 <TextField
                   type="number"
                   floatingLabelFixed
-                  floatingLabelText={intl.formatMessage(confirmMessages.gasInputLabel)}
+                  // floatingLabelText={intl.formatMessage(confirmMessages.gasInputLabel)}
                   fullWidth
                   className="col-xs-10"
                   value={gasAmount}
@@ -156,7 +156,7 @@ class PublishConfirmDialog extends Component {
                 <div
                   className="col-xs-2"
                   style={{ marginTop: 24 }}
-                  data-tip={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
+                  // data-tip={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
                 >
                   <IconButton>
                     <InfoIcon />
