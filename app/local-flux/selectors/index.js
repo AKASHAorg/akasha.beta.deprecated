@@ -162,12 +162,6 @@ export const selectLoggedProfileData = state =>
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
 
-export const selectNeedTransferAction = state =>
-    state.actionState.getIn(['byId', state.actionState.get('needTransferConfirm')]);
-
-export const selectNeedWeightAction = state =>
-    state.actionState.getIn(['byId', state.actionState.get('needWeightConfirm')]);
-
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 

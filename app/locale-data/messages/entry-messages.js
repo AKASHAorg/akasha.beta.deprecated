@@ -189,6 +189,11 @@ const entryMessages = defineMessages({
         description: 'upvote button tooltip',
         defaultMessage: 'Upvote'
     },
+    voteWeight: {
+        id: 'app.entry.voteWeight',
+        description: 'placeholder for vote weight input',
+        defaultMessage: 'Vote weight'
+    },
     votingExpired: {
         id: 'app.entry.votingExpired',
         description: 'upvote/downvote tooltip when voting period expired',

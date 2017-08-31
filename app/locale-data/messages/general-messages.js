@@ -347,6 +347,11 @@ const generalMessages = defineMessages({
         id: 'app.general.upgrading',
         description: 'Upgrading services',
         defaultMessage: 'Upgrading'
+    },
+    vote: {
+        id: 'app.general.vote',
+        description: 'Vote',
+        defaultMessage: 'Vote'
     }
 });
 export { generalMessages };

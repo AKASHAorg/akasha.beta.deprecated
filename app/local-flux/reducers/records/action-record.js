@@ -15,8 +15,6 @@ export const ActionState = Record({
     allActions: new List(),
     byId: new Map(),
     needAuth: null,
-    needTransferConfirm: null,
-    needWeightConfirm: null,
     published: new List(),
     publishing: new List()
 });
