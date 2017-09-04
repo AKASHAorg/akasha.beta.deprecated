@@ -29,10 +29,6 @@ class CommentEditor extends Component {
         };
     }
 
-    shouldComponentUpdate (nextProps, nextState) {
-        return nextState.editorState !== this.state.editorState;
-    }
-
     getBaseNode = () => this.baseNodeRef;
 
     getContainerRef = el => (this.container = el);

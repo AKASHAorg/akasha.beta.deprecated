@@ -28,7 +28,20 @@ class ProfileContainer extends Component {
           size={80}
           style={{ paddingTop: '120px' }}
         >
-          <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+          <div
+            style={{
+                position: 'fixed',
+                top: 50,
+                bottom: 0,
+                left: 64,
+                right: 0,
+                backgroundColor: '#f7f7f7',
+                zIndex: 99,
+                display: 'flex',
+                flexDirection: 'row',
+                height: '100%'
+            }}
+          >
             <ProfileDetails
               akashaId={match.params.akashaId}
             />

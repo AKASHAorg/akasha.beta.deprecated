@@ -41,10 +41,11 @@ class ProfilePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        console.log('on visible change');
         this.setState({
             popoverVisible
         });
-        if (!popoverVisible) {
+        if (!popoverVisible && this.state.sendTip) {
             // Delay state reset until popover animation is finished
             this.timeout = setTimeout(() => {
                 this.timeout = null;
@@ -96,7 +97,7 @@ class ProfilePopover extends Component {
         return (
           <div className="profile-popover__content">
             <div className="profile-popover__header">
-              <div className="profile-popover__avatar-wrapper">
+              <div className="profile-popover__avatar-wrapper" onClick={() => this.onVisibleChange(false)}>
                 <Avatar
                   akashaId={profile.get('akashaId')}
                   firstName={profile.get('firstName')}
@@ -107,7 +108,11 @@ class ProfilePopover extends Component {
                 />
               </div>
               <div>
-                <Link className="unstyled-link" to={`/@${profile.get('akashaId')}`}>
+                <Link
+                  className="unstyled-link"
+                  onClick={() => this.onVisibleChange(false)}
+                  to={{ pathname: `/@${profile.get('akashaId')}`, state: { overlay: true } }}
+                >
                   <div className="content-link overflow-ellipsis profile-popover__name">
                     {name}
                   </div>

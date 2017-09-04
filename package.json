@@ -215,7 +215,7 @@
     "@akashaproject/contracts.js": "1.2.12",
     "@akashaproject/geth-connector": "1.7.19",
     "@akashaproject/ipfs-connector": "1.10.4",
-    "antd": "2.12.6",
+    "antd": "2.13",
     "archiver": "2.0.0",
     "bluebird": "3.5.0",
     "compare-versions": "3.0.1",
