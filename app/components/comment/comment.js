@@ -108,9 +108,9 @@ class Comment extends Component {
                       avatar={
                         <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
                           <Avatar
-                            firstName={author.get('firstName')}
+                            firstName={author && author.get('firstName')}
                             image={authorAvatar}
-                            lastName={author.get('lastName')}
+                            lastName={author && author.get('lastName')}
                             size="small"
                           />
                         </ProfilePopover>
@@ -134,7 +134,6 @@ class Comment extends Component {
                                 paddingRight: 4,
                                 color: this.getAuthorNameColor()
                             }}
-                            // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
                             style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
                           />
                         </ProfilePopover>

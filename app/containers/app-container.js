@@ -6,7 +6,6 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms, hideReportModal,
     bootstrapHome } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
@@ -61,7 +60,6 @@ class AppContainer extends Component {
 
         // check if wee need to bootstrap home
         if (shouldBootstrapHome && !this.bootstrappingHome && !appState.get('homeReady')) {
-            console.log('should bootstrap home');
             this.props.bootstrapHome();
             this.props.entryVoteCost();
             this.props.licenseGetAll();
@@ -129,13 +127,16 @@ class AppContainer extends Component {
                       <PageContent>
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
-                        <Route exact path="/@:akashaId" component={ProfileContainer} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
+                          <Route exact path="/@:akashaId" component={ProfileContainer} />
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
-                          <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                          <div>
+                            <Route exact path="/@:akashaId" component={ProfileContainer} />
+                            <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                          </div>
                         }
                       </PageContent>
                       <TopBar />

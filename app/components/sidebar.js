@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
+import { Icon } from 'antd';
 import { LogoButton } from './';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
 import { generalMessages } from '../locale-data/messages';
-import panels from '../constants/panels';
 
 class Sidebar extends Component {
     _handleNewEntry = () => {
@@ -29,11 +30,15 @@ class Sidebar extends Component {
     }
 
     render () {
-        const { activeDashboard, draftsCount, loggedProfileData, location } = this.props;
+        const { activeDashboard, draftsCount, history, loggedProfileData, location } = this.props;
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         const isLoggedIn = !!loggedProfileData.get('akashaId');
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
+            <div className="sidebar__nav-container">
+              <Icon className="content-link" onClick={history.goBack} type="left" />
+              <Icon className="content-link" onClick={history.goForward} type="right" />
+            </div>
             <div className="sidebar__entry-icon" >
               {(entriesCount > 0 || draftsCount > 0) ?
                 <div {...this.getWrapperProps(generalMessages.myEntries)}>
@@ -87,9 +92,10 @@ class Sidebar extends Component {
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftsCount: PropTypes.number,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
 };
 
-export default Sidebar;
+export default withRouter(Sidebar);
