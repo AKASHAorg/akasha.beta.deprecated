@@ -30,5 +30,5 @@ export const Draft = Record({
     created_at: null,
     updated_at: null,
     saved: false,
-    saving: true,
+    saving: false,
 });

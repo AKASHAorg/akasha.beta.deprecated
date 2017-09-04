@@ -2,10 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Icon, Popover } from 'antd';
+import fuzzy from 'fuzzy';
+import { injectIntl } from 'react-intl';
+import { entryMessages } from '../../locale-data/messages';
 import { selectLoggedAkashaId } from '../../local-flux/selectors';
 import { draftsGetCount, draftsGet, draftDelete } from '../../local-flux/actions/draft-actions';
 
 class NewEntrySecondarySidebar extends Component {
+    state = {
+        searchString: ''
+    };
+
     componentDidMount () {
         const { akashaId } = this.props;
         this.props.draftsGetCount({ akashaId });
@@ -31,6 +38,20 @@ class NewEntrySecondarySidebar extends Component {
             if (ev) ev.preventDefault();
             this.props.draftDelete({ draftId, akashaId });
         }
+    _handleDraftSearch = (ev) => {
+        ev.preventDefault();
+        const searchString = ev.target.value;
+        if (searchString.length) {
+            return this.setState({
+                searchString,
+                searching: true
+            });
+        }
+        return this.setState({
+            searchString,
+            searching: false
+        });
+    }
     _createDraftPreviewLink = draftId =>
         (ev) => {
             // prevent default just in case some other dev decides to
@@ -42,8 +63,14 @@ class NewEntrySecondarySidebar extends Component {
             // this.props.createDraftPreviewLink()
         }
     render () {
-        const { draftsCount, drafts, match } = this.props;
+        const { draftsCount, drafts, match, intl } = this.props;
         const currentDraftId = match.params.draftId;
+        const searchOptions = {
+            pre: '<b>',
+            post: '</b>',
+            extract: el => el.content.title,
+        };
+        const results = fuzzy.filter(this.state.searchString, drafts.toList().toJS(), searchOptions);
 
         return (
           <div
@@ -52,7 +79,7 @@ class NewEntrySecondarySidebar extends Component {
             <div
               className="new-entry-secondary-sidebar__sidebar-header"
             >
-              {draftsCount} DRAFTS
+              {intl.formatMessage(entryMessages.draftsCount, { count: draftsCount })}
             </div>
             <div
               className="new-entry-secondary-sidebar__sidebar-body"
@@ -63,14 +90,86 @@ class NewEntrySecondarySidebar extends Component {
                 <input
                   type="text"
                   className="new-entry-secondary-sidebar__search-field"
-                  placeholder="Search something..."
+                  placeholder={intl.formatMessage(entryMessages.searchSomething)}
+                  onChange={this._handleDraftSearch}
                 />
               </div>
               <div
                 className="new-entry-secondary-sidebar__draft-list-container"
               >
-                <div className="new-entry-secondary-sidebar__draft-list-title">DRAFTS</div>
-                {drafts.map(draft => (
+                <div className="new-entry-secondary-sidebar__draft-list-title">
+                  {intl.formatMessage(entryMessages.drafts)}
+                </div>
+                {this.state.searching && (results.length > 0) &&
+                    results.map(draft => (
+                      <div
+                        key={`${draft.original.id}`}
+                        className={
+                            `new-entry-secondary-sidebar__draft-list-item
+                            new-entry-secondary-sidebar__draft-list-item${
+                            (draft.original.id === currentDraftId) ? '_active' : ''
+                        }`}
+                      >
+                        <a
+                          href="/"
+                          dangerouslySetInnerHTML={{ __html: draft.string }}
+                          className="draft-list-item__link"
+                          onClick={
+                            this._onDraftItemClick(
+                              `/draft/${draft.original.content.type}/${draft.original.id}`
+                            )
+                          }
+                        />
+                        <span
+                          className="draft-list-item__menu-container"
+                        >
+                          <Popover
+                            placement="bottomLeft"
+                            overlayClassName="draft-list-item__popover"
+                            content={
+                              <div>
+                                {(draft.original.id !== currentDraftId) &&
+                                <div
+                                  className="draft-list-item__popover-button"
+                                  onClick={
+                                    this._onDraftItemClick(
+                                      `/draft/${draft.original.content.type}/${draft.original.id}`
+                                    )
+                                  }
+                                >
+                                  <b>{intl.formatMessage(entryMessages.draftEdit)}</b>
+                                </div>
+                                }
+                                <div
+                                  className="draft-list-item__popover-button"
+                                  onClick={this._createDraftPreviewLink(draft.original.id)}
+                                >
+                                  <b>{intl.formatMessage(entryMessages.draftSharePreview)}</b>
+                                </div>
+                                <div
+                                  className="draft-list-item__popover-button"
+                                  onClick={this._handleDraftDelete(draft.original.id)}
+                                >
+                                  <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
+                                </div>
+                              </div>
+                            }
+                            trigger="click"
+                          >
+                            <Icon
+                              className="draft-list-item__menu-button"
+                              type="ellipsis"
+                              onClick={this._showDraftMenuDropdown}
+                            />
+                          </Popover>
+                        </span>
+                      </div>
+                    ))
+                }
+                {this.state.searching && results.length === 0 &&
+                  <div>No drafts matching your search criteria were found.</div>
+                }
+                {!this.state.searching && drafts.map(draft => (
                   <div
                     className={
                         `new-entry-secondary-sidebar__draft-list-item
@@ -108,20 +207,20 @@ class NewEntrySecondarySidebar extends Component {
                                     )
                                 }
                               >
-                                <b>Edit draft</b>
+                                <b>{intl.formatMessage(entryMessages.draftEdit)}</b>
                               </div>
                             }
                             <div
                               className="draft-list-item__popover-button"
                               onClick={this._createDraftPreviewLink(draft.get('id'))}
                             >
-                              <b>Share preview link</b>
+                              <b>{intl.formatMessage(entryMessages.draftSharePreview)}</b>
                             </div>
                             <div
                               className="draft-list-item__popover-button"
                               onClick={this._handleDraftDelete(draft.get('id'))}
                             >
-                              <b>Delete draft</b>
+                              <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
                             </div>
                           </div>
                         }
@@ -151,6 +250,7 @@ NewEntrySecondarySidebar.propTypes = {
     draftsGet: PropTypes.func,
     draftsGetCount: PropTypes.func,
     history: PropTypes.shape(),
+    intl: PropTypes.shape(),
     match: PropTypes.shape(),
 };
 const mapStateToProps = state => ({
@@ -167,4 +267,4 @@ export default connect(
         draftsGetCount,
         draftsGet,
     }
-)(NewEntrySecondarySidebar);
+)(injectIntl(NewEntrySecondarySidebar));

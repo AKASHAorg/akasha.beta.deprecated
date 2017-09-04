@@ -26,10 +26,50 @@ const entryMessages = defineMessages({
         description: 'draft label indicator',
         defaultMessage: 'Draft'
     },
+    drafts: {
+        id: 'app.entry.drafts',
+        description: 'drafts section title',
+        defaultMessage: 'Drafts'
+    },
+    draftsCount: {
+        id: 'app.entry.draftsCount',
+        description: 'drafts count',
+        defaultMessage: `{count, number} {count, plural,
+            one {draft}
+            few {drafts}
+            many {drafts}
+            other {drafts}
+        }`
+    },
     draftCardSubtitle: {
         id: 'app.entry.draftCardSubtitle',
         description: 'subtitle showing last updated time and words number on draft card in new entry panel',
         defaultMessage: '{lastUpdate} - {wordCount} words so far'
+    },
+    draftDelete: {
+        id: 'app.entry.draftDelete',
+        description: 'delete draft button label',
+        defaultMessage: 'Delete draft',
+    },
+    draftEdit: {
+        id: 'app.entry.draftEdit',
+        description: 'edit draft button label',
+        defaultMessage: 'Edit draft'
+    },
+    draftSaved: {
+        id: 'app.entry.draftSaved',
+        description: 'draft saved status message',
+        defaultMessage: 'Draft Saved'
+    },
+    draftSaving: {
+        id: 'app.entry.draftSaving',
+        description: 'saving draft status message',
+        defaultMessage: 'Saving Draft'
+    },
+    draftSharePreview: {
+        id: 'app.entry.draftSharePreview',
+        description: 'share preview link button title',
+        defaultMessage: 'Share preview link',
     },
     entriesCount: {
         id: 'app.entry.entriesCount',
@@ -63,6 +103,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
         defaultMessage: 'Save highlight'
+    },
+    searchSomething: {
+        id: 'app.entry.searchSomething',
+        description: 'placeholder for draft search input',
+        defaultMessage: 'Search something...'
     },
     wordsCount: {
         id: 'app.entry.wordsCount',

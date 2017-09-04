@@ -83,6 +83,10 @@ class NewEntryPage extends Component {
         }
         const { content, tags } = draftObj;
         const { title, excerpt, licence, draft } = content;
+        console.log(draftObj, 'draftObj');
+        const draftSaving = !draftObj.get('saved') && draftObj.get('saving');
+        const draftSaved = draftObj.get('saved') && !draftObj.get('saving');
+
         return (
           <div className="text-entry-page">
             <div
@@ -151,7 +155,12 @@ class NewEntryPage extends Component {
                 <div className="text-entry-page__footer">
                   <div className="text-entry-page__footer-messages-wrapper">
                     <div className="text-entry-page__footer-message">
-                        A sample message. this is a long message and should fit into this container.
+                      {draftSaved &&
+                        <div>{intl.formatMessage(entryMessages.draftSaved)}</div>
+                      }
+                      {draftSaving &&
+                        <div>{intl.formatMessage(entryMessages.draftSaving)}</div>
+                      }
                     </div>
                   </div>
                   <div className="text-entry-page__footer-actions">
