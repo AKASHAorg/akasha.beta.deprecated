@@ -195,6 +195,7 @@ class NewEntrySecondarySidebar extends Component {
                     >
                       <Popover
                         placement="bottomLeft"
+                        arrowPointAtCenter
                         overlayClassName="draft-list-item__popover"
                         content={
                           <div>

@@ -7,6 +7,7 @@ import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftAutosave,
     draftsGetCount } from '../local-flux/actions/draft-actions';
+import { tagSearch } from '../local-flux/actions/tag-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 
@@ -76,14 +77,14 @@ class NewEntryPage extends Component {
 
     render () {
         const { showPublishPanel } = this.state;
-        const { baseUrl, showSecondarySidebar, intl, draftObj } = this.props;
+        const { baseUrl, showSecondarySidebar, intl, draftObj,
+            tagSuggestions, tagSuggestionsCount } = this.props;
 
         if (!draftObj) {
             return <div>Finding Draft</div>;
         }
         const { content, tags } = draftObj;
         const { title, excerpt, licence, draft } = content;
-        console.log(draftObj, 'draftObj');
         const draftSaving = !draftObj.get('saved') && draftObj.get('saving');
         const draftSaved = draftObj.get('saved') && !draftObj.get('saving');
 
@@ -128,6 +129,9 @@ class NewEntryPage extends Component {
                     ref={this._createRef('tagEditor')}
                     nodeRef={(node) => { this.tagsField = node; }}
                     tags={tags}
+                    tagSearch={this.props.tagSearch}
+                    tagSuggestions={tagSuggestions}
+                    tagSuggestionsCount={tagSuggestionsCount}
                   />
                 </div>
               </Col>
@@ -196,6 +200,9 @@ NewEntryPage.propTypes = {
     match: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
+    tagSearch: PropTypes.func,
+    tagSuggestions: PropTypes.shape(),
+    tagSuggestionsCount: PropTypes.number
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -204,7 +211,9 @@ const mapStateToProps = (state, ownProps) => ({
     akashaId: selectLoggedAkashaId(state),
     draftsCount: state.draftState.get('draftsCount'),
     draftsFetched: state.draftState.get('draftsFetched'),
-    baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl'])
+    baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+    tagSuggestions: state.searchState.get('tags'),
+    tagSuggestionsCount: state.searchState.get('resultsCount'),
 });
 
 export default connect(
@@ -216,5 +225,6 @@ export default connect(
         draftUpdate,
         draftAutosave,
         draftsGetCount,
+        tagSearch,
     }
 )(injectIntl(NewEntryPage));

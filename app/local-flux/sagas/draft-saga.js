@@ -66,10 +66,6 @@ function* draftGetById ({ data }) {
     }
 }
 /**
- * manually save a draft to db.
- */
-function* draftSave () {}
-/**
  * save draft to db every x seconds
  */
 function* draftAutoSave ({ data }) {
@@ -125,7 +121,6 @@ function* draftDelete ({ data }) {
 export function* watchDraftActions () {
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_GET_BY_ID, draftGetById);
-    yield takeLatest(types.DRAFT_SAVE, draftSave);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
     yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
     yield takeLatest(types.DRAFTS_GET, draftsGet);

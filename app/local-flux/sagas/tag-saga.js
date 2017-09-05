@@ -69,7 +69,15 @@ function* tagSearch ({ tag, start = 0, limit = tagSearchLimit }) {
         put(actions.tagSearchError(error));
     }
 }
-
+// intentionally left here...
+function* tagsGetSuggestions ({ tag, start = 0, limit = tagSearchLimit }) {
+    try {
+        const response = yield call([tagService, tagService.tagSearch], tag.tag, start, limit);
+        yield put(actions.tagSearchSuccess(response.tags, response.count));
+    } catch (ex) {
+        yield put(actions.tagSearchError(ex));
+    }
+}
 // Action watchers
 
 function* watchTagGetEntriesCount () {
@@ -86,7 +94,13 @@ function* watchTagSave () {
 }
 
 function* watchTagSearch () {
-    yield takeLatest(types.TAG_SEARCH, tagSearch);
+    yield takeLatest(types.TAG_SEARCH, (action) => {
+        const { tag } = action;
+        if (tag.localOnly) {
+            return tagsGetSuggestions(action);
+        }
+        return tagSearch(action);
+    });
 }
 
 function* watchTagSearchMore () {
