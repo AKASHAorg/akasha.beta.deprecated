@@ -144,8 +144,7 @@ class EntryPageHeader extends Component {
     }
 
     render () {
-        const { entry, existingDraft, latestVersion, loggedAkashaId,
-            publisherTitleShadow, publisher, intl, history } = this.props;
+        const { entry, existingDraft, latestVersion, loggedAkashaId, publisher, intl, history } = this.props;
         const { palette } = this.context.muiTheme;
         const isOwnEntry = entry && loggedAkashaId === entry.getIn(['entryEth', 'publisher']);
 
@@ -158,8 +157,6 @@ class EntryPageHeader extends Component {
               className={styles.entry_publisher_info_inner}
               style={{
                   position: 'relative',
-                  boxShadow: publisherTitleShadow ?
-                      '0px 15px 28px -15px #555, 0 12px 15px -15px #000000' : 'none',
                   transform: 'translate3d(0,0,0)',
                   willChange: 'box-shadow',
                   padding: 16
@@ -168,7 +165,7 @@ class EntryPageHeader extends Component {
               <CardHeader
                 avatar={this.renderAvatar()}
                 subtitle={this.renderSubtitle()}
-                style={{ zIndex: 5, padding: 0 }}
+                style={{ zIndex: 5, padding: 0, flex: '1 1 auto' }}
                 title={publisher ?
                   <ProfilePopover akashaId={publisher.get('akashaId')}>
                     <div
@@ -200,13 +197,6 @@ class EntryPageHeader extends Component {
                     </IconButton>
                   </div>
                 }
-                <div data-tip={intl.formatMessage(generalMessages.close)}>
-                  <IconButton onClick={history.goBack} style={buttonStyle}>
-                    <SvgIcon>
-                      <CloseIcon />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
               </div>
             </div>
             {!!latestVersion && this.state.showVersions &&
@@ -239,7 +229,6 @@ EntryPageHeader.propTypes = {
     loggedAkashaId: PropTypes.string.isRequired,
     match: PropTypes.shape(),
     publisher: PropTypes.shape(),
-    publisherTitleShadow: PropTypes.bool,
 };
 
 function mapStateToProps (state) {

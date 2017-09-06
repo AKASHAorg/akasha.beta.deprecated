@@ -205,6 +205,11 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
+    reply: {
+        id: 'app.general.reply',
+        description: 'reply',
+        defaultMessage: 'Reply'
+    },
     reset: {
         id: 'app.general.reset',
         description: 'Reset form',

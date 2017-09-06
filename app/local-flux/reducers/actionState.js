@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { fromJS, List } from 'immutable';
 import { ActionRecord, ActionState } from './records';
 import * as actionStatus from '../../constants/action-status';
 import * as types from '../constants';
@@ -36,10 +36,15 @@ const actionState = createReducer(initialState, {
 
     [types.ACTION_GET_PENDING_SUCCESS]: (state, { data }) => {
         let byId = state.get('byId');
+        let publishing = new List();
         data.forEach((action) => {
             byId = byId.set(action.id, createAction(action));
+            publishing = publishing.push(action.id);
         });
-        return state.set('byId', byId);
+        return state.merge({
+            byId,
+            publishing
+        });
     },
 
     [types.ACTION_PUBLISH]: state => state.set('needAuth', null),
@@ -49,9 +54,16 @@ const actionState = createReducer(initialState, {
             return state;
         }
         const newAction = state.getIn(['byId', changes.id]).merge(changes);
+        let publishing = state.get('publishing');
+        if (changes.status === actionStatus.publishing) {
+            publishing = publishing.push(changes.id);
+        } else if (changes.status === actionStatus.published) {
+            publishing = publishing.filter(id => id !== changes.id);
+        }
         return state.merge({
             byId: state.get('byId').set(changes.id, newAction),
-            needAuth: changes.status === actionStatus.needAuth ? changes.id : state.get('needAuth')
+            needAuth: changes.status === actionStatus.needAuth ? changes.id : state.get('needAuth'),
+            publishing
         });
     },
 

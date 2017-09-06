@@ -1,4 +1,5 @@
 /* eslint-disable import/no-named-as-default */
+export AddImage from './comment/add-image';
 export AppSettings from './app-settings';
 export Auth from './setup/auth';
 export Avatar from './avatar/avatar';
@@ -10,6 +11,7 @@ export ColumnHeader from './columns/column-header';
 export ConfirmationDialog from './dialogs/confirmation-dialog';
 export Comment from './comment/comment';
 export CommentEditor from './comment/comment-editor';
+export ReplyEditor from './comment/reply-editor';
 export CommentsList from './comment/comments-list';
 export CommentThread from './comment/comment-thread';
 export CommonTopBar from './top-bars/common-top-bar';

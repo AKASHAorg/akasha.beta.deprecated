@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
+import { CardActions, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import * as actionTypes from '../../constants/action-types';
 import { ListPopover, VotePopover } from '../';
@@ -55,9 +55,9 @@ class EntryPageAction extends Component {
     };
 
     render () { // eslint-disable-line complexity
-        const { balance, canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
+        const { canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
             fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, updatingLists,
-            voteCost, votePending, voteWeight } = this.props;
+            votePending, voteWeight } = this.props;
         const { palette } = this.context.muiTheme;
         const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
             && (!fetchingEntryBalance || entryBalance !== undefined);
@@ -70,19 +70,17 @@ class EntryPageAction extends Component {
             fontSize: '12px',
             cursor: 'default'
         };
+        const iconClassName = 'entry-actions__vote-icon';
+        const voteProps = { containerRef, iconClassName, votePending, voteWeight };
 
         return (
-          <CardActions style={{ padding: '18px 8px 0px' }}>
+          <CardActions style={{ padding: '18px 8px 0px', maxWidth: '700px', margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center' }} >
               <div className="flex-center" style={{ position: 'relative' }}>
                 <VotePopover
-                  balance={balance}
-                  entry={entry}
                   onSubmit={this.handleVote}
-                  type={actionTypes.upvote}
-                  voteCost={voteCost}
-                  votePending={votePending}
-                  voteWeight={voteWeight}
+                  type={actionTypes.entryUpvote}
+                  {...voteProps}
                 />
                 {voteWeight > 0 &&
                   <div
@@ -106,13 +104,9 @@ class EntryPageAction extends Component {
               </div>
               <div className="flex-center" style={{ position: 'relative' }}>
                 <VotePopover
-                  balance={balance}
-                  entry={entry}
                   onSubmit={this.handleVote}
-                  type={actionTypes.downvote}
-                  voteCost={voteCost}
-                  votePending={votePending}
-                  voteWeight={voteWeight}
+                  type={actionTypes.entryDownvote}
+                  {...voteProps}
                 />
                 {voteWeight < 0 &&
                   <div
@@ -193,7 +187,6 @@ EntryPageAction.defaultProps = {
 
 EntryPageAction.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    balance: PropTypes.string,
     canClaim: PropTypes.bool,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
@@ -212,7 +205,6 @@ EntryPageAction.propTypes = {
     loggedAkashaId: PropTypes.string,
     publisher: PropTypes.shape(),
     updatingLists: PropTypes.bool,
-    voteCost: PropTypes.shape().isRequired,
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
 };
@@ -223,7 +215,6 @@ function mapStateToProps (state, ownProps) {
     const votePending = state.entryState.getIn(['flags', 'votePending', entry.get('entryId')]);
     const loggedAkashaId = selectLoggedAkashaId(state);
     return {
-        balance: state.profileState.get('balance'),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending,
@@ -235,7 +226,6 @@ function mapStateToProps (state, ownProps) {
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
         updatingLists: state.listState.getIn(['flags', 'updatingLists']),
-        voteCost: state.entryState.get('voteCostByWeight'),
         votePending,
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };

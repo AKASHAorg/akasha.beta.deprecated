@@ -1,29 +1,37 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { CardHeader, CircularProgress, Divider, FlatButton, IconButton, SvgIcon } from 'material-ui';
-import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
-import Link from 'megadraft/lib/components/Link';
-import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
-import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { MentionDecorators } from '../../shared-components';
-import { Avatar } from '../';
-import style from './comment.scss';
+import DraftJS from 'draft-js';
+import Editor from 'draft-js-plugins-editor';
+import classNames from 'classnames';
+import createEmojiPlugin from 'draft-js-emoji-plugin';
+import createImagePlugin from 'draft-js-image-plugin';
+import decorateComponentWithProps from 'decorate-component-with-props';
+import { Spin } from 'antd';
+import * as actionTypes from '../../constants/action-types';
+import { entryMessages } from '../../locale-data/messages';
+import { ProfilePopover, VotePopover } from '../';
+import CommentImage from './comment-image';
 
-const { CompositeDecorator, EditorState } = DraftJS;
+const { convertFromRaw, EditorState } = DraftJS;
 
 class OptimisticComment extends Component {
     constructor (props) {
         super(props);
 
-        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator, {
-            strategy: createTypeStrategy('LINK'),
-            component: Link
-        }]);
-        this.editorState = EditorState.createEmpty(decorators);
+        this.editorState = EditorState.createEmpty();
+        const rawContent = JSON.parse(props.comment.getIn(['payload', 'content']));
+        const content = convertFromRaw(rawContent);
         this.state = {
-            isExpanded: null,
+            editorState: EditorState.createWithContent(content),
+            isExpanded: null
         };
+
+        const wrappedComponent = decorateComponentWithProps(CommentImage, {
+            readOnly: true
+        });
+        this.emojiPlugin = createEmojiPlugin({ imagePath: 'images/emoji-svg/' });
+        this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
     componentDidMount () {
@@ -32,24 +40,13 @@ class OptimisticComment extends Component {
         if (this.editorWrapperRef) {
             contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
         }
-        if (contentHeight > 155) {
+        if (contentHeight > 170) {
             isExpanded = false;
         }
         return this.setState({ // eslint-disable-line react/no-did-mount-set-state
             isExpanded
         });
     }
-
-    getExpandedStyle = () => {
-        const { isExpanded } = this.state;
-        if (isExpanded === false) {
-            return { maxHeight: 155, overflow: 'hidden' };
-        }
-        if (isExpanded === true) {
-            return { maxHeight: 'none', overflow: 'visible' };
-        }
-        return {};
-    };
 
     toggleExpanded = (ev, isExpanded) => {
         ev.preventDefault();
@@ -58,105 +55,87 @@ class OptimisticComment extends Component {
         });
     };
 
+    onChange = (editorState) => { this.setState({ editorState }); };
+
+    renderExpandButton = () => {
+        const { intl } = this.props;
+        const label = this.state.isExpanded ?
+            intl.formatMessage(entryMessages.showLess) :
+            intl.formatMessage(entryMessages.showMore);
+        return (
+          <div className="flex-center comment__expand-button">
+            <div className="content-link" onClick={this.toggleExpanded}>
+              {label}
+            </div>
+          </div>
+        );
+    };
+
     render () {
-        const { comment, intl, loggedProfileData } = this.props;
-        const { palette } = this.context.muiTheme;
-        const { isExpanded } = this.state;
-        const { date, content } = comment.payload.toJS();
-        const parsedContent = JSON.parse(content);
-        const editorState = editorStateFromRaw(parsedContent).getCurrentContent();
-        const akashaId = loggedProfileData.get('akashaId');
-        const avatar = loggedProfileData.get('avatar');
+        const { comment, containerRef, intl, loggedAkashaId } = this.props;
+        const { editorState, isExpanded } = this.state;
+        const { date } = comment.payload.toJS();
+        const authorClass = classNames('content-link comment__author-name', 'comment__author-name_logged');
+        const bodyClass = classNames('comment__body', {
+            comment__body_collapsed: isExpanded === false,
+            comment__body_expanded: isExpanded === true
+        });
+        const iconClassName = 'comment__vote-icon';
+        const voteProps = { iconClassName, votePending: false, voteWeight: 0 };
 
         return (
-          <div className={style.root} style={{ position: 'relative' }}>
-            <div className={style.rootInner}>
-              <div className={`row ${style.commentHeader}`} style={{ marginBottom: 0 }}>
-                <div className={`col-xs-5 ${style.commentAuthor}`}>
-                  <CardHeader
-                    avatar={
-                      <Avatar
-                        firstName={loggedProfileData.get('firstName')}
-                        image={avatar}
-                        lastName={loggedProfileData.get('lastName')}
-                        size="small"
-                      />
-                    }
-                    style={{ padding: 0 }}
-                    subtitle={
-                      <div>
-                        {date && intl.formatRelative(new Date(date))}
-                      </div>
-                    }
-                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
-                    title={
-                      <div style={{ position: 'relative' }}>
-                        <FlatButton
-                          className={`${style.viewer_is_author} ${style.author_name}`}
-                          hoverColor="transparent"
-                          label={akashaId}
-                          labelStyle={{
-                              textTransform: 'initial',
-                              paddingLeft: 4,
-                              paddingRight: 4,
-                              color: palette.commentViewerIsAuthorColor
-                          }}
-                          // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                        />
-                      </div>
-                    }
-                    titleStyle={{ fontSize: '100%', height: 24 }}
-                  />
-                </div>
-                <div className={'col-xs-7 end-xs'}>
-                  <CircularProgress size={32} />
-                </div>
-              </div>
-              <div
-                ref={editorWrap => (this.editorWrapperRef = editorWrap)}
-                className={`row ${style.commentBody}`}
-                style={this.getExpandedStyle()}
-              >
-                <MegadraftEditor
-                  readOnly
-                  editorState={EditorState.push(this.editorState, editorState)}
-                  sidebarRendererFn={() => null}
+          <div id={`comment-${comment.get('commentId')}`} className="comment">
+            <div className="comment__inner">
+              <div className="comment__votes">
+                <VotePopover
+                  disabled
+                  onSubmit={() => {}}
+                  type={actionTypes.commentUpvote}
+                  {...voteProps}
+                />
+                <span className="comment__score">0</span>
+                <VotePopover
+                  disabled
+                  onSubmit={() => {}}
+                  type={actionTypes.commentDownvote}
+                  {...voteProps}
                 />
               </div>
-              {isExpanded !== null &&
-                <div style={{ fontSize: 12, textAlign: 'center' }}>
-                  {(isExpanded === false) &&
-                    <IconButton onClick={ev => this.toggleExpanded(ev, true)}>
-                      <SvgIcon>
-                        <MoreIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  }
-                  {isExpanded &&
-                    <IconButton onClick={ev => this.toggleExpanded(ev, false)}>
-                      <SvgIcon>
-                        <LessIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  }
+              <div className="comment__main">
+                <div className="flex-center-y comment__header">
+                  <ProfilePopover akashaId={loggedAkashaId} containerRef={containerRef}>
+                    <div className={authorClass}>
+                      {loggedAkashaId}
+                    </div>
+                  </ProfilePopover>
+                  <span className="comment__publish-date">
+                    {date && intl.formatRelative(new Date(date))}
+                  </span>
+                  <Spin className="flex-center" delay={200} />
                 </div>
-              }
-              <Divider />
+                <div className={bodyClass} ref={(el) => { this.editorWrapperRef = el; }}>
+                  <Editor
+                    editorState={editorState}
+                    // This is needed because draft-js-plugin-editor applies decorators on onChange event
+                    // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
+                    onChange={this.onChange}
+                    plugins={[this.emojiPlugin, this.imagePlugin]}
+                    readOnly
+                  />
+                </div>
+                {isExpanded !== null && this.renderExpandButton()}
+              </div>
             </div>
           </div>
         );
     }
 }
 
-OptimisticComment.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 OptimisticComment.propTypes = {
+    containerRef: PropTypes.shape(),
     comment: PropTypes.shape(),
     intl: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
+    loggedAkashaId: PropTypes.string,
 };
 
 export default injectIntl(OptimisticComment);

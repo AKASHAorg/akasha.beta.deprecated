@@ -156,10 +156,25 @@ const canvasToArray = canvas =>
             return reject(exception);
         }
     });
+
 // method to resize static (non animated gifs) images;
 const resizeImage = (image, options) => {
     const { actualWidth, actualHeight } = options;
-    const imageWidths = settings.imageWidths.filter(widthObj => widthObj.res <= actualWidth);
+    const imageWidths = settings.imageWidths.filter((widthObj) => {
+        if (options.maxResizeWidth) {
+            return widthObj.res <= actualWidth && widthObj.res <= options.maxResizeWidth;
+        }
+        return widthObj.res <= actualWidth;
+    });
+
+    // If image is smaller than 320px (xs) but this is allowed, skip the resize
+    const smallestWidth = settings.imageWidths[settings.imageWidths.length - 1];
+    const { minWidth } = options;
+    const skipResize = minWidth && actualWidth < smallestWidth.res && actualWidth > minWidth;
+    if (!imageWidths.length && skipResize) {
+        imageWidths.push(smallestWidth);
+    }
+
     const imageObject = {};
     let p = Promise.resolve();
     const canvas = document.createElement('canvas');
@@ -171,11 +186,12 @@ const resizeImage = (image, options) => {
      */
     imageWidths.forEach((widthObj, index) => {
         p = p.then(() => {
-            const targetWidth = widthObj.res;
-            const targetHeight = (actualHeight * widthObj.res) / actualWidth;
+            const targetWidth = skipResize ? actualWidth : widthObj.res;
+            console.log('target width', targetWidth);
+            const targetHeight = (actualHeight * targetWidth) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
-            ctx.fillStyle = 'white'; 
+            ctx.fillStyle = 'white';
             /**
              * pica.resizeCanvas(from, to, options, cb)
              */

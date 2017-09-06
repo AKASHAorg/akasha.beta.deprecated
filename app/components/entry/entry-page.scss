@@ -17,13 +17,6 @@
     z-index: 10;
     position: relative;
 }
-.entry_infos {
-    max-width: 700px;
-    margin: 0 auto;
-}
-.comments_section {
-    padding-bottom: 20px;
-}
 
 .unresolved_entry {
     height: 300px;
@@ -37,7 +30,7 @@
 .button_absolute {
     position: absolute;
     margin: 0 auto;
-    top: 40px;
+    top: 0px;
     width: 700px;
 }
 
@@ -45,5 +38,5 @@
     position: fixed;
     left: 64px;
     right: 6px;
-    top: 96px;
+    top: 50px;
 }

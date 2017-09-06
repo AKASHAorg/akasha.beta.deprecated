@@ -1,5 +1,5 @@
-import path from "path";
-import webpack from "webpack";
+import path from 'path';
+import webpack from 'webpack';
 
 export default {
     module: {
@@ -9,7 +9,7 @@ export default {
             exclude: /node_modules/,
             options: {
                 plugins: [
-                    ['import', {libraryName: "antd", style: true}]
+                    ['import', { libraryName: 'antd', style: true }]
                 ]
             }
         }]

@@ -1,11 +1,7 @@
 .entry_header_actions {
-    position: absolute;
-    top: 0;
-    right: 0;
     height: 80;
     display: flex;
     align-items: center;
-    z-index: 5;
 }
 
 .entry_publisher_name {
@@ -20,12 +16,8 @@
 
 .entry_publisher_info {
     margin: 0 auto;
-    position: fixed;
-    top: 50px;
-    z-index: 20;
-    left: 64px;
-    right: 0;
     &_inner {
+        display: flex;
         max-width: 752px;
         margin: 0 auto;
         transition: box-shadow 0.215s ease-in-out;

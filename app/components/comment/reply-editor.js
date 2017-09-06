@@ -18,41 +18,6 @@ import CommentImage from './comment-image';
 const { convertToRaw, EditorState, RichUtils, SelectionState } = DraftJS;
 const { handleKeyCommand, toggleInlineStyle, toggleBlockType } = RichUtils;
 
-const config = {
-    theme: {
-        emoji: 'draftJsEmojiPlugin__emoji__2oqBk',
-        emojiSuggestions: 'draftJsEmojiPlugin__emojiSuggestions__2ffcV',
-        emojiSuggestionsEntry: 'draftJsEmojiPlugin__emojiSuggestionsEntry__2-2p_',
-        emojiSuggestionsEntryFocused: 'draftJsEmojiPlugin__emojiSuggestionsEntryFocused__XDntY',
-        emojiSuggestionsEntryText: 'draftJsEmojiPlugin__emojiSuggestionsEntryText__2sPjk',
-        emojiSuggestionsEntryIcon: 'draftJsEmojiPlugin__emojiSuggestionsEntryIcon__1qC2V',
-        emojiSelect: 'comment-editor__emoji-select',
-        emojiSelectButton: 'comment-editor__emoji-select-button',
-        emojiSelectButtonPressed: 'comment-editor__emoji-select-button_pressed',
-        emojiSelectPopover: 'comment-editor__emoji-select-popover',
-        emojiSelectPopoverClosed: 'comment-editor__emoji-select-popover-closed',
-        emojiSelectPopoverTitle: 'comment-editor__emoji-select-popover-title',
-        emojiSelectPopoverGroups: 'comment-editor__emoji-select-popover-groups',
-        emojiSelectPopoverGroup: 'draftJsEmojiPlugin__emojiSelectPopoverGroup__2J_ye',
-        emojiSelectPopoverGroupTitle: 'draftJsEmojiPlugin__emojiSelectPopoverGroupTitle__2gFs6',
-        emojiSelectPopoverGroupList: 'draftJsEmojiPlugin__emojiSelectPopoverGroupList__IYtlu',
-        emojiSelectPopoverGroupItem: 'draftJsEmojiPlugin__emojiSelectPopoverGroupItem__2hlBb',
-        emojiSelectPopoverToneSelect: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelect__2GSYa',
-        emojiSelectPopoverToneSelectList: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectList__2iPME',
-        emojiSelectPopoverToneSelectItem: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectItem__3VVdN',
-        emojiSelectPopoverEntry: 'draftJsEmojiPlugin__emojiSelectPopoverEntry__3nQtJ',
-        emojiSelectPopoverEntryFocused: 'draftJsEmojiPlugin__emojiSelectPopoverEntryFocused__GHigP',
-        emojiSelectPopoverEntryIcon: 'draftJsEmojiPlugin__emojiSelectPopoverEntryIcon__3SzrH',
-        emojiSelectPopoverNav: 'comment-editor__emoji-select-popover-nav',
-        emojiSelectPopoverNavItem: 'draftJsEmojiPlugin__emojiSelectPopoverNavItem__14K42',
-        emojiSelectPopoverNavEntry: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntry__2bPuZ',
-        emojiSelectPopoverNavEntryActive: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntryActive__2G0lt',
-        emojiSelectPopoverScrollbar: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbar__QWjCt',
-        emojiSelectPopoverScrollbarThumb: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbarThumb__1J-ig'
-    },
-    imagePath: 'images/emoji-svg/'
-};
-
 // TODO Remove this temporary "hack"
 const Underline = () => (
   <div
@@ -79,7 +44,7 @@ const blockStyleActions = [{
     style: 'blockquote'
 }];
 
-class CommentEditor extends Component {
+class ReplyEditor extends Component {
     constructor (props) {
         super(props);
 
@@ -93,14 +58,47 @@ class CommentEditor extends Component {
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
             removeImage: this.removeImage
         });
-
-        this.emojiPlugin = createEmojiPlugin(config);
+        console.log('create new emoji plugin');
+        this.emojiPlugin = createEmojiPlugin({
+            theme: {
+                emoji: 'draftJsEmojiPlugin__emoji__2oqBk',
+                emojiSuggestions: 'draftJsEmojiPlugin__emojiSuggestions__2ffcV',
+                emojiSuggestionsEntry: 'draftJsEmojiPlugin__emojiSuggestionsEntry__2-2p_',
+                emojiSuggestionsEntryFocused: 'draftJsEmojiPlugin__emojiSuggestionsEntryFocused__XDntY',
+                emojiSuggestionsEntryText: 'draftJsEmojiPlugin__emojiSuggestionsEntryText__2sPjk',
+                emojiSuggestionsEntryIcon: 'draftJsEmojiPlugin__emojiSuggestionsEntryIcon__1qC2V',
+                emojiSelect: 'comment-editor__emoji-select',
+                emojiSelectButton: 'comment-editor__emoji-select-button',
+                emojiSelectButtonPressed: 'comment-editor__emoji-select-button_pressed',
+                emojiSelectPopover: 'comment-editor__emoji-select-popover',
+                emojiSelectPopoverClosed: 'comment-editor__emoji-select-popover-closed',
+                emojiSelectPopoverTitle: 'comment-editor__emoji-select-popover-title',
+                emojiSelectPopoverGroups: 'comment-editor__emoji-select-popover-groups',
+                emojiSelectPopoverGroup: 'draftJsEmojiPlugin__emojiSelectPopoverGroup__2J_ye',
+                emojiSelectPopoverGroupTitle: 'draftJsEmojiPlugin__emojiSelectPopoverGroupTitle__2gFs6',
+                emojiSelectPopoverGroupList: 'draftJsEmojiPlugin__emojiSelectPopoverGroupList__IYtlu',
+                emojiSelectPopoverGroupItem: 'draftJsEmojiPlugin__emojiSelectPopoverGroupItem__2hlBb',
+                emojiSelectPopoverToneSelect: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelect__2GSYa',
+                emojiSelectPopoverToneSelectList: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectList__2iPME',
+                emojiSelectPopoverToneSelectItem: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectItem__3VVdN',
+                emojiSelectPopoverEntry: 'draftJsEmojiPlugin__emojiSelectPopoverEntry__3nQtJ',
+                emojiSelectPopoverEntryFocused: 'draftJsEmojiPlugin__emojiSelectPopoverEntryFocused__GHigP',
+                emojiSelectPopoverEntryIcon: 'draftJsEmojiPlugin__emojiSelectPopoverEntryIcon__3SzrH',
+                emojiSelectPopoverNav: 'comment-editor__emoji-select-popover-nav',
+                emojiSelectPopoverNavItem: 'draftJsEmojiPlugin__emojiSelectPopoverNavItem__14K42',
+                emojiSelectPopoverNavEntry: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntry__2bPuZ',
+                emojiSelectPopoverNavEntryActive: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntryActive__2G0lt',
+                emojiSelectPopoverScrollbar: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbar__QWjCt',
+                emojiSelectPopoverScrollbarThumb: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbarThumb__1J-ig'
+            },
+            imagePath: 'images/emoji-svg/'
+        });
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
     componentDidMount () {
         if (this.props.parent && this.editor) {
-            setTimeout(this.editor.focus, 0);
+            this.editor.focus();
         }
     }
 
@@ -134,7 +132,7 @@ class CommentEditor extends Component {
 
     onWrapperClick = () => {
         if (this.editor) {
-            setTimeout(this.editor.focus, 0);
+            this.editor.focus();
         }
         this.setState({
             editorFocused: true
@@ -316,17 +314,18 @@ class CommentEditor extends Component {
             >
               <div className="comment-editor__editor-area">
                 <div className={wrapperClass}>
-                  <Editor
-                    editorState={editorState}
-                    handleKeyCommand={this.handleKeyCommand}
-                    onChange={this.onChange}
-                    placeholder={placeholder}
-                    plugins={[this.emojiPlugin, this.imagePlugin]}
-                    ref={this.getEditorRef}
-                  />
+                  {(parent || !replyTo) &&
+                    <Editor
+                      editorState={editorState}
+                      handleKeyCommand={this.handleKeyCommand}
+                      onChange={this.onChange}
+                      placeholder={placeholder}
+                      plugins={[this.emojiPlugin, this.imagePlugin]}
+                      ref={this.getEditorRef}
+                    />
+                  }
                 </div>
                 <EmojiSelect />
-                <EmojiSuggestions />
               </div>
               {showToolbar &&
                 <div className="comment-editor__toolbar">
@@ -345,7 +344,7 @@ class CommentEditor extends Component {
     }
 }
 
-CommentEditor.propTypes = {
+ReplyEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string,
@@ -357,4 +356,4 @@ CommentEditor.propTypes = {
     replyTo: PropTypes.string
 };
 
-export default clickAway(CommentEditor);
+export default clickAway(ReplyEditor);
