@@ -1,0 +1,115 @@
+.comment {
+    margin-bottom: 16px;
+    position: relative;
+
+    &__inner {
+        display: flex;
+        margin-bottom: 16px;
+    }
+
+    &__votes {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px;
+    }
+
+    &__votes-icon {
+        font-size: 16px;
+    }
+
+    &__score {
+        font-size: 14px;
+        line-height: 1;
+        padding: 4px 0px;
+        cursor: default;
+    }
+
+    &__main {
+        flex: 1 1 auto;
+        margin-left: 8px;
+    }
+
+    &__header {
+        width: 100%;
+        height: 24px;
+    }
+
+    &__author-name {
+        font-weight: 600;
+        color: @heading-color;
+
+        &_logged {
+            color: @primary-color;
+        }
+
+        &_author {
+            color: #4ab558;
+        }
+    }
+
+    &__publish-date {
+        padding: 0px 12px 0px 6px;
+        font-size: 12px;
+        line-height: 22px;
+        color: @text-color-secondary;
+    }
+
+    &__placeholder {
+        position: absolute;
+        right: 10px;
+        top: 7px;
+        opacity: 0.5;
+    }
+
+    &__body {
+        padding-top: 8px;
+
+        &_collapsed {
+            max-height: 155px;
+            overflow: hidden;
+        }
+
+        &_expanded {
+            max-height: none;
+            overflow: visible;
+        }
+
+        blockquote {
+            border-left: 3px solid #eee;
+            color: #666;
+            font-style: italic;
+            margin: 8px 0;
+            padding: 4px 8px;
+        }
+    }
+
+    &__expand-button {
+        font-size: 12px;
+        padding: 4px 0px;
+    }
+
+    &__actions {
+        height: 32px;
+    }
+
+    &__reply-button {
+        color: @primary-color;
+        fill: @primary-color;
+        margin-right: 10px;
+        font-size: 12px;
+
+        svg {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+        }
+    }
+
+    &__replies {
+        padding-left: 32px;
+    }
+}

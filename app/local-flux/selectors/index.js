@@ -1,5 +1,6 @@
 import { List } from 'immutable';
 import { ProfileRecord } from '../reducers/records';
+import * as actionTypes from '../../constants/action-types';
 
 /* eslint-disable no-use-before-define */
 
@@ -166,14 +167,15 @@ export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
 export const selectPendingComments = (state, entryId) => {
-    // const pendingComments = state.appState
-    //     .get('pendingActions')
-    //     .filter(act =>
-    //         act.get('type') === actionTypes.comment &&
-    //         act.get('status') === 'publishing' &&
-    //         act.getIn(['payload', 'entryId']) === entryId);
-    // return pendingComments;
-    return new List();
+    const pendingComments = state.actionState
+        .get('publishing')
+        .filter((actionId) => {
+            const action = state.actionState.getIn(['byId', actionId]);
+            return action.get('type') === actionTypes.comment &&
+                action.getIn(['payload', 'entryId']) === entryId;
+        })
+        .map(actionId => state.actionState.getIn(['byId', actionId]));
+    return pendingComments;
 };
 
 export const selectProfile = (state, akashaId) =>
@@ -203,5 +205,7 @@ export const selectTagGetEntriesCount = state =>
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 
 export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
+
+export const selectVoteCost = state => state.entryState.get('voteCostByWeight');
 
 /* eslint-enable no-use-before-define */

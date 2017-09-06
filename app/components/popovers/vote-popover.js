@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Slider } from 'antd';
-import * as actionTypes from '../../constants/action-types';
+import classNames from 'classnames';
+import { selectBalance, selectVoteCost } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 const FormItem = Form.Item;
@@ -30,8 +32,8 @@ class VotePopover extends Component {
     }
 
     canVote = () => {
-        const { entry, votePending, voteWeight } = this.props;
-        return entry.get('active') && !votePending && !voteWeight;
+        const { disabled, votePending, voteWeight } = this.props;
+        return !disabled && !votePending && !voteWeight;
     };
 
     onCancel = () => {
@@ -78,7 +80,7 @@ class VotePopover extends Component {
     renderContent = () => {
         const { form, intl, type, votePending } = this.props;
         const { getFieldDecorator, getFieldError, getFieldValue } = form;
-        const title = type === actionTypes.downvote ? entryMessages.downvote : entryMessages.upvote;
+        const title = type.includes('Downvote') ? entryMessages.downvote : entryMessages.upvote;
 
         if (!this.canVote()) {
             return null;
@@ -148,7 +150,10 @@ class VotePopover extends Component {
     };
 
     render () {
-        const { containerRef, type } = this.props;
+        const { containerRef, iconClassName, type } = this.props;
+        const iconClass = classNames(iconClassName, {
+            'content-link': this.canVote()
+        });
 
         return (
           <Popover
@@ -161,8 +166,8 @@ class VotePopover extends Component {
             visible={this.state.popoverVisible}
           >
             <Icon
-              className={`${this.canVote() && 'content-link'} vote-popover__icon`}
-              type={type === actionTypes.downvote ? 'down-circle-o' : 'up-circle-o'}
+              className={iconClass}
+              type={type.includes('Downvote') ? 'arrow-down' : 'arrow-up'}
             />
           </Popover>
         );
@@ -172,8 +177,9 @@ class VotePopover extends Component {
 VotePopover.propTypes = {
     balance: PropTypes.string.isRequired,
     containerRef: PropTypes.shape(),
-    entry: PropTypes.shape().isRequired,
+    disabled: PropTypes.bool,
     form: PropTypes.shape().isRequired,
+    iconClassName: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     onSubmit: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
@@ -182,4 +188,11 @@ VotePopover.propTypes = {
     voteWeight: PropTypes.number
 };
 
-export default Form.create()(injectIntl(VotePopover));
+function mapStateToProps (state) {
+    return {
+        balance: selectBalance(state),
+        voteCost: selectVoteCost(state)
+    };
+}
+
+export default connect(mapStateToProps)(Form.create()(injectIntl(VotePopover)));

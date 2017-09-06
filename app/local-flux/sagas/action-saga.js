@@ -23,13 +23,13 @@ const publishActions = {
     [actionTypes.claim]: entryActions.entryClaim,
     [actionTypes.comment]: commentsActions.commentsPublish,
     [actionTypes.createTag]: tagActions.tagCreate,
-    [actionTypes.downvote]: entryActions.entryDownvote,
+    [actionTypes.entryDownvote]: entryActions.entryDownvote,
+    [actionTypes.entryUpvote]: entryActions.entryUpvote,
     [actionTypes.follow]: profileActions.profileFollow,
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
     [actionTypes.sendTip]: profileActions.profileSendTip,
     [actionTypes.unfollow]: profileActions.profileUnfollow,
-    [actionTypes.upvote]: entryActions.entryUpvote
 };
 
 /**
@@ -42,13 +42,13 @@ const publishSuccessActions = {
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     [actionTypes.createTag]: tagActions.tagCreateSuccess,
-    [actionTypes.downvote]: entryActions.entryDownvoteSuccess,
+    [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
+    [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
-    [actionTypes.upvote]: entryActions.entryUpvoteSuccess
 };
 
 
@@ -98,15 +98,17 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
  */
 function* actionSave (id) {
     let action = yield select(state => selectAction(state, id));
-    // Remove non persistent fields from payload before saving to local DB
+    // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
-    const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
-    if (nonPersistentFields && nonPersistentFields.size) {
-        nonPersistentFields.forEach((field) => {
-            action = action.deleteIn(['payload', field]);
-        });
+    if (action.status === actionStatus.published) {
+        const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
+        if (nonPersistentFields && nonPersistentFields.size) {
+            nonPersistentFields.forEach((field) => {
+                action = action.deleteIn(['payload', field]);
+            });
+        }
+        action = action.deleteIn(['payload', 'nonPersistentFields']);
     }
-    action = action.deleteIn(['payload', 'nonPersistentFields']);
     try {
         yield apply(actionService, actionService.saveAction, [action.toJS()]);
     } catch (error) {

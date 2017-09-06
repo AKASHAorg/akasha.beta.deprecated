@@ -16,6 +16,16 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip',
         defaultMessage: 'Claim'
     },
+    commentsCount: {
+        id: 'app.entry.commentsCount',
+        description: 'Number of comments',
+        defaultMessage: `{count, number} {count, plural,
+            one {comment}
+            few {comments}
+            many {comments}
+            other {comments}
+        }`
+    },
     downvote: {
         id: 'app.entry.downvote',
         description: 'downvote button tooltip',
@@ -29,6 +39,11 @@ const entryMessages = defineMessages({
             other {entries}
         }`
     },
+    publicDiscussion: {
+        id: 'app.entry.publicDiscussion',
+        description: 'entry comments section title',
+        defaultMessage: 'Public discussion'
+    },
     published: {
         id: 'app.entry.published',
         description: 'published',
@@ -38,6 +53,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
         defaultMessage: 'Save highlight'
+    },
+    showLess: {
+        id: 'app.entry.showLess',
+        description: 'label for comment collapse button',
+        defaultMessage: 'Show less'
+    },
+    showMore: {
+        id: 'app.entry.showMore',
+        description: 'label for comment expand button',
+        defaultMessage: 'Show more'
     },
     wordsCount: {
         id: 'app.entry.wordsCount',
@@ -53,11 +78,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.readTime',
         description: 'estimated time to read an entry',
         defaultMessage: 'read'
-    },
-    allComments: {
-        id: 'app.entry.allComments',
-        description: 'all comments section title',
-        defaultMessage: 'ALL COMMENTS'
     },
     writeComment: {
         id: 'app.entry.writeComment',
