@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const tagMessages = defineMessages({
+    addTag: {
+        id: 'app.tag.addTag',
+        description: 'placeholder for tag editor field',
+        defaultMessage: '#category...'
+    },
     recommendedTags: {
         id: 'app.tag.recommendedTags',
         description: 'tags recommended by Akasha',

@@ -8,6 +8,7 @@ import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftAutosave,
     draftsGetCount } from '../local-flux/actions/draft-actions';
 import { tagSearch } from '../local-flux/actions/tag-actions';
+import { searchResetResults } from '../local-flux/actions/search-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 
@@ -53,7 +54,16 @@ class NewEntryPage extends Component {
             id: match.params.draftId,
         });
     }
-
+    _handleTagUpdate = (tagList) => {
+        const { match, akashaId, draftObj } = this.props;
+        console.log('new added tags', tagList);
+        this.props.draftUpdate({
+            akashaId,
+            id: match.params.draftId,
+            content: draftObj.get('content'),
+            tags: draftObj.get('tags').clear().concat(tagList),
+        });
+    }
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
@@ -122,16 +132,20 @@ class NewEntryPage extends Component {
                     editorState={draft}
                     selectionState={this.state.editorState}
                     baseUrl={baseUrl}
+                    intl={intl}
                   />
                 </div>
                 <div className="text-entry-page__tag-editor">
                   <TagEditor
                     ref={this._createRef('tagEditor')}
                     nodeRef={(node) => { this.tagsField = node; }}
+                    intl={intl}
+                    onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     tagSearch={this.props.tagSearch}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
+                    searchResetResults={this.props.searchResetResults}
                   />
                 </div>
               </Col>
@@ -202,7 +216,8 @@ NewEntryPage.propTypes = {
     secondarySidebarToggle: PropTypes.func,
     tagSearch: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
-    tagSuggestionsCount: PropTypes.number
+    tagSuggestionsCount: PropTypes.number,
+    searchResetResults: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -226,5 +241,6 @@ export default connect(
         draftAutosave,
         draftsGetCount,
         tagSearch,
+        searchResetResults,
     }
 )(injectIntl(NewEntryPage));

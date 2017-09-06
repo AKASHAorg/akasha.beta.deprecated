@@ -13,6 +13,9 @@
         border: none;
         min-width: 15%;
         padding: 2px 8px;
+        &:disabled::-webkit-input-placeholder {
+            color: #C8C8C8;
+        }
     }
     &__tag-item {
         border-radius: 3px;
@@ -46,5 +49,24 @@
             cursor: pointer;
             margin-left: 4px;
         }
+    }
+}
+.tag-editor__suggestions-container {
+    min-width: 125px;
+    .ant-popover-inner-content {
+        padding: 4px;
+    }
+}
+.tag-editor__suggestion-item {
+    padding: 4px 8px 4px 4px;
+    border-radius: 3px;
+    user-select: none;
+    font-size: 13px;
+    cursor: pointer;
+    &:hover {
+        background-color: #EDEDED;
+    }
+    &_selected {
+        background-color: #ECF6FF;
     }
 }

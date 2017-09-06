@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, Popover } from 'antd';
+import { tagMessages } from '../locale-data/messages';
 
 const tagCreatorKeycodes = [
     13, // enter
@@ -15,33 +16,47 @@ const suggestionsControlKeys = [
     40, // arrow down
 ];
 class TagEditor extends Component {
-    state = {
-        partialTag: '',
-        createdTags: [],
-        existentTags: [],
-        tagInputWidth: 0,
+    constructor (props) {
+        super(props);
+        const { intl } = this.props;
+        this.state = {
+            partialTag: '',
+            createdTags: [],
+            existentTags: [],
+            tagInputWidth: this._getTextWidth(intl.formatMessage(tagMessages.addTag)),
+            selectedSuggestionIndex: 0,
+        };
     }
 
     getTags = () =>
         this.state.createdTags;
-
     // capture up and down keys.
     // when input is in focus and suggestions are visible,
     // prevent default behaviour and navigate through results
     _handleArrowKeyPress = (ev) => {
         const { inputHasFocus } = this.state;
-        const { tagSuggestionsCount } = this.props;
+        const { tagSuggestionsCount, tagSuggestions } = this.props;
         const controllingSuggestions = suggestionsControlKeys.includes(ev.which);
         if (inputHasFocus && controllingSuggestions && tagSuggestionsCount > 0) {
             switch (ev.which) {
                 case 13:
-                    console.log('create the tag selected');
+                    this._addNewTag(tagSuggestions.get(this.state.selectedSuggestionIndex), tagSuggestions.get(this.state.selectedSuggestionIndex));
                     break;
                 case 38:
-                    console.log('change tag selection to one up');
+                    this.setState((prevState) => {
+                        if (prevState.selectedSuggestionIndex === 0) {
+                            return { selectedSuggestionIndex: tagSuggestions.size - 1 };
+                        }
+                        return { selectedSuggestionIndex: prevState.selectedSuggestionIndex - 1 };
+                    });
                     break;
                 case 40:
-                    console.log('change tag selection one down');
+                    this.setState((prevState) => {
+                        if (prevState.selectedSuggestionIndex === (tagSuggestions.size - 1)) {
+                            return { selectedSuggestionIndex: 0 };
+                        }
+                        return { selectedSuggestionIndex: prevState.selectedSuggestionIndex + 1 };
+                    });
                     break;
                 default:
                     break;
@@ -51,20 +66,43 @@ class TagEditor extends Component {
             }
         }
     }
-    _checkTagExistence = tags =>
-        new Promise((resolve) => {
-            resolve(tags);
-        })
+    _checkTagExistence = (tagName) => {
+        const serverChannel = window.Channel.server.tags.exists;
+        const clientChannel = window.Channel.client.tags.exists;
+        return new Promise((resolve) => {
+            clientChannel.on((ev, response) => {
+                if (response.data.exists) {
+                    return resolve(response.data.tagName);
+                }
+                return resolve(null);
+            });
+            serverChannel.send({ tagName });
+        });
+    }
 
+    _addNewTag = (tagName, existent) => {
+        this.setState({
+            createdTags: [...this.state.createdTags, tagName],
+            existentTags: existent ? [...this.state.existentTags, existent] : this.state.existentTags,
+            partialTag: '',
+            tagInputWidth: 0
+        }, () => {
+            this.props.onTagUpdate(this.state.createdTags);
+            this.tagInput.focus();
+            this.props.searchResetResults();
+        });
+    }
     _detectTagCreationKeys = (ev) => {
         if (tagCreatorKeycodes.includes(ev.which)) {
-            this._checkTagExistence([this.state.partialTag, ...this.state.createdTags]);
             if (this.state.partialTag.length > 2) {
-                this.setState({
-                    createdTags: [...this.state.createdTags, this.state.partialTag],
-                    partialTag: '',
-                    tagInputWidth: 0
+                this._checkTagExistence(this.state.partialTag).then((existentTag) => {
+                    if (existentTag) {
+                        this._addNewTag(this.state.partialTag, existentTag);
+                    } else {
+                        this._addNewTag(this.state.partialTag);
+                    }
                 });
+                this.props.searchResetResults();
             }
             ev.preventDefault();
         }
@@ -74,6 +112,8 @@ class TagEditor extends Component {
         () => {
             this.setState({
                 createdTags: [...this.state.createdTags.filter(tag => tag !== tagName)]
+            }, () => {
+                this.props.onTagUpdate(this.state.createdTags);
             });
         }
 
@@ -96,12 +136,26 @@ class TagEditor extends Component {
 
     _getTagSuggestions = () => {
         const { tagSuggestions } = this.props;
+        /* eslint-disable react/no-array-index-key */
         return tagSuggestions.map((tag, index) => (
-          <div key={`suggested-${tag}-${index}`}>{tag}</div>
+          <div
+            key={`suggested-${tag}-${index}`}
+            onClick={() => this._addNewTag(tag, tag)}
+            className={
+                `tag-editor__suggestion-item
+                tag-editor__suggestion-item${this.state.selectedSuggestionIndex === index ? '_selected' : ''}`
+            }
+          >
+            {tag}
+          </div>
         ));
+        /* eslint-enable react/no-array-index-key */
     }
 
     _handleTagChange = (ev) => {
+        if (this.state.partialTag.length === 32 && ev.target.value.length > 32) {
+            return;
+        }
         this.setState({
             partialTag: ev.target.value,
             tagInputWidth: this._getTextWidth(ev.target.value).width + 20,
@@ -111,52 +165,90 @@ class TagEditor extends Component {
                     tag: this.state.partialTag,
                     localOnly: true
                 });
+            } else {
+                this.props.searchResetResults();
             }
         });
     }
 
     _changeInputFocus = focusState =>
-        () => this.setState({
+        () => setTimeout(() => this.setState({
             inputHasFocus: focusState
-        })
-
+        }, () => {
+            if (this.state.inputHasFocus) {
+                if (this.state.partialTag.length > 2) {
+                    this.props.tagSearch({
+                        tag: this.state.partialTag,
+                        localOnly: true,
+                    });
+                }
+            }
+            if (!this.state.inputHasFocus) {
+                this.props.searchResetResults();
+            }
+        }), 100);
+    _getTagPopoverContent = (tag) => {
+        const { existentTags } = this.state;
+        if (!existentTags.includes(tag)) {
+            return (
+              <div>
+                <p>This is a new tag that wasn`t created by anyone before!</p>
+                <div>
+                  <span>Cancel</span>
+                  <span>Create</span>
+                </div>
+              </div>
+            );
+        }
+        return null;
+    }
     render () {
         const { createdTags, tagInputWidth, inputHasFocus, existentTags } = this.state;
-        const { tagSuggestionsCount } = this.props;
-
+        const { tagSuggestionsCount, intl, tags } = this.props;
+        console.log(tags, '!!!!!! replace createdTags with "tags" !!!!!!!!!!!!!!!!!!!!');
         return (
           <div
             className="tag-editor"
             ref={this.props.nodeRef}
           >
+            { /* eslint-disable react/no-array-index-key */ }
             {createdTags.map((tag, index) => (
-              <div
-                className={
-                  `tag-editor__tag-item
-                  tag-editor__tag-item_${existentTags.includes(tag) ? '' : 'should-register'}`
-                }
+              <Popover
                 key={`${tag}-${index}`}
+                content={this._getTagPopoverContent(tag)}
+                overlayClassName="tag-editor__tag-item-popover"
+                visible={!existentTags.includes(tag)}
               >
-                { tag }
-                <span
-                  className="tag-item__delete-button"
-                  onClick={this._deleteTag(tag)}
+                <div
+                  className={
+                    `tag-editor__tag-item
+                    tag-editor__tag-item${existentTags.includes(tag) ? '' : '_should-register'}`
+                    }
                 >
-                  <Icon
-                    type="close"
-                  />
-                </span>
-              </div>
+                  { tag }
+                  <span
+                    className="tag-item__delete-button"
+                    onClick={this._deleteTag(tag)}
+                  >
+                    <Icon
+                      type="close"
+                    />
+                  </span>
+                </div>
+              </Popover>
             ))}
+            { /* eslint-enable react/no-array-index-key */ }
             <Popover
               content={this._getTagSuggestions()}
               placement="topLeft"
               visible={tagSuggestionsCount > 0 && inputHasFocus}
+              overlayClassName="tag-editor__suggestions-container"
             >
               <input
+                ref={(node) => { this.tagInput = node; }}
                 type="text"
                 className="tag-editor__input"
-                placeholder="#category..."
+                placeholder={intl.formatMessage(tagMessages.addTag)}
                 onKeyPress={this._detectTagCreationKeys}
                 onKeyDown={this._handleArrowKeyPress}
                 onChange={this._handleTagChange}
@@ -166,6 +258,7 @@ class TagEditor extends Component {
                 value={this.state.partialTag}
                 onFocus={this._changeInputFocus(true)}
                 onBlur={this._changeInputFocus(false)}
+                disabled={!createdTags.every(tag => existentTags.includes(tag))}
               />
             </Popover>
           </div>
@@ -174,10 +267,13 @@ class TagEditor extends Component {
 }
 
 TagEditor.propTypes = {
+    intl: PropTypes.shape(),
     nodeRef: PropTypes.func,
+    onTagUpdate: PropTypes.func,
     tagSearch: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
+    searchResetResults: PropTypes.func,
 };
 
 export default TagEditor;

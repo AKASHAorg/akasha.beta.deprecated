@@ -455,6 +455,7 @@ export const TAG_SAVE = 'TAG_SAVE';
 export const TAG_SAVE_ERROR = 'TAG_SAVE_ERROR';
 export const TAG_SAVE_SUCCESS = 'TAG_SAVE_SUCCESS';
 export const TAG_SEARCH = 'TAG_SEARCH';
+export const TAG_SEARCH_CLEAR = 'TAG_SEARCH_CLEAR';
 export const TAG_SEARCH_SUCCESS = 'TAG_SEARCH_SUCCESS';
 export const TAG_SEARCH_ERROR = 'TAG_SEARCH_ERROR';
 export const TAG_SEARCH_MORE = 'TAG_SEARCH_MORE';
