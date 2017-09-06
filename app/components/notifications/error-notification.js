@@ -11,9 +11,9 @@ class ErrorNotification extends Component {
     componentWillReceiveProps (nextProps) {
         const { intl } = this.props;
         const { errorState } = nextProps;
-        if (this.props.errorState.get('byId') !== errorState.get('byId')) {
+        if (!this.props.errorState.get('byId').equals(errorState.get('byId'))) {
             const err = errorState.get('byId').last();
-            if (err && errorState.get('nonFatalErrors').indexOf(err.get('id') === -1)) {
+            if (err && errorState.get('nonFatalErrors').indexOf(err.get('id')) === -1) {
                 const message = err.get('messageId') ?
                     intl.formatMessage(errorMessages[err.get('messageId')], err.get('values')) :
                     err.get('message');

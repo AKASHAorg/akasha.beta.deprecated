@@ -12,10 +12,10 @@ import { NotificationHighlightNote } from '../';
 class Notification extends Component {
     componentWillReceiveProps (nextProps) {
         const { intl } = this.props;
-        const { notifications, notificationsDisplay } = nextProps;
-        if (this.props.notifications !== notifications) {
+        const { notifications, displayedNotifications } = nextProps;
+        if (!this.props.notifications.equals(notifications)) {
             const notif = notifications.last();
-            if (notif && notificationsDisplay.indexOf(notif.get('displayId') === -1)) {
+            if (notif && displayedNotifications.indexOf(notif.get('displayId')) === -1) {
                 if (!notif.get('type')) {
                     const message = intl.formatMessage(
                         notificationMessages[notif.get('id')],
@@ -63,13 +63,13 @@ Notification.propTypes = {
     intl: PropTypes.shape().isRequired,
     notifications: PropTypes.shape().isRequired,
     notificationDisplay: PropTypes.func,
-    notificationsDisplay: PropTypes.shape()
+    displayedNotifications: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
         notifications: state.appState.get('notifications'),
-        notificationsDisplay: state.appState.get('notificationsDisplay')
+        displayedNotifications: state.appState.get('displayedNotifications')
     };
 }
 

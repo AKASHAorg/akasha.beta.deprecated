@@ -12,7 +12,7 @@ const AppRecord = Record({
     appReady: false,
     homeReady: false,
     notifications: new List(),
-    notificationsDisplay: new List(),
+    displayedNotifications: new List(),
     showAppSettings: false,
     showAuthDialog: null,
     showGethDetailsModal: false,

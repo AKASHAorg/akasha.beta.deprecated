@@ -8,10 +8,10 @@ const initialState = new AppRecord();
 const appState = createReducer(initialState, {
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
-        const indexToRemove = state.get('notificationsDisplay').findIndex(displayId =>
+        const indexToRemove = state.get('displayedNotifications').findIndex(displayId =>
             displayId === notification.displayId);
         return state.merge({
-            notificationsDisplay: state.get('notificationsDisplay').delete(indexToRemove)
+            displayedNotifications: state.get('displayedNotifications').delete(indexToRemove)
         });
     },
 
@@ -34,7 +34,7 @@ const appState = createReducer(initialState, {
 
     [types.NOTIFICATION_DISPLAY]: (state, { notification }) => {
         return state.merge({
-            notificationsDisplay: state.get('notificationsDisplay').push(notification.get('displayId'))
+            displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
         });
     },
 
