@@ -1,5 +1,7 @@
 import { apply, put, select, takeEvery } from 'redux-saga/effects';
+import { Map } from 'immutable';
 import * as actions from '../actions/highlight-actions';
+import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
 import * as highlightService from '../services/highlight-service';
 import { selectLoggedAccount } from '../selectors';
@@ -41,6 +43,11 @@ function* highlightSave ({ payload }) {
             [{ account, ...payload }]
         );
         yield put(actions.highlightSaveSuccess(highlight));
+        yield put(appActions.showNotification({
+            id: 'highlightSaveSuccess',
+            type: types.HIGHLIGHT_SAVE_SUCCESS,
+            values: new Map({ id: highlight.id })
+        }));
     } catch (error) {
         yield put(actions.highlightSaveError(error));
     }

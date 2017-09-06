@@ -520,9 +520,9 @@ const profileState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').merge({
                 [akashaId]: profile ?
-                    profile.set('followersCount', profile.get('followersCount') + 1) :
+                    profile.set('followersCount', +profile.get('followersCount') + 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount + 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount + 1)
             }),
             flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,
@@ -766,9 +766,9 @@ const profileState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').merge({
                 [akashaId]: profile ?
-                    profile.set('followersCount', profile.get('followersCount') - 1) :
+                    profile.set('followersCount', +profile.get('followersCount') - 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount - 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount - 1)
             }),
             flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,
