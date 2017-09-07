@@ -5,8 +5,8 @@ import { injectIntl } from 'react-intl';
 import { PanelContainer, Tutorials } from '../components';
 import { PanelHeader } from '../shared-components';
 import { ConfigurationContainer, SynchronizationContainer, AuthContainer, LogDetailsContainer,
-    NewProfileContainer, NewProfileStatusContainer, NewProfileCompleteContainer } from './';
-import { setupMessages, generalMessages } from '../locale-data/messages';
+    NewProfileContainer } from './';
+import { setupMessages } from '../locale-data/messages';
 
 const LauncherContainer = ({ intl, location }) => {
     const routes = [
@@ -30,14 +30,6 @@ const LauncherContainer = ({ intl, location }) => {
             path: '/setup/new-identity',
             component: NewProfileContainer,
             title: intl.formatMessage(setupMessages.newIdentity)
-        }, {
-            path: '/setup/new-identity-status',
-            component: NewProfileStatusContainer,
-            title: intl.formatMessage(generalMessages.akasha)
-        }, {
-            path: '/setup/new-identity-complete',
-            component: NewProfileCompleteContainer,
-            title: intl.formatMessage(generalMessages.akasha)
         }
     ];
     const titleRoutes = routes.map(route => (

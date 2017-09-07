@@ -96,10 +96,25 @@ const formMessages = defineMessages({
         description: 'Error displayed when gas amount is not between limits',
         defaultMessage: 'Gas amount must be between {min} and {max}'
     },
-    voteWeightError: {
-        id: 'app.form.voteWeightError',
+    voteWeightIntegerError: {
+        id: 'app.form.voteWeightIntegerError',
+        description: 'Error displayed when vote weight is not an integer',
+        defaultMessage: 'Vote weight must be an integer'
+    },
+    voteWeightRangeError: {
+        id: 'app.form.voteWeightRangeError',
         description: 'Error displayed when vote weight is not between limits',
-        defaultMessage: 'Vote weight must be between {minWeight} and {maxWeight}'
+        defaultMessage: 'Vote weight must be between {min} and {max}'
+    },
+    voteWeightRequired: {
+        id: 'app.form.voteWeightRequired',
+        description: 'Error displayed when vote weight is not specified',
+        defaultMessage: 'Vote weight is required'
+    },
+    voteWeightExtra: {
+        id: 'app.form.voteWeightExtra',
+        description: 'extra information about the vote weight input',
+        defaultMessage: 'Define a value between {min} and {max}'
     },
     notEnoughFunds: {
         id: 'app.form.notEnoughFunds',
@@ -140,16 +155,6 @@ const formMessages = defineMessages({
         id: 'app.form.tipAmountError',
         description: 'Error displayed when the tip amount is smaller than the minimum allowed value',
         defaultMessage: 'The amount should be at least {minAmount} AETH'
-    },
-    tipDecimalsError: {
-        id: 'app.form.tipDecimalsError',
-        description: 'Error displayed when the tip amount has more decimals than the maximum allowed',
-        defaultMessage: 'The amount should not have more than {maxDecimals} decimals'
-    },
-    logInTitle: {
-        id: 'app.form.logInTitle',
-        description: 'login page title',
-        defaultMessage: 'Log in'
     },
     updateSettings: {
         id: 'app.form.updateSettings',

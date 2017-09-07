@@ -91,6 +91,11 @@ const errorMessages = defineMessages({
         description: 'upvote entry error message',
         defaultMessage: 'An error occurred while upvoting {entryTitle}'
     },
+    errorNotificationTitle: {
+        id: 'app.error.errorNotificationTitle',
+        description: 'title for error notifcations',
+        defaultMessage: 'Error code {errorCode}'
+    },
     fatalError: {
         id: 'app.error.fatalError',
         description: 'title for fatal error modal',
@@ -175,6 +180,11 @@ const errorMessages = defineMessages({
         id: 'app.error.ipfsStop',
         description: 'stop ipfs error message',
         defaultMessage: 'IPFS service could not be stopped'
+    },
+    unexpectedError: {
+        id: 'app.error.unexpectedError',
+        description: 'an error with no code',
+        defaultMessage: 'Unexpected Error'
     },
     profileGetLocal: {
         id: 'app.error.profileGetLocal',

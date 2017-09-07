@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FormattedDate } from 'react-intl';
+import { FormattedDate, injectIntl } from 'react-intl';
 import { Icon } from 'antd';
-import { Avatar, PanelLink } from './';
+import { highlightMessages } from '../locale-data/messages';
+import { Avatar, PanelLink, ProfilePopover } from './';
 
 const HighlightHeader = (props) => {
-    const { deleteHighlight, editable, highlight, publisher } = props;
+    const { containerRef, deleteHighlight, editable, highlight, intl, publisher } = props;
 
     const date = (
       <FormattedDate
@@ -22,7 +23,7 @@ const HighlightHeader = (props) => {
 
     return (
       <div className="highlight-header">
-        <Link className="highlight-header__link" to={publisherUrl}>
+        <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
           <Avatar
             className="highlight-header__avatar"
             firstName={publisher.get('firstName')}
@@ -30,11 +31,13 @@ const HighlightHeader = (props) => {
             lastName={publisher.get('lastName')}
             size="small"
           />
-        </Link>
+        </ProfilePopover>
         <div className="highlight-header__text">
-          <Link className="unstyled-link content-link highlight-header__link" to={publisherUrl}>
-            {highlight.get('publisher')}
-          </Link>
+          <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
+            <span className="content-link">
+              {highlight.get('publisher')}
+            </span>
+          </ProfilePopover>
           <div className="highlight-header__subtitle">
             <div className="highlight-header__entry-title overflow-ellipsis">
               <Link className="unstyled-link content-link highlight-header__link" to={entryUrl}>
@@ -49,14 +52,16 @@ const HighlightHeader = (props) => {
           <div className="content-link highlight-header__button">
             <Icon className="highlight-header__icon" type="file" />
             <span className="highlight-header__button-text">
-              Start an entry
+              {intl.formatMessage(highlightMessages.startEntry)}
             </span>
           </div>
           {editable &&
             <div className="content-link highlight-header__button">
               <PanelLink to={highlightUrl}>
                 <Icon className="highlight-header__icon" type="edit" />
-                <span className="highlight-header__button-text">Edit note</span>
+                <span className="highlight-header__button-text">
+                  {intl.formatMessage(highlightMessages.editNote)}
+                </span>
               </PanelLink>
             </div>
           }
@@ -73,10 +78,12 @@ const HighlightHeader = (props) => {
 };
 
 HighlightHeader.propTypes = {
+    containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func.isRequired,
     editable: PropTypes.bool,
     highlight: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     publisher: PropTypes.shape()
 };
 
-export default HighlightHeader;
+export default injectIntl(HighlightHeader);

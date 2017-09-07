@@ -105,7 +105,7 @@ class EditProfile extends Component {
                   onClick={this._handleSubmit}
                   style={{ marginLeft: 8 }}
                 >
-                  {intl.formatMessage(generalMessages.nextButtonLabel)}
+                  {intl.formatMessage(generalMessages.next)}
                 </Button>
               </PanelContainerFooter>
             </div>

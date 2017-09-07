@@ -21,16 +21,6 @@ const entryMessages = defineMessages({
         description: 'downvote button tooltip',
         defaultMessage: 'Downvote'
     },
-    draft: {
-        id: 'app.entry.draft',
-        description: 'draft label indicator',
-        defaultMessage: 'Draft'
-    },
-    draftCardSubtitle: {
-        id: 'app.entry.draftCardSubtitle',
-        description: 'subtitle showing last updated time and words number on draft card in new entry panel',
-        defaultMessage: '{lastUpdate} - {wordCount} words so far'
-    },
     entriesCount: {
         id: 'app.entry.entriesCount',
         description: 'counting entries',
@@ -38,16 +28,6 @@ const entryMessages = defineMessages({
             one {entry}
             other {entries}
         }`
-    },
-    publishedBlockDiff: {
-        id: 'app.entry.publishedBlockDiff',
-        description: 'how many blocks ago was an entry published',
-        defaultMessage: `Published {blockDiff, number} {blockDiff, plural,
-                one {block}
-                few {blocks}
-                many {blocks}
-                other {blocks}
-            } ago`
     },
     published: {
         id: 'app.entry.published',
@@ -93,16 +73,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.loadingComments',
         description: 'message when loading comments for the first time',
         defaultMessage: 'Loading comments'
-    },
-    loadingMoreComments: {
-        id: 'app.entry.loadingMoreComments',
-        description: 'message for loading more comments',
-        defaultMessage: 'Loading more comments'
-    },
-    createdAt: {
-        id: 'app.entry.createdAt',
-        description: 'message to display when sorting something',
-        defaultMessage: 'Created {createdAt}'
     },
     unresolvedEntry: {
         id: 'app.entry.unresolvedEntry',
@@ -188,11 +158,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',
         defaultMessage: 'Upvote'
-    },
-    votingExpired: {
-        id: 'app.entry.votingExpired',
-        description: 'upvote/downvote tooltip when voting period expired',
-        defaultMessage: 'Voting period has ended'
     }
 });
 export { entryMessages };

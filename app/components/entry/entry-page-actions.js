@@ -5,8 +5,8 @@ import { injectIntl } from 'react-intl';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import * as actionTypes from '../../constants/action-types';
-import { ListPopover } from '../';
-import { EntryDownvote, EntryUpvote, ToolbarEthereum } from '../svg';
+import { ListPopover, VotePopover } from '../';
+import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listUpdateEntryIds } from '../../local-flux/actions/list-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
@@ -30,24 +30,16 @@ class EntryPageAction extends Component {
         });
     };
 
-    handleUpvote = () => {
+    handleVote = ({ type, value, weight }) => {
         const { entry, loggedAkashaId, publisher } = this.props;
         const payload = {
-            publisherAkashaId: publisher && publisher.get('akashaId'),
+            entryId: entry.entryId,
             entryTitle: entry.content.title,
-            entryId: entry.entryId
-        };
-        this.props.actionAdd(loggedAkashaId, actionTypes.upvote, payload);
-    };
-
-    handleDownvote = () => {
-        const { entry, loggedAkashaId, publisher } = this.props;
-        const payload = {
             publisherAkashaId: publisher && publisher.get('akashaId'),
-            entryTitle: entry.content.title,
-            entryId: entry.entryId
+            value,
+            weight
         };
-        this.props.actionAdd(loggedAkashaId, actionTypes.downvote, payload);
+        this.props.actionAdd(loggedAkashaId, type, payload);
     };
 
     handleClaim = () => {
@@ -63,42 +55,35 @@ class EntryPageAction extends Component {
     };
 
     render () { // eslint-disable-line complexity
-        const { balance, canClaim, canClaimPending, claimPending, containerRef, entry, fetchingEntryBalance,
-            intl, isOwnEntry, lists, listSearchKeyword, updatingLists, votePending, voteWeight } = this.props;
+        const { balance, canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
+            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, updatingLists,
+            voteCost, votePending, voteWeight } = this.props;
         const { palette } = this.context.muiTheme;
-        const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
-        const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
-        const voteButtonsDisabled = !entry.active || voteWeight !== 0 || votePending;
         const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
-            && (!fetchingEntryBalance || balance !== undefined);
+            && (!fetchingEntryBalance || entryBalance !== undefined);
         const existingVoteStyle = {
             position: 'absolute',
-            top: 0,
+            top: '-14px',
             left: 0,
             right: 0,
             textAlign: 'center',
             fontSize: '12px',
+            cursor: 'default'
         };
+
         return (
           <CardActions style={{ padding: '18px 8px 0px' }}>
             <div style={{ display: 'flex', alignItems: 'center' }} >
-              <div style={{ position: 'relative' }}>
-                <div
-                  data-tip={entry.get('active') ?
-                      intl.formatMessage(entryMessages.upvote) :
-                      intl.formatMessage(entryMessages.votingExpired)
-                  }
-                >
-                  <IconButton
-                    onTouchTap={this.handleUpvote}
-                    iconStyle={{ width: '24px', height: '24px' }}
-                    disabled={voteButtonsDisabled}
-                  >
-                    <SvgIcon viewBox="0 0 20 20" >
-                      <EntryUpvote fill={upvoteIconColor} />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
+              <div className="flex-center" style={{ position: 'relative' }}>
+                <VotePopover
+                  balance={balance}
+                  entry={entry}
+                  onSubmit={this.handleVote}
+                  type={actionTypes.upvote}
+                  voteCost={voteCost}
+                  votePending={votePending}
+                  voteWeight={voteWeight}
+                />
                 {voteWeight > 0 &&
                   <div
                     style={Object.assign({}, existingVoteStyle, { color: palette.accent3Color })}
@@ -107,25 +92,28 @@ class EntryPageAction extends Component {
                   </div>
                 }
               </div>
-              <div style={{ fontSize: '18px', padding: '0 15px', letterSpacing: '2px' }}>
-                <FlatButton
-                  label={entry.score}
+              <div
+                className="flex-center"
+                style={{ minWidth: '40px', fontSize: '18px', padding: '0 5px', letterSpacing: '2px' }}
+              >
+                <span
+                  className="content-link"
                   onClick={this.openVotesPanel}
-                  style={{ minWidth: '10px', borderRadius: '6px' }}
-                />
+                  style={{ borderRadius: '6px' }}
+                >
+                  {entry.score}
+                </span>
               </div>
-              <div style={{ position: 'relative' }}>
-                <div data-tip={entry.get('active') ? 'Downvote' : 'Voting period has ended'}>
-                  <IconButton
-                    onTouchTap={this.handleDownvote}
-                    iconStyle={{ width: '24px', height: '24px' }}
-                    disabled={voteButtonsDisabled}
-                  >
-                    <SvgIcon viewBox="0 0 20 20">
-                      <EntryDownvote fill={downvoteIconColor} />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
+              <div className="flex-center" style={{ position: 'relative' }}>
+                <VotePopover
+                  balance={balance}
+                  entry={entry}
+                  onSubmit={this.handleVote}
+                  type={actionTypes.downvote}
+                  voteCost={voteCost}
+                  votePending={votePending}
+                  voteWeight={voteWeight}
+                />
                 {voteWeight < 0 &&
                   <div
                     style={Object.assign({}, existingVoteStyle, { color: palette.accent1Color })}
@@ -174,9 +162,9 @@ class EntryPageAction extends Component {
                         </IconButton>
                       </div>
                     }
-                    {balance !== 'claimed' &&
+                    {entryBalance !== 'claimed' &&
                       <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                        {balance} AETH
+                        {entryBalance} AETH
                       </div>
                     }
                   </div>
@@ -211,6 +199,7 @@ EntryPageAction.propTypes = {
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape().isRequired,
+    entryBalance: PropTypes.string,
     fetchingEntryBalance: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     isOwnEntry: PropTypes.bool,
@@ -223,6 +212,7 @@ EntryPageAction.propTypes = {
     loggedAkashaId: PropTypes.string,
     publisher: PropTypes.shape(),
     updatingLists: PropTypes.bool,
+    voteCost: PropTypes.shape().isRequired,
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
 };
@@ -233,10 +223,11 @@ function mapStateToProps (state, ownProps) {
     const votePending = state.entryState.getIn(['flags', 'votePending', entry.get('entryId')]);
     const loggedAkashaId = selectLoggedAkashaId(state);
     return {
-        balance: selectEntryBalance(state, entry.get('entryId')),
+        balance: state.profileState.get('balance'),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending,
+        entryBalance: selectEntryBalance(state, entry.get('entryId')),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
         lists: selectLists(state),
@@ -244,6 +235,7 @@ function mapStateToProps (state, ownProps) {
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
         updatingLists: state.listState.getIn(['flags', 'updatingLists']),
+        voteCost: state.entryState.get('voteCostByWeight'),
         votePending,
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };

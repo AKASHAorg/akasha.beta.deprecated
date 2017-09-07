@@ -8,9 +8,8 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { profileIsFollower, profileAddFollowAction,
-    profileAddUnfollowAction, profileAddTipAction } from '../../local-flux/actions/profile-actions';
-import { selectProfile } from '../../local-flux/selectors';
+import { profileIsFollower } from '../../local-flux/actions/profile-actions';
+import { selectLoggedAkashaId, selectProfile } from '../../local-flux/selectors';
 
 class ProfileDetails extends Component {
 
@@ -34,16 +33,16 @@ class ProfileDetails extends Component {
 
     sendTip = (profileData) => {
         const { akashaId, firstName, lastName, profile } = profileData;
-        const payload = { akashaId, firstName, lastName, profile };
-        this.props.profileAddTipAction(payload);
+        const payload = { akashaId, firstName, lastName, receiver: profile };
+        this.props.actionAdd(this.props.loggedAkashaId, actionTypes.sendTip, payload);
     };
 
     render () {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
         const { about, avatar, backgroundImage, links, firstName, lastName,
         followersCount, followingCount } = profileData;
-        const { akashaId, intl, followPending, followerList, sendingTip } = this.props;
-        const isOwnProfile = akashaId === this.props.loggedProfile.akashaId;
+        const { akashaId, intl, followPending, followerList, loggedAkashaId, sendingTip } = this.props;
+        const isOwnProfile = akashaId === loggedAkashaId;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
@@ -83,13 +82,13 @@ class ProfileDetails extends Component {
                     <Button
                       type="primary"
                       ghost
-                      onClick={() => this.props.actionAdd(actionTypes.follow, { akashaId })}
+                      onClick={() => this.props.actionAdd(loggedAkashaId, actionTypes.unfollow, { akashaId })}
                       disabled={followPending.get(akashaId)}
                     >{intl.formatMessage(profileMessages.unfollow)}</Button> :
                     <Button
                       type="primary"
                       ghost
-                      onClick={() => this.props.actionAdd(actionTypes.unfollow, { akashaId })}
+                      onClick={() => this.props.actionAdd(loggedAkashaId, actionTypes.follow, { akashaId })}
                       disabled={followPending.get(akashaId)}
                     >{intl.formatMessage(profileMessages.follow)}</Button>
                 }
@@ -158,9 +157,8 @@ ProfileDetails.propTypes = {
     followPending: PropTypes.shape(),
     followerList: PropTypes.shape(),
     intl: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
+    loggedAkashaId: PropTypes.string,
     profileData: PropTypes.shape(),
-    profileAddTipAction: PropTypes.func,
     sendingTip: PropTypes.shape(),
 };
 
@@ -171,7 +169,7 @@ function mapStateToProps (state, ownProps) {
         followPending: state.profileState.getIn(['flags', 'followPending']),
         followerList: state.profileState.get('isFollower'),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
-        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedAkashaId: selectLoggedAkashaId(state),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         profileData: selectProfile(state, ownProps.akashaId),
         sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
@@ -182,9 +180,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        profileIsFollower,
-        profileAddFollowAction,
-        profileAddUnfollowAction,
-        profileAddTipAction
+        profileIsFollower
     }
 )(injectIntl(ProfileDetails));

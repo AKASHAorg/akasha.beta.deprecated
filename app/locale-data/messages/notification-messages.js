@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 const notificationMessages = defineMessages({
+    highlightSaveSuccess: {
+        id: 'app.notification.highlightSaveSuccess',
+        description: 'Notification to be displayed when a highlight has been saved',
+        defaultMessage: 'The highlight has been saved!'
+    },
+    highlightSaveSuccessInputPlaceholder: {
+        id: 'app.notification.highlightSaveSuccessInputPlaceholder',
+        description: 'Placeholder for note input after highlight save',
+        defaultMessage: 'Do you want to type a note?'
+    },
     updatingProfile: {
         id: 'app.notification.updatingProfile',
         description: 'Notification to be displayed when update profile transaction is sent',
@@ -41,26 +51,6 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when a tag was registered',
         defaultMessage: 'Tag "{tagName}" successfully registered.'
     },
-    subscribingTag: {
-        id: 'app.notification.subscribingTag',
-        description: 'Notification to be displayed when subscribe tag transaction is sent',
-        defaultMessage: 'Subscribing to "{tagName}" ...'
-    },
-    tagSubscribedSuccessfully: {
-        id: 'app.notification.tagSubscribedSuccessfully',
-        description: 'Notification to be displayed when a user subscribed to a tag',
-        defaultMessage: 'You successfully subscribed to tag "{tagName}"'
-    },
-    unsubscribingTag: {
-        id: 'app.notification.unsubscribingTag',
-        description: 'Notification to be displayed when unsubscribe tag transaction is sent',
-        defaultMessage: 'Unsubscribing from "{tagName}" ...'
-    },
-    tagUnsubscribedSuccessfully: {
-        id: 'app.notification.tagUnsubscribedSuccessfully',
-        description: 'Notification to be displayed when a user unsubscribed from a tag',
-        defaultMessage: 'You successfully unsubscribed from tag "{tagName}"'
-    },
     publishingEntry: {
         id: 'app.notification.publishingEntry',
         description: 'Notification for when entry is publishing',
@@ -91,11 +81,6 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when upvote entry transaction was mined',
         defaultMessage: 'You successfully upvoted {entryTitle}'
     },
-    upvoteEntryError: {
-        id: 'app.notification.upvoteEntryError',
-        description: 'Notification to be displayed when upvote entry transaction was mined but was unsuccessfull',
-        defaultMessage: 'Upvoting {entryTitle} has failed'
-    },
     downvotingEntry: {
         id: 'app.notification.downvotingEntry',
         description: 'Notification to be displayed when entry downvote transaction is sent',
@@ -105,11 +90,6 @@ const notificationMessages = defineMessages({
         id: 'app.notification.downvoteEntrySuccess',
         description: 'Notification to be displayed when downvote entry transaction was mined',
         defaultMessage: 'You successfully downvoted {entryTitle}'
-    },
-    downvoteEntryError: {
-        id: 'app.notification.downvoteEntryError',
-        description: 'Notification to be displayed when downvote entry transaction was mined but was unsuccessfull',
-        defaultMessage: 'Downvoting {entryTitle} has failed'
     },
     publishingComment: {
         id: 'app.notification.publishingComment',
@@ -131,35 +111,15 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when claim transaction was mined',
         defaultMessage: 'You successfully claimed {entryTitle}'
     },
-    claimError: {
-        id: 'app.notification.claimError',
-        description: 'Notification to be displayed when claim transaction was mined but was unsuccessfull',
-        defaultMessage: 'Claiming {entryTitle} has failed'
-    },
     draftSavedSuccessfully: {
         id: 'app.notification.draftSavedSuccessfully',
         description: 'notification to show when draft was successfully saved',
         defaultMessage: 'Draft successfully saved!'
     },
-    draftSaveFailed: {
-        id: 'app.notification.draftSaveFailed',
-        description: 'Notification to show when saving draft failed',
-        defaultMessage: 'Failed to save draft!'
-    },
     draftDeletedSuccessfully: {
         id: 'app.notification.draftDeletedSuccessfully',
         description: 'notification to show when draft was successfully deleted',
         defaultMessage: 'Draft successfully deleted!'
-    },
-    draftDeleteFailed: {
-        id: 'app.notification.draftDeleteFailed',
-        description: 'Notification to show when deleting draft failed',
-        defaultMessage: 'Failed to delete draft!'
-    },
-    editorMessage: {
-        id: 'app.notification.editorMessage',
-        description: 'just a placeholder',
-        defaultMessage: '{errorMessage}'
     },
     linkCopiedToClipboard: {
         id: 'app.notification.linkCopiedToClipboard',
@@ -176,30 +136,15 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when tip transaction was successfully mined',
         defaultMessage: 'You have successfully tipped @{akashaId}'
     },
-    sendTipError: {
-        id: 'app.notification.sendTipError',
-        description: 'Notification to be displayed when tip transaction was mined but was unsuccessfull',
-        defaultMessage: 'Tipping @{akashaId} has failed'
-    },
     notificationsEnabledSuccess: {
         id: 'app.notification.notificationsEnabledSuccess',
         description: 'message to be displayed when notifications were enabled for a specific user',
         defaultMessage: 'Notifications enabled for @{akashaId}'
     },
-    notificationsEnabledError: {
-        id: 'app.notification.notificationsEnabledError',
-        description: 'message to be displayed when enabling notifications for a specific user has failed',
-        defaultMessage: 'Enabling notifications for @{akashaId} has failed'
-    },
     notificationsDisabledSuccess: {
         id: 'app.notification.notificationsDisabledSuccess',
         description: 'message to be displayed when notifications were disabled for a specific user',
         defaultMessage: 'Notifications disabled for @{akashaId}'
-    },
-    notificationsDisabledError: {
-        id: 'app.notification.notificationsDisabledError',
-        description: 'message to be displayed when disabling notifications for a specific user has failed',
-        defaultMessage: 'Disabling notifications for @{akashaId} has failed'
     },
     channelStarred: {
         id: 'app.notification.channelStarred',

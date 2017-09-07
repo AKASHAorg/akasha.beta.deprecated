@@ -20,10 +20,12 @@ const errorHandler = (state, { error, flags }) =>
         flags: state.get('flags').merge(flags)
     });
 
-const addProfileData = (byId, profileData) => {
+const addProfileData = (byId, { ...profileData }) => {
     if (!profileData) {
         return byId;
     }
+    profileData.followersCount = Number(profileData.followersCount);
+    profileData.followingCount = Number(profileData.followingCount);
     const { avatar, baseUrl } = profileData;
     if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;
@@ -518,9 +520,9 @@ const profileState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').merge({
                 [akashaId]: profile ?
-                    profile.set('followersCount', profile.get('followersCount') + 1) :
+                    profile.set('followersCount', +profile.get('followersCount') + 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount + 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount + 1)
             }),
             flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,
@@ -764,9 +766,9 @@ const profileState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').merge({
                 [akashaId]: profile ?
-                    profile.set('followersCount', profile.get('followersCount') - 1) :
+                    profile.set('followersCount', +profile.get('followersCount') - 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount - 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount - 1)
             }),
             flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,

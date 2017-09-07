@@ -36,6 +36,15 @@ class ListPopover extends Component {
         }
     }
 
+    componentWillUnmount () {
+        if (this.focusTimeout) {
+            clearInterval(this.focusTimeout);
+        }
+        if (this.resetTimeout) {
+            clearInterval(this.resetTimeout);
+        }
+    }
+
     getSearchInputRef = (el) => { this.searchInput = el; };
 
     getEntryLists = (lists) => {
@@ -86,7 +95,8 @@ class ListPopover extends Component {
         });
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
-            setTimeout(() => {
+            this.resetTimeout = setTimeout(() => {
+                this.resetTimeout = null;
                 this.searchList('');
                 this.setState({
                     addNewList: false,
@@ -97,7 +107,8 @@ class ListPopover extends Component {
     };
 
     setInputFocusAsync = () => {
-        setTimeout(() => {
+        this.focusTimeout = setTimeout(() => {
+            this.focusTimeout = null;
             const input = document.getElementById('list-popover-search');
             if (input) {
                 input.focus();
@@ -160,6 +171,7 @@ class ListPopover extends Component {
                 placeholder={intl.formatMessage(listMessages.searchForList)}
                 prefix={<Icon className="list-popover__search-icon" type="search" />}
                 ref={this.getSearchInputRef}
+                size="large"
                 value={search}
               />
             </div>
@@ -207,19 +219,18 @@ class ListPopover extends Component {
                   );
               })}
             </div>
-            <div className="list-popover__divider" />
             {this.isListDirty() ?
-              <div className="content-link list-popover__row" onClick={this.listUpdateEntryIds}>
+              <div className="content-link list-popover__button" onClick={this.listUpdateEntryIds}>
                 <Icon
                   className="list-popover__left-item"
                   style={{ position: 'relative', top: '2px' }}
                   type="save"
                 />
                 <div style={{ flex: '1 1 auto' }}>
-                  {intl.formatMessage(generalMessages.submit)}
+                  {intl.formatMessage(generalMessages.save)}
                 </div>
               </div> :
-              <div className="content-link list-popover__row" onClick={this.toggleNewList}>
+              <div className="content-link list-popover__button" onClick={this.toggleNewList}>
                 <Icon
                   className="list-popover__left-item"
                   type="plus"
@@ -239,7 +250,7 @@ class ListPopover extends Component {
         return (
           <Popover
             content={this.renderContent()}
-            getPopupContainer={() => containerRef}
+            getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="list-popover"
             placement="bottom"
