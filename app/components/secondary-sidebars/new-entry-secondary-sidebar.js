@@ -18,9 +18,9 @@ class NewEntrySecondarySidebar extends Component {
         this.props.draftsGetCount({ akashaId });
     }
     componentWillReceiveProps (nextProps) {
-        const { draftsFetched } = nextProps;
+        const { draftsFetched, draftsCount } = nextProps;
         const { akashaId } = this.props;
-        if (!draftsFetched) {
+        if (!draftsFetched && (draftsCount > 0)) {
             this.props.draftsGet({ akashaId });
         }
     }
@@ -110,6 +110,7 @@ class NewEntrySecondarySidebar extends Component {
                             (draft.original.id === currentDraftId) ? '_active' : ''
                         }`}
                       >
+                        {/* eslint-disable react/no-danger */}
                         <a
                           href="/"
                           dangerouslySetInnerHTML={{ __html: draft.string }}
@@ -120,6 +121,7 @@ class NewEntrySecondarySidebar extends Component {
                             )
                           }
                         />
+                        {/* eslint-enable react/no-danger */}
                         <span
                           className="draft-list-item__menu-container"
                         >

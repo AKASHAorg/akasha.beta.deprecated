@@ -1,4 +1,4 @@
-import { Record, List, Map } from 'immutable';
+import { Record, Map, List } from 'immutable';
 import { DraftLicence, DraftContent, Draft } from '../records';
 
 const DraftModelRecord = Record({
@@ -10,7 +10,13 @@ const DraftModelRecord = Record({
 
 export default class DraftModel extends DraftModelRecord {
     static createDraft (draftObj) {
-        const { content = {}, tags, id, akashaId, entryId, tx, created_at, updated_at } = draftObj;
+        const {
+            akashaId,
+            content = {},
+            entryId,
+            id,
+            tags = null,
+            tx, created_at, updated_at } = draftObj;
         const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
         const createdDraft = new Draft({
             id,
@@ -27,7 +33,7 @@ export default class DraftModel extends DraftModelRecord {
                 featuredImage,
                 wordCount
             }),
-            tags: List.of(tags)
+            tags: new List().concat(tags)
         });
         return createdDraft;
     }

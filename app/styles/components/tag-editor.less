@@ -49,6 +49,15 @@
             cursor: pointer;
             margin-left: 4px;
         }
+        &__info-button {
+            margin-left: 4px;
+            border-radius: 50%;
+            width: 17px;
+            height: 17px;
+            display: inline-block;
+            text-align: center;
+            background-color: rgba(0,0,0,0.16);
+        }
     }
 }
 .tag-editor__suggestions-container {
@@ -68,5 +77,24 @@
     }
     &_selected {
         background-color: #ECF6FF;
+    }
+}
+.tag-editor {
+    &__tag-item-popover-content {
+        max-width: 220px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    &__tag-item-popover-message {
+        margin-bottom: 24px;
+    }
+    &__tag-item-popover-actions {
+        text-align: right;
+        .ant-btn {
+            margin-left: 8px;
+        }
+        .ant-btn-sm {
+            font-size: 13px;
+        }
     }
 }

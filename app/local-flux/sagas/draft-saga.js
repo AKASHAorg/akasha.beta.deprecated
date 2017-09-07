@@ -74,14 +74,12 @@ function* draftAutoSave ({ data }) {
     /**
      * prepare data to save in db
      */
-    const dataToSave = Object.assign({}, data.draft);
+    const dataToSave = Object.assign({}, data.draft.toJS());
     const jsonDraft = JSON.parse(editorStateToJSON(data.draft.content.draft));
-    console.log(jsonDraft, data, 'jsonDraft');
     dataToSave.content = data.draft.content.toJS();
     dataToSave.content.draft = jsonDraft;
     dataToSave.tags = data.draft.tags.toJS();
 
-    // console.log(dataToSave, 'plain data to save to db');
     try {
         const response = yield call([draftService, draftService.draftCreateOrUpdate], { draft: dataToSave });
         yield put(draftActions.draftAutosaveSuccess(response));

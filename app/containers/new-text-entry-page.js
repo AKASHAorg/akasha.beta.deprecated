@@ -9,6 +9,7 @@ import { draftCreate, draftsGet, draftUpdate, draftAutosave,
     draftsGetCount } from '../local-flux/actions/draft-actions';
 import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
+import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 
@@ -34,36 +35,34 @@ class NewEntryPage extends Component {
             showPublishPanel: true
         });
     }
+
     _handleTitleChange = (ev) => {
         const { match, akashaId, draftObj } = this.props;
-        this.props.draftUpdate({
+        this.props.draftUpdate(draftObj.merge({
             akashaId,
             content: draftObj.get('content').merge({
                 title: ev.target.value
             }),
             id: match.params.draftId,
-        });
+        }));
     }
+
     _handleEditorChange = (editorState) => {
-        const { match, akashaId, draftObj } = this.props;
-        this.props.draftUpdate({
-            akashaId,
+        const { draftObj } = this.props;
+        this.props.draftUpdate(draftObj.merge({
             content: draftObj.get('content').mergeDeep({
                 draft: editorState,
             }),
-            id: match.params.draftId,
-        });
+        }));
     }
+
     _handleTagUpdate = (tagList) => {
-        const { match, akashaId, draftObj } = this.props;
-        console.log('new added tags', tagList);
-        this.props.draftUpdate({
-            akashaId,
-            id: match.params.draftId,
-            content: draftObj.get('content'),
+        const { draftObj } = this.props;
+        this.props.draftUpdate(draftObj.merge({
             tags: draftObj.get('tags').clear().concat(tagList),
-        });
+        }));
     }
+
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
@@ -73,12 +72,8 @@ class NewEntryPage extends Component {
     _createRef = nodeName =>
         (node) => { this[nodeName] = node; };
 
-    _handleForceSave = () => {
-        console.log('handle save', this.editor.getRawContent());
-    }
-
     _handlePublish = () => {
-        console.log(this.editor.getContent());
+        console.log('publish this draft!');
     }
 
     componentWillUnmount () {
@@ -87,8 +82,8 @@ class NewEntryPage extends Component {
 
     render () {
         const { showPublishPanel } = this.state;
-        const { baseUrl, showSecondarySidebar, intl, draftObj,
-            tagSuggestions, tagSuggestionsCount } = this.props;
+        const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
+            tagSuggestions, tagSuggestionsCount, match } = this.props;
 
         if (!draftObj) {
             return <div>Finding Draft</div>;
@@ -138,10 +133,13 @@ class NewEntryPage extends Component {
                 <div className="text-entry-page__tag-editor">
                   <TagEditor
                     ref={this._createRef('tagEditor')}
+                    match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
+                    akashaId={akashaId}
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
+                    actionAdd={this.props.actionAdd}
                     tagSearch={this.props.tagSearch}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
@@ -204,6 +202,7 @@ class NewEntryPage extends Component {
 }
 
 NewEntryPage.propTypes = {
+    actionAdd: PropTypes.func,
     akashaId: PropTypes.string,
     baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
@@ -234,6 +233,7 @@ const mapStateToProps = (state, ownProps) => ({
 export default connect(
     mapStateToProps,
     {
+        actionAdd,
         secondarySidebarToggle,
         draftCreate,
         draftsGet,

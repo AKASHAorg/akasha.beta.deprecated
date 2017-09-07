@@ -21,10 +21,20 @@ const tagMessages = defineMessages({
         description: 'newest tags in the network',
         defaultMessage: 'Newest tags'
     },
+    notEnoughKarma: {
+        id: 'app.tag.notEnoughKarma',
+        description: 'message to display when user does not have enough karma to do action',
+        defaultMessage: 'Sorry! You don`t have enough karma to create tags.'
+    },
     subscribe: {
         id: 'app.tag.subscribe',
         description: 'label for subscribe button',
         defaultMessage: 'Subscribe'
+    },
+    tagNotCreated: {
+        id: 'app.tag.tagNotCreated',
+        description: 'Message to display when the tag was not created before',
+        defaultMessage: 'This is a new tag that wasn`t created by anyone before!'
     },
     unsubscribe: {
         id: 'app.tag.unsubscribe',

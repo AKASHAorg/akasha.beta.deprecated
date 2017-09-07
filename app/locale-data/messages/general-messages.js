@@ -92,6 +92,11 @@ const generalMessages = defineMessages({
         description: 'connected status',
         defaultMessage: 'connected'
     },
+    create: {
+        id: 'app.general.create',
+        description: 'Create button label',
+        defaultMessage: 'Create'
+    },
     created: {
         id: 'app.general.created',
         description: 'created',
