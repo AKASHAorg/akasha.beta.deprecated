@@ -29,10 +29,6 @@ class CommentEditor extends Component {
         };
     }
 
-    shouldComponentUpdate (nextProps, nextState) {
-        return nextState.editorState !== this.state.editorState;
-    }
-
     getBaseNode = () => this.baseNodeRef;
 
     getContainerRef = el => (this.container = el);
@@ -148,7 +144,7 @@ class CommentEditor extends Component {
 
 CommentEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entryId: PropTypes.string,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

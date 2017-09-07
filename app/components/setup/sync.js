@@ -201,7 +201,7 @@ class Sync extends Component {
                     onClick={this.handleNext}
                     type="primary"
                   >
-                    {intl.formatMessage(generalMessages.nextButtonLabel)}
+                    {intl.formatMessage(generalMessages.next)}
                   </Button>
                 }
               </div>

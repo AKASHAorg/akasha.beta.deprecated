@@ -286,12 +286,14 @@ class EntryCard extends Component {
           >
             <CardHeader
               title={publisher ?
-                <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>                
+                <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
                   <div
-                    className="overflow-ellipsis content-link"
+                    className="overflow-ellipsis"
                     style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
-                    {publisher.get('akashaId')}
+                    <span className="content-link">
+                      {publisher.get('akashaId')}
+                    </span>
                   </div>
                 </ProfilePopover> :
                 <div style={{ height: '22px' }} />
@@ -635,7 +637,7 @@ EntryCard.propTypes = {
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
 
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.bool,
     publisher: PropTypes.shape()

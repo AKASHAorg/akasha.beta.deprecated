@@ -1,20 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Map } from 'immutable';
 import { Card } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 import { HighlightHeader } from '../';
 
 const HighlightCard = (props) => {
-    const { deleteHighlight, highlight, intl, profiles } = props;
-    const publisher = profiles.get(highlight.get('publisher')) || new Map();
+    const { containerRef, deleteHighlight, highlight, intl, publisher } = props;
 
     return (
       <Card
         className="highlight-card"
         title={
           <HighlightHeader
+            containerRef={containerRef}
             deleteHighlight={deleteHighlight}
             editable
             highlight={highlight}
@@ -38,10 +37,11 @@ const HighlightCard = (props) => {
 };
 
 HighlightCard.propTypes = {
+    containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func,
     highlight: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
-    profiles: PropTypes.shape().isRequired
+    publisher: PropTypes.shape().isRequired
 };
 
 export default injectIntl(HighlightCard);

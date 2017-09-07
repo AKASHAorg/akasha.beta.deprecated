@@ -8,19 +8,27 @@
     &__search {
         .ant-input {
             border: none;
-            outline: none;    
+            outline: none;
+            padding-left: 34px !important;
+            border-radius: 4px;
+
+            &:focus {
+                background-color: #fbfbfb;
+                box-shadow: none;             
+            }
         }
     }
 
     &__search-icon {
-        margin-right: 5px;
+        font-size: 18px;
+        margin-left: 3px;
     }
 
     &__list-wrapper {
         max-height: 200px;
         overflow-x: hidden;
         overflow-y: auto;
-        margin-top: 5px;
+        margin: 5px 0px;
     }
 
     &__row {
@@ -31,14 +39,8 @@
         border-radius: 4px;
 
         &:hover {
-            background-color: #eee;
+            background-color: #fbfbfb;
         }
-    }
-
-    &__divider {
-        height: 1px;
-        background-color: #ddd;
-        margin: 5px 0px;        
     }
 
     &__left-item {
@@ -77,5 +79,14 @@
 
     &__name {
         flex: 1 1 auto;
+    }
+
+    &__button {
+        height: 36px;
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+        border-radius: 4px;
+        background-color: #f5f5f5;
     }
 }

@@ -39,8 +39,8 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { entry, entryGetFull, entryGetLatestVersion, fetchingFullEntry, location, match,
-            pendingComments } = this.props;
+        const { commentsClean, entry, entryGetFull, entryGetLatestVersion,
+            fetchingFullEntry, location, match, pendingComments } = this.props;
         const { params } = match;
         const nextParams = nextProps.match.params;
         const { version } = parse(nextProps.location.search);
@@ -50,6 +50,7 @@ class EntryPage extends Component {
         if ((params.entryId !== nextParams.entryId && entry.get('entryId') !== nextParams.entryId) ||
                 (version !== undefined && version !== location.query.version)) {
             const versionNr = isNaN(Number(version)) ? null : Number(version);
+            commentsClean();
             entryGetFull(nextParams.entryId, versionNr);
             this.fetchComments(nextParams.entryId);
         }

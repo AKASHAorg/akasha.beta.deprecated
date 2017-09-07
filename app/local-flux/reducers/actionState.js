@@ -1,7 +1,6 @@
 import { fromJS } from 'immutable';
 import { ActionRecord, ActionState } from './records';
 import * as actionStatus from '../../constants/action-status';
-import { getInitialStatus } from '../../utils/action-utils';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -14,12 +13,9 @@ const createAction = (action) => {
 };
 
 const actionState = createReducer(initialState, {
-    /**
-     * Note: if a new action type is needed, add support for it in getInitialStatus (action-utils.js)
-     */
     [types.ACTION_ADD]: (state, { akashaId, payload, actionType }) => {
         const id = `${new Date().getTime()}-${actionType}`;
-        const status = getInitialStatus(actionType);
+        const status = actionStatus.needAuth;
         if (!status) {
             return state;
         }
@@ -32,13 +28,9 @@ const actionState = createReducer(initialState, {
 
     [types.ACTION_DELETE]: (state, { id }) => {
         const needAuth = state.get('needAuth');
-        const needTransferConfirm = state.get('needTransferConfirm');
-        const needWeightConfirm = state.get('needWeightConfirm');
         return state.merge({
             byId: state.get('byId').delete(id),
             needAuth: needAuth === id ? null : needAuth,
-            needTransferConfirm: needTransferConfirm === id ? null : needTransferConfirm,
-            needWeightConfirm: needWeightConfirm === id ? null : needWeightConfirm,
         });
     },
 
@@ -53,21 +45,13 @@ const actionState = createReducer(initialState, {
     [types.ACTION_PUBLISH]: state => state.set('needAuth', null),
 
     [types.ACTION_UPDATE]: (state, { changes }) => {
-        let dialogs = {};
         if (!changes || !changes.id) {
             return state;
-        }
-        if (changes.status === actionStatus.needAuth) {
-            dialogs = {
-                needAuth: changes.id,
-                needTransferConfirm: null,
-                needWeightConfirm: null
-            };
         }
         const newAction = state.getIn(['byId', changes.id]).merge(changes);
         return state.merge({
             byId: state.get('byId').set(changes.id, newAction),
-            ...dialogs
+            needAuth: changes.status === actionStatus.needAuth ? changes.id : state.get('needAuth')
         });
     },
 

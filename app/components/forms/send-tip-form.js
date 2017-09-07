@@ -43,13 +43,13 @@ class SendTipForm extends Component {
             <FormItem
               className="send-tip-form__form-item"
               colon={false}
+              help={amountError || extra}
               label={
                 <span className="uppercase">
                   {intl.formatMessage(formMessages.aethAmountLabel)}
                 </span>
               }
               validateStatus={amountError ? 'error' : ''}
-              help={amountError || extra}
             >
               {getFieldDecorator('amount', {
                   initialValue: 0.001,
@@ -64,7 +64,7 @@ class SendTipForm extends Component {
                   min={0.001}
                   max={maxAmount}
                   onKeyDown={this.handleKeyDown}
-                  placeholder="Tip amount"
+                  placeholder={intl.formatMessage(profileMessages.tipAmount)}
                   step={0.001}
                 />
               )}
@@ -88,7 +88,7 @@ class SendTipForm extends Component {
             </FormItem>
             <div className="send-tip-form__actions">
               <Button className="send-tip-form__button" onClick={onCancel}>
-                <span className="send-tip-form__button-label">                
+                <span className="send-tip-form__button-label">
                   {intl.formatMessage(generalMessages.cancel)}
                 </span>
               </Button>

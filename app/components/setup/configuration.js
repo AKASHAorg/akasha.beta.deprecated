@@ -190,7 +190,7 @@ class Config extends Component {
                   size="large"
                   type="primary"
                 >
-                  {intl.formatMessage(generalMessages.nextButtonLabel)}
+                  {intl.formatMessage(generalMessages.next)}
                 </Button>
               </div>
             </div>

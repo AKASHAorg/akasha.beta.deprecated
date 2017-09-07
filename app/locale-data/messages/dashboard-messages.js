@@ -26,11 +26,6 @@ const dashboardMessages = defineMessages({
         description: 'subtitle for add new tag column',
         defaultMessage: 'Please select a tag'
     },
-    chat: {
-        id: 'app.dashboard.chat',
-        description: 'label for chat column',
-        defaultMessage: 'Channel'
-    },
     collection: {
         id: 'app.dashboard.collection',
         description: 'label for collection column',

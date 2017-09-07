@@ -74,6 +74,7 @@ export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
 
