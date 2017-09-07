@@ -22,6 +22,8 @@ import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorRepo
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
+// const emojiPlugin = createEmojiPlugin({ imagePath: 'images/emoji-svg/' });
+
 class AppContainer extends Component {
     bootstrappingHome = false;
     // pass previousLocation to Switch when we need to render Entry Page as an overlay
