@@ -19,13 +19,17 @@ class NewEntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched } = nextProps;
+        const { match, draftObj, draftsFetched, userDefaultLicence } = nextProps;
         const { akashaId } = this.props;
         if (!draftObj && draftsFetched) {
             this.props.draftCreate({
                 id: match.params.draftId,
-                type: 'article',
                 akashaId,
+                tags: [],
+                content: {
+                    licence: userDefaultLicence,
+                    type: 'article',
+                }
             });
         }
     }
@@ -63,6 +67,18 @@ class NewEntryPage extends Component {
         }));
     }
 
+    _handleDraftLicenceChange = (licenceField, licence) => {
+        const { draftObj } = this.props;
+        this.props.draftUpdate(
+            draftObj.mergeIn(['content', 'licence', licenceField], licence)
+        );
+    }
+
+    _handleExcerptChange = (excerpt) => {
+        const { draftObj } = this.props;
+        this.props.draftUpdate(draftObj.mergeIn(['content', 'excerpt'], excerpt));
+    }
+
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
@@ -83,7 +99,7 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel } = this.state;
         const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
-            tagSuggestions, tagSuggestionsCount, match } = this.props;
+            tagSuggestions, tagSuggestionsCount, match, licences } = this.props;
 
         if (!draftObj) {
             return <div>Finding Draft</div>;
@@ -92,7 +108,6 @@ class NewEntryPage extends Component {
         const { title, excerpt, licence, draft } = content;
         const draftSaving = !draftObj.get('saved') && draftObj.get('saving');
         const draftSaved = draftObj.get('saved') && !draftObj.get('saving');
-
         return (
           <div className="text-entry-page">
             <div
@@ -157,9 +172,12 @@ class NewEntryPage extends Component {
                 <PublishOptionsPanel
                   intl={intl}
                   onClose={this._handlePublishPanelClose}
+                  onLicenceChange={this._handleDraftLicenceChange}
+                  onExcerptChange={this._handleExcerptChange}
                   title={title}
                   excerpt={excerpt}
-                  licence={licence}
+                  selectedLicence={licence}
+                  licences={licences}
                 />
               </Col>
               <div
@@ -210,13 +228,15 @@ NewEntryPage.propTypes = {
     draftUpdate: PropTypes.func,
     draftsFetched: PropTypes.bool,
     intl: PropTypes.shape(),
+    licences: PropTypes.shape(),
     match: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
+    searchResetResults: PropTypes.func,
     tagSearch: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
-    searchResetResults: PropTypes.func,
+    userDefaultLicence: PropTypes.shape(),
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -228,6 +248,8 @@ const mapStateToProps = (state, ownProps) => ({
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('resultsCount'),
+    licences: state.licenseState.get('byId'),
+    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
 });
 
 export default connect(

@@ -24,14 +24,17 @@ function* draftCreate ({ data }) {
      * create a new editor state with the selection applied
      */
     const editorState = EditorState.acceptSelection(newEditorState, newSelectionState);
+    const { content, ...others } = data;
     yield put(draftActions.draftCreateSuccess({
         content: {
             draft: editorState,
             title: '',
             excerpt: '',
+            type: content.type,
+            licence: content.licence,
         },
         selectionState: newSelectionState,
-        ...data
+        ...others
     }));
 }
 

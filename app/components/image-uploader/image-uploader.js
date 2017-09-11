@@ -258,8 +258,6 @@ ImageUploader.propTypes = {
     minHeight: PropTypes.number,
     // support multiple files
     multiFiles: PropTypes.bool,
-    // theme
-    muiTheme: PropTypes.shape().isRequired,
     // change event for updates
     onChange: PropTypes.func,
     // handler when remove image is pressed
@@ -267,8 +265,5 @@ ImageUploader.propTypes = {
     // styles..
     clearImageButtonStyle: PropTypes.shape(),
     errorStyle: PropTypes.shape(),
-};
-ImageUploader.contextTypes = {
-    muiTheme: PropTypes.shape()
 };
 export default ImageUploader;

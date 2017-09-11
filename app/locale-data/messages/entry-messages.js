@@ -6,6 +6,11 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip when it was already claimed',
         defaultMessage: 'Already claimed'
     },
+    allowedImageTypes: {
+        id: 'app.entry.allowedImageTypes',
+        description: 'types of images allowed',
+        defaultMessage: 'JPG, GIF or PNG images'
+    },
     blockNr: {
         id: 'app.entry.blockNr',
         description: 'block number',
@@ -78,6 +83,16 @@ const entryMessages = defineMessages({
             one {entry}
             other {entries}
         }`
+    },
+    featuredImage: {
+        id: 'app.entry.featuredImage',
+        description: 'featured image section title',
+        defaultMessage: 'Featured Image'
+    },
+    license: {
+        id: 'app.entry.license',
+        description: 'License label',
+        defaultMessage: 'License'
     },
     publishedBlockDiff: {
         id: 'app.entry.publishedBlockDiff',
@@ -198,6 +213,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.editEntry',
         description: 'tooltip for Edit entry button',
         defaultMessage: 'Edit entry'
+    },
+    excerpt: {
+        id: 'app.entry.excerpt',
+        description: 'excerpts section title',
+        defaultMessage: 'excerpt'
     },
     cannotEdit: {
         id: 'app.entry.cannotEdit',

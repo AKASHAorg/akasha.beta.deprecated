@@ -1,20 +1,47 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Menu, Icon } from 'antd';
-import { entryMessages } from '../../locale-data/messages';
+import { Button, Menu, Icon, Radio, Select, Input } from 'antd';
+import { entryMessages, validationMessages } from '../../locale-data/messages';
+import { ImageUploader } from '../';
 
+const { Option } = Select;
+const { TextArea } = Input;
 const { SubMenu } = Menu;
+const RadioGroup = Radio.Group;
 
 class PublishOptionsPanel extends Component {
     constructor (props) {
         super(props);
         this.state = {};
     }
+    _handleContentScroll = (ev) => {
+        const scrollTop = ev.target.scrollTop;
+        this.setState({
+            scrolled: scrollTop > 0
+        });
+    }
+    _handleLicenceChange = licenceType =>
+        (value) => {
+            if (licenceType === 'parent') {
+                this.props.onLicenceChange(licenceType, value);
+            } else if (licenceType === 'id') {
+                this.props.onLicenceChange(licenceType, value.target.value);
+            }
+        }
+    _handleExcerptChange = (ev) => {
+        this.props.onExcerptChange(ev.target.value);
+    }
     render () {
-        const { intl, onClose } = this.props;
+        const { intl, onClose, licences, selectedLicence, featuredImage,
+            excerpt } = this.props;
         return (
           <div className="publish-options-panel">
-            <div className="publish-options-panel__header">
+            <div
+              className={
+                  `publish-options-panel__header
+                  publish-options-panel__header${this.state.scrolled ? '_scrolled' : ''}`
+              }
+            >
               <div className="publish-options-panel__header-title">
                 {intl.formatMessage(entryMessages.publishOptions)}
               </div>
@@ -26,8 +53,75 @@ class PublishOptionsPanel extends Component {
                 />
               </div>
             </div>
-            <div className="publish-options-panel__content">
-              Content
+            <div
+              className="publish-options-panel__content"
+              onScroll={this._handleContentScroll}
+            >
+              <div className="publish-options-panel__licence-container">
+                <h4 className="publish-options-panel__container-title">
+                  {intl.formatMessage(entryMessages.license)}
+                </h4>
+                <Select
+                  defaultValue={selectedLicence.parent}
+                  style={{ width: '100%' }}
+                  className="publish-options-panel__licence-select"
+                  onChange={this._handleLicenceChange('parent')}
+                >
+                  {licences.filter(lic => !lic.parent).map(parentLicence =>
+                    <Option key={parentLicence.get('id')}>{parentLicence.get('label')}</Option>
+                  ).toIndexedSeq()}
+                </Select>
+                {(licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
+                  <RadioGroup
+                    className="publish-options-panel__licence-radio-group"
+                    onChange={this._handleLicenceChange('id')}
+                    value={selectedLicence.id}
+                  >
+                      {licences.filter(lic => lic.get('parent') === selectedLicence.parent)
+                        .map(childLic => (
+                          <Radio
+                            className="publish-options-panel__licence-radio"
+                            key={childLic.id}
+                            value={childLic.id}
+                          >
+                            {childLic.label}
+                          </Radio>
+                        )).toIndexedSeq()}
+                  </RadioGroup>
+                }
+              </div>
+              <div
+                className="publish-options-panel__featured-image-container"
+              >
+                <h4
+                  className="publish-options-panel__container-title"
+                >
+                  {intl.formatMessage(entryMessages.featuredImage)}
+                </h4>
+                <ImageUploader
+                  initialImage={featuredImage}
+                  intl={intl}
+                />
+                <div>{intl.formatMessage(entryMessages.allowedImageTypes)}</div>
+              </div>
+              <div
+                className="publish-options-panel__excerpt-container"
+              >
+                <h4
+                  className="publish-options-panel__container-title"
+                >
+                  {intl.formatMessage(entryMessages.excerpt)}
+                </h4>
+                <TextArea
+                  ref={(node) => { this.textareaNode = node; }}
+                  className="publish-options-panel__excerpt-textarea"
+                  placeholder="Write a short summary"
+                  autosize={{ minRows: 3 }}
+                  onChange={this._handleExcerptChange}
+                  value={excerpt}
+                />
+                <div>{intl.formatMessage(validationMessages.maxExcerptLength)}</div>
+              </div>
             </div>
           </div>
         );
@@ -35,8 +129,14 @@ class PublishOptionsPanel extends Component {
 }
 
 PublishOptionsPanel.propTypes = {
+    excerpt: PropTypes.string,
     intl: PropTypes.shape(),
     onClose: PropTypes.func,
+    onLicenceChange: PropTypes.func,
+    onExcerptChange: PropTypes.func,
+    featuredImage: PropTypes.shape(),
+    licences: PropTypes.shape(),
+    selectedLicence: PropTypes.shape()
 };
 
 export default PublishOptionsPanel;

@@ -47,6 +47,11 @@ const validationMessages = defineMessages({
         id: 'app.validator.validAddress',
         description: 'A valid address (URL) is required',
         defaultMessage: 'must be a valid address'
-    }
+    },
+    maxExcerptLength: {
+        id: 'app.validator.maxExcerptLength',
+        description: 'Info message about max length of an excerpt',
+        defaultMessage: 'The excerpts can have max. 120 characters'
+    },
 });
 export { validationMessages };

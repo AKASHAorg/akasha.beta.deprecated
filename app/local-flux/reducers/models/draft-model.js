@@ -17,7 +17,7 @@ export default class DraftModel extends DraftModelRecord {
             id,
             tags = null,
             tx, created_at, updated_at } = draftObj;
-        const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
+        const { title, excerpt, licence = new DraftLicence(), draft, wordCount, featuredImage, type } = content;
         const createdDraft = new Draft({
             id,
             akashaId,
@@ -26,6 +26,7 @@ export default class DraftModel extends DraftModelRecord {
             created_at,
             updated_at,
             content: new DraftContent({
+                type,
                 draft,
                 title,
                 licence: new DraftLicence(licence),
