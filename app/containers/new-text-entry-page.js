@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { fromJS } from 'immutable';
 import { Icon, Row, Col, Button } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
@@ -29,6 +30,7 @@ class NewEntryPage extends Component {
                 content: {
                     licence: userDefaultLicence,
                     type: 'article',
+                    featuredImage: {},
                 }
             });
         }
@@ -79,6 +81,14 @@ class NewEntryPage extends Component {
         this.props.draftUpdate(draftObj.mergeIn(['content', 'excerpt'], excerpt));
     }
 
+    _handleFeaturedImageChange = (image) => {
+        const { draftObj } = this.props;
+        console.log('update draftObj with image', draftObj.mergeIn(['content', 'featuredImage'], image));
+        this.props.draftUpdate(
+            draftObj.setIn(['content', 'featuredImage'], fromJS(image))
+        );
+    }
+
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
@@ -105,7 +115,7 @@ class NewEntryPage extends Component {
             return <div>Finding Draft</div>;
         }
         const { content, tags } = draftObj;
-        const { title, excerpt, licence, draft } = content;
+        const { title, excerpt, licence, draft, featuredImage } = content;
         const draftSaving = !draftObj.get('saved') && draftObj.get('saving');
         const draftSaved = draftObj.get('saved') && !draftObj.get('saving');
         return (
@@ -170,12 +180,15 @@ class NewEntryPage extends Component {
                 }
               >
                 <PublishOptionsPanel
+                  baseUrl={baseUrl}
                   intl={intl}
                   onClose={this._handlePublishPanelClose}
                   onLicenceChange={this._handleDraftLicenceChange}
                   onExcerptChange={this._handleExcerptChange}
+                  onFeaturedImageChange={this._handleFeaturedImageChange}
                   title={title}
                   excerpt={excerpt}
+                  featuredImage={featuredImage}
                   selectedLicence={licence}
                   licences={licences}
                 />

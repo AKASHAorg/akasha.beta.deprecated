@@ -17,6 +17,7 @@ export const DraftContent = Record({
     draft: EditorState.createEmpty(),
     title: '',
     excerpt: '',
+    featuredImage: new Map(),
     wordCount: 0,
     licence: new DraftLicence(),
     type: 'article'

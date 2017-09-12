@@ -27,11 +27,10 @@ function* draftCreate ({ data }) {
     const { content, ...others } = data;
     yield put(draftActions.draftCreateSuccess({
         content: {
+            ...content,
             draft: editorState,
             title: '',
             excerpt: '',
-            type: content.type,
-            licence: content.licence,
         },
         selectionState: newSelectionState,
         ...others

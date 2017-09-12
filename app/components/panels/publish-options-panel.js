@@ -31,9 +31,14 @@ class PublishOptionsPanel extends Component {
     _handleExcerptChange = (ev) => {
         this.props.onExcerptChange(ev.target.value);
     }
+    _handleFeaturedImageChange = (image) => {
+        console.log(image, 'the image');
+        this.props.onFeaturedImageChange(image);
+    }
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
-            excerpt } = this.props;
+            excerpt, baseUrl } = this.props;
+
         return (
           <div className="publish-options-panel">
             <div
@@ -99,8 +104,11 @@ class PublishOptionsPanel extends Component {
                   {intl.formatMessage(entryMessages.featuredImage)}
                 </h4>
                 <ImageUploader
+                  baseUrl={baseUrl}
                   initialImage={featuredImage}
                   intl={intl}
+                  onChange={this._handleFeaturedImageChange}
+                  useIpfs
                 />
                 <div>{intl.formatMessage(entryMessages.allowedImageTypes)}</div>
               </div>
@@ -129,11 +137,13 @@ class PublishOptionsPanel extends Component {
 }
 
 PublishOptionsPanel.propTypes = {
+    baseUrl: PropTypes.string,
     excerpt: PropTypes.string,
     intl: PropTypes.shape(),
     onClose: PropTypes.func,
     onLicenceChange: PropTypes.func,
     onExcerptChange: PropTypes.func,
+    onFeaturedImageChange: PropTypes.func,
     featuredImage: PropTypes.shape(),
     licences: PropTypes.shape(),
     selectedLicence: PropTypes.shape()

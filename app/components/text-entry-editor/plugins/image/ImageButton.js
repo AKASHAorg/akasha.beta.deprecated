@@ -5,6 +5,7 @@ import { IconButton } from 'material-ui';
 import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
 import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
 import { genId } from '../../../../utils/dataModule';
+import { uploadImage } from '../../../../local-flux/services/utils-service';
 
 const { RichUtils } = DraftJS;
 
@@ -30,38 +31,8 @@ export default class BlockButton extends Component {
         });
     }
     _handleImageProgress = (currentProgress) => {
-        console.log(currentProgress, 'currentProgress');
         const { onImageProgress } = this.props;
         if (onImageProgress) onImageProgress(currentProgress);
-    }
-    _convertToIpfs = (files, imgId) => {
-        const serverChannel = window.Channel.server.utils.uploadImage;
-        const clientChannel = window.Channel.client.utils.uploadImage;
-        const managerChannel = window.Channel.client.utils.manager;
-        console.log(files, 'the files to convert');
-
-        return new Promise((resolve, reject) => {
-            clientChannel.on((ev, { data }) => {
-                if (data.error) return reject(data.error);
-                const filesArr = data.collection;
-                filesArr.forEach((file) => {
-                    files[file.size].src = file.hash;
-                });
-                console.log(files, 'the new files with ipfs hash');
-                return resolve(files);
-            });
-            managerChannel.on(() => {
-                serverChannel.send(
-                    Object.keys(files)
-                        .map(fileKey => ({
-                            size: fileKey,
-                            id: imgId,
-                            source: files[fileKey].src
-                        })));
-            });
-            serverChannel.enable();
-            // resolve(files);
-        });
     }
 
     _handleImageAdd = (ev) => {
@@ -92,7 +63,7 @@ export default class BlockButton extends Component {
                 caption: ''
             };
         }).then((data) => {
-            this._convertToIpfs(data.files, data.imgId).then((imgHashes) => {
+            uploadImage(data.files, data.imgId).then((imgHashes) => {
                 this.fileInput.value = '';
                 this.setState({
                     isAddingImage: false,

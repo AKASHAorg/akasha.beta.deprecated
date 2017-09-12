@@ -13,4 +13,3 @@ export { SettingsService } from './settings-service';
 export { TagService } from './tag-service';
 export { UtilsService } from './utils-service';
 export { ValidationService } from './validation-service';
-
