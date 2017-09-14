@@ -200,6 +200,11 @@ const generalMessages = defineMessages({
         description: 'Message to show while images are being precessed',
         defaultMessage: 'Processing image'
     },
+    profileOverview: {
+        id: 'app.general.profileOverview',
+        description: 'button label for profile overview',
+        defaultMessage: 'Profile Overview'
+    },
     publish: {
         id: 'app.general.publish',
         description: 'button label for publish action',
