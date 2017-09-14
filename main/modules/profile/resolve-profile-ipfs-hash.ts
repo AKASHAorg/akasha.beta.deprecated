@@ -1,11 +1,12 @@
 import * as Promise from 'bluebird';
 import { getShortProfile } from './ipfs';
 import { SHORT_WAIT_TIME } from '../../config/settings';
+
 /**
  * @type {Function}
  */
 const execute = Promise.coroutine(
-    function*(data: { ipfsHash: string[] }, cb: any) {
+    function* (data: { ipfsHash: string[] }, cb: any) {
         if (!Array.isArray(data.ipfsHash)) {
             throw new Error('data is must be an array');
         }

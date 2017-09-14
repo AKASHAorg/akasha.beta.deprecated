@@ -19,6 +19,7 @@ interface IPCmanager {
     channel: string;
     listen: boolean;
 }
+
 /////////// ipfs models \\\\\\\\\\\\\
 interface IpfsLink {
     '/': string;  // ex: { '/': 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' }
@@ -32,6 +33,7 @@ type multiRes = {
     lg?: mediaSource,
     xl?: mediaSource
 };
+
 interface ProfileModel {
     firstName: string;
     lastName: string;
@@ -55,6 +57,7 @@ interface CommentModel {
     content: any; // ipfs hash
     date: Date;
 }
+
 /////////////////// ipfs models \\\\\\\\\\\\\\\\\\\\\\\\\
 
 // Define type of `data`
@@ -103,6 +106,7 @@ interface IpfsgetConfigResponse extends MainResponse {
         storagePath: string;
     }
 }
+
 interface IpfsResolveResponse extends MainResponse {
     data: {
         content: any;
@@ -118,6 +122,7 @@ interface IpfsSetConfigRequest {
     };
     restart?: boolean;
 }
+
 interface IpfsSetConfigResponse extends MainResponse {
     data: {
         set: boolean
@@ -132,6 +137,7 @@ interface IpfsGetPortsResponse {
     },
     request: any
 }
+
 // channels.server.geth.restart
 interface GethRestartRequest {
     timer?: number;
@@ -242,6 +248,7 @@ interface EmitMinedResponse extends MainResponse {
         watching: boolean;
     };
 }
+
 /////////////////////////  </ TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 /////////////////////////  < Registry > \\\\\\\\\\\\\\\\\\\\\\\\
@@ -287,6 +294,7 @@ interface ProfileCreateResponse extends MainResponse {
 interface ProfileUpdateRequest extends AuthRequest {
     ipfs: IpfsProfileCreateRequest;
 }
+
 interface ProfileUpdateResponse extends MainResponse {
     data: {
         tx: string;
@@ -307,6 +315,7 @@ interface GenericErrorEventResponse extends MainResponse {
 
 interface ProfileErrorEventRequest extends GenericErrorEventRequest {
 }
+
 interface ProfileErrorEventResponse extends GenericErrorEventResponse {
 }
 
@@ -322,8 +331,10 @@ interface GenericFromEventRequest extends ProfileErrorEventRequest {
 
 interface ProfileRegisteredEventRequest extends GenericFromEventRequest {
 }
+
 interface ProfileRegisteredEventResponse extends GenericFromEventResponse {
 }
+
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 ////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -335,6 +346,7 @@ type multiResPost = {
     lg?: mediaSourcePost,
     xl?: mediaSourcePost
 };
+
 interface IpfsProfileCreateRequest {
     firstName: string;
     lastName: string;
@@ -423,6 +435,7 @@ interface GetFollowingResponse extends MainResponse {
         following: string[];
     }
 }
+
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////////// < TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -513,6 +526,7 @@ interface TagsFromToRequest {
     from: number;
     to: number;
 }
+
 interface TagsFromToResponse extends MainResponse {
     data: {
         from: number;
@@ -520,6 +534,7 @@ interface TagsFromToResponse extends MainResponse {
         tags: string[];
     }
 }
+
 /////////////////////// </ TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -557,11 +572,13 @@ interface EntryUpvoteRequest extends AuthRequest {
     value: number;
     extra: any;
 }
+
 interface EntryUpvoteResponse extends MainResponse {
     data: {
         tx: string;
     };
 }
+
 interface EntryOpenedVotesRequest {
     address: string; // entry address
 }
@@ -645,6 +662,7 @@ interface EntryGetResponse extends MainResponse {
         content: any;
     }
 }
+
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////// < COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -705,6 +723,7 @@ interface GetCommentCountResponse extends MainResponse {
         address: string; // entry address
     }
 }
+
 interface GetCommentAtRequest {
     address: string; //entry address
     id: number; // comment id
@@ -719,4 +738,5 @@ interface GetCommentAtResponse extends MainResponse {
         id: number;
     }
 }
+
 /////////////////// </ COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

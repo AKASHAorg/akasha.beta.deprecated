@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 
-const execute = Promise.coroutine(function*(data: IpfsStartRequest) {
+const execute = Promise.coroutine(function* (data: IpfsStartRequest) {
     if (IpfsConnector.getInstance().serviceStatus.process) {
         throw new Error('IPFS is already running');
     }

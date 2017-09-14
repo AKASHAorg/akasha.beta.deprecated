@@ -21,6 +21,18 @@ class AppLogger {
         }
         this.loggers = {};
     }
+
+    /**
+     *
+     * @returns {*}
+     */
+    static getInstance() {
+        if (!this[symbol]) {
+            this[symbol] = new AppLogger(symbolEnforcer);
+        }
+        return this[symbol];
+    }
+
     public init() {
         return new Promise((resolve, reject) => {
             const defaultPath = pathJoin(app.getPath('userData'), 'logs');
@@ -36,33 +48,6 @@ class AppLogger {
                 return resolve(this.PATH_OK);
             });
         });
-    }
-
-    private _buildPath(path) {
-        this._setLogsFolder(path);
-        mkdirSync(path);
-        this.PATH_OK = true;
-        return this.PATH_OK;
-    }
-
-    /**
-     *
-     * @returns {*}
-     */
-    static getInstance() {
-        if (!this[symbol]) {
-            this[symbol] = new AppLogger(symbolEnforcer);
-        }
-        return this[symbol];
-    }
-
-    /**
-     *
-     * @param path
-     * @private
-     */
-    private _setLogsFolder(path: string) {
-        this.logPath = path;
     }
 
     /**
@@ -115,6 +100,22 @@ class AppLogger {
      */
     getLogger(name: string) {
         return this.loggers[name];
+    }
+
+    private _buildPath(path) {
+        this._setLogsFolder(path);
+        mkdirSync(path);
+        this.PATH_OK = true;
+        return this.PATH_OK;
+    }
+
+    /**
+     *
+     * @param path
+     * @private
+     */
+    private _setLogsFolder(path: string) {
+        this.logPath = path;
     }
 }
 

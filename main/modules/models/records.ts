@@ -11,6 +11,10 @@ class Entries {
         this.loadOptions();
     }
 
+    get records() {
+        return this._entries;
+    }
+
     setOptions(newOptions: {}) {
         this.options = Object.assign({}, this.options, newOptions);
         return this;
@@ -59,11 +63,8 @@ class Entries {
         this._entries.reset();
     }
 
-    get records() {
-        return this._entries;
-    }
-
 }
+
 export const entries = new Entries();
 export const profiles = new Entries();
 export const comments = new Entries();

@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import Auth from './Auth';
 import feed from '../notifications/feed';
 
-const execute = Promise.coroutine(function*() {
+const execute = Promise.coroutine(function* () {
     feed.execute({ stop: true });
     Auth.logout();
     return { done: true };

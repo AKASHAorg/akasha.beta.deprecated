@@ -1,11 +1,12 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import getEntry from './get-entry';
+
 /**
  * Get entries indexed by tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, tagName: string, reverse: boolean }) {
+const execute = Promise.coroutine(function* (data: { start?: number, limit?: number, tagName: string, reverse: boolean }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.entries.getTagEntryFirst(data.tagName);
     if (currentId === '0') {
         return { collection: [], tagName: data.tagName };

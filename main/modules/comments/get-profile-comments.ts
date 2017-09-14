@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 
 /**
@@ -7,7 +7,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
  * @param start {block number}
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { id: string, start?: number, limit?: number }) {
+const execute = Promise.coroutine(function* (data: { id: string, start?: number, limit?: number }) {
     let commentEthData, entryId, commentId;
     const comments = [];
     let status = (data.start) ? data.start : yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();

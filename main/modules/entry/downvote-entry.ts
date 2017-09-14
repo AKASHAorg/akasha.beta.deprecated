@@ -3,13 +3,13 @@
  */
 import auth from '../auth/Auth';
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Downvote entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryUpvoteRequest) {
+const execute = Promise.coroutine(function* (data: EntryUpvoteRequest) {
     if (data.weight < 1 || data.weight > 10) {
         throw new Error('Vote weight value must be between 1-10');
     }

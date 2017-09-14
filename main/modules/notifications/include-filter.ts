@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { filter } from './set-filter';
 
-const execute = Promise.coroutine(function*(data: { profiles: string[] }) {
+const execute = Promise.coroutine(function* (data: { profiles: string[] }) {
     data.profiles.forEach((profileAddress) => {
         filter.appendAddress(profileAddress);
     });

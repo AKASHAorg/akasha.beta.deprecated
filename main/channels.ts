@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { hostname } from 'os';
+
 const hashPath = (...path: string[]) => {
     const hash = createHash('sha256');
     path.forEach((segment) => {

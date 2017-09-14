@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Get subscription size for a profile id
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { akashaId: string }) {
+const execute = Promise.coroutine(function* (data: { akashaId: string }) {
     const count = yield contracts.instance.subs.subsCount(data.akashaId);
     return { count, akashaId: data.akashaId };
 });

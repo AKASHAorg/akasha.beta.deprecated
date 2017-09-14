@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Search a tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { tagName: string, limit?: number }) {
+const execute = Promise.coroutine(function* (data: { tagName: string, limit?: number }) {
     if (!data.limit) {
         data.limit = 1;
     }

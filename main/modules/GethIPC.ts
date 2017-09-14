@@ -8,7 +8,8 @@ import Logger from './Logger';
 import gethModule from './geth';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
-import { constructed } from '../contracts/index';
+import contracts from '../contracts/index';
+
 const peers = require('../config/peers.json');
 
 class GethIPC extends ModuleEmitter {
@@ -25,11 +26,11 @@ class GethIPC extends ModuleEmitter {
         GethConnector.getInstance().setBinPath(join(app.getPath('userData'), 'go-ethereum'));
         GethConnector.getInstance().setOptions({
             bootnodes: BOOTNODE,
-            datadir: join(GethConnector.getDefaultDatadir(), 'akasha-alpha'),
-            ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'akasha-alpha', 'geth.ipc'),
-            networkid: 511337,
-            shh: '',
+            datadir: join(GethConnector.getDefaultDatadir(), 'rinkeby'),
+            ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'rinkeby', 'geth.ipc'),
+            networkid: 4,
             syncmode: 'fast',
+            rinkeby: ''
             // rpc: '',
             // rpccorsdomain: '*',
             // rpcapi: 'eth,net,web3,personal,admin,shh,txpool',
@@ -61,7 +62,10 @@ class GethIPC extends ModuleEmitter {
         );
         GethConnector.getInstance().on(
             CONSTANTS.DOWNLOAD_PROGRESS, (stats) => {
-                this.fireEvent(channels.client.geth.startService, mainResponse({ downloading: true, progress: stats }, {}));
+                this.fireEvent(channels.client.geth.startService, mainResponse({
+                    downloading: true,
+                    progress: stats
+                }, {}));
             }
         );
         return this;
@@ -96,11 +100,10 @@ class GethIPC extends ModuleEmitter {
         GethConnector.getInstance().on(
             CONSTANTS.IPC_CONNECTED, () => {
                 this.fireEvent(channels.client.geth.startService, mainResponse({ ipc: true }, {}));
-                // inject web3 instance
-                constructed.init(GethConnector.getInstance().web3);
-                // add static peers
-                peers.list.forEach((peer: string) => {
-                    GethConnector.getInstance().web3.admin.addPeerAsync(peer).then(() => null);
+                contracts.init().then(() => {
+                    peers.list.forEach((peer: string) => {
+                        GethConnector.getInstance().web3.admin.addPeerAsync(peer).then(() => null);
+                    });
                 });
             }
         );
@@ -160,4 +163,5 @@ class GethIPC extends ModuleEmitter {
         return this;
     }
 }
+
 export default GethIPC;

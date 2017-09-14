@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Get cost value for vote weight
@@ -11,7 +11,7 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function*(data: { weight: number[] }) {
+    function* (data: { weight: number[] }) {
         if (!Array.isArray(data.weight)) {
             throw new Error('data.weight must be an array');
         }

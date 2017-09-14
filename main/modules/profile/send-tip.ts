@@ -1,10 +1,10 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import auth from '../auth/Auth';
 import addressOf from '../registry/address-of-akashaid';
 
 const execute = Promise.coroutine(
-    function*(data: { token: string, receiver: string, akashaId: string, value: string, unit?: string, gas?: number }) {
+    function* (data: { token: string, receiver: string, akashaId: string, value: string, unit?: string, gas?: number }) {
         const validateReceiver = yield addressOf.execute([{ akashaId: data.akashaId }]);
         if (validateReceiver.collection[0] !== data.receiver) {
             throw new Error('Cannot validate receiver\'s address.');

@@ -14,7 +14,7 @@ const windowStateKeeper = require('electron-window-state');
 
 let modules;
 let mainWindow = null;
-const shutDown = Promise.coroutine(function*() {
+const shutDown = Promise.coroutine(function* () {
     yield feed.execute({ stop: true });
     yield fetch.execute({ stop: true });
     yield GethConnector.getInstance().stop();

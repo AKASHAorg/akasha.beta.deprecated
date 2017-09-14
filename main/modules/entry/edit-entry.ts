@@ -1,13 +1,13 @@
 import * as Promise from 'bluebird';
 import auth from '../auth/Auth';
 import IpfsEntry from './ipfs';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  *
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryEditRequest) {
+const execute = Promise.coroutine(function* (data: EntryEditRequest) {
     const active = yield contracts.instance.entries.isMutable(data.entryId);
 
     if (!active) {
