@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import getFollowingList from '../profile/following-list';
 import currentProfile from '../registry/current-profile';
 import { mixed } from '../models/records';
@@ -8,7 +8,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import getEntry from './get-entry';
 
 
-const fetch = Promise.coroutine(function*(entries, following, toBlock, limit) {
+const fetch = Promise.coroutine(function* (entries, following, toBlock, limit) {
     const fromBlock = toBlock - BLOCK_INTERVAL;
     const filter = { fromBlock: (fromBlock > 0) ? fromBlock : 0, toBlock: toBlock };
     let rounds = limit;
@@ -33,7 +33,7 @@ const fetch = Promise.coroutine(function*(entries, following, toBlock, limit) {
     return lastBlock;
 });
 
-const execute = Promise.coroutine(function*(data: { limit?: number, toBlock?: number, purgeCache?: boolean }) {
+const execute = Promise.coroutine(function* (data: { limit?: number, toBlock?: number, purgeCache?: boolean }) {
     if (data.purgeCache) {
         mixed.removeFull(FOLLOWING_LIST);
     }

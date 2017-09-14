@@ -16,6 +16,11 @@ class Notifications {
         }, this.COLLECT_TIME);
     }
 
+    public clear() {
+        clearTimeout(this._timeout);
+        this.queue.length = 0;
+    }
+
     private emit(cb) {
         let count = (this.queue.length > this.BATCH_SIZE) ? this.BATCH_SIZE : this.queue.length;
         for (let i = 0; i < count; i++) {
@@ -25,10 +30,6 @@ class Notifications {
             this.push(cb);
         }
     }
-
-    public clear() {
-        clearTimeout(this._timeout);
-        this.queue.length = 0;
-    }
 }
+
 export default new Notifications();

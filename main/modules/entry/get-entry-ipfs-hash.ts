@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Fetch entry ipfs hash from entryId
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryGetRequest) {
+const execute = Promise.coroutine(function* (data: EntryGetRequest) {
     const entryEth = yield contracts.instance.entries.getEntry(data.entryId);
     return { ipfsHash: entryEth.ipfsHash };
 });

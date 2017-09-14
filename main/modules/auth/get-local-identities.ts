@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
-const execute = Promise.coroutine(function*() {
+const execute = Promise.coroutine(function* () {
     const profiles = yield contracts.instance.registry.getLocalProfiles();
     for (let profile of profiles) {
         profile['akashaId'] = (profile.profile) ? yield contracts.instance.profile.getId(profile.profile) : null;

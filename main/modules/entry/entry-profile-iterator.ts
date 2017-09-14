@@ -1,11 +1,12 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import getEntry from './get-entry';
+
 /**
  * Get entries indexed by publisher
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, akashaId: string }) {
+const execute = Promise.coroutine(function* (data: { start?: number, limit?: number, akashaId: string }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.entries.getProfileEntryFirst(data.akashaId);
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };

@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { getShortProfile, resolveProfile } from './ipfs';
 import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
 import followingCount from './following-count';
@@ -12,7 +12,7 @@ import subsCount from '../tags/subs-count';
  * Get profile data for an akasha profile address
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: ProfileDataRequest) {
+const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     let profile;
     const akashaId = (data.akashaId) ? data.akashaId : yield contracts.instance.profile.getId(data.profile);
     const profileAddress = (data.profile) ? data.profile : yield contracts.instance.registry.addressOf(data.akashaId);

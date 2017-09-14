@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 
 /**
@@ -12,7 +12,7 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function*(data: { entryId: string, akashaId: string }[]) {
+    function* (data: { entryId: string, akashaId: string }[]) {
         if (!Array.isArray(data)) {
             throw new Error('data must be an array');
         }

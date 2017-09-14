@@ -5,7 +5,7 @@ import getEntry from './get-entry';
  * Resolve a list of entries
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { entryIds: { entryId: string }[] }) {
+const execute = Promise.coroutine(function* (data: { entryIds: { entryId: string }[] }) {
     const pool = data.entryIds.map((entryObj) => {
         return getEntry.execute(entryObj);
     });

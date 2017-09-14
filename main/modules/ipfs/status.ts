@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 
-const execute = Promise.coroutine(function*() {
+const execute = Promise.coroutine(function* () {
     return {};
 });
 

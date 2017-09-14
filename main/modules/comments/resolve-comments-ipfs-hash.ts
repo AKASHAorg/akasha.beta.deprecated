@@ -7,7 +7,7 @@ import { FULL_WAIT_TIME, INSTANT_WAIT_TIME, MEDIUM_WAIT_TIME, SHORT_WAIT_TIME } 
  * @type {Function}
  */
 
-const execute = Promise.coroutine(function*(data: string[], cb: any) {
+const execute = Promise.coroutine(function* (data: string[], cb: any) {
     const waitTimes = [INSTANT_WAIT_TIME, SHORT_WAIT_TIME, MEDIUM_WAIT_TIME, FULL_WAIT_TIME];
     let count = 0;
     let resolved = [];

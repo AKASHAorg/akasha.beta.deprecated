@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import getComment from './get-comment';
 
 /**
@@ -7,7 +7,7 @@ import getComment from './get-comment';
  * @type {Function}
  */
 
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, entryId: string }) {
+const execute = Promise.coroutine(function* (data: { start?: number, limit?: number, entryId: string }) {
     let currentId = yield contracts.instance.comments.getFirstComment(data.entryId);
     let firstCommentId = currentId;
     if (currentId === '0') {

@@ -1,38 +1,17 @@
-import Profile from './Profile';
-import Registry from './Registry';
-import Tags from './Tags';
-import Feed from './Feed';
-import Faucet from './Faucet';
-import Entries from './Entries';
-import Comments from './Comments';
-import Subs from './Subs';
-import Votes from './Votes';
-import RegistryStore from './RegistryStore';
-import contracts from '@akashaproject/contracts.js';
+const initContracts = require('@akashaproject/contracts.js');
+import { GethConnector } from '@akashaproject/geth-connector';
 
 class Contracts {
     public instance: any;
 
     /**
-     * Boostrap web3 contracts
-     * @param web3
-     * @returns {any}
+     * Init web3 contract js bindings
+     * @returns {Promise<any>}
      */
-    public init(web3: any) {
-        const factory = new contracts.Class(web3);
-        const registry = new Registry(factory.objects.registry);
-        const registryStore = new RegistryStore(factory.objects.registry_store);
-        const profile = new Profile(factory.classes.Profile);
-        const tags = new Tags(factory.objects.tags);
-        const feed = new Feed(factory.objects.feed);
-        const subs = new Subs(factory.objects.subs);
-        const faucet = new Faucet(factory.objects.faucet);
-        const entries = new Entries(factory.objects.entries);
-        const comments = new Comments(factory.objects.comments);
-        const votes = new Votes(factory.objects.votes);
-        this.instance = { profile, registry, registryStore, tags, feed, faucet, entries, comments, subs, votes };
+    public async init() {
+        this.instance = await initContracts(GethConnector.getInstance().web3.currentProvider);
         return this.instance;
     }
 }
 
-export const constructed = new Contracts();
+export default new Contracts();

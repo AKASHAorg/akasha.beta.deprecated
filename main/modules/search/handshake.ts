@@ -12,7 +12,7 @@ import {
 import { randomBytesAsync } from '../auth/Auth';
 import { whisperIdentity } from '../chat/post';
 
-const execute = Promise.coroutine(function*(data: { provider?: string, timeout?: number }) {
+const execute = Promise.coroutine(function* (data: { provider?: string, timeout?: number }) {
     const timeout = (data.timeout) ? data.timeout : handshakeTimeout;
     const seed = yield randomBytesAsync(32);
     const message = GethConnector.getInstance()

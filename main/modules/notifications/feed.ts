@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { filter } from './set-filter';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getProfileData from '../profile/profile-data';
@@ -41,7 +41,7 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
         });
 };
 
-const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
+const emitMention = Promise.coroutine(function* (event, akashaId, cb) {
     let message;
     const unmarshall = GethConnector.getInstance().web3.toUtf8(event.payload);
 
@@ -79,7 +79,7 @@ const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
  * Get total number of your follows
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: number }, cb) {
+const execute = Promise.coroutine(function* (data: { stop?: boolean, newerThan?: number }, cb) {
     if (!contracts.instance) {
         return { running: false };
     }

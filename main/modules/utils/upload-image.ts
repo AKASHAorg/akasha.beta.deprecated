@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 
-const execute = Promise.coroutine(function*(data: { source: Buffer, size?: string }[]) {
+const execute = Promise.coroutine(function* (data: { source: Buffer, size?: string }[]) {
 
     const uploads = data.map((value, index) => {
         return IpfsConnector

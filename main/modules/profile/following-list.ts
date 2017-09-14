@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Get following list of id
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { akashaId: string }) {
+const execute = Promise.coroutine(function* (data: { akashaId: string }) {
     let currentId = yield contracts.instance.feed.getFollowingFirst(data.akashaId);
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };

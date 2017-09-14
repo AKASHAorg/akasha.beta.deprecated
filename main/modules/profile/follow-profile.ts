@@ -1,13 +1,14 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import auth from '../auth/Auth';
 import pinner, { ObjectType, OperationType } from '../pinner/runner';
 import { mixed } from '../models/records';
+
 /**
  * Follow an akasha profile
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: ProfileFollowRequest) {
+const execute = Promise.coroutine(function* (data: ProfileFollowRequest) {
     const txData = yield contracts.instance.feed.follow(data.akashaId, data.gas);
     const tx = yield auth.signData(txData, data.token);
     mixed.flush();

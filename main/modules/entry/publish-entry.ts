@@ -2,13 +2,13 @@ import auth from '../auth/Auth';
 import IpfsEntry from './ipfs';
 import { uniq } from 'ramda';
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 
 /**
  * Create a new Entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryCreateRequest) {
+const execute = Promise.coroutine(function* (data: EntryCreateRequest) {
     let ipfsEntry = new IpfsEntry();
     data.tags = uniq(data.tags);
     const hash = yield ipfsEntry.create(data.content, data.tags);

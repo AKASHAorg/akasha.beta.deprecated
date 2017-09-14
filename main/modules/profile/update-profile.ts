@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import getCurrentProfile from '../registry/current-profile';
 import { create } from './ipfs';
 import auth from '../auth/Auth';
@@ -8,7 +8,7 @@ import auth from '../auth/Auth';
  * Update ipfs profile info
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: ProfileUpdateRequest) {
+const execute = Promise.coroutine(function* (data: ProfileUpdateRequest) {
     const ipfsHash = yield create(data.ipfs);
     const currentProfile = yield getCurrentProfile.execute();
     if (!currentProfile.profileAddress) {

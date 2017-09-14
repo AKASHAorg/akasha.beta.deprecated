@@ -6,7 +6,7 @@ import { SHORT_WAIT_TIME } from '../../config/settings';
  * Fetch short content from an array of ipfs hashes
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { ipfsHash: string[] }, cb: any) {
+const execute = Promise.coroutine(function* (data: { ipfsHash: string[] }, cb: any) {
     if (!Array.isArray(data.ipfsHash)) {
         throw new Error('data is must be an array');
     }

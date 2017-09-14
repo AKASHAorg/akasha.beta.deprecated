@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import followingCount from '../profile/following-count';
 import subsCount from '../tags/subs-count';
 
@@ -8,7 +8,7 @@ export const DEFAULT_TAG = 'akasha';
  * Get score of an entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { akashaId: string }) {
+const execute = Promise.coroutine(function* (data: { akashaId: string }) {
     let fCount = yield followingCount.execute({ akashaId: data.akashaId });
     let sCount = yield subsCount.execute({ akashaId: data.akashaId });
     const followedProfiles = [];

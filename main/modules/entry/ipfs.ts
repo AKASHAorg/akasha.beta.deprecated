@@ -180,12 +180,13 @@ class IpfsEntry {
         });
     }
 }
+
 /**
  *
  * @param hash
  * @returns {any}
  */
-export const getShortContent = Promise.coroutine(function*(hash) {
+export const getShortContent = Promise.coroutine(function* (hash) {
     if (entries.hasShort(hash)) {
         return Promise.resolve(entries.getShort(hash));
     }
@@ -212,7 +213,7 @@ export const getShortContent = Promise.coroutine(function*(hash) {
  *
  * @type {Function}
  */
-const findVersion = Promise.coroutine(function*(hash: string, version: number) {
+const findVersion = Promise.coroutine(function* (hash: string, version: number) {
     const root = yield IpfsConnector.getInstance().api.get(hash);
     if (!root.hasOwnProperty('version')) {
         throw new Error('Cannot find version ' + version);
@@ -238,7 +239,7 @@ const findVersion = Promise.coroutine(function*(hash: string, version: number) {
  * @param hash
  * @returns {any}
  */
-export const getFullContent = Promise.coroutine(function*(hash: string, version?: number) {
+export const getFullContent = Promise.coroutine(function* (hash: string, version?: number) {
     const indexedVersion = (is(Number, version)) ? `${hash}/v/${version}` : hash;
 
     if (entries.hasFull(indexedVersion)) {

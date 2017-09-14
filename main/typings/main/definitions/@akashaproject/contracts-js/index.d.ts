@@ -1,8 +1,4 @@
-declare module '@akashaproject/contracts.js' {
-    const contracts: { Class: any };
-    export default contracts;
-    export const classes: any;
-}
+declare module '@akashaproject/contracts.js';
 
 declare module 'ethereumjs-util' {
     export function ecsign(msgHash: string, privateKey: string): { r: string, s: string, v: string };
