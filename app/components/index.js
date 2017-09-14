@@ -69,6 +69,8 @@ export ProfileColumn from './columns/profile-column';
 export ProfileDetailsPanel from './panels/user-profile-details';
 export ProfileEditPanel from './panels/profile-edit';
 export ProfileDetails from './profile/profile-details';
+export ProfileOverview from './profile-overview/profile-overview';
+export ProfileOverviewSecondarySidebar from './secondary-sidebars/profile-overview-secondary-sidebar';
 export ProfileList from './setup/profile-list';
 export ProfilePanelsHeader from './panels/profile-panels-header';
 export ProfilePopover from './popovers/profile-popover';
