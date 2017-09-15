@@ -195,6 +195,7 @@ interface AuthLogoutResponse extends MainResponse {
 // channels.server.auth.generateEthKey
 interface AuthKeygenRequest {
     password: Uint8Array;
+    password1: Uint8Array;
 }
 
 // channels.client.auth.generateEthKey
