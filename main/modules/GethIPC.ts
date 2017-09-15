@@ -3,12 +3,11 @@ import ModuleEmitter from '../event/ModuleEmitter';
 import { CONSTANTS, GethConnector } from '@akashaproject/geth-connector';
 import { join } from 'path';
 import { app } from 'electron';
-import { BOOTNODE, GETH_LOGGER } from '../config/settings';
+import { GETH_LOGGER } from '../config/settings';
 import Logger from './Logger';
 import gethModule from './geth';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
-import contracts from '../contracts/index';
 
 const peers = require('../config/peers.json');
 
@@ -25,7 +24,6 @@ class GethIPC extends ModuleEmitter {
         // set default options
         GethConnector.getInstance().setBinPath(join(app.getPath('userData'), 'go-ethereum'));
         GethConnector.getInstance().setOptions({
-            bootnodes: BOOTNODE,
             datadir: join(GethConnector.getDefaultDatadir(), 'rinkeby'),
             ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'rinkeby', 'geth.ipc'),
             networkid: 4,
@@ -100,10 +98,8 @@ class GethIPC extends ModuleEmitter {
         GethConnector.getInstance().on(
             CONSTANTS.IPC_CONNECTED, () => {
                 this.fireEvent(channels.client.geth.startService, mainResponse({ ipc: true }, {}));
-                contracts.init().then(() => {
-                    peers.list.forEach((peer: string) => {
-                        GethConnector.getInstance().web3.admin.addPeerAsync(peer).then(() => null);
-                    });
+                peers.list.forEach((peer: string) => {
+                    GethConnector.getInstance().web3.admin.addPeerAsync(peer).then(() => null);
                 });
             }
         );
