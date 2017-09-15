@@ -15,9 +15,8 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
-import { AuthDialog } from '../components/dialogs';
-import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorNotification, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, Notification, PageContent,
+import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
+     ErrorReportingModal, FatalErrorModal, GethDetailsModal, IpfsDetailsModal, Notification, PageContent,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -171,7 +170,7 @@ class AppContainer extends Component {
                 }
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
-                {needAuth && appState.get('showAuthDialog') && <AuthDialog intl={intl} />}
+                {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                 {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
                 <ReactTooltip delayShow={300} class="generic-tooltip" place="bottom" effect="solid" />
               </div>

@@ -469,7 +469,6 @@ export const TEMP_PROFILE_UPDATE_ERROR = 'TEMP_PROFILE_UPDATE_ERROR';
 // used to update temp profile (skipping steps from create temp profile);
 export const UPDATE_TEMP_PROFILE = 'UPDATE_TEMP_PROFILE';
 
-export const TOGGLE_AUTH_DIALOG = 'TOGGLE_AUTH_DIALOG';
 export const TOGGLE_GETH_DETAILS_MODAL = 'TOGGLE_GETH_DETAILS_MODAL';
 export const TOGGLE_IPFS_DETAILS_MODAL = 'TOGGLE_IPFS_DETAILS_MODAL';
 
