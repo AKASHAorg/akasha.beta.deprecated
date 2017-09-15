@@ -2,6 +2,7 @@ import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as commentsActions from '../actions/comments-actions';
+import * as draftActions from '../actions/draft-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
@@ -25,6 +26,7 @@ const publishActions = {
     [actionTypes.comment]: commentsActions.commentsPublish,
     [actionTypes.createTag]: tagActions.tagCreate,
     [actionTypes.downvote]: entryActions.entryDownvote,
+    [actionTypes.draftPublish]: draftActions.draftPublish,
     [actionTypes.follow]: profileActions.profileFollow,
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
@@ -44,6 +46,7 @@ const publishSuccessActions = {
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     [actionTypes.createTag]: tagActions.tagCreateSuccess,
     [actionTypes.downvote]: entryActions.entryDownvoteSuccess,
+    [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,

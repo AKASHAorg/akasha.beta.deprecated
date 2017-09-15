@@ -50,6 +50,7 @@ class Sidebar extends Component {
                     draftCreate({
                         id: draftId,
                         content: {
+                            featuredImage: {},
                             licence: userSelectedLicence,
                             type: 'article',
                         },

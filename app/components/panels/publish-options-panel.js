@@ -14,6 +14,13 @@ class PublishOptionsPanel extends Component {
         super(props);
         this.state = {};
     }
+    shouldComponentUpdate (nextProps, nextState) {
+        return nextProps.excerpt !== this.props.excerpt ||
+            !nextProps.selectedLicence.equals(this.props.selectedLicence) ||
+            !nextProps.featuredImage.equals(this.props.featuredImage) ||
+            nextState.scrolled !== this.state.scrolled;
+    }
+
     _handleContentScroll = (ev) => {
         const scrollTop = ev.target.scrollTop;
         this.setState({
@@ -38,7 +45,6 @@ class PublishOptionsPanel extends Component {
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
             excerpt, baseUrl } = this.props;
-
         return (
           <div className="publish-options-panel">
             <div

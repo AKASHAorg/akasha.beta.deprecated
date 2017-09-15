@@ -1,12 +1,17 @@
-import { call, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
-import { Map, Record } from 'immutable';
+import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
+import { actionChannels, enableChannel } from './helpers';
+import { selectToken } from '../selectors';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
+import * as actionActions from '../actions/action-actions';
+import * as actionStatus from '../../constants/action-status';
 
 const { EditorState, SelectionState } = DraftJS;
+const { Channel } = self;
 /**
  * Draft saga
  */
@@ -119,9 +124,53 @@ function* draftDelete ({ data }) {
     }
 }
 
+function* draftPublish ({ draft }) {
+    console.log(draft);
+    const channel = Channel.server.entry.publish;
+    const { id, content, tags } = draft;
+    const { title, excerpt, featuredImage, licence, type } = content;
+    const token = yield select(selectToken);
+    const draftContentObj = editorStateToJSON(content.draft);
+        // draftObj, token, gas
+    yield call([channel, channel.send], {
+        id,
+        token,
+        tags,
+        draft: draftContentObj,
+        title,
+        excerpt,
+        featuredImage,
+        licence,
+        type
+    });
+    // yield put(draftActions.draftPublishSuccess, {
+    //     id: response.request.id,
+    //     status: actionStatus.publishing,
+    //     tx: response.data.tx
+    // });
+}
+function* watchDraftPublishChannel () {
+    while (true) {
+        const response = yield take(actionChannels.entry.publish);
+        if (response.error) {
+            return yield put(draftActions.draftPublishError(response.error));
+        }
+        return yield put(actionActions.actionUpdate({
+            id: response.request.id,
+            status: actionStatus.publishing,
+            tx: response.data.tx
+        }));
+    }
+}
+function* registerChannelListeners () {
+    yield fork(watchDraftPublishChannel);
+}
+
 export function* watchDraftActions () {
+    yield fork(registerChannelListeners);
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_GET_BY_ID, draftGetById);
+    yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
     yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
     yield takeLatest(types.DRAFTS_GET, draftsGet);

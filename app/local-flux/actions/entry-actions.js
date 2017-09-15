@@ -166,6 +166,7 @@ export const entryProfileIteratorError = (error, req) => {
 
 export const entryProfileIteratorSuccess = (data, req) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
+
 export const entryResolveIpfsHash = (ipfsHash, columnId, entryIds) =>
     action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds });
 

@@ -24,7 +24,7 @@ export const uploadImage = (files, imgId) => {
     console.log(files, 'the files to convert');
 
     return new Promise((resolve, reject) => {
-        clientChannel.on((ev, { data }) => {
+        clientChannel.once((ev, { data }) => {
             if (data.error) return reject(data.error);
             const filesArr = data.collection;
             filesArr.forEach((file) => {
@@ -33,7 +33,7 @@ export const uploadImage = (files, imgId) => {
             console.log(files, 'the new files with ipfs hash');
             return resolve(files);
         });
-        managerChannel.on(() => {
+        managerChannel.once(() => {
             serverChannel.send(
                 Object.keys(files)
                     .map(fileKey => ({

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
-import { Icon, Row, Col, Button } from 'antd';
+import { Icon, Row, Col, Button, Steps, Popover } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftAutosave,
@@ -13,6 +13,9 @@ import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
+import * as actionTypes from '../constants/action-types';
+
+const { Step } = Steps;
 
 class NewEntryPage extends Component {
     state = {
@@ -98,14 +101,84 @@ class NewEntryPage extends Component {
     _createRef = nodeName =>
         (node) => { this[nodeName] = node; };
 
-    _handlePublish = () => {
-        console.log('publish this draft!');
+    _handlePublish = (ev) => {
+        const { draftObj, akashaId } = this.props;
+        console.log('publish', draftObj);
+        this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: draftObj });
+        ev.preventDefault();
     }
 
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
+    _getPendingTimeline = () => {
+        const { draftObj } = this.props;
+        const saving = draftObj.get('saving');
+        const saved = draftObj.get('saved');
+        if ((saving || saved) && !draftObj.get('version')) {
+            return <div>Local Version</div>;
+        }
+        return null;
+    }
+    _getProgressDot = (dot, { status, index }) => {
+        const { draftObj } = this.props;
+        const { version } = draftObj.get('content');
 
+        switch (status) {
+            case 'draft':
+                return (
+                  <span className="draft-dot">
+                    {dot}
+                  </span>
+                );
+            case 'complete':
+                return (
+                  <Popover content="28 Aug 2017">
+                    <a href="" className="complete-dot">
+                      {dot}
+                    </a>
+                  </Popover>
+                );
+            case 'none':
+                return null;
+            default:
+                return dot;
+        }
+        // return <Popover content="test">{dot}</Popover>;
+    }
+    _createTimeline = () => {
+        const { draftObj } = this.props;
+        const { version } = draftObj;
+        const timelineItems = Array.from(Number(version));
+        const saving = draftObj.get('saving');
+        const saved = draftObj.get('saved');
+        if (!version) {
+            return (
+              <Steps
+                progressDot={this._getProgressDot}
+                current={1}
+                className="text-entry-page__timeline-steps"
+              >
+                <Step title="" status="none" />
+                <Step title="Local Version" status="draft" />
+              </Steps>
+            );
+        }
+        if (version) {
+            return <div>This entry has version!</div>;
+        }
+        return (
+          <Steps
+            size="small"
+            current={version}
+            className="text-entry-page__timeline-steps"
+          >
+            {timelineItems.map(item =>
+              <Step title={`v${item}`} />
+            )}
+          </Steps>
+        );
+    }
     render () {
         const { showPublishPanel } = this.state;
         const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
@@ -114,10 +187,8 @@ class NewEntryPage extends Component {
         if (!draftObj) {
             return <div>Finding Draft</div>;
         }
-        const { content, tags } = draftObj;
+        const { content, tags, version } = draftObj;
         const { title, excerpt, licence, draft, featuredImage } = content;
-        const draftSaving = !draftObj.get('saved') && draftObj.get('saving');
-        const draftSaved = draftObj.get('saved') && !draftObj.get('saving');
         return (
           <div className="text-entry-page">
             <div
@@ -200,26 +271,21 @@ class NewEntryPage extends Component {
                 }
               >
                 <div className="text-entry-page__footer">
-                  <div className="text-entry-page__footer-messages-wrapper">
-                    <div className="text-entry-page__footer-message">
-                      {draftSaved &&
-                        <div>{intl.formatMessage(entryMessages.draftSaved)}</div>
+                  <div className="text-entry-page__footer-timeline-wrapper">
+                    <div
+                      className={
+                          `text-entry-page__footer-timeline
+                          text-entry-page__footer-timeline${version ? '' : '_empty'}`
                       }
-                      {draftSaving &&
-                        <div>{intl.formatMessage(entryMessages.draftSaving)}</div>
-                      }
+                    >
+                      {this._createTimeline()}
                     </div>
                   </div>
                   <div className="text-entry-page__footer-actions">
                     <Button
                       size="large"
-                      onClick={this._handleForceSave}
-                    >
-                      {intl.formatMessage(generalMessages.save)}
-                    </Button>
-                    <Button
-                      size="large"
                       type="primary"
+                      onClick={this._handlePublish}
                     >
                       {intl.formatMessage(generalMessages.publish)}
                     </Button>

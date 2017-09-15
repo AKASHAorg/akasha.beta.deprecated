@@ -2,6 +2,7 @@ export const claim = 'claim';
 export const comment = 'comment';
 export const createTag = 'createTag';
 export const downvote = 'downvote';
+export const draftPublish = 'draftPublish';
 export const follow = 'follow';
 export const profileRegister = 'profileRegister';
 export const profileUpdate = 'profileUpdate';

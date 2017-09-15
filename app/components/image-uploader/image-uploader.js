@@ -138,13 +138,10 @@ class ImageUploader extends Component {
         });
     }
     render () {
-        const {
-            multiFiles,
-            intl,
-        } = this.props;
-        const { imageLoaded } = this.state;
-        const { initialImage } = this.props;
+        const { multiFiles, intl, initialImage } = this.props;
+        const { imageLoaded, processingFinished, progress, error, highlightDropZone } = this.state;
 
+        console.log(processingFinished, initialImage.isEmpty(), imageLoaded);
         return (
           <div
             ref={(container) => { this.container = container; }}
@@ -153,22 +150,26 @@ class ImageUploader extends Component {
             onDragLeave={this._diminishDropZone}
           >
             <div>
-              {this.state.processingFinished && initialImage && !initialImage.isEmpty() &&
+              {processingFinished &&
+                initialImage &&
+                !initialImage.isEmpty() &&
                 <img
                   src={this._getImageSrc(initialImage)}
-                  className={`image-uploader__img image-uploader__img${this.state.imageLoaded && '_loaded'}`}
+                  className={`image-uploader__img image-uploader__img${imageLoaded && '_loaded'}`}
                   onLoad={this._handleImageLoad}
                   alt=""
                 />
               }
-              {this.state.processingFinished && !initialImage.isEmpty() && !imageLoaded &&
+              {processingFinished &&
+                !initialImage.isEmpty() &&
+                !imageLoaded &&
                 <div
                   className="image-uploader__generating-preview"
                 >
                   {intl.formatMessage(generalMessages.generatingPreview)}...
                 </div>
               }
-              {!this.state.processingFinished && initialImage.isEmpty() &&
+              {!processingFinished &&
                 <div
                   className="image-uploader__empty-container image-uploader__processing-loader"
                 >
@@ -181,13 +182,13 @@ class ImageUploader extends Component {
                     <Progress
                       className="image-uploader__progress-bar"
                       strokeWidth={5}
-                      percent={this.state.progress}
+                      percent={progress}
                       status="active"
                     />
                   </div>
                 </div>
               }
-              {this.state.processingFinished && !initialImage.isEmpty() &&
+              {processingFinished && initialImage && !initialImage.isEmpty() &&
                 <div className="image-uploader__clear-image-button">
                   <Button
                     type="standard"
@@ -197,19 +198,19 @@ class ImageUploader extends Component {
                 </div>
               }
             </div>
-            {initialImage.isEmpty() && this.state.processingFinished &&
+            {(!initialImage || initialImage.isEmpty()) && processingFinished &&
               <div
                 className={
                     `image-uploader__empty-container
-                    image-uploader__empty-container${this.state.highlightDropZone ? '_dragEnter' : ''}`
+                    image-uploader__empty-container${highlightDropZone ? '_dragEnter' : ''}`
                 }
               >
                 <SvgIcon style={{ height: 48, width: 48 }} >
                   <AddImage />
                 </SvgIcon>
                 <text className="image-uploader__helper-text">
-                  {!this.state.highlightDropZone && intl.formatMessage(generalMessages.addImage)}
-                  {this.state.highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
+                  {!highlightDropZone && intl.formatMessage(generalMessages.addImage)}
+                  {highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
                 </text>
               </div>
             }
@@ -220,12 +221,12 @@ class ImageUploader extends Component {
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
               accept="image/*"
-              title={initialImage.isEmpty() ?
+              title={(!initialImage || initialImage.isEmpty()) ?
                 intl.formatMessage(generalMessages.chooseImage) :
                 intl.formatMessage(generalMessages.chooseAnotherImage)}
             />
             {this.state.error &&
-              <div className="image-uploader__error">{this.state.error}</div>
+              <div className="image-uploader__error">{error}</div>
             }
           </div>
         );
