@@ -33,7 +33,7 @@ const RememberPassphrase = (props) => {
         </div>
         <div style={{ margin: '0px 0px 0px 5px', width: '80px', position: 'relative' }}>
           <RememberPassphraseSelect
-            getPopupContainer={() => document.getElementById('select-popup-container')}
+            getPopupContainer={() => document.getElementById('select-popup-container') || document.body}
             handleTimeChange={handleTimeChange}
             unlockTime={unlockTime}
           />

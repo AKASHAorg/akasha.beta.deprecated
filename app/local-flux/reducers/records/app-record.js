@@ -14,7 +14,6 @@ const AppRecord = Record({
     notifications: new List(),
     displayedNotifications: new List(),
     showAppSettings: false,
-    showAuthDialog: null,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
     showReportModal: null,
