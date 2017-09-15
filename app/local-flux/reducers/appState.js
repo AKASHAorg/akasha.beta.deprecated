@@ -38,9 +38,6 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_LOGIN_SUCCESS]: state =>
-        state.set('showAuthDialog', false),
-
     [types.PROFILE_LOGOUT]: state =>
         state.merge({
             notifications: new List(),
@@ -64,9 +61,6 @@ const appState = createReducer(initialState, {
         state.merge({
             showTerms: true
         }),
-
-    [types.TOGGLE_AUTH_DIALOG]: state =>
-        state.set('showAuthDialog', !state.get('showAuthDialog')),
 
     [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
         state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),
