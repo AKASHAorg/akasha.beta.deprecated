@@ -1,5 +1,6 @@
 export { akashaTerms } from './akasha-terms-161006';
 export { chatMessages } from './chat-messages';
+export { confirmationMessages } from './confirmation-messages';
 export { dashboardMessages } from './dashboard-messages';
 export { entryMessages } from './entry-messages';
 export { errorMessages } from './error-messages';

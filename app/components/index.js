@@ -7,6 +7,7 @@ export Balance from './balance';
 export Breadcrumbs from './breadcrumbs/breadcrumbs';
 export Column from './columns/column';
 export ColumnHeader from './columns/column-header';
+export ConfirmationDialog from './dialogs/confirmation-dialog';
 export Comment from './comment/comment';
 export CommentEditor from './comment/comment-editor';
 export CommentsList from './comment/comments-list';
