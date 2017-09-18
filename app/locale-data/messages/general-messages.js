@@ -27,6 +27,11 @@ const generalMessages = defineMessages({
         description: 'aeth token',
         defaultMessage: 'AETH'
     },
+    amount: {
+        id: 'app.general.amount',
+        description: 'currency amount',
+        defaultMessage: 'Amount'
+    },
     akasha: {
         id: 'app.general.akasha',
         description: 'AKASHA',
