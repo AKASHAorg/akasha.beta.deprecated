@@ -194,8 +194,8 @@ interface AuthLogoutResponse extends MainResponse {
 
 // channels.server.auth.generateEthKey
 interface AuthKeygenRequest {
-    password: Uint8Array;
-    password1: Uint8Array;
+    password: Buffer;
+    password1: Buffer;
 }
 
 // channels.client.auth.generateEthKey
@@ -406,7 +406,8 @@ interface ProfileUnregisterRequest extends AuthRequest {
 }
 
 interface ProfileFollowRequest extends AuthRequest {
-    akashaId: string;
+    akashaId?: string;
+    ethAddress?: string;
 }
 
 interface ProfileFollowResponse extends MainResponse {
