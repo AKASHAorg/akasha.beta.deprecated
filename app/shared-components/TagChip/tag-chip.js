@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Chip } from 'material-ui';
+import { Tag } from 'antd';
 
 const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme }) => {
     const { palette } = muiTheme;
@@ -18,12 +18,12 @@ const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme }) => {
         cursor: 'pointer',
     };
     return (
-      <Chip
+      <Tag
         style={{ ...tagStyle, ...style }}
         onTouchTap={ev => onTagClick(ev, tag)}
       >
         {tag}
-      </Chip>
+      </Tag>
     );
 };
 

@@ -268,7 +268,7 @@ class CommentEditor extends Component {
     );
 
     render () {
-        const { containerRef, intl, loggedProfileData, parent, replyTo } = this.props;
+        const { containerRef, intl, loggedProfileData } = this.props;
         let { placeholder } = this.props;
         const { editorFocused, editorState } = this.state;
         const { EmojiSuggestions, EmojiSelect } = this.emojiPlugin;

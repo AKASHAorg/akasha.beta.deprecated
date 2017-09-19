@@ -25,7 +25,7 @@ class ProfileContainer extends Component {
         return (<DataLoader
           flag={!profileData}
           timeout={300}
-          size={80}
+          size="large"
           style={{ paddingTop: '120px' }}
         >
           <div

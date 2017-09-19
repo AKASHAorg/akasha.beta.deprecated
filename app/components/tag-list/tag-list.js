@@ -54,7 +54,6 @@ class TagList extends Component {
             <DataLoader
               flag={fetchingTags}
               timeout={defaultTimeout}
-              size={60}
               style={{ paddingTop: '80px' }}
             >
               <div style={{ width: '100%' }}>
@@ -82,7 +81,7 @@ class TagList extends Component {
                 </List>
                 {moreTags &&
                   <div style={{ height: '35px' }}>
-                    <DataLoader flag={fetchingMoreTags} size={30}>
+                    <DataLoader flag={fetchingMoreTags} size="small">
                       <div
                         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                       >

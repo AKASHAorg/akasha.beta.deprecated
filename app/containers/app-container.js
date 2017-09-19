@@ -110,7 +110,7 @@ class AppContainer extends Component {
 
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
-            <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
+            <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div
                 className="container fill-height"
                 style={{
@@ -120,7 +120,7 @@ class AppContainer extends Component {
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
                 {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
-                  <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
+                  <DataLoader flag={!appState.get('homeReady')} size="large" style={{ paddingTop: '100px' }}>
                     <div>
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />

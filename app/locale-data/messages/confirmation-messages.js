@@ -16,10 +16,15 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for createTag',
         defaultMessage: 'Please confirm that you want to create this tag: {value}.'
     },
-    downvote: {
-        id: 'app.confirmations.downvote',
+    entryDownvote: {
+        id: 'app.confirmations.entryDownvote',
         description: 'confirmation message for downvote',
         defaultMessage: 'Please confirm that you want to downvote.'
+    },
+    entryUpvote: {
+        id: 'app.confirmations.entryUpvote',
+        description: 'confirmation message for upvote',
+        defaultMessage: 'Please confirm that you want to upvote.'
     },
     follow: {
         id: 'app.confirmations.follow',
@@ -51,11 +56,6 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for unfollow',
         defaultMessage: 'Please confirm that you want to unfollow @{akashaId}.'
     },
-    upvote: {
-        id: 'app.confirmations.upvote',
-        description: 'confirmation message for upvote',
-        defaultMessage: 'Please confirm that you want to upvote.'
-    },
     claimTitle: {
         id: 'app.confirmations.claimTitle',
         description: 'title for confirmation message for claim',
@@ -71,10 +71,15 @@ const confirmationMessages = defineMessages({
         description: 'title for confirmation message for createTag',
         defaultMessage: 'Create Tag'
     },
-    downvoteTitle: {
-        id: 'app.confirmations.downvoteTitle',
+    entryDownvoteTitle: {
+        id: 'app.confirmations.entryDownvoteTitle',
         description: 'title for confirmation message for downvote',
         defaultMessage: 'Downvote'
+    },
+    entryUpvoteTitle: {
+        id: 'app.confirmations.entryUpvoteTitle',
+        description: 'title for confirmation message for upvote',
+        defaultMessage: 'Upvote'
     },
     followTitle: {
         id: 'app.confirmations.followTitle',
@@ -101,10 +106,5 @@ const confirmationMessages = defineMessages({
         description: 'title for confirmation message for unfollow',
         defaultMessage: 'Unfollow'
     },
-    upvoteTitle: {
-        id: 'app.confirmations.upvoteTitle',
-        description: 'title for confirmation message for upvote',
-        defaultMessage: 'Upvote'
-    }
 });
 export { confirmationMessages };
