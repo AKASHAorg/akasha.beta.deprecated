@@ -1,12 +1,14 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
+import { profileAddress } from './helpers';
 
 /**
  * Get total number of your follows
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: GetFollowerCountRequest) {
-    const count = yield contracts.instance.feed.getFollowingCount(data.akashaId);
+    const address = yield profileAddress(data);
+    const count = yield contracts.instance.Feed.totalFollowing(address);
     return { count, akashaId: data.akashaId };
 });
 

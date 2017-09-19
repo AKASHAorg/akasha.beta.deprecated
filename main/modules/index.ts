@@ -2,8 +2,8 @@ import GethIPC from './GethIPC';
 import IpfsIPC from './IpfsIPC';
 import AuthIPC from './AuthIPC';
 import TxIPC from './TxIPC';
-// import RegistryIPC from './RegistryIPC';
-// import ProfileIPC from './ProfileIPC';
+import RegistryIPC from './RegistryIPC';
+import ProfileIPC from './ProfileIPC';
 // import TagsIPC from './TagsIPC';
 // import EntryIPC from './EntryIPC';
 // import CommentsIPC from './CommentsIPC';
@@ -18,8 +18,8 @@ export default [
     new IpfsIPC(),
     new AuthIPC(),
     new TxIPC(),
-    // new RegistryIPC(),
-    // new ProfileIPC(),
+    new RegistryIPC(),
+    new ProfileIPC(),
     // new TagsIPC(),
     // new EntryIPC(),
     // new CommentsIPC(),
