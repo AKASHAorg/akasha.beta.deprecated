@@ -32,7 +32,7 @@ class NewIdentity extends Component {
 
     onConfirmChange = () => {
         const { setFields } = this.props.form;
-        setFields({ confirm: { errors: null } });
+        setFields({ passphrase1: { errors: null } });
     };
 
     checkConfirm = (rule, value, callback) => {
@@ -48,7 +48,7 @@ class NewIdentity extends Component {
     checkPassphrase = (rule, value, callback) => {
         const form = this.props.form;
         if (value && this.state.confirmDirty) {
-            form.validateFields(['confirm'], { force: true });
+            form.validateFields(['passphrase1'], { force: true });
         }
         callback();
     };
@@ -57,7 +57,9 @@ class NewIdentity extends Component {
         ev.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                this.props.profileCreateEthAddress(new TextEncoder('utf-8').encode(values.passphrase));
+                const passphrase = new TextEncoder('utf-8').encode(values.passphrase);
+                const passphrase1 = new TextEncoder('utf-8').encode(values.passphrase1);
+                this.props.profileCreateEthAddress({ passphrase, passphrase1 });
             }
         });
     };
@@ -91,7 +93,7 @@ class NewIdentity extends Component {
               )}
             </FormItem>
             <FormItem colon={false} label={intl.formatMessage(formMessages.confirmPassphrase)}>
-              {getFieldDecorator('confirm', {
+              {getFieldDecorator('passphrase1', {
                   rules: [{
                       required: true,
                       whitespace: true,
