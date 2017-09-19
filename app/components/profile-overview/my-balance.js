@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import QRCode from 'qrcode.react';
 import { Button, Card, Col, Form, Input, Row } from 'antd';
-import { selectBalance } from '../local-flux/selectors';
-import { generalMessages, profileMessages } from '../locale-data/messages';
+import { selectBalance } from '../../local-flux/selectors';
+import { generalMessages, profileMessages } from '../../locale-data/messages';
 
 const Item = Form.Item;
 
