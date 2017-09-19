@@ -9,11 +9,11 @@ import { profileAddress } from './helpers';
  */
 const execute = Promise.coroutine(function* (data: ProfileFollowRequest, cb) {
     const address = yield profileAddress(data);
-    const txData = yield contracts.instance.Feed.follow.request(address, { gas: 400000 });
-    const tx = yield contracts.send(txData, data.token, cb);
+    const txData = contracts.instance.Feed.follow.request(address, { gas: 400000 });
+    const transaction = yield contracts.send(txData, data.token, cb);
     mixed.flush();
     pinner.execute({ type: ObjectType.PROFILE, id: data.akashaId, operation: OperationType.ADD });
-    return { tx, akashaId: data.akashaId };
+    return { tx: transaction.tx, receipt: transaction.receipt, akashaId: data.akashaId };
 });
 
 export default { execute, name: 'followProfile', hasStream: true };

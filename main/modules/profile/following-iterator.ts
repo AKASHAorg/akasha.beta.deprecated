@@ -1,39 +1,23 @@
 import * as Promise from 'bluebird';
+import { GethConnector } from '@akashaproject/geth-connector';
 import contracts from '../../contracts/index';
-import profileData from './profile-data';
+import { profileAddress } from './helpers';
 
 /**
  * Get followed profiles of id
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { start?: number, limit?: number, akashaId: string, short: true }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.feed.getFollowingFirst(data.akashaId);
-    if (currentId === '0') {
-        return { collection: [], akashaId: data.akashaId };
+const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number, akashaId?: string, ethAddress?: string }) {
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const address = yield profileAddress(data);
+    const toBlock = (!data.lastBlock) ? yield GethConnector.getInstance().web3.eth.getBlockNumberAsync() : data.lastBlock;
+    const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { follower: address }, toBlock, maxResults);
+    for (let event of fetched.results) {
+        console.log(event);
+        collection.push({ ethAddress: event.args.followed });
     }
-
-    let profileId;
-    let profile;
-    let counter = 0;
-    const results = [];
-    const maxResults = (data.limit) ? data.limit : 10;
-    if (!data.start) {
-        profileId = yield contracts.instance.feed.getFollowingById(data.akashaId, currentId);
-        profile = yield profileData.execute({ profile: profileId });
-        results.push({ profile, address: profileId, index: currentId });
-        counter = 1;
-    }
-    while (counter < maxResults) {
-        currentId = yield contracts.instance.feed.getFollowingNext(data.akashaId, currentId);
-        if (currentId === '0') {
-            break;
-        }
-        profileId = yield contracts.instance.feed.getFollowingById(data.akashaId, currentId);
-        profile = yield profileData.execute({ profile: profileId, short: data.short });
-        results.push({ profile, address: profileId, index: currentId });
-        counter++;
-    }
-    return { collection: results, akashaId: data.akashaId, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'followingIterator' };

@@ -1,14 +1,15 @@
 import contracts from '../../contracts/index';
+import * as Promise from 'bluebird';
 
-export const profileAddress = async function(data) {
+export const profileAddress = Promise.coroutine(function*(data) {
     let profileAddress;
     if (data.akashaId) {
-        profileAddress = await contracts.instance.ProfileResolver.addr(data.akashaId);
+        profileAddress = yield contracts.instance.ProfileResolver.addr(data.akashaId);
     } else if (data.ethAddress) {
         profileAddress = data.ethAddress;
     }
     if (!profileAddress) {
         throw new Error('Must provide an akasha ID or ethereum address');
     }
-    return profileAddress;
-};
+    return Promise.resolve(profileAddress);
+});
