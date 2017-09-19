@@ -9,7 +9,7 @@ import { profileAddress } from './helpers';
 const execute = Promise.coroutine(function* (data: GetFollowerCountRequest) {
     const address = yield profileAddress(data);
     const count = yield contracts.instance.Feed.totalFollowers(address);
-    return { count, akashaId: data.akashaId };
+    return { count: count.toString(10), akashaId: data.akashaId };
 });
 
 export default { execute, name: 'getFollowersCount' };

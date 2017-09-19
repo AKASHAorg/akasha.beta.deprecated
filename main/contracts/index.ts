@@ -15,7 +15,7 @@ class Contracts {
     }
 
     public async send(data: any, token: string, cb) {
-        const tx = await auth.signData(data, token);
+        const tx = await auth.signData(data.params[0], token);
         cb(null, { tx });
         return Contracts.watchTx(tx);
     }
@@ -26,7 +26,7 @@ class Contracts {
         return new Promise((resolve, reject) => {
             const getReceipt = function () {
                 GethConnector.getInstance().web3
-                    .eth.getTransactionReceipt((err, receipt) => {
+                    .eth.getTransactionReceipt(tx, (err, receipt) => {
                     if (receipt != null) {
                         return resolve({
                             tx: tx,
@@ -44,6 +44,32 @@ class Contracts {
             };
             getReceipt();
         });
+    }
+
+    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number, address?: string) {
+        const step = 5300;
+        return new Promise((resolve, reject) => {
+            let results = [];
+            const fetch = (to) => {
+                let fromBlock = to - step;
+                if (fromBlock < 0) {
+                    fromBlock = 0;
+                }
+                const event = ethEvent(args, { fromBlock, toBlock: to, address });
+                event.get((err, data) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    results = results.concat(data);
+                    if (results.length < limit && fromBlock > 0) {
+                        return fetch(fromBlock);
+                    }
+                    return resolve({ results, fromBlock });
+                });
+            };
+            fetch(toBlock);
+        });
+
     }
 
 }
