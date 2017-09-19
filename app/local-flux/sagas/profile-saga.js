@@ -3,22 +3,20 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
-import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
     selectNeedAuthAction, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
-import * as actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
-function* profileCreateEthAddress ({ data }) {
+function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
     const channel = Channel.server.auth.generateEthKey;
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield apply(channel, channel.send, [{ password: data }]);
+    yield apply(channel, channel.send, [{ password: passphrase, password1: passphrase1 }]);
 }
 
 function* profileDeleteLogged () {
@@ -294,14 +292,15 @@ function* watchProfileGetLocalChannel () {
         if (resp.error) {
             yield put(actions.profileGetLocalError(resp.error));
         } else {
-            const profileAddresses = [];
-            resp.data.forEach((data) => {
-                if (data.profile) {
-                    profileAddresses.push({ profile: data.profile });
+            const akashaIds = [];
+            resp.data.collection.forEach((data) => {
+                if (data.akashaId) {
+                    akashaIds.push({ akashaId: data.akashaId });
                 }
             });
-            yield put(actions.profileGetList(profileAddresses));
-            yield put(actions.profileGetLocalSuccess(resp.data));
+            // TODO uncomment the line below when channel is available
+            // yield put(actions.profileGetList(akashaIds));
+            yield put(actions.profileGetLocalSuccess(resp.data.collection));
         }
     }
 }
