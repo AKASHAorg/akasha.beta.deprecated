@@ -84,7 +84,6 @@ class ConfirmationDialog extends Component {
         }
     }
 
-
     render () {
         const { action, intl, loginErrors, loginPending, needAuth } = this.props;
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { RefreshIndicator } from 'material-ui';
+import { Spin } from 'antd';
 
 class DataLoader extends Component {
     constructor (props) {
@@ -50,29 +50,19 @@ class DataLoader extends Component {
             loading: this.props.flag,
             timeoutExpired: true
         });
-    }
+    };
 
     render () {
         const { size, style } = this.props;
         if (this.state.loading) {
-            return (<div
-              style={Object.assign({
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-              }, style)}
-            >
-              <div style={{ position: 'relative', width: size + 5, height: size + 5 }}>
-                <RefreshIndicator
-                  top={0}
-                  left={0}
-                  size={size}
-                  status="loading"
-                />
+            const innerClassName = size ? `data-loader__inner_${size}` : 'data-loader__inner';
+            return (
+              <div className="data-loader" style={style}>
+                <div className={innerClassName}>
+                  <Spin size={size} />
+                </div>
               </div>
-            </div>);
+            );
         }
         return this.props.children;
     }
@@ -82,12 +72,12 @@ DataLoader.propTypes = {
     children: PropTypes.node,
     flag: PropTypes.bool,
     timeout: PropTypes.number,
-    size: PropTypes.number,
+    size: PropTypes.string,
     style: PropTypes.shape()
 };
 
 DataLoader.defaultProps = {
-    size: 50
+    size: 'standard'
 };
 
 export default DataLoader;

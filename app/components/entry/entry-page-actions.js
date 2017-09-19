@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { CardActions, IconButton, SvgIcon } from 'material-ui';
+import { Tooltip } from 'antd';
+import classNames from 'classnames';
 import { EntryVotesPanel } from 'shared-components';
 import * as actionTypes from '../../constants/action-types';
 import { ListPopover, VotePopover } from '../';
@@ -10,7 +11,8 @@ import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listUpdateEntryIds } from '../../local-flux/actions/list-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
-    selectLoggedAkashaId, selectProfile } from '../../local-flux/selectors';
+    selectLoggedAkashaId, selectPendingEntryClaim, selectPendingEntryVote,
+    selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
 class EntryPageAction extends Component {
@@ -54,69 +56,63 @@ class EntryPageAction extends Component {
         this.props.actionAdd(loggedAkashaId, actionTypes.claim, payload);
     };
 
-    render () { // eslint-disable-line complexity
+    render () {
         const { canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
             fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, updatingLists,
             votePending, voteWeight } = this.props;
-        const { palette } = this.context.muiTheme;
         const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
             && (!fetchingEntryBalance || entryBalance !== undefined);
-        const existingVoteStyle = {
-            position: 'absolute',
-            top: '-14px',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-            fontSize: '12px',
-            cursor: 'default'
-        };
-        const iconClassName = 'entry-actions__vote-icon';
-        const voteProps = { containerRef, iconClassName, votePending, voteWeight };
+        const voteIconClass = 'entry-actions__vote-icon';
+        const claimIconClass = classNames('entry-actions__claim-icon', {
+            disabled: claimPending,
+            'entry-actions__claim-icon_claimed': !canClaim,
+            'content-link': canClaim
+        });
+        const voteProps = { containerRef, iconClassName: voteIconClass, votePending, voteWeight };
+        const upvotePercent = 70;
+        const downvotePercent = 30;
 
         return (
-          <CardActions style={{ padding: '18px 8px 0px', maxWidth: '700px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }} >
-              <div className="flex-center" style={{ position: 'relative' }}>
-                <VotePopover
-                  onSubmit={this.handleVote}
-                  type={actionTypes.entryUpvote}
-                  {...voteProps}
-                />
-                {voteWeight > 0 &&
-                  <div
-                    style={Object.assign({}, existingVoteStyle, { color: palette.accent3Color })}
-                  >
-                    +{voteWeight}
+          <div className="entry-actions">
+            <div className="flex-center-y">
+              <div>
+                <div className="flex-center-y">
+                  <div className="flex-center entry-actions__vote-wrapper">
+                    <VotePopover
+                      onSubmit={this.handleVote}
+                      type={actionTypes.entryUpvote}
+                      {...voteProps}
+                    />
+                    {voteWeight > 0 &&
+                      <div className="entry-actions__existing-vote entry-actions__existing-vote_upvote">
+                        +{voteWeight}
+                      </div>
+                    }
                   </div>
-                }
-              </div>
-              <div
-                className="flex-center"
-                style={{ minWidth: '40px', fontSize: '18px', padding: '0 5px', letterSpacing: '2px' }}
-              >
-                <span
-                  className="content-link"
-                  onClick={this.openVotesPanel}
-                  style={{ borderRadius: '6px' }}
-                >
-                  {entry.score}
-                </span>
-              </div>
-              <div className="flex-center" style={{ position: 'relative' }}>
-                <VotePopover
-                  onSubmit={this.handleVote}
-                  type={actionTypes.entryDownvote}
-                  {...voteProps}
-                />
-                {voteWeight < 0 &&
-                  <div
-                    style={Object.assign({}, existingVoteStyle, { color: palette.accent1Color })}
-                  >
-                    {voteWeight}
+                  <div className="flex-center entry-actions__score">
+                    <span className="content-link" onClick={this.openVotesPanel}>
+                      {entry.score}
+                    </span>
                   </div>
-                }
+                  <div className="flex-center entry-actions__vote-wrapper">
+                    <VotePopover
+                      onSubmit={this.handleVote}
+                      type={actionTypes.entryDownvote}
+                      {...voteProps}
+                    />
+                    {voteWeight < 0 &&
+                      <div className="entry-actions__existing-vote entry-actions__existing-vote_downvote">
+                        {voteWeight}
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div className="entry-actions__vote-bar">
+                  <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
+                  <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
+                </div>
               </div>
-              <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
+              <div className="entry-actions__right-actions">
                 {!isOwnEntry &&
                   <ListPopover
                     containerRef={containerRef}
@@ -131,33 +127,21 @@ class EntryPageAction extends Component {
                   />
                 }
                 {showBalance &&
-                  <div
-                    style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
-                  >
+                  <div className="entry-actions__balance-container">
                     {!entry.active &&
-                      <div
-                        data-tip={!canClaim ?
+                      <Tooltip
+                        title={!canClaim ?
                             intl.formatMessage(entryMessages.alreadyClaimed) :
                             intl.formatMessage(entryMessages.claim)
                         }
                       >
-                        <IconButton
-                          onTouchTap={this.handleClaim}
-                          iconStyle={{
-                              width: '24px',
-                              height: '24px',
-                              fill: !canClaim ? palette.accent3Color : 'currentColor'
-                          }}
-                          disabled={claimPending}
-                        >
-                          <SvgIcon viewBox="0 0 16 16">
-                            <ToolbarEthereum />
-                          </SvgIcon>
-                        </IconButton>
-                      </div>
+                        <svg className={claimIconClass} onClick={this.handleClaim} viewBox="0 0 16 16">
+                          <ToolbarEthereum />
+                        </svg>
+                      </Tooltip>
                     }
                     {entryBalance !== 'claimed' &&
-                      <div style={{ fontSize: '16px', paddingRight: '5px' }}>
+                      <div className="entry-actions__balance">
                         {entryBalance} AETH
                       </div>
                     }
@@ -172,14 +156,10 @@ class EntryPageAction extends Component {
                 entryTitle={entry.content.title}
               />
             }
-          </CardActions>
+          </div>
         );
     }
 }
-
-EntryPageAction.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 EntryPageAction.defaultProps = {
     voteWeight: 0
@@ -211,13 +191,11 @@ EntryPageAction.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const entry = ownProps.entry;
-    const claimPending = state.entryState.getIn(['flags', 'claimPending', entry.get('entryId')]);
-    const votePending = state.entryState.getIn(['flags', 'votePending', entry.get('entryId')]);
     const loggedAkashaId = selectLoggedAkashaId(state);
     return {
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
-        claimPending,
+        claimPending: selectPendingEntryClaim(state, entry.get('entryId')),
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
@@ -226,7 +204,7 @@ function mapStateToProps (state, ownProps) {
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
         updatingLists: state.listState.getIn(['flags', 'updatingLists']),
-        votePending,
+        votePending: selectPendingEntryVote(state, entry.get('entryId')),
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };
 }

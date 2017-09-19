@@ -77,7 +77,7 @@ class CommentList extends Component {
             }
             {moreComments &&
               <div className="comment-list__loader-wrapper">
-                <DataLoader flag={fetchingMoreComments} size={30}>
+                <DataLoader flag={fetchingMoreComments} size="small">
                   <div className="flex-center">
                     <div className="comment-list__trigger" ref={getTriggerRef} />
                   </div>

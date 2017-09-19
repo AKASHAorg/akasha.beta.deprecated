@@ -74,7 +74,6 @@ class TagListInterests extends Component {
             <DataLoader
               flag={fetchingTags}
               timeout={defaultTimeout}
-              size={60}
               style={{ paddingTop: '80px' }}
             >
               <div>
@@ -88,7 +87,7 @@ class TagListInterests extends Component {
 
                 {moreTags &&
                   <div className="tag-list-interests__more-tags">
-                    <DataLoader flag={fetchingMoreTags} size={30}>
+                    <DataLoader flag={fetchingMoreTags} size="small">
                       <div ref={this.getTriggerRef} />
                     </DataLoader>
                   </div>

@@ -114,7 +114,6 @@ class EntryList extends Component {
             <DataLoader
               flag={fetchingEntries}
               timeout={defaultTimeout}
-              size={60}
               style={{ paddingTop: '80px' }}
             >
               <div style={{ width: '100%' }}>
@@ -138,7 +137,7 @@ class EntryList extends Component {
                 }
                 {moreEntries &&
                   <div style={{ height: '35px' }}>
-                    <DataLoader flag={fetchingMoreEntries} size={30}>
+                    <DataLoader flag={fetchingMoreEntries} size="small">
                       <div
                         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                       >

@@ -178,6 +178,29 @@ export const selectPendingComments = (state, entryId) => {
     return pendingComments;
 };
 
+export const selectPendingEntryClaim = (state, entryId) => {
+    const pendingClaim = state.actionState
+        .get('publishing')
+        .filter((actionId) => {
+            const action = state.actionState.getIn(['byId', actionId]);
+            return action.get('type') === actionTypes.claim &&
+                action.getIn(['payload', 'entryId']) === entryId;
+        });
+    return !!pendingClaim.size;
+};
+
+export const selectPendingEntryVote = (state, entryId) => {
+    const { entryDownvote, entryUpvote } = actionTypes;
+    const pendingVotes = state.actionState
+        .get('publishing')
+        .filter((actionId) => {
+            const action = state.actionState.getIn(['byId', actionId]);
+            return [entryDownvote, entryUpvote].includes(action.get('type')) &&
+                action.getIn(['payload', 'entryId']) === entryId;
+        });
+    return !!pendingVotes.size;
+};
+
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 

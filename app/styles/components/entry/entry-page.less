@@ -1,9 +1,35 @@
 .entry-page {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 64px;
+    right: 0;
+    overflow-x: hidden;
+    background-color: #f7f7f7;
+
+    &__inner {
+        margin: 0 auto;        
+    }
+
+    &__content {
+        z-index: 10;
+        position: relative;
+    }
+
+    &__unresolved-placeholder {
+        height: 300px;
+        margin-top: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        color: @disabled-color;        
+    }
 
     &__comments {
         max-width: 700px;
-        margin: 20px auto;
-        background-color: white;
+        margin: 12px auto;
+        background-color: #fff;
         padding: 20px;
         border-radius: 4px;
         border: 2px solid #eee;

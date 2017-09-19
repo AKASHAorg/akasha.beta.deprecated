@@ -6,6 +6,11 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip when it was already claimed',
         defaultMessage: 'Already claimed'
     },
+    alreadyVoted: {
+        id: 'app.entry.alreadyVoted',
+        description: 'vote button tooltip when it was already voted',
+        defaultMessage: 'You have already voted on this entry'
+    },
     blockNr: {
         id: 'app.entry.blockNr',
         description: 'block number',
@@ -178,6 +183,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',
         defaultMessage: 'Upvote'
+    },
+    votePending: {
+        id: 'app.entry.votePending',
+        description: 'tooltip for vote button in pending state',
+        defaultMessage: 'Your vote is pending'
     }
 });
 export { entryMessages };

@@ -1,18 +1,14 @@
 import PropTypes from 'prop-types';
-/* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component } from 'react';
-import { FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import throttle from 'lodash.throttle';
-import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
 import classNames from 'classnames';
 import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageContent,
     EntryPageHeader } from '../';
 import { EntryComment } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
-import styles from './entry-page.scss';
 
 const COMMENT_FETCH_LIMIT = 25;
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
@@ -135,7 +131,6 @@ class EntryPage extends Component {
     render () {
         const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
             licenses, loggedProfileData, newComments } = this.props;
-        const { palette } = this.context.muiTheme;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -145,13 +140,15 @@ class EntryPage extends Component {
 
         const component = !entry || fetchingFullEntry ?
             null :
-            (<div className={styles.entry_page_inner}>
-              <div id="content-section" className={styles.content_section}>
+            (<div className="entry-page__inner">
+              <div id="content-section" className="entry-page__content">
                 <EntryPageHeader
+                  containerRef={this.container}
                   latestVersion={latestVersion}
                 />
                 {entry.content &&
                   <EntryPageContent
+                    containerRef={this.container}
                     entry={entry}
                     highlightSave={highlightSave}
                     latestVersion={latestVersion}
@@ -159,7 +156,7 @@ class EntryPage extends Component {
                   />
                 }
                 {!entry.content &&
-                  <div className={styles.unresolved_entry} style={{ color: palette.disabledColor }}>
+                  <div className="entry-page__unresolved-placeholder">
                     {intl.formatMessage(entryMessages.unresolvedEntry)}
                   </div>
                 }
@@ -216,22 +213,17 @@ class EntryPage extends Component {
 
         return (
           <div
-            className={styles.root}
+            className="entry-page"
             id="entry-page-root"
             ref={this.getContainerRef}
-            style={{ backgroundColor: palette.entryPageBackground }}
           >
-            <DataLoader flag={!entry || fetchingFullEntry} size={80} style={{ paddingTop: '120px' }}>
+            <DataLoader flag={!entry || fetchingFullEntry} size="large" style={{ paddingTop: '120px' }}>
               {component}
             </DataLoader>
           </div>
         );
     }
 }
-
-EntryPage.contextTypes = {
-    muiTheme: PropTypes.shape(),
-};
 
 EntryPage.propTypes = {
     actionAdd: PropTypes.func.isRequired,
