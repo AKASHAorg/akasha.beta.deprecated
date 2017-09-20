@@ -4,19 +4,15 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-
+    margin: 15px 0px;
+    background-color: #fff;
+    border-radius: 4px;
+    
     &__no-tags {
         display: flex;
         justify-content: center;
         color: #999999;
         padding-top: 10px;
-    }
-
-    &__more-tags {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 35px;
     }
 
     &__tag-list-item {
@@ -25,6 +21,11 @@
         align-items: center;
         border-bottom: 1px inset lightgrey;
         padding: 15px 0px;
+        margin: 0px 15px;
+
+        &_last {
+            border-bottom: none;
+        }
     }
 
     &__tag-list-item-text-wrapper {

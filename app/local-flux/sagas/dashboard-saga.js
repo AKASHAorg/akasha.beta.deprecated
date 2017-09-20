@@ -42,16 +42,18 @@ function* dashboardAddColumn ({ columnType, value }) {
 }
 
 function* dashboardAddFirst ({ interests }) {
-    const interestsMap = interests.toJS();
-    const addTagColumns = interestsMap[columnTypes.tag].map(interest =>
-        put(actions.dashboardAddColumn(columnTypes.tag, interest))
-    );
-    const addPeopleColumns = interestsMap[columnTypes.profile].map(interest =>
-        put(actions.dashboardAddColumn(columnTypes.profile, interest))
-    );
-    const addColumns = addTagColumns.concat(addPeopleColumns);
     yield call(dashboardAdd, { name: 'first' });
-    yield all(addColumns);
+    if (interests) {
+        const interestsMap = interests.toJS();
+        const addTagColumns = interestsMap[columnTypes.tag].map(interest =>
+            put(actions.dashboardAddColumn(columnTypes.tag, interest))
+        );
+        const addPeopleColumns = interestsMap[columnTypes.profile].map(interest =>
+            put(actions.dashboardAddColumn(columnTypes.profile, interest))
+        );
+        const addColumns = addTagColumns.concat(addPeopleColumns);
+        yield all(addColumns);
+    }
     yield put(actions.dashboardAddFirstSuccess());
 }
 
