@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions, DraftActions, TagActions,
+import { ProfileActions, EntryActions, DraftActions,
     AppActions, SettingsActions } from 'local-flux';
 import PublishEntryPanel from './components/publish-entry-panel';
 
@@ -18,7 +18,6 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         entryActions: new EntryActions(dispatch),
         draftActions: new DraftActions(dispatch),
-        tagActions: new TagActions(dispatch),
         appActions: new AppActions(dispatch),
         settingsActions: new SettingsActions(dispatch)
     };

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, EntryActions, ProfileActions, SettingsActions, TagActions } from 'local-flux';
+import { AppActions, EntryActions, ProfileActions, SettingsActions } from 'local-flux';
 import { DataLoader } from 'shared-components';
 import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
@@ -190,7 +190,6 @@ function mapDispatchToProps (dispatch) {
         entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
-        tagActions: new TagActions(dispatch)
     };
 }
 

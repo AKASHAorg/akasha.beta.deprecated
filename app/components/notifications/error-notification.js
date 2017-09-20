@@ -18,7 +18,7 @@ class ErrorNotification extends Component {
                     intl.formatMessage(errorMessages[err.get('messageId')], err.get('values')) :
                     err.get('message');
                 const title = err.get('code') ?
-                    intl.formatMessage(errorMessages.errorNotificationTitle, err.get('code')) :
+                    intl.formatMessage(errorMessages.errorNotificationTitle, { errorCode: err.get('code') }) :
                     intl.formatMessage(errorMessages.unexpectedError);
                 const close = () => {
                     this.props.errorDeleteNonFatal(err.get('id'));

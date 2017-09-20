@@ -250,6 +250,11 @@ const generalMessages = defineMessages({
         description: 'settings button label',
         defaultMessage: 'Settings'
     },
+    skipStep: {
+        id: 'app.general.skipStep',
+        description: 'label for skip button',
+        defaultMessage: 'Skip this step'
+    },
     start: {
         id: 'app.general.start',
         description: 'start button label',

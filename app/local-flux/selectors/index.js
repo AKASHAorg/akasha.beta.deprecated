@@ -220,10 +220,9 @@ export const selectSearchEntries = state =>
 
 export const selectSearchQuery = state => state.searchState.get('query');
 
-export const selectTagMargins = state => state.tagState.get('margins');
+export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
 
-export const selectTagGetEntriesCount = state =>
-    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
+export const selectTagMargins = state => state.tagState.get('margins');
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 

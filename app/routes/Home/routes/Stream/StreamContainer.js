@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
-import { EntryActions, TagActions } from 'local-flux';
+import { EntryActions } from 'local-flux';
 import { connect } from 'react-redux';
 import TheStream from './components/stream';
 import StreamMenu from './components/stream-menu';
@@ -182,7 +182,6 @@ function mapStateToProps (state, ownProps) {
 function mapDispatchToProps (dispatch) {
     return {
         entryActions: new EntryActions(dispatch),
-        tagActions: new TagActions(dispatch)
     };
 }
 

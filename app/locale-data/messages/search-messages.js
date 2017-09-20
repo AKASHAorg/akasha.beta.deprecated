@@ -6,6 +6,16 @@ const searchMessages = defineMessages({
         description: 'message to display when trying to connect to search service',
         defaultMessage: 'Connecting to search service...'
     },
+    noResults: {
+        id: 'app.search.noResults',
+        description: 'message displayed when no results are found',
+        defaultMessage: 'No results found'
+    },
+    searchSomething: {
+        id: 'app.search.searchSomething',
+        description: 'placeholder for search input',
+        defaultMessage: 'Search something...'
+    },
     serviceError: {
         id: 'app.search.serviceError',
         description: 'Error message to display when search service is not available',

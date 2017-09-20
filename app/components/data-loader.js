@@ -77,7 +77,7 @@ DataLoader.propTypes = {
 };
 
 DataLoader.defaultProps = {
-    size: 'standard'
+    size: 'default'
 };
 
 export default DataLoader;
