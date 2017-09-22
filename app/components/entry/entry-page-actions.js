@@ -71,6 +71,11 @@ class EntryPageAction extends Component {
         const voteProps = { containerRef, iconClassName: voteIconClass, votePending, voteWeight };
         const upvotePercent = 70;
         const downvotePercent = 30;
+        const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {
+            downvote: downvotePercent,
+            upvote: upvotePercent
+        });
+        console.log('tooltip', votePercentTooltip);
 
         return (
           <div className="entry-actions">
@@ -107,10 +112,12 @@ class EntryPageAction extends Component {
                     }
                   </div>
                 </div>
-                <div className="entry-actions__vote-bar">
-                  <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
-                  <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
-                </div>
+                <Tooltip placement="left" title={votePercentTooltip}>
+                  <div className="flex-center-y entry-actions__vote-bar">
+                    <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
+                    <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
+                  </div>
+                </Tooltip>
               </div>
               <div className="entry-actions__right-actions">
                 {!isOwnEntry &&

@@ -1,0 +1,38 @@
+.selectable-editor {
+    position: relative;
+
+    &__popover-inner {
+        height: 100%;
+        width: 100%;
+    }
+
+    &__popover-wrapper {
+        width: 200px;
+        height: 0px;
+        position: absolute;
+    }
+
+    &__popover {
+        .ant-popover-inner-content {
+            padding: 4px;
+        }
+    }
+
+    &__menu-item {
+        padding: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 4px;
+        color: @heading-color;
+        cursor: pointer;
+        &:hover {
+            background-color: #f5f5f5;
+        }
+    }
+
+    &__menu-icon {
+        width: 20px;
+        font-size: 18px;
+        margin-right: 5px;
+    }
+}

@@ -122,10 +122,8 @@ class EntryPage extends Component {
 
     throttledHandler = throttle(this.handleContentScroll, 300);
 
-    selectProfile = () => {
-        const { entry, history } = this.props;
-        const profileAddress = entry.entryEth.publisher;
-        history.push(`/${profileAddress}`);
+    startComment = (highlight) => {
+        this.commentEditor.insertHighlight(highlight);
     };
 
     render () {
@@ -148,11 +146,13 @@ class EntryPage extends Component {
                 />
                 {entry.content &&
                   <EntryPageContent
+                    commentEditor={this.commentEditor}
                     containerRef={this.container}
                     entry={entry}
                     highlightSave={highlightSave}
                     latestVersion={latestVersion}
                     licenses={licenses}
+                    startComment={this.startComment}
                   />
                 }
                 {!entry.content &&
@@ -238,7 +238,6 @@ EntryPage.propTypes = {
     entryGetLatestVersion: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
     highlightSave: PropTypes.func.isRequired,
-    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),

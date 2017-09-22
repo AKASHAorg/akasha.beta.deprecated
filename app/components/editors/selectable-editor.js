@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
-import { Popover } from 'antd';
+import { Icon, Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import { MentionDecorators } from '../../shared-components';
@@ -145,8 +145,7 @@ class SelectableEditor extends Component {
         });
     };
 
-    saveHighlight = () => {
-        const { highlightSave } = this.props;
+    getHighlightText = () => {
         const { editorState } = this.state;
         const selectionState = this.getSelectionState(editorState);
         const contentState = editorState.getCurrentContent();
@@ -154,7 +153,12 @@ class SelectableEditor extends Component {
         const fragmentContent = ContentState.createFromBlockArray(fragment.toArray());
         // const fragmentState = EditorState.createWithContent(fragmentContent);
         // const raw = editorStateToJSON(fragmentState);
-        const text = fragmentContent.getPlainText();
+        return fragmentContent.getPlainText();
+    }
+
+    saveHighlight = () => {
+        const { highlightSave } = this.props;
+        const text = this.getHighlightText();
         this.setState({
             range: null,
             showPopover: false
@@ -162,36 +166,50 @@ class SelectableEditor extends Component {
         highlightSave(text);
     };
 
+    startComment = () => {
+        const { startComment } = this.props;
+        const text = this.getHighlightText();
+        this.setState({
+            range: null,
+            showPopover: false
+        });
+        startComment(text);
+    }
+
     renderPopover = () => {
-        const { intl } = this.props;
+        const { intl, startComment } = this.props;
         if (!this.editorWrapper) {
             return null;
         }
         const { top, left } = this.getPopoverPosition();
-
         const content = (
           <div>
             <div
-              className="content-link"
+              className="flex-center-y selectable-editor__menu-item"
               onClick={this.saveHighlight}
             >
-              {intl.formatMessage(entryMessages.saveHighlight)}
+              <Icon className="selectable-editor__menu-icon" type="save" />
+              <span>{intl.formatMessage(entryMessages.saveHighlight)}</span>
+            </div>
+            <div
+              className="flex-center-y selectable-editor__menu-item"
+              onClick={startComment && this.startComment}
+            >
+              <Icon className="selectable-editor__menu-icon" style={{ fontSize: '16px' }} type="message" />
+              <span>{intl.formatMessage(entryMessages.startComment)}</span>
             </div>
           </div>
         );
 
         return (
-          <div
-            style={{
-                width: '200px',
-                height: '0px',
-                position: 'absolute',
-                top,
-                left,
-            }}
-          >
-            <Popover placement="bottom" content={content} visible>
-              <div style={{ height: '100%', width: '100%' }} />
+          <div className="selectable-editor__popover-wrapper" style={{ top, left }}>
+            <Popover
+              content={content}
+              overlayClassName="selectable-editor__popover"
+              placement="bottom"
+              visible
+            >
+              <div className="selectable-editor__popover-inner" />
             </Popover>
           </div>
         );
@@ -202,9 +220,9 @@ class SelectableEditor extends Component {
 
         return (
           <div
+            className="selectable-editor"
             onMouseDown={this.hidePopover}
             onMouseUp={this.checkSelection}
-            style={{ position: 'relative' }}
           >
             <div ref={(el) => { this.editorWrapper = el; }}>
               <MegadraftEditor
@@ -223,7 +241,8 @@ class SelectableEditor extends Component {
 SelectableEditor.propTypes = {
     draft: PropTypes.shape().isRequired,
     highlightSave: PropTypes.func.isRequired,
-    intl: PropTypes.shape()
+    intl: PropTypes.shape(),
+    startComment: PropTypes.func
 };
 
 export default injectIntl(clickAway(SelectableEditor));

@@ -14,8 +14,9 @@ import clickAway from '../../utils/clickAway';
 import { getMentionsFromEditorState } from '../../utils/editorUtils';
 import AddImage from './add-image';
 import CommentImage from './comment-image';
+import createHighlightPlugin from './plugins/highlight-plugin';
 
-const { convertToRaw, EditorState, RichUtils, SelectionState } = DraftJS;
+const { AtomicBlockUtils, convertToRaw, EditorState, RichUtils, SelectionState } = DraftJS;
 const { handleKeyCommand, toggleInlineStyle, toggleBlockType } = RichUtils;
 
 const config = {
@@ -91,10 +92,11 @@ class CommentEditor extends Component {
         };
 
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
-            removeImage: this.removeImage
+            removeImage: this.removeAtomicBlock
         });
 
         this.emojiPlugin = createEmojiPlugin(config);
+        this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
@@ -114,11 +116,11 @@ class CommentEditor extends Component {
 
     componentClickAway = () => {
         const { onClose, parent } = this.props;
-        const { editorFocused, editorState } = this.state;
+        const { editorFocused } = this.state;
         if (!editorFocused) {
             return;
         }
-        const shouldCloseEditor = parent && !editorState.getCurrentContent().hasText();
+        const shouldCloseEditor = parent && !this.hasText();
         if (shouldCloseEditor) {
             onClose();
         } else {
@@ -128,9 +130,35 @@ class CommentEditor extends Component {
         }
     };
 
-    getBaseNodeRef = (baseNode) => { this.baseNodeRef = baseNode; };
+    getBaseNodeRef = (el) => { this.baseNodeRef = el; };
 
     getEditorRef = (el) => { this.editor = el; };
+
+    scrollIntoView = () => this.baseNodeRef && this.baseNodeRef.scrollIntoViewIfNeeded();
+
+    hasText = () => this.state.editorState.getCurrentContent().hasText();
+
+    insertHighlight = (highlight) => { // eslint-disable-line consistent-return
+        if (this.hasText()) {
+            return null;
+        }
+        const { editorState } = this.state;
+        const type = 'highlight';
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(type, 'IMMUTABLE', { highlight });
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const newEditorState = AtomicBlockUtils.insertAtomicBlock(
+            editorState,
+            entityKey,
+            ' '
+        );
+        let newContent = newEditorState.getCurrentContent();
+        const firstBlockKey = newContent.getFirstBlock().getKey();
+        const blockMap = newContent.getBlockMap().delete(firstBlockKey);
+        newContent = newContent.merge({ blockMap });
+        const editorWithoutBlock = EditorState.push(newEditorState, newContent);
+        this.onChange(editorWithoutBlock, this.scrollIntoView);
+    };
 
     onWrapperClick = () => {
         if (this.editor) {
@@ -141,13 +169,25 @@ class CommentEditor extends Component {
         });
     };
 
-    onChange = (editorState) => {
-        this.setState({
-            editorState,
-        });
+    onChange = (editorState, cb) => {
+        const callback = cb && typeof cb === 'function' ? cb : null;
+        const contentState = editorState.getCurrentContent();
+        const { anchorKey } = editorState.getSelection().toJS();
+        const firstBlock = contentState.getFirstBlock();
+        const isFirstBlockAtomic = firstBlock.getType() === 'atomic';
+        const isFirstBlockSelected = firstBlock.getKey() === anchorKey;
+        const lastChangeType = editorState.getLastChangeType();
+        // remove selected atomic block when pressing backspace
+        if (isFirstBlockAtomic && isFirstBlockSelected && lastChangeType === 'backspace-character') {
+            this.removeAtomicBlock(firstBlock.getKey());
+        } else {
+            this.setState({
+                editorState,
+            }, callback);
+        }
     };
 
-    removeImage = (blockKey) => {
+    removeAtomicBlock = (blockKey) => {
         const { editorState } = this.state;
         const selection = editorState.getSelection();
         const content = editorState.getCurrentContent();
@@ -179,7 +219,7 @@ class CommentEditor extends Component {
             newState = EditorState.forceSelection(newState, newSelection);
         }
         this.onChange(newState);
-    }
+    };
 
     handleCommentCreate = () => {
         const { actionAdd, entryId, loggedProfileData, parent = '0' } = this.props;
@@ -211,7 +251,7 @@ class CommentEditor extends Component {
             return true;
         }
         return false;
-    }
+    };
 
     isInlineAction = style => !!inlineStyleActions.find(act => act.style === style);
 
@@ -226,7 +266,7 @@ class CommentEditor extends Component {
             .getBlockForKey(selection.getStartKey())
             .getType();
         return blockType === action.style;
-    }
+    };
 
     actionHandler = (style) => {
         if (this.isInlineAction(style)) {
@@ -321,7 +361,7 @@ class CommentEditor extends Component {
                     handleKeyCommand={this.handleKeyCommand}
                     onChange={this.onChange}
                     placeholder={placeholder}
-                    plugins={[this.emojiPlugin, this.imagePlugin]}
+                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin]}
                     ref={this.getEditorRef}
                   />
                 </div>

@@ -18,7 +18,9 @@ class EntryPageContent extends Component {
     }
 
     shouldComponentUpdate (nextProps) {
-        if (!nextProps.entry.equals(this.props.entry)) {
+        if (!nextProps.entry.equals(this.props.entry) ||
+            nextProps.commentEditor !== this.props
+        ) {
             return true;
         }
         return false;
@@ -90,7 +92,7 @@ class EntryPageContent extends Component {
     };
 
     render () {
-        const { entry, licenses } = this.props;
+        const { commentEditor, entry, licenses } = this.props;
         const license = licenses.get(entry.content.licence.id);
         const licenseLabel = license.parent ?
             licenses.get(license.parent).label :
@@ -105,6 +107,7 @@ class EntryPageContent extends Component {
                 <SelectableEditor
                   draft={entry.getIn(['content', 'draft'])}
                   highlightSave={this.highlightSave}
+                  startComment={commentEditor && commentEditor.insertHighlight}
                 />
               </div>
             </div>
@@ -121,7 +124,6 @@ class EntryPageContent extends Component {
                     className="uppercase"
                     key={tag}
                     style={{ fontSize: '12px' }}
-                    // onTagClick={this.navigateToTag}
                   >
                     {tag}
                   </Tag>
@@ -134,12 +136,14 @@ class EntryPageContent extends Component {
 }
 
 EntryPageContent.propTypes = {
+    commentEditor: PropTypes.shape(),
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     highlightSave: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     latestVersion: PropTypes.number,
-    licenses: PropTypes.shape()
+    licenses: PropTypes.shape(),
+    startComment: PropTypes.func.isRequired,
 };
 
 export default withRouter(EntryPageContent);
