@@ -14,7 +14,6 @@ const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?:
     const toBlock = (!data.lastBlock) ? yield GethConnector.getInstance().web3.eth.getBlockNumberAsync() : data.lastBlock;
     const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { follower: address }, toBlock, maxResults);
     for (let event of fetched.results) {
-        console.log(event);
         collection.push({ ethAddress: event.args.followed });
     }
     return { collection: collection, lastBlock: fetched.fromBlock, akashaId: data.akashaId, limit: maxResults };
