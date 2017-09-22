@@ -293,6 +293,7 @@ interface ProfileCreateResponse extends MainResponse {
 }
 
 interface ProfileUpdateRequest extends AuthRequest {
+    akashaIdHash: string;
     ipfs: IpfsProfileCreateRequest;
 }
 
@@ -359,7 +360,7 @@ interface IpfsProfileCreateRequest {
 
 interface ProfileDataRequest {
     akashaId: string;
-    profile?: string; // profile contract address
+    akashaIdHash: string;
     short?: boolean;
     full?: boolean; // resolve full profile from ipfs
     resolveImages?: boolean; // resolve media to buffer

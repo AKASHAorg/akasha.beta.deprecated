@@ -6,6 +6,8 @@ import followingCount from './following-count';
 import followersCount from './followers-count';
 import entryCountProfile from '../entry/entry-count-profile';
 import subsCount from '../tags/subs-count';
+import { profileAddress } from './helpers';
+import { encodeHash } from '../ipfs/helpers';
 
 
 /**
@@ -14,16 +16,16 @@ import subsCount from '../tags/subs-count';
  */
 const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     let profile;
-    const akashaId = (data.akashaId) ? data.akashaId : yield contracts.instance.profile.getId(data.profile);
-    const profileAddress = (data.profile) ? data.profile : yield contracts.instance.registry.addressOf(data.akashaId);
-    const ipfsHash = yield contracts.instance.profile.getIpfs(profileAddress);
-    const foCount = yield followingCount.execute({ akashaId });
-    const fwCount = yield followersCount.execute({ akashaId });
-    const entriesCount = yield entryCountProfile.execute({ akashaId });
-    const subscriptionsCount = yield subsCount.execute({ akashaId });
-
+    const ethAddress = yield profileAddress(data);
+    const [address, donationsEnabled,
+        fn, digestSize, hash] = yield contracts.instance.ProfileResolver.resolve(data.akashaIdHash);
+    const foCount = yield followingCount.execute({ ethAddress });
+    const fwCount = yield followersCount.execute({ ethAddress });
+    const entriesCount = yield entryCountProfile.execute({ ethAddress });
+    const subscriptionsCount = yield subsCount.execute({ ethAddress });
+    const ipfsHash = encodeHash(fn, digestSize, hash);
     if (data.short) {
-        profile = { ipfsHash: ipfsHash };
+        profile = { ipfsHash };
     } else {
         profile = (data.full) ?
             yield resolveProfile(ipfsHash, data.resolveImages)
@@ -37,7 +39,9 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
 
     return Object.assign(
         {
-            akashaId: akashaId,
+            akashaId: data.akashaId,
+            ethAddress: address,
+            donationsEnabled: donationsEnabled,
             followingCount: foCount.count,
             followersCount: fwCount.count,
             entriesCount: entriesCount.count,

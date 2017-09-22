@@ -46,7 +46,7 @@ class Contracts {
         });
     }
 
-    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number, address?: string) {
+    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number) {
         const step = 5300;
         return new Promise((resolve, reject) => {
             let results = [];
@@ -55,7 +55,7 @@ class Contracts {
                 if (fromBlock < 0) {
                     fromBlock = 0;
                 }
-                const event = ethEvent(args, { fromBlock, toBlock: to, address });
+                const event = ethEvent(args, { fromBlock, toBlock: to });
                 event.get((err, data) => {
                     if (err) {
                         return reject(err);

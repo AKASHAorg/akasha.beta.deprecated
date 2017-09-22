@@ -11,15 +11,15 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function* (data: { following: string, akashaId: string }[]) {
+    function* (data: { addressFollower: string, addressFollowing: string }[]) {
         if (!Array.isArray(data)) {
             throw new Error('data must be an array');
         }
         const requests = data.map((req) => {
-            return contracts.instance.feed
-                .isFollower(req.akashaId, req.following)
+            return contracts.instance.Feed
+                .follows(req.addressFollower, req.addressFollowing)
                 .then((result) => {
-                    return { result, following: req.following, akashaId: req.akashaId };
+                    return { result, addressFollower: req.addressFollower, addressFollowing: req.addressFollowing };
                 });
         });
 

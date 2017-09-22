@@ -2,27 +2,27 @@ import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import getCurrentProfile from '../registry/current-profile';
 import { create } from './ipfs';
-import auth from '../auth/Auth';
+import { decodeHash } from '../ipfs/helpers';
 
 /**
  * Update ipfs profile info
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: ProfileUpdateRequest) {
+const execute = Promise.coroutine(function* (data: ProfileUpdateRequest, cb) {
     const ipfsHash = yield create(data.ipfs);
+    const decodedHash = decodeHash(ipfsHash);
     const currentProfile = yield getCurrentProfile.execute();
     if (!currentProfile.profileAddress) {
         throw new Error('No profile found to update');
     }
 
-    const txData = yield contracts.instance.profile
-        .updateHash(
-            ipfsHash,
-            currentProfile.profileAddress,
-            data.gas
+    const txData = yield contracts.instance.ProfileResolver
+        .setHash.request(
+            data.akashaIdHash,
+            decodedHash
         );
-    const tx = yield auth.signData(txData, data.token);
-    return { tx };
+    const transaction = yield contracts.send(txData, data.token, cb);
+    return { tx: transaction.tx};
 });
 
-export default { execute, name: 'updateProfileData' };
+export default { execute, name: 'updateProfileData', hasStream: true };
