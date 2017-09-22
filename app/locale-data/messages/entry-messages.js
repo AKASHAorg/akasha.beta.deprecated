@@ -69,6 +69,11 @@ const entryMessages = defineMessages({
         description: 'label for comment expand button',
         defaultMessage: 'Show more'
     },
+    startComment: {
+        id: 'app.entry.startComment',
+        description: 'button label for starting a comment from a highlight',
+        defaultMessage: 'Start comment'
+    },
     wordsCount: {
         id: 'app.entry.wordsCount',
         description: 'number of words in an entry',
@@ -123,6 +128,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.versionNumber',
         description: 'label for version number',
         defaultMessage: 'Version {index}'
+    },
+    votePercentage: {
+        id: 'app.entry.votePercentage',
+        description: '',
+        defaultMessage: 'Upvotes - {upvote}% · Downvotes - {downvote}%'
     },
     originalVersion: {
         id: 'app.entry.originalVersion',

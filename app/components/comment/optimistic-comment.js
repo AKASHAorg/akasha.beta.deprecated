@@ -12,6 +12,7 @@ import * as actionTypes from '../../constants/action-types';
 import { entryMessages } from '../../locale-data/messages';
 import { ProfilePopover, VotePopover } from '../';
 import CommentImage from './comment-image';
+import createHighlightPlugin from './plugins/highlight-plugin';
 
 const { convertFromRaw, EditorState } = DraftJS;
 
@@ -31,6 +32,7 @@ class OptimisticComment extends Component {
             readOnly: true
         });
         this.emojiPlugin = createEmojiPlugin({ imagePath: 'images/emoji-svg/' });
+        this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
@@ -119,7 +121,7 @@ class OptimisticComment extends Component {
                     // This is needed because draft-js-plugin-editor applies decorators on onChange event
                     // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
                     onChange={this.onChange}
-                    plugins={[this.emojiPlugin, this.imagePlugin]}
+                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin]}
                     readOnly
                   />
                 </div>

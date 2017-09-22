@@ -11,7 +11,7 @@ export ColumnHeader from './columns/column-header';
 export ConfirmationDialog from './dialogs/confirmation-dialog';
 export Comment from './comment/comment';
 export CommentEditor from './comment/comment-editor';
-export ReplyEditor from './comment/reply-editor';
+export CommentHighlight from './comment/comment-highlight';
 export CommentsList from './comment/comments-list';
 export CommentThread from './comment/comment-thread';
 export CommonTopBar from './top-bars/common-top-bar';
