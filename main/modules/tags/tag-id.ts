@@ -1,13 +1,7 @@
 import * as Promise from 'bluebird';
-import contracts from '../../contracts/index';
 
-/**
- * Get tagId from tagName
- * @type {Function}
- */
-const execute = Promise.coroutine(function* (data: TagAtNameRequest) {
-    const tagId = yield contracts.instance.tags.getTagId(data.tagName);
-    return { tagId, tagName: data.tagName };
+const execute = Promise.coroutine(function* () {
+    throw new Error('deprecated');
 });
 
 export default { execute, name: 'getTagId' };

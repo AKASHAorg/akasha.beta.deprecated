@@ -6,7 +6,7 @@ import contracts from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: TagAtNameRequest) {
-    const status = yield contracts.instance.tags.checkFormat(data.tagName);
+    const status = yield contracts.instance.Tags.checkFormat(data.tagName);
     return { status, tagName: data.tagName };
 });
 
