@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import DraftJS from 'draft-js';
-import { Tag, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from '../svg';
-import { SelectableEditor } from '../';
+import { SelectableEditor, TagPopover } from '../';
 
 const { EditorState } = DraftJS;
 
@@ -92,7 +92,7 @@ class EntryPageContent extends Component {
     };
 
     render () {
-        const { commentEditor, entry, licenses } = this.props;
+        const { commentEditor, containerRef, entry, licenses } = this.props;
         const license = licenses.get(entry.content.licence.id);
         const licenseLabel = license.parent ?
             licenses.get(license.parent).label :
@@ -120,13 +120,11 @@ class EntryPageContent extends Component {
             <div className="entry-page-content__info">
               <div>
                 {entry.getIn(['content', 'tags']).map(tag => (
-                  <Tag
-                    className="uppercase"
+                  <TagPopover
+                    containerRef={containerRef}
                     key={tag}
-                    style={{ fontSize: '12px' }}
-                  >
-                    {tag}
-                  </Tag>
+                    tag={tag}
+                  />
                 ))}
               </div>
             </div>
@@ -143,7 +141,6 @@ EntryPageContent.propTypes = {
     history: PropTypes.shape(),
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),
-    startComment: PropTypes.func.isRequired,
 };
 
 export default withRouter(EntryPageContent);

@@ -57,13 +57,12 @@ export const listSearchError = (error) => {
 
 export const listSearchSuccess = data => action(types.LIST_SEARCH_SUCCESS, { data });
 
-export const listUpdateEntryIds = (listNames, entryId) =>
-    action(types.LIST_UPDATE_ENTRY_IDS, { listNames, entryId });
+export const listToggleEntry = (listName, entryId) => action(types.LIST_TOGGLE_ENTRY, { listName, entryId });
 
-export const listUpdateEntryIdsError = (error) => {
-    error.code = 'LUEIE01';
-    error.messageId = 'listUpdateEntryIds';
-    return action(types.LIST_UPDATE_ENTRY_IDS_ERROR, { error });
+export const listToggleEntryError = (error) => {
+    error.code = 'LTEE01';
+    error.messageId = 'listToggleEntry';
+    return action(types.LIST_TOGGLE_ENTRY_ERROR, { error });
 };
 
-export const listUpdateEntryIdsSuccess = data => action(types.LIST_UPDATE_ENTRY_IDS_SUCCESS, { data });
+export const listToggleEntrySuccess = data => action(types.LIST_TOGGLE_ENTRY_SUCCESS, { data });

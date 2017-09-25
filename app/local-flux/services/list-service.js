@@ -79,35 +79,62 @@ export const searchList = ({ account, search }) =>
             .catch(reject);
     });
 
-export const updateEntryIds = ({ account, listNames, entryId }) =>
+// export const updateEntryIds = ({ account, listNames, entryId }) =>
+//     new Promise((resolve, reject) => {
+//         listDB.lists
+//             .where('account')
+//             .equals(account)
+//             .toArray()
+//             .then((lists) => {
+//                 const modifiedLists = [];
+//                 lists.forEach((list) => {
+//                     // Initialize entryIds with an empty array if it doesn't exist
+//                     list.entryIds = list.entryIds || [];
+//                     const entryExists = list.entryIds.includes(entryId);
+
+//                     if (listNames.includes(list.name)) {
+//                         // If list is in listNames, we should add the entryId
+//                         if (!entryExists) {
+//                             list.entryIds.push(entryId);
+//                             modifiedLists.push(list);
+//                         }
+//                     } else if (entryExists) {
+//                         // Otherwise if entryId is already added, it should be removed
+//                         list.entryIds = list.entryIds.filter(id => id !== entryId);
+//                         modifiedLists.push(list);
+//                     }
+//                 });
+
+//                 listDB.lists
+//                     .bulkPut(modifiedLists)
+//                     .then(() => resolve(modifiedLists))
+//                     .catch(reject);
+//             })
+//             .catch(err => reject(err));
+//     });
+
+export const toggleEntry = ({ account, listName, entryId }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('account')
-            .equals(account)
+            .where('[account+name]')
+            .equals([account, listName])
             .toArray()
-            .then((lists) => {
-                const modifiedLists = [];
-                lists.forEach((list) => {
-                    // Initialize entryIds with an empty array if it doesn't exist
-                    list.entryIds = list.entryIds || [];
-                    const entryExists = list.entryIds.includes(entryId);
+            .then((data) => {
+                const list = data[0];
+                // Initialize entryIds with an empty array if it doesn't exist
+                list.entryIds = list.entryIds || [];
+                const entryExists = list.entryIds.includes(entryId);
 
-                    if (listNames.includes(list.name)) {
-                        // If list is in listNames, we should add the entryId
-                        if (!entryExists) {
-                            list.entryIds.push(entryId);
-                            modifiedLists.push(list);
-                        }
-                    } else if (entryExists) {
-                        // Otherwise if entryId is already added, it should be removed
-                        list.entryIds = list.entryIds.filter(id => id !== entryId);
-                        modifiedLists.push(list);
-                    }
-                });
+                if (!entryExists) {
+                    list.entryIds.push(entryId);
+                } else if (entryExists) {
+                    // Otherwise if entryId is already added, it should be removed
+                    list.entryIds = list.entryIds.filter(id => id !== entryId);
+                }
 
                 listDB.lists
-                    .bulkPut(modifiedLists)
-                    .then(() => resolve(modifiedLists))
+                    .put(list)
+                    .then(() => resolve(list))
                     .catch(reject);
             })
             .catch(err => reject(err));

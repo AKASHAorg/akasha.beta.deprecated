@@ -1,7 +1,7 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const dashboardAdd = name => action(types.DASHBOARD_ADD, { name });
+export const dashboardAdd = (name, columns) => action(types.DASHBOARD_ADD, { name, columns });
 
 export const dashboardAddError = (error) => {
     error.code = 'DAE01';
@@ -65,17 +65,6 @@ export const dashboardGetAllError = (error) => {
 };
 
 export const dashboardGetAllSuccess = data => action(types.DASHBOARD_GET_ALL_SUCCESS, { data });
-
-export const dashboardGetColumnsError = (error) => {
-    error.code = 'DGCE01';
-    error.messageId = 'dashboardGetColumns';
-    return action(types.DASHBOARD_GET_COLUMNS_ERROR, { error });
-};
-
-export const dashboardGetColumnsSuccess = data =>
-    action(types.DASHBOARD_GET_COLUMNS_SUCCESS, { data });
-
-
 export const dashboardGetProfileSuggestions = (akashaId, columnId) =>
     action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, { akashaId, columnId });
 
@@ -101,6 +90,7 @@ export const dashboardGetTagSuggestionsError = (error, request) => {
 export const dashboardGetTagSuggestionsSuccess = (data, request) =>
     action(types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS, { data, request });
 
+export const dashboardSearch = query => action(types.DASHBOARD_SEARCH, { query });
 
 export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
 
@@ -112,6 +102,17 @@ export const dashboardSetActiveError = (error) => {
 
 export const dashboardSetActiveSuccess = data =>
     action(types.DASHBOARD_SET_ACTIVE_SUCCESS, { data });
+export const dashboardToggleTagColumn = (dashboardId, tag) =>
+    action(types.DASHBOARD_TOGGLE_TAG_COLUMN, { dashboardId, tag });
+
+export const dashboardToggleTagColumnError = (error) => {
+    error.code = 'DTTCE01';
+    error.messageId = 'dashboardToggleTagColumn';
+    return action(types.DASHBOARD_TOGGLE_TAG_COLUMN_ERROR, { error });
+};
+
+export const dashboardToggleTagColumnSuccess = data =>
+    action(types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS, { data });
 export const dashboardUpdateColumn = (id, changes) =>
     action(types.DASHBOARD_UPDATE_COLUMN, { id, changes });
 

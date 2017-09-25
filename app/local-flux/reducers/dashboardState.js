@@ -88,6 +88,12 @@ const handleSuggestions = (state, { data, request }) => {
     return state;
 };
 
+const createDashboardRecord = (data) => {
+    let dashboard = new DashboardRecord(data);
+    dashboard = dashboard.set('columns', new List(dashboard.columns.map(col => col.id)));
+    return dashboard;
+};
+
 const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN]: state =>
@@ -95,10 +101,10 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
         state.merge({
-            columnById: state.get('columnById').set(data.id, new ColumnRecord(data)),
-            dashboardById: state.get('dashboardById').setIn(
+            columnById: state.get('columnById').set(data.column.id, new ColumnRecord(data.column)),
+            dashboardByName: state.get('dashboardByName').setIn(
                 [data.dashboardName, 'columns'],
-                state.getIn(['dashboardById', data.dashboardName, 'columns']).push(data.id)
+                state.getIn(['dashboardByName', data.dashboardName, 'columns']).push(data.column.id)
             )
         }),
 
@@ -107,57 +113,73 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
         state.set('newColumn', new NewColumnRecord()),
 
-    [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) =>
-        state.merge({
+    [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) => {
+        let columnById = state.get('columnById');
+        data.columns.forEach((column) => {
+            columnById = columnById.set(column.id, new ColumnRecord(column));
+        });
+        return state.merge({
             activeDashboard: data.name,
-            dashboardById: state.get('dashboardById').set(data.name, new DashboardRecord(data)),
-        }),
+            columnById,
+            dashboardByName: state.get('dashboardByName').set(data.name, createDashboardRecord(data)),
+        });
+    },
 
     [types.DASHBOARD_DELETE_COLUMN_SUCCESS]: (state, { data }) => {
-        const oldDashboard = state.getIn(['dashboardById', data.dashboardName]);
-        const index = oldDashboard.get('columns').indexOf(data.columnId);
+        const { name } = data.dashboard;
+        const dashboardByName = state.get('dashboardByName').set(name, createDashboardRecord(data.dashboard));
         return state.merge({
             columnById: state.get('columnById').delete(data.columnId),
-            dashboardById: state.get('dashboardById').setIn(
-                [data.dashboardName, 'columns'],
-                oldDashboard.get('columns').delete(index)
-            )
+            dashboardByName
         });
     },
 
     [types.DASHBOARD_DELETE_SUCCESS]: (state, { data }) =>
-        state.set('dashboardById', state.get('dashboardById').delete(data.name)),
+        state.set('dashboardByName', state.get('dashboardByName').delete(data.name)),
 
     [types.DASHBOARD_GET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.set('activeDashboard', data),
 
     [types.DASHBOARD_GET_ALL_SUCCESS]: (state, { data }) => {
-        let dashboardById = state.get('dashboardById');
-        data.forEach((dashboard) => {
-            // convert the columns array to List
-            dashboard.columns = new List(dashboard.columns);
-            dashboardById = dashboardById.set(dashboard.name, new DashboardRecord(dashboard));
-        });
-        return state.set('dashboardById', dashboardById);
-    },
-
-    [types.DASHBOARD_GET_COLUMNS_SUCCESS]: (state, { data }) => {
+        let dashboardByName = state.get('dashboardByName');
         let columnById = state.get('columnById');
-        data.forEach((column) => {
-            columnById = columnById.set(column.id, new ColumnRecord(column));
+        data.forEach((dashboard) => {
+            dashboard.columns.forEach((column) => {
+                columnById = columnById.set(column.id, new ColumnRecord(column));
+            });
+            dashboardByName = dashboardByName.set(dashboard.name, createDashboardRecord(dashboard));
         });
-        return state.set('columnById', columnById);
+        return state.merge({
+            columnById,
+            dashboardByName
+        });
     },
 
     [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
+    [types.DASHBOARD_SEARCH]: (state, { query }) =>
+        state.set('search', query),
+
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({
             activeDashboard: data,
             newColumn: null
         }),
+
+    [types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS]: (state, { data }) => {
+        let columnById = state.get('columnById');
+        let dashboardByName = state.get('dashboardByName');
+        data.columns.forEach((column) => {
+            columnById = columnById.set(column.id, new ColumnRecord(column));
+        });
+        dashboardByName = dashboardByName.set(data.name, createDashboardRecord(data));
+        return state.merge({
+            columnById,
+            dashboardByName
+        });
+    },
 
     [types.DASHBOARD_UPDATE_COLUMN_SUCCESS]: (state, { data }) =>
         state.mergeIn(['columnById', data.id], data.changes),

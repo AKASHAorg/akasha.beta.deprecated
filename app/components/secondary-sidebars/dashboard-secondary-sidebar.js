@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { List, ListItem, IconButton, Subheader } from 'material-ui';
 import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
@@ -51,12 +52,13 @@ const DashboardSecondarySidebar = props => (
     <List>
       {props.dashboards.toList().map(dashboard => (
         <div key={dashboard.get('id')} style={{ position: 'relative' }}>
-          <ListItem
-            innerDivStyle={innerDivStyle}
-            onClick={() => props.dashboardSetActive(dashboard.get('name'))}
-            primaryText={<div>{dashboard.get('name')}</div>}
-            style={{ display: 'flex', borderRadius: '5px' }}
-          />
+          <Link className="unstyled-link" to={`/dashboard/${dashboard.get('name')}`}>
+            <ListItem
+              innerDivStyle={innerDivStyle}
+              primaryText={<div>{dashboard.get('name')}</div>}
+              style={{ display: 'flex', borderRadius: '5px' }}
+            />
+          </Link>
           {props.activeDashboard !== dashboard.get('name') &&
             <button
               onClick={(ev) => {

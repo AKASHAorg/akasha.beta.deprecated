@@ -77,6 +77,11 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
+    create: {
+        id: 'app.general.create',
+        description: 'create',
+        defaultMessage: 'Create'
+    },
     created: {
         id: 'app.general.created',
         description: 'created',

@@ -65,17 +65,17 @@ function* listSearch ({ search }) {
     }
 }
 
-function* listUpdateEntryIds ({ listNames, entryId }) {
+function* listToggleEntry ({ listName, entryId }) {
     try {
         const account = yield select(selectLoggedAccount);
-        const lists = yield apply(
+        const list = yield apply(
             listService,
-            listService.updateEntryIds,
-            [{ account, listNames, entryId }]
+            listService.toggleEntry,
+            [{ account, listName, entryId }]
         );
-        yield put(actions.listUpdateEntryIdsSuccess(lists));
+        yield put(actions.listToggleEntrySuccess(list));
     } catch (error) {
-        yield put(actions.listUpdateEntryIdsError(error));
+        yield put(actions.listToggleEntryError(error));
     }
 }
 
@@ -86,5 +86,5 @@ export function* watchListActions () {
     yield takeEvery(types.LIST_DELETE_ENTRY, listDeleteEntry);
     yield takeEvery(types.LIST_GET_FULL, listGetFull);
     yield takeEvery(types.LIST_SEARCH, listSearch);
-    yield takeEvery(types.LIST_UPDATE_ENTRY_IDS, listUpdateEntryIds);
+    yield takeEvery(types.LIST_TOGGLE_ENTRY, listToggleEntry);
 }

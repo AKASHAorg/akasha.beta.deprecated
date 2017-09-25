@@ -47,7 +47,7 @@ class NewIdentityInterests extends Component {
     };
 
     handleSubmit = () => {
-        this.props.dashboardAddFirst(this.props.profileInterests);
+        this.props.dashboardAddFirst(this.props.profileInterests.toJS());
         this.setState({ disableSubmit: true });
     };
 
