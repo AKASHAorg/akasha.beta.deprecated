@@ -185,17 +185,17 @@ class SelectableEditor extends Component {
         const content = (
           <div>
             <div
-              className="flex-center-y selectable-editor__menu-item"
+              className="flex-center-y popover-menu__item"
               onClick={this.saveHighlight}
             >
-              <Icon className="selectable-editor__menu-icon" type="save" />
+              <Icon className="popover-menu__icon" type="save" />
               <span>{intl.formatMessage(entryMessages.saveHighlight)}</span>
             </div>
             <div
-              className="flex-center-y selectable-editor__menu-item"
+              className="flex-center-y popover-menu__item"
               onClick={startComment && this.startComment}
             >
-              <Icon className="selectable-editor__menu-icon" style={{ fontSize: '16px' }} type="message" />
+              <Icon className="popover-menu__icon" style={{ fontSize: '16px' }} type="message" />
               <span>{intl.formatMessage(entryMessages.startComment)}</span>
             </div>
           </div>
@@ -205,7 +205,7 @@ class SelectableEditor extends Component {
           <div className="selectable-editor__popover-wrapper" style={{ top, left }}>
             <Popover
               content={content}
-              overlayClassName="selectable-editor__popover"
+              overlayClassName="popover-menu"
               placement="bottom"
               visible
             >

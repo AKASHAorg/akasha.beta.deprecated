@@ -2,29 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { List } from 'immutable';
-import { Checkbox, Icon, Input, Popover } from 'antd';
-import { NewListForm, PanelLink } from '../';
-import { EntryBookmarkOff } from '../svg';
+import { Checkbox, Icon, Input } from 'antd';
+import { PanelLink } from '../';
 import { listMessages } from '../../locale-data/messages';
 
-class ListPopover extends Component {
-    state = {
-        addNewList: false,
-        popoverVisible: false,
-    };
-
-    shouldComponentUpdate = (nextProps, nextState) => {
-        const { lists, search } = nextProps;
-        const { addNewList, popoverVisible } = nextState;
-        if (!lists.equals(this.props.lists) ||
-            search !== this.props.search ||
-            popoverVisible !== this.state.popoverVisible ||
-            addNewList !== this.state.addNewList
-        ) {
-            return true;
-        }
-        return false;
-    }
+class PopoverSelectableList extends Component {
 
     componentWillUnmount () {
         if (this.focusTimeout) {
@@ -34,6 +16,8 @@ class ListPopover extends Component {
             clearInterval(this.resetTimeout);
         }
     }
+
+    getSearchInputRef = (el) => { this.searchInput = el; };
 
     isSaved = (list) => {
         const { entryId } = this.props;
@@ -55,32 +39,12 @@ class ListPopover extends Component {
 
     onKeyDown = (ev) => {
         if (ev.key === 'Escape') {
-            this.props.listSearch('');
+            this.searchList('');
         }
     };
 
     onSearchChange = (ev) => {
-        this.props.listSearch(ev.target.value);
-    };
-
-    onVisibleChange = (popoverVisible) => {
-        if (popoverVisible) {
-            this.setInputFocusAsync();
-        }
-        this.setState({
-            popoverVisible
-        });
-        if (!popoverVisible) {
-            // Delay state reset until popover animation is finished
-            this.resetTimeout = setTimeout(() => {
-                this.resetTimeout = null;
-                this.props.listSearch('');
-                this.setState({
-                    addNewList: false,
-                    entryLists: this.initialEntryLists
-                });
-            }, 100);
-        }
+        this.searchList(ev.target.value);
     };
 
     setInputFocusAsync = () => {
@@ -93,32 +57,14 @@ class ListPopover extends Component {
         }, 100);
     };
 
-    toggleNewList = () => {
-        if (this.state.addNewList) {
-            this.setInputFocusAsync();
-        }
-        this.setState({
-            addNewList: !this.state.addNewList
-        });
-    };
+    searchList = search => this.props.listSearch(search);
 
-    renderContent = () => {
-        const { entryId, intl, listAdd, listDelete, lists, listToggleEntry, search } = this.props;
-
-        if (this.state.addNewList) {
-            return (
-              <NewListForm
-                entryId={entryId}
-                lists={lists}
-                onSave={listAdd}
-                onCancel={this.toggleNewList}
-              />
-            );
-        }
+    render () {
+        const { entryId, intl, listDelete, lists, listToggleEntry, search } = this.props;
 
         return (
-          <div>
-            <div>
+          <div className="list-popover__content">
+            <div className="list-popover__input-wrapper">
               <Input
                 className="list-popover__search"
                 id="list-popover-search"
@@ -126,6 +72,7 @@ class ListPopover extends Component {
                 onKeyDown={this.onKeyDown}
                 placeholder={intl.formatMessage(listMessages.searchForList)}
                 prefix={<Icon className="list-popover__search-icon" type="search" />}
+                ref={this.getSearchInputRef}
                 size="large"
                 value={search}
               />
@@ -185,34 +132,12 @@ class ListPopover extends Component {
             </div>
           </div>
         );
-    };
-
-    render () {
-        const { containerRef } = this.props;
-
-        return (
-          <Popover
-            content={this.renderContent()}
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="popover-menu list-popover"
-            placement="bottomRight"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 20 20">
-              <EntryBookmarkOff />
-            </svg>
-          </Popover>
-        );
     }
 }
 
-ListPopover.propTypes = {
-    containerRef: PropTypes.shape(),
+PopoverSelectableList.propTypes = {
     entryId: PropTypes.string.isRequired,
     intl: PropTypes.shape().isRequired,
-    listAdd: PropTypes.func.isRequired,
     listDelete: PropTypes.func.isRequired,
     lists: PropTypes.shape().isRequired,
     listSearch: PropTypes.func.isRequired,
@@ -220,4 +145,4 @@ ListPopover.propTypes = {
     search: PropTypes.string,
 };
 
-export default injectIntl(ListPopover);
+export default injectIntl(PopoverSelectableList);

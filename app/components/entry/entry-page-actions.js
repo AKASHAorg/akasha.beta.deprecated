@@ -9,7 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { ListPopover, VotePopover } from '../';
 import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { listAdd, listDelete, listSearch, listUpdateEntryIds } from '../../local-flux/actions/list-actions';
+import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
     selectLoggedAkashaId, selectPendingEntryClaim, selectPendingEntryVote,
     selectProfile } from '../../local-flux/selectors';
@@ -58,7 +58,7 @@ class EntryPageAction extends Component {
 
     render () {
         const { canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
-            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, updatingLists,
+            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword,
             votePending, voteWeight } = this.props;
         const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
             && (!fetchingEntryBalance || entryBalance !== undefined);
@@ -75,7 +75,6 @@ class EntryPageAction extends Component {
             downvote: downvotePercent,
             upvote: upvotePercent
         });
-        console.log('tooltip', votePercentTooltip);
 
         return (
           <div className="entry-actions">
@@ -128,9 +127,8 @@ class EntryPageAction extends Component {
                     listDelete={this.props.listDelete}
                     lists={lists}
                     listSearch={this.props.listSearch}
-                    listUpdateEntryIds={this.props.listUpdateEntryIds}
+                    listToggleEntry={this.props.listToggleEntry}
                     search={listSearchKeyword}
-                    updatingLists={updatingLists}
                   />
                 }
                 {showBalance &&
@@ -188,10 +186,9 @@ EntryPageAction.propTypes = {
     lists: PropTypes.shape().isRequired,
     listSearch: PropTypes.func.isRequired,
     listSearchKeyword: PropTypes.string,
-    listUpdateEntryIds: PropTypes.func.isRequired,
+    listToggleEntry: PropTypes.func.isRequired,
     loggedAkashaId: PropTypes.string,
     publisher: PropTypes.shape(),
-    updatingLists: PropTypes.bool,
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
 };
@@ -210,7 +207,6 @@ function mapStateToProps (state, ownProps) {
         listSearchKeyword: selectListSearch(state),
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
-        updatingLists: state.listState.getIn(['flags', 'updatingLists']),
         votePending: selectPendingEntryVote(state, entry.get('entryId')),
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };
@@ -223,6 +219,6 @@ export default connect(
         listAdd,
         listDelete,
         listSearch,
-        listUpdateEntryIds,
+        listToggleEntry,
     }
 )(injectIntl(EntryPageAction));

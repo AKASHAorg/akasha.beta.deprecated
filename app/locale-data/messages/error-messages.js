@@ -56,11 +56,6 @@ const errorMessages = defineMessages({
         description: 'get all dashboards error message',
         defaultMessage: 'An error occurred while getting your dashboards'
     },
-    dashboardGetColumns: {
-        id: 'app.error.dashboardGetColumns',
-        description: 'get columns error message',
-        defaultMessage: 'An error occurred while getting your columns'
-    },
     dashboardSetActive: {
         id: 'app.error.dashboardSetActive',
         description: 'set active dashboard error message',

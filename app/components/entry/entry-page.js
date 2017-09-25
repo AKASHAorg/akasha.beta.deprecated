@@ -122,10 +122,6 @@ class EntryPage extends Component {
 
     throttledHandler = throttle(this.handleContentScroll, 300);
 
-    startComment = (highlight) => {
-        this.commentEditor.insertHighlight(highlight);
-    };
-
     render () {
         const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
             licenses, loggedProfileData, newComments } = this.props;
@@ -152,7 +148,6 @@ class EntryPage extends Component {
                     highlightSave={highlightSave}
                     latestVersion={latestVersion}
                     licenses={licenses}
-                    startComment={this.startComment}
                   />
                 }
                 {!entry.content &&

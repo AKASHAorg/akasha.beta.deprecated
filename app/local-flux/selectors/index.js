@@ -1,4 +1,3 @@
-import { List } from 'immutable';
 import { ProfileRecord } from '../reducers/records';
 import * as actionTypes from '../../constants/action-types';
 
@@ -12,7 +11,7 @@ export const selectActiveDashboard = (state) => {
         return null;
     }
     return state.dashboardState.getIn([
-        'dashboardById',
+        'dashboardByName',
         activeDashboard
     ]);
 };
@@ -23,7 +22,7 @@ export const selectActiveDashboardId = (state) => {
         return null;
     }
     return state.dashboardState.getIn([
-        'dashboardById',
+        'dashboardByName',
         activeDashboardName,
         'id'
     ]);
@@ -51,6 +50,8 @@ export const selectColumnLastBlock = (state, columnId) =>
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
 
+export const selectColumns = state => state.dashboardState.get('columnById');
+
 export const selectColumnSuggestions = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'suggestions']);
 
@@ -62,10 +63,19 @@ export const selectCommentsFlag = (state, flag, id) => {
 };
 
 export const selectDashboardId = (state, name) =>
-    state.dashboardState.getIn(['dashboardById', name, 'id']);
+    state.dashboardState.getIn(['dashboardByName', name, 'id']);
 
-export const selectDashboards = state =>
-    state.dashboardState.get('dashboardById');
+export const selectDashboards = (state) => {
+    const search = selectDashboardSearch(state);
+    if (!search) {
+        return state.dashboardState.get('dashboardByName');
+    }
+    return state.dashboardState.get('dashboardByName').filter(dashboard =>
+        dashboard.get('name').toLowerCase().includes(search.toLowerCase())
+    );
+};
+
+export const selectDashboardSearch = state => state.dashboardState.get('search');
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
@@ -133,8 +143,8 @@ export const selectListNextEntries = (state, name, limit) => {
 };
 
 export const selectLists = (state) => {
-    const searchResults = state.listState.get('searchResults');
     if (state.listState.get('search')) {
+        const searchResults = state.listState.get('searchResults');
         return searchResults.map(name => state.listState.getIn(['byName', name]));
     }
     return state.listState.get('byName').toList();
