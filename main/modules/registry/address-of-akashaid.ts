@@ -8,11 +8,11 @@ import contracts from '../../contracts/index';
 const execute = Promise.coroutine(function* (data: ProfileExistsRequest[]) {
     const batch = data.map(
         (profile) => {
-            return contracts.instance.registry.addressOf(profile.akashaId);
+            return contracts.instance.ProfileResolver.addr(profile.akashaId);
         }
     );
     const collection = yield Promise.all(batch);
-    return { collection, request: data };
+    return { collection };
 });
 
 export default { execute, name: 'addressOf' };

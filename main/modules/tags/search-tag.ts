@@ -1,31 +1,27 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
+import { mixed } from '../models/records';
 
+
+export const cacheKey = 'search:tags:all';
 /**
  * Search a tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { tagName: string, limit?: number }) {
-    if (!data.limit) {
-        data.limit = 1;
+const execute = Promise.coroutine(function* (data: { tagName: string, limit: number }) {
+
+    if (!mixed.hasFull(cacheKey)) {
+        const filter = contracts.instance.Tags.TagCreate({}, { fromBlock: 0, toBlock: 'latest' });
+        yield filter.get().then((collection) => {
+            mixed.setFull(cacheKey, collection);
+            return true;
+        });
     }
-    let currentId = yield contracts.instance.tags.getFirstTag();
-    let currentName = yield contracts.instance.tags.getTagName(currentId);
-    const results = [];
-    if (currentName.includes(data.tagName)) {
-        results.push(currentName);
-    }
-    while (results.length < data.limit) {
-        currentId = yield contracts.instance.tags.getNextTag(currentId);
-        if (currentId === '0') {
-            break;
-        }
-        let currentName = yield contracts.instance.tags.getTagName(currentId);
-        if (currentName.includes(data.tagName)) {
-            results.push(currentName);
-        }
-    }
-    return { collection: results, tagName: data.tagName };
+    const collection = (mixed.getFull(cacheKey)).filter((currentTag) => {
+        return currentTag.includes(data.tagName);
+    });
+
+    return { collection };
 });
 
 export default { execute, name: 'searchTag' };

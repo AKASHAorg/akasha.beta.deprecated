@@ -6,7 +6,7 @@ import contracts from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: TagExistsRequest) {
-    const exists = yield contracts.instance.tags.exists(data.tagName);
+    const exists = yield contracts.instance.Tags.exists(data.tagName);
     return { exists, tagName: data.tagName };
 });
 

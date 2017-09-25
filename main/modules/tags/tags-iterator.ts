@@ -5,30 +5,14 @@ import contracts from '../../contracts/index';
  * Get a tags created
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { start?: number, limit?: number }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.tags.getFirstTag();
-    if (currentId === '0') {
-        return { collection: [] };
+const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number }) {
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const fetched = yield contracts.fromEvent(contracts.instance.ProfileRegistrar.TagCreate, {}, data.toBlock, maxResults);
+    for (let event of fetched.results) {
+        collection.push({tag: event.args.tag});
     }
-    let currentName;
-    const maxResults = (data.limit) ? data.limit : 20;
-    const results = [];
-    let counter = 0;
-    if (!data.start) {
-        currentName = yield contracts.instance.tags.getTagName(currentId);
-        results.push({ tagId: currentId, tagName: currentName });
-        counter = 1;
-    }
-    while (counter < maxResults) {
-        currentId = yield contracts.instance.tags.getNextTag(currentId);
-        if (currentId === '0') {
-            break;
-        }
-        currentName = yield contracts.instance.tags.getTagName(currentId);
-        results.push({ tagId: currentId, tagName: currentName });
-        counter++;
-    }
-    return { collection: results, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock };
 });
 
 export default { execute, name: 'tagIterator' };

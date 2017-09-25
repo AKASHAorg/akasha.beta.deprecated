@@ -1,3 +1,4 @@
+import canCreate from './can-create';
 import checkFormat from './check-format';
 import createTag from './create-tag';
 import existsTag from './exists-tag';
@@ -14,6 +15,7 @@ import isSubscribed from './is-subscribed';
 import searchTag from './search-tag';
 
 export default [
+    canCreate,
     checkFormat,
     createTag,
     existsTag,

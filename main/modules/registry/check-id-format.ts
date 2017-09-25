@@ -6,7 +6,7 @@ import contracts from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: ProfileExistsRequest) {
-    const idValid = yield contracts.instance.registry.checkFormat(data.akashaId);
+    const idValid = yield contracts.instance.ProfileRegistrar.checkFormat(data.akashaId);
     return { idValid, akashaId: data.akashaId };
 });
 

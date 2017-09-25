@@ -7,7 +7,8 @@ import contracts from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: GenericFromEventRequest) {
-    const collection = yield contracts.instance.tags.getTagsCreated(data);
+    const event = yield contracts.instance.Tags.TagCreate(data);
+    const collection = yield event.get();
     return { collection };
 });
 
