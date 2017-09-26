@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedDate, injectIntl } from 'react-intl';
-import { Icon } from 'antd';
+import { Popover, Icon } from 'antd';
 import { highlightMessages } from '../locale-data/messages';
-import { Avatar, PanelLink, ProfilePopover } from './';
+import { Avatar, ProfilePopover } from './';
 
 const HighlightHeader = (props) => {
-    const { containerRef, deleteHighlight, editable, highlight, intl, publisher } = props;
+    const { containerRef, deleteHighlight, highlight, toggleNoteEditable, intl, publisher } = props;
 
     const date = (
       <FormattedDate
@@ -17,9 +17,31 @@ const HighlightHeader = (props) => {
         year="numeric"
       />
     );
-    const highlightUrl = `highlights/${highlight.get('id')}`;
     const publisherUrl = `/@${highlight.get('publisher')}`;
     const entryUrl = `${publisherUrl}/${highlight.get('entryId')}`;
+
+    const menu = (
+      <div className="highlight-header__menu">
+        <div className="highlight-header__button-text">
+          {intl.formatMessage(highlightMessages.startEntry)}
+        </div>
+        <div
+          onClick={() => toggleNoteEditable(highlight.get('id'))}
+          className="highlight-header__button-text"
+        >
+          {highlight.get('notes') ?
+              intl.formatMessage(highlightMessages.editNote) :
+              intl.formatMessage(highlightMessages.addNote)
+            }
+        </div>
+        <div
+          onClick={() => deleteHighlight(highlight.get('id'))}
+          className="highlight-header__button-text"
+        >
+          {intl.formatMessage(highlightMessages.deleteHighlight)}
+        </div>
+      </div>
+    );
 
     return (
       <div className="highlight-header">
@@ -48,31 +70,15 @@ const HighlightHeader = (props) => {
             {date}
           </div>
         </div>
-        <div className="highlight-header__actions">
-          <div className="content-link highlight-header__button">
-            <Icon className="highlight-header__icon" type="file" />
-            <span className="highlight-header__button-text">
-              {intl.formatMessage(highlightMessages.startEntry)}
-            </span>
-          </div>
-          {editable &&
-            <div className="content-link highlight-header__button">
-              <PanelLink to={highlightUrl}>
-                <Icon className="highlight-header__icon" type="edit" />
-                <span className="highlight-header__button-text">
-                  {intl.formatMessage(highlightMessages.editNote)}
-                </span>
-              </PanelLink>
-            </div>
-          }
-          <div className="content-link highlight-header__button">
-            <Icon
-              className="highlight-header__icon"
-              onClick={() => deleteHighlight(highlight.get('id'))}
-              type="delete"
-            />
-          </div>
-        </div>
+        <Popover
+          arrowPointAtCenter
+          placement="bottomLeft"
+          content={menu}
+          trigger="click"
+          overlayClassName="highlight-header__popover"
+        >
+          <Icon type="ellipsis" className="highlight-header__menu-icon" />
+        </Popover>
       </div>
     );
 };
@@ -80,8 +86,8 @@ const HighlightHeader = (props) => {
 HighlightHeader.propTypes = {
     containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func.isRequired,
-    editable: PropTypes.bool,
     highlight: PropTypes.shape().isRequired,
+    toggleNoteEditable: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     publisher: PropTypes.shape()
 };
