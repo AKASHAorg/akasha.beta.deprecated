@@ -7,9 +7,8 @@ import Masonry from 'react-masonry-component';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../locale-data/messages';
 import { entryPageShow } from '../local-flux/actions/entry-actions';
-import { EntryCard } from '../shared-components';
 import { isInViewport } from '../utils/domUtils';
-import { DataLoader } from './';
+import { DataLoader, EntryCard } from './';
 
 class EntryList extends Component {
 

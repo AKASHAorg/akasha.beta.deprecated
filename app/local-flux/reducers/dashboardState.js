@@ -172,7 +172,9 @@ const dashboardState = createReducer(initialState, {
         let columnById = state.get('columnById');
         let dashboardByName = state.get('dashboardByName');
         data.columns.forEach((column) => {
-            columnById = columnById.set(column.id, new ColumnRecord(column));
+            if (!columnById.get(column.id)) {
+                columnById = columnById.set(column.id, new ColumnRecord(column));
+            }
         });
         dashboardByName = dashboardByName.set(data.name, createDashboardRecord(data));
         return state.merge({
