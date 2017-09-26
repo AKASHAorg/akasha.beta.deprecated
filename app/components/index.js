@@ -29,6 +29,7 @@ export ErrorReportingModal from './errors/error-reporting-modal';
 export FatalErrorModal from './fatal-error-modal';
 export GethCacheSelect from './forms/geth-cache-select';
 export GethDetailsModal from './modals/geth-details-modal';
+export Highlights from './profile-overview/highlights';
 export HighlightCard from './cards/highlight-card';
 export HighlightEditPanel from './panels/highlight-edit-panel';
 export HighlightHeader from './highlight-header';

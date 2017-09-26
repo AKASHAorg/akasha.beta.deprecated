@@ -17,7 +17,7 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog } from '../components/dialogs';
 import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorNotification, ErrorReportingModal,
-    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, MyBalance, Notification, PageContent,
+    FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, Notification, PageContent,
     ProfileOverview, ProfileOverviewSecondarySidebar, SearchSecondarySidebar, SecondarySidebar, SetupPages,
     TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -135,6 +135,7 @@ class AppContainer extends Component {
                       <PageContent>
                         <Route path="/profileoverview/overview" component={ProfileOverview} />
                         <Route path="/profileoverview/mybalance" component={MyBalance} />
+                        <Route path="/profileoverview/highlights" component={Highlights} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
