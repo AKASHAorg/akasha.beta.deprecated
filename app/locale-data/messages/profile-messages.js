@@ -71,6 +71,11 @@ export const profileMessages = defineMessages({
         description: 'remove crypto button label',
         defaultMessage: 'Remove cryptocurrency link'
     },
+    entries: {
+        id: 'app.profile.entries',
+        description: 'Title for entries card',
+        defaultMessage: 'Entries'
+    },
     follow: {
         id: 'app.profile.follow',
         description: 'follow a profile',
@@ -127,10 +132,30 @@ export const profileMessages = defineMessages({
         description: 'Title for my balance card',
         defaultMessage: 'My Balance'
     },
+    myProfile: {
+        id: 'app.profile.myProfile',
+        description: 'Title for profile overview sidebar',
+        defaultMessage: 'MY PROFILE'
+    },
+    overview: {
+        id: 'app.profile.overview',
+        description: 'Title for overview card',
+        defaultMessage: 'Overview'
+    },
+    settings: {
+        id: 'app.profile.settings',
+        description: 'Title for profile settings',
+        defaultMessage: 'Profile Settings'
+    },
     receive: {
         id: 'app.profile.receive',
         description: 'Receive button label',
         defaultMessage: 'Receive'
+    },
+    rewardsAndGoals: {
+        id: 'app.profile.rewardsAndGoals',
+        description: 'Title for rewards and goals card',
+        defaultMessage: 'Rewards and Goals'
     },
     send: {
         id: 'app.profile.send',

@@ -27,6 +27,11 @@ const generalMessages = defineMessages({
         description: 'aeth token',
         defaultMessage: 'AETH'
     },
+    amount: {
+        id: 'app.general.amount',
+        description: 'currency amount',
+        defaultMessage: 'Amount'
+    },
     akasha: {
         id: 'app.general.akasha',
         description: 'AKASHA',
@@ -199,6 +204,11 @@ const generalMessages = defineMessages({
         id: 'app.general.processingImage',
         description: 'Message to show while images are being precessed',
         defaultMessage: 'Processing image'
+    },
+    profileOverview: {
+        id: 'app.general.profileOverview',
+        description: 'button label for profile overview',
+        defaultMessage: 'Profile Overview'
     },
     publish: {
         id: 'app.general.publish',

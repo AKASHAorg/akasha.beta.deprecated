@@ -30,7 +30,10 @@ const highlightState = createReducer(initialState, {
             searchResults: data
         }),
 
-    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
+
+    [types.HIGHLIGHT_TOGGLE_NOTE_EDITABLE]: (state, { id }) =>
+        state.setIn(['byId', id, 'editNotes'], !state.getIn(['byId', id, 'editNotes']))
 });
 
 export default highlightState;

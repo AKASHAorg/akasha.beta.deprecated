@@ -16,7 +16,8 @@ import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
-     ErrorReportingModal, FatalErrorModal, GethDetailsModal, IpfsDetailsModal, Notification, PageContent,
+    ErrorReportingModal, FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance,
+    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -127,9 +128,13 @@ class AppContainer extends Component {
                       }
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent>
+                        <Route path="/profileoverview/overview" component={ProfileOverview} />
+                        <Route path="/profileoverview/mybalance" component={MyBalance} />
+                        <Route path="/profileoverview/highlights" component={Highlights} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>

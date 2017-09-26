@@ -80,6 +80,11 @@ class Sidebar extends Component {
                   <ChatIcon isActive={this._checkActiveIcon('chat')} />
                 </Link>
               </div>
+              <div {...this.getWrapperProps(generalMessages.profileOverview)}>
+                <Link to="/profileoverview/overview">
+                  <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
+                </Link>
+              </div>
             </div>
             <div className="sidebar__logo">
               <LogoButton />

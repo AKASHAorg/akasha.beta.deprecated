@@ -43,21 +43,30 @@
         align-items: center;
     }
 
-    &__icon {
-        width: 16px;
-        height: 16px;
-        font-size: 16px;
-        margin-right: 5px;
+    &__popover {
+        .ant-popover-inner-content {
+            padding: 0;
+        }
     }
 
     &__button-text {
         font-size: 13px;
         font-weight: 400;
+        padding: 8px 16px;
+        cursor: pointer;
+        &:hover {
+            background-color: #ecf6fd;
+        }
     }
 
     &__entry-title {
         display: inline-block;
         max-width: 200px;
         height: 14px;
+    }
+
+    &__menu-icon {
+        cursor: pointer;
+        transform: rotate(90deg);
     }
 }
