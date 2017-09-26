@@ -47,11 +47,11 @@ class DraftCard extends Component {
               <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }}>
                 <div style={{ display: 'flex' }}>
                   {tags.map((tag, key) =>
-                    <TagChip
+                    {/* <TagChip
                       key={key}
                       tag={tag}
                       style={{ height: '24px' }}
-                    />
+                    /> */}
                   )}
                 </div>
               </CardText>

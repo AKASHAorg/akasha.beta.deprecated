@@ -3,8 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Popover, Icon } from 'antd';
-import { highlightMessages } from '../locale-data/messages';
-import { Avatar, ProfilePopover } from './';
+import { highlightMessages } from '../../locale-data/messages';
+import { Avatar, ProfilePopover } from '../';
 
 const HighlightHeader = (props) => {
     const { containerRef, deleteHighlight, highlight, toggleNoteEditable, intl, publisher } = props;

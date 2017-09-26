@@ -2,17 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
-    SvgIcon } from 'material-ui';
-import WarningIcon from 'material-ui/svg-icons/alert/warning';
-import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
-import EditIcon from 'material-ui/svg-icons/image/edit';
-import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
-    EntryUpvote, ToolbarEthereum } from '../../components/svg';
-import { EntryVotesPanel, TagChip } from '../';
-import { Avatar, EntryVersionsPanel, ProfilePopover } from '../../components';
-import { calculateReadingTime } from '../../utils/dataModule';
-import { entryMessages, generalMessages } from '../../locale-data/messages';
+import { Card } from 'antd';
+import classNames from 'classnames';
+import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover } from '../';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -63,72 +55,11 @@ class EntryCard extends Component {
         return !this.isOwnEntry() && parseInt(entry.get('score'), 10) <= -30;
     };
 
-    selectProfile = () => {
-        const { entry, hidePanel, loggedAkashaId } = this.props;
-        const { router } = this.context;
-        const profileAddress = entry.getIn(['entryEth', 'publisher', 'profile']);
-        if (profileAddress) {
-            hidePanel();
-            router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
-        }
-    };
-
-    selectTag = (ev, tag) => {
-        const { hidePanel, selectTag } = this.props;
-        hidePanel();
-        selectTag(tag);
-    };
-
-    handleUpvote = () => {
-        const { entry, entryActions } = this.props;
-        const akashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
-        const payload = {
-            publisherAkashaId: akashaId,
-            entryTitle: entry.getIn(['content', 'title']),
-            entryId: entry.get('entryId'),
-            active: entry.get('active')
-        };
-        entryActions.addUpvoteAction(payload);
-    };
-
-    handleDownvote = () => {
-        const { entry, entryActions } = this.props;
-        const akashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
-        const payload = {
-            publisherAkashaId: akashaId,
-            entryTitle: entry.getIn(['content', 'title']),
-            entryId: entry.get('entryId')
-        };
-        entryActions.addDownvoteAction(payload);
-    };
-
     handleComments = () => {
         const { router } = this.context;
         const { entry, hidePanel, loggedAkashaId } = this.props;
         hidePanel();
         router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
-    };
-
-    handleBookmark = () => {
-        const { entry, loggedAkashaId, isSaved, entryActions } = this.props;
-        if (isSaved) {
-            entryActions.deleteEntry(loggedAkashaId, entry.get('entryId'));
-            entryActions.moreSavedEntriesList(1);
-        } else {
-            entryActions.saveEntry(loggedAkashaId, entry.get('entryId'));
-        }
-    };
-
-    handleClaim = () => {
-        const { entry, entryActions } = this.props;
-        if (!entry.get('canClaim')) {
-            return;
-        }
-        const payload = {
-            entryTitle: entry.getIn(['content', 'title']),
-            entryId: entry.get('entryId')
-        };
-        entryActions.addClaimAction(payload);
     };
 
     handleEdit = () => {
@@ -137,15 +68,13 @@ class EntryCard extends Component {
         handleEdit(entry.get('entryId'));
     };
 
-    handleEntryNavigation = (tar, ev, version) => {
+    getVersion = (version) => {
         const { entry, hidePanel, loggedAkashaId, entryPageShow } = this.props;
         // hidePanel();
         // const query = version !== undefined ? `?version=${version}` : '';
         // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
         // entryPageShow(entry.get('entryId'));
     };
-
-    getVersion = version => this.handleEntryNavigation(null, null, version);
 
     openVotesPanel = () => {
         this.setState({
@@ -172,155 +101,46 @@ class EntryCard extends Component {
     };
 
     renderResolvingPlaceholder = () => (
-      <Card style={{ margin: '5px 10px 10px 5px', width: '340px', height: '300px', opacity: '0.5' }}>
-        <CardText style={{ position: 'relative' }}>
-          <div style={{ maxWidth: '175px' }}>
-            Resolving ipfs hash
-          </div>
-        </CardText>
+      <Card className="entry-card entry-card_transparent entry-card_fixed-height">
+        <div style={{ maxWidth: '175px' }}>
+          Resolving ipfs hash
+        </div>
       </Card>
     );
 
-    renderUnresolvedPlaceholder = () => {
-        const { intl } = this.props;
-        const { palette } = this.context.muiTheme;
-        return (
-          <Card style={{ margin: '5px 10px 10px 5px', width: '340px', height: '300px' }}>
-            <CardText style={{ position: 'relative' }}>
-              <div style={{ maxWidth: '175px' }}>
-                {intl.formatMessage(entryMessages.unresolvedEntry)}
-              </div>
-              <div
-                data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
-                style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '2px',
-                    display: 'inline-block'
-                }}
-              >
-                <IconButton>
-                  <HubIcon color={palette.accent1Color} />
-                </IconButton>
-              </div>
-            </CardText>
-          </Card>
-        );
-    };
-
-    renderSubtitle = () => {
-        const { entry, intl } = this.props;
-        const content = entry.get('content');
-        const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
-        const wordCount = (content && content.get('wordCount')) || 0;
-        const readingTime = calculateReadingTime(wordCount);
-        const latestVersion = content && content.get('version');
-        const publishedMessage = latestVersion ?
-          (<span>
-            <span onClick={this.openVersionsPanel} className="link">
-              {intl.formatMessage(entryMessages.published)}
-            </span>
-            <span> *</span>
-          </span>) :
-          intl.formatMessage(entryMessages.published);
-
-        return (
-          <div
-            className="overflow-ellipsis"
-            style={{ maxWidth: '270px', textAlign: 'left' }}
-          >
-            <span style={{ paddingRight: '5px' }}>
-              {publishedMessage}
-            </span>
-            <span
-              data-tip={`Block ${entry.getIn(['entryEth', 'blockNr'])}`}
-              style={{ display: 'inline-block', fontWeight: 600 }}
-            >
-              {intl.formatRelative(publishDate)}
-            </span>
-            <span style={{ padding: '0 5px' }}>-</span>
-            {readingTime.hours &&
-              intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })
-            }
-            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
-            <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
-            <span style={{ padding: '0 5px' }}>
-              ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
-            </span>
-          </div>
-        );
-    };
-
     render () {
-        const { canClaimPending, claimPending, containerRef, entry, entryResolvingIpfsHash, existingDraft,
-            fetchingEntryBalance, intl, isSaved, selectedTag, style, voteEntryPending,
+        const { containerRef, entry, entryResolvingIpfsHash, existingDraft, style,
             publisher } = this.props;
-        const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const latestVersion = content && content.get('version');
-        const existingVoteWeight = entry.get('voteWeight') || 0;
         if (entryResolvingIpfsHash) {
             return this.renderResolvingPlaceholder();
         }
         if (!publisher) {
-            return this.renderUnresolvedPlaceholder();
+            console.error('cannot resolve publisher');
         }
-        const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
-        const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
+        const cardClass = classNames('entry-card', {
+            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !content
+        });
 
         return (
           <Card
-            className="start-xs"
-            expanded={this.isPossiblyUnsafe() ? this.state.expanded : true}
-            onExpandChange={this.onExpandChange}
-            style={Object.assign(
-                {},
-                {
-                    margin: '5px 10px 10px 5px',
-                    transition: 'none',
-                    width: '340px',
-                    opacity: (this.isPossiblyUnsafe() && !this.state.expanded) || !content ? 0.5 : 1
-                },
-                style
-            )}
+            className={cardClass}
+            // expanded={this.isPossiblyUnsafe() ? this.state.expanded : true}
+            // onExpandChange={this.onExpandChange}
+            style={style}
+            title={
+              <EntryCardHeader
+                containerRef={containerRef}
+                entry={entry}
+                isNotSafe={this.isPossiblyUnsafe()}
+                isOwnEntry={this.isOwnEntry()}
+                openVersionsPanel={this.openVersionsPanel}
+                publisher={publisher}
+              />
+            }
           >
-            <CardHeader
-              title={publisher ?
-                <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
-                  <div
-                    className="overflow-ellipsis"
-                    style={{ maxWidth: '270px', textAlign: 'left' }}
-                  >
-                    <span className="content-link">
-                      {publisher.get('akashaId')}
-                    </span>
-                  </div>
-                </ProfilePopover> :
-                <div style={{ height: '22px' }} />
-              }
-              subtitle={this.renderSubtitle()}
-              avatar={
-                <button
-                  style={{
-                      border: '0px',
-                      outline: 'none',
-                      background: 'transparent',
-                      borderRadius: '50%',
-                      margin: '0 10px 0 0',
-                      padding: 0
-                  }}
-                  onClick={this.selectProfile}
-                >
-                  <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
-                    <Avatar
-                      firstName={publisher.get('firstName')}
-                      image={publisher.get('avatar')}
-                      lastName={publisher.get('lastName')}
-                      size="small"
-                    />
-                  </ProfilePopover>
-                </button>
-              }
+            {/* <CardHeader
               textStyle={{ paddingRight: '0px' }}
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
@@ -404,64 +224,48 @@ class EntryCard extends Component {
                   </div>
                 </div>
               }
-            </CardHeader>
+            </CardHeader> */}
+            {!content && !entryResolvingIpfsHash &&
+              <div style={{ height: '240px' }}>Cannot resolve content</div>
+            }
             {content &&
               <Link
+                className="unstyled-link"
                 to={{
                     pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
                     state: { overlay: true }
                 }}
               >
-                <CardTitle
-                  title={content.get('title')}
-                  expandable
-                  className="content-link"
-                  style={{
-                      paddingTop: '4px',
-                      paddingBottom: '4px',
-                      fontWeight: '600',
-                      wordWrap: 'break-word',
-                      maxHeight: '80px',
-                      overflow: 'hidden'
-                  }}
-                />
+                <div className="content-link entry-card__title">
+                  {content.get('title')}
+                </div>
               </Link>
             }
             {content &&
-              <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }} expandable>
-                {content.get('tags').map(tag =>
-                  <TagChip
+              <Link
+                className="unstyled-link"
+                to={{
+                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
+                    state: { overlay: true }
+                }}
+              >
+                <div className="content-link entry-card__excerpt">
+                  {content.get('excerpt')}
+                </div>
+              </Link>
+            }
+            {content &&
+              <div className="entry-card__tags">
+                {content.get('tags').map(tag => (
+                  <TagPopover
+                    containerRef={containerRef}
                     key={tag}
                     tag={tag}
-                    isSelected={selectedTag === tag}
-                    onTagClick={this.selectTag}
-                    style={{ height: '24px' }}
                   />
-                )}
-              </CardText>
+                ))}
+              </div>
             }
-            {content &&
-              <Link
-                to={{
-                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
-                    state: { overlay: true }
-                }}
-              >
-                <CardText
-                  className="content-link"
-                  style={{
-                      paddingTop: '4px',
-                      paddingBottom: '4px',
-                      wordWrap: 'break-word',
-                      fontSize: '16px'
-                  }}
-                  expandable
-                >
-                  {content.get('excerpt')}
-                </CardText>
-              </Link>
-            }
-            {content &&
+            {/* {content &&
               <CardActions className="col-xs-12">
                 <div style={{ display: 'flex', alignItems: 'center' }} >
                   <div style={{ position: 'relative' }}>
@@ -602,8 +406,9 @@ class EntryCard extends Component {
                   />
                 }
               </CardActions>
-            }
-            {latestVersion && this.state.showVersions &&
+            } */}
+            {content && <EntryPageActions containerRef={containerRef} entry={entry} />}
+            {!!latestVersion && this.state.showVersions &&
               <EntryVersionsPanel
                 closeVersionsPanel={this.closeVersionsPanel}
                 currentVersion={latestVersion}

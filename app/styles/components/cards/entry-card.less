@@ -1,0 +1,43 @@
+.entry-card {
+    margin: 5px 10px 10px 5px;
+    width: 340px;
+
+    &_transparent {
+        opacity: 0.5;
+    }
+
+    &_fixed-height {
+        height: 300px;
+    }
+
+    &__title {
+        padding: 6px 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: @heading-color;
+        word-wrap: break-word;
+        max-height: 64px;
+        overflow: hidden;
+        line-height: 1.2;
+    }
+
+    &__excerpt {
+        margin: 6px 0px;
+        word-wrap: break-word;
+        color: @heading-color;
+    }
+
+    &__tags {
+        padding: 6px 0;
+    }
+
+    .ant-card-head {
+        padding: 0 12px;
+        height: 52px;
+        border-bottom: none;
+    }
+
+    .ant-card-body {
+        padding: 0 12px;
+    }
+}
