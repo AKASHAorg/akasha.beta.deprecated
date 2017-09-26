@@ -28,8 +28,8 @@ class GethIPC extends ModuleEmitter {
             ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'rinkeby', 'geth.ipc'),
             networkid: 4,
             syncmode: 'fast',
-            rinkeby: ''
-            // rpc: '',
+            rinkeby: '',
+            // rpc: ''
             // rpccorsdomain: '*',
             // rpcapi: 'eth,net,web3,personal,admin,shh,txpool',
             // rpcaddr: '0.0.0.0'

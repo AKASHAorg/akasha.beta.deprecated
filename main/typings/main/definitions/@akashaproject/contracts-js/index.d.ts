@@ -9,6 +9,8 @@ declare module 'ethereumjs-util' {
 
     export function isValidAddress(address: string): boolean;
 
+    export function isValidChecksumAddress(address: string): boolean;
+
     export function toBuffer(data: any): Buffer;
 
     export function bufferToHex(data: Buffer): string;

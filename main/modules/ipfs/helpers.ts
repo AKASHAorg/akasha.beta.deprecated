@@ -17,9 +17,9 @@ export const decodeHash = function (ipfsHash: string): string[] {
 
 // reverse operation of decode
 // used for data from web3 contracts, hex encoded
-export const encodeHash = function (fn: string, digestSize: string, hash: string): string {
-    const fnBuff = Buffer.from(stripHexPrefix(fn), 'hex');
-    const digestSizeBuff = Buffer.from(stripHexPrefix(digestSize), 'hex');
+export const encodeHash = function (fn: any, digestSize: any, hash: string): string {
+    const fnBuff = Buffer.from(fn.toString(16), 'hex');
+    const digestSizeBuff = Buffer.from(digestSize.toString(16), 'hex');
     const hashBuff = Buffer.from(stripHexPrefix(hash), 'hex');
     const totalLength = fnBuff.length + digestSizeBuff.length + hashBuff.length;
     const decoded = Buffer.concat([fnBuff, digestSizeBuff, hashBuff], totalLength);

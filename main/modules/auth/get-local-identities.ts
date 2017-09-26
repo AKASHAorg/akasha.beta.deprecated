@@ -1,7 +1,6 @@
 import * as Promise from 'bluebird';
-import contracts from '../../contracts/index';
+import resolveEth from '../registry/resolve-ethaddress';
 import { GethConnector } from '@akashaproject/geth-connector';
-import { unpad } from 'ethereumjs-util';
 
 const execute = Promise.coroutine(function* () {
     const accounts = yield GethConnector.getInstance().web3.eth.getAccountsAsync();
@@ -9,13 +8,7 @@ const execute = Promise.coroutine(function* () {
         return [];
     }
     const profiles = accounts.map((address) => {
-        return contracts.instance.ProfileResolver.reverse(address).then((node) => {
-            return {
-                akashaId: GethConnector.getInstance().web3.toUtf8(node),
-                key: address,
-                raw: (unpad(node)) ? node : null
-            };
-        });
+        return resolveEth.execute({ ethAddress: address });
     });
     const collection = yield Promise.all(profiles);
     return { collection };
