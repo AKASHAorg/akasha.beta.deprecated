@@ -117,6 +117,7 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
     const actionId = action.get('id');
     const payload = action.get('payload').toJS();
     const publishAction = publishActions[action.get('type')];
+    console.log(payload, 'some payload');
     if (publishAction) {
         yield put(publishAction({ actionId, ...payload }));
     }

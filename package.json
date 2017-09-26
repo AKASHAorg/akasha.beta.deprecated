@@ -21,7 +21,7 @@
     "build-lang": "babel ./app/utils/build-translations.js | node",
     "start": "cross-env NODE_ENV=production electron ./main.js",
     "prestart-hot": "npm run build-lang",
-    "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --debug=5858 ./main.js",
+    "start-hot": "cross-env HOT=1 NODE_ENV=development electron --debug=5858 ./main.js",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "package": "npm run build && build --publish never",
     "package-win": "npm run build && build --win --x64",

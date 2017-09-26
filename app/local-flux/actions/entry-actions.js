@@ -155,8 +155,9 @@ export const entryNewestIteratorSuccess = (data, req) =>
 export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
-export const entryProfileIterator = (columnId, akashaId) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { columnId, akashaId });
+
+export const entryProfileIterator = ({ columnId, akashaId, limit, asDrafts }) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { columnId, akashaId, limit, asDrafts });
 
 export const entryProfileIteratorError = (error, req) => {
     error.code = 'EPIE01';
@@ -167,8 +168,8 @@ export const entryProfileIteratorError = (error, req) => {
 export const entryProfileIteratorSuccess = (data, req) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
 
-export const entryResolveIpfsHash = (ipfsHash, columnId, entryIds) =>
-    action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds });
+export const entryResolveIpfsHash = ({ ipfsHash, columnId, entryIds, asDrafts, full }) =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds, asDrafts, full });
 
 export const entryResolveIpfsHashError = (error, req) => {
     error.code = 'ERIHE01';

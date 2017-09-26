@@ -29,12 +29,12 @@ class NewEntryPage extends Component {
             this.props.draftCreate({
                 id: match.params.draftId,
                 akashaId,
-                tags: [],
                 content: {
                     licence: userDefaultLicence,
-                    type: 'article',
                     featuredImage: {},
-                }
+                },
+                tags: [],
+                type: 'article',
             });
         }
     }
@@ -103,27 +103,30 @@ class NewEntryPage extends Component {
 
     _handlePublish = (ev) => {
         const { draftObj, akashaId } = this.props;
-        console.log('publish', draftObj);
-        this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: draftObj });
+        const publishPayload = {
+            id: draftObj.id,
+            title: draftObj.getIn(['content', 'title']),
+            type: draftObj.getIn(['content', 'type'])
+        };
+        this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: publishPayload });
         ev.preventDefault();
     }
+
+    _handleVersionRevert = version =>
+        (ev) => {
+            const { draftObj } = this.props;
+            if (draftObj.localChanges) {
+                alert(`Are you sure you want to discard current changes and revert to v${version + 1}?`);
+            }
+            console.log('revert current draft to version', version);
+            ev.preventDefault();
+        }
 
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
-    _getPendingTimeline = () => {
-        const { draftObj } = this.props;
-        const saving = draftObj.get('saving');
-        const saved = draftObj.get('saved');
-        if ((saving || saved) && !draftObj.get('version')) {
-            return <div>Local Version</div>;
-        }
-        return null;
-    }
-    _getProgressDot = (dot, { status, index }) => {
-        const { draftObj } = this.props;
-        const { version } = draftObj.get('content');
 
+    _getProgressDot = (dot, { status, index }) => {
         switch (status) {
             case 'draft':
                 return (
@@ -131,10 +134,14 @@ class NewEntryPage extends Component {
                     {dot}
                   </span>
                 );
-            case 'complete':
+            case 'published':
                 return (
-                  <Popover content="28 Aug 2017">
-                    <a href="" className="complete-dot">
+                  <Popover content={`Status: ${status}`}>
+                    <a
+                      href="##"
+                      className="published-dot"
+                      onClick={this._handleVersionRevert(index)}
+                    >
                       {dot}
                     </a>
                   </Popover>
@@ -146,13 +153,27 @@ class NewEntryPage extends Component {
         }
         // return <Popover content="test">{dot}</Popover>;
     }
+    _getTimelineSteps = (items, localChanges) => {
+        const steps = items.map((item, index) => (
+          <Step
+            key={`${index}`}
+            title={`v${index + 1}`}
+            status="published"
+          />
+        ));
+        if (localChanges) {
+            steps.push(
+              <Step key="$localVersion" title="Local Version" status="draft" />
+            );
+        }
+        return steps;
+    }
     _createTimeline = () => {
         const { draftObj } = this.props;
-        const { version } = draftObj;
-        const timelineItems = Array.from(Number(version));
-        const saving = draftObj.get('saving');
-        const saved = draftObj.get('saved');
-        if (!version) {
+        const { content, localChanges } = draftObj;
+        const { version } = content;
+        const timelineItems = [...Array(Number(version) + 1)];
+        if (version === -1) {
             return (
               <Steps
                 progressDot={this._getProgressDot}
@@ -164,21 +185,19 @@ class NewEntryPage extends Component {
               </Steps>
             );
         }
-        if (version) {
-            return <div>This entry has version!</div>;
-        }
         return (
           <Steps
-            size="small"
-            current={version}
+            progressDot={this._getProgressDot}
+            current={version + 1}
             className="text-entry-page__timeline-steps"
           >
-            {timelineItems.map(item =>
-              <Step title={`v${item}`} />
-            )}
+            {
+              this._getTimelineSteps(timelineItems, localChanges)
+            }
           </Steps>
         );
     }
+
     render () {
         const { showPublishPanel } = this.state;
         const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
@@ -286,6 +305,7 @@ class NewEntryPage extends Component {
                       size="large"
                       type="primary"
                       onClick={this._handlePublish}
+                      loading={draftObj.get('publishing')}
                     >
                       {intl.formatMessage(generalMessages.publish)}
                     </Button>

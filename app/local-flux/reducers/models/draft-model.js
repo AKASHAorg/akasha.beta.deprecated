@@ -1,48 +1,34 @@
 import { Record, Map, List, fromJS } from 'immutable';
-import { DraftLicence, DraftContent, Draft } from '../records';
+import { DraftLicence, DraftContent, Draft, EntryEth } from '../records';
 
 const DraftModelRecord = Record({
     drafts: new Map(),
     draftsCount: 0,
+    publishedEntries: new Map(),
     selection: new Map(),
     draftsFetched: false,
+    resolvingHashes: new List(),
 });
 
 export default class DraftModel extends DraftModelRecord {
     static createDraft (draftObj) {
-        const {
-            akashaId,
-            content = {},
-            entryId,
-            id,
-            tags = null,
-            tx, created_at, updated_at } = draftObj;
-        const {
-            title,
-            excerpt,
-            licence = new DraftLicence(),
-            draft,
-            wordCount,
-            featuredImage,
-            type } = content;
-        const createdDraft = new Draft({
-            id,
-            akashaId,
-            entryId,
-            tx,
-            created_at,
-            updated_at,
-            content: new DraftContent({
-                type,
-                draft,
-                title,
-                licence: new DraftLicence(licence),
-                excerpt,
-                featuredImage: fromJS(featuredImage),
-                wordCount
-            }),
-            tags: new List().concat(tags)
+        const { selectionState, ...others } = draftObj;
+        const draftLicence = new DraftLicence(draftObj.content.licence);
+        const entryEth = new EntryEth(draftObj.entryEth);
+        const draftContent = new DraftContent({
+            ...draftObj.content,
+            licence: draftLicence,
+            featuredImage: draftObj.featuredImage ? draftObj.featuredImage : new Map()
         });
-        return createdDraft;
+        const draft = new Draft({
+            ...others,
+            akashaId: draftObj.akashaId || draftObj.entryEth.publisher.akashaId,
+            id: draftObj.id ? draftObj.id : draftObj.entryId,
+            licence: draftLicence,
+            content: draftContent,
+            entryEth,
+            tags: (draftObj.tags && draftObj.tags.length) ? List.of(...draftObj.tags) : new List(),
+        });
+        return draft;
     }
 }

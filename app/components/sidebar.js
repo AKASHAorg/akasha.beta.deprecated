@@ -39,7 +39,7 @@ class Sidebar extends Component {
         return !blackList.every(route => location.pathname.includes(route));
     }
     _navigateTo = (path) => {
-        const { history, draftCreate, userSelectedLicence } = this.props;
+        const { history, draftCreate, userSelectedLicence, loggedProfile } = this.props;
         return () => {
             this.setState({
                 overlayVisible: false,
@@ -49,12 +49,13 @@ class Sidebar extends Component {
                     const draftId = genId();
                     draftCreate({
                         id: draftId,
+                        akashaId: loggedProfile.get('akashaId'),
                         content: {
                             featuredImage: {},
                             licence: userSelectedLicence,
-                            type: 'article',
                         },
-                        tags: []
+                        tags: [],
+                        type: 'article',
                     });
                     return history.push(`/draft/article/${draftId}`);
                 }
@@ -197,6 +198,7 @@ Sidebar.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
 };

@@ -4,6 +4,7 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
+import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
@@ -92,7 +93,7 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     }
 }
 
-export function* entryGetExtraOfList (collection, limit, columnId) {
+export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) {
     // requests are made for n+1 entries, but the last one
     // should be ignored if the limit is fulfilled
     const entries = collection.length === limit ?
@@ -120,7 +121,12 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
             ownEntries.push(entry.entryId);
         }
     });
-    yield put(actions.entryResolveIpfsHash(entryIpfsHashes, columnId, entryIds));
+    yield put(actions.entryResolveIpfsHash({
+        ipfsHash: entryIpfsHashes,
+        columnId,
+        entryIds,
+        asDrafts
+    }));
     yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, akashaIds));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
@@ -199,16 +205,16 @@ function* entryNewestIterator ({ columnId }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT }]);
 }
 
-function* entryProfileIterator ({ columnId, akashaId }) {
+function* entryProfileIterator ({ columnId, akashaId, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, akashaId }]);
+    yield apply(channel, channel.send, [{ columnId, limit, akashaId, asDrafts }]);
 }
 
-function* entryResolveIpfsHash ({ ipfsHash, columnId, entryIds }) {
+function* entryResolveIpfsHash ({ ipfsHash, columnId, entryIds, asDrafts, full }) {
     const channel = Channel.server.entry.resolveEntriesIpfsHash;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ ipfsHash, columnId, entryIds }]);
+    yield apply(channel, channel.send, [{ ipfsHash, columnId, entryIds, asDrafts, full }]);
 }
 
 function* entryStreamIterator ({ columnId }) {
@@ -232,7 +238,6 @@ function* entryVoteSuccess (entryId) {
     }
     const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
     if (publisher && publisher === loggedAkashaId) {
-        console.log('is own entry');
         yield put(actions.entryCanClaim(entryId));
         yield put(actions.entryGetBalance(entryId));
     }
@@ -401,20 +406,35 @@ function* watchEntryNewestIteratorChannel () {
 function* watchEntryProfileIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryProfileIterator);
+        const { columnId, limit, asDrafts } = resp.request;
         if (resp.error) {
             if (resp.request.start) {
                 yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
+            } else if (resp.request.asDrafts) {
+                yield put(draftActions.entriesGetAsDraftsError(resp.error, resp.request));
             } else {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
             }
         } else {
             if (resp.request.start) {
                 yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+            } else if (resp.request.asDrafts) {
+                yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
+                const reqObj = resp.data.collection.map(entry => ({
+                    ipfsHash: [entry.entryEth.ipfsHash],
+                    entryIds: [entry.entryId]
+                })).reduce((prev, curr) => ({
+                    ipfsHash: prev.ipfsHash.concat(curr.ipfsHash),
+                    entryIds: prev.entryIds.concat(curr.entryIds),
+                    columnId: null,
+                    asDrafts: true,
+                    full: true,
+                }));
+                yield put(actions.entryResolveIpfsHash(reqObj));
             } else {
                 yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
             }
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
         }
     }
 }
@@ -423,7 +443,13 @@ function* watchEntryResolveIpfsHashChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
         if (resp.error) {
-            yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+            if (resp.request.asDrafts) {
+                yield put(draftActions.entryResolveIpfsHashAsDraftsError(resp.error, resp.request));
+            } else {
+                yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+            }
+        } else if (resp.request.asDrafts) {
+            yield put(draftActions.entryResolveIpfsHashAsDraftsSuccess(resp.data, resp.request));
         } else {
             yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
         }
@@ -501,6 +527,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryClaimChannel);
     yield fork(watchEntryDownvoteChannel);
     yield fork(watchEntryGetBalanceChannel);
+    // yield fork(watchEntryGetChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
     yield fork(watchEntryIsActiveChannel);

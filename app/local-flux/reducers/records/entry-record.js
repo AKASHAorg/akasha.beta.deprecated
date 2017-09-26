@@ -76,6 +76,7 @@ export const EntryPageOverlay = Record({
 export const EntryState = Record({
     balance: new Map(),
     byId: new Map(),
+    byAkashaId: new Map(),
     canClaim: new Map(),
     published: new List(),
     flags: new Flags(),

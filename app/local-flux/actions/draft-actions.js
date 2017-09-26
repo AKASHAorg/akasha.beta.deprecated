@@ -75,110 +75,14 @@ export const draftsGetCount = data => action(types.DRAFTS_GET_COUNT, { data });
 export const draftsGetCountSuccess = data => action(types.DRAFTS_GET_COUNT_SUCCESS, { data });
 export const draftsGetCountError = error => action(types.DRAFTS_GET_COUNT_ERROR, { error });
 
+/**
+ * Get entries as drafts
+ */
+export const entriesGetAsDraftsSuccess = data => action(types.ENTRIES_GET_AS_DRAFTS_SUCCESS, { data });
+export const entriesGetAsDraftsError = error => action(types.ENTRIES_GET_AS_DRAFTS_ERROR, { error });
 
+export const entryResolveIpfsHashAsDraftsSuccess = data =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH_AS_DRAFTS_SUCCESS, { data });
+export const entryResolveIpfsHashAsDraftsError = error =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH_AS_DRAFTS_ERROR, { error });
 
-    // publishDraft = (payload, gas = 4000000) => {
-    //     this.dispatch((dispatch, getState) => {
-    //         const loggedProfile = getState().profileState.get('loggedProfile');
-    //         const token = loggedProfile.get('token');
-    //         const draft = payload.get('draft');
-    //         const mentions = payload.get('mentions');
-    //         const flagOn = { draftId: draft.get('id'), value: true };
-    //         const flagOff = { draftId: draft.get('id'), value: false };
-    //         const draftObj = draft.toJS();
-    //         dispatch(draftActionCreators.publishDraft({ publishPending: flagOn }));
-    //         this.entryService.publishEntry({
-    //             draftObj,
-    //             token,
-    //             gas,
-    //             onSuccess: (data) => {
-    //                 this.transactionActions.listenForMinedTx();
-    //                 this.transactionActions.addToQueue([{
-    //                     tx: data.tx,
-    //                     type: draftObj.entryId ? 'publishNewEntryVersion' : 'publishEntry',
-    //                     draftId: draftObj.id,
-    //                     entryId: draftObj.entryId,
-    //                     mentions
-    //                 }]);
-    //                 this.appActions.showNotification({
-    //                     id: draftObj.entryId ? 'publishingNewEntryVersion' : 'publishingEntry',
-    //                     values: { title: draftObj.content.title },
-    //                     duration: 3000
-    //                 });
-    //                 hashHistory.replace(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish-status`);
-    //             },
-    //             onError: error => dispatch(draftActionCreators.publishDraftError(error, {
-    //                 publishPending: flagOff
-    //             }))
-    //         });
-    //     });
-    // };
-    /**
-     * This action should be placed in entryActions ?
-     * Or it should be renamed to publishDraftSuccess ?
-     */
-    // publishEntrySuccess = (draftId, title) => {
-    //     this.dispatch(draftActionCreators.publishDraftSuccess({
-    //         publishPending: { draftId, value: false }
-    //     }));
-    //     this.appActions.showNotification({
-    //         id: 'draftPublishedSuccessfully',
-    //         values: { title }
-    //     });
-    //     this.deleteDraft(draftId);
-    // };
-
-    // publishNewEntryVersionSuccess = (draftId, title) => {
-    //     this.dispatch(draftActionCreators.publishDraftSuccess({
-    //         publishPending: { draftId, value: false }
-    //     }));
-    //     this.appActions.showNotification({
-    //         id: 'newVersionPublishedSuccessfully',
-    //         values: { title }
-    //     });
-    //     this.deleteDraft(draftId);
-    // }
-
-    // getDrafts = (akashaId) => {
-    //     draftActionCreators.getDrafts({ fetchingDrafts: true });
-    //     this.draftService.getAllDrafts(akashaId)
-    //         .then(result => this.dispatch(draftActionCreators.getDraftsSuccess(result, {
-    //             fetchingDrafts: false
-    //         })))
-    //         .catch(reason => this.dispatch(draftActionCreators.getDraftsError(reason, {
-    //             fetchingDrafts: false
-    //         })));
-    // };
-
-    // getDraftsCount = (akashaId) => {
-    //     this.dispatch((dispatch, getState) => {
-    //         const flags = getState().draftState.get('flags');
-    //         if (!flags.get('fetchingDraftsCount') && !flags.get('draftsCountFetched')) {
-    //             dispatch(draftActionCreators.getDraftsCount({
-    //                 fetchingDraftsCount: true
-    //             }));
-    //             this.draftService.getDraftsCount({
-    //                 akashaId,
-    //                 onSuccess: result =>
-    //                     dispatch(draftActionCreators.getDraftsCountSuccess(result, {
-    //                         fetchingDraftsCount: false,
-    //                         draftsCountFetched: true
-    //                     })),
-    //                 onError: reason => dispatch(draftActionCreators.getDraftsCountError(reason, {
-    //                     fetchingDraftsCount: false,
-    //                     draftsCountFetched: false
-    //                 }))
-    //             });
-    //         }
-    //     });
-    // };
-
-    // getDraftById = id =>
-    //     this.draftService.getById({
-    //         id,
-    //         onSuccess: result => this.dispatch(draftActionCreators.getDraftByIdSuccess(result)),
-    //         onError: error => this.dispatch(draftActionCreators.getDraftByIdError(error))
-    //     });
-// }
-
-// export { DraftActions };

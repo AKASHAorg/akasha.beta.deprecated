@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
@@ -6,37 +6,38 @@ import { EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
 
 const initialState = new EntryState();
 
-const getEntryRecord = (entry) => {
-    let record = new EntryRecord(entry);
-    if (entry.content) {
-        record = record.set('content', new EntryContent(entry.content));
-    }
-    record = record.set('entryEth', new EntryEth(entry.entryEth));
-    if (entry.entryEth.publisher) {
-        // only keep a reference to the publisher's akashaId
-        record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.akashaId);
-    }
-    return record;
-};
-
-const entryIteratorHandler = (state, { data }) => {
-    let byId = state.get('byId');
-    const moreEntries = data.limit === data.collection.length;
-    data.collection.forEach((entry, index) => {
-        // the request is made for n + 1 entries to determine if there are more entries left
-        // if this is the case, ignore the extra entry
-        if (!moreEntries || index !== data.collection.length - 1) {
-            let newEntry = getEntryRecord(entry);
-            const oldContent = byId.getIn([entry.entryId, 'content']);
-            // it shouldn't reset the entry content
-            if (!newEntry.get('content') && oldContent) {
-                newEntry = newEntry.set('content', oldContent);
+const getEntryRecord = entry =>
+        new EntryRecord(entry).withMutations((mEntry) => {
+            if (entry.content) {
+                mEntry.set('content', new EntryContent(entry.content));
             }
-            byId = byId.set(entry.entryId, newEntry);
-        }
+            mEntry.set('entryEth', new EntryEth(entry.entryEth));
+            if (entry.entryEth.publisher) {
+                mEntry.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.akashaId);
+            }
+        });
+
+const entryIteratorHandler = (state, { data }) =>
+    state.withMutations((mState) => {
+        const moreEntries = data.limit === data.collection.length;
+        data.collection.forEach((entry, index) => {
+            const publisherAkashaId = entry.entryEth.publisher.akashaId;
+            // the request is made for n + 1 entries to determine if there are more entries left
+            // if this is the case, ignore the extra entry
+            if (!moreEntries || index !== data.collection.length - 1) {
+                let newEntry = getEntryRecord(entry);
+                const oldContent = state.getIn(['byId', entry.entryId, 'content']);
+                // it shouldn't reset the entry content
+                if (!newEntry.get('content') && oldContent) {
+                    newEntry = newEntry.set('content', oldContent);
+                }
+                mState.setIn(['byId', entry.entryId], newEntry)
+                    .setIn(['byAkashaId', publisherAkashaId],
+                        new List(mState.getIn(['byAkashaId', publisherAkashaId])).push(entry.entryId)
+                    );
+            }
+        });
     });
-    return state.set('byId', byId);
-};
 
 /**
  * State of the entries and drafts
@@ -190,7 +191,7 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
         let newHashes = new Map();
-        ipfsHash.forEach(hash => (newHashes = newHashes.set(hash, true)));
+        ipfsHash.forEach((hash) => { newHashes = newHashes.set(hash, true); });
         return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
     },
 

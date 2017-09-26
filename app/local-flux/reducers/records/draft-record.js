@@ -15,21 +15,35 @@ export const DraftLicence = Record({
 
 export const DraftContent = Record({
     draft: EditorState.createEmpty(),
-    title: '',
     excerpt: '',
     featuredImage: new Map(),
-    wordCount: 0,
     licence: new DraftLicence(),
-    type: 'article'
+    title: '',
+    wordCount: 0,
+    version: -1,
 });
 
 export const Draft = Record({
-    id: null,
-    content: new DraftContent(),
-    tags: new List(),
+    /**
+     * published entry fields
+     */
+    active: false,
+    baseUrl: '',
+    commentsCount: 0,
+    entryEth: new Map(),
+    score: '',
+    /**
+     * Draft + published fields
+     */
     akashaId: null,
+    content: new DraftContent(),
     created_at: null,
-    updated_at: null,
+    id: null,
+    publishing: false,
     saved: false,
     saving: false,
+    localChanges: false,
+    tags: new List(),
+    type: 'article',
+    updated_at: null,
 });

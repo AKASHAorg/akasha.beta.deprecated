@@ -3,7 +3,7 @@ import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel } from './helpers';
-import { selectToken } from '../selectors';
+import { selectToken, selectDraftById } from '../selectors';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
@@ -124,31 +124,26 @@ function* draftDelete ({ data }) {
     }
 }
 
-function* draftPublish ({ draft }) {
-    console.log(draft);
+function* draftPublish ({ actionId, draft }) {
     const channel = Channel.server.entry.publish;
-    const { id, content, tags } = draft;
-    const { title, excerpt, featuredImage, licence, type } = content;
+    const { id } = draft;
+    const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
-    const draftContentObj = editorStateToJSON(content.draft);
-        // draftObj, token, gas
+    const draftToPublish = draftFromState.toJS();
+    draftToPublish.content.draft = JSON.parse(
+        editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+    );
+    delete draftToPublish.content.featuredImage;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
     yield call([channel, channel.send], {
+        actionId,
         id,
         token,
-        tags,
-        draft: draftContentObj,
-        title,
-        excerpt,
-        featuredImage,
-        licence,
-        type
+        tags: draftToPublish.tags,
+        content: draftToPublish.content,
     });
-    // yield put(draftActions.draftPublishSuccess, {
-    //     id: response.request.id,
-    //     status: actionStatus.publishing,
-    //     tx: response.data.tx
-    // });
 }
+
 function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
@@ -156,12 +151,13 @@ function* watchDraftPublishChannel () {
             return yield put(draftActions.draftPublishError(response.error));
         }
         return yield put(actionActions.actionUpdate({
-            id: response.request.id,
+            id: response.request.actionId,
             status: actionStatus.publishing,
             tx: response.data.tx
         }));
     }
 }
+
 function* registerChannelListeners () {
     yield fork(watchDraftPublishChannel);
 }

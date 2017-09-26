@@ -1,32 +1,11 @@
 import { Map } from 'immutable';
+import { editorStateFromRaw } from 'megadraft';
 import { DraftModel } from './models';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 
 const initialState = new DraftModel();
 
-
-// const publishDraftHandler = (state, { flags }) => {
-//     const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
-//     if (publishPendingDrafts === undefined) {
-//         return state.merge({
-//             flags: state.get('flags').set('publishPendingDrafts', new List([flags.publishPending]))
-//         });
-//     }
-//     const index = publishPendingDrafts.findIndex(flag =>
-//         flag.draftId === flags.publishPending.draftId);
-//     if (index === -1) {
-//         return state.merge({
-//             flags: state.get('flags').merge({
-//                 publishPendingDrafts: state.getIn(['flags', 'publishPendingDrafts'])
-//                     .push(flags.publishPending)
-//             })
-//         });
-//     }
-//     return state.merge({
-//         flags: state.get('flags').mergeIn(['publishPendingDrafts', index], flags.publishPending)
-//     });
-// };
 const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -66,6 +45,7 @@ const draftState = createReducer(initialState, {
             draft.merge({
                 saved: true,
                 saving: false,
+                localChanges: true,
                 updated_at: data.updated_at
             })).set('draftsCount', state.get('drafts').size)
     ),
@@ -85,115 +65,80 @@ const draftState = createReducer(initialState, {
             drafts: state.get('drafts').delete(data.draftId),
             draftsCount: state.get('drafts').delete(data.draftId).size
         }),
-        // [types.DRAFT_SAVE]: (state, { flags }) =>
-    //     state.merge({
-    //         flags: state.get('flags').merge(flags)
-    //     }),
 
-    // [types.DRAFT_CREATE_SUCCESS]: (state, { draft, flags }) => {
-    //     const drft = createDraftRecord(draft);
-    //     return state.merge({
-    //         drafts: state.get('drafts').push(drft),
-    //         draftsCount: state.get('draftsCount') + 1,
-    //         flags: state.get('flags').merge(flags)
-    //     });
-    // },
+    // draft = { id, title, type }
+    [types.DRAFT_PUBLISH]: (state, { draft }) =>
+        state.setIn(['drafts', draft.id, 'publishing'], true),
 
-    // [types.DRAFTS_GET]: (state, { flags }) =>
-    //     state.merge({
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.DRAFTS_GET_SUCCESS]: (state, { drafts, flags }) => {
-    //     const drfts = new List(drafts.map(draft => createDraftRecord(draft)));
-    //     return state.merge({
-    //         drafts: drfts,
-    //         flags: state.get('flags').merge(flags)
-    //     });
-    // },
-
-    // [types.DRAFTS_GET_ERROR]: (state, { error, flags }) =>
-    //     state.merge({
-    //         errors: state.get('errors').push(new ErrorRecord(error)),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.DRAFT_PUBLISH]: publishDraftHandler,
-    // [types.DRAFT_PUBLISH_SUCCESS]: publishDraftHandler,
-
-    // [types.DRAFT_PUBLISH_ERROR]: (state, { error }) =>
-    //     state.merge({
-    //         errors: state.get('errors').push(new ErrorRecord(error))
-    //     }),
-
-    // [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { draft }) => {
-    //     if (!draft) return state;
-    //     const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
-    //     if (draftIndex > -1) {
-    //         return state.mergeIn(['drafts', draftIndex], createDraftRecord(draft));
-    //     }
-    //     return state.merge({
-    //         drafts: state.get('drafts').push(createDraftRecord(draft))
-    //     });
-    // },
-
-    // [types.UPDATE_DRAFT_SUCCESS]: (state, { draft, flags }) => {
-    //     const draftIndex = state.get('drafts').findIndex(drft =>
-    //         drft.id === draft.id
-    //     );
-    //     let updatedDraft = state.getIn(['drafts', draftIndex]).mergeDeep(draft);
-    //     if (draft.tags) {
-    //         updatedDraft = updatedDraft.set('tags', draft.tags);
-    //     }
-    //     return state.merge({
-    //         drafts: state.get('drafts').setIn([draftIndex], createDraftRecord(updatedDraft.toJS())),
-    //         flags: state.get('flags').merge(flags)
-    //     });
-    // },
-
-    // [types.UPDATE_DRAFT_ERROR]: (state, { error, flags }) =>
-    //     state.merge({
-    //         errors: state.get('errors').push(new ErrorRecord(error)),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.DELETE_DRAFT_SUCCESS]: (state, { draftId }) => {
-    //     const draftIndex = state.get('drafts').findIndex(drft => drft.id === draftId);
-    //     return state.merge({
-    //         drafts: state.get('drafts').delete(draftIndex)
-    //     });
-    // },
-
-    // [types.GET_DRAFTS_COUNT]: (state, { flags }) =>
-    //     state.merge({
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.GET_DRAFTS_COUNT_SUCCESS]: (state, { count, flags }) =>
-    //     state.merge({
-    //         draftsCount: count,
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.GET_PUBLISHING_DRAFTS]: (state, { flags }) =>
-    //     state.merge({
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts, flags }) =>
-    //     state.merge({
-    //         drafts: state.get('drafts').toSet().union(new Set(drafts.map(drft =>
-    //             createDraftRecord(drft)))).toList(),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [types.GET_PUBLISHING_DRAFTS_ERROR]: (state, { error, flags }) =>
-    //     state.merge({
-    //         errors: state.get('errors').push(new ErrorRecord(error)),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [appTypes.CLEAN_STORE]: () => initialState,
+    // data.draft
+    [types.DRAFT_PUBLISH_SUCCESS]: (state, { data }) =>
+        state.merge({
+            drafts: state.get('drafts').delete(data.draft.id)
+        }),
+    [types.ENTRIES_GET_AS_DRAFTS_SUCCESS]: (state, { data }) =>
+        /**
+         * check if entry already in store, if it`s already in store,
+         * check if entry version is up to date, if not update it.
+         */
+        state.withMutations((mState) => {
+            data.collection.forEach((entry) => {
+                /**
+                 * if entry is not in store, add it
+                 */
+                if (!state.getIn(['drafts', entry.entryId])) {
+                    mState.setIn(['drafts', entry.entryId], { ...entry, type: 'article' });
+                } else {
+                    mState.mergeIn(['drafts', entry.entryId], {
+                        entryEth: entry.entryEth,
+                        active: entry.active,
+                        score: entry.score,
+                        baseUrl: entry.baseUrl,
+                        saved: true,
+                        localChanges: true,
+                    });
+                }
+                mState.set('resolvingHashes', state.get('resolvingHashes').push(entry.entryEth.ipfsHash));
+            });
+        }),
+    /**
+     * At this point we have entry`s data but without the actual draft content.
+     */
+    [types.ENTRY_RESOLVE_IPFS_HASH_AS_DRAFTS_SUCCESS]: (state, { data }) =>
+        state.withMutations((mState) => {
+            const entryIpfsHash = data.ipfsHash;
+            const targetEntry = mState.get('drafts')
+                .valueSeq()
+                .filter(entry =>
+                    entry.active && entry.entryEth.ipfsHash === entryIpfsHash
+                )
+                .toList();
+            if (targetEntry.size > 0) {
+                targetEntry.forEach((entry) => {
+                    const targetEntryId = entry.entryId || entry.id;
+                    const { content, ...otherDraftData } = mState.getIn(['drafts', targetEntryId]);
+                    if (!content) {
+                        const drft = {
+                            content: {
+                                ...data.entry,
+                                draft: editorStateFromRaw(data.entry.draft),
+                            },
+                            ...otherDraftData,
+                        };
+                        mState.setIn(['drafts', targetEntryId], DraftModel.createDraft(drft))
+                            .set('resolvingHashes', mState.get('resolvingHashes').delete(data.ipfsHash));
+                    }
+                    /**
+                     * entry content is already in store, so it`s a draft.
+                     * update the entry version with the one which is published,
+                     * in case of an edit from another computer.
+                     */
+                    mState.setIn(['drafts', targetEntryId, 'content', 'version'], data.entry.version);
+                });
+            }
+            // if (entryIndex) {
+            //     console.log('update draft', state.getIn(['drafts', entryIndex]));
+            // }
+        })
 });
 
 export default draftState;

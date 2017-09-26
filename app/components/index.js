@@ -22,6 +22,7 @@ export EntryPage from './entry/entry-page';
 export EntryPageActions from './entry/entry-page-actions';
 export EntryPageContent from './entry/entry-page-content';
 export EntryPageHeader from './entry/entry-page-header';
+export EntrySecondarySidebarItem from './entry-secondary-sidebar-item';
 export EntryVersionsPanel from './entry-versions-panel';
 export ErrorBar from './error-bar';
 export ErrorCard from './errors/error-card';
