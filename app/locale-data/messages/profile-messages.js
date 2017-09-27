@@ -132,6 +132,11 @@ export const profileMessages = defineMessages({
         description: 'Title for my balance card',
         defaultMessage: 'My Balance'
     },
+    myEntries: {
+        id: 'app.profile.myEntries',
+        description: 'Title for my entries',
+        defaultMessage: 'My Entries'
+    },
     myProfile: {
         id: 'app.profile.myProfile',
         description: 'Title for profile overview sidebar',

@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { Icon, Input } from 'antd';
 import { HighlightCard } from '../';
+import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
     highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
 import { profileGetList } from '../../local-flux/actions/profile-actions';
@@ -32,7 +34,7 @@ class Highlights extends Component {
     };
 
     render () {
-        const { highlights, profiles, search } = this.props;
+        const { intl, highlights, profiles, search } = this.props;
 
         return (
           <div className="highlights">
@@ -42,7 +44,7 @@ class Highlights extends Component {
                   onChange={this.onSearchChange}
                   value={search}
                   size="large"
-                  placeholder="Search something..."
+                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
                   prefix={<Icon type="search" />}
                 />
               </div>
@@ -72,6 +74,7 @@ Highlights.propTypes = {
     highlights: PropTypes.shape(),
     highlightSearch: PropTypes.func,
     highlightToggleNoteEditable: PropTypes.func,
+    intl: PropTypes.shape(),
     profileGetList: PropTypes.func.isRequired,
     profiles: PropTypes.shape().isRequired,
     search: PropTypes.string
@@ -94,4 +97,4 @@ export default connect(
         profileGetList,
         highlightToggleNoteEditable
     }
-)(Highlights);
+)(injectIntl(Highlights));
