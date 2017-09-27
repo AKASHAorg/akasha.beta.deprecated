@@ -73,8 +73,8 @@ export const profileGetDataError = (error) => {
 };
 
 export const profileGetDataSuccess = data => action(types.PROFILE_GET_DATA_SUCCESS, { data });
-export const profileGetList = profileAddresses =>
-    action(types.PROFILE_GET_LIST, { profileAddresses });
+export const profileGetList = akashaIds =>
+    action(types.PROFILE_GET_LIST, { akashaIds });
 
 export const profileGetListError = (error) => {
     error.code = 'PGLE02';
