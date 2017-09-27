@@ -298,8 +298,7 @@ function* watchProfileGetLocalChannel () {
                     akashaIds.push({ akashaId: data.akashaId });
                 }
             });
-            // TODO uncomment the line below when channel is available
-            // yield put(actions.profileGetList(akashaIds));
+            yield put(actions.profileGetList(akashaIds));
             yield put(actions.profileGetLocalSuccess(resp.data.collection));
         }
     }
