@@ -17,7 +17,7 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     ErrorReportingModal, FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance,
-    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
+    MyEntries, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -134,6 +134,7 @@ class AppContainer extends Component {
                       <PageContent>
                         <Route path="/profileoverview/overview" component={ProfileOverview} />
                         <Route path="/profileoverview/mybalance" component={MyBalance} />
+                        <Route path="/profileoverview/myentries" component={MyEntries} />
                         <Route path="/profileoverview/highlights" component={Highlights} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
