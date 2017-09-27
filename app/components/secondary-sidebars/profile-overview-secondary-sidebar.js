@@ -41,9 +41,9 @@ class ProfileOverviewSecondarySidebar extends Component {
                   {intl.formatMessage(profileMessages.contacts)}
                 </div>
               </Link>
-              <Link to="/profileoverview/entries" className="profile-overview-sidebar__link">
-                <div className={this.checkActiveRoute('profileoverview/entries')}>
-                  {intl.formatMessage(profileMessages.entries)}
+              <Link to="/profileoverview/myentries" className="profile-overview-sidebar__link">
+                <div className={this.checkActiveRoute('profileoverview/myentries')}>
+                  {intl.formatMessage(profileMessages.myEntries)}
                 </div>
               </Link>
               <Link to="/profileoverview/highlights" className="profile-overview-sidebar__link">
