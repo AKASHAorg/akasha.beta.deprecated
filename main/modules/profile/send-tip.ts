@@ -16,8 +16,8 @@ const execute = Promise.coroutine(
             value: data.value,
             gas: data.gas
         });
-        const tx = yield contracts.send(txData, data.token, cb);
-        return { tx, receiver: address, akashaId: data.akashaId, hasStream: true };
+        const transaction = yield contracts.send(txData, data.token, cb);
+        return { tx: transaction.tx, receipt: transaction.receipt, receiver: address, akashaId: data.akashaId, hasStream: true };
     });
 
 export default { execute, name: 'tip' };

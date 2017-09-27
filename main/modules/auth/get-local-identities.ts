@@ -11,7 +11,7 @@ const execute = Promise.coroutine(function* () {
         return resolveEth.execute({ ethAddress: address });
     });
     const collection = yield Promise.all(profiles);
-    return { collection };
+    return { collection: collection || [] };
 });
 
 export default { execute, name: 'getLocalIdentities' };

@@ -52,7 +52,7 @@ const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
         .ProfileRegistrar
         .register.request(data.akashaId, data.donations, hash, fn, digest, { gas: 400000, from: data.ethAddress});
     const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx };
+    return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
 export default { execute, name: 'registerProfile', hasStream: true };

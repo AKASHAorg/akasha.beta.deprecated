@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: ProfileUpdateRequest, cb) {
             decodedHash
         );
     const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx};
+    return { tx: transaction.tx, receipt: transaction.receipt};
 });
 
 export default { execute, name: 'updateProfileData', hasStream: true };
