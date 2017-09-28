@@ -92,12 +92,26 @@ class ProfileList extends Component {
     };
 
     renderListItem = (account, profile) => {
+        const { pendingListProfiles } = this.props;
         const { hoveredAccount, selectedAccount } = this.state;
         const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
         const avatar = profile.get('avatar');
         const akashaId = profile.get('akashaId');
         const isSelected = account === selectedAccount;
         const isHovered = account === hoveredAccount && !isSelected;
+        const isPending = pendingListProfiles.get(profile.get('akashaId'));
+        if (isPending) {
+            return (
+              <div
+                className="profile-list__profile-card"
+                key={account}
+              >
+                <div className="flex-center-y profile-list__card-placeholder">
+                  Resolving profile
+                </div>
+              </div>
+            );
+        }
         const onClick = isSelected ? undefined : () => this.onSelectAccount(account);
         const header = (
           <div className="profile-list__card-header">
@@ -157,7 +171,6 @@ class ProfileList extends Component {
     render () {
         const { fetchingProfiles, profiles, gethStatus, intl, ipfsStatus } = this.props;
         let placeholderMessage;
-
         if (!gethStatus.get('process')) {
             placeholderMessage = intl.formatMessage(setupMessages.gethStopped);
         } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
@@ -197,6 +210,7 @@ ProfileList.propTypes = {
     getListContainerRef: PropTypes.func,
     intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
+    pendingListProfiles: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
 };
 

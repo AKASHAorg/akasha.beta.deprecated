@@ -14,7 +14,8 @@ function mapStateToProps (state) {
         localProfiles: selectLocalProfiles(state),
         localProfilesFetched: selectProfileFlag(state, 'localProfilesFetched'),
         ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
-        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference'])
+        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
+        pendingListProfiles: state.profileState.getIn(['flags', 'pendingListProfiles']),
     };
 }
 
