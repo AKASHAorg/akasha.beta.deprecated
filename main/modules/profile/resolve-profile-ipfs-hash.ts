@@ -1,31 +1,35 @@
 import * as Promise from 'bluebird';
-import { getShortProfile } from './ipfs';
+import { getShortProfile, resolveProfile } from './ipfs';
 import { SHORT_WAIT_TIME } from '../../config/settings';
 import schema from '../utils/jsonschema';
 
 export const resolveProfileIpfsHash = {
     'id': '/resolveProfileIpfsHash',
-    'type': 'array',
-    'items': {
-        'type': 'object',
-        'properties': {
-            'ipfsHash': { 'type': 'string', 'format': 'multihash' }
+    'type': 'object',
+    'properties': {
+        'ipfsHash': {
+            'type': 'array',
+            'items': { 'type': 'string', 'format': 'multihash' },
+            'uniqueItems': true,
+            'minItems': 1
         },
-        'required': ['ipfsHash']
+        'full': {
+            'type': 'boolean'
+        }
     },
-    'uniqueItems': true,
-    'minItems': 1
+    'required': ['ipfsHash']
 };
 
 /**
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { ipfsHash: string[] }, cb: any) {
+const execute = Promise.coroutine(function* (data: { ipfsHash: string[], full?: boolean }, cb: any) {
     const v = new schema.Validator();
     v.validate(data, resolveProfileIpfsHash, { throwError: true });
 
+    const resolve = (data.full) ? resolveProfile : getShortProfile;
     data.ipfsHash.forEach((profileHash) => {
-        getShortProfile(profileHash)
+        resolve(profileHash)
             .timeout(SHORT_WAIT_TIME)
             .then((profile) => {
                 cb(null, { profile, ipfsHash: profileHash });

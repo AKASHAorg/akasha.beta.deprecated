@@ -39,9 +39,8 @@ const execute = Promise.coroutine(
             tx: transaction.tx,
             receipt: transaction.receipt,
             receiver: address,
-            akashaId: data.akashaId,
-            hasStream: true
+            akashaId: data.akashaId
         };
     });
 
-export default { execute, name: 'tip' };
+export default { execute, name: 'tip', hasStream: true };
