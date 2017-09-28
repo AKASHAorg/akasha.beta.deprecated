@@ -1,5 +1,6 @@
 import { create } from '../profile/ipfs';
 import { decodeHash } from '../ipfs/helpers';
+import checkId from './check-id-format';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
@@ -33,10 +34,11 @@ export const registerProfile = {
                     }
                 }
             }
-        }
+        },
+        'token': {'type': 'string'}
 
     },
-    'required': ['akashaId', 'ethAddress', 'donations', 'ipfs']
+    'required': ['akashaId', 'ethAddress', 'donations', 'ipfs', 'token']
 };
 /**
  * Register a new AKASHA ID
@@ -46,6 +48,10 @@ const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
     const v = new schema.Validator();
     v.validate(data, registerProfile, { throwError: true });
 
+    const check = yield checkId.execute({akashaId: data.akashaId});
+    if (!check.idValid) {
+        throw new Error('Invalid akashaId');
+    }
     const ipfsHash = yield create(data.ipfs);
     const [fn, digest, hash] = decodeHash(ipfsHash);
     const txData = contracts.instance
