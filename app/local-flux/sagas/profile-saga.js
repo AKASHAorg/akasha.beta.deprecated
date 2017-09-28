@@ -69,10 +69,10 @@ function* profileGetData ({ akashaId, full = false }) {
     yield apply(channel, channel.send, [{ akashaId, full }]);
 }
 
-function* profileGetList ({ profileAddresses }) {
+function* profileGetList ({ akashaIds }) {
     const channel = Channel.server.profile.getProfileList;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [profileAddresses]);
+    yield apply(channel, channel.send, [akashaIds]);
 }
 
 function* profileGetLocal () {
