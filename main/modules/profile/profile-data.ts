@@ -9,13 +9,27 @@ import followersCount from './followers-count';
 import { profileAddress } from './helpers';
 import { encodeHash } from '../ipfs/helpers';
 import { unpad } from 'ethereumjs-util';
+import schema from '../utils/jsonschema';
 
+export const getProfileData = {
+    'id': '/getProfileData',
+    'type': 'object',
+    'properties': {
+        'akashaId': { 'type': 'string' },
+        'short': { 'type': 'boolean' },
+        'full': { 'type': 'boolean' },
+        'resolveImages': { 'type': 'boolean' }
+    }
+};
 
 /**
  * Get profile data for an akasha profile address
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
+    const v = new schema.Validator();
+    v.validate(data, getProfileData, { throwError: true });
+
     let profile;
     const ethAddress = yield profileAddress(data);
     const akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
@@ -25,8 +39,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     const fwCount = yield followersCount.execute({ ethAddress });
     // const entriesCount = yield entryCountProfile.execute({ ethAddress });
     // const subscriptionsCount = yield subsCount.execute({ ethAddress });
-    const entriesCount = {count: 1};
-    const subscriptionsCount = {count: 1};
+    const entriesCount = { count: 1 };
+    const subscriptionsCount = { count: 1 };
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         if (data.short) {

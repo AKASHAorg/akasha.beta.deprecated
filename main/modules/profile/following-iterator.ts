@@ -2,12 +2,17 @@ import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 import contracts from '../../contracts/index';
 import { profileAddress } from './helpers';
+import schema from '../utils/jsonschema';
+import { followersIterator } from './followers-iterator';
 
 /**
  * Get followed profiles of id
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number, akashaId?: string, ethAddress?: string }) {
+    const v = new schema.Validator();
+    v.validate(data, followersIterator, { throwError: true });
+
     const collection = [];
     const maxResults = data.limit || 5;
     const address = yield profileAddress(data);

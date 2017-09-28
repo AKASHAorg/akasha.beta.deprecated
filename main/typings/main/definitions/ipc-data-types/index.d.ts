@@ -295,7 +295,6 @@ interface ProfileCreateResponse extends MainResponse {
 }
 
 interface ProfileUpdateRequest extends AuthRequest {
-    akashaIdHash: string;
     ipfs: IpfsProfileCreateRequest;
 }
 
@@ -378,7 +377,7 @@ interface ProfileDataResponse {
 }
 
 interface BalanceRequest {
-    etherBase?: string;
+    ethAddress?: string;
     unit?: string; // ether/wei/etc
 }
 
@@ -419,7 +418,8 @@ interface ProfileFollowResponse extends MainResponse {
 }
 
 interface GetFollowerCountRequest {
-    akashaId: string;
+    akashaId?: string;
+    ethAddress?: string;
 }
 
 interface GetFollowersRequest {
