@@ -167,8 +167,7 @@ interface IpfsStopRequest {
 // channels.server.auth.login
 interface AuthLoginRequest {
     account: string;
-    password: Uint8Array;
-    registering: boolean;
+    password: Buffer;
     rememberTime: number; // number of minutes to remember the password
 }
 

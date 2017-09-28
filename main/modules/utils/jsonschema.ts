@@ -3,15 +3,32 @@ import {isValidAddress, isValidChecksumAddress} from 'ethereumjs-util';
 import { multihash } from 'is-ipfs';
 
 Validator.prototype.customFormats['address'] = function(input) {
-  return isValidAddress(input);
+    if (input) {
+        return isValidAddress(input);
+    }
+    return true;
 };
 
 Validator.prototype.customFormats['checkSummedAddress'] = function(input) {
-    return isValidChecksumAddress(input);
+    if (input) {
+
+        return isValidChecksumAddress(input);
+    }
+    return true;
 };
 
 Validator.prototype.customFormats['multihash'] = function(input) {
-    return multihash(input);
+    if (input) {
+        return multihash(input);
+    }
+    return true;
+};
+
+Validator.prototype.customFormats['buffer'] = function(input) {
+    if (input) {
+        return Buffer.isBuffer(input);
+    }
+    return true;
 };
 
 export default { Validator };

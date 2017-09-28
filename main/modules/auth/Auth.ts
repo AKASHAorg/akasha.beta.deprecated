@@ -52,7 +52,7 @@ export class Auth {
      * @param registering
      * @returns {any}
      */
-    public login(acc: string, pass: any | Uint8Array, timer: number = 1, registering = false) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 1) {
 
         return gethHelper
             .hasKey(acc)
