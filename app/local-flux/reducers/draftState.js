@@ -85,7 +85,7 @@ const draftState = createReducer(initialState, {
                 /**
                  * if entry is not in store, add it
                  */
-                if (!state.getIn(['drafts', entry.entryId])) {
+                if (!mState.getIn(['drafts', entry.entryId])) {
                     mState.setIn(['drafts', entry.entryId], { ...entry, type: 'article' });
                 } else {
                     mState.mergeIn(['drafts', entry.entryId], {
@@ -97,8 +97,10 @@ const draftState = createReducer(initialState, {
                         localChanges: true,
                     });
                 }
-                mState.set('resolvingHashes', state.get('resolvingHashes').push(entry.entryEth.ipfsHash));
+                mState
+                    .set('resolvingHashes', mState.get('resolvingHashes').push(entry.entryEth.ipfsHash));
             });
+            mState.set('entriesFetched', true);
         }),
     /**
      * At this point we have entry`s data but without the actual draft content.
@@ -125,7 +127,7 @@ const draftState = createReducer(initialState, {
                             ...otherDraftData,
                         };
                         mState.setIn(['drafts', targetEntryId], DraftModel.createDraft(drft))
-                            .set('resolvingHashes', mState.get('resolvingHashes').delete(data.ipfsHash));
+                            .deleteIn('resolvingHashes', mState.get('resolvingHashes').delete(data.ipfsHash));
                     }
                     /**
                      * entry content is already in store, so it`s a draft.
@@ -135,9 +137,6 @@ const draftState = createReducer(initialState, {
                     mState.setIn(['drafts', targetEntryId, 'content', 'version'], data.entry.version);
                 });
             }
-            // if (entryIndex) {
-            //     console.log('update draft', state.getIn(['drafts', entryIndex]));
-            // }
         })
 });
 

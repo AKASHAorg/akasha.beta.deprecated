@@ -11,6 +11,16 @@ const entryMessages = defineMessages({
         description: 'types of images allowed',
         defaultMessage: 'JPG, GIF or PNG images'
     },
+    articleEntryType: {
+        id: 'app.entry.articleEntryType',
+        description: 'entry of type article',
+        defaultMessage: 'Article Entries'
+    },
+    linkEntryType: {
+        id: 'app.entry.linkEntryType',
+        description: 'entry of type link',
+        defaultMessage: 'Link Entries'
+    },
     blockNr: {
         id: 'app.entry.blockNr',
         description: 'block number',

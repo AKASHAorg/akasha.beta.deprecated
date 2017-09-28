@@ -1,8 +1,60 @@
 .new-entry-secondary-sidebar {
     font-size: 0.86em;
+    &__entry-type-list {
+        width: 115px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    &__entry-type {
+        cursor: pointer;
+        padding: 8px 4px;
+        border-radius: @border-radius-base;
+        user-select: none;
+        &:hover {
+            background-color: lighten(@primary-color, 50%);
+        }
+        i {
+            margin-right: 4px;
+        }
+        &_active {
+            color: lighten(@primary-color, 15%);
+        }
+    }
     &__sidebar-header {
+        display: flex;
         padding: 8px 24px;
         height: @top-bar-height;
+        justify-content: space-between;
+        font-size: 14px;
+        align-items: center;
+        &_search-icon {
+            cursor: pointer;
+            user-select: none;
+            font-size: 16px;
+            &:hover {
+                color: @text-color-secondary;
+            }
+        }
+        &_dropdown-container {
+            width: 70%;
+            cursor: pointer;
+            user-select: none;
+            transition: width 0.218s @ease-in-out;
+            &:hover {
+                color: @text-color-secondary;
+            }
+            &-hidden {
+                width: 0;
+                overflow: hidden;
+            }
+            > div {
+                display: flex;
+                flex-wrap: nowrap;
+                white-space: nowrap;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+        }
     }
     &__draft-list-title {
         margin-bottom: 8px;
@@ -11,12 +63,25 @@
         text-transform: uppercase;
         font-weight: 500;
         color: #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        i {
+            cursor: pointer;
+        }
+    }
+    &__search-container {
+        width: 0;
+        transition: width 0.218s @ease-in-out;
+        &_visible {
+            width: 100%;
+            transition: width 0.218s @ease-in-out;
+        }
     }
     &__search-field {
         border: none;
         width: 100%;
         outline: none;
-        padding: 0 8px;
     }
     &__draft-list-item {
         display: flex;
@@ -63,6 +128,11 @@
     &__sidebar-body {
         padding: 0 16px;
 
+    }
+    &__draft-type-popover {
+        .ant-popover-inner-content {
+            padding: 8px;
+        }
     }
 }
 .draft-list-item__popover {

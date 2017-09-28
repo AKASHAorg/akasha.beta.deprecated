@@ -6,13 +6,18 @@ import fuzzy from 'fuzzy';
 import { injectIntl } from 'react-intl';
 import { EntrySecondarySidebarItem } from '../';
 import { entryMessages } from '../../locale-data/messages';
+import { genId } from '../../utils/dataModule';
+import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { selectLoggedAkashaId } from '../../local-flux/selectors';
-import { draftsGetCount, draftsGet, draftDelete } from '../../local-flux/actions/draft-actions';
+import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 
 class NewEntrySecondarySidebar extends Component {
     state = {
-        searchString: ''
+        searchString: '',
+        draftTypeVisible: false,
+        searchBarVisible: false,
+        searching: false,
     };
 
     componentDidMount () {
@@ -37,7 +42,14 @@ class NewEntrySecondarySidebar extends Component {
     _onDraftItemClick = (ev, draftPath) => {
         ev.preventDefault();
         const { history } = this.props;
-        history.push(draftPath);
+        this.setState({
+            searchString: '',
+            searchBarVisible: false,
+            searching: false,
+            draftTypeVisible: false
+        }, () => {
+            history.push(draftPath);
+        });
     }
 
     _handleDraftDelete = (ev, draftId) => {
@@ -62,7 +74,74 @@ class NewEntrySecondarySidebar extends Component {
             searching: false
         });
     }
-
+    _handleTypeChange = type =>
+        (ev) => {
+            const { akashaId, drafts, history, userSelectedLicence } = this.props;
+            const draftToPush = drafts.filter(draft => draft.type === type).first();
+            let draftId;
+            /**
+             * Push to first draft of the selected type!
+             */
+            if (draftToPush) {
+                draftId = draftToPush.id;
+            } else {
+                /**
+                 * create a new draft and push to it
+                 */
+                draftId = genId();
+                this.props.draftCreate({
+                    id: draftId,
+                    akashaId,
+                    content: {
+                        featuredImage: {},
+                        licence: userSelectedLicence,
+                    },
+                    tags: [],
+                    type,
+                });
+            }
+            this.setState({
+                draftTypeVisible: false
+            }, () => {
+                history.push(`/draft/${type}/${draftId}`);
+            });
+            ev.preventDefault();
+        }
+    _handleDraftCreate = () => {
+        console.log('please create a draft!');
+    }
+    _getEntryTypePopover = () => {
+        const { intl, match } = this.props;
+        const currentType = match.params.draftType;
+        return (
+          <div>
+            <ul
+              className="new-entry-secondary-sidebar__entry-type-list"
+            >
+              {entryTypes.map(type => (
+                <li
+                  key={type}
+                  className={
+                    `new-entry-secondary-sidebar__entry-type
+                    new-entry-secondary-sidebar__entry-type${type === currentType ? '_active' : ''}`
+                  }
+                  onClick={this._handleTypeChange(type)}
+                >
+                  <Icon
+                    type={entryTypesIcons[type]}
+                  />
+                  {intl.formatMessage(entryMessages[`${type}EntryType`])}
+                </li>
+                ))}
+            </ul>
+          </div>
+        );
+    }
+    _handleDraftTypeVisibility = () => {
+        this.setState(prevState => ({
+            draftTypeVisible: !prevState.draftTypeVisible
+        }));
+    }
     _createDraftPreviewLink = (ev, draftId) => {
         // prevent default just in case some other dev decides to
         // use <a> tag instead <div>
@@ -79,7 +158,26 @@ class NewEntrySecondarySidebar extends Component {
             return draft.type === draftType &&
                 (isPublished ? draft.content && draft.content.title : true);
         });
-
+    _toggleSearchBarVisibility = (ev) => {
+        ev.preventDefault();
+        this.setState((prevState) => {
+            if (!prevState.searchBarVisible) {
+                this.searchInput.focus();
+            }
+            if (prevState.searchBarVisible) {
+                return {
+                    searchBarVisible: false,
+                    draftTypeVisible: false,
+                    searchString: '',
+                    searching: false
+                };
+            }
+            return {
+                searchBarVisible: !prevState.searchBarVisible,
+                draftTypeVisible: false,
+            };
+        });
+    };
     _getSearchResults = (drafts, resolvingHashes, draftType) => {
         const searchOptions = {
             pre: '<b>',
@@ -92,10 +190,29 @@ class NewEntrySecondarySidebar extends Component {
         }
         return null;
     }
-
+    _handleSearchBarShortcuts = (ev) => {
+        if (ev.which === 27) {
+            this.setState({
+                searchString: '',
+                searching: false,
+                searchBarVisible: false
+            });
+        }
+    }
+    /**
+     * for events like clicking outside of the popover component
+     */
+    _forceDraftTypeVisibility = (visible) => {
+        this.setState({
+            draftTypeVisible: visible
+        });
+    }
     render () {
-        const { draftsCount, drafts, intl, match, resolvingHashes } = this.props;
+        const { drafts, intl, match, resolvingHashes } = this.props;
+        const { searchBarVisible, searching, searchString } = this.state;
         const currentDraftId = match.params.draftId;
+        const { draftType } = match.params;
+        const draftsByType = drafts.filter(drft => !drft.active && drft.type === draftType);
         const searchResults = this._getSearchResults(drafts, resolvingHashes, match.params.draftType);
 
         return (
@@ -105,30 +222,61 @@ class NewEntrySecondarySidebar extends Component {
             <div
               className="new-entry-secondary-sidebar__sidebar-header"
             >
-              <div>DropDown</div>
-              <div>Search Icon</div>
-              {intl.formatMessage(entryMessages.draftsCount, { count: draftsCount })}
+              <div
+                className={
+                  `new-entry-secondary-sidebar__sidebar-header_dropdown-container
+                  new-entry-secondary-sidebar__sidebar-header_dropdown-container${searchBarVisible ? '-hidden' : ''}`
+                }
+              >
+                <Popover
+                  content={this._getEntryTypePopover()}
+                  trigger="click"
+                  placement="bottomLeft"
+                  overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
+                  visible={this.state.draftTypeVisible}
+                  onVisibleChange={this._forceDraftTypeVisibility}
+                >
+                  <div
+                    onClick={this._handleDraftTypeVisibility}
+                  >{intl.formatMessage(entryMessages[`${draftType}EntryType`])} <Icon type="down" /></div>
+                </Popover>
+              </div>
+              <div
+                className={
+                    `new-entry-secondary-sidebar__search-container
+                    new-entry-secondary-sidebar__search-container${searchBarVisible ? '_visible' : ''}`
+                }
+              >
+                <input
+                  type="text"
+                  ref={(node) => { this.searchInput = node; }}
+                  className="new-entry-secondary-sidebar__search-field"
+                  placeholder={intl.formatMessage(entryMessages.searchSomething)}
+                  onChange={this._handleDraftSearch}
+                  onKeyDown={this._handleSearchBarShortcuts}
+                  value={searchString}
+                />
+              </div>
+              <div
+                className="new-entry-secondary-sidebar__sidebar-header_search-icon"
+                onClick={this._toggleSearchBarVisibility}
+              >
+                <Icon
+                  type={`${searchBarVisible ? 'close' : 'search'}`}
+                />
+              </div>
             </div>
             <div
               className="new-entry-secondary-sidebar__sidebar-body"
             >
               <div
-                className="new-entry-secondary-sidebar__search-container"
-              >
-                <input
-                  type="text"
-                  className="new-entry-secondary-sidebar__search-field"
-                  placeholder={intl.formatMessage(entryMessages.searchSomething)}
-                  onChange={this._handleDraftSearch}
-                />
-              </div>
-              <div
                 className="new-entry-secondary-sidebar__draft-list-container"
               >
                 <div className="new-entry-secondary-sidebar__draft-list-title">
-                  {intl.formatMessage(entryMessages.drafts)}
+                  <div>{intl.formatMessage(entryMessages.drafts)}</div>
+                  <Icon type="plus" onClick={this._handleDraftCreate} />
                 </div>
-                {this.state.searching && (searchResults.length > 0) &&
+                {searching && (searchResults.length > 0) &&
                     searchResults
                         .filter(drft => !drft.original.active)
                         .map(draft => (
@@ -145,26 +293,27 @@ class NewEntrySecondarySidebar extends Component {
                           />
                         ))
                 }
-                {this.state.searching && searchResults.length === 0 &&
+                {searching && searchResults.length === 0 &&
                   <div>No drafts matching your search criteria were found.</div>
                 }
-                {!this.state.searching && drafts.filter(drft => !drft.active).map(draft => (
-                  <EntrySecondarySidebarItem
-                    active={(draft.id === currentDraftId)}
-                    key={draft.id}
-                    draft={draft}
-                    intl={intl}
-                    onItemClick={this._onDraftItemClick}
-                    onDraftDelete={this._handleDraftDelete}
-                    showDraftMenuDropdown={this._showDraftMenuDropdown}
-                    onPreviewCreate={this._createDraftPreviewLink}
-                  />
-                )).toList()}
+                {!searching &&
+                    draftsByType.map(draft => (
+                      <EntrySecondarySidebarItem
+                        active={(draft.id === currentDraftId)}
+                        key={draft.id}
+                        draft={draft}
+                        intl={intl}
+                        onItemClick={this._onDraftItemClick}
+                        onDraftDelete={this._handleDraftDelete}
+                        showDraftMenuDropdown={this._showDraftMenuDropdown}
+                        onPreviewCreate={this._createDraftPreviewLink}
+                      />
+                    )).toList()}
                 <div>
                   <div className="new-entry-secondary-sidebar__draft-list-title">Published</div>
-                  {!this.state.searching &&
+                  {!searching &&
                     drafts.filter(drft =>
-                        drft.active && drft.id && drft.type === match.params.draftType)
+                        drft.active && drft.type === match.params.draftType)
                     .map(draft => (
                       <div key={`${draft.id}`}>
                         {!draft.content &&
@@ -184,7 +333,7 @@ class NewEntrySecondarySidebar extends Component {
                         }
                       </div>
                   )).toList()}
-                  {this.state.searching && searchResults.filter(drft => drft.original.active).map(draft => (
+                  {searching && searchResults.filter(drft => drft.original.active).map(draft => (
                     <EntrySecondarySidebarItem
                       active={(draft.original.id === currentDraftId)}
                       key={draft.original.id}
@@ -197,6 +346,9 @@ class NewEntrySecondarySidebar extends Component {
                       onPreviewCreate={this._createDraftPreviewLink}
                     />
                   ))}
+                  {searching && searchResults.length === 0 &&
+                    <div>No drafts matching your search criteria were found.</div>
+                  }
                 </div>
               </div>
             </div>
@@ -207,6 +359,7 @@ class NewEntrySecondarySidebar extends Component {
 NewEntrySecondarySidebar.propTypes = {
     akashaId: PropTypes.string,
     draftsCount: PropTypes.number,
+    draftCreate: PropTypes.func,
     draftDelete: PropTypes.func,
     draftsFetched: PropTypes.bool,
     drafts: PropTypes.shape(),
@@ -217,6 +370,7 @@ NewEntrySecondarySidebar.propTypes = {
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
     resolvingHashes: PropTypes.shape(),
+    userSelectedLicence: PropTypes.shape(),
 };
 const mapStateToProps = state => ({
     draftsCount: state.draftState.get('draftsCount'),
@@ -224,11 +378,13 @@ const mapStateToProps = state => ({
     draftsFetched: state.draftState.get('draftsFetched'),
     drafts: state.draftState.get('drafts'),
     resolvingHashes: state.draftState.get('resolvingHashes'),
+    userSelectedLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
 });
 
 export default connect(
     mapStateToProps,
     {
+        draftCreate,
         draftDelete,
         draftsGetCount,
         draftsGet,

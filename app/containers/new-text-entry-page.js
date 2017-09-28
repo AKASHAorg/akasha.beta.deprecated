@@ -23,9 +23,11 @@ class NewEntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched, userDefaultLicence } = nextProps;
+        const { match, draftObj, draftsFetched, entriesFetched, resolvingHashes,
+            userDefaultLicence } = nextProps;
         const { akashaId } = this.props;
-        if (!draftObj && draftsFetched) {
+        const draftIsPublished = resolvingHashes.includes(match.params.draftId);
+        if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
             this.props.draftCreate({
                 id: match.params.draftId,
                 akashaId,
@@ -203,9 +205,10 @@ class NewEntryPage extends Component {
         const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences } = this.props;
 
-        if (!draftObj) {
+        if (!draftObj || !draftObj.content) {
             return <div>Finding Draft</div>;
         }
+
         const { content, tags, version } = draftObj;
         const { title, excerpt, licence, draft, featuredImage } = content;
         return (
@@ -326,9 +329,11 @@ NewEntryPage.propTypes = {
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
     draftsFetched: PropTypes.bool,
+    entriesFetched: PropTypes.bool,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     match: PropTypes.shape(),
+    resolvingHashes: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
@@ -339,15 +344,16 @@ NewEntryPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-    showSecondarySidebar: state.appState.get('showSecondarySidebar'),
-    draftObj: selectDraftById(state, ownProps.match.params.draftId),
     akashaId: selectLoggedAkashaId(state),
-    draftsCount: state.draftState.get('draftsCount'),
-    draftsFetched: state.draftState.get('draftsFetched'),
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+    draftObj: selectDraftById(state, ownProps.match.params.draftId),
+    draftsFetched: state.draftState.get('draftsFetched'),
+    entriesFetched: state.draftState.get('entriesFetched'),
+    licences: state.licenseState.get('byId'),
+    resolvingHashes: state.draftState.get('resolvingHashes'),
+    showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('resultsCount'),
-    licences: state.licenseState.get('byId'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
 });
 

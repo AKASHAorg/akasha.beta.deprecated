@@ -14,7 +14,7 @@ import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage,
+import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
      TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog } from '../components/dialogs';
 import { AppSettings, DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
@@ -139,6 +139,7 @@ class AppContainer extends Component {
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
+                          <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
