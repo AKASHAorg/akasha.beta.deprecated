@@ -53,7 +53,7 @@ const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
         throw new Error('Invalid akashaId');
     }
     const ipfsHash = yield create(data.ipfs);
-    const [fn, digest, hash] = decodeHash(ipfsHash);
+    const [hash, fn, digest] = decodeHash(ipfsHash);
     const txData = contracts.instance
         .ProfileRegistrar
         .register.request(data.akashaId, data.donations, hash, fn, digest, { gas: 400000, from: data.ethAddress});

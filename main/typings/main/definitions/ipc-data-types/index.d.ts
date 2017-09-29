@@ -545,6 +545,7 @@ interface TagsFromToResponse extends MainResponse {
 interface EntryCreateRequest extends AuthRequest {
     content: any;
     tags: string[];
+    entryType: number
 }
 
 interface EntryEditRequest extends EntryCreateRequest {
@@ -559,7 +560,6 @@ interface EntryCreateResponse extends MainResponse {
 
 interface EntryUpdateRequest extends AuthRequest {
     content: any;
-    tags: string[],
     entryId: string;
 }
 
