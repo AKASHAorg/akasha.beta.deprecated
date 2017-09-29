@@ -19,43 +19,43 @@ const nameRegExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
 export const getProfileSchema = (intl, options) => {
     const baseSchema = Joi.object().keys({
         firstName: Joi
-           .string()
-           .required()
-           .min(2)
-           .max(32)
-           .regex(nameRegExp)
-           .label(intl.formatMessage(formMessages.firstName))
-           .options({
-               language: {
-                   any: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                       empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
-                   },
-                   string: {
-                       min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                       max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                       regex: {
-                           base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
-                       }
-                   }
-               }
-           }),
+            .string()
+            .required()
+            .min(2)
+            .max(32)
+            .regex(nameRegExp)
+            .label(intl.formatMessage(formMessages.firstName))
+            .options({
+                language: {
+                    any: {
+                        required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
+                    },
+                    string: {
+                        min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        regex: {
+                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                        }
+                    }
+                }
+            }),
         lastName: Joi
-           .string()
-           .max(32)
-           .regex(nameRegExp)
-           .allow('')
-           .label(intl.formatMessage(formMessages.lastName))
-           .options({
-               language: {
-                   string: {
-                       max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                       regex: {
-                           base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
-                       }
-                   }
-               }
-           }),
+            .string()
+            .max(32)
+            .regex(nameRegExp)
+            .allow('')
+            .label(intl.formatMessage(formMessages.lastName))
+            .options({
+                language: {
+                    string: {
+                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        regex: {
+                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                        }
+                    }
+                }
+            }),
         about: Joi
             .string()
             .allow(''),
@@ -80,19 +80,19 @@ export const getProfileSchema = (intl, options) => {
                             }
                         }),
                     url: Joi.alternatives().try(
-                    Joi
-                        .string()
-                        .label('URL')
-                        .options({
-                            language: {
-                                any: {
-                                    empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                },
-                                string: {
-                                    uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
+                        Joi
+                            .string()
+                            .label('URL')
+                            .options({
+                                language: {
+                                    any: {
+                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                                    },
+                                    string: {
+                                        uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
+                                    }
                                 }
-                            }
-                        })
+                            })
                     )
                 })
             ).label('Link').options({

@@ -5,7 +5,6 @@ import { MenuStreams } from '../svg';
 
 
 class IconStreams extends Component {
-
     render () {
         const { disabled, iconStyle, isActive, onClick } = this.props;
 

@@ -40,3 +40,19 @@ export const profileUpdateLogged = profile =>
             .then(resolve)
             .catch(reject)
     );
+
+export const tempProfileGet = () =>
+    new Promise((resolve, reject) =>
+        profileDB.tempProfileGet
+            .toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
+
+export const tempProfileSave = tempProfile =>
+    new Promise((resolve, reject) =>
+        profileDB.tempProfileGet
+            .put(tempProfile)
+            .then(resolve)
+            .catch(reject)
+    );

@@ -20,5 +20,4 @@ export default class MenuEntries extends Component {
           </g>
         );
     }
-
 }

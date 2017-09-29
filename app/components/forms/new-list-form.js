@@ -9,7 +9,6 @@ const FormItem = Form.Item;
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class NewListForm extends Component {
-
     componentDidMount () {
         this.props.form.validateFields();
     }
@@ -51,7 +50,7 @@ class NewListForm extends Component {
         const listNameError = isFieldTouched('name') && getFieldError('name');
 
         return (
-          <Form className="new-list-form" hideRequiredMark onSubmit={this.onSubmit}>            
+          <Form className="new-list-form" hideRequiredMark onSubmit={this.onSubmit}>
             <div className="new-list-form__title">
               {intl.formatMessage(listMessages.addToNewList)}
             </div>

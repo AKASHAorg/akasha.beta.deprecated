@@ -5,6 +5,7 @@ import merge from 'webpack-merge';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
+
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // @TODO extract akasha themes in separated files
 export default merge(baseConfig, {
@@ -29,9 +30,9 @@ export default merge(baseConfig, {
             {
                 test: /\.module\.css$/,
                 use: ExtractTextPlugin.extract({
-                        use: ['style-loader',
-                            'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]']
-                    }
+                    use: ['style-loader',
+                        'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]']
+                }
                 )
             },
             // Pipe other styles through css modules and append to style.css
@@ -152,7 +153,7 @@ export default merge(baseConfig, {
             ignoreOrder: true
         }),
         new OptimizeCssAssetsPlugin({
-            cssProcessorOptions: { discardComments: {removeAll: true } },
+            cssProcessorOptions: { discardComments: { removeAll: true } },
             canPrint: true
         }),
         /**

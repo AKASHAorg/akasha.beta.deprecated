@@ -96,7 +96,7 @@ class SearchSecondarySidebar extends Component {
                     <button onClick={() => this.props.searchHandshake()}>Handshake</button>
             }
             <button
-              onClick={() => 
+              onClick={() =>
                 this.props.history.push(`/search/${this.props.match.params.topic}/${this.state.queryInput}`)
               }
             >
