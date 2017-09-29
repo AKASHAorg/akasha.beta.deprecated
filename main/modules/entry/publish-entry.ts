@@ -1,21 +1,50 @@
-import auth from '../auth/Auth';
 import IpfsEntry from './ipfs';
-import { uniq } from 'ramda';
+import { decodeHash } from '../ipfs/helpers';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+
+const publish = {
+    'id': '/publish',
+    'type': 'object',
+    'properties': {
+        'content': {
+            'type': 'object'
+        },
+        'tags': {
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            },
+            'uniqueItems': true,
+            'minItems': 1
+        },
+        'entryType': {
+            'type': 'number'
+        },
+        'token': {
+            'type': 'string'
+        }
+    },
+    'required': ['content', 'tags', 'entryType', 'token']
+};
 
 /**
  * Create a new Entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: EntryCreateRequest) {
+const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
+    const v = new schema.Validator();
+    v.validate(data, publish, { throwError: true });
+
     let ipfsEntry = new IpfsEntry();
-    data.tags = uniq(data.tags);
-    const hash = yield ipfsEntry.create(data.content, data.tags);
-    const txData = yield contracts.instance.entries.publish(hash, data.tags, data.gas);
-    const tx = yield auth.signData(txData, data.token);
+    const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
+    const decodedHash = decodeHash(ipfsHash);
+
+    const txData = contracts.instance.Entries.publish.request(...decodedHash, data.tags, data.entryType, { gas: 1000000 });
+    const transaction = yield contracts.send(txData, data.token, cb);
     ipfsEntry = null;
-    return { tx };
+    return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
-export default { execute, name: 'publish' };
+export default { execute, name: 'publish', hasStream: true };

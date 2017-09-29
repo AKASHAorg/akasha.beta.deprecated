@@ -9,9 +9,9 @@ export const decodeHash = function (ipfsHash: string): string[] {
     const digestSize = decoded.slice(1, 2);
     const hash = decoded.slice(2);
     return [
+        addHexPrefix(hash.toString('hex')),
         addHexPrefix(fn.toString('hex')),
-        addHexPrefix(digestSize.toString('hex')),
-        addHexPrefix(hash.toString('hex'))
+        addHexPrefix(digestSize.toString('hex'))
     ];
 };
 

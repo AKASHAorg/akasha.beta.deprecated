@@ -211,7 +211,7 @@
     "dependencies": {
         "@akashaproject/contracts.js": "1.3.2",
         "@akashaproject/geth-connector": "1.7.22",
-        "@akashaproject/ipfs-connector": "1.10.6",
+        "@akashaproject/ipfs-connector": "1.10.7",
         "antd": "2.13",
         "archiver": "2.0.3",
         "bluebird": "3.5.0",

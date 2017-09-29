@@ -53,10 +53,10 @@ const execute = Promise.coroutine(function* (data: ProfileUpdateRequest, cb) {
         throw new Error('No profile found to update');
     }
 
-    const txData = yield contracts.instance.ProfileResolver
+    const txData = contracts.instance.ProfileResolver
         .setHash.request(
             currentProfile.raw,
-            decodedHash
+            ...decodedHash
         );
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
