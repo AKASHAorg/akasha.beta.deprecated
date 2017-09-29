@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { EntryListContainer } from '../../shared-components';
+import { EntryList } from '../../components';
 import { searchMoreQuery } from '../../local-flux/actions/search-actions';
 import { selectSearchEntries } from '../../local-flux/selectors';
 import { SEARCH } from '../../constants/context-types';
 
-
 class EntrySearchPage extends Component {
-
     queryMore = () => {
         const { query, entries } = this.props;
         this.props.searchMoreQuery(query, entries.size);
@@ -19,7 +17,7 @@ class EntrySearchPage extends Component {
         const checkMoreEntries = resultsCount > entries.size;
         return (
           <div style={{ height: '100%', position: 'absolute', left: 0, right: 0, padding: '0px 50px' }}>
-            <EntryListContainer
+            <EntryList
               style={{ height: '100%', flexFlow: 'row wrap' }}
               cardStyle={{ width: '400px' }}
               contextId={SEARCH}

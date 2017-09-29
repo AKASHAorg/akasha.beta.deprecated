@@ -17,7 +17,7 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, Side
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     ErrorReportingModal, FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance,
     MyEntries, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
-    SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
+    SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -176,7 +176,7 @@ class AppContainer extends Component {
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
-                {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
+                {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
                 <ReactTooltip delayShow={300} class="generic-tooltip" place="bottom" effect="solid" />
               </div>
             </DataLoader>
