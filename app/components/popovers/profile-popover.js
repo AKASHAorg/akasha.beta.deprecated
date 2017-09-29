@@ -41,7 +41,6 @@ class ProfilePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
-        console.log('on visible change');
         this.setState({
             popoverVisible
         });

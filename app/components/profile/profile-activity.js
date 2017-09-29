@@ -28,23 +28,27 @@ class ProfileActivity extends Component {
 
     render () {
         const { intl, profileEntries, fetchingProfileEntries, moreProfileEntries,
-            fetchingMoreProfileEntries, firstName, profiles } = this.props;
+            fetchingMoreProfileEntries, profiles } = this.props;
         return (
           <div className="profile-activity">
-            <div className="profile-activity__name">
-              {firstName}&#8217;s {intl.formatMessage(profileMessages.activity)}
+            <div className="flex-center-y profile-activity__column">
+              <div className="profile-activity__column-header">
+                <div className="profile-activity__column-title">
+                  {intl.formatMessage(profileMessages.entries)}
+                </div>
+              </div>
+              <EntryList
+                style={{ height: '100%', flexFlow: 'row wrap' }}
+                cardStyle={{ width: '340px' }}
+                contextId={ACTIVITY}
+                entries={profileEntries}
+                fetchingEntries={fetchingProfileEntries}
+                fetchingMoreEntries={fetchingMoreProfileEntries}
+                fetchMoreEntries={this.fetchMoreProfileEntries}
+                moreEntries={moreProfileEntries}
+                profiles={profiles}
+              />
             </div>
-            <EntryList
-              style={{ height: '100%', flexFlow: 'row wrap' }}
-              cardStyle={{ width: '400px' }}
-              contextId={ACTIVITY}
-              entries={profileEntries}
-              fetchingEntries={fetchingProfileEntries}
-              fetchingMoreEntries={fetchingMoreProfileEntries}
-              fetchMoreEntries={this.fetchMoreProfileEntries}
-              moreEntries={moreProfileEntries}
-              profiles={profiles}
-            />
           </div>
         );
     }
@@ -58,7 +62,6 @@ ProfileActivity.propTypes = {
     profileEntries: PropTypes.shape(),
     fetchingProfileEntries: PropTypes.bool,
     fetchingMoreProfileEntries: PropTypes.bool,
-    firstName: PropTypes.string,
     moreProfileEntries: PropTypes.bool,
     profiles: PropTypes.shape()
 };

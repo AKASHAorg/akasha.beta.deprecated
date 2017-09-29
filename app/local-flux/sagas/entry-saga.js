@@ -100,7 +100,7 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const getVoteOf = Channel.server.entry.getVoteOf;
     yield call(enableExtraChannels);
-    const akashaId = yield select(selectLoggedAkashaId);
+    const loggedAkashaId = yield select(selectLoggedAkashaId);
     const allEntries = [];
     const ownEntries = [];
     const entryIpfsHashes = [];
@@ -108,13 +108,15 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     const profileIpfsHashes = [];
     const akashaIds = [];
     entries.forEach((entry) => {
+        const akashaId = entry.entryEth.publisher.akashaId;
         allEntries.push({ akashaId, entryId: entry.entryId });
         entryIpfsHashes.push(entry.entryEth.ipfsHash);
         entryIds.push(entry.entryId);
-        profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
-        akashaIds.push(entry.entryEth.publisher.akashaId);
-        if (entry.entryEth && entry.entryEth.publisher &&
-                akashaId === entry.entryEth.publisher.akashaId) {
+        if (akashaId && !akashaIds.includes(akashaId)) {
+            akashaIds.push(akashaId);
+            profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
+        }
+        if (akashaId && loggedAkashaId === akashaId) {
             ownEntries.push(entry.entryId);
         }
     });

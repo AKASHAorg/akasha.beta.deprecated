@@ -155,6 +155,11 @@ const generalMessages = defineMessages({
         description: 'join button label',
         defaultMessage: 'Join'
     },
+    karma: {
+        id: 'app.general.karma',
+        description: 'karma',
+        defaultMessage: 'Karma'
+    },
     leave: {
         id: 'app.general.leave',
         description: 'leave button label',
@@ -199,6 +204,11 @@ const generalMessages = defineMessages({
         id: 'app.general.pause',
         description: 'pause button label',
         defaultMessage: 'Pause'
+    },
+    pending: {
+        id: 'app.general.pending',
+        description: 'an action is pending',
+        defaultMessage: 'Pending'
     },
     people: {
         id: 'app.general.people',

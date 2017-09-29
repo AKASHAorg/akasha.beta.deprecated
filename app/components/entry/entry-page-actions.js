@@ -58,7 +58,7 @@ class EntryPageAction extends Component {
 
     render () {
         const { canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
-            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword,
+            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, noVotesBar,
             votePending, voteWeight } = this.props;
         const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
             && (!fetchingEntryBalance || entryBalance !== undefined);
@@ -111,12 +111,14 @@ class EntryPageAction extends Component {
                     }
                   </div>
                 </div>
-                <Tooltip placement="left" title={votePercentTooltip}>
-                  <div className="flex-center-y entry-actions__vote-bar">
-                    <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
-                    <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
-                  </div>
-                </Tooltip>
+                {!noVotesBar &&
+                  <Tooltip placement="left" title={votePercentTooltip}>
+                    <div className="flex-center-y entry-actions__vote-bar">
+                      <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
+                      <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
+                    </div>
+                  </Tooltip>
+                }
               </div>
               <div className="entry-actions__right-actions">
                 {!isOwnEntry &&
@@ -188,6 +190,7 @@ EntryPageAction.propTypes = {
     listSearchKeyword: PropTypes.string,
     listToggleEntry: PropTypes.func.isRequired,
     loggedAkashaId: PropTypes.string,
+    noVotesBar: PropTypes.bool,
     publisher: PropTypes.shape(),
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,

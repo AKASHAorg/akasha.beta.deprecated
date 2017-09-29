@@ -13,11 +13,10 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, EntrySearchPage,
-     TagSearchPage, SidebarContainer, ProfileContainer } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     ErrorReportingModal, FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance,
-    MyEntries, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
+    MyEntries, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, TermsPanel, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -139,13 +138,13 @@ class AppContainer extends Component {
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
-                          <Route exact path="/@:akashaId" component={ProfileContainer} />
+                          <Route exact path="/@:akashaId" component={ProfilePage} />
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
                           <div>
-                            <Route exact path="/@:akashaId" component={ProfileContainer} />
+                            <Route exact path="/@:akashaId" component={ProfilePage} />
                             <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                           </div>
                         }
