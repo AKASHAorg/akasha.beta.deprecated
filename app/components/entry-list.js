@@ -129,7 +129,7 @@ class EntryList extends Component {
                   </div>
                 }
                 {masonry ?
-                  <Masonry>
+                  <Masonry options={{ transitionDuration: 0 }}>
                     {entryCards}
                   </Masonry> :
                   entryCards

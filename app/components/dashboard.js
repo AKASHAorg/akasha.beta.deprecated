@@ -12,16 +12,7 @@ const Dashboard = (props) => {
     const activeDashboard = dashboards.get(name);
 
     return (
-      <div
-        ref={getDashboardRef}
-        style={{
-            display: 'flex',
-            padding: '20px 20px 0',
-            height: '100%',
-            width: '100%',
-            overflowX: 'auto'
-        }}
-      >
+      <div className="dashboard" ref={getDashboardRef}>
         {activeDashboard && activeDashboard.get('columns').map((id, index) => {
             const column = columns.get(id);
             if (!column) {
@@ -33,8 +24,9 @@ const Dashboard = (props) => {
 
             return (
               <div
+                className="dashboard__column"
                 key={id}
-                style={{ flex: '0 0 auto', marginRight: '5px', width, paddingRight: isLast ? '20px' : 0 }}
+                style={{ width, paddingRight: isLast ? '20px' : 0 }}
               >
                 <Column column={column} />
               </div>

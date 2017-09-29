@@ -81,11 +81,6 @@ export const profileMessages = defineMessages({
         description: 'follow a profile',
         defaultMessage: 'Follow'
     },
-    unfollow: {
-        id: 'app.profile.unfollow',
-        description: 'unfollow a profile',
-        defaultMessage: 'Unfollow'
-    },
     followers: {
         id: 'app.profile.followers',
         description: 'Label for followers tab',
@@ -101,7 +96,7 @@ export const profileMessages = defineMessages({
     },
     following: {
         id: 'app.profile.following',
-        description: 'Label for following tab',
+        description: 'following an user',
         defaultMessage: 'Following'
     },
     followings: {
@@ -182,9 +177,29 @@ export const profileMessages = defineMessages({
         description: 'title for send tip form',
         defaultMessage: 'Send tip to {name}'
     },
+    support: {
+        id: 'app.profile.support',
+        description: 'support an user financially',
+        defaultMessage: 'Support'
+    },
+    supported: {
+        id: 'app.profile.supported',
+        description: 'supported by someone',
+        defaultMessage: 'Supported'
+    },
+    supporting: {
+        id: 'app.profile.supporting',
+        description: 'supporting someone',
+        defaultMessage: 'Supporting'
+    },
     tipAmount: {
         id: 'app.profile.tipAmount',
         description: 'placeholder for tip amount input',
         defaultMessage: 'Tip amount'
+    },
+    unfollow: {
+        id: 'app.profile.unfollow',
+        description: 'unfollow a profile',
+        defaultMessage: 'Unfollow'
     }
 });

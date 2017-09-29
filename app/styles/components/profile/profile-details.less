@@ -1,0 +1,144 @@
+.profile-details {
+    height: 100%;
+    padding: 16px;
+    width: 352px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+    border-right: 1px solid #eee;
+
+    &__background-image {
+        height: 160px;
+        width: 320px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 4px;
+
+        &_fixed-width {
+            flex: none;
+            width: 320px;
+        }
+
+        &_fixed-height {
+            flex: none;
+            height: 160px;
+        }
+    }
+
+    &__background-image-placeholder {
+        height: 100%;
+        width: 100%;
+        background-color: #6c747f;
+    }
+
+    &__avatar-row {
+        display: flex;
+        justify-content: space-between;
+        width: 320px;
+        margin-top: -50px;
+    }
+
+    &__avatar-wrapper {
+        padding-left: 12px;
+    }
+
+    &__avatar {
+        border: 2px solid #fff;
+    }
+
+    &__heading {
+        flex: 1 1 auto;
+        padding: 6px 0px 6px 6px;
+        margin-top: 50px;
+        height: 50px;
+        position: relative;
+    }
+
+    &__name {
+        color: @heading-color;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1;
+        height: 20px;
+        max-width: 202px;
+
+        &_own-profile {
+            max-width: 148px;
+        }
+    }
+
+    &__karma-score {
+        color: @heading-color;
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    &__edit-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+    }
+
+    &__actions {
+        margin: 24px 0px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__button {
+        font-weight: 400;
+        font-size: 13px;
+
+        &_large {
+            width: ~'calc(50% - 8px)';            
+        }
+    }
+
+    &__button-icon {
+        margin-right: 5px;
+    }
+
+    &__unfollow-button {
+        background-color: @error-color !important;
+        color: @text-color-dark !important;
+    }
+
+    &__following-button {
+        color: @primary-color !important;
+        border-color: @primary-color !important;
+    }
+
+    &__counters-wrapper {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 400;
+        text-transform: uppercase;
+        margin: 24px 0px;        
+    }
+
+    &__counter {
+        margin-top: 6px;
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 500;
+        color: @heading-color;
+    }
+
+    &__about {
+        font-size: 13px;
+        word-wrap: break-word;
+        padding-bottom: 12px;
+    }
+
+    &__links-wrapper {
+        padding-bottom: 12px;
+    }
+
+    &__link {
+        font-size: 13px;
+    }
+}

@@ -113,7 +113,6 @@ export const resolveProfile = Promise.coroutine(function* (hash: string, resolve
     }
     let constructed = {
         [ProfileSchema.LINKS]: [],
-        [ProfileSchema.ABOUT]: '',
         [ProfileSchema.BACKGROUND_IMAGE]: ''
     };
     const shortProfile = yield getShortProfile(hash, resolveImages);

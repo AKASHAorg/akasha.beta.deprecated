@@ -67,6 +67,8 @@ function* profileGetBalance ({ unit = 'ether' }) {
 function* profileGetData ({ akashaId, full = false }) {
     const channel = Channel.server.profile.getProfileData;
     yield apply(channel, channel.send, [{ akashaId, full }]);
+    yield put(actions.profileIsFollower([akashaId])); // eslint-disable-line no-use-before-define
+    yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
 function* profileGetList ({ profileAddresses }) {
@@ -280,7 +282,6 @@ function* watchProfileGetDataChannel () {
         if (resp.error) {
             yield put(actions.profileGetDataError(resp.error));
         } else {
-            yield fork(profileSaveAkashaIds, [resp.data.akashaId]); // eslint-disable-line
             yield put(actions.profileGetDataSuccess(resp.data));
         }
     }

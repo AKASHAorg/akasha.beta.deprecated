@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
@@ -56,10 +57,9 @@ class EntryCard extends Component {
     };
 
     handleComments = () => {
-        const { router } = this.context;
-        const { entry, hidePanel, loggedAkashaId } = this.props;
+        const { entry, hidePanel, history, loggedAkashaId } = this.props;
         hidePanel();
-        router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
+        history.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
     };
 
     handleEdit = () => {
@@ -265,149 +265,13 @@ class EntryCard extends Component {
                 ))}
               </div>
             }
-            {/* {content &&
-              <CardActions className="col-xs-12">
-                <div style={{ display: 'flex', alignItems: 'center' }} >
-                  <div style={{ position: 'relative' }}>
-                    <div
-                      data-tip={entry.get('active') ? 'Upvote' : 'Voting period has ended'}
-                    >
-                      <IconButton
-                        onTouchTap={this.handleUpvote}
-                        iconStyle={{ width: '20px', height: '20px' }}
-                        disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
-                      >
-                        <SvgIcon viewBox="0 0 20 20" >
-                          <EntryUpvote fill={upvoteIconColor} />
-                        </SvgIcon>
-                      </IconButton>
-                    </div>
-                    {existingVoteWeight > 0 &&
-                      <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            textAlign: 'center',
-                            fontSize: '10px',
-                            color: palette.accent3Color
-                        }}
-                      >
-                        +{existingVoteWeight}
-                      </div>
-                    }
-                  </div>
-                  <div style={{ fontSize: '16px', padding: '0 5px', letterSpacing: '2px' }}>
-                    <FlatButton
-                      label={entry.get('score')}
-                      onClick={this.openVotesPanel}
-                      style={{ minWidth: '10px', borderRadius: '6px' }}
-                    />
-                  </div>
-                  <div style={{ position: 'relative' }}>
-                    <div
-                      data-tip={entry.get('active') ? 'Downvote' : 'Voting period has ended'}
-                    >
-                      <IconButton
-                        onTouchTap={this.handleDownvote}
-                        iconStyle={{ width: '20px', height: '20px' }}
-                        disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
-                      >
-                        <SvgIcon viewBox="0 0 20 20">
-                          <EntryDownvote fill={downvoteIconColor} />
-                        </SvgIcon>
-                      </IconButton>
-                    </div>
-                    {existingVoteWeight < 0 &&
-                      <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            textAlign: 'center',
-                            fontSize: '10px',
-                            color: palette.accent1Color
-                        }}
-                      >
-                        {existingVoteWeight}
-                      </div>
-                    }
-                  </div>
-                  <div>
-                    <div data-tip="Comments">
-                      <IconButton
-                        onTouchTap={this.handleComments}
-                        iconStyle={{ width: '20px', height: '20px' }}
-                      >
-                        <SvgIcon viewBox="0 0 20 20">
-                          <EntryComment />
-                        </SvgIcon>
-                      </IconButton>
-                    </div>
-                  </div>
-                  <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                    {entry.get('commentsCount')}
-                  </div>
-                  <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
-                    {!this.isOwnEntry() &&
-                      <div
-                        data-tip="Bookmark"
-                        style={{ display: 'inline-block' }}
-                      >
-                        <IconButton
-                          onTouchTap={this.handleBookmark}
-                          iconStyle={{ width: '20px', height: '20px' }}
-                        >
-                          <SvgIcon viewBox="0 0 20 20">
-                            {isSaved ?
-                              <EntryBookmarkOn /> :
-                              <EntryBookmarkOff />
-                            }
-                          </SvgIcon>
-                        </IconButton>
-                      </div>
-                    }
-                    {this.isOwnEntry() && (!canClaimPending || entry.get('canClaim') !== undefined)
-                        && (!fetchingEntryBalance || entry.get('balance') !== undefined) &&
-                      <div style={{ display: 'inline-flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                        {!entry.get('active') &&
-                          <div data-tip={!entry.get('canClaim') ? 'Already claimed' : 'Claim'}>
-                            <IconButton
-                              onTouchTap={this.handleClaim}
-                              iconStyle={{
-                                  width: '20px',
-                                  height: '20px',
-                                  fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
-                              }}
-                              disabled={claimPending}
-                            >
-                              <SvgIcon viewBox="0 0 16 16">
-                                <ToolbarEthereum />
-                              </SvgIcon>
-                            </IconButton>
-                          </div>
-                        }
-                        {entry.get('balance') !== 'claimed' &&
-                          <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                            {entry.get('balance')} AETH
-                          </div>
-                        }
-                      </div>
-                    }
-                  </div>
-                </div>
-                {this.state.showVotes &&
-                  <EntryVotesPanel
-                    closeVotesPanel={this.closeVotesPanel}
-                    entryId={entry.get('entryId')}
-                    entryTitle={content.get('title')}
-                  />
-                }
-              </CardActions>
-            } */}
-            {content && <EntryPageActions containerRef={containerRef} entry={entry} />}
+            {content &&
+              <EntryPageActions
+                containerRef={containerRef}
+                entry={entry}
+                noVotesBar
+              />
+            }
             {!!latestVersion && this.state.showVersions &&
               <EntryVersionsPanel
                 closeVersionsPanel={this.closeVersionsPanel}
@@ -429,28 +293,20 @@ EntryCard.propTypes = {
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     entry: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
     existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     hidePanel: PropTypes.func,
-    intl: PropTypes.shape(),
     isSaved: PropTypes.bool,
     loggedAkashaId: PropTypes.string,
-    selectedTag: PropTypes.string,
-    selectTag: PropTypes.func,
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
 
     containerRef: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.bool,
+    history: PropTypes.shape().isRequired,
     publisher: PropTypes.shape()
 };
 
-EntryCard.contextTypes = {
-    muiTheme: PropTypes.shape(),
-    router: PropTypes.shape()
-};
-
-export default injectIntl(EntryCard);
+export default withRouter(injectIntl(EntryCard));
