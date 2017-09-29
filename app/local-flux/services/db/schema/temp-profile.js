@@ -6,7 +6,7 @@ const TempProfileStatusSchema = {
     publishRequested: Boolean,
     faucetTx: null,
     publishTx: null
-}
+};
 
 const TempProfileSchema = {
     firstName: String,

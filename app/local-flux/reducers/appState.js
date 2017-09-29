@@ -32,11 +32,9 @@ const appState = createReducer(initialState, {
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
 
-    [types.NOTIFICATION_DISPLAY]: (state, { notification }) => {
-        return state.merge({
-            displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
-        });
-    },
+    [types.NOTIFICATION_DISPLAY]: (state, { notification }) => state.merge({
+        displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
+    }),
 
     [types.PROFILE_LOGOUT]: state =>
         state.merge({
