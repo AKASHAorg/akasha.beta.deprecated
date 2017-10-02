@@ -4,7 +4,6 @@ import entryTagIterator from './entry-tag-iterator';
 import entryProfileIterator from './entry-profile-iterator';
 import getEntry from './get-entry';
 import publishEntry from './publish-entry';
-import updateEntry from './update-entry';
 import canClaim from './can-claim';
 import claimDeposit from './claim-deposit';
 import downVoteEntry from './downvote-entry';
@@ -32,7 +31,6 @@ export default [
     entryCountTag,
     getEntry,
     publishEntry,
-    updateEntry,
     canClaim,
     claimDeposit,
     downVoteEntry,

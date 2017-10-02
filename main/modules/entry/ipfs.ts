@@ -38,15 +38,30 @@ class IpfsEntry {
         this.licence = content.licence;
         this.tags = tags;
         this.wordCount = content.wordCount;
-        if (content.featuredImage) {
-            ipfsApiRequests.push(
-                IpfsConnector.getInstance().api
-                    .add(content.featuredImage, true, is(String, content.featuredImage))
+        if (content.featuredImage && is(Object, content.featuredImage)) {
+            const req = (Object.keys(content.featuredImage).sort()).map((imSize) => {
+                if (!content.featuredImage[imSize].src) {
+                    return Promise.resolve({});
+                }
+                const mediaData = this._normalizeImage(content.featuredImage[imSize].src);
+                return IpfsConnector.getInstance().api
+                    .add(content.featuredImage[imSize].src, true, is(String, mediaData))
                     .then((obj) => {
-                        this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
-                    }));
+                        return { [imSize]: obj.hash };
+                    });
+            });
+            ipfsApiRequests.push(
+                Promise.all(req).then((sizes) => {
+                    const LINK = {};
+                    sizes.forEach((record) => {
+                        Object.assign(LINK, record);
+                    });
+                    return IpfsConnector.getInstance().api.add(LINK);
+                }).then((obj) => {
+                    this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
+                })
+            );
         }
-
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
                 .add(content.excerpt)
@@ -198,7 +213,7 @@ export const getShortContent = Promise.coroutine(function* (hash) {
     const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE]);
     for (let i = 0; i < extraData.length; i++) {
         if (extraData[i].name === FEATURED_IMAGE) {
-            response[FEATURED_IMAGE] = extraData[i].multihash;
+            response[FEATURED_IMAGE] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
         }
         if (extraData[i].name === EXCERPT) {
             response[EXCERPT] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);

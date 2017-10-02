@@ -29,7 +29,7 @@ class GethIPC extends ModuleEmitter {
             networkid: 4,
             syncmode: 'fast',
             rinkeby: '',
-            // rpc: ''
+            rpc: ''
             // rpccorsdomain: '*',
             // rpcapi: 'eth,net,web3,personal,admin,shh,txpool',
             // rpcaddr: '0.0.0.0'
