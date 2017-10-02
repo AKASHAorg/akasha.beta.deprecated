@@ -35,11 +35,9 @@ const Flags = Record({
     fetchingMoreFollowings: new Map(),
     fetchingProfileData: false,
     fetchingProfileList: false,
-    followPending: new Map(),
     localProfilesFetched: false,
     loginPending: false,
     resolvingIpfsHash: new Map(),
-    sendingTip: new Map()
 });
 
 const Interests = Record({

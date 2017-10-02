@@ -385,6 +385,7 @@ function* watchProfileSendTipChannel () {
         const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -398,6 +399,7 @@ function* watchProfileUnfollowChannel () {
         const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileUnfollowError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

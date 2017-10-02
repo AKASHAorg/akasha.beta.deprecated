@@ -1,5 +1,5 @@
+import { List } from 'immutable';
 import { ProfileRecord } from '../reducers/records';
-import * as actionTypes from '../../constants/action-types';
 
 /* eslint-disable no-use-before-define */
 
@@ -33,6 +33,10 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 export const selectAllComments = state => state.commentsState.get('byId').toList();
 
 export const selectAllLicenses = state => state.licenseState.get('byId');
+
+export const selectAllPendingClaims = state => state.actionState.getIn(['pending', 'claim']);
+
+export const selectAllPendingVotes = state => state.actionState.getIn(['pending', 'entryVote']);
 
 export const selectBalance = state => state.profileState.get('balance');
 
@@ -176,40 +180,20 @@ export const selectNeedAuthAction = state =>
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
-export const selectPendingComments = (state, entryId) => {
-    const pendingComments = state.actionState
-        .get('publishing')
-        .filter((actionId) => {
-            const action = state.actionState.getIn(['byId', actionId]);
-            return action.get('type') === actionTypes.comment &&
-                action.getIn(['payload', 'entryId']) === entryId;
-        })
-        .map(actionId => state.actionState.getIn(['byId', actionId]));
-    return pendingComments;
-};
+export const selectPendingClaim = (state, entryId) =>
+    !!state.actionState.getIn(['pending', 'claim', entryId]);
 
-export const selectPendingEntryClaim = (state, entryId) => {
-    const pendingClaim = state.actionState
-        .get('publishing')
-        .filter((actionId) => {
-            const action = state.actionState.getIn(['byId', actionId]);
-            return action.get('type') === actionTypes.claim &&
-                action.getIn(['payload', 'entryId']) === entryId;
-        });
-    return !!pendingClaim.size;
-};
+export const selectPendingComments = (state, entryId) =>
+    state.actionState.getIn(['pending', 'comment', entryId]) || new List();
 
-export const selectPendingEntryVote = (state, entryId) => {
-    const { entryDownvote, entryUpvote } = actionTypes;
-    const pendingVotes = state.actionState
-        .get('publishing')
-        .filter((actionId) => {
-            const action = state.actionState.getIn(['byId', actionId]);
-            return [entryDownvote, entryUpvote].includes(action.get('type')) &&
-                action.getIn(['payload', 'entryId']) === entryId;
-        });
-    return !!pendingVotes.size;
-};
+export const selectPendingFollow = (state, akashaId) =>
+    !!state.actionState.getIn(['pending', 'follow', akashaId]);
+
+export const selectPendingTip = (state, akashaId) =>
+    !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
+
+export const selectPendingVote = (state, entryId) =>
+    !!state.actionState.getIn(['pending', 'entryVote', entryId]);
 
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();

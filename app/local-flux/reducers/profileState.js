@@ -100,12 +100,6 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
 
-    [types.PROFILE_FOLLOW]: (state, { akashaId }) =>
-        state.setIn(['flags', 'followPending', akashaId], true),
-
-    [types.PROFILE_FOLLOW_ERROR]: (state, { request }) =>
-        state.setIn(['flags', 'followPending', request.akashaId], false),
-
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const { akashaId } = data;
         const loggedAkashaId = state.getIn(['loggedProfile', 'akashaId']);
@@ -129,7 +123,6 @@ const profileState = createReducer(initialState, {
                     undefined,
                 [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount + 1)
             }),
-            flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,
             followings,
             isFollower: state.get('isFollower').set(akashaId, true)
@@ -329,15 +322,6 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_SEND_TIP]: (state, { akashaId }) =>
-        state.setIn(['flags', 'sendingTip', akashaId], true),
-
-    [types.PROFILE_SEND_TIP_ERROR]: (state, { request }) =>
-        state.setIn(['flags', 'sendingTip', request.akashaId], false),
-
-    [types.PROFILE_SEND_TIP_SUCCESS]: (state, { data }) =>
-        state.setIn(['flags', 'sendingTip', data.akashaId], false),
-
     [types.PROFILE_TOGGLE_INTEREST]: (state, { interest, interestType }) => {
         const interestState = state.getIn(['interests', interestType]);
         const newList = interestState.includes(interest) ?
@@ -345,12 +329,6 @@ const profileState = createReducer(initialState, {
                         interestState.push(interest);
         return state.setIn(['interests', interestType], newList);
     },
-
-    [types.PROFILE_UNFOLLOW]: (state, { akashaId }) =>
-        state.setIn(['flags', 'followPending', akashaId], true),
-
-    [types.PROFILE_UNFOLLOW_ERROR]: (state, { request }) =>
-        state.setIn(['flags', 'followPending', request.akashaId], false),
 
     [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
         const { akashaId } = data;
@@ -375,7 +353,6 @@ const profileState = createReducer(initialState, {
                     undefined,
                 [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount - 1)
             }),
-            flags: state.get('flags').setIn(['followPending', akashaId], false),
             followers,
             followings,
             isFollower: state.get('isFollower').set(akashaId, false)

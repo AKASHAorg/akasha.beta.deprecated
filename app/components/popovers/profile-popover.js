@@ -6,8 +6,8 @@ import { injectIntl } from 'react-intl';
 import { Button, Icon, Popover } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectIsFollower, selectLoggedAkashaId, selectProfile,
-    selectProfileFlag } from '../../local-flux/selectors';
+import { selectBalance, selectIsFollower, selectLoggedAkashaId, selectPendingFollow,
+    selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { Avatar, PanelLink, SendTipForm } from '../';
 
@@ -18,9 +18,9 @@ class ProfilePopover extends Component {
     };
 
     componentWillReceiveProps (nextProps) {
-        const { sendingTip } = nextProps;
+        const { tipPending } = nextProps;
         // Close the send tip form after sending tip
-        if (sendingTip && !this.props.sendingTip) {
+        if (tipPending && !this.props.tipPending) {
             this.toggleSendTip();
         }
     }
@@ -75,7 +75,7 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { akashaId, balance, followPending, intl, isFollower, loggedAkashaId, profile,
-            sendingTip } = this.props;
+            tipPending } = this.props;
         const name = profile.get('firstName') || profile.get('lastName') ?
             `${profile.get('firstName')} ${profile.get('lastName')}` :
             profile.get('akashaId');
@@ -88,7 +88,7 @@ class ProfilePopover extends Component {
                 name={name}
                 onCancel={this.toggleSendTip}
                 onSubmit={this.sendTip}
-                sendingTip={sendingTip}
+                tipPending={tipPending}
               />
             );
         }
@@ -218,18 +218,18 @@ ProfilePopover.propTypes = {
     loggedAkashaId: PropTypes.string,
     placement: PropTypes.string,
     profile: PropTypes.shape().isRequired,
-    sendingTip: PropTypes.bool
+    tipPending: PropTypes.bool
 };
 
 function mapStateToProps (state, ownProps) {
     const { akashaId } = ownProps;
     return {
         balance: selectBalance(state),
-        followPending: selectProfileFlag(state, 'followPending').get(akashaId),
+        followPending: selectPendingFollow(state, akashaId),
         isFollower: selectIsFollower(state, akashaId),
         loggedAkashaId: selectLoggedAkashaId(state),
         profile: selectProfile(state, akashaId),
-        sendingTip: selectProfileFlag(state, 'sendingTip').get(akashaId)
+        tipPending: selectPendingTip(state, akashaId)
     };
 }
 

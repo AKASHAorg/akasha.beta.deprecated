@@ -2,11 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../locale-data/messages';
 import { entryPageShow } from '../local-flux/actions/entry-actions';
+import { selectAllPendingClaims, selectAllPendingVotes } from '../local-flux/selectors';
 import { isInViewport } from '../utils/domUtils';
 import { DataLoader, EntryCard } from './';
 
@@ -45,36 +47,25 @@ class EntryList extends Component {
     }
 
     handleEdit = (entryId) => {
-        const { loggedAkashaId } = this.props;
-        const { router } = this.context;
+        const { history, loggedAkashaId } = this.props;
         const existingDraft = this.getExistingDraft(entryId);
         if (existingDraft) {
-            router.push(`/${loggedAkashaId}/draft/${existingDraft.get('id')}`);
+            history.push(`/${loggedAkashaId}/draft/${existingDraft.get('id')}`);
         } else {
-            router.push(`/${loggedAkashaId}/draft/new?editEntry=${entryId}`);
+            history.push(`/${loggedAkashaId}/draft/new?editEntry=${entryId}`);
         }
     };
 
-    selectTag = (tag) => {
-        const { params } = this.context.router;
-        this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
-    };
-
     render () {
-        const { blockNr, cardStyle, claimPending, canClaimPending, defaultTimeout,
-            entries, entryActions, entryResolvingIpfsHash, fetchingEntries, fetchingEntryBalance,
-            fetchingMoreEntries, intl, loggedAkashaId, masonry, moreEntries, placeholderMessage,
-            savedEntriesIds, selectedTag, style, votePending, profiles } = this.props;
+        const { blockNr, cardStyle, canClaimPending, defaultTimeout, entries, entryResolvingIpfsHash,
+            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, loggedAkashaId, masonry,
+            moreEntries, pendingClaims, pendingVotes, placeholderMessage, profiles, style } = this.props;
         const { palette } = this.context.muiTheme;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
                 return null;
             }
-            const voteEntryPending = votePending && votePending.find(vote =>
-                vote.entryId === entry.get('entryId'));
-            const claimEntryPending = claimPending && claimPending.find(claim =>
-                claim.entryId === entry.get('entryId'));
-            const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
+            const claimPending = !!pendingClaims.get(entry.get('entryId'));
             const publisher = profiles.get(entry.getIn(['entryEth', 'publisher']));
             const entryIpfsHash = entry.getIn(['entryEth', 'ipfsHash']);
             const resolvingEntry = entryResolvingIpfsHash &&
@@ -83,24 +74,20 @@ class EntryList extends Component {
             return (<EntryCard
               blockNr={blockNr}
               canClaimPending={canClaimPending}
-              claimPending={claimEntryPending && claimEntryPending.value}
+              claimPending={claimPending}
               entry={entry}
-              entryActions={entryActions}
               entryResolvingIpfsHash={resolvingEntry}
               existingDraft={this.getExistingDraft(entry.get('entryId'))}
               fetchingEntryBalance={fetchingEntryBalance}
               handleEdit={this.handleEdit}
-              isSaved={isSaved}
               key={entry.get('entryId')}
               loggedAkashaId={loggedAkashaId}
-              selectedTag={selectedTag}
-              selectTag={this.selectTag}
               style={cardStyle}
-              voteEntryPending={voteEntryPending && voteEntryPending.value}
 
               containerRef={this.container}
-              publisher={publisher}
               entryPageShow={this.props.entryPageShow}
+              publisher={publisher}
+              votePending={pendingVotes.get(entry.get('entryId'))}
             />);
         });
 
@@ -156,50 +143,46 @@ EntryList.propTypes = {
     blockNr: PropTypes.number,
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
-    claimPending: PropTypes.shape(),
     defaultTimeout: PropTypes.number,
     drafts: PropTypes.shape(),
     entries: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
     fetchingEntries: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
     intl: PropTypes.shape(),
     moreEntries: PropTypes.bool,
     placeholderMessage: PropTypes.string,
-    savedEntriesIds: PropTypes.shape(),
-    selectedTag: PropTypes.string,
     style: PropTypes.shape(),
-    votePending: PropTypes.shape(),
 
     // used in mapStateToProps
-    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // eslint-disable-line react/no-unused-prop-types
+    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // eslint-disable-line
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.shape(),
     fetchMoreEntries: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
     loggedAkashaId: PropTypes.string,
     masonry: PropTypes.bool,
+    pendingClaims: PropTypes.shape().isRequired,
+    pendingVotes: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
 };
 
 EntryList.contextTypes = {
     muiTheme: PropTypes.shape(),
-    router: PropTypes.shape()
 };
 
 function mapStateToProps (state, ownProps) {
     return {
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
-        claimPending: state.entryState.getIn(['flags', 'claimPending']),
         drafts: state.draftState.get('drafts'),
         entryResolvingIpfsHash: state.entryState.getIn(['flags', 'resolvingIpfsHash', ownProps.contextId]),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         loggedAkashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
+        pendingClaims: selectAllPendingClaims(state),
+        pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byId'),
-        savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
         selectedTag: state.tagState.get('selectedTag'),
-        votePending: state.entryState.getIn(['flags', 'votePending'])
     };
 }
 
@@ -208,4 +191,4 @@ export default connect(
     {
         entryPageShow
     }
-)(injectIntl(EntryList));
+)(withRouter(injectIntl(EntryList)));

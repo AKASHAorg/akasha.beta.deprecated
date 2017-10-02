@@ -11,7 +11,7 @@ import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
-    selectLoggedAkashaId, selectPendingEntryClaim, selectPendingEntryVote,
+    selectLoggedAkashaId, selectPendingClaim, selectPendingVote,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -202,7 +202,7 @@ function mapStateToProps (state, ownProps) {
     return {
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
-        claimPending: selectPendingEntryClaim(state, entry.get('entryId')),
+        claimPending: selectPendingClaim(state, entry.get('entryId')),
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
@@ -210,7 +210,7 @@ function mapStateToProps (state, ownProps) {
         listSearchKeyword: selectListSearch(state),
         loggedAkashaId,
         publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
-        votePending: selectPendingEntryVote(state, entry.get('entryId')),
+        votePending: selectPendingVote(state, entry.get('entryId')),
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };
 }
