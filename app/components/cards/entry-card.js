@@ -18,19 +18,18 @@ class EntryCard extends Component {
         };
     }
 
-    shouldComponentUpdate (nextProps, nextState) {
+    shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
         const { blockNr, canClaimPending, claimPending, entry, entryResolvingIpfsHash,
-            fetchingEntryBalance, isSaved, publisher, style, voteEntryPending } = nextProps;
+            fetchingEntryBalance, publisher, style, votePending } = nextProps;
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
             entryResolvingIpfsHash !== this.props.entryResolvingIpfsHash ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
-            isSaved !== this.props.isSaved ||
             !publisher.equals(this.props.publisher) ||
             (style && style.width !== this.props.style.width) ||
-            voteEntryPending !== this.props.voteEntryPending ||
+            votePending !== this.props.votePending ||
             nextState.expanded !== this.state.expanded ||
             nextState.showVotes !== this.state.showVotes ||
             nextState.showVersions !== this.state.showVersions
@@ -297,16 +296,15 @@ EntryCard.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     hidePanel: PropTypes.func,
-    isSaved: PropTypes.bool,
-    loggedAkashaId: PropTypes.string,
     style: PropTypes.shape(),
-    voteEntryPending: PropTypes.bool,
 
     containerRef: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     entryResolvingIpfsHash: PropTypes.bool,
     history: PropTypes.shape().isRequired,
-    publisher: PropTypes.shape()
+    loggedAkashaId: PropTypes.string,
+    publisher: PropTypes.shape(),
+    votePending: PropTypes.bool,
 };
 
 export default withRouter(injectIntl(EntryCard));

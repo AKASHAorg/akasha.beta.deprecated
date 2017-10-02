@@ -10,8 +10,8 @@ import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { selectIsFollower, selectLoggedAkashaId, selectProfile,
-    selectProfileFlag } from '../../local-flux/selectors';
+import { selectIsFollower, selectLoggedAkashaId, selectPendingFollow, selectPendingTip,
+    selectProfile } from '../../local-flux/selectors';
 
 class ProfileDetails extends Component {
     state = {
@@ -116,7 +116,7 @@ class ProfileDetails extends Component {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
         const { about, avatar, backgroundImage, links, firstName, lastName,
             followersCount, followingCount } = profileData;
-        const { akashaId, intl, loggedAkashaId, sendingTip } = this.props;
+        const { akashaId, intl, loggedAkashaId, tipPending } = this.props;
         const isOwnProfile = akashaId === loggedAkashaId;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
@@ -174,7 +174,7 @@ class ProfileDetails extends Component {
                 {this.renderFollowButton()}
                 <Button
                   className="profile-details__button profile-details__button_large"
-                  disabled={sendingTip.get(akashaId)}
+                  disabled={tipPending}
                   onClick={() => this.sendTip(profileData)}
                   size="large"
                 >
@@ -240,18 +240,16 @@ ProfileDetails.propTypes = {
     isFollower: PropTypes.bool,
     loggedAkashaId: PropTypes.string,
     profileData: PropTypes.shape(),
-    sendingTip: PropTypes.shape(),
+    tipPending: PropTypes.bool,
 };
 
 function mapStateToProps (state, ownProps) {
     return {
-        fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
-        fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
-        followPending: selectProfileFlag(state, 'followPending').get(ownProps.akashaId),
+        followPending: selectPendingFollow(state, ownProps.akashaId),
         isFollower: selectIsFollower(state, ownProps.akashaId),
         loggedAkashaId: selectLoggedAkashaId(state),
         profileData: selectProfile(state, ownProps.akashaId),
-        sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
+        tipPending: selectPendingTip(state, ownProps.akashaId)
     };
 }
 

@@ -232,7 +232,6 @@ function* entryVoteSuccess (entryId) {
     }
     const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
     if (publisher && publisher === loggedAkashaId) {
-        console.log('is own entry');
         yield put(actions.entryCanClaim(entryId));
         yield put(actions.entryGetBalance(entryId));
     }
@@ -281,6 +280,7 @@ function* watchEntryClaimChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -294,6 +294,7 @@ function* watchEntryDownvoteChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -478,6 +479,7 @@ function* watchEntryUpvoteChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

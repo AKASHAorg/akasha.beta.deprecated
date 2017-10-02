@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { List } from 'immutable';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
