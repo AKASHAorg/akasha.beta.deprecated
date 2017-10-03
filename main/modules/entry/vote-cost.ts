@@ -1,5 +1,14 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+
+export const voteCost = {
+    'id': '/voteCost',
+    'type': 'array',
+    'items': { 'type': 'number' },
+    'uniqueItems': true,
+    'minItems': 1
+};
 
 /**
  * Get cost value for vote weight
@@ -11,12 +20,12 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function* (data: { weight: number[] }) {
-        if (!Array.isArray(data.weight)) {
-            throw new Error('data.weight must be an array');
-        }
-        const requests = data.weight.map((w) => {
-            return contracts.instance.votes.getVoteCost(w)
+    function* (data: number[]) {
+        const v = new schema.Validator();
+        v.validate(data, voteCost, { throwError: true });
+
+        const requests = data.map((w) => {
+            return contracts.instance.Votes.getEssenceCost(w)
                 .then((cost) => {
                     return { cost, weight: w };
                 });

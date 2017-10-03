@@ -30,7 +30,6 @@ const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: nu
             return GethConnector.getInstance().web3.toUtf8(tag);
         });
         const author = yield resolve.execute({ ethAddress: event.args.author });
-
         collection.push({
             tags,
             entryType: GethConnector.getInstance().web3.toDecimal(event.args.entryType),

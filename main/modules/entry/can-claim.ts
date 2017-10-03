@@ -1,6 +1,16 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
 
+const canClaim = {
+    'id': '/canClaim',
+    'type': 'array',
+    'items': {
+        'type': 'string'
+    },
+    'uniqueItems': true,
+    'minItems': 1
+};
 /**
  * Check if can claim deposit from entry
  */
@@ -10,17 +20,16 @@ const execute = Promise.coroutine(
      * @returns {{collection: any}}
      */
     function* (data: { entryId: string[] }) {
-        if (!Array.isArray(data.entryId)) {
-            throw new Error('data.entryId must be an array');
-        }
+        const v = new schema.Validator();
+        v.validate(data, canClaim, { throwError: true });
 
+        const timeStamp = new Date().getTime() / 1000;
         const requests = data.entryId.map((id) => {
-            return Promise.all([
-                contracts.instance.entries.getEntryFund(id),
-                contracts.instance.entries.isMutable(id)
-            ]).then((resolve) => {
-                return { canClaim: !!(resolve[0] && !resolve[1]), entryId: id };
-            });
+            return contracts.instance.Entries
+                .canClaimEntry(id, timeStamp)
+                .then((status) => {
+                    return { entryId: id, status };
+                });
         });
         const collection = yield Promise.all(requests);
         return { collection };

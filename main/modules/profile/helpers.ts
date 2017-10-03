@@ -4,7 +4,8 @@ import * as Promise from 'bluebird';
 export const profileAddress = Promise.coroutine(function*(data) {
     let profileAddress;
     if (data.akashaId) {
-        profileAddress = yield contracts.instance.ProfileResolver.addr(data.akashaId);
+        const nameHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
+        profileAddress = yield contracts.instance.ProfileResolver.addr(nameHash);
     } else if (data.ethAddress) {
         profileAddress = data.ethAddress;
     }
