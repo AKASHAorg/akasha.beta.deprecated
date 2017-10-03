@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'antd';
 import throttle from 'lodash.throttle';
-import { ProfileList } from '../';
+import { AuthProfileList } from '../';
 import { setupMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
@@ -87,7 +87,7 @@ class Auth extends Component {
                     </div>
                   </div>
                   <div className="auth__list-wrapper">
-                    <ProfileList
+                    <AuthProfileList
                       displayShadow={this.displayShadow}
                       fetchingProfiles={!localProfilesFetched || fetchingProfileList}
                       gethStatus={gethStatus}

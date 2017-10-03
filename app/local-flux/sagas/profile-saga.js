@@ -439,7 +439,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
     yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+    yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);

@@ -166,7 +166,6 @@ function mapStateToProps (state, ownProps) {
         pendingClaims: selectAllPendingClaims(state),
         pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byId'),
-        selectedTag: state.tagState.get('selectedTag'),
     };
 }
 

@@ -129,6 +129,12 @@ const profileState = createReducer(initialState, {
         });
     },
 
+    [types.PROFILE_FOLLOWERS_ITERATOR]: (state, { akashaId }) =>
+        state.setIn(['flags', 'fetchingFollowers', akashaId], true),
+
+    [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingFollowers', request.akashaId], false),
+
     [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data }) => {
         const moreFollowers = data.limit === data.collection.length;
         let byId = state.get('byId');
@@ -145,10 +151,16 @@ const profileState = createReducer(initialState, {
             byId,
             flags: state.get('flags').setIn(['fetchingFollowers', data.akashaId], false),
             followers: state.get('followers').set(data.akashaId, followersList),
-            lastFollower: state.get('lastFollowing').set(data.akashaId, lastIndex),
+            lastFollower: state.get('lastFollower').set(data.akashaId, lastIndex),
             moreFollowers: state.get('moreFollowers').set(data.akashaId, moreFollowers)
         });
     },
+
+    [types.PROFILE_FOLLOWINGS_ITERATOR]: (state, { akashaId }) =>
+        state.setIn(['flags', 'fetchingFollowings', akashaId], true),
+
+    [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingFollowings', request.akashaId], false),
 
     [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: (state, { data }) => {
         const moreFollowings = data.limit === data.collection.length;
@@ -262,6 +274,12 @@ const profileState = createReducer(initialState, {
             loggedProfile: state.get('loggedProfile').merge(data)
         }),
 
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: (state, { akashaId }) =>
+        state.setIn(['flags', 'fetchingMoreFollowers', akashaId], true),
+
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingMoreFollowers', request.akashaId], false),
+
     [types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data }) => {
         const moreFollowers = data.limit === data.collection.length;
         let byId = state.get('byId');
@@ -282,6 +300,12 @@ const profileState = createReducer(initialState, {
             moreFollowers: state.get('moreFollowers').set(data.akashaId, moreFollowers)
         });
     },
+
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR]: (state, { akashaId }) =>
+        state.setIn(['flags', 'fetchingMoreFollowings', akashaId], true),
+
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingMoreFollowings', request.akashaId], false),
 
     [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: (state, { data }) => {
         const moreFollowings = data.limit === data.collection.length;

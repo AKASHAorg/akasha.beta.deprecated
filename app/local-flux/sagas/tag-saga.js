@@ -125,10 +125,7 @@ function* watchTagSearchChannel () {
             yield put(actions.tagSearchError(resp.error));
         } else {
             const query = yield select(state => state.tagState.get('searchQuery'));
-            console.log('query', query);
-            console.log('tagName', resp.request.tagName);
             if (query === resp.request.tagName) {
-                console.log('data', resp.data);
                 yield put(actions.tagSearchSuccess(resp.data.collection));
                 yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
             }

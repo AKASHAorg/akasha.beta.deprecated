@@ -90,7 +90,7 @@ class ProfileDetails extends Component {
             );
         }
         const className = classNames(
-            'profile-details__button profile-details__button_large',
+            'profile-details__button',
             {
                 'profile-details__unfollow-button': !followPending && isFollower && followHovered,
                 'profile-details__following-button': !followPending && isFollower && !followHovered
@@ -153,27 +153,25 @@ class ProfileDetails extends Component {
                   {firstName} {lastName}
                 </div>
                 <div className="profile-details__karma">
-                  {intl.formatMessage(generalMessages.karma)}
-                  <span className="profile-details__karma-score">85</span>
+                  @{akashaId}
                 </div>
-                {isOwnProfile &&
-                  <div className="flex-center-y profile-details__edit-button">
-                    <Button
-                      className="profile-details__button"
-                      size="large"
-                      type="primary"
-                    >
-                      {intl.formatMessage(generalMessages.edit)}
-                    </Button>
-                  </div>
-                }
               </div>
             </div>
-            {!isOwnProfile &&
-              <div className="profile-details__actions">
-                {this.renderFollowButton()}
+            <div className="profile-details__scores-wrapper">
+              <div>
+                {intl.formatMessage(generalMessages.karmaTotalScore)}
+                <span className="profile-details__score">85</span>
+              </div>
+              <div>
+                {intl.formatMessage(generalMessages.essenceTotalScore)}
+                <span className="profile-details__score">216</span>
+              </div>
+            </div>
+            <div className="profile-details__actions">
+              {!isOwnProfile && this.renderFollowButton()}
+              {!isOwnProfile &&
                 <Button
-                  className="profile-details__button profile-details__button_large"
+                  className="profile-details__button"
                   disabled={tipPending}
                   onClick={() => this.sendTip(profileData)}
                   size="large"
@@ -183,8 +181,17 @@ class ProfileDetails extends Component {
                     {intl.formatMessage(profileMessages.support)}
                   </div>
                 </Button>
-              </div>
-            }
+              }
+              {isOwnProfile &&
+                <Button
+                  className="profile-details__button"
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.editProfile)}
+                </Button>
+              }
+            </div>
             <div className="profile-details__counters-wrapper">
               <div>
                 <div>{intl.formatMessage(profileMessages.followers)}</div>

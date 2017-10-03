@@ -94,7 +94,35 @@ export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', i
 export const selectEthAddress = (state, profileAddress) =>
     state.profileState.getIn(['ethAddresses', profileAddress]);
 
+export const selectFetchingFollowers = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
+
+export const selectFetchingFollowings = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingFollowings', akashaId]);
+
+export const selectFetchingMoreFollowers = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowers', akashaId]);
+
+export const selectFetchingMoreFollowings = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowings', akashaId]);
+
 export const selectFirstComment = state => state.commentsState.get('firstComm');
+
+export const selectFollowers = (state, akashaId) => {
+    const followers = state.profileState.getIn(['followers', akashaId]);
+    if (followers) {
+        return followers.map(id => selectProfile(state, id));
+    }
+    return new List();
+};
+
+export const selectFollowings = (state, akashaId) => {
+    const followings = state.profileState.getIn(['followings', akashaId]);
+    if (followings) {
+        return followings.map(id => selectProfile(state, id));
+    }
+    return new List();
+};
 
 export const selectFullEntry = state =>
     state.entryState.get('fullEntry');
@@ -122,10 +150,10 @@ export const selectHighlightSearch = state => state.highlightState.get('search')
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
 export const selectLastFollower = (state, akashaId) =>
-    state.profileState.getIn(['followers', akashaId]).last();
+    state.profileState.getIn(['lastFollower', akashaId]);
 
 export const selectLastFollowing = (state, akashaId) =>
-    state.profileState.getIn(['followings', akashaId]).last();
+    state.profileState.getIn(['lastFollowing', akashaId]);
 
 export const selectLastGethLog = state =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
@@ -173,6 +201,12 @@ export const selectLoggedProfile = state => state.profileState.get('loggedProfil
 
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
+
+export const selectMoreFollowers = (state, akashaId) =>
+    state.profileState.getIn(['moreFollowers', akashaId]);
+
+export const selectMoreFollowings = (state, akashaId) =>
+    state.profileState.getIn(['moreFollowings', akashaId]);
 
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
