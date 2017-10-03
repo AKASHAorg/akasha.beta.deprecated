@@ -105,7 +105,17 @@ const generalMessages = defineMessages({
     editProfile: {
         id: 'app.general.editProfile',
         description: 'Edit profile button label',
-        defaultMessage: 'Edit Profile'
+        defaultMessage: 'Edit profile'
+    },
+    essence: {
+        id: 'app.general.essence',
+        description: 'essence',
+        defaultMessage: 'Essence'
+    },
+    essenceTotalScore: {
+        id: 'app.general.essenceTotalScore',
+        description: 'essence total score',
+        defaultMessage: 'Essence total score'
     },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
@@ -159,6 +169,11 @@ const generalMessages = defineMessages({
         id: 'app.general.karma',
         description: 'karma',
         defaultMessage: 'Karma'
+    },
+    karmaTotalScore: {
+        id: 'app.general.karmaTotalScore',
+        description: 'karma total score',
+        defaultMessage: 'Karma total score'
     },
     leave: {
         id: 'app.general.leave',

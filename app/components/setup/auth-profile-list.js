@@ -6,7 +6,7 @@ import clickAway from '../../utils/clickAway';
 import { isVisible } from '../../utils/domUtils';
 import { setupMessages } from '../../locale-data/messages';
 
-class ProfileList extends Component {
+class AuthProfileList extends Component {
     container = null;
     selectedElement = null;
     state = {
@@ -100,19 +100,19 @@ class ProfileList extends Component {
         const isHovered = account === hoveredAccount && !isSelected;
         const onClick = isSelected ? undefined : () => this.onSelectAccount(account);
         const header = (
-          <div className="profile-list__card-header">
+          <div className="auth-profile-list__card-header">
             <Avatar
-              className="profile-list__avatar"
+              className="auth-profile-list__avatar"
               firstName={profile.get('firstName')}
               image={avatar}
               lastName={profile.get('lastName')}
             />
-            <div className="profile-list__header-text">
-              <div className="overflow-ellipsis heading profile-list__name">
+            <div className="auth-profile-list__header-text">
+              <div className="overflow-ellipsis heading auth-profile-list__name">
                 {akashaId ? profileName : account}
               </div>
               {akashaId &&
-                <div className="profile-list__akasha-id">
+                <div className="auth-profile-list__akasha-id">
                   <small>@{akashaId}</small>
                 </div>
               }
@@ -122,7 +122,7 @@ class ProfileList extends Component {
 
         return (
           <div
-            className="profile-list__profile-card"
+            className="auth-profile-list__profile-card"
             id={`account-${account}`}
             key={account}
             onClick={onClick}
@@ -169,7 +169,7 @@ class ProfileList extends Component {
         if (placeholderMessage) {
             this.getContainerRef(null);
             return (
-              <div className="profile-list__placeholder">
+              <div className="auth-profile-list__placeholder">
                 {placeholderMessage}
               </div>
             );
@@ -177,10 +177,10 @@ class ProfileList extends Component {
 
         return (
           <DataLoader flag={fetchingProfiles} style={{ paddingTop: '100px' }}>
-            <div className="profile-list__root">
+            <div className="auth-profile-list__root">
               <div
                 id="select-popup-container"
-                className="profile-list__list-wrapper"
+                className="auth-profile-list__list-wrapper"
                 ref={this.getContainerRef}
               >
                 {profiles.map(({ account, profile }) => this.renderListItem(account, profile))}
@@ -191,7 +191,7 @@ class ProfileList extends Component {
     }
 }
 
-ProfileList.propTypes = {
+AuthProfileList.propTypes = {
     fetchingProfiles: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     getListContainerRef: PropTypes.func,
@@ -200,4 +200,4 @@ ProfileList.propTypes = {
     profiles: PropTypes.shape().isRequired,
 };
 
-export default clickAway(ProfileList);
+export default clickAway(AuthProfileList);

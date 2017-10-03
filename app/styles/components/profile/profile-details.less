@@ -1,4 +1,5 @@
 .profile-details {
+    flex: 0 0 auto;
     height: 100%;
     padding: 16px;
     width: 352px;
@@ -42,6 +43,7 @@
 
     &__avatar-wrapper {
         padding-left: 12px;
+        height: 100px;
     }
 
     &__avatar {
@@ -69,7 +71,12 @@
         }
     }
 
-    &__karma-score {
+    &__scores-wrapper {
+        margin: 24px 0px;
+        font-size: 13px;
+    }
+
+    &__score {
         color: @heading-color;
         font-weight: 500;
         margin-left: 5px;
@@ -91,10 +98,7 @@
     &__button {
         font-weight: 400;
         font-size: 13px;
-
-        &_large {
-            width: ~'calc(50% - 8px)';            
-        }
+        width: ~'calc(50% - 8px)';            
     }
 
     &__button-icon {

@@ -4,13 +4,20 @@
     padding: 16px 8px 0px;
     background-color: #fff;
     display: flex;
+    overflow-x: auto;
 
     &__column {
+        flex: 0 0 auto;
         width: 360px;
         background-color: #f7f7f7;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
+        margin-right: 10px;
+
+        &_last {
+            margin-right: 20px;
+        }
     }
 
     &__column-header {

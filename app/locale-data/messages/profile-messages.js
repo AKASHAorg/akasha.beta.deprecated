@@ -137,6 +137,11 @@ export const profileMessages = defineMessages({
         description: 'Title for profile overview sidebar',
         defaultMessage: 'MY PROFILE'
     },
+    noProfiles: {
+        id: 'app.entry.noProfiles',
+        description: 'placeholder for empty profiles list',
+        defaultMessage: 'No profiles'
+    },
     overview: {
         id: 'app.profile.overview',
         description: 'Title for overview card',

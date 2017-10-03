@@ -2,6 +2,7 @@
 export AddImage from './comment/add-image';
 export AppSettings from './app-settings';
 export Auth from './setup/auth';
+export AuthProfileList from './setup/auth-profile-list';
 export Avatar from './avatar/avatar';
 export AvatarEditor from './avatar/avatar-editor';
 export Balance from './balance';
@@ -72,7 +73,7 @@ export ProfileColumn from './columns/profile-column';
 export ProfileDetailsPanel from './panels/user-profile-details';
 export ProfileEditPanel from './panels/profile-edit';
 export ProfileDetails from './profile/profile-details';
-export ProfileList from './setup/profile-list';
+export ProfileList from './profile-list';
 export ProfileOverview from './profile-overview/profile-overview';
 export ProfileOverviewSecondarySidebar from './secondary-sidebars/profile-overview-secondary-sidebar';
 export ProfilePage from './profile/profile-page';
