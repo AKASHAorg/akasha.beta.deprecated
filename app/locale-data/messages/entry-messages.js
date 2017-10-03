@@ -104,11 +104,6 @@ const entryMessages = defineMessages({
         description: 'message when loading comments for the first time',
         defaultMessage: 'Loading comments'
     },
-    unresolvedEntry: {
-        id: 'app.entry.unresolvedEntry',
-        description: 'Message to display when an entry could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
-    },
     newComments: {
         id: 'app.entry.newComments',
         description: 'Message to show when new comments were published',
@@ -179,6 +174,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for empty latest entries list',
         defaultMessage: 'No new entries'
     },
+    noVotes: {
+        id: 'app.entry.noVotes',
+        description: 'Placeholder for empty votes list',
+        defaultMessage: 'No votes'
+    },
     searchProfile: {
         id: 'app.entry.searchProfile',
         description: 'placeholder for profile column',
@@ -188,6 +188,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.searchTag',
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
+    },
+    unresolvedComment: {
+        id: 'app.entry.unresolvedComment',
+        description: 'Message to display when a comment could not be resolved',
+        defaultMessage: 'There are no peers online right now.'
+    },
+    unresolvedEntry: {
+        id: 'app.entry.unresolvedEntry',
+        description: 'Message to display when an entry could not be resolved',
+        defaultMessage: 'There are no peers online right now.'
     },
     upvote: {
         id: 'app.entry.upvote',

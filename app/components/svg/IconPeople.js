@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SvgIcon } from 'material-ui';
-import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuPeople } from '../svg';
 
@@ -14,14 +12,12 @@ const IconPeople = (props) => {
         isActive={isActive}
         onClick={onClick}
       >
-        <SvgIcon
-          color={colors.lightBlack}
-          hoverColor={colors.darkBlack}
+        <svg
           style={iconStyle}
           viewBox="0 0 32 32"
         >
           <MenuPeople />
-        </SvgIcon>
+        </svg>
       </CircleIcon>
     );
 };

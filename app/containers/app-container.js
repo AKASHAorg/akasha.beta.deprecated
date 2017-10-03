@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { hideTerms, hideReportModal,
-    bootstrapHome } from '../local-flux/actions/app-actions';
+import { hideTerms, bootstrapHome } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
+import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
-    ErrorReportingModal, FatalErrorModal, GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance,
-    MyEntries, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
+    GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, Notification,
+    PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -36,7 +35,20 @@ class AppContainer extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
+        const { errorState, intl } = nextProps;
         this._bootstrapApp(nextProps);
+        if (errorState.get('fatalErrors').size) {
+            const error = errorState.getIn(['byId', errorState.get('fatalErrors').first()]);
+            const content = error.get('messageId') ?
+                intl.formatMessage(errorMessages[error.get('messageId')]) :
+                error.get('message');
+            const modal = Modal.error({
+                content,
+                okText: intl.formatMessage(generalMessages.ok),
+                onOk: () => { this.props.errorDeleteFatal(); modal.destroy(); },
+                title: intl.formatMessage(errorMessages.fatalError),
+            });
+        }
     }
 
     componentWillUpdate (nextProps) {
@@ -86,22 +98,10 @@ class AppContainer extends Component {
         }
     }
 
-    renderNotifications = () => {
-        // const { appState, intl } = this.props;
-        // const notifications = appState.get('notifications');
-        // notifications.forEach((notif) => {
-        //     notification.success({
-        //         message: 'Success',
-        //         description: intl.formatMessage(notificationMessages[notif.get('id')]),
-        //         onClose: () => this.props.hideNotification(notif.get('id'))
-        //     });
-        // });
-    };
-
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, errorDeleteFatal, errorState,
-            hideTerms, hideReportModal, intl, location, needAuth, theme } = this.props;
+        const { activeDashboard, appState, hideTerms, intl,
+            location, needAuth, theme } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -111,12 +111,7 @@ class AppContainer extends Component {
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
-              <div
-                className="container fill-height"
-                style={{
-                    backgroundColor: muiTheme.palette.canvasColor
-                }}
-              >
+              <div className="container fill-height app-container">
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
                 {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
@@ -157,19 +152,12 @@ class AppContainer extends Component {
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
                 <ErrorNotification />
-                {!!errorState.get('fatalErrors').size &&
-                  <FatalErrorModal
-                    deleteError={errorDeleteFatal}
-                    error={errorState.getIn(['byId', errorState.get('fatalErrors').first()])}
-                    intl={intl}
-                  />
-                }
-                <ErrorReportingModal
+                {/* <ErrorReportingModal
                   open={!!appState.get('showReportModal')}
                   error={errorState.get('reportError')}
                   intl={intl}
                   onClose={hideReportModal}
-                />
+                /> */}
                 {appState.get('showAppSettings') &&
                   <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
                 }
@@ -177,7 +165,6 @@ class AppContainer extends Component {
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                 {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
-                <ReactTooltip delayShow={300} class="generic-tooltip" place="bottom" effect="solid" />
               </div>
             </DataLoader>
           </MuiThemeProvider>
@@ -193,7 +180,7 @@ AppContainer.propTypes = {
     errorDeleteFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     gethGetStatus: PropTypes.func,
-    hideReportModal: PropTypes.func.isRequired,
+    // hideReportModal: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
@@ -222,7 +209,7 @@ export default connect(
         errorDeleteFatal,
         gethGetStatus,
         hideTerms,
-        hideReportModal,
+        // hideReportModal,
         licenseGetAll,
     }
 )(injectIntl(AppContainer));

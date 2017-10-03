@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import { IconButton, SvgIcon } from 'material-ui';
+import { Icon } from 'antd';
 import { Avatar, Balance, PanelLink, ServiceStatusBar } from '../';
 
 const TopBarRightSide = ({
@@ -15,16 +14,13 @@ const TopBarRightSide = ({
       <ServiceStatusBar />
     </div>
     <div style={{ margin: '0 10px', width: '2px', backgroundColor: muiTheme.palette.borderColor }} />
-    <div style={{ flex: '0 0 auto', marginRight: '10px' }}>
-      <IconButton
-        iconStyle={{ width: '24px', height: '24px' }}
-        style={{ width: '32px', height: '32px', padding: '0px' }}
+    <div className="flex-center-y" style={{ flex: '0 0 auto', marginRight: '10px' }}>
+      <Icon
+        className="content-link"
         onClick={openNotificationPanel}
-      >
-        <SvgIcon viewBox="0 0 18 18">
-          <NotificationsIcon />
-        </SvgIcon>
-      </IconButton>
+        style={{ fontSize: '20px' }}
+        type="bell"
+      />
     </div>
     <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
       <PanelLink to="wallet">

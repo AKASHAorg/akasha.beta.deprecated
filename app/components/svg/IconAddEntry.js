@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SvgIcon } from 'material-ui';
-import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuAddEntry } from '../svg';
 
 class IconAddEntry extends Component {
     render () {
-        let { iconStyle, viewBox, disabled, tooltip, isActive, onClick } = this.props;
+        const { iconStyle, disabled, tooltip, isActive, onClick } = this.props;
 
         return (
           <CircleIcon
@@ -16,14 +14,12 @@ class IconAddEntry extends Component {
             onClick={onClick}
             tooltip={tooltip}
           >
-            <SvgIcon
-              color={colors.lightBlack}
-              hoverColor={colors.darkBlack}
+            <svg
               style={iconStyle}
               viewBox="0 0 32 32"
             >
               <MenuAddEntry />
-            </SvgIcon>
+            </svg>
           </CircleIcon>
         );
     }

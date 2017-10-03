@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
-import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import classNames from 'classnames';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import decorateComponentWithProps from 'decorate-component-with-props';
+import { Icon, Tooltip } from 'antd';
 import { ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
@@ -92,7 +92,6 @@ class Comment extends Component {
         const { data } = comment;
         const { date, content } = data;
         const author = profiles.get(data.profile);
-        const { palette } = this.context.muiTheme;
         const authorAkashaId = author && author.get('akashaId');
         const authorClass = classNames('content-link comment__author-name', {
             'comment__author-name_logged': this.isLogged(),
@@ -150,7 +149,12 @@ class Comment extends Component {
                 }
                 {!content &&
                   <div className="comment__placeholder">
-                    <HubIcon color={palette.accent1Color} />
+                    <Tooltip
+                      getPopupContainer={() => containerRef || document.body}
+                      title={intl.formatMessage(entryMessages.unresolvedComment)}
+                    >
+                      <Icon className="comment__placeholder-icon" type="share-alt" />
+                    </Tooltip>
                   </div>
                 }
                 {isExpanded !== null && this.renderExpandButton()}
@@ -178,10 +182,6 @@ class Comment extends Component {
         );
     }
 }
-
-Comment.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 Comment.propTypes = {
     children: PropTypes.node,
