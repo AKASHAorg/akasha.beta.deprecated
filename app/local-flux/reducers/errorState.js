@@ -14,7 +14,7 @@ const newError = (state, error) => {
 const addNewError = (state, { error }) => {
     const err = newError(state, error);
     const extra = err.fatal ?
-        { fatalErrors: state.get('fatalErrors').push(err.displayId) } :
+        { fatalErrors: state.get('fatalErrors').push(err.id) } :
         null;
 
     return state.merge({

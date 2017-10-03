@@ -3,19 +3,14 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Icon } from 'antd';
-import { LogoButton } from './';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
-import { generalMessages } from '../locale-data/messages';
 
 class Sidebar extends Component {
     _handleNewEntry = () => {
         console.log('new entry');
     }
-    getWrapperProps = message => ({
-        'data-tip': this.props.intl.formatMessage(message),
-        'data-place': 'right'
-    });
+
     _isSidebarVisible = (location) => {
         /**
          * specify blacklisted routes
@@ -41,14 +36,14 @@ class Sidebar extends Component {
             </div>
             <div className="sidebar__entry-icon" >
               {(entriesCount > 0 || draftsCount > 0) ?
-                <div {...this.getWrapperProps(generalMessages.myEntries)}>
+                <div>
                   <EntriesIcon
                     disabled={!isLoggedIn}
                     isActive={false}
                     onClick={this._handleNewEntry}
                   />
                 </div> :
-                <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
+                <div>
                   <AddEntryIcon
                     disabled={!isLoggedIn}
                     isActive={this._checkActiveIcon('draft/new')}
@@ -56,7 +51,7 @@ class Sidebar extends Component {
                   />
                 </div>
               }
-              <div {...this.getWrapperProps(generalMessages.search)}>
+              <div>
                 <Link to="/search/entries">
                   <SearchIcon
                     isActive={this._checkActiveIcon('search')}
@@ -65,29 +60,26 @@ class Sidebar extends Component {
               </div>
             </div>
             <div className="sidebar__stream-icon" >
-              <div {...this.getWrapperProps(generalMessages.stream)}>
+              <div>
                 <Link to={`/dashboard/${activeDashboard || ''}`}>
                   <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
                 </Link>
               </div>
-              <div {...this.getWrapperProps(generalMessages.people)}>
+              <div>
                 <Link to="/people">
                   <PeopleIcon isActive={this._checkActiveIcon('people')} />
                 </Link>
               </div>
-              <div {...this.getWrapperProps(generalMessages.chat)}>
+              <div>
                 <Link to="/chat">
                   <ChatIcon isActive={this._checkActiveIcon('chat')} />
                 </Link>
               </div>
-              <div {...this.getWrapperProps(generalMessages.profileOverview)}>
+              <div>
                 <Link to="/profileoverview/overview">
                   <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
                 </Link>
               </div>
-            </div>
-            <div className="sidebar__logo">
-              <LogoButton />
             </div>
           </div>
         );
@@ -98,7 +90,6 @@ Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftsCount: PropTypes.number,
     history: PropTypes.shape(),
-    intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
 };

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
@@ -26,7 +25,6 @@ class EntryList extends Component {
             this.container.removeEventListener('scroll', this.throttledHandler);
         }
         window.removeEventListener('resize', this.throttledHandler);
-        ReactTooltip.hide();
     }
 
     getContainerRef = (el) => { this.container = el; };
@@ -60,7 +58,6 @@ class EntryList extends Component {
         const { blockNr, cardStyle, canClaimPending, defaultTimeout, entries, entryResolvingIpfsHash,
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, loggedAkashaId, masonry,
             moreEntries, pendingClaims, pendingVotes, placeholderMessage, profiles, style } = this.props;
-        const { palette } = this.context.muiTheme;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
                 return null;
@@ -87,7 +84,7 @@ class EntryList extends Component {
               containerRef={this.container}
               entryPageShow={this.props.entryPageShow}
               publisher={publisher}
-              votePending={pendingVotes.get(entry.get('entryId'))}
+              votePending={!!pendingVotes.get(entry.get('entryId'))}
             />);
         });
 
@@ -104,14 +101,7 @@ class EntryList extends Component {
             >
               <div style={{ width: '100%' }}>
                 {entries.size === 0 &&
-                  <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        color: palette.disabledColor,
-                        paddingTop: '10px'
-                    }}
-                  >
+                  <div className="flex-center-x entry-list__placeholder">
                     {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
                   </div>
                 }
@@ -124,9 +114,7 @@ class EntryList extends Component {
                 {moreEntries &&
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreEntries} size="small">
-                      <div
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
+                      <div className="flex-center">
                         <div ref={this.getTriggerRef} style={{ height: 0 }} />
                       </div>
                     </DataLoader>
@@ -165,10 +153,6 @@ EntryList.propTypes = {
     pendingClaims: PropTypes.shape().isRequired,
     pendingVotes: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
-};
-
-EntryList.contextTypes = {
-    muiTheme: PropTypes.shape(),
 };
 
 function mapStateToProps (state, ownProps) {

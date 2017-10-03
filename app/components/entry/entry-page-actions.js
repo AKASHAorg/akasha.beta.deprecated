@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
-import { EntryVotesPanel } from 'shared-components';
 import * as actionTypes from '../../constants/action-types';
-import { ListPopover, VotePopover } from '../';
+import { EntryVotesModal, ListPopover, VotePopover } from '../';
 import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
@@ -157,7 +156,7 @@ class EntryPageAction extends Component {
               </div>
             </div>
             {this.state.showVotes &&
-              <EntryVotesPanel
+              <EntryVotesModal
                 closeVotesPanel={this.closeVotesPanel}
                 entryId={entry.entryId}
                 entryTitle={entry.content.title}

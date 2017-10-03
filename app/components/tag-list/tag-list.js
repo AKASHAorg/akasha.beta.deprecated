@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
 import throttle from 'lodash.throttle';
 import { List, ListItem } from 'material-ui/List';
 import { DataLoader } from '../';
@@ -20,12 +19,11 @@ class TagList extends Component {
             this.container.removeEventListener('scroll', this.throttledHandler);
         }
         window.removeEventListener('resize', this.throttledHandler);
-        ReactTooltip.hide();
     }
 
-    getContainerRef = el => (this.container = el);
+    getContainerRef = (el) => { this.container = el; };
 
-    getTriggerRef = el => (this.trigger = el);
+    getTriggerRef = (el) => { this.trigger = el; };
 
     checkTrigger = () => {
         if (this.trigger && isInViewport(this.trigger)) {
@@ -70,14 +68,14 @@ class TagList extends Component {
                   </div>
                 }
                 <List>
-                {tags && tags.map((tag) => {
-                    if (!tag) {
-                        return null;
-                    }
-                    return (
-                      <ListItem key={tag.tagName} primaryText={tag.tagName} secondaryText={<p> { tag.count } entries</p>} />
-                    );
-                })}
+                  {tags && tags.map((tag) => {
+                      if (!tag) {
+                          return null;
+                      }
+                      return (
+                        <ListItem key={tag.tagName} primaryText={tag.tagName} secondaryText={<p> { tag.count } entries</p>} />
+                      );
+                  })}
                 </List>
                 {moreTags &&
                   <div style={{ height: '35px' }}>
