@@ -573,8 +573,7 @@ interface EntryUpdateResponse extends MainResponse {
 interface EntryUpvoteRequest extends AuthRequest {
     entryId: string; // entry address
     weight: number;
-    value: number;
-    extra: any;
+    ethAddress: string;
 }
 
 interface EntryUpvoteResponse extends MainResponse {
@@ -657,6 +656,8 @@ interface EntriesOfResponse extends MainResponse {
 interface EntryGetRequest {
     entryId: string;
     full?: boolean;
+    ethAddress?: string;
+    akashaId?: string;
     version?: number;
 }
 

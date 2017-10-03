@@ -9,7 +9,6 @@ import claimDeposit from './claim-deposit';
 import downVoteEntry from './downvote-entry';
 import entryScore from './entry-score';
 import isActive from './entry-is-active';
-import getDepositBalance from './get-deposit-balance';
 import upVoteEntry from './upvote-entry';
 import voteCost from './vote-cost';
 import voteCount from './vote-count';
@@ -35,7 +34,6 @@ export default [
     claimDeposit,
     downVoteEntry,
     entryScore,
-    getDepositBalance,
     getEntriesStream,
     upVoteEntry,
     voteCost,
