@@ -173,7 +173,7 @@ class ProfileDetails extends Component {
                 <Button
                   className="profile-details__button"
                   disabled={tipPending}
-                  onClick={() => this.sendTip(profileData)}
+                  onClick={this.sendTip}
                   size="large"
                 >
                   <div>

@@ -109,7 +109,7 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     const akashaIds = [];
     entries.forEach((entry) => {
         const akashaId = entry.entryEth.publisher.akashaId;
-        allEntries.push({ akashaId, entryId: entry.entryId });
+        allEntries.push({ akashaId: loggedAkashaId, entryId: entry.entryId });
         entryIpfsHashes.push(entry.entryEth.ipfsHash);
         entryIds.push(entry.entryId);
         if (akashaId && !akashaIds.includes(akashaId)) {
@@ -122,6 +122,7 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     });
     yield put(actions.entryResolveIpfsHash(entryIpfsHashes, columnId, entryIds));
     yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, akashaIds));
+    yield put(profileActions.profileIsFollower(akashaIds));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);

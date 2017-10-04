@@ -1,8 +1,9 @@
 .profile-popover {
-    width: 260px;
-    
+    width: 300px;
+
     &__header {
         display: flex;
+        height: 32px;
     }
 
     &__avatar-wrapper {
@@ -18,9 +19,9 @@
         height: 17px;
     }
 
-    &__send-tip {
-        height: 17px;
+    &__akasha-id {
         font-size: 12px;
+        cursor: default;
     }
 
     &__tip-icon {
@@ -30,10 +31,8 @@
     }
 
     &__details {
-        font-size: 13px;        
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid #f5f5f5;
+        font-size: 13px;
+        margin: 12px 0px;
     }
 
     &__counter-icon {
@@ -46,24 +45,56 @@
     }
 
     &__about {
-        margin-top: 5px;
-        color: @text-color-secondary;
         max-height: 150px;
+        margin-top: 12px;
         overflow-y: auto;
     }
 
-    &__footer {
+    &__about-inner {
+        display: inline-block;
+        line-height: 13px;
+    }
+
+    &__counters-wrapper {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 400;
+        text-transform: uppercase;
+        margin: 12px 0px;
+    }
+
+    &__counter {
+        font-size: 13px;
+        line-height: 1;
+        font-weight: 500;
+        color: @heading-color;
+    }
+
+    &__actions {
         display: flex;
         justify-content: space-between;
         font-size: 13px;
-        border-top: 1px solid #f5f5f5;
-        margin-top: 8px;
-        padding-top: 8px;
+        margin: 16px 0px 8px;
     }
 
-    &__button-label {
+    &__button {
+        font-weight: 400;
         font-size: 13px;
-        font-weight: normal;
+        width: ~'calc(50% - 8px)';            
     }
 
+    &__button-icon {
+        margin-right: 5px;
+    }
+
+    &__unfollow-button {
+        background-color: @error-color !important;
+        color: @text-color-dark !important;
+    }
+
+    &__following-button {
+        color: @primary-color !important;
+        border-color: @primary-color !important;
+    }
 }
