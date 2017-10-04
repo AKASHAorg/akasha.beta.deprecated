@@ -74,11 +74,8 @@ class EntryVotesModal extends Component {
                         'entry-votes-modal__vote-icon_upvote': weight > 0
                     });
                     return (
-                      <Link className="unstyled-link" to={url}>
-                        <div
-                          className="flex-center-y entry-votes-modal__row"
-                          key={vote.akashaId}
-                        >
+                      <Link className="unstyled-link" key={vote.akashaId} to={url}>
+                        <div className="flex-center-y entry-votes-modal__row">
                           <svg className={iconClass} viewBox="0 0 20 20">
                             {weight < 0 ?
                               <EntryDownvote /> :
