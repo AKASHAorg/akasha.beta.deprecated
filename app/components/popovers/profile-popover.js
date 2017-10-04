@@ -142,7 +142,9 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { akashaId, balance, intl, loggedAkashaId, profile, tipPending } = this.props;
-        const name = `${profile.get('firstName')} ${profile.get('lastName')}`;
+        const firstName = profile.get('firstName');
+        const lastName = profile.get('lastName');
+        const name = firstName || lastName ? `${firstName} ${lastName}` : null;
         const isOwnProfile = akashaId === loggedAkashaId;
 
         if (this.state.sendTip) {
@@ -176,13 +178,15 @@ class ProfilePopover extends Component {
                   onClick={() => this.onVisibleChange(false)}
                   to={{ pathname: `/@${profile.get('akashaId')}`, state: { overlay: true } }}
                 >
-                  <div className="content-link overflow-ellipsis profile-popover__name">
-                    {name}
+                  <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
+                    {name || `@${akashaId}`}
                   </div>
                 </Link>
-                <div className="profile-popover__akasha-id">
-                  @{akashaId}
-                </div>
+                {name &&
+                  <div className="profile-popover__akasha-id">
+                    @{akashaId}
+                  </div>
+                }
               </div>
             </div>
             <div className="profile-popover__details">
