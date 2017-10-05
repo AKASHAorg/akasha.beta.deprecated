@@ -1,0 +1,69 @@
+.entry-votes-modal {
+    &__header {
+        padding-left: 12px;
+    }
+
+    &__title {
+        width: ~'calc(100% - 38px)';
+    }
+
+    &__title-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 14px;
+        flex: 0 0 auto;
+    }
+
+    &__list {
+        min-height: 144px;
+        max-height: 430px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    &__row {
+        display: flex;
+        border-radius: 4px;
+        margin-right: 16px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: #f5f5f5;
+        }
+    }
+
+    &__vote-icon {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
+        margin: 14px;
+
+        &_upvote {
+            fill: @success-color;
+        }
+
+        &_downvote {
+            fill: @error-color;
+        }
+    }
+
+    &__voter {
+        flex: 1 1 auto;
+        width: 180px;
+    }
+
+    &__weight {
+        flex: 0 0 auto;
+        width: 36px;
+        text-align: center;
+    }
+
+    &__placeholder {
+        height: 144px;
+        color: @disabled-color;
+    }
+
+    .ant-modal-body {
+        padding: 0px 0px 0px 16px;
+    }
+}

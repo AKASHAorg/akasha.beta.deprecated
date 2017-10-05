@@ -81,13 +81,13 @@ const searchState = createReducer(initialState, {
             tags: []
         }),
 
-    [types.TAG_SEARCH]: (state, { tag }) =>
+    [types.TAG_SEARCH_LOCAL]: (state, { tag }) =>
         state.merge({
             query: tag,
             flags: state.get('flags').merge({ queryPending: true })
         }),
 
-    [types.TAG_SEARCH_SUCCESS]: (state, { tags, tagCount }) =>
+    [types.TAG_SEARCH_LOCAL_SUCCESS]: (state, { tags, tagCount }) =>
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: null,
@@ -98,16 +98,16 @@ const searchState = createReducer(initialState, {
             tags
         }),
 
-    [types.TAG_SEARCH_ERROR]: state =>
+    [types.TAG_SEARCH_LOCAL_ERROR]: state =>
         state.setIn(['flags', 'queryPending'], false),
 
-    [types.TAG_SEARCH_MORE]: (state, { tag }) =>
+    [types.TAG_SEARCH_LOCAL_MORE]: (state, { tag }) =>
         state.merge({
             query: tag,
             flags: state.get('flags').merge({ moreQueryPending: true })
         }),
 
-    [types.TAG_SEARCH_MORE_SUCCESS]: (state, { tags, tagCount }) =>
+    [types.TAG_SEARCH_LOCAL_MORE_SUCCESS]: (state, { tags, tagCount }) =>
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: null,
@@ -118,7 +118,7 @@ const searchState = createReducer(initialState, {
             tags: state.get('tags').concat(tags)
         }),
 
-    [types.TAG_SEARCH_MORE_ERROR]: state =>
+    [types.TAG_SEARCH_LOCAL_MORE_ERROR]: state =>
         state.setIn(['flags', 'moreQueryPending'], false),
 });
 

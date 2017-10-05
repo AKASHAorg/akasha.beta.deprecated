@@ -4,22 +4,13 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
-import { CardHeader, IconButton, SvgIcon } from 'material-ui';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
-import EditIcon from 'material-ui/svg-icons/image/edit';
+import { Icon, Tooltip } from 'antd';
+import classNames from 'classnames';
 import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedAkashaId } from '../../local-flux/selectors';
 import { calculateReadingTime } from '../../utils/dataModule';
-import styles from './entry-page-header.scss';
-
-const buttonStyle = {
-    width: '40px',
-    height: '40px',
-    padding: '8px',
-    margin: '4px'
-};
 
 class EntryPageHeader extends Component {
     state = {
@@ -49,6 +40,8 @@ class EntryPageHeader extends Component {
         return latestVersion;
     };
 
+    getPopupContainer = () => this.props.containerRef || document.body;
+
     getVersion = (version) => {
         const { history, match } = this.props;
         const query = version !== undefined ? `?version=${version}` : '';
@@ -67,14 +60,18 @@ class EntryPageHeader extends Component {
     };
 
     renderAvatar = () => {
-        const { publisher } = this.props;
+        const { containerRef, publisher } = this.props;
         if (!publisher) {
-            return <Avatar style={{ cursor: 'pointer' }} />;
+            return <Avatar className="entry-page-header__avatar" />;
         }
 
         return (
-          <ProfilePopover akashaId={publisher.get('akashaId')}>
+          <ProfilePopover
+            akashaId={publisher.get('akashaId')}
+            containerRef={containerRef}
+          >
             <Avatar
+              className="entry-page-header__avatar"
               firstName={publisher.get('firstName')}
               image={publisher.avatar}
               lastName={publisher.get('lastName')}
@@ -86,7 +83,6 @@ class EntryPageHeader extends Component {
 
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
-        const blockNr = entry.getIn(['entryEth', 'blockNr']);
         const wordCount = entry.getIn(['content', 'wordCount']) || 0;
         const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
         const readingTime = calculateReadingTime(wordCount);
@@ -116,19 +112,16 @@ class EntryPageHeader extends Component {
         }
 
         return (
-          <div style={{ fontSize: '12px' }}>
+          <div>
             <span style={{ paddingRight: '5px' }}>
               {publishedMessage}
             </span>
             {!isOlderVersion &&
-              <span
-                data-tip={intl.formatMessage(entryMessages.blockNr, { blockNr })}
-                style={{ fontWeight: 600, display: 'inline-block' }}
-              >
+              <span style={{ display: 'inline-block' }}>
                 {intl.formatRelative(publishDate)}
               </span>
             }
-            <span style={{ padding: '0 5px' }}>-</span>
+            <span style={{ padding: '0 7px' }}>|</span>
             {readingTime.hours &&
               <span style={{ marginRight: 5 }}>
                 {intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })}
@@ -141,72 +134,52 @@ class EntryPageHeader extends Component {
             </span>
           </div>
         );
-    }
+    };
 
     render () {
-        const { entry, existingDraft, latestVersion, loggedAkashaId,
-            publisherTitleShadow, publisher, intl, history } = this.props;
-        const { palette } = this.context.muiTheme;
+        const { containerRef, entry, existingDraft, intl, latestVersion, loggedAkashaId,
+            publisher } = this.props;
         const isOwnEntry = entry && loggedAkashaId === entry.getIn(['entryEth', 'publisher']);
+        const buttonClass = classNames('entry-page-header__button', {
+            'content-link': entry.get('active'),
+            'entry-page-header__button_disabled': !entry.get('active')
+        });
 
         return (
-          <div
-            className={styles.entry_publisher_info}
-            style={{ backgroundColor: palette.entryPageBackground }}
-          >
-            <div
-              className={styles.entry_publisher_info_inner}
-              style={{
-                  position: 'relative',
-                  boxShadow: publisherTitleShadow ?
-                      '0px 15px 28px -15px #555, 0 12px 15px -15px #000000' : 'none',
-                  transform: 'translate3d(0,0,0)',
-                  willChange: 'box-shadow',
-                  padding: 16
-              }}
-            >
-              <CardHeader
-                avatar={this.renderAvatar()}
-                subtitle={this.renderSubtitle()}
-                style={{ zIndex: 5, padding: 0 }}
-                title={publisher ?
-                  <ProfilePopover akashaId={publisher.get('akashaId')}>
-                    <div
-                      className={`content-link ${styles.entry_publisher_name}`}
-                      style={{ color: palette.textColor }}
+          <div className="entry-page-header">
+            <div className="entry-page-header__inner">
+              {this.renderAvatar()}
+              <div className="entry-page-header__info">
+                <div className="entry-page-header__author">
+                  {publisher &&
+                    <ProfilePopover
+                      akashaId={publisher.get('akashaId')}
+                      containerRef={containerRef}
                     >
-                      {publisher.akashaId}
-                    </div>
-                  </ProfilePopover> :
-                  <div style={{ height: '22px' }} />
-                }
-              />
-              <div className={styles.entry_header_actions}>
+                      <span className="content-link">{publisher.akashaId}</span>
+                    </ProfilePopover>
+                  }
+                </div>
+                <div className="entry-page-header__subtitle">
+                  {this.renderSubtitle()}
+                </div>
+              </div>
+              <div className="flex-center entry-page-header__actions">
                 {isOwnEntry &&
-                  <div
-                    data-tip={entry.get('active') ?
+                  <Tooltip
+                    getPopupContainer={this.getPopupContainer}
+                    title={entry.get('active') ?
                         intl.formatMessage(entryMessages.editEntry) :
                         intl.formatMessage(entryMessages.cannotEdit)
                     }
                   >
-                    <IconButton
-                      onClick={this.handleEdit}
-                      style={buttonStyle}
-                      disabled={!entry.get('active')}
-                    >
-                      <SvgIcon>
-                        <EditIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
+                    <Icon
+                      className={buttonClass}
+                      onClick={entry.get('active') && this.handleEdit}
+                      type="edit"
+                    />
+                  </Tooltip>
                 }
-                <div data-tip={intl.formatMessage(generalMessages.close)}>
-                  <IconButton onClick={history.goBack} style={buttonStyle}>
-                    <SvgIcon>
-                      <CloseIcon />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
               </div>
             </div>
             {!!latestVersion && this.state.showVersions &&
@@ -225,11 +198,8 @@ class EntryPageHeader extends Component {
     }
 }
 
-EntryPageHeader.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 EntryPageHeader.propTypes = {
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     existingDraft: PropTypes.shape(),
     history: PropTypes.shape(),
@@ -239,7 +209,6 @@ EntryPageHeader.propTypes = {
     loggedAkashaId: PropTypes.string.isRequired,
     match: PropTypes.shape(),
     publisher: PropTypes.shape(),
-    publisherTitleShadow: PropTypes.bool,
 };
 
 function mapStateToProps (state) {

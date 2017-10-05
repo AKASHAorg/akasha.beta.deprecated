@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedTime } from 'react-intl';
-import { Avatar } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
-import { getInitials } from 'utils/dataModule';  // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator from 'utils/imageUtils';  // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar } from '../../../../../components';
+import { getInitials } from '../../../../../utils/dataModule';
+import imageCreator from '../../../../../utils/imageUtils';
 
 class ChatMessage extends Component {
     renderMessage = () => {

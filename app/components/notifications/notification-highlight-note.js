@@ -21,6 +21,20 @@ class NotificationHighlightNote extends Component {
         btnClose();
     }
 
+    handleCancel = () => {
+        const { btnClose } = this.props;
+        this.setState({ value: '' });
+        btnClose();
+    }
+
+    handleKeyPress = (ev) => {
+        if (ev.key === 'Enter') {
+            this.handleSave();
+        } else if (ev.key === 'Escape' || ev.key === 'Esc') {
+            this.handleCancel();
+        }
+    }
+
     render () {
         const { intl, notif } = this.props;
         const hasText = !!this.state.value;
@@ -40,6 +54,7 @@ class NotificationHighlightNote extends Component {
                 placeholder={intl.formatMessage(notificationMessages.highlightSaveSuccessInputPlaceholder)}
                 value={this.state.value}
                 onChange={this.handleChange}
+                onKeyDown={this.handleKeyPress}
               />
             </div>
             {hasText &&
@@ -47,7 +62,7 @@ class NotificationHighlightNote extends Component {
               <div className="notif-note__cancel">
                 <Button
                   size="small"
-                  onClick={() => this.setState({ value: '' })}
+                  onClick={this.handleCancel}
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>

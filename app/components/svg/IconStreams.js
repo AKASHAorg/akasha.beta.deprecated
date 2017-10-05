@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SvgIcon } from 'material-ui';
-import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuStreams } from '../svg';
 
@@ -9,7 +7,7 @@ import { MenuStreams } from '../svg';
 class IconStreams extends Component {
 
     render () {
-        let { disabled, iconStyle, isActive, onClick } = this.props;
+        const { disabled, iconStyle, isActive, onClick } = this.props;
 
         return (
           <CircleIcon
@@ -17,14 +15,12 @@ class IconStreams extends Component {
             isActive={isActive}
             onClick={onClick}
           >
-            <SvgIcon
-              color={colors.lightBlack}
-              hoverColor={colors.darkBlack}
+            <svg
               style={iconStyle}
               viewBox="0 0 32 32"
             >
               <MenuStreams />
-            </SvgIcon>
+            </svg>
           </CircleIcon>
         );
     }
@@ -32,7 +28,7 @@ class IconStreams extends Component {
 
 IconStreams.propTypes = {
     disabled: PropTypes.bool,
-    iconStyle: PropTypes.object,
+    iconStyle: PropTypes.shape(),
     isActive: PropTypes.bool,
     onClick: PropTypes.func,
 };

@@ -35,43 +35,16 @@ const EntriesStream = Record({
 });
 
 const Flags = Record({
-    claimPending: new Map(),
     fetchingEntryBalance: false,
     fetchingFullEntry: false,
     isActivePending: false,
     resolvingIpfsHash: new Map(),
-    votePending: new Map(),
 });
 
 export const EntryPageOverlay = Record({
     entryId: null,
     version: null
 });
-
-// export const EntryState = Record({
-//     published: new List(),
-//     licences: new List(),
-//     errors: new List(),
-//     flags: new Map({
-//         votePending: new List(),
-//         claimPending: new List()
-//     }),
-//     fetchingEntriesCount: false,
-//     entriesStream: new EntriesStream(),
-//     entries: new List(),
-//     fullEntry: null,
-//     fullEntryLatestVersion: null,
-//     lastAllStreamBlock: null,
-//     savedEntries: new List(),
-//     moreAllStreamEntries: false,
-//     moreProfileEntries: false,
-//     moreSavedEntries: false,
-//     moreSearchEntries: false,
-//     moreTagEntries: false,
-//     tagEntriesCount: new Map(),
-//     entriesCount: 0, // entries published by a logged profile
-//     voteCostByWeight: new Map()
-// });
 
 export const EntryState = Record({
     balance: new Map(),

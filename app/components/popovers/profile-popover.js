@@ -3,24 +3,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Button, Icon, Popover } from 'antd';
+import { Button, Icon, Popover, Spin } from 'antd';
+import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectIsFollower, selectLoggedAkashaId, selectProfile,
-    selectProfileFlag } from '../../local-flux/selectors';
+import { selectBalance, selectIsFollower, selectLoggedAkashaId, selectPendingFollow,
+    selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import { Avatar, PanelLink, SendTipForm } from '../';
+import { Avatar, SendTipForm } from '../';
 
 class ProfilePopover extends Component {
     state = {
+        followHovered: false,
         popoverVisible: false,
         sendTip: false
     };
 
     componentWillReceiveProps (nextProps) {
-        const { sendingTip } = nextProps;
+        const { tipPending } = nextProps;
         // Close the send tip form after sending tip
-        if (sendingTip && !this.props.sendingTip) {
+        if (tipPending && !this.props.tipPending) {
             this.toggleSendTip();
         }
     }
@@ -30,6 +32,18 @@ class ProfilePopover extends Component {
             clearTimeout(this.timeout);
         }
     }
+
+    onMouseEnter = () => {
+        this.setState({
+            followHovered: true
+        });
+    };
+
+    onMouseLeave = () => {
+        this.setState({
+            followHovered: false
+        });
+    };
 
     onFollow = () => {
         const { akashaId, isFollower, loggedAkashaId } = this.props;
@@ -41,7 +55,6 @@ class ProfilePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
-        console.log('on visible change');
         this.setState({
             popoverVisible
         });
@@ -74,13 +87,65 @@ class ProfilePopover extends Component {
         });
     };
 
+    renderFollowButton = () => {
+        const { intl, isFollower, followPending } = this.props;
+        const { followHovered } = this.state;
+        const canFollow = !isFollower && !followPending;
+        let label;
+        if (followPending) {
+            label = (
+              <div className="flex-center">
+                <Spin className="profile-popover__button-icon" size="small" />
+                {intl.formatMessage(generalMessages.pending)}
+              </div>
+            );
+        } else if (isFollower) {
+            const message = followHovered ?
+                intl.formatMessage(profileMessages.unfollow) :
+                intl.formatMessage(profileMessages.following);
+            label = (
+              <div className="flex-center">
+                <Icon className="profile-popover__button-icon" type={followHovered ? 'close' : 'check'} />
+                {message}
+              </div>
+            );
+        } else {
+            label = (
+              <div className="flex-center">
+                <Icon className="profile-popover__button-icon" type="plus" />
+                {intl.formatMessage(profileMessages.follow)}
+              </div>
+            );
+        }
+        const className = classNames(
+            'profile-popover__button',
+            {
+                'profile-popover__unfollow-button': !followPending && isFollower && followHovered,
+                'profile-popover__following-button': !followPending && isFollower && !followHovered
+            }
+        );
+
+        return (
+          <Button
+            className={className}
+            disabled={followPending}
+            onClick={this.onFollow}
+            onMouseEnter={this.onMouseEnter}
+            onMouseLeave={this.onMouseLeave}
+            size="large"
+            type={canFollow ? 'primary' : 'default'}
+          >
+            {label}
+          </Button>
+        );
+    };
+
     renderContent () {
-        const { akashaId, balance, followPending, intl, isFollower, loggedAkashaId, profile,
-            sendingTip } = this.props;
-        const name = profile.get('firstName') || profile.get('lastName') ?
-            `${profile.get('firstName')} ${profile.get('lastName')}` :
-            profile.get('akashaId');
-        const isLoggedProfile = akashaId === loggedAkashaId;
+        const { akashaId, balance, intl, loggedAkashaId, profile, tipPending } = this.props;
+        const firstName = profile.get('firstName');
+        const lastName = profile.get('lastName');
+        const name = firstName || lastName ? `${firstName} ${lastName}` : null;
+        const isOwnProfile = akashaId === loggedAkashaId;
 
         if (this.state.sendTip) {
             return (
@@ -89,7 +154,7 @@ class ProfilePopover extends Component {
                 name={name}
                 onCancel={this.toggleSendTip}
                 onSubmit={this.sendTip}
-                sendingTip={sendingTip}
+                tipPending={tipPending}
               />
             );
         }
@@ -113,18 +178,15 @@ class ProfilePopover extends Component {
                   onClick={() => this.onVisibleChange(false)}
                   to={{ pathname: `/@${profile.get('akashaId')}`, state: { overlay: true } }}
                 >
-                  <div className="content-link overflow-ellipsis profile-popover__name">
-                    {name}
+                  <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
+                    {name || `@${akashaId}`}
                   </div>
                 </Link>
-                <div className="profile-popover__send-tip">
-                  {!isLoggedProfile &&
-                    <div className="content-link flex-center-y" onClick={this.toggleSendTip}>
-                      <Icon className="profile-popover__tip-icon" type="wallet" />
-                      {intl.formatMessage(profileMessages.sendTip)}
-                    </div>
-                  }
-                </div>
+                {name &&
+                  <div className="profile-popover__akasha-id">
+                    @{akashaId}
+                  </div>
+                }
               </div>
             </div>
             <div className="profile-popover__details">
@@ -137,46 +199,62 @@ class ProfilePopover extends Component {
                 <div className="profile-popover__counter-text">
                   {profile.get('commentsCount') || 3}
                 </div>
+                <Icon className="profile-popover__counter-icon" type="trophy" />
+                <div className="profile-popover__counter-text">
+                  85
+                </div>
               </div>
               {profile.get('about') &&
                 <div className="profile-popover__about">
-                  {profile.get('about')}
+                  <span className="profile-popover__about-inner">{profile.get('about')}</span>
                 </div>
               }
             </div>
-            <div className="profile-popover__footer">
-              <div className="flex-center-y">
-                <Icon className="profile-popover__counter-icon" type="user" />
-                <div className="profile-popover__counter-text">
+            <div className="profile-popover__counters-wrapper">
+              <div>
+                <div>{intl.formatMessage(profileMessages.followers)}</div>
+                <div className="profile-popover__counter">
                   {profile.get('followersCount')}
                 </div>
-                <Icon className="profile-popover__counter-icon" type="user" />
-                <div className="profile-popover__counter-text">
+              </div>
+              <div>
+                <div>{intl.formatMessage(profileMessages.followings)}</div>
+                <div className="profile-popover__counter">
                   {profile.get('followingCount')}
                 </div>
               </div>
-              {!isLoggedProfile &&
+              <div>
+                <div>{intl.formatMessage(profileMessages.supported)}</div>
+                <div className="profile-popover__counter">{0}</div>
+              </div>
+              <div>
+                <div>{intl.formatMessage(profileMessages.supporting)}</div>
+                <div className="profile-popover__counter">{0}</div>
+              </div>
+            </div>
+            <div className="profile-popover__actions">
+              {!isOwnProfile && this.renderFollowButton()}
+              {!isOwnProfile &&
                 <Button
-                  disabled={followPending || !loggedAkashaId}
-                  onClick={this.onFollow}
-                  type="primary"
+                  className="profile-popover__button"
+                  disabled={tipPending}
+                  onClick={this.toggleSendTip}
+                  size="large"
                 >
-                  <span className="profile-popover__button-label">
-                    {isFollower ?
-                        intl.formatMessage(profileMessages.unfollow) :
-                        intl.formatMessage(profileMessages.follow)
-                    }
-                  </span>
+                  <div>
+                    <Icon className="profile-popover__button-icon" type="heart-o" />
+                    {intl.formatMessage(profileMessages.support)}
+                  </div>
                 </Button>
               }
-              {isLoggedProfile &&
-                <PanelLink to="editProfile">
-                  <Button onClick={() => this.onVisibleChange(false)} type="primary">
-                    <span className="profile-popover__button-label">
-                      {intl.formatMessage(generalMessages.edit)}
-                    </span>
-                  </Button>
-                </PanelLink>
+              {isOwnProfile &&
+                <Button
+                  className="profile-popover__button"
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.editProfile)}
+                </Button>
               }
             </div>
           </div>
@@ -219,18 +297,18 @@ ProfilePopover.propTypes = {
     loggedAkashaId: PropTypes.string,
     placement: PropTypes.string,
     profile: PropTypes.shape().isRequired,
-    sendingTip: PropTypes.bool
+    tipPending: PropTypes.bool
 };
 
 function mapStateToProps (state, ownProps) {
     const { akashaId } = ownProps;
     return {
         balance: selectBalance(state),
-        followPending: selectProfileFlag(state, 'followPending').get(akashaId),
+        followPending: selectPendingFollow(state, akashaId),
         isFollower: selectIsFollower(state, akashaId),
         loggedAkashaId: selectLoggedAkashaId(state),
         profile: selectProfile(state, akashaId),
-        sendingTip: selectProfileFlag(state, 'sendingTip').get(akashaId)
+        tipPending: selectPendingTip(state, akashaId)
     };
 }
 
