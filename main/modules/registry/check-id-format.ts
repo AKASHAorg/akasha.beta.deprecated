@@ -18,7 +18,7 @@ const execute = Promise.coroutine(function* (data: ProfileExistsRequest) {
     const v = new schema.Validator();
     v.validate(data, checkIdFormat, { throwError: true });
 
-    const idValid = yield contracts.instance.ProfileRegistrar.checkFormat(data.akashaId);
+    const idValid = yield contracts.instance.ProfileRegistrar.check_format(data.akashaId);
     return { idValid, akashaId: data.akashaId };
 });
 

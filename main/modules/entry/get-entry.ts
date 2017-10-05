@@ -6,6 +6,7 @@ import { encodeHash } from '../ipfs/helpers';
 import { unpad } from 'ethereumjs-util';
 import { profileAddress } from '../profile/helpers';
 import { getFullContent, getShortContent } from './ipfs';
+import commentsCount from '../comments/comments-count';
 
 export const getEntry = {
     'id': '/getEntry',
@@ -36,8 +37,8 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
             yield getShortContent(ipfsHash).timeout(SHORT_WAIT_TIME);
     }
 
-    const [_totalVotes, _score, _endPeriod, _totalKarma, ] = yield contracts.instance.Votes.getRecord(data.entryId);
-    // const cCount = yield commentsCount.execute({ entryId: data.entryId });
+    const [_totalVotes, _score, _endPeriod, _totalKarma,] = yield contracts.instance.Votes.getRecord(data.entryId);
+    const cCount = yield commentsCount.execute([data.entryId]);
 
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
@@ -46,7 +47,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         endPeriod: (new Date(_endPeriod.toNumber() * 1000)).toISOString(),
         totalKarma: _totalKarma.toString(10),
         content: entry,
-        // commentsCount: cCount.count
+        commentsCount: cCount.collection[0].length ? (cCount.collection[0].count).toString(10) : 0
     };
 });
 

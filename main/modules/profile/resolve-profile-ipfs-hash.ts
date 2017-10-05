@@ -29,7 +29,7 @@ const execute = Promise.coroutine(function* (data: { ipfsHash: string[], full?: 
 
     const resolve = (data.full) ? resolveProfile : getShortProfile;
     data.ipfsHash.forEach((profileHash) => {
-        resolve(profileHash)
+        resolve(profileHash, false)
             .timeout(SHORT_WAIT_TIME)
             .then((profile) => {
                 cb(null, { profile, ipfsHash: profileHash });

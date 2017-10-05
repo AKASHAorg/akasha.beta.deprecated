@@ -1,5 +1,5 @@
 import { join as pathJoin } from 'path';
-import { Logger, transports } from 'winston';
+import * as winston from 'winston';
 import { mkdirSync, open } from 'fs';
 import { app } from 'electron';
 
@@ -68,9 +68,9 @@ class AppLogger {
         if (!this.PATH_OK) {
             throw new Error(`${this.logPath} is not accessible`);
         }
-        this.loggers[name] = new (Logger)({
+        this.loggers[name] = winston.createLogger({
             transports: [
-                new (transports.File)({
+                new winston.transports.File({
                     filename: pathJoin(this.logPath, `${name}.error.log`),
                     level: errorLevel,
                     maxsize,
@@ -79,7 +79,7 @@ class AppLogger {
                     tailable: true,
                     zippedArchive: true
                 }),
-                new (transports.File)({
+                new winston.transports.File({
                     filename: pathJoin(this.logPath, `${name}.info.log`),
                     level,
                     maxsize,

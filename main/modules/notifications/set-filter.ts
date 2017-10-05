@@ -54,7 +54,7 @@ const execute = Promise.coroutine(function* (data: { profiles: string[], exclude
     let temp;
     filter.setBlockNr(blockNr);
     if (!data.profiles.length) {
-        temp = yield getFollowingList.execute({ akashaId: myProfile.akashaId });
+        temp = yield getFollowingList.execute();
         data.profiles = temp.collection;
         mixed.setFull(FOLLOWING_LIST, temp.collection);
     }
