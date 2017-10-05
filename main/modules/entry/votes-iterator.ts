@@ -1,37 +1,40 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+
+const votesIterator = {
+    'id': '/tagIterator',
+    'type': 'object',
+    'properties': {
+        'limit': { 'type': 'number' },
+        'toBlock': { 'type': 'number' },
+        'entryId': {'type': 'string'},
+        'ethAddress': {'type': 'string', 'format': 'address'},
+        'akashaId': {'type': 'string'}
+    },
+    'required': ['toBlock', 'entryId']
+};
 
 /**
  * Get individual votes of entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, entryId: string }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.votes.getFirstVoteId(data.entryId);
-    if (currentId === '0') {
-        return { collection: [] };
-    }
-    let row;
-    let akashaId;
-    const maxResults = (data.limit) ? data.limit : 100;
-    const results = [];
-    let counter = 0;
-    if (!data.start) {
-        row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
-        akashaId = yield contracts.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
-        counter = 1;
-    }
-    while (counter < maxResults) {
-        currentId = yield contracts.instance.votes.getNextVoteId(data.entryId, currentId);
-        if (currentId === '0') {
+const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number, entryId: string }) {
+    const v = new schema.Validator();
+    v.validate(data, votesIterator, { throwError: true });
+
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const filter = {target: data.entryId, voteType: 0};
+    const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults);
+    for (let event of fetched.results) {
+        collection.push({ ethAddress: event.args.voter, weight: (event.args.weight).toString(10), negative: event.args.negative });
+        if (collection.length === maxResults) {
             break;
         }
-        row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
-        akashaId = yield contracts.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
-        counter++;
     }
-    return { collection: results, entryId: data.entryId, limit: maxResults };
+
+    return { collection: collection, lastBlock: fetched.fromBlock };
 });
 
 export default { execute, name: 'votesIterator' };

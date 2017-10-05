@@ -1,6 +1,14 @@
 import { Cipher, createCipher, createDecipher, Decipher, randomBytes } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
-import { addHexPrefix, bufferToHex, ecrecover, fromRpcSig, hashPersonalMessage, pubToAddress, toBuffer } from 'ethereumjs-util';
+import {
+    addHexPrefix,
+    bufferToHex,
+    ecrecover,
+    fromRpcSig,
+    hashPersonalMessage,
+    pubToAddress,
+    toBuffer
+} from 'ethereumjs-util';
 import * as Promise from 'bluebird';
 
 export const randomBytesAsync = Promise.promisify(randomBytes);
@@ -38,58 +46,15 @@ export class Auth {
 
     /**
      *
-     * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}
-     * @private
-     */
-    private _generateRandom() {
-        return randomBytesAsync(64).then((buff: Buffer) => {
-            this._cipher = createCipher('aes-256-ctr', buff.toString('hex'));
-            this._decipher = createDecipher('aes-256-ctr', buff.toString('hex'));
-            return true;
-        });
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {Auth}
-     * @private
-     */
-    private _encrypt(key: any) {
-        const keyTr = Buffer.from(key);
-        return this._generateRandom().then(() => {
-            this._encrypted = Buffer.concat([this._cipher.update(keyTr), this._cipher.final()]);
-            return true;
-        });
-    }
-
-    /**
-     *
-     * @returns {Buffer}
-     * @private
-     */
-    private _read(token: any) {
-
-        if (!this.isLogged(token)) {
-            throw new Error('Token is not valid');
-        }
-        const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
-        this._encrypt(result);
-        return result;
-    }
-
-
-    /**
-     *
      * @param acc
      * @param pass
      * @param timer
      * @param registering
      * @returns {any}
      */
-    public login(acc: string, pass: any | Uint8Array, timer: number = 1, registering = false) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 1) {
 
-        return  gethHelper
+        return gethHelper
             .hasKey(acc)
             .then((found) => {
                 if (!found) {
@@ -162,6 +127,61 @@ export class Auth {
 
     /**
      *
+     * @param data
+     * @param token
+     * @returns {any}
+     */
+    public signData(data: {}, token: string) {
+        return GethConnector.getInstance()
+            .web3
+            .personal
+            .sendTransactionAsync(data, this._read(token).toString('utf8'));
+    }
+
+    /**
+     *
+     * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}
+     * @private
+     */
+    private _generateRandom() {
+        return randomBytesAsync(64).then((buff: Buffer) => {
+            this._cipher = createCipher('aes-256-ctr', buff.toString('hex'));
+            this._decipher = createDecipher('aes-256-ctr', buff.toString('hex'));
+            return true;
+        });
+    }
+
+    /**
+     *
+     * @param key
+     * @returns {Auth}
+     * @private
+     */
+    private _encrypt(key: any) {
+        const keyTr = Buffer.from(key);
+        return this._generateRandom().then(() => {
+            this._encrypted = Buffer.concat([this._cipher.update(keyTr), this._cipher.final()]);
+            return true;
+        });
+    }
+
+    /**
+     *
+     * @returns {Buffer}
+     * @private
+     */
+    private _read(token: any) {
+
+        if (!this.isLogged(token)) {
+            throw new Error('Token is not valid');
+        }
+        const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
+        this._encrypt(result);
+        return result;
+    }
+
+    /**
+     *
      * @private
      */
     private _flushSession() {
@@ -186,19 +206,6 @@ export class Auth {
             .web3
             .personal
             .signAsync(hash, account, password);
-    }
-
-    /**
-     *
-     * @param data
-     * @param token
-     * @returns {any}
-     */
-    public signData(data: {}, token: string) {
-        return GethConnector.getInstance()
-            .web3
-            .personal
-            .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }
 

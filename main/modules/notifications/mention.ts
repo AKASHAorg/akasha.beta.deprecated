@@ -6,7 +6,7 @@ import { MENTION_CHANNEL, MENTION_TTL, MENTION_TYPE } from '../../config/setting
 import { uniq } from 'ramda';
 
 const execute = Promise.coroutine(
-    function*(data: { mention: string[], entryId: string, commentId?: string }) {
+    function* (data: { mention: string[], entryId: string, commentId?: string }) {
         if (data.mention.length > 10) {
             throw new Error('Can mention max 10 users');
         }

@@ -1,8 +1,4 @@
-declare module '@akashaproject/contracts.js' {
-    const contracts: { Class: any };
-    export default contracts;
-    export const classes: any;
-}
+declare module '@akashaproject/contracts.js';
 
 declare module 'ethereumjs-util' {
     export function ecsign(msgHash: string, privateKey: string): { r: string, s: string, v: string };
@@ -12,6 +8,8 @@ declare module 'ethereumjs-util' {
     export function fromRpcSig(sig: string): { r: string, s: string, v: string };
 
     export function isValidAddress(address: string): boolean;
+
+    export function isValidChecksumAddress(address: string): boolean;
 
     export function toBuffer(data: any): Buffer;
 
@@ -35,3 +33,4 @@ declare module 'compare-versions';
 declare module 'electron-spellchecker';
 declare module 'archiver';
 declare module 'request';
+declare module 'winston';

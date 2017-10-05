@@ -6,7 +6,7 @@ import { createWriteStream } from 'fs';
 import { app } from 'electron';
 import * as archiver from 'archiver';
 
-const execute = Promise.coroutine(function*(data: { target?: string }) {
+const execute = Promise.coroutine(function* (data: { target?: string }) {
     const dataDir = yield GethConnector.getInstance().web3.admin.getDatadirAsync();
     const keyDir = join(dataDir, 'keystore/');
 

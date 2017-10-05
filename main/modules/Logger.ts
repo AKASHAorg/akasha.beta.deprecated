@@ -1,5 +1,5 @@
 import { join as pathJoin } from 'path';
-import { Logger, transports } from 'winston';
+import * as winston from 'winston';
 import { mkdirSync, open } from 'fs';
 import { app } from 'electron';
 
@@ -21,6 +21,18 @@ class AppLogger {
         }
         this.loggers = {};
     }
+
+    /**
+     *
+     * @returns {*}
+     */
+    static getInstance() {
+        if (!this[symbol]) {
+            this[symbol] = new AppLogger(symbolEnforcer);
+        }
+        return this[symbol];
+    }
+
     public init() {
         return new Promise((resolve, reject) => {
             const defaultPath = pathJoin(app.getPath('userData'), 'logs');
@@ -36,33 +48,6 @@ class AppLogger {
                 return resolve(this.PATH_OK);
             });
         });
-    }
-
-    private _buildPath(path) {
-        this._setLogsFolder(path);
-        mkdirSync(path);
-        this.PATH_OK = true;
-        return this.PATH_OK;
-    }
-
-    /**
-     *
-     * @returns {*}
-     */
-    static getInstance() {
-        if (!this[symbol]) {
-            this[symbol] = new AppLogger(symbolEnforcer);
-        }
-        return this[symbol];
-    }
-
-    /**
-     *
-     * @param path
-     * @private
-     */
-    private _setLogsFolder(path: string) {
-        this.logPath = path;
     }
 
     /**
@@ -83,9 +68,9 @@ class AppLogger {
         if (!this.PATH_OK) {
             throw new Error(`${this.logPath} is not accessible`);
         }
-        this.loggers[name] = new (Logger)({
+        this.loggers[name] = winston.createLogger({
             transports: [
-                new (transports.File)({
+                new winston.transports.File({
                     filename: pathJoin(this.logPath, `${name}.error.log`),
                     level: errorLevel,
                     maxsize,
@@ -94,7 +79,7 @@ class AppLogger {
                     tailable: true,
                     zippedArchive: true
                 }),
-                new (transports.File)({
+                new winston.transports.File({
                     filename: pathJoin(this.logPath, `${name}.info.log`),
                     level,
                     maxsize,
@@ -115,6 +100,22 @@ class AppLogger {
      */
     getLogger(name: string) {
         return this.loggers[name];
+    }
+
+    private _buildPath(path) {
+        this._setLogsFolder(path);
+        mkdirSync(path);
+        this.PATH_OK = true;
+        return this.PATH_OK;
+    }
+
+    /**
+     *
+     * @param path
+     * @private
+     */
+    private _setLogsFolder(path: string) {
+        this.logPath = path;
     }
 }
 

@@ -1,30 +1,26 @@
 import * as Promise from 'bluebird';
-import { stat } from 'fs';
 import { GethConnector } from '@akashaproject/geth-connector';
-import { getGenesisPath } from '../../config/genesis';
+import schema from '../utils/jsonschema';
 
-const statAsync = Promise.promisify(stat);
-const execute = Promise.coroutine(function*(data: GethStartRequest) {
+const startService = {
+    'id': '/startService',
+    'type': 'object',
+    'properties': {
+        'datadir': { 'type': 'string' },
+        'ipcpath': { 'type': 'string' },
+        'cache': { 'type': 'number' }
+    }
+};
+
+const execute = Promise.coroutine(function* (data: GethStartRequest) {
+    const v = new schema.Validator();
+    v.validate(data, startService, { throwError: true });
+
     if (GethConnector.getInstance().serviceStatus.process) {
         throw new Error('Geth is already running');
     }
     GethConnector.getInstance().setOptions(data);
     GethConnector.getInstance().enableDownloadEvents();
-    const dataDir = GethConnector.getInstance().spawnOptions.get('datadir');
-    let requiresGenesis = false;
-    if (dataDir) {
-        requiresGenesis = yield statAsync(dataDir).then((stats) => {
-            return !stats.isDirectory();
-        }).catch(() => {
-            return true;
-        });
-    }
-    // write genesis block if needed
-    if (requiresGenesis) {
-        yield Promise.fromCallback((cb) => {
-            GethConnector.getInstance().writeGenesis(getGenesisPath(), cb);
-        });
-    }
     // start daemon
     yield GethConnector.getInstance().start();
     return {};

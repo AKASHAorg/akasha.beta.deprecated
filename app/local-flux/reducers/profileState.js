@@ -202,20 +202,21 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('fetchingProfileData', false)
         }),
 
-    [types.PROFILE_GET_LIST]: state =>
-        state.setIn(['flags', 'fetchingProfileList'], true),
-
-    [types.PROFILE_GET_LIST_ERROR]: state =>
-        state.setIn(['flags', 'fetchingProfileList'], false),
+    [types.PROFILE_GET_LIST]: (state, { akashaIds }) => {
+        let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
+        akashaIds.forEach((item) => {
+            pendingListProfiles = pendingListProfiles.set(item.akashaId, true);
+        });
+        return state.setIn(['flags', 'pendingListProfiles'], pendingListProfiles);
+    },
 
     [types.PROFILE_GET_LIST_SUCCESS]: (state, { data }) => {
-        let byId = state.get('byId');
-        data.collection.forEach((profileData) => {
-            byId = addProfileData(byId, profileData);
-        });
+        if (data.done) {
+            return state;
+        }
         return state.merge({
-            byId,
-            flags: state.get('flags').set('fetchingProfileList', false)
+            byId: addProfileData(state.get('byId'), data),
+            flags: state.get('flags').setIn(['pendingListProfiles', data.akashaId], false)
         });
     },
 
@@ -234,11 +235,16 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
         let ethAddresses = state.get('ethAddresses');
         let localProfiles = new List();
+        let byId = state.get('byId');
         data.forEach((prf) => {
-            ethAddresses = ethAddresses.set(prf.key, prf.akashaId);
-            localProfiles = localProfiles.push(prf.key);
+            if (prf.akashaId) {
+                byId = addProfileData(byId, prf);
+            }
+            ethAddresses = ethAddresses.set(prf.ethAddress, prf.akashaId);
+            localProfiles = localProfiles.push(prf.ethAddress);
         });
         return state.merge({
+            byId,
             ethAddresses,
             flags: state.get('flags').merge({
                 fetchingLocalProfiles: false,

@@ -2,7 +2,7 @@ import settings from './settings';
 import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 
-const execute = Promise.coroutine(function*(data: { channels: string[] }) {
+const execute = Promise.coroutine(function* (data: { channels: string[] }) {
     if (!data.channels || !data.channels.length) {
         throw new Error('Must provide at least a channel');
     }

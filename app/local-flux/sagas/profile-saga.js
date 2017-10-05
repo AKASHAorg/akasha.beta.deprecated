@@ -13,10 +13,10 @@ const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
-function* profileCreateEthAddress ({ data }) {
+function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
     const channel = Channel.server.auth.generateEthKey;
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield apply(channel, channel.send, [{ password: data }]);
+    yield apply(channel, channel.send, [{ password: passphrase, password1: passphrase1 }]);
 }
 
 function* profileDeleteLogged () {
@@ -71,10 +71,10 @@ function* profileGetData ({ akashaId, full = false }) {
     yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
-function* profileGetList ({ profileAddresses }) {
+function* profileGetList ({ akashaIds }) {
     const channel = Channel.server.profile.getProfileList;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [profileAddresses]);
+    yield apply(channel, channel.send, [akashaIds]);
 }
 
 function* profileGetLocal () {
@@ -293,14 +293,14 @@ function* watchProfileGetLocalChannel () {
         if (resp.error) {
             yield put(actions.profileGetLocalError(resp.error));
         } else {
-            const profileAddresses = [];
-            resp.data.forEach((data) => {
-                if (data.profile) {
-                    profileAddresses.push({ profile: data.profile });
+            const akashaIds = [];
+            resp.data.collection.forEach((data) => {
+                if (data.akashaId) {
+                    akashaIds.push({ akashaId: data.akashaId });
                 }
             });
-            yield put(actions.profileGetList(profileAddresses));
-            yield put(actions.profileGetLocalSuccess(resp.data));
+            yield put(actions.profileGetList(akashaIds));
+            yield put(actions.profileGetLocalSuccess(resp.data.collection));
         }
     }
 }

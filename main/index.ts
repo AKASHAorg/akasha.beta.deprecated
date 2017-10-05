@@ -14,9 +14,9 @@ const windowStateKeeper = require('electron-window-state');
 
 let modules;
 let mainWindow = null;
-const shutDown = Promise.coroutine(function*() {
-    yield feed.execute({ stop: true });
-    yield fetch.execute({ stop: true });
+const shutDown = Promise.coroutine(function* () {
+    yield feed.execute({ stop: true }, ()=>{});
+    yield fetch.execute({ stop: true }, ()=>{});
     yield GethConnector.getInstance().stop();
     yield IpfsConnector.getInstance().stop();
     return true;
@@ -61,7 +61,8 @@ export function bootstrapApp() {
     }
 
     app.on('ready', () => {
-        console.time('mainProcess');
+        console.time('total');
+        console.time('buildWindow');
         modules = initModules();
         let mainWindowState = windowStateKeeper({
             defaultWidth: 1280,
@@ -82,10 +83,11 @@ export function bootstrapApp() {
                 scrollBounce: true
             }
         });
-
         mainWindowState.manage(mainWindow);
+        console.timeEnd('buildWindow');
+        console.time('mainApi');
         modules.initListeners(mainWindow.webContents).then(() => {
-            console.timeEnd('mainProcess');
+            console.timeEnd('mainApi');
             mainWindow.loadURL(
                 process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/index.html`
             );
@@ -101,6 +103,7 @@ export function bootstrapApp() {
             mainWindow.once('ready-to-show', () => {
                 mainWindow.show();
                 mainWindow.focus();
+                console.timeEnd('total');
             });
             mainWindow.webContents.on('crashed', (e) => {
                 modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);

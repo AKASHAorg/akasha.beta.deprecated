@@ -1,37 +1,37 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import profileData from './profile-data';
+import { GethConnector } from '@akashaproject/geth-connector';
+import contracts from '../../contracts/index';
+import { profileAddress } from './helpers';
+import schema from '../utils/jsonschema';
+
+export const followersIterator = {
+    'id': '/followersIterator',
+    'type': 'object',
+    'properties': {
+        'ethAddress': { 'type': 'string', 'format': 'address' },
+        'akashaId': { 'type': 'string' },
+        'lastBlock': { 'type': 'number' },
+        'limit': { 'type': 'number' }
+    }
+};
+
 /**
  * Get followers of profile
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, akashaId: string, short: true }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.feed.getFollowersFirst(data.akashaId);
-    if (currentId === '0') {
-        return { collection: [], akashaId: data.akashaId };
+const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number, akashaId?: string, ethAddress?: string }) {
+    const v = new schema.Validator();
+    v.validate(data, followersIterator, { throwError: true });
+
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const address = yield profileAddress(data);
+    const toBlock = (!data.lastBlock) ? yield GethConnector.getInstance().web3.eth.getBlockNumberAsync() : data.lastBlock;
+    const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { followed: address }, toBlock, maxResults);
+    for (let event of fetched.results) {
+        collection.push({ ethAddress: event.args.follower });
     }
-    let profileId;
-    let profile;
-    let counter = 0;
-    const results = [];
-    const maxResults = (data.limit) ? data.limit : 10;
-    if (!data.start) {
-        profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
-        profile = yield profileData.execute({ profile: profileId });
-        results.push({ profile, address: profileId, index: currentId });
-        counter = 1;
-    }
-    while (counter < maxResults) {
-        currentId = yield contracts.instance.feed.getFollowersNext(data.akashaId, currentId);
-        if (currentId === '0') {
-            break;
-        }
-        profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
-        profile = yield profileData.execute({ profile: profileId, short: data.short });
-        results.push({ profile, address: profileId, index: currentId });
-        counter++;
-    }
-    return { collection: results, akashaId: data.akashaId, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'followersIterator' };

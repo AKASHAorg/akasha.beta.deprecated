@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { hostname } from 'os';
+
 const hashPath = (...path: string[]) => {
     const hash = createHash('sha256');
     path.forEach((segment) => {
@@ -11,8 +12,8 @@ const channels = {
 
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
-    tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
-        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed', 'searchTag'],
+    tags: ['canCreate', 'checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed', 'searchTag', 'tagCount'],
 
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
@@ -29,7 +30,7 @@ const channels = {
 
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
         'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
-        'getFollowingList', 'getProfileList', 'tip', 'resolveProfileIpfsHash'],
+        'getFollowingList', 'getProfileList', 'tip', 'resolveProfileIpfsHash', 'toggleDonations'],
 
     registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
         'getByAddress', 'unregister'],
