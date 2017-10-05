@@ -7,6 +7,73 @@ abstract class ModuleEmitter extends AbstractEmitter {
     protected DEFAULT_MANAGED: string[];
 
     /**
+     * @returns {boolean}
+     */
+    public attachEmitters() {
+        return true;
+    }
+
+    public generateStreamListener(method) {
+        return (event: any, data: any) => {
+            let response: any;
+            // console.time(method.name);
+            method
+                .execute(data, (er, ev) => {
+                    if (er) {
+                        response = mainResponse({ error: (er.hasOwnProperty('message')) ? er : { message: er } }, data);
+                    } else {
+                        response = mainResponse(ev, data);
+                    }
+                    this.fireEvent(
+                        channels.client[this.MODULE_NAME][method.name],
+                        response,
+                        event
+                    );
+                })
+                .then((result: any) => {
+                    response = mainResponse(result, data);
+                })
+                .catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message, trace: err } }, data);
+                })
+                .finally(() => {
+                    this.fireEvent(
+                        channels.client[this.MODULE_NAME][method.name],
+                        response,
+                        event
+                    );
+                    // console.timeEnd(method.name);
+                    response = null;
+                });
+        };
+    }
+
+    public generateListener(method) {
+        return (event: any, data: any) => {
+            let response: any;
+            // const stamp = method.name + ' ' + (new Date()).getTime();
+            // console.time(stamp);
+            method
+                .execute(data)
+                .then((result: any) => {
+                    response = mainResponse(result, data);
+                })
+                .catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message, trace: err } }, data);
+                })
+                .finally(() => {
+                    this.fireEvent(
+                        channels.client[this.MODULE_NAME][method.name],
+                        response,
+                        event
+                    );
+                    // console.timeEnd(stamp);
+                    response = null;
+                });
+        };
+    }
+
+    /**
      *
      * @private
      */
@@ -36,73 +103,6 @@ abstract class ModuleEmitter extends AbstractEmitter {
         );
     }
 
-    /**
-     * @returns {boolean}
-     */
-    public attachEmitters() {
-        return true;
-    }
-
-    public generateStreamListener(method) {
-        return (event: any, data: any) => {
-            let response: any;
-            // console.time(method.name);
-            method
-                .execute(data, (er, ev) => {
-                    if (er) {
-                        response = mainResponse({ error: (er.hasOwnProperty('message')) ? er : { message: er } }, data);
-                    } else {
-                        response = mainResponse(ev, data);
-                    }
-                    this.fireEvent(
-                        channels.client[this.MODULE_NAME][method.name],
-                        response,
-                        event
-                    );
-                })
-                .then((result: any) => {
-                    response = mainResponse(result, data);
-                })
-                .catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } }, data);
-                })
-                .finally(() => {
-                    this.fireEvent(
-                        channels.client[this.MODULE_NAME][method.name],
-                        response,
-                        event
-                    );
-                    // console.timeEnd(method.name);
-                    response = null;
-                });
-        };
-    }
-
-    public generateListener(method) {
-        return (event: any, data: any) => {
-            let response: any;
-            // const stamp = method.name + ' ' + (new Date()).getTime();
-            // console.time(stamp);
-            method
-                .execute(data)
-                .then((result: any) => {
-                    response = mainResponse(result, data);
-                })
-                .catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } }, data);
-                })
-                .finally(() => {
-                    this.fireEvent(
-                        channels.client[this.MODULE_NAME][method.name],
-                        response,
-                        event
-                    );
-                    // console.timeEnd(stamp);
-                    response = null;
-                });
-        };
-    }
-
     protected _initMethods(methods) {
         methods.forEach((method) => {
             // console.log([this.MODULE_NAME], [method.name]);
@@ -120,4 +120,5 @@ abstract class ModuleEmitter extends AbstractEmitter {
         });
     }
 }
+
 export default ModuleEmitter;

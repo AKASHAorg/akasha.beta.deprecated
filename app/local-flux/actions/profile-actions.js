@@ -3,7 +3,8 @@ import * as types from '../constants';
 
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
-export const profileCreateEthAddress = data => action(types.PROFILE_CREATE_ETH_ADDRESS, { data });
+export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
+    action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
 
 export const profileCreateEthAddressError = (error) => {
     error.code = 'PCEAE01';
@@ -72,8 +73,8 @@ export const profileGetDataError = (error) => {
 };
 
 export const profileGetDataSuccess = data => action(types.PROFILE_GET_DATA_SUCCESS, { data });
-export const profileGetList = profileAddresses =>
-    action(types.PROFILE_GET_LIST, { profileAddresses });
+export const profileGetList = akashaIds =>
+    action(types.PROFILE_GET_LIST, { akashaIds });
 
 export const profileGetListError = (error) => {
     error.code = 'PGLE02';

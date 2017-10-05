@@ -1,7 +1,6 @@
-import { checkForGenesis } from './config/genesis';
 import * as Promise from 'bluebird';
 import Logger from './modules/Logger';
-import ipcChannels from './modules';
+import ipcChannels from './modules/index';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -14,12 +13,7 @@ export function initModules() {
                 ipcChannels.forEach((obj: any) => {
                     obj.initListeners(webContents);
                 });
-                checkForGenesis((errGenesis) => {
-                    if (errGenesis) {
-                        (Logger.getInstance().getLogger('akasha')).error(errGenesis);
-                    }
-                    resolve();
-                });
+                resolve();
             });
         }),
         logger,

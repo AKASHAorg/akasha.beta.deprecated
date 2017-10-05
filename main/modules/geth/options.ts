@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 
-const execute = Promise.coroutine(function*(data) {
+const execute = Promise.coroutine(function* (data) {
     const options = GethConnector.getInstance().setOptions(data);
     let mapObj = Object.create(null);
     for (let [k, v] of options) {

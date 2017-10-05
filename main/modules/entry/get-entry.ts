@@ -1,37 +1,53 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import { getFullContent } from './ipfs';
-import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
+import contracts from '../../contracts/index';
+import { BASE_URL, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
+import schema from '../utils/jsonschema';
+import { encodeHash } from '../ipfs/helpers';
+import { unpad } from 'ethereumjs-util';
+import { profileAddress } from '../profile/helpers';
+import { getFullContent, getShortContent } from './ipfs';
 import commentsCount from '../comments/comments-count';
-import getProfileData from '../profile/profile-data';
 
+export const getEntry = {
+    'id': '/getEntry',
+    'type': 'object',
+    'properties': {
+        'entryId': { 'type': 'string' },
+        'ethAddress': { 'type': 'string', 'format': 'address' },
+        'akashaId': { 'type': 'string' },
+        'full': { 'type': 'boolean' }
+    },
+    'required': ['entryId']
+};
 /**
  * Fetch entry from entryId
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryGetRequest) {
-    const entryEth = yield contracts.instance.entries.getEntry(data.entryId);
-    const active = yield contracts.instance.entries.isMutable(data.entryId);
-    const score = yield contracts.instance.votes.getScore(data.entryId);
-    const cCount = yield commentsCount.execute({ entryId: data.entryId });
-    entryEth.publisher = yield getProfileData.execute({ profile: entryEth.publisher, short: true })
-        .timeout(SHORT_WAIT_TIME)
-        .then((d) => d).catch((e) => null);
-    const content = (data.full) ?
-        yield getFullContent(entryEth.ipfsHash, data.version)
-            .timeout(FULL_WAIT_TIME)
-            .then((d) => d).catch((e) => null)
-        :
-        null;
+const execute = Promise.coroutine(function* (data: EntryGetRequest) {
+    const v = new schema.Validator();
+    v.validate(data, getEntry, { throwError: true });
+
+    let entry;
+    const ethAddress = yield profileAddress(data);
+    const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(ethAddress, data.entryId);
+    if (!!unpad(hash)) {
+        const ipfsHash = encodeHash(fn, digestSize, hash);
+        entry = (data.full || data.version) ?
+            yield getFullContent(ipfsHash, data.version).timeout(SHORT_WAIT_TIME) :
+            yield getShortContent(ipfsHash).timeout(SHORT_WAIT_TIME);
+    }
+
+    const [_totalVotes, _score, _endPeriod, _totalKarma,] = yield contracts.instance.Votes.getRecord(data.entryId);
+    const cCount = yield commentsCount.execute([data.entryId]);
 
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
-        content,
-        entryEth,
-        entryId: data.entryId,
-        score,
-        active,
-        commentsCount: cCount.count
+        totalVotes: _totalVotes.toString(10),
+        score: _score.toString(10),
+        endPeriod: (new Date(_endPeriod.toNumber() * 1000)).toISOString(),
+        totalKarma: _totalKarma.toString(10),
+        content: entry,
+        commentsCount: cCount.collection[0].length ? (cCount.collection[0].count).toString(10) : 0
     };
 });
 

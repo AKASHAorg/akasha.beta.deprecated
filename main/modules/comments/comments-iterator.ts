@@ -1,36 +1,46 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import getComment from './get-comment';
+import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+import fetchComment from './get-comment';
+
+const commentsIterator = {
+    'id': '/commentsIterator',
+    'type': 'object',
+    'properties': {
+        'limit': { 'type': 'number' },
+        'entryId': { 'type': 'string' },
+        'toBlock': { 'type': 'number' },
+        'parent': { 'type': 'string' },
+        'author': { 'type': 'string', 'format': 'address' }
+    },
+    'required': ['entryId', 'toBlock']
+};
+
 /**
  * Get entries indexed by tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, entryId: string, reverse: boolean }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.comments.getFirstComment(data.entryId);
-    if (currentId === '0') {
-        return { collection: [], entryId: data.entryId };
-    }
-    let comment;
-    const maxResults = (data.limit) ? data.limit : 50;
-    const results = [];
-    let counter = 0;
-    if (!data.start) {
-        comment = yield getComment.execute({ entryId: data.entryId, commentId: currentId });
-        results.push(comment);
-        counter = 1;
+const execute = Promise.coroutine(function* (data: { toBlock: number,
+    limit?: number, entryId?: string, parent?: string, author?: string }) {
+
+    const v = new schema.Validator();
+    v.validate(data, commentsIterator, { throwError: true });
+
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const fetched = yield contracts
+        .fromEvent(contracts.instance.Comments.Publish, {
+                entryId: data.entryId,
+                parent: data.parent,
+                author: data.author
+            },
+            data.toBlock, maxResults);
+    for (let event of fetched.results) {
+        const comment = yield fetchComment.execute({ commentId: event.args.id, entryId: event.args.entryId });
+        collection.push(Object.assign({}, comment, { commentId: event.args.id }));
     }
 
-    while (counter < maxResults) {
-        currentId = (data.reverse) ? yield contracts.instance.comments.getPrevComment(data.entryId, currentId) :
-            yield contracts.instance.comments.getNextComment(data.entryId, currentId);
-        if (currentId === '0') {
-            break;
-        }
-        comment = yield getComment.execute({ entryId: data.entryId, commentId: currentId });
-        results.push(comment);
-        counter++;
-    }
-    return { collection: results, entryId: data.entryId, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock };
 });
 
 export default { execute, name: 'commentsIterator' };

@@ -1,15 +1,21 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import auth from '../auth/Auth';
+import contracts from '../../contracts/index';
+import { profileAddress } from './helpers';
 import pinner, { ObjectType, OperationType } from '../pinner/runner';
 import { mixed } from '../models/records';
+import schema from '../utils/jsonschema';
+import { followProfile } from './follow-profile';
 
-const execute = Promise.coroutine(function*(data: ProfileFollowRequest) {
-    const txData = yield contracts.instance.feed.unFollow(data.akashaId, data.gas);
-    const tx = yield auth.signData(txData, data.token);
+const execute = Promise.coroutine(function* (data: ProfileFollowRequest, cb) {
+    const v = new schema.Validator();
+    v.validate(data, followProfile, { throwError: true });
+
+    const address = yield profileAddress(data);
+    const txData = contracts.instance.Feed.unFollow.request(address, { gas: 400000 });
+    const transaction = yield contracts.send(txData, data.token, cb);
     mixed.flush();
     pinner.execute({ type: ObjectType.PROFILE, id: data.akashaId, operation: OperationType.REMOVE });
-    return { tx, akashaId: data.akashaId };
+    return { tx: transaction.tx, receipt: transaction.receipt, akashaId: data.akashaId };
 });
 
-export default { execute, name: 'unFollowProfile' };
+export default { execute, name: 'unFollowProfile', hasStream: true };

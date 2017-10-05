@@ -4,6 +4,7 @@ import getFollowingList from '../profile/following-list';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { mixed } from '../models/records';
 import { FOLLOWING_LIST } from '../../config/settings';
+
 export const filter = {
     _address: {},
     _blockNr: 0,
@@ -46,14 +47,14 @@ export const filter = {
  * @param data
  * @returns {Bluebird<{done: boolean, watching: any}>}
  */
-const execute = Promise.coroutine(function*(data: { profiles: string[], exclude?: string[], blockNr?: number }) {
+const execute = Promise.coroutine(function* (data: { profiles: string[], exclude?: string[], blockNr?: number }) {
     const blockNr = (data.blockNr) ? data.blockNr : yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
     const myProfile = yield currentProfile.execute();
     let objectFilter = {};
     let temp;
     filter.setBlockNr(blockNr);
     if (!data.profiles.length) {
-        temp = yield getFollowingList.execute({ akashaId: myProfile.akashaId });
+        temp = yield getFollowingList.execute();
         data.profiles = temp.collection;
         mixed.setFull(FOLLOWING_LIST, temp.collection);
     }

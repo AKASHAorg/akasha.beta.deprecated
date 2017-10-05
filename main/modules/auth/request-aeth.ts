@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import { post as POST } from 'request';
 import { FAUCET_TOKEN, FAUCET_URL } from '../../config/settings';
 
-const execute = Promise.coroutine(function*(data: RequestEtherRequest) {
+const execute = Promise.coroutine(function* (data: RequestEtherRequest) {
     return new Promise((resolve, reject) => {
         POST({
                 url: FAUCET_URL,

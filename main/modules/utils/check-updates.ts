@@ -1,10 +1,10 @@
-import { constructed } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 import updater from '../../check-version';
 import * as Promise from 'bluebird';
 
-const execute = Promise.coroutine(function*() {
-    return constructed
+const execute = Promise.coroutine(function* () {
+    return contracts
         .instance
         .feed
         .contract

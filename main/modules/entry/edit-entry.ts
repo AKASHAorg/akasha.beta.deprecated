@@ -1,25 +1,49 @@
-import * as Promise from 'bluebird';
-import auth from '../auth/Auth';
 import IpfsEntry from './ipfs';
-import { constructed as contracts } from '../../contracts/index';
+import * as Promise from 'bluebird';
+import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+import { decodeHash } from '../ipfs/helpers';
+
+const update = {
+    'id': '/publish',
+    'type': 'object',
+    'properties': {
+        'content': {
+            'type': 'object'
+        },
+        'token': {
+            'type': 'string'
+        },
+        'tags': {
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            },
+            'uniqueItems': true,
+            'minItems': 1
+        }
+    },
+    'required': ['content', 'token', 'tags']
+};
 
 /**
- *
+ * Update ipfsHash for entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: EntryEditRequest) {
-    const active = yield contracts.instance.entries.isMutable(data.entryId);
+const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
+    const v = new schema.Validator();
+    v.validate(data, update, { throwError: true });
 
-    if (!active) {
-        throw new Error('This entry can no longer be edited.');
-    }
     let ipfsEntry = new IpfsEntry();
-    const entryEth = yield contracts.instance.entries.getEntry(data.entryId);
-    const hash = yield ipfsEntry.edit(data.content, data.tags, entryEth.ipfsHash);
-    const txData = yield contracts.instance.entries.updateEntryContent(hash, data.entryId, data.gas);
-    const tx = yield auth.signData(txData, data.token);
+    const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
+    const decodedHash = decodeHash(ipfsHash);
+    delete data.content;
+    delete data.tags;
     ipfsEntry = null;
-    return { tx, entryId: data.entryId };
+    const txData = yield contracts.instance.Entries.edit.request(data.entryId, ...decodedHash);
+    const transaction = yield contracts.send(txData, data.token, cb);
+
+    return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
 export default { execute, name: 'editEntry' };

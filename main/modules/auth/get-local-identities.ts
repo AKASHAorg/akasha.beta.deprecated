@@ -1,12 +1,17 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import resolveEth from '../registry/resolve-ethaddress';
+import { GethConnector } from '@akashaproject/geth-connector';
 
-const execute = Promise.coroutine(function*() {
-    const profiles = yield contracts.instance.registry.getLocalProfiles();
-    for (let profile of profiles) {
-        profile['akashaId'] = (profile.profile) ? yield contracts.instance.profile.getId(profile.profile) : null;
+const execute = Promise.coroutine(function* () {
+    const accounts = yield GethConnector.getInstance().web3.eth.getAccountsAsync();
+    if (!accounts || !accounts.length) {
+        return [];
     }
-    return profiles;
+    const profiles = accounts.map((address) => {
+        return resolveEth.execute({ ethAddress: address });
+    });
+    const collection = yield Promise.all(profiles);
+    return { collection: collection || [] };
 });
 
 export default { execute, name: 'getLocalIdentities' };

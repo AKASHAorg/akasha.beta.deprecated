@@ -38,15 +38,30 @@ class IpfsEntry {
         this.licence = content.licence;
         this.tags = tags;
         this.wordCount = content.wordCount;
-        if (content.featuredImage) {
-            ipfsApiRequests.push(
-                IpfsConnector.getInstance().api
-                    .add(content.featuredImage, true, is(String, content.featuredImage))
+        if (content.featuredImage && is(Object, content.featuredImage)) {
+            const req = (Object.keys(content.featuredImage).sort()).map((imSize) => {
+                if (!content.featuredImage[imSize].src) {
+                    return Promise.resolve({});
+                }
+                const mediaData = this._normalizeImage(content.featuredImage[imSize].src);
+                return IpfsConnector.getInstance().api
+                    .add(content.featuredImage[imSize].src, true, is(String, mediaData))
                     .then((obj) => {
-                        this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
-                    }));
+                        return { [imSize]: obj.hash };
+                    });
+            });
+            ipfsApiRequests.push(
+                Promise.all(req).then((sizes) => {
+                    const LINK = {};
+                    sizes.forEach((record) => {
+                        Object.assign(LINK, record);
+                    });
+                    return IpfsConnector.getInstance().api.add(LINK);
+                }).then((obj) => {
+                    this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
+                })
+            );
         }
-
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
                 .add(content.excerpt)
@@ -180,12 +195,13 @@ class IpfsEntry {
         });
     }
 }
+
 /**
  *
  * @param hash
  * @returns {any}
  */
-export const getShortContent = Promise.coroutine(function*(hash) {
+export const getShortContent = Promise.coroutine(function* (hash) {
     if (entries.hasShort(hash)) {
         return Promise.resolve(entries.getShort(hash));
     }
@@ -197,7 +213,7 @@ export const getShortContent = Promise.coroutine(function*(hash) {
     const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE]);
     for (let i = 0; i < extraData.length; i++) {
         if (extraData[i].name === FEATURED_IMAGE) {
-            response[FEATURED_IMAGE] = extraData[i].multihash;
+            response[FEATURED_IMAGE] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
         }
         if (extraData[i].name === EXCERPT) {
             response[EXCERPT] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
@@ -212,7 +228,7 @@ export const getShortContent = Promise.coroutine(function*(hash) {
  *
  * @type {Function}
  */
-const findVersion = Promise.coroutine(function*(hash: string, version: number) {
+const findVersion = Promise.coroutine(function* (hash: string, version: number) {
     const root = yield IpfsConnector.getInstance().api.get(hash);
     if (!root.hasOwnProperty('version')) {
         throw new Error('Cannot find version ' + version);
@@ -238,7 +254,7 @@ const findVersion = Promise.coroutine(function*(hash: string, version: number) {
  * @param hash
  * @returns {any}
  */
-export const getFullContent = Promise.coroutine(function*(hash: string, version?: number) {
+export const getFullContent = Promise.coroutine(function* (hash: string, version: any) {
     const indexedVersion = (is(Number, version)) ? `${hash}/v/${version}` : hash;
 
     if (entries.hasFull(indexedVersion)) {

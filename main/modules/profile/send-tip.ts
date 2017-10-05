@@ -1,17 +1,46 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import auth from '../auth/Auth';
-import addressOf from '../registry/address-of-akashaid';
+import contracts from '../../contracts/index';
+import { profileAddress } from './helpers';
+import schema from '../utils/jsonschema';
+
+export const tip = {
+    'id': '/tip',
+    'type': 'object',
+    'properties': {
+        'ethAddress': { 'type': 'string', 'format': 'address' },
+        'akashaId': { 'type': 'string' },
+        'token': { 'type': 'string' },
+        'value': { 'type': 'string' },
+        'tokenAmount': { 'type': 'string' },
+        'message': { 'type': 'string' }
+    },
+    'required': ['token']
+};
 
 const execute = Promise.coroutine(
-    function*(data: { token: string, receiver: string, akashaId: string, value: string, unit?: string, gas?: number }) {
-        const validateReceiver = yield addressOf.execute([{ akashaId: data.akashaId }]);
-        if (validateReceiver.collection[0] !== data.receiver) {
-            throw new Error('Cannot validate receiver\'s address.');
-        }
-        const txData = yield contracts.instance.profile.sendTip(data.receiver, data.value, data.unit, data.gas);
-        const tx = yield auth.signData(txData, data.token);
-        return { tx, receiver: data.receiver, akashaId: data.akashaId };
+    function* (data: {
+        token: string,
+        akashaId?: string,
+        ethAddress?: string,
+        value?: string,
+        tokenAmount?: string,
+        message?: string
+    }, cb) {
+        const v = new schema.Validator();
+        v.validate(data, tip, { throwError: true });
+
+        const address = yield profileAddress(data);
+        const txData = yield contracts.instance.AETH.donate.request(address, data.tokenAmount, data.message, {
+            value: data.value,
+            gas: 200000
+        });
+        const transaction = yield contracts.send(txData, data.token, cb);
+        return {
+            tx: transaction.tx,
+            receipt: transaction.receipt,
+            receiver: address,
+            akashaId: data.akashaId
+        };
     });
 
-export default { execute, name: 'tip' };
+export default { execute, name: 'tip', hasStream: true };

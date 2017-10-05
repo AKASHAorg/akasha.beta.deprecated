@@ -10,6 +10,7 @@ class GenericApi {
     }
 
 }
+
 export class ApiRequest extends GenericApi {
     public manager: string;
 
@@ -33,6 +34,10 @@ export class ApiRequest extends GenericApi {
 
 export class ApiListener extends GenericApi {
 
+    get listenerCount() {
+        return ipcRenderer.listenerCount(this.channel);
+    }
+
     public on(listener: any) {
         ipcRenderer.on(this.channel, listener);
     }
@@ -47,9 +52,5 @@ export class ApiListener extends GenericApi {
 
     public removeAllListeners() {
         ipcRenderer.removeAllListeners(this.channel);
-    }
-
-    get listenerCount() {
-        return ipcRenderer.listenerCount(this.channel);
     }
 }
