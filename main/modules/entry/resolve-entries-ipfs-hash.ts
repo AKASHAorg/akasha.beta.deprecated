@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function* (data: { ipfsHash: string[], full?: 
 
     const fetchData = (data.full) ? getFullContent : getShortContent;
     data.ipfsHash.forEach((ipfsHash) => {
-        fetchData(ipfsHash)
+        fetchData(ipfsHash, false)
             .timeout(SHORT_WAIT_TIME)
             .then((entry) => {
                 cb(null, { entry, ipfsHash: ipfsHash });

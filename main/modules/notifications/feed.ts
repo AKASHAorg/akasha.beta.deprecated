@@ -30,7 +30,7 @@ const VALUE_UNIT = 'ether';
 
 const hydrateWithProfile = (cb, profile, entry, extra) => {
     const batch = [];
-    batch.push(getProfileData.execute({ profile: profile }));
+    batch.push(getProfileData.execute({ akashaId: profile }));
     batch.push(getEntry.execute({ entryId: entry }));
     Promise.all(batch)
         .then((result) => {
@@ -187,7 +187,7 @@ const execute = Promise.coroutine(function* (data: { stop?: boolean, newerThan?:
             cb({ message: err.message, type: eventTypes.FOLLOWING });
         }
         getProfileData
-            .execute({ profile: event.args.follower })
+            .execute({ akashaId: event.args.follower })
             .then((data) => {
                 queue.push(
                     cb,
@@ -207,9 +207,9 @@ const execute = Promise.coroutine(function* (data: { stop?: boolean, newerThan?:
         }
         resolveProfile
             .execute({ ethAddress: event.args.from })
-            .then((profile) => {
+            .then((profile: any) => {
                 const ethers = GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
-                return getProfileData.execute({ profile: profile.profileAddress })
+                return getProfileData.execute({ akashaId: profile.profileAddress })
                     .then((resolvedProfile) => {
                         queue.push(
                             cb,

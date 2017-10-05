@@ -1,39 +1,30 @@
 import * as Promise from 'bluebird';
 import { getCommentContent } from './ipfs';
-import { FULL_WAIT_TIME, INSTANT_WAIT_TIME, MEDIUM_WAIT_TIME, SHORT_WAIT_TIME } from '../../config/settings';
+import schema from '../utils/jsonschema';
 
+
+const resolveCommentsIpfsHash = {
+    'id': '/resolveCommentsIpfsHash',
+    'type': 'array',
+    'items': {
+        'type': 'string',
+        'format': 'multihash'
+    },
+    'uniqueItems': true,
+    'minItems': 1
+};
 /**
  * Resolve comments ipfs hashes
  * @type {Function}
  */
-
 const execute = Promise.coroutine(function* (data: string[], cb: any) {
-    const waitTimes = [INSTANT_WAIT_TIME, SHORT_WAIT_TIME, MEDIUM_WAIT_TIME, FULL_WAIT_TIME];
-    let count = 0;
-    let resolved = [];
-    const unresolved = [];
+    const v = new schema.Validator();
+    v.validate(data, resolveCommentsIpfsHash, { throwError: true });
 
-    data.forEach((ipfsHash) => {
+    for (let ipfsHash of data) {
         getCommentContent(ipfsHash)
-            .then((d) => resolved.push(d))
-            .catch((e) => unresolved.push(ipfsHash))
-            .finally(() => {
-                count++;
-                if (count === data.length && unresolved.length) {
-                    cb(null, { unresolved: unresolved });
-                }
-            });
-    });
-
-    for (let time of waitTimes) {
-        setTimeout(() => {
-            if (resolved.length > 0) {
-                cb(null, { resolved: resolved });
-            }
-            resolved = [];
-        }, time);
+            .then((result) => cb('', Object.assign({}, result, { ipfsHash })));
     }
-
     return {};
 });
 

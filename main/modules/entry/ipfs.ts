@@ -254,7 +254,7 @@ const findVersion = Promise.coroutine(function* (hash: string, version: number) 
  * @param hash
  * @returns {any}
  */
-export const getFullContent = Promise.coroutine(function* (hash: string, version?: number) {
+export const getFullContent = Promise.coroutine(function* (hash: string, version: any) {
     const indexedVersion = (is(Number, version)) ? `${hash}/v/${version}` : hash;
 
     if (entries.hasFull(indexedVersion)) {

@@ -33,3 +33,4 @@ declare module 'compare-versions';
 declare module 'electron-spellchecker';
 declare module 'archiver';
 declare module 'request';
+declare module 'winston';

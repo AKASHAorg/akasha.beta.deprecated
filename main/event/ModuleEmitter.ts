@@ -34,7 +34,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                     response = mainResponse(result, data);
                 })
                 .catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } }, data);
+                    response = mainResponse({ error: { message: err.message, trace: err } }, data);
                 })
                 .finally(() => {
                     this.fireEvent(
@@ -59,7 +59,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                     response = mainResponse(result, data);
                 })
                 .catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } }, data);
+                    response = mainResponse({ error: { message: err.message, trace: err } }, data);
                 })
                 .finally(() => {
                     this.fireEvent(
