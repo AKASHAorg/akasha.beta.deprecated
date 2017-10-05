@@ -243,10 +243,6 @@ AvatarEditr.propTypes = {
     style: PropTypes.shape(),
 };
 
-AvatarEditr.contextTypes = {
-    muiTheme: PropTypes.object
-};
-
 AvatarEditr.defaultProps = {
     size: 200,
 };

@@ -199,7 +199,6 @@ class ChatChannel extends Component {
                 <SvgIcon
                   viewBox="0 0 30 30"
                   style={{ width: '22px', height: '22px', marginRight: '5px' }}
-                  data-tip={intl.formatMessage(chatMessages.channelDisclaimer)}
                 >
                   <ChatChannelInfo />
                 </SvgIcon>

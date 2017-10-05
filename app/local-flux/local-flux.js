@@ -9,7 +9,6 @@ export {
     ProfileActions,
     SearchActions,
     SettingsActions,
-    TagActions,
     TempProfileActions,
     TransactionActions,
     UtilsActions,

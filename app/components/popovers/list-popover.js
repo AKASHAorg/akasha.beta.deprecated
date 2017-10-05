@@ -5,35 +5,25 @@ import { List } from 'immutable';
 import { Checkbox, Icon, Input, Popover } from 'antd';
 import { NewListForm, PanelLink } from '../';
 import { EntryBookmarkOff } from '../svg';
-import { generalMessages, listMessages } from '../../locale-data/messages';
+import { listMessages } from '../../locale-data/messages';
 
 class ListPopover extends Component {
-    constructor (props) {
-        super(props);
-        this.initialEntryLists = this.getEntryLists(props.lists);
-        this.state = {
-            addNewList: false,
-            entryLists: this.initialEntryLists,
-            popoverVisible: false,
-        };
-    }
+    state = {
+        addNewList: false,
+        popoverVisible: false,
+    };
 
-    componentWillReceiveProps (nextProps) {
-        const { lists, updatingLists } = nextProps;
-        if (!updatingLists && this.props.updatingLists) {
-            this.initialEntryLists = this.getEntryLists(lists);
-            this.setState({
-                addNewList: false,
-                entryLists: this.initialEntryLists,
-                popoverVisible: false
-            });
+    shouldComponentUpdate = (nextProps, nextState) => {
+        const { lists, search } = nextProps;
+        const { addNewList, popoverVisible } = nextState;
+        if (!lists.equals(this.props.lists) ||
+            search !== this.props.search ||
+            popoverVisible !== this.state.popoverVisible ||
+            addNewList !== this.state.addNewList
+        ) {
+            return true;
         }
-        if (!lists.equals(this.props.lists)) {
-            this.initialEntryLists = this.getEntryLists(lists);
-            this.setState({
-                entryLists: this.initialEntryLists
-            });
-        }
+        return false;
     }
 
     componentWillUnmount () {
@@ -45,29 +35,16 @@ class ListPopover extends Component {
         }
     }
 
-    getSearchInputRef = (el) => { this.searchInput = el; };
-
-    getEntryLists = (lists) => {
-        const result = lists
-            .filter(list => list.get('entryIds').includes(this.props.entryId))
-            .map(list => list.get('name'))
-            .toList();
-        return result;
+    isSaved = (list) => {
+        const { entryId } = this.props;
+        return list.get('entryIds').includes(entryId);
     };
-
-    isSaved = (listName) => {
-        const { entryLists } = this.state;
-        return entryLists.includes(listName);
-    };
-
-    isListDirty = () => !this.initialEntryLists.equals(this.state.entryLists);
 
     groupByState = (lists) => {
         let saved = new List();
         let unsaved = new List();
         lists.forEach((list) => {
-            const listName = list.get('name');
-            if (this.isSaved(listName)) {
+            if (this.isSaved(list)) {
                 saved = saved.push(list);
             } else {
                 unsaved = unsaved.push(list);
@@ -78,12 +55,12 @@ class ListPopover extends Component {
 
     onKeyDown = (ev) => {
         if (ev.key === 'Escape') {
-            this.searchList('');
+            this.props.listSearch('');
         }
     };
 
     onSearchChange = (ev) => {
-        this.searchList(ev.target.value);
+        this.props.listSearch(ev.target.value);
     };
 
     onVisibleChange = (popoverVisible) => {
@@ -97,7 +74,7 @@ class ListPopover extends Component {
             // Delay state reset until popover animation is finished
             this.resetTimeout = setTimeout(() => {
                 this.resetTimeout = null;
-                this.searchList('');
+                this.props.listSearch('');
                 this.setState({
                     addNewList: false,
                     entryLists: this.initialEntryLists
@@ -116,27 +93,6 @@ class ListPopover extends Component {
         }, 100);
     };
 
-    searchList = search => this.props.listSearch(search);
-
-    listUpdateEntryIds = () => {
-        const { entryId, listUpdateEntryIds } = this.props;
-        listUpdateEntryIds(this.state.entryLists.toJS(), entryId);
-    };
-
-    toggleList = (listName) => {
-        const { entryLists } = this.state;
-        let newEntryLists;
-        const index = entryLists.indexOf(listName);
-        if (index !== -1) {
-            newEntryLists = entryLists.delete(index);
-        } else {
-            newEntryLists = entryLists.push(listName);
-        }
-        this.setState({
-            entryLists: newEntryLists
-        });
-    };
-
     toggleNewList = () => {
         if (this.state.addNewList) {
             this.setInputFocusAsync();
@@ -147,7 +103,7 @@ class ListPopover extends Component {
     };
 
     renderContent = () => {
-        const { entryId, intl, listAdd, listDelete, lists, search } = this.props;
+        const { entryId, intl, listAdd, listDelete, lists, listToggleEntry, search } = this.props;
 
         if (this.state.addNewList) {
             return (
@@ -161,8 +117,8 @@ class ListPopover extends Component {
         }
 
         return (
-          <div className="list-popover__content">
-            <div className="list-popover__input-wrapper">
+          <div>
+            <div>
               <Input
                 className="list-popover__search"
                 id="list-popover-search"
@@ -170,15 +126,14 @@ class ListPopover extends Component {
                 onKeyDown={this.onKeyDown}
                 placeholder={intl.formatMessage(listMessages.searchForList)}
                 prefix={<Icon className="list-popover__search-icon" type="search" />}
-                ref={this.getSearchInputRef}
                 size="large"
                 value={search}
               />
             </div>
             <div className="list-popover__list-wrapper">
               {this.groupByState(lists).map((list) => {
-                  const toggleList = () => this.toggleList(list.get('name'));
-                  const isSaved = this.isSaved(list.get('name'));
+                  const toggleList = () => listToggleEntry(list.get('name'), entryId);
+                  const isSaved = this.isSaved(list);
                   const root = 'list-popover__left-item list-popover__row-icon';
                   const modifier = 'list-popover__row-icon_saved';
                   const className = `${root} ${isSaved && modifier}`;
@@ -219,27 +174,15 @@ class ListPopover extends Component {
                   );
               })}
             </div>
-            {this.isListDirty() ?
-              <div className="content-link list-popover__button" onClick={this.listUpdateEntryIds}>
-                <Icon
-                  className="list-popover__left-item"
-                  style={{ position: 'relative', top: '2px' }}
-                  type="save"
-                />
-                <div style={{ flex: '1 1 auto' }}>
-                  {intl.formatMessage(generalMessages.save)}
-                </div>
-              </div> :
-              <div className="content-link list-popover__button" onClick={this.toggleNewList}>
-                <Icon
-                  className="list-popover__left-item"
-                  type="plus"
-                />
-                <div style={{ flex: '1 1 auto' }}>
-                  {intl.formatMessage(listMessages.createNew)}
-                </div>
+            <div className="content-link list-popover__button" onClick={this.toggleNewList}>
+              <Icon
+                className="list-popover__left-item"
+                type="plus"
+              />
+              <div style={{ flex: '1 1 auto' }}>
+                {intl.formatMessage(listMessages.createNew)}
               </div>
-            }
+            </div>
           </div>
         );
     };
@@ -252,8 +195,8 @@ class ListPopover extends Component {
             content={this.renderContent()}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
-            overlayClassName="list-popover"
-            placement="bottom"
+            overlayClassName="popover-menu list-popover"
+            placement="bottomRight"
             trigger="click"
             visible={this.state.popoverVisible}
           >
@@ -273,9 +216,8 @@ ListPopover.propTypes = {
     listDelete: PropTypes.func.isRequired,
     lists: PropTypes.shape().isRequired,
     listSearch: PropTypes.func.isRequired,
-    listUpdateEntryIds: PropTypes.func.isRequired,
+    listToggleEntry: PropTypes.func.isRequired,
     search: PropTypes.string,
-    updatingLists: PropTypes.bool
 };
 
 export default injectIntl(ListPopover);

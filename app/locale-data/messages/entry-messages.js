@@ -6,6 +6,11 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip when it was already claimed',
         defaultMessage: 'Already claimed'
     },
+    alreadyVoted: {
+        id: 'app.entry.alreadyVoted',
+        description: 'vote button tooltip when it was already voted',
+        defaultMessage: 'You have already voted on this entry'
+    },
     blockNr: {
         id: 'app.entry.blockNr',
         description: 'block number',
@@ -15,6 +20,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.claim',
         description: 'claim button tooltip',
         defaultMessage: 'Claim'
+    },
+    commentsCount: {
+        id: 'app.entry.commentsCount',
+        description: 'Number of comments',
+        defaultMessage: `{count, number} {count, plural,
+            one {comment}
+            few {comments}
+            many {comments}
+            other {comments}
+        }`
     },
     downvote: {
         id: 'app.entry.downvote',
@@ -29,6 +44,11 @@ const entryMessages = defineMessages({
             other {entries}
         }`
     },
+    publicDiscussion: {
+        id: 'app.entry.publicDiscussion',
+        description: 'entry comments section title',
+        defaultMessage: 'Public discussion'
+    },
     published: {
         id: 'app.entry.published',
         description: 'published',
@@ -38,6 +58,21 @@ const entryMessages = defineMessages({
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
         defaultMessage: 'Save highlight'
+    },
+    showLess: {
+        id: 'app.entry.showLess',
+        description: 'label for comment collapse button',
+        defaultMessage: 'Show less'
+    },
+    showMore: {
+        id: 'app.entry.showMore',
+        description: 'label for comment expand button',
+        defaultMessage: 'Show more'
+    },
+    startComment: {
+        id: 'app.entry.startComment',
+        description: 'button label for starting a comment from a highlight',
+        defaultMessage: 'Start comment'
     },
     wordsCount: {
         id: 'app.entry.wordsCount',
@@ -54,11 +89,6 @@ const entryMessages = defineMessages({
         description: 'estimated time to read an entry',
         defaultMessage: 'read'
     },
-    allComments: {
-        id: 'app.entry.allComments',
-        description: 'all comments section title',
-        defaultMessage: 'ALL COMMENTS'
-    },
     writeComment: {
         id: 'app.entry.writeComment',
         description: 'placeholder for writing a comment',
@@ -73,11 +103,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.loadingComments',
         description: 'message when loading comments for the first time',
         defaultMessage: 'Loading comments'
-    },
-    unresolvedEntry: {
-        id: 'app.entry.unresolvedEntry',
-        description: 'Message to display when an entry could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
     },
     newComments: {
         id: 'app.entry.newComments',
@@ -98,6 +123,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.versionNumber',
         description: 'label for version number',
         defaultMessage: 'Version {index}'
+    },
+    votePercentage: {
+        id: 'app.entry.votePercentage',
+        description: '',
+        defaultMessage: 'Upvotes - {upvote}% · Downvotes - {downvote}%'
     },
     originalVersion: {
         id: 'app.entry.originalVersion',
@@ -144,6 +174,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for empty latest entries list',
         defaultMessage: 'No new entries'
     },
+    noVotes: {
+        id: 'app.entry.noVotes',
+        description: 'Placeholder for empty votes list',
+        defaultMessage: 'No votes'
+    },
     searchProfile: {
         id: 'app.entry.searchProfile',
         description: 'placeholder for profile column',
@@ -154,10 +189,25 @@ const entryMessages = defineMessages({
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
     },
+    unresolvedComment: {
+        id: 'app.entry.unresolvedComment',
+        description: 'Message to display when a comment could not be resolved',
+        defaultMessage: 'There are no peers online right now.'
+    },
+    unresolvedEntry: {
+        id: 'app.entry.unresolvedEntry',
+        description: 'Message to display when an entry could not be resolved',
+        defaultMessage: 'There are no peers online right now.'
+    },
     upvote: {
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',
         defaultMessage: 'Upvote'
+    },
+    votePending: {
+        id: 'app.entry.votePending',
+        description: 'tooltip for vote button in pending state',
+        defaultMessage: 'Your vote is pending'
     }
 });
 export { entryMessages };

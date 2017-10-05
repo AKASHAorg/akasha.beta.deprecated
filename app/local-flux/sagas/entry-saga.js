@@ -5,12 +5,10 @@ import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
-import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import { selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
     selectIsFollower, selectListNextEntries, selectLoggedAkashaId, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
-import * as actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const ALL_STREAM_LIMIT = 11;
@@ -102,7 +100,7 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const getVoteOf = Channel.server.entry.getVoteOf;
     yield call(enableExtraChannels);
-    const akashaId = yield select(selectLoggedAkashaId);
+    const loggedAkashaId = yield select(selectLoggedAkashaId);
     const allEntries = [];
     const ownEntries = [];
     const entryIpfsHashes = [];
@@ -110,18 +108,21 @@ export function* entryGetExtraOfList (collection, limit, columnId) {
     const profileIpfsHashes = [];
     const akashaIds = [];
     entries.forEach((entry) => {
-        allEntries.push({ akashaId, entryId: entry.entryId });
+        const akashaId = entry.entryEth.publisher.akashaId;
+        allEntries.push({ akashaId: loggedAkashaId, entryId: entry.entryId });
         entryIpfsHashes.push(entry.entryEth.ipfsHash);
         entryIds.push(entry.entryId);
-        profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
-        akashaIds.push(entry.entryEth.publisher.akashaId);
-        if (entry.entryEth && entry.entryEth.publisher &&
-                akashaId === entry.entryEth.publisher.akashaId) {
+        if (akashaId && !akashaIds.includes(akashaId)) {
+            akashaIds.push(akashaId);
+            profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
+        }
+        if (akashaId && loggedAkashaId === akashaId) {
             ownEntries.push(entry.entryId);
         }
     });
     yield put(actions.entryResolveIpfsHash(entryIpfsHashes, columnId, entryIds));
     yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, akashaIds));
+    yield put(profileActions.profileIsFollower(akashaIds));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
@@ -232,7 +233,6 @@ function* entryVoteSuccess (entryId) {
     }
     const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
     if (publisher && publisher === loggedAkashaId) {
-        console.log('is own entry');
         yield put(actions.entryCanClaim(entryId));
         yield put(actions.entryGetBalance(entryId));
     }
@@ -281,6 +281,7 @@ function* watchEntryClaimChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -294,6 +295,7 @@ function* watchEntryDownvoteChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -478,6 +480,7 @@ function* watchEntryUpvoteChannel () {
         const { actionId, entryId, entryTitle } = resp.request;
         if (resp.error) {
             yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

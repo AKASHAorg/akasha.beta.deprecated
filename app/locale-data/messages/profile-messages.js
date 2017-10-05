@@ -71,15 +71,15 @@ export const profileMessages = defineMessages({
         description: 'remove crypto button label',
         defaultMessage: 'Remove cryptocurrency link'
     },
+    entries: {
+        id: 'app.profile.entries',
+        description: 'Title for entries card',
+        defaultMessage: 'Entries'
+    },
     follow: {
         id: 'app.profile.follow',
         description: 'follow a profile',
         defaultMessage: 'Follow'
-    },
-    unfollow: {
-        id: 'app.profile.unfollow',
-        description: 'unfollow a profile',
-        defaultMessage: 'Unfollow'
     },
     followers: {
         id: 'app.profile.followers',
@@ -96,7 +96,7 @@ export const profileMessages = defineMessages({
     },
     following: {
         id: 'app.profile.following',
-        description: 'Label for following tab',
+        description: 'following an user',
         defaultMessage: 'Following'
     },
     followings: {
@@ -127,10 +127,40 @@ export const profileMessages = defineMessages({
         description: 'Title for my balance card',
         defaultMessage: 'My Balance'
     },
+    myEntries: {
+        id: 'app.profile.myEntries',
+        description: 'Title for my entries',
+        defaultMessage: 'My Entries'
+    },
+    myProfile: {
+        id: 'app.profile.myProfile',
+        description: 'Title for profile overview sidebar',
+        defaultMessage: 'MY PROFILE'
+    },
+    noProfiles: {
+        id: 'app.entry.noProfiles',
+        description: 'placeholder for empty profiles list',
+        defaultMessage: 'No profiles'
+    },
+    overview: {
+        id: 'app.profile.overview',
+        description: 'Title for overview card',
+        defaultMessage: 'Overview'
+    },
+    settings: {
+        id: 'app.profile.settings',
+        description: 'Title for profile settings',
+        defaultMessage: 'Profile Settings'
+    },
     receive: {
         id: 'app.profile.receive',
         description: 'Receive button label',
         defaultMessage: 'Receive'
+    },
+    rewardsAndGoals: {
+        id: 'app.profile.rewardsAndGoals',
+        description: 'Title for rewards and goals card',
+        defaultMessage: 'Rewards and Goals'
     },
     send: {
         id: 'app.profile.send',
@@ -152,9 +182,29 @@ export const profileMessages = defineMessages({
         description: 'title for send tip form',
         defaultMessage: 'Send tip to {name}'
     },
+    support: {
+        id: 'app.profile.support',
+        description: 'support an user financially',
+        defaultMessage: 'Support'
+    },
+    supported: {
+        id: 'app.profile.supported',
+        description: 'supported by someone',
+        defaultMessage: 'Supported'
+    },
+    supporting: {
+        id: 'app.profile.supporting',
+        description: 'supporting someone',
+        defaultMessage: 'Supporting'
+    },
     tipAmount: {
         id: 'app.profile.tipAmount',
         description: 'placeholder for tip amount input',
         defaultMessage: 'Tip amount'
+    },
+    unfollow: {
+        id: 'app.profile.unfollow',
+        description: 'unfollow a profile',
+        defaultMessage: 'Unfollow'
     }
 });

@@ -23,13 +23,13 @@ const publishActions = {
     [actionTypes.claim]: entryActions.entryClaim,
     [actionTypes.comment]: commentsActions.commentsPublish,
     [actionTypes.createTag]: tagActions.tagCreate,
-    [actionTypes.downvote]: entryActions.entryDownvote,
+    [actionTypes.entryDownvote]: entryActions.entryDownvote,
+    [actionTypes.entryUpvote]: entryActions.entryUpvote,
     [actionTypes.follow]: profileActions.profileFollow,
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
     [actionTypes.sendTip]: profileActions.profileSendTip,
     [actionTypes.unfollow]: profileActions.profileUnfollow,
-    [actionTypes.upvote]: entryActions.entryUpvote
 };
 
 /**
@@ -42,37 +42,15 @@ const publishSuccessActions = {
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     [actionTypes.createTag]: tagActions.tagCreateSuccess,
-    [actionTypes.downvote]: entryActions.entryDownvoteSuccess,
+    [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
+    [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
-    [actionTypes.upvote]: entryActions.entryUpvoteSuccess
 };
 
-/**
- * Check for token expiration date:
- * - if token is valid, publish action
- * - if token has expired, display AuthDialog
- */
-function* checkAuthentication () {
-    const expiration = yield select(selectTokenExpiration);
-    const isLoggedIn = Date.parse(expiration) - 3000 > Date.now();
-    if (isLoggedIn) {
-        const id = yield select(state => state.actionState.get('needAuth'));
-        yield call(actionPublish, { id }); // eslint-disable-line no-use-before-define
-    } else {
-        yield put(appActions.toggleAuthDialog());
-    }
-}
-
-/**
- * This saga is used as a hook. If a new action was added, check for authentication
- */
-function* actionAdd () {
-    yield call(checkAuthentication);
-}
 
 /**
  * Fetch all actions with a "publishing" status from local db;
@@ -120,15 +98,17 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
  */
 function* actionSave (id) {
     let action = yield select(state => selectAction(state, id));
-    // Remove non persistent fields from payload before saving to local DB
+    // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
-    const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
-    if (nonPersistentFields && nonPersistentFields.size) {
-        nonPersistentFields.forEach((field) => {
-            action = action.deleteIn(['payload', field]);
-        });
+    if (action.status === actionStatus.published) {
+        const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
+        if (nonPersistentFields && nonPersistentFields.size) {
+            nonPersistentFields.forEach((field) => {
+                action = action.deleteIn(['payload', field]);
+            });
+        }
+        action = action.deleteIn(['payload', 'nonPersistentFields']);
     }
-    action = action.deleteIn(['payload', 'nonPersistentFields']);
     try {
         yield apply(actionService, actionService.saveAction, [action.toJS()]);
     } catch (error) {
@@ -142,9 +122,6 @@ function* actionSave (id) {
  */
 function* actionUpdate ({ changes }) {
     const action = yield select(state => selectAction(state, changes.id));
-    if (changes.status === actionStatus.needAuth) {
-        yield call(checkAuthentication);
-    }
     if (changes.status === actionStatus.publishing) {
         yield put(transactionActions.transactionAddToQueue([changes]));
         yield fork(actionSave, changes.id);
@@ -161,7 +138,6 @@ function* actionUpdate ({ changes }) {
 // Action watchers
 
 export function* watchActionActions () {
-    yield takeEvery(types.ACTION_ADD, actionAdd);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_UPDATE, actionUpdate);

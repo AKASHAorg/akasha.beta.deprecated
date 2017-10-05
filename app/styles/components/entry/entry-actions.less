@@ -1,0 +1,78 @@
+.entry-actions {
+    padding: 6px 0;
+    max-width: 700px;
+    margin: 0 auto;
+
+    &__vote-wrapper {
+        position: relative;
+    }
+
+    &__vote-icon {
+        font-size: 20px;
+    }
+
+    &__existing-vote {
+        position: absolute;
+        top: -14px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 12px;
+        cursor: default;
+
+        &_downvote {
+            color: @error-color;
+        }
+
+        &_upvote {
+            color: @success-color;            
+        }
+    }
+
+    &__score {
+        min-width: 40px;
+        font-size: 18px;
+        padding: 0 5px;
+        letter-spacing: 2px;
+    }
+
+    &__vote-bar {
+        height: 2px;
+        padding: 4px 0px;
+    }
+
+    &__downvote-bar {
+        height: 2px;
+        background-color: @error-color;                    
+    }
+
+    &__upvote-bar {
+        height: 2px;
+        background-color: @success-color;
+    }
+
+    &__right-actions {
+        flex: 1 1 auto;
+        text-align: right;
+    }
+
+    &__balance-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center
+    }
+
+    &__balance {
+        font-size: 16px;
+        padding-right: 5px;
+    }
+
+    &__claim-icon {
+        width: 24px;
+        height: 24px;
+
+        &_claimed {
+            fill: @success-color;
+        }
+    }
+}

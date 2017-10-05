@@ -1,10 +1,12 @@
 export const claim = 'claim';
 export const comment = 'comment';
+export const commentDownvote = 'commentDownvote';
+export const commentUpvote = 'commentUpvote';
 export const createTag = 'createTag';
-export const downvote = 'downvote';
+export const entryDownvote = 'entryDownvote';
+export const entryUpvote = 'entryUpvote';
 export const follow = 'follow';
 export const profileRegister = 'profileRegister';
 export const profileUpdate = 'profileUpdate';
 export const sendTip = 'sendTip';
 export const unfollow = 'unfollow';
-export const upvote = 'upvote';

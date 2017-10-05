@@ -14,7 +14,7 @@ const newError = (state, error) => {
 const addNewError = (state, { error }) => {
     const err = newError(state, error);
     const extra = err.fatal ?
-        { fatalErrors: state.get('fatalErrors').push(err.displayId) } :
+        { fatalErrors: state.get('fatalErrors').push(err.id) } :
         null;
 
     return state.merge({
@@ -31,7 +31,6 @@ const errorState = createReducer(initialState, {
     [types.DASHBOARD_DELETE_COLUMN_ERROR]: addNewError,
     [types.DASHBOARD_GET_ACTIVE_ERROR]: addNewError,
     [types.DASHBOARD_GET_ALL_ERROR]: addNewError,
-    [types.DASHBOARD_GET_COLUMNS_ERROR]: addNewError,
     [types.DASHBOARD_SET_ACTIVE_ERROR]: addNewError,
     [types.DASHBOARD_UPDATE_COLUMN_ERROR]: addNewError,
     [types.ENTRY_CLAIM_ERROR]: addNewError,
@@ -55,7 +54,6 @@ const errorState = createReducer(initialState, {
             nonFatalErrors: state.get('nonFatalErrors').push(err.id)
         }),
     [types.SHOW_REPORT_MODAL]: (state, { data }) => {
-        console.log(data);
         return state.merge({
             reportError: new Map(data.error)
         });

@@ -63,10 +63,6 @@
         justify-content: flex-end;
     }
 
-    &__icon {
-        font-size: 20px;
-    }
-
     &__button {
         margin-left: 10px;
     }
@@ -74,5 +70,11 @@
     &__button-label {
         font-size: 13px;
         font-weight: normal;
+    }
+
+    &__icon {
+        &_disabled {
+            color: @disabled-color;
+        }
     }
 }

@@ -13,10 +13,13 @@ const AvatarPresenter = (props) => {
       (<div
         className={`avatar ${base} ${base}_${sizes[size]} ${className || ''}`}
         onClick={onClick}
-        style={{ cursor: onClick || link ? 'pointer' : 'inherit' }}
+        style={{ cursor: onClick || link ? 'pointer' : 'default' }}
       >
         {initials &&
-          <div className="flex-center avatar__initials">
+          <div
+            className="flex-center"
+            style={{ cursor: onClick || link ? 'pointer' : 'default' }}
+          >
             {initials}
           </div>
         }
@@ -28,7 +31,7 @@ const AvatarPresenter = (props) => {
         shape="square"
         size={size}
         src={image && image}
-        style={{ cursor: onClick || link ? 'pointer' : 'inherit' }}
+        style={{ cursor: onClick || link ? 'pointer' : 'default' }}
       />);
 
     if (link) {

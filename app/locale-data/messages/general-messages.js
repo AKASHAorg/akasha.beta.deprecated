@@ -27,6 +27,11 @@ const generalMessages = defineMessages({
         description: 'aeth token',
         defaultMessage: 'AETH'
     },
+    amount: {
+        id: 'app.general.amount',
+        description: 'currency amount',
+        defaultMessage: 'Amount'
+    },
     akasha: {
         id: 'app.general.akasha',
         description: 'AKASHA',
@@ -72,6 +77,11 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
+    create: {
+        id: 'app.general.create',
+        description: 'create',
+        defaultMessage: 'Create'
+    },
     created: {
         id: 'app.general.created',
         description: 'created',
@@ -95,7 +105,17 @@ const generalMessages = defineMessages({
     editProfile: {
         id: 'app.general.editProfile',
         description: 'Edit profile button label',
-        defaultMessage: 'Edit Profile'
+        defaultMessage: 'Edit profile'
+    },
+    essence: {
+        id: 'app.general.essence',
+        description: 'essence',
+        defaultMessage: 'Essence'
+    },
+    essenceTotalScore: {
+        id: 'app.general.essenceTotalScore',
+        description: 'essence total score',
+        defaultMessage: 'Essence total score'
     },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
@@ -145,6 +165,16 @@ const generalMessages = defineMessages({
         description: 'join button label',
         defaultMessage: 'Join'
     },
+    karma: {
+        id: 'app.general.karma',
+        description: 'karma',
+        defaultMessage: 'Karma'
+    },
+    karmaTotalScore: {
+        id: 'app.general.karmaTotalScore',
+        description: 'karma total score',
+        defaultMessage: 'Karma total score'
+    },
     leave: {
         id: 'app.general.leave',
         description: 'leave button label',
@@ -190,6 +220,11 @@ const generalMessages = defineMessages({
         description: 'pause button label',
         defaultMessage: 'Pause'
     },
+    pending: {
+        id: 'app.general.pending',
+        description: 'an action is pending',
+        defaultMessage: 'Pending'
+    },
     people: {
         id: 'app.general.people',
         description: 'tooltip for sidebar people button',
@@ -200,10 +235,20 @@ const generalMessages = defineMessages({
         description: 'Message to show while images are being precessed',
         defaultMessage: 'Processing image'
     },
+    profileOverview: {
+        id: 'app.general.profileOverview',
+        description: 'button label for profile overview',
+        defaultMessage: 'Profile Overview'
+    },
     publish: {
         id: 'app.general.publish',
         description: 'button label for publish action',
         defaultMessage: 'Publish'
+    },
+    reply: {
+        id: 'app.general.reply',
+        description: 'reply',
+        defaultMessage: 'Reply'
     },
     reset: {
         id: 'app.general.reset',
@@ -244,6 +289,11 @@ const generalMessages = defineMessages({
         id: 'app.general.settings',
         description: 'settings button label',
         defaultMessage: 'Settings'
+    },
+    skipStep: {
+        id: 'app.general.skipStep',
+        description: 'label for skip button',
+        defaultMessage: 'Skip this step'
     },
     start: {
         id: 'app.general.start',

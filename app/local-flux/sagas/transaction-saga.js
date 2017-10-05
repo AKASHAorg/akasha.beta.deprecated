@@ -18,6 +18,18 @@ function* transactionAddToQueue ({ txs }) {
     yield apply(channel, channel.send, [txs]);
 }
 
+function* transactionEmitMinedSuccess (data) {
+    const { blockNumber, cumulativeGasUsed } = data;
+    const loggedAkashaId = yield select(selectLoggedAkashaId);
+    const actionId = yield apply(actionService, actionService.getActionByTx, [data.mined]);
+    const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+    if (action && action.get('akashaId') === loggedAkashaId) {
+        const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+        yield put(actionActions.actionUpdate(changes));
+        yield put(profileActions.profileGetBalance());
+    }
+}
+
 export function* transactionGetStatus ({ txs, ids }) {
     const channel = Channel.server.tx.getTransaction;
     yield apply(channel, channel.send, [{ transactionHash: txs, actionIds: ids }]);
@@ -50,16 +62,7 @@ function* watchTransactionEmitMinedChannel () {
         if (resp.error) {
             yield put(actions.transactionEmitMinedError(resp.error));
         } else {
-            const { blockNumber, cumulativeGasUsed } = resp.data;
-            const loggedAkashaId = yield select(selectLoggedAkashaId);
-            const actionId = yield apply(actionService, actionService.getActionByTx, [resp.data.mined]);
-            const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
-            if (!action || action.get('akashaId') !== loggedAkashaId) {
-                return null;
-            }
-            const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
-            yield put(actionActions.actionUpdate(changes));
-            yield put(profileActions.profileGetBalance());
+            yield fork(transactionEmitMinedSuccess, resp.data);
         }
     }
 }

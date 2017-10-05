@@ -1,5 +1,6 @@
 export { akashaTerms } from './akasha-terms-161006';
 export { chatMessages } from './chat-messages';
+export { confirmationMessages } from './confirmation-messages';
 export { dashboardMessages } from './dashboard-messages';
 export { entryMessages } from './entry-messages';
 export { errorMessages } from './error-messages';
@@ -12,5 +13,6 @@ export { profileMessages } from './profile-messages';
 export { searchMessages } from './search-messages';
 export { settingsMessages } from './settings-messages';
 export { setupMessages } from './setup-messages';
+export { tagMessages } from './tag-messages';
 export { tutorialMessages } from './tutorial-messages';
 export { validationMessages } from './validation-messages';
