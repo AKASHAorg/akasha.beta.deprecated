@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
-import { Icon, Row, Col, Button, Steps, Popover } from 'antd';
+import { Icon, Row, Col, Button, Steps, Popover, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftAutosave,
-    draftsGetCount } from '../local-flux/actions/draft-actions';
+    draftsGetCount, draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
@@ -16,6 +17,7 @@ import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { Step } = Steps;
+const { confirm } = Modal;
 
 class NewEntryPage extends Component {
     state = {
@@ -88,7 +90,6 @@ class NewEntryPage extends Component {
 
     _handleFeaturedImageChange = (image) => {
         const { draftObj } = this.props;
-        console.log('update draftObj with image', draftObj.mergeIn(['content', 'featuredImage'], image));
         this.props.draftUpdate(
             draftObj.setIn(['content', 'featuredImage'], fromJS(image))
         );
@@ -104,26 +105,49 @@ class NewEntryPage extends Component {
         (node) => { this[nodeName] = node; };
 
     _handlePublish = (ev) => {
-        const { draftObj, akashaId } = this.props;
+        ev.preventDefault();
+        const { draftObj, akashaId, match } = this.props;
         const publishPayload = {
             id: draftObj.id,
             title: draftObj.getIn(['content', 'title']),
-            type: draftObj.getIn(['content', 'type'])
+            type: match.params.draftType
         };
-        this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: publishPayload });
-        ev.preventDefault();
+        if (draftObj.onChain) {
+            return this.props.actionAdd(akashaId, actionTypes.draftPublishUpdate, { draft: publishPayload });
+        }
+        return this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: publishPayload });
     }
 
-    _handleVersionRevert = version =>
-        (ev) => {
-            const { draftObj } = this.props;
-            if (draftObj.localChanges) {
-                alert(`Are you sure you want to discard current changes and revert to v${version + 1}?`);
-            }
-            console.log('revert current draft to version', version);
-            ev.preventDefault();
-        }
+    _handleVersionRevert = (version) => {
+        const { draftObj } = this.props;
+        this.props.draftRevertToVersion({
+            version,
+            id: draftObj.id
+        });
+        this.props.entryGetFull({
+            entryId: draftObj.id,
+            version,
+            asDraft: true
+        });
+    }
 
+    _showRevertConfirm = (ev, version) => {
+        const handleVersionRevert = this._handleVersionRevert.bind(null, version);
+        const { draftObj } = this.props;
+        if (draftObj.localChanges) {
+            confirm({
+                content: 'Are you sure you want to revert this draft?',
+                okText: 'Yes',
+                okType: 'danger',
+                cancelText: 'No',
+                onOk: handleVersionRevert,
+                onCancel () {}
+            });
+        } else {
+            handleVersionRevert();
+        }
+        ev.preventDefault();
+    }
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
@@ -142,7 +166,21 @@ class NewEntryPage extends Component {
                     <a
                       href="##"
                       className="published-dot"
-                      onClick={this._handleVersionRevert(index)}
+                      onClick={ev => this._showRevertConfirm(ev, index)}
+                    >
+                      {dot}
+                    </a>
+                  </Popover>
+                );
+            case 'published-selected':
+                return (
+                  <Popover
+                    content={'Status: Published'}
+                  >
+                    <a
+                      href="##"
+                      className="published-dot published-dot-selected"
+                      onClick={ev => this._showRevertConfirm(ev, index)}
                     >
                       {dot}
                     </a>
@@ -155,14 +193,17 @@ class NewEntryPage extends Component {
         }
         // return <Popover content="test">{dot}</Popover>;
     }
-    _getTimelineSteps = (items, localChanges) => {
+
+    _getTimelineSteps = (items, localChanges, selectedVersion) => {
+        /* eslint-disable react/no-array-index-key */
         const steps = items.map((item, index) => (
           <Step
             key={`${index}`}
             title={`v${index + 1}`}
-            status="published"
+            status={`published${(selectedVersion === index) ? '-selected' : ''}`}
           />
         ));
+        /* eslint-enable react/no-array-index-key */
         if (localChanges) {
             steps.push(
               <Step key="$localVersion" title="Local Version" status="draft" />
@@ -170,31 +211,20 @@ class NewEntryPage extends Component {
         }
         return steps;
     }
+
     _createTimeline = () => {
         const { draftObj } = this.props;
         const { content, localChanges } = draftObj;
-        const { version } = content;
-        const timelineItems = [...Array(Number(version) + 1)];
-        if (version === -1) {
-            return (
-              <Steps
-                progressDot={this._getProgressDot}
-                current={1}
-                className="text-entry-page__timeline-steps"
-              >
-                <Step title="" status="none" />
-                <Step title="Local Version" status="draft" />
-              </Steps>
-            );
-        }
+        const { latestVersion, version } = content;
+        const timelineItems = [...Array(Number(latestVersion) + 1)];
         return (
           <Steps
             progressDot={this._getProgressDot}
-            current={version + 1}
+            current={latestVersion + 1}
             className="text-entry-page__timeline-steps"
           >
             {
-              this._getTimelineSteps(timelineItems, localChanges)
+              this._getTimelineSteps(timelineItems, localChanges, version)
             }
           </Steps>
         );
@@ -203,14 +233,23 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel } = this.state;
         const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
-            tagSuggestions, tagSuggestionsCount, match, licences } = this.props;
-
+            tagSuggestions, tagSuggestionsCount, match, licences, resolvingHashes } = this.props;
         if (!draftObj || !draftObj.content) {
-            return <div>Finding Draft</div>;
+            return (
+              <div>Finding Draft</div>
+            );
         }
-
-        const { content, tags, version } = draftObj;
-        const { title, excerpt, licence, draft, featuredImage } = content;
+        const unresolved = draftObj.entryEth.ipfsHash && resolvingHashes.includes(draftObj.entryEth.ipfsHash);
+        if (unresolved) {
+            return (
+              <div>
+                  Cannot resolve entry`s ipfs hash.
+                  Make sure to open AKASHA DApp on the computer you have published from.
+              </div>
+            );
+        }
+        const { content, tags, localChanges, onChain } = draftObj;
+        const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         return (
           <div className="text-entry-page">
             <div
@@ -294,14 +333,16 @@ class NewEntryPage extends Component {
               >
                 <div className="text-entry-page__footer">
                   <div className="text-entry-page__footer-timeline-wrapper">
-                    <div
-                      className={
+                    {onChain && (localChanges || latestVersion > 0) &&
+                      <div
+                        className={
                           `text-entry-page__footer-timeline
-                          text-entry-page__footer-timeline${version ? '' : '_empty'}`
-                      }
-                    >
-                      {this._createTimeline()}
-                    </div>
+                          text-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
+                        }
+                      >
+                        {this._createTimeline()}
+                      </div>
+                    }
                   </div>
                   <div className="text-entry-page__footer-actions">
                     <Button
@@ -310,7 +351,10 @@ class NewEntryPage extends Component {
                       onClick={this._handlePublish}
                       loading={draftObj.get('publishing')}
                     >
-                      {intl.formatMessage(generalMessages.publish)}
+                      {onChain ?
+                        intl.formatMessage(generalMessages.update) :
+                        intl.formatMessage(generalMessages.publish)
+                      }
                     </Button>
                   </div>
                 </div>
@@ -328,8 +372,10 @@ NewEntryPage.propTypes = {
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
+    draftRevertToVersion: PropTypes.func,
     draftsFetched: PropTypes.bool,
     entriesFetched: PropTypes.bool,
+    entryGetFull: PropTypes.func,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     match: PropTypes.shape(),
@@ -367,6 +413,8 @@ export default connect(
         draftUpdate,
         draftAutosave,
         draftsGetCount,
+        draftRevertToVersion,
+        entryGetFull,
         tagSearch,
         searchResetResults,
     }

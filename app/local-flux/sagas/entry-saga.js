@@ -135,11 +135,11 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) {
     }
 }
 
-function* entryGetFull ({ entryId, version }) {
+function* entryGetFull ({ entryId, version, asDraft }) {
     yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId, full: true, version }]);
+    yield apply(channel, channel.send, [{ entryId, full: true, version, asDraft }]);
 }
 
 function* entryGetLatestVersion ({ entryId }) {
@@ -320,13 +320,17 @@ function* watchEntryGetBalanceChannel () {
 function* watchEntryGetChannel () {
     const resp = yield take(actionChannels.entry.getEntry);
     if (resp.error) {
-        if (resp.request.latestVersion) {
+        if (resp.request.asDraft) {
+            yield put(actions.entryGetFullAsDraftError(resp.error));
+        } else if (resp.request.latestVersion) {
             yield put(actions.entryGetLatestVersionError(resp.error));
         } else if (resp.request.full) {
             yield put(actions.entryGetFullError(resp.error));
         } else {
             yield put(actions.entryGetError(resp.error));
         }
+    } else if (resp.request.asDraft) {
+        yield put(actions.entryGetFullAsDraftSuccess(resp.data));
     } else if (resp.request.latestVersion) {
         const { content } = resp.data;
         yield put(actions.entryGetLatestVersionSuccess(content && content.version));
@@ -418,6 +422,7 @@ function* watchEntryProfileIteratorChannel () {
         } else {
             if (resp.request.start) {
                 yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+                yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
             } else if (resp.request.asDrafts) {
                 yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
                 const reqObj = resp.data.collection.map(entry => ({
@@ -433,8 +438,8 @@ function* watchEntryProfileIteratorChannel () {
                 yield put(actions.entryResolveIpfsHash(reqObj));
             } else {
                 yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
+                yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
             }
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
         }
     }
 }
@@ -448,8 +453,10 @@ function* watchEntryResolveIpfsHashChannel () {
             } else {
                 yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
             }
-        } else if (resp.request.asDrafts) {
-            yield put(draftActions.entryResolveIpfsHashAsDraftsSuccess(resp.data, resp.request));
+        } else if (resp.request.asDrafts && resp.data.entry) {
+            if (resp.data.entry) {
+                yield put(draftActions.entryResolveIpfsHashAsDraftsSuccess(resp.data, resp.request));
+            }
         } else {
             yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
         }

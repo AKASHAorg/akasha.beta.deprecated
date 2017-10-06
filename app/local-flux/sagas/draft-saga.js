@@ -8,6 +8,7 @@ import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
 import * as actionActions from '../actions/action-actions';
+import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
 
 const { EditorState, SelectionState } = DraftJS;
@@ -61,22 +62,11 @@ function* draftsGet ({ data }) {
         yield put(draftActions.draftsGetError({ error: ex }));
     }
 }
-/**
- * get draft by id
- */
-function* draftGetById ({ data }) {
-    try {
-        const response = yield call([draftService, draftService.draftGetById], data.draftId);
-        yield put(draftActions.draftGetByIdSuccess({ draft: response }));
-    } catch (ex) {
-        yield put(draftActions.draftGetByIdError({ error: ex }));
-    }
-}
+
 /**
  * save draft to db every x seconds
  */
 function* draftAutoSave ({ data }) {
-    // console.log('autosaving draft...', data);
     yield put(draftActions.draftAutosave(data.draft));
     /**
      * prepare data to save in db
@@ -133,6 +123,7 @@ function* draftPublish ({ actionId, draft }) {
     draftToPublish.content.draft = JSON.parse(
         editorStateToJSON(draftFromState.getIn(['content', 'draft']))
     );
+    console.log(draftToPublish);
     delete draftToPublish.content.featuredImage;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield call([channel, channel.send], {
@@ -144,29 +135,93 @@ function* draftPublish ({ actionId, draft }) {
     });
 }
 
+function* draftPublishUpdate ({ actionId, draft }) {
+    const channel = Channel.server.entry.editEntry;
+    const { id } = draft;
+    const draftFromState = yield select(state => selectDraftById(state, id));
+    const token = yield select(selectToken);
+    const draftToPublish = draftFromState.toJS();
+    draftToPublish.content.draft = JSON.parse(
+        editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+    );
+    delete draftToPublish.content.featuredImage;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield call([channel, channel.send], {
+        actionId,
+        entryId: id,
+        token,
+        tags: draftToPublish.tags,
+        content: draftToPublish.content,
+    });
+}
+
+function* draftPublishUpdateSuccess ({ data }) {
+    const { id } = data.draft;
+    yield put(entryActions.entryGetFull({
+        entryId: id,
+        asDraft: true
+    }));
+    yield call([draftService, draftService.draftDelete], { draftId: id });
+}
+
+function* draftRevert ({ data }) {
+    const { version, id } = data;
+    const channel = Channel.server.entry.getEntry;
+    try {
+        yield call([draftService, draftService.draftDelete], { draftId: id });
+        yield call(enableChannel, channel, Channel.client.entry.manager);
+        yield call([channel, channel.send], {
+            entryId: id,
+            version,
+            full: true
+        });
+    } catch (ex) {
+        console.error(ex);
+    }
+}
+
 function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
         if (response.error) {
-            return yield put(draftActions.draftPublishError(response.error));
+            yield put(draftActions.draftPublishError(response.error));
+        } else {
+            yield put(actionActions.actionUpdate({
+                id: response.request.actionId,
+                status: actionStatus.publishing,
+                tx: response.data.tx,
+            }));
         }
-        return yield put(actionActions.actionUpdate({
-            id: response.request.actionId,
-            status: actionStatus.publishing,
-            tx: response.data.tx
-        }));
+    }
+}
+
+function* watchDraftPublishUpdateChannel () {
+    while (true) {
+        const response = yield take(actionChannels.entry.editEntry);
+        if (response.error) {
+            yield put(draftActions.draftPublishUpdateError(response.error));
+        } else {
+            yield put(actionActions.actionUpdate({
+                id: response.request.actionId,
+                status: actionStatus.publishing,
+                tx: response.data.tx,
+            }));
+        }
     }
 }
 
 function* registerChannelListeners () {
     yield fork(watchDraftPublishChannel);
+    yield fork(watchDraftPublishUpdateChannel);
 }
 
 export function* watchDraftActions () {
     yield fork(registerChannelListeners);
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
-    yield takeEvery(types.DRAFT_GET_BY_ID, draftGetById);
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
+    yield takeEvery(types.DRAFT_PUBLISH_UPDATE, draftPublishUpdate);
+    yield takeEvery(types.DRAFT_PUBLISH_UPDATE_SUCCESS, draftPublishUpdateSuccess);
+    yield takeEvery(types.DRAFT_REVERT_TO_VERSION, draftRevert);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
     yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
     yield takeLatest(types.DRAFTS_GET, draftsGet);

@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
+import { extractWebsiteInfo } from '../utils/extract-website-info';
 import { actionAdd } from '../local-flux/actions/action-actions';
 
+window.__extractWebsiteInfo = extractWebsiteInfo;
 class NewLinkEntryPage extends Component {
     render () {
         return (

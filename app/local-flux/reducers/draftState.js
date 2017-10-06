@@ -75,6 +75,13 @@ const draftState = createReducer(initialState, {
         state.merge({
             drafts: state.get('drafts').delete(data.draft.id)
         }),
+
+    [types.DRAFT_PUBLISH_UPDATE]: (state, { draft }) =>
+        state.setIn(['drafts', draft.id, 'publishing'], true),
+
+    [types.DRAFT_PUBLISH_UPDATE_SUCCESS]: (state, { data }) =>
+        state.setIn(['drafts', data.draft.id, 'publishing'], false),
+
     [types.ENTRIES_GET_AS_DRAFTS_SUCCESS]: (state, { data }) =>
         /**
          * check if entry already in store, if it`s already in store,
@@ -86,7 +93,11 @@ const draftState = createReducer(initialState, {
                  * if entry is not in store, add it
                  */
                 if (!mState.getIn(['drafts', entry.entryId])) {
-                    mState.setIn(['drafts', entry.entryId], { ...entry, type: 'article' });
+                    mState.setIn(['drafts', entry.entryId], DraftModel.createDraft({
+                        ...entry,
+                        type: 'article',
+                        onChain: true
+                    }));
                 } else {
                     mState.mergeIn(['drafts', entry.entryId], {
                         entryEth: entry.entryEth,
@@ -94,7 +105,7 @@ const draftState = createReducer(initialState, {
                         score: entry.score,
                         baseUrl: entry.baseUrl,
                         saved: true,
-                        localChanges: true,
+                        onChain: true
                     });
                 }
                 mState
@@ -111,33 +122,58 @@ const draftState = createReducer(initialState, {
             const targetEntry = mState.get('drafts')
                 .valueSeq()
                 .filter(entry =>
-                    entry.active && entry.entryEth.ipfsHash === entryIpfsHash
+                    entry.onChain && entry.entryEth.ipfsHash === entryIpfsHash
                 )
                 .toList();
             if (targetEntry.size > 0) {
                 targetEntry.forEach((entry) => {
-                    const targetEntryId = entry.entryId || entry.id;
-                    const { content, ...otherDraftData } = mState.getIn(['drafts', targetEntryId]);
-                    if (!content) {
+                    const targetEntryId = entry.id;
+                    const { content, ...otherDraftData } = mState.getIn(['drafts', targetEntryId]).toJS();
+                    const { tags, draftParts, ...entryContent } = data.entry;
+                    if (!otherDraftData.localChanges) {
                         const drft = {
                             content: {
-                                ...data.entry,
+                                ...entryContent,
                                 draft: editorStateFromRaw(data.entry.draft),
+                                version: entryContent.version,
+                                latestVersion: entryContent.version
                             },
                             ...otherDraftData,
+                            tags
                         };
-                        mState.setIn(['drafts', targetEntryId], DraftModel.createDraft(drft))
-                            .deleteIn('resolvingHashes', mState.get('resolvingHashes').delete(data.ipfsHash));
+                        mState.setIn(['drafts', targetEntryId], DraftModel.createDraft(drft));
                     }
                     /**
                      * entry content is already in store, so it`s a draft.
                      * update the entry version with the one which is published,
                      * in case of an edit from another computer.
                      */
-                    mState.setIn(['drafts', targetEntryId, 'content', 'version'], data.entry.version);
+                    mState.setIn(['drafts', targetEntryId, 'content', 'version'], data.entry.version)
+                        .deleteIn(['resolvingHashes'], data.ipfsHash);
                 });
             }
-        })
+        }),
+    [types.ENTRY_GET_FULL_AS_DRAFT_SUCCESS]: (state, { data }) => {
+        const { entryId, content } = data;
+        const existingDraft = state.getIn(['drafts', entryId]);
+        if (existingDraft && existingDraft.get('content')) {
+            const { draftParts, tags, ...otherDraftContent } = content;
+            return state.setIn(['drafts', entryId], DraftModel.createDraft({
+                ...existingDraft.toJS(),
+                content: {
+                    ...otherDraftContent,
+                    draft: editorStateFromRaw(data.content.draft),
+                    latestVersion: Math.max(
+                        existingDraft.getIn(['content', 'latestVersion']), content.version
+                    ),
+                },
+                saved: false,
+                localChanges: false,
+                tags
+            }));
+        }
+        return state;
+    }
 });
 
 export default draftState;

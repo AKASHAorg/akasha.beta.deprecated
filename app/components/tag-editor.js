@@ -12,6 +12,7 @@ const tagCreatorKeycodes = [
 ];
 
 const suggestionsControlKeys = [
+    9, // tab => coder skillz
     13, // enter
     38, // arrow up
     40, // arrow down
@@ -52,7 +53,7 @@ class TagEditor extends Component {
         const controllingSuggestions = suggestionsControlKeys.includes(ev.which);
         if (inputHasFocus && controllingSuggestions && tagSuggestionsCount > 0) {
             switch (ev.which) {
-                case 13:
+                case (9 || 13): // tab or enter
                     this._addNewTag(
                         tagSuggestions.get(this.state.selectedSuggestionIndex),
                         tagSuggestions.get(this.state.selectedSuggestionIndex)
@@ -190,16 +191,16 @@ class TagEditor extends Component {
             }
         });
     }
-    _handleTagRegister = tag =>
+    _handleTagRegister = tagName =>
         (ev) => {
             const { actionAdd, akashaId } = this.props;
             const payload = {
                 akashaId,
-                tag
+                tagName
             };
             actionAdd(akashaId, actionTypes.tagCreate, payload);
             ev.preventDefault();
-            console.log('register this tag on blockchain', tag);
+            console.log('register this tag on blockchain', tagName);
         }
     _changeInputFocus = focusState =>
         () => setTimeout(() => this.setState({

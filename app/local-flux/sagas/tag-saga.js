@@ -1,11 +1,13 @@
 import { apply, call, cancel, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as reduxSaga from 'redux-saga';
 import { actionChannels, enableChannel } from './helpers';
-import { selectTagMargins } from '../selectors';
+import { selectTagMargins, selectToken } from '../selectors';
 import * as actions from '../actions/tag-actions';
+import * as actionActions from '../actions/action-actions';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import { tagSearchLimit } from '../../constants/iterator-limits';
+import * as actionStatus from '../../constants/action-status';
 
 const Channel = global.Channel;
 const TAG_LIMIT = 30;
@@ -16,6 +18,16 @@ function* cancelTagIterator () {
         yield cancel(tagFetchAllTask);
         tagFetchAllTask = null;
     }
+}
+
+function* tagCreate ({ data }) {
+    const channel = Channel.server.tags.create;
+    const token = yield select(selectToken);
+    yield call(enableChannel, channel, Channel.client.tags.manager);
+    yield call([channel, channel.send], {
+        ...data,
+        token,
+    });
 }
 
 function* tagGetEntriesCount ({ tags }) {
@@ -108,7 +120,20 @@ function* watchTagSearchMore () {
 }
 
 // Channel watchers
-
+function* watchTagCreateChannel () {
+    while (true) {
+        const response = yield take(actionChannels.tags.create);
+        if (response.error) {
+            yield put(actions.tagCreateError(response.error));
+        } else {
+            return yield put(actionActions.actionUpdate({
+                id: response.request.actionId,
+                status: actionStatus.publishing,
+                tx: response.data.tx
+            }));
+        }
+    }
+}
 function* watchTagGetEntriesCountChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getTagEntriesCount);
@@ -154,11 +179,13 @@ function* watchTagIteratorChannel () {
 // }
 
 export function* registerTagListeners () {
+    yield fork(watchTagCreateChannel);
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagIteratorChannel);
 }
 
 export function* watchTagActions () {
+    yield takeEvery(types.TAG_CREATE, tagCreate);
     yield fork(watchTagGetEntriesCount);
     yield fork(watchTagIterator);
     yield fork(watchTagSave);

@@ -68,9 +68,23 @@ export const draftPublishSuccess = data => action(types.DRAFT_PUBLISH_SUCCESS, {
 export const draftPublishError = error => action(types.DRAFT_PUBLISH_ERROR, { error });
 
 /**
+ * Publish an update of an entry to chain.
+ * Not to be confused with draftUpdate!
+ */
+export const draftPublishUpdate = ({ actionId, ...payload }) =>
+    action(types.DRAFT_PUBLISH_UPDATE, { actionId, ...payload });
+export const draftPublishUpdateError = error => action(types.DRAFT_PUBLISH_UPDATE_ERROR, { error });
+export const draftPublishUpdateSuccess = data => action(types.DRAFT_PUBLISH_UPDATE_SUCCESS, { data });
+/**
+ * Revert draft content to another version
+ */
+export const draftRevertToVersion = data => action(types.DRAFT_REVERT_TO_VERSION, { data });
+export const draftRevertToVersionError = error => action(types.DRAFT_REVERT_TO_VERSION_ERROR, { error });
+export const draftRevertToVersionSuccess = data => action(types.DRAFT_REVERT_TO_VERSION_SUCCESS, { data });
+
+/**
  * Get drafts count for an akashaId
  */
-
 export const draftsGetCount = data => action(types.DRAFTS_GET_COUNT, { data });
 export const draftsGetCountSuccess = data => action(types.DRAFTS_GET_COUNT_SUCCESS, { data });
 export const draftsGetCountError = error => action(types.DRAFTS_GET_COUNT_ERROR, { error });

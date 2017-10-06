@@ -3,8 +3,22 @@ import PropTypes from 'prop-types';
 import { Popover, Icon } from 'antd';
 import { entryMessages } from '../locale-data/messages';
 
+const getIconType = (localChanges, published, unresolved) => {
+    switch (true) {
+        case unresolved:
+            return 'dot red-dot';
+        case (localChanges && published):
+            return 'dot';
+        case (!localChanges && published):
+            return 'check';
+        default:
+            return 'hdd';
+    }
+};
+
 const EntrySecondarySidebarItem = ({
-    draft, active, intl, matchString, onItemClick, showDraftMenuDrowpdown, onDraftDelete, onPreviewCreate
+    draft, active, intl, matchString, onItemClick, showDraftMenuDrowpdown, onDraftDelete, onPreviewCreate,
+    published, localChanges, unresolved
 }) => (
   <div
     className={
@@ -16,21 +30,31 @@ const EntrySecondarySidebarItem = ({
   >
     {/* eslint-disable react/no-danger */}
     {matchString &&
+    <div>
+      <Icon
+        type={getIconType(localChanges, published, unresolved)}
+      />
       <a
         href="/"
         dangerouslySetInnerHTML={{ __html: matchString }}
         className="draft-list-item__link"
         onClick={ev => onItemClick(ev, `/draft/${draft.type}/${draft.id}`)}
       />
+    </div>
     }
     {!matchString &&
+    <div>
+      <Icon
+        type={getIconType(localChanges, published, unresolved)}
+      />
       <a
         href="/"
         className="draft-list-item__link"
         onClick={ev => onItemClick(ev, `/draft/${draft.type}/${draft.id}`)}
       >
-        { draft.content.title || 'No title' }
+        {(draft.content && draft.content.title) || 'No title' }
       </a>
+    </div>
     }
     {/* eslint-enable react/no-danger */}
     <span
@@ -83,7 +107,10 @@ EntrySecondarySidebarItem.propTypes = {
     onItemClick: PropTypes.func,
     onDraftDelete: PropTypes.func,
     onPreviewCreate: PropTypes.func,
+    published: PropTypes.bool,
+    localChanges: PropTypes.bool,
     showDraftMenuDrowpdown: PropTypes.func,
+    unresolved: PropTypes.bool,
 };
 
 export default EntrySecondarySidebarItem;

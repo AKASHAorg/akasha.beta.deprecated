@@ -14,13 +14,22 @@ const DraftModelRecord = Record({
 export default class DraftModel extends DraftModelRecord {
     static createDraft (draftObj) {
         const { selectionState, ...others } = draftObj;
-        const draftLicence = new DraftLicence(draftObj.content.licence);
         const entryEth = new EntryEth(draftObj.entryEth);
-        const draftContent = new DraftContent({
-            ...draftObj.content,
-            licence: draftLicence,
-            featuredImage: draftObj.featuredImage ? draftObj.featuredImage : new Map()
-        });
+        let draftLicence = new DraftLicence();
+        let draftContent = new DraftContent();
+        let tags = new List();
+
+        if (draftObj.content) {
+            draftLicence = draftLicence.merge(draftObj.content.licence);
+            draftContent = draftContent.mergeDeep({
+                ...draftObj.content,
+                licence: draftLicence,
+                featuredImage: draftObj.featuredImage ? draftObj.featuredImage : new Map()
+            });
+        }
+        if (draftObj.tags && draftObj.tags.length) {
+            tags = tags.concat(draftObj.tags);
+        }
         const draft = new Draft({
             ...others,
             akashaId: draftObj.akashaId || draftObj.entryEth.publisher.akashaId,
@@ -28,7 +37,7 @@ export default class DraftModel extends DraftModelRecord {
             licence: draftLicence,
             content: draftContent,
             entryEth,
-            tags: (draftObj.tags && draftObj.tags.length) ? List.of(...draftObj.tags) : new List(),
+            tags,
         });
         return draft;
     }

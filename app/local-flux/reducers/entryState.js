@@ -103,7 +103,12 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
-    [types.ENTRY_GET_FULL]: state => state.setIn(['flags', 'fetchingFullEntry'], true),
+    [types.ENTRY_GET_FULL]: (state, { asDraft }) => {
+        if (!asDraft) {
+            return state.setIn(['flags', 'fetchingFullEntry'], true);
+        }
+        return state;
+    },
 
     [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
 

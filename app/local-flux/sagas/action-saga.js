@@ -24,9 +24,10 @@ import { getInitialStatus } from '../../utils/action-utils';
 const publishActions = {
     [actionTypes.claim]: entryActions.entryClaim,
     [actionTypes.comment]: commentsActions.commentsPublish,
-    [actionTypes.createTag]: tagActions.tagCreate,
+    [actionTypes.tagCreate]: tagActions.tagCreate,
     [actionTypes.downvote]: entryActions.entryDownvote,
     [actionTypes.draftPublish]: draftActions.draftPublish,
+    [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdate,
     [actionTypes.follow]: profileActions.profileFollow,
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
@@ -44,9 +45,10 @@ const publishActions = {
 const publishSuccessActions = {
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
-    [actionTypes.createTag]: tagActions.tagCreateSuccess,
+    [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
     [actionTypes.downvote]: entryActions.entryDownvoteSuccess,
     [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
+    [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
@@ -117,7 +119,6 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
     const actionId = action.get('id');
     const payload = action.get('payload').toJS();
     const publishAction = publishActions[action.get('type')];
-    console.log(payload, 'some payload');
     if (publishAction) {
         yield put(publishAction({ actionId, ...payload }));
     }

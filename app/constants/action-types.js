@@ -1,8 +1,9 @@
 export const claim = 'claim';
 export const comment = 'comment';
-export const createTag = 'createTag';
+export const tagCreate = 'tagCreate';
 export const downvote = 'downvote';
 export const draftPublish = 'draftPublish';
+export const draftPublishUpdate = 'draftPublishUpdate';
 export const follow = 'follow';
 export const profileRegister = 'profileRegister';
 export const profileUpdate = 'profileUpdate';
