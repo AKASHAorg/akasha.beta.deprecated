@@ -1,7 +1,9 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const tagCreate = ({ tagName }) => action(types.TAG_CREATE, { tagName });
+export const tagCreate = data => action(types.TAG_CREATE, { data });
+export const tagCreateError = error => action(types.TAG_CREATE_ERROR, { error });
+export const tagCreateSuccess = data => action(types.TAG_CREATE_SUCCESS, { data });
 
 export const tagGetEntriesCount = tags => action(types.TAG_GET_ENTRIES_COUNT, { tags });
 
@@ -19,6 +21,7 @@ export const tagGetMarginsError = (error) => {
 };
 
 export const tagGetMarginsSuccess = data => action(types.TAG_GET_MARGINS_SUCCESS, { data });
+
 export const tagIterator = () => action(types.TAG_ITERATOR);
 
 export const tagIteratorError = (error) => {
@@ -52,5 +55,8 @@ export const tagSearchLocalMore = (tag, start) => action(types.TAG_SEARCH_LOCAL_
 
 export const tagSearchLocalMoreError = error => action(types.TAG_SEARCH_LOCAL_MORE_ERROR, { error });
 
+export const tagSearchMoreSuccess = (tags, tagCount) =>
+    action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });
+
 export const tagSearchLocalMoreSuccess = (tags, tagCount) =>
-    action(types.TAG_SEARCH_LOCAL_MORE_SUCCESS, { tags, tagCount });
+action(types.TAG_SEARCH_LOCAL_MORE_SUCCESS, { tags, tagCount });

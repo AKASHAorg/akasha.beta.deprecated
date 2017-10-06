@@ -1,6 +1,6 @@
 import Pica from 'pica/dist/pica';
-import StreamReader from './stream-reader';
 import R from 'ramda';
+import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -199,7 +199,6 @@ const resizeImage = (image, options) => {
                 quality: 3,
                 alpha: true
             }).then(destCanvas =>
-                // console.timeEnd(`resize to ${widthObj.res} took`);
                 canvasToArray(destCanvas).then((result) => {
                     if (options.progressHandler && typeof options.progressHandler === 'function') {
                         const { maxProgress } = options;
@@ -208,6 +207,9 @@ const resizeImage = (image, options) => {
                         }
                         const currentProgress = index * (maxProgress / (imageWidths.length - 1));
                         options.progressHandler(currentProgress);
+                    }
+                    if (options.idGenerator && typeof options.idGenerator === 'function') {
+                        result.id = options.idGenerator();
                     }
                     imageObject[widthObj.key] = result;
                     return imageObject;
@@ -224,11 +226,9 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
     const streamReader = new StreamReader(imageArray.value);
     return new Promise((resolve, reject) => {
         if (streamReader.readAscii(3) !== 'GIF') {
-            // console.log('It is not an animated gif. Not sure if this is an image, actually!');
             return reject('Gif file not recognised!');
         }
         const frameCount = streamReader.getFrameNumber();
-        // console.log('number of frames:', frameCount);
         // resize 1 frame for presentation;
         return resizeImage(image, options).then((imageObj) => {
             if (frameCount > 0) {
@@ -326,9 +326,6 @@ const getResizedImages = (inputFiles, options) => {
                 // imageData should be the original animated gif Uint8Array
                 getImageSize(file.path, options).then((size) => {
                     const { height, width } = size;
-
-                    console.info(`original image size ${width}px width x ${height}px height.`);
-
                     options.actualHeight = height;
                     options.actualWidth = width;
                     return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
@@ -336,9 +333,6 @@ const getResizedImages = (inputFiles, options) => {
         } else if (settings.extentions.includes(ext)) {
             imagePromises[index] = getImageSize(file.path, options).then((results) => {
                 const { height, width } = results;
-
-                console.info(`original image size ${width}px width x ${height}px height.`);
-
                 options.actualWidth = width;
                 options.actualHeight = height;
                 return resizeImage(results.imageObj, options);

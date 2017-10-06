@@ -6,6 +6,21 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip when it was already claimed',
         defaultMessage: 'Already claimed'
     },
+    allowedImageTypes: {
+        id: 'app.entry.allowedImageTypes',
+        description: 'types of images allowed',
+        defaultMessage: 'JPG, GIF or PNG images'
+    },
+    articleEntryType: {
+        id: 'app.entry.articleEntryType',
+        description: 'entry of type article',
+        defaultMessage: 'Article Entries'
+    },
+    linkEntryType: {
+        id: 'app.entry.linkEntryType',
+        description: 'entry of type link',
+        defaultMessage: 'Link Entries'
+    },
     alreadyVoted: {
         id: 'app.entry.alreadyVoted',
         description: 'vote button tooltip when it was already voted',
@@ -36,6 +51,56 @@ const entryMessages = defineMessages({
         description: 'downvote button tooltip',
         defaultMessage: 'Downvote'
     },
+    draft: {
+        id: 'app.entry.draft',
+        description: 'draft label indicator',
+        defaultMessage: 'Draft'
+    },
+    drafts: {
+        id: 'app.entry.drafts',
+        description: 'drafts section title',
+        defaultMessage: 'Drafts'
+    },
+    draftsCount: {
+        id: 'app.entry.draftsCount',
+        description: 'drafts count',
+        defaultMessage: `{count, number} {count, plural,
+            one {draft}
+            few {drafts}
+            many {drafts}
+            other {drafts}
+        }`
+    },
+    draftCardSubtitle: {
+        id: 'app.entry.draftCardSubtitle',
+        description: 'subtitle showing last updated time and words number on draft card in new entry panel',
+        defaultMessage: '{lastUpdate} - {wordCount} words so far'
+    },
+    draftDelete: {
+        id: 'app.entry.draftDelete',
+        description: 'delete draft button label',
+        defaultMessage: 'Delete draft',
+    },
+    draftEdit: {
+        id: 'app.entry.draftEdit',
+        description: 'edit draft button label',
+        defaultMessage: 'Edit draft'
+    },
+    draftSaved: {
+        id: 'app.entry.draftSaved',
+        description: 'draft saved status message',
+        defaultMessage: 'Draft Saved'
+    },
+    draftSaving: {
+        id: 'app.entry.draftSaving',
+        description: 'saving draft status message',
+        defaultMessage: 'Saving Draft'
+    },
+    draftSharePreview: {
+        id: 'app.entry.draftSharePreview',
+        description: 'share preview link button title',
+        defaultMessage: 'Share preview link',
+    },
     entriesCount: {
         id: 'app.entry.entriesCount',
         description: 'counting entries',
@@ -43,6 +108,26 @@ const entryMessages = defineMessages({
             one {entry}
             other {entries}
         }`
+    },
+    featuredImage: {
+        id: 'app.entry.featuredImage',
+        description: 'featured image section title',
+        defaultMessage: 'Featured Image'
+    },
+    license: {
+        id: 'app.entry.license',
+        description: 'License label',
+        defaultMessage: 'License'
+    },
+    publishedBlockDiff: {
+        id: 'app.entry.publishedBlockDiff',
+        description: 'how many blocks ago was an entry published',
+        defaultMessage: `Published {blockDiff, number} {blockDiff, plural,
+                one {block}
+                few {blocks}
+                many {blocks}
+                other {blocks}
+            } ago`
     },
     publicDiscussion: {
         id: 'app.entry.publicDiscussion',
@@ -54,10 +139,20 @@ const entryMessages = defineMessages({
         description: 'published',
         defaultMessage: 'Published'
     },
+    publishOptions: {
+        id: 'app.entry.publishOptions',
+        description: 'publish options panel title',
+        defaultMessage: 'Publish Options'
+    },
     saveHighlight: {
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
         defaultMessage: 'Save highlight'
+    },
+    searchSomething: {
+        id: 'app.entry.searchSomething',
+        description: 'placeholder for draft search input',
+        defaultMessage: 'Search something...'
     },
     showLess: {
         id: 'app.entry.showLess',
@@ -148,6 +243,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.editEntry',
         description: 'tooltip for Edit entry button',
         defaultMessage: 'Edit entry'
+    },
+    excerpt: {
+        id: 'app.entry.excerpt',
+        description: 'excerpts section title',
+        defaultMessage: 'excerpt'
     },
     cannotEdit: {
         id: 'app.entry.cannotEdit',

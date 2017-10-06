@@ -9,13 +9,6 @@
 @avatar-size-lg: 100px;
 @avatar-size-sm: 32px;
 @avatar-border-radius: 4px;
-@avatar-bg: #4D5D69;
-
-// image uploader
-@image-uploader-bg: #f7f7f7;
-
-// avatar editor
-@avatar-editor-bg: #f7f7f7;
 
 // spin dot size
 @spin-dot-size-lg: 48px;
@@ -24,14 +17,48 @@
     font-weight: 400;
     font-size: 15px;
 }
-
+.ant-btn-entry-menu-button {
+    color: @text-color;
+    background-color: #FFF!important;
+    box-shadow: @shadow-1-down;
+    margin-right: 1em;
+    font-size: 1.4em;
+    height: 42px;
+    width: 42px;
+    opacity: 1;
+    &:hover {
+        color: @text-color-dark;
+        background: @avatar-bg !important;
+    }
+}
+.anticon-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    background-color: @text-color;
+}
 .ant-tooltip-inner {
     font-size: 13px;
+}
+.borderless {
+    border: none;
+}
+
+.gradient(@type; @colors; @dir: 0deg; @prefixes: webkit, moz, ms, o; @index: length(@prefixes)) when (@index > 0) {
+    .gradient(@type; @colors; @dir; @prefixes; (@index - 1));
+
+    @prefix  : extract(@prefixes, @index);
+    @dir-old : 90 - (@dir);
+
+    background-image: ~"-@{prefix}-@{type}-gradient(@{dir-old}, @{colors})";
+  & when ( @index = length(@prefixes) ) {
+        background-image: ~"@{type}-gradient(@{dir}, @{colors})";
+    }
 }
 
 .ant-form-item-label {
     line-height: 24px;
-    
+
     label {
         font-size: 12px;
         color: @text-color-secondary;

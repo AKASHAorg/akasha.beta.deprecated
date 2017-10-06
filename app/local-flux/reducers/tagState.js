@@ -50,29 +50,6 @@ const tagState = createReducer(initialState, {
 
     [tagTypes.REGISTER_TAG_ERROR]: registerFlagHandler,
 
-    // [tagTypes.TAG_ITERATOR]: (state, { flags }) =>
-    //     state.merge({
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [tagTypes.TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-    //     const moreTags = data.limit === data.collection.length;
-    //     const newTags = moreTags ?
-    //         fromJS(data.collection.slice(0, -1)) :
-    //         fromJS(data.collection);
-    //     return state.merge({
-    //         newestTags: state.get('newestTags').concat(newTags),
-    //         moreNewTags: data.limit === data.collection.length,
-    //         flags: state.get('flags').merge(flags)
-    //     });
-    // },
-
-    // [tagTypes.TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
-    //     state.merge({
-    //         errors: state.get('errors').push(new ErrorRecord(error)),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
     [appTypes.CLEAN_STORE]: () => initialState,
 
     // ************ NEW REDUCERS **********************
