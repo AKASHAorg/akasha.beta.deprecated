@@ -7,6 +7,7 @@ import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
 import * as commentsSaga from './comments-saga';
+import * as draftSaga from './draft-saga';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
@@ -85,6 +86,7 @@ export default function* rootSaga () {
     yield fork(actionSaga.watchActionActions);
     yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
+    yield fork(draftSaga.watchDraftActions);
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);
     yield fork(highlightSaga.watchHighlightActions);

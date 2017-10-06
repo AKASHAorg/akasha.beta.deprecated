@@ -2,6 +2,7 @@ import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as commentsActions from '../actions/comments-actions';
+import * as draftActions from '../actions/draft-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
@@ -22,7 +23,9 @@ import * as actionTypes from '../../constants/action-types';
 const publishActions = {
     [actionTypes.claim]: entryActions.entryClaim,
     [actionTypes.comment]: commentsActions.commentsPublish,
-    [actionTypes.createTag]: tagActions.tagCreate,
+    [actionTypes.tagCreate]: tagActions.tagCreate,
+    [actionTypes.draftPublish]: draftActions.draftPublish,
+    [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdate,
     [actionTypes.entryDownvote]: entryActions.entryDownvote,
     [actionTypes.entryUpvote]: entryActions.entryUpvote,
     [actionTypes.follow]: profileActions.profileFollow,
@@ -41,7 +44,9 @@ const publishActions = {
 const publishSuccessActions = {
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
-    [actionTypes.createTag]: tagActions.tagCreateSuccess,
+    [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
+    [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
+    [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
     [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
     [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,

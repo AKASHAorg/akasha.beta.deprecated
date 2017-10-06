@@ -2,13 +2,25 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Icon } from 'antd';
-import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon,
-    SearchIcon, StreamsIcon } from './svg';
+import { Button, Tooltip, Icon } from 'antd';
+import panels from '../constants/panels';
+import { genId } from '../utils/dataModule';
+import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
 
 class Sidebar extends Component {
-    _handleNewEntry = () => {
-        console.log('new entry');
+    state = {
+        overlayVisible: false,
+        showEntryMenu: false,
+    }
+
+    handleSearch = () => this.handlePanelShow(panels.search);
+
+    _toggleEntryMenu = (ev) => {
+        ev.preventDefault();
+        this.setState(prevState => ({
+            overlayVisible: !prevState.overlayVisible,
+            showEntryMenu: !prevState.showEntryMenu
+        }));
     }
 
     _isSidebarVisible = (location) => {
@@ -19,14 +31,45 @@ class Sidebar extends Component {
         const blackList = ['setup'];
         return !blackList.every(route => location.pathname.includes(route));
     }
+    _navigateTo = (path) => {
+        const { history, draftCreate, userSelectedLicence, loggedProfile } = this.props;
+        return () => {
+            this.setState({
+                overlayVisible: false,
+                showEntryMenu: false,
+            }, () => {
+                const draftId = genId();
+                if (path === '/draft/article/new') {
+                    draftCreate({
+                        id: draftId,
+                        akashaId: loggedProfile.get('akashaId'),
+                        content: {
+                            featuredImage: {},
+                            licence: userSelectedLicence,
+                        },
+                        tags: [],
+                        type: 'article',
+                    });
+                    return history.push(`/draft/article/${draftId}`);
+                }
+                return history.push(path);
+            });
+        };
+    }
     _checkActiveIcon = (name) => {
         const { location } = this.props;
         return location.pathname.includes(name);
     }
 
+    _toggleOverlay = () => {
+        this.setState({
+            overlayVisible: false,
+            showEntryMenu: false,
+        });
+    }
+
     render () {
-        const { activeDashboard, draftsCount, history, loggedProfileData, location } = this.props;
-        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
+        const { activeDashboard, history, loggedProfileData, location } = this.props;
         const isLoggedIn = !!loggedProfileData.get('akashaId');
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
@@ -35,22 +78,52 @@ class Sidebar extends Component {
               <Icon className="content-link" onClick={history.goForward} type="right" />
             </div>
             <div className="sidebar__entry-icon" >
-              {(entriesCount > 0 || draftsCount > 0) ?
-                <div>
-                  <EntriesIcon
-                    disabled={!isLoggedIn}
-                    isActive={false}
-                    onClick={this._handleNewEntry}
-                  />
-                </div> :
-                <div>
-                  <AddEntryIcon
-                    disabled={!isLoggedIn}
-                    isActive={this._checkActiveIcon('draft/new')}
-                    onClick={this._handleNewEntry}
-                  />
+              <div>
+                <AddEntryIcon
+                  disabled={!isLoggedIn}
+                  isActive={this._checkActiveIcon('draft/new')}
+                  onClick={this._toggleEntryMenu}
+                />
+                <div
+                  className={
+                    `sidebar__entry-menu
+                    sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
+                }
+                >
+                  <ul className="sidebar__entry-menu-buttons">
+                    <li>
+                      <Tooltip
+                        title="Text Entry"
+                        placement="bottom"
+                      >
+                        <Button
+                          type="entry-menu-button"
+                          size="large"
+                          className="borderless"
+                          icon="file"
+                          ghost
+                          onClick={this._navigateTo('/draft/article/new')}
+                        />
+                      </Tooltip>
+                    </li>
+                    <li>
+                      <Tooltip
+                        title="Link Entry"
+                        placement="bottom"
+                      >
+                        <Button
+                          type="entry-menu-button"
+                          size="large"
+                          className="borderless"
+                          icon="link"
+                          ghost
+                          onClick={this._navigateTo('/draft/link/new')}
+                        />
+                      </Tooltip>
+                    </li>
+                  </ul>
                 </div>
-              }
+              </div>
               <div>
                 <Link to="/search/entries">
                   <SearchIcon
@@ -81,6 +154,13 @@ class Sidebar extends Component {
                 </Link>
               </div>
             </div>
+            <div
+              className={
+                  `sidebar__overlay
+                  sidebar__overlay${this.state.overlayVisible ? '_visible' : ''}`
+              }
+              onClick={this._toggleOverlay}
+            />
           </div>
         );
     }
@@ -88,10 +168,13 @@ class Sidebar extends Component {
 
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
-    draftsCount: PropTypes.number,
+    draftCreate: PropTypes.func,
     history: PropTypes.shape(),
+    draftsCount: PropTypes.number,
     location: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    userSelectedLicence: PropTypes.shape(),
 };
 
 export default withRouter(Sidebar);

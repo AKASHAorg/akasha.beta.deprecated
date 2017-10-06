@@ -1,0 +1,76 @@
+.publish-options-panel {
+    height: 100%;
+    position: relative;
+    &__header {
+        display: flex;
+        flex-wrap: nowrap;
+        padding: 18px 24px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #FFF;
+        &_scrolled {
+            border-bottom: 1px solid #DDD;
+        }
+    }
+    &__content {
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 24px 64px 24px;
+    }
+    &__header-title {
+        flex: 100%;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    &__header-actions {
+        flex: 1 auto;
+    }
+    &__excerpt-container {
+        padding-top: 24px;
+    }
+    &__excerpt-textarea {
+        resize: none;
+        width: 100%;
+    }
+    &__licence-container {
+        padding-bottom: 16px;
+        &-menu {
+            border: 1px solid lighten(@text-color, 75%);
+            border-radius: 3px;
+        }
+    }
+    &__container-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 300;
+        padding: 0 0 8px;
+    }
+    &__licence-radio-group {
+        padding: 12px 0;
+    }
+    &__licence-radio {
+        width: 100%;
+        padding: 4px 0;
+    }
+}
+
+.publish-options-panel__licence-select {
+    .ant-select-selection--single {
+        height: 38px;
+        padding: 5px;
+        &.ant-select-selection {
+            box-shadow: none;
+            &:focus,
+            &:active {
+                box-shadow: none;
+            }
+        }
+    }
+}

@@ -33,6 +33,8 @@ const errorState = createReducer(initialState, {
     [types.DASHBOARD_GET_ALL_ERROR]: addNewError,
     [types.DASHBOARD_SET_ACTIVE_ERROR]: addNewError,
     [types.DASHBOARD_UPDATE_COLUMN_ERROR]: addNewError,
+    [types.DRAFT_CREATE_ERROR]: addNewError,
+    [types.DRAFT_PUBLISH_ERROR]: addNewError,
     [types.ENTRY_CLAIM_ERROR]: addNewError,
     [types.ENTRY_DOWNVOTE_ERROR]: addNewError,
     [types.ENTRY_GET_FULL_ERROR]: addNewError,
