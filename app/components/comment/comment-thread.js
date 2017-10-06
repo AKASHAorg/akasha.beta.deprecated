@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Divider } from 'material-ui';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -13,11 +12,27 @@ class CommentThread extends Component {
         }
     }
 
+    shouldComponentUpdate (nextProps) {
+        const { comments, pendingComments, profiles, replyTo } = nextProps;
+        if (
+            !comments.equals(this.props.comments) ||
+            !pendingComments.equals(this.props.pendingComments) ||
+            !profiles.equals(this.props.profiles) ||
+            replyTo !== this.props.replyTo
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    getEditorRef = (editor) => {
+        this.commentEditorRef = editor && editor.refs.clickAwayableElement;
+    };
+
     render () {
-        const { actionAdd, comments, containerRef, depth, entryAuthorProfile, entryId, intl,
-            loggedProfile, onReply, onReplyCancel, parentId, pendingComments, profileAvatar,
-            profiles, profileUserInitials, replyTo } = this.props;
-        const loggedProfileData = profiles.get(loggedProfile.get('akashaId'));
+        const { actionAdd, comments, containerRef, depth, entryAuthor, entryId, intl,
+            loggedProfileData, onReply, onReplyClose, parentId, pendingComments,
+            profiles, replyTo } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         let optimisticComments = pendingComments.filter(action =>
             action.getIn(['payload', 'parent']) === parentId);
@@ -31,17 +46,18 @@ class CommentThread extends Component {
             .map(commAction => (
               <OptimisticComment
                 comment={commAction}
+                containerRef={containerRef}
                 key={commAction.id}
-                loggedProfileData={loggedProfileData}
+                loggedAkashaId={loggedProfileData.get('akashaId')}
               />
             ));
         const comms = filteredComments.map(comment => (
           <Comment
             comment={comment}
             containerRef={containerRef}
-            entryAuthorProfile={entryAuthorProfile}
+            entryAuthor={entryAuthor}
             key={`${comment.commentId}-fetchedComments`}
-            loggedProfile={loggedProfile}
+            loggedAkashaId={loggedProfileData.get('akashaId')}
             onReply={onReply}
             profiles={profiles}
             showReplyButton={(depth <= 2)}
@@ -51,17 +67,15 @@ class CommentThread extends Component {
               comments={comments}
               containerRef={containerRef}
               depth={(depth + 1)}
-              entryAuthorProfile={entryAuthorProfile}
+              entryAuthor={entryAuthor}
               entryId={entryId}
               intl={intl}
-              loggedProfile={loggedProfile}
+              loggedProfileData={loggedProfileData}
               onReply={onReply}
-              onReplyCancel={onReplyCancel}
+              onReplyClose={onReplyClose}
               parentId={`${comment.commentId}`}
               pendingComments={pendingComments}
-              profileAvatar={profileAvatar}
               profiles={profiles}
-              profileUserInitials={profileUserInitials}
               replyTo={replyTo}
             />
             {replyTo === comment.commentId && (() => {
@@ -73,16 +87,15 @@ class CommentThread extends Component {
                       containerRef={containerRef}
                       entryId={entryId}
                       intl={intl}
+                      isReply
                       loggedProfileData={loggedProfileData}
-                      onCancel={onReplyCancel}
+                      onClose={onReplyClose}
                       parent={comment.commentId}
                       placeholder={intl.formatMessage(entryMessages.writeReplyTo, {
                           name: `@${author.get('akashaId')}`
                       })}
-                      ref={editor => (this.commentEditorRef = editor)}
-                      showPublishActions
+                      ref={this.getEditorRef}
                     />
-                    <Divider />
                   </div>
                 );
             })()}
@@ -102,19 +115,17 @@ class CommentThread extends Component {
 CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     comments: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     depth: PropTypes.number,
-    entryAuthorProfile: PropTypes.string,
+    entryAuthor: PropTypes.string,
     entryId: PropTypes.string,
-    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),
     onReply: PropTypes.func.isRequired,
-    onReplyCancel: PropTypes.func.isRequired,
+    onReplyClose: PropTypes.func.isRequired,
     parentId: PropTypes.string,
     pendingComments: PropTypes.shape(),
-    profileAvatar: PropTypes.string,
     profiles: PropTypes.shape(),
-    profileUserInitials: PropTypes.string,
     replyTo: PropTypes.string,
 };
 

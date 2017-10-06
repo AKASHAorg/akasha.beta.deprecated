@@ -74,6 +74,7 @@ export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
 
@@ -92,7 +93,6 @@ export const showNotification = notification =>
     action(types.SHOW_NOTIFICATION, { notification });
 export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
 export const showTerms = () => action(types.SHOW_TERMS);
-export const toggleAuthDialog = () => action(types.TOGGLE_AUTH_DIALOG);
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 

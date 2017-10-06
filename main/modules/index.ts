@@ -8,9 +8,9 @@ import TagsIPC from './TagsIPC';
 import EntryIPC from './EntryIPC';
 import CommentsIPC from './CommentsIPC';
 import LicensesIPC from './LicensesIPC';
-import NotificationsIPC from './NotificationsIPC';
-import ChatIPC from './ChatIPC';
-import SearchIPC from './SearchIPC';
+// import NotificationsIPC from './NotificationsIPC';
+// import ChatIPC from './ChatIPC';
+// import SearchIPC from './SearchIPC';
 import UtilsIPC from './UtilsIPC';
 
 export default [
@@ -24,8 +24,8 @@ export default [
     new EntryIPC(),
     new CommentsIPC(),
     new LicensesIPC(),
-    new NotificationsIPC(),
-    new ChatIPC(),
-    new SearchIPC(),
+    // new NotificationsIPC(),
+    // new ChatIPC(),
+    // new SearchIPC(),
     new UtilsIPC()
 ];

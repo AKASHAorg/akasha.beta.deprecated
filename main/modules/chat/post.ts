@@ -7,7 +7,7 @@ import currentProfile from '../registry/current-profile';
 export const whisperIdentity = {
     from: ''
 };
-const execute = Promise.coroutine(function*(data: { message: string }) {
+const execute = Promise.coroutine(function* (data: { message: string }) {
     if (data.message.length > 128) {
         throw new Error('Max message length allowed is 128');
     }

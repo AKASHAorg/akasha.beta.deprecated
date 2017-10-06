@@ -56,11 +56,6 @@ const errorMessages = defineMessages({
         description: 'get all dashboards error message',
         defaultMessage: 'An error occurred while getting your dashboards'
     },
-    dashboardGetColumns: {
-        id: 'app.error.dashboardGetColumns',
-        description: 'get columns error message',
-        defaultMessage: 'An error occurred while getting your columns'
-    },
     dashboardSetActive: {
         id: 'app.error.dashboardSetActive',
         description: 'set active dashboard error message',
@@ -90,6 +85,11 @@ const errorMessages = defineMessages({
         id: 'app.error.entryUpvote',
         description: 'upvote entry error message',
         defaultMessage: 'An error occurred while upvoting {entryTitle}'
+    },
+    errorNotificationTitle: {
+        id: 'app.error.errorNotificationTitle',
+        description: 'title for error notifcations',
+        defaultMessage: 'Error code {errorCode}'
     },
     fatalError: {
         id: 'app.error.fatalError',
@@ -175,6 +175,11 @@ const errorMessages = defineMessages({
         id: 'app.error.ipfsStop',
         description: 'stop ipfs error message',
         defaultMessage: 'IPFS service could not be stopped'
+    },
+    unexpectedError: {
+        id: 'app.error.unexpectedError',
+        description: 'an error with no code',
+        defaultMessage: 'Unexpected Error'
     },
     profileGetLocal: {
         id: 'app.error.profileGetLocal',

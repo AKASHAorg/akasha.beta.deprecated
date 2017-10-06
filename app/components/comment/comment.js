@@ -1,32 +1,38 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { CardHeader, Divider, FlatButton, IconButton, SvgIcon } from 'material-ui';
-import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
-import Link from 'megadraft/lib/components/Link';
-import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
-import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
-import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { Avatar, ProfilePopover } from '../';
+import DraftJS from 'draft-js';
+import Editor from 'draft-js-plugins-editor';
+import classNames from 'classnames';
+import createEmojiPlugin from 'draft-js-emoji-plugin';
+import createImagePlugin from 'draft-js-image-plugin';
+import decorateComponentWithProps from 'decorate-component-with-props';
+import { Icon, Tooltip } from 'antd';
+import { ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
-import { MentionDecorators } from '../../shared-components';
-import { entryMessages } from '../../locale-data/messages';
-import style from './comment.scss';
+import * as actionTypes from '../../constants/action-types';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
+import CommentImage from './comment-image';
+import createHighlightPlugin from './plugins/highlight-plugin';
 
-const { CompositeDecorator, EditorState } = DraftJS;
+const { convertFromRaw, EditorState } = DraftJS;
 
 class Comment extends Component {
     constructor (props) {
         super(props);
 
-        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator, {
-            strategy: createTypeStrategy('LINK'),
-            component: Link
-        }]);
-        this.editorState = EditorState.createEmpty(decorators);
+        const content = convertFromRaw(props.comment.data.content);
         this.state = {
+            editorState: EditorState.createWithContent(content),
             isExpanded: null,
         };
+
+        const wrappedComponent = decorateComponentWithProps(CommentImage, {
+            readOnly: true
+        });
+        this.emojiPlugin = createEmojiPlugin({ imagePath: 'images/emoji-svg/' });
+        this.highlightPlugin = createHighlightPlugin();
+        this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
     componentDidMount () {
@@ -39,7 +45,7 @@ class Comment extends Component {
         if (!comment.data.content) {
             isExpanded = null;
         }
-        if (contentHeight > 155) {
+        if (contentHeight > 170) {
             isExpanded = false;
         }
         return this.setState({ // eslint-disable-line react/no-did-mount-set-state
@@ -47,157 +53,128 @@ class Comment extends Component {
         });
     }
 
-    getAuthorNameColor = () => {
-        const { comment, entryAuthorProfile, loggedProfile, profiles } = this.props;
-        const { palette } = this.context.muiTheme;
-        const author = profiles.get(comment.data.profile);
-        const isEntryAuthor = entryAuthorProfile === author.get('profile');
-        const viewerIsAuthor = loggedProfile.get('profile') === author.get('profile');
-
-        if (viewerIsAuthor) {
-            return palette.commentViewerIsAuthorColor;
-        } else if (isEntryAuthor) {
-            return palette.commentIsEntryAuthorColor;
-        }
-        return palette.commentAuthorColor;
+    isLogged = () => {
+        const { comment, loggedAkashaId } = this.props;
+        return loggedAkashaId === comment.data.profile;
     };
 
-    getExpandedStyle = () => {
-        const { isExpanded } = this.state;
-        if (isExpanded === false) {
-            return { maxHeight: 155, overflow: 'hidden' };
-        }
-        if (isExpanded === true) {
-            return { maxHeight: 'none', overflow: 'visible' };
-        }
-        return {};
-    };
+    isEntryAuthor = () => {
+        const { comment, entryAuthor } = this.props;
+        return comment.data.profile === entryAuthor;
+    }
 
-    toggleExpanded = (ev, isExpanded) => {
+    onChange = (editorState) => { this.setState({ editorState }); };
+
+    toggleExpanded = (ev) => {
         ev.preventDefault();
         this.setState({
-            isExpanded
+            isExpanded: !this.state.isExpanded
         });
+    };
+
+    renderExpandButton = () => {
+        const { intl } = this.props;
+        const label = this.state.isExpanded ?
+            intl.formatMessage(entryMessages.showLess) :
+            intl.formatMessage(entryMessages.showMore);
+        return (
+          <div className="flex-center comment__expand-button">
+            <div className="content-link" onClick={this.toggleExpanded}>
+              {label}
+            </div>
+          </div>
+        );
     };
 
     render () {
         const { comment, containerRef, children, intl, onReply, profiles, showReplyButton } = this.props;
-        const { isExpanded } = this.state;
+        const { editorState, isExpanded } = this.state;
         const { data } = comment;
         const { date, content } = data;
-        const currentContent = editorStateFromRaw(content).getCurrentContent();
         const author = profiles.get(data.profile);
-        const { palette } = this.context.muiTheme;
-        const authorAkashaId = author.get('akashaId');
-        const authorAvatar = author.get('avatar');
+        const authorAkashaId = author && author.get('akashaId');
+        const authorClass = classNames('content-link comment__author-name', {
+            'comment__author-name_logged': this.isLogged(),
+            'comment__author-name_author': !this.isLogged() && this.isEntryAuthor()
+        });
+        const bodyClass = classNames('comment__body', {
+            comment__body_collapsed: isExpanded === false,
+            comment__body_expanded: isExpanded === true
+        });
+        const iconClassName = 'comment__vote-icon';
+        const voteProps = { containerRef, iconClassName, votePending: false, voteWeight: 0 };
 
         return (
-          <div
-            id={`comment-${comment.get('commentId')}`}
-            className={style.root}
-            style={{ position: 'relative' }}
-          >
-            <div className={style.rootInner}>
-              <div
-                className={`row ${style.commentHeader}`}
-                style={{ marginBottom: !content ? '8px' : '0px' }}
-              >
-                <div className={`col-xs-5 ${style.commentAuthor}`}>
-                  <CardHeader
-                    avatar={
-                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
-                        <Avatar
-                          firstName={author.get('firstName')}
-                          image={authorAvatar}
-                          lastName={author.get('lastName')}
-                          size="small"
-                        />
-                      </ProfilePopover>
-                    }
-                    style={{ padding: 0 }}
-                    subtitle={
-                      <div style={{ opacity: !content ? 0.5 : 1 }}>
-                        {date && intl.formatRelative(new Date(date))}
+          <div id={`comment-${comment.get('commentId')}`} className="comment">
+            <div className="comment__inner">
+              <div className="comment__votes">
+                <VotePopover
+                  onSubmit={() => {}}
+                  type={actionTypes.commentUpvote}
+                  {...voteProps}
+                />
+                <span className="comment__score">
+                  {Math.round(Math.random() * 100)}
+                </span>
+                <VotePopover
+                  onSubmit={() => {}}
+                  type={actionTypes.commentDownvote}
+                  {...voteProps}
+                />
+              </div>
+              <div className="comment__main">
+                <div className="flex-center-y comment__header">
+                  {author &&
+                    <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
+                      <div className={authorClass}>
+                        {authorAkashaId}
                       </div>
-                    }
-                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
-                    title={
-                      <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
-                        <FlatButton
-                          className={style.author_name}
-                          hoverColor="transparent"
-                          label={authorAkashaId}
-                          labelStyle={{
-                              textTransform: 'initial',
-                              paddingLeft: 4,
-                              paddingRight: 4,
-                              color: this.getAuthorNameColor()
-                          }}
-                          // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                        />
-                      </ProfilePopover>
-                    }
-                    titleStyle={{ fontSize: '100%', height: 24 }}
-                  />
+                    </ProfilePopover>
+                  }
+                  <span className="comment__publish-date">
+                    {date && intl.formatRelative(new Date(date))}
+                  </span>
                 </div>
+                {content &&
+                  <div className={bodyClass} ref={(el) => { this.editorWrapperRef = el; }}>
+                    <Editor
+                      editorState={editorState}
+                      // This is needed because draft-js-plugin-editor applies decorators on onChange event
+                      // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
+                      onChange={this.onChange}
+                      plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin]}
+                      readOnly
+                    />
+                  </div>
+                }
+                {!content &&
+                  <div className="comment__placeholder">
+                    <Tooltip
+                      getPopupContainer={() => containerRef || document.body}
+                      title={intl.formatMessage(entryMessages.unresolvedComment)}
+                    >
+                      <Icon className="comment__placeholder-icon" type="share-alt" />
+                    </Tooltip>
+                  </div>
+                }
+                {isExpanded !== null && this.renderExpandButton()}
                 {showReplyButton && content &&
-                  <div className="col-xs-7 end-xs">
-                    <div className={style.commentActions}>
-                      <IconButton onClick={() => onReply(comment.commentId)}>
-                        <SvgIcon>
-                          <EntryCommentReply />
-                        </SvgIcon>
-                      </IconButton>
+                  <div className="flex-center-y comment__actions">
+                    <div
+                      className="content-link flex-center-y comment__reply-button"
+                      onClick={() => onReply(comment.commentId)}
+                    >
+                      <svg viewBox="0 0 20 20">
+                        <EntryCommentReply />
+                      </svg>
+                      <span>{intl.formatMessage(generalMessages.reply)}</span>
                     </div>
                   </div>
                 }
               </div>
-              {content &&
-                <div
-                  ref={(editorWrap) => { this.editorWrapperRef = editorWrap; }}
-                  className={`row ${style.commentBody}`}
-                  style={this.getExpandedStyle()}
-                >
-                  <MegadraftEditor
-                    readOnly
-                    editorState={EditorState.push(this.editorState, currentContent)}
-                    sidebarRendererFn={() => null}
-                  />
-                </div>
-              }
-              {!content &&
-                <div
-                  data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
-                  style={{ position: 'absolute', right: '10px', top: '7px', opacity: 0.5 }}
-                >
-                  <IconButton>
-                    <HubIcon color={palette.accent1Color} />
-                  </IconButton>
-                </div>
-              }
-              {isExpanded !== null &&
-                <div style={{ fontSize: 12, textAlign: 'center' }}>
-                  {(isExpanded === false) &&
-                    <IconButton onClick={ev => this.toggleExpanded(ev, true)}>
-                      <SvgIcon>
-                        <MoreIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  }
-                  {isExpanded &&
-                    <IconButton onClick={ev => this.toggleExpanded(ev, false)}>
-                      <SvgIcon>
-                        <LessIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  }
-                </div>
-              }
-              <Divider />
             </div>
             {children &&
-              <div className={style.commentReply}>
+              <div className="comment__replies">
                 {children}
               </div>
             }
@@ -206,17 +183,13 @@ class Comment extends Component {
     }
 }
 
-Comment.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 Comment.propTypes = {
     children: PropTypes.node,
     comment: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
-    entryAuthorProfile: PropTypes.string,
+    containerRef: PropTypes.shape(),
+    entryAuthor: PropTypes.string,
     intl: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
+    loggedAkashaId: PropTypes.string,
     onReply: PropTypes.func.isRequired,
     profiles: PropTypes.shape(),
     showReplyButton: PropTypes.bool,

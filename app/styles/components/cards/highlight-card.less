@@ -13,16 +13,55 @@
     }
 
     &__content {
-        margin-left: 42px;
-        font-style: italic;
+        // margin-left: 5px;
+        display: inline-block;
+    }
+
+    &__quote {
+        width: 30px;
+        display: inline-block;
     }
 
     &__notes {
         margin-top: 30px;
         color: @text-color-secondary;
+        font-size: 12px;
+    }
+
+    &__notes-content {
+        overflow-wrap: break-word;
+    }
+
+    &__notes-editor {
+        .ant-input:focus {
+            outline: none;
+            box-shadow: none;
+        }
     }
 
     &__notes-title {
         font-size: 13px;
+        padding: 10px 0px;
+        border-top: 1px outset lightgrey;
+    }
+
+    &__notes-input {
+        border: none;
+        background-color: transparent;
+        outline: none;
+        box-shadow: none;
+        resize: none;
+        width: 100%;
+        font-size: 12px;
+    }
+
+    &__notes-input-buttons {
+        padding-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__notes-input-cancel {
+        padding-right: 10px;
     }
 }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'antd';
 import throttle from 'lodash.throttle';
-import { ProfileList } from '../';
+import { AuthProfileList } from '../';
 import { setupMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
@@ -69,8 +69,8 @@ class Auth extends Component {
     };
 
     render () {
-        const { backupKeysRequest, backupPending, fetchingProfileList, gethStatus, intl, ipfsStatus,
-            localProfiles, localProfilesFetched } = this.props;
+        const { backupKeysRequest, backupPending, gethStatus, intl, ipfsStatus, localProfiles,
+            localProfilesFetched, pendingListProfiles } = this.props;
         const { isScrolled } = this.state;
         const withShadow = this.listContainer && isScrolled && 'auth__title-wrapper_with-shadow';
         return (
@@ -87,13 +87,14 @@ class Auth extends Component {
                     </div>
                   </div>
                   <div className="auth__list-wrapper">
-                    <ProfileList
+                    <AuthProfileList
                       displayShadow={this.displayShadow}
-                      fetchingProfiles={!localProfilesFetched || fetchingProfileList}
+                      fetchingProfiles={!localProfilesFetched}
                       gethStatus={gethStatus}
                       getListContainerRef={this.getListContainerRef}
                       intl={intl}
                       ipfsStatus={ipfsStatus}
+                      pendingListProfiles={pendingListProfiles}
                       profiles={localProfiles}
                     />
                   </div>
@@ -148,13 +149,13 @@ class Auth extends Component {
 Auth.propTypes = {
     backupKeysRequest: PropTypes.func.isRequired,
     backupPending: PropTypes.bool,
-    fetchingProfileList: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,
     localProfilesFetched: PropTypes.bool,
+    pendingListProfiles: PropTypes.shape().isRequired,
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,

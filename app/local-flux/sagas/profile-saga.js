@@ -3,22 +3,20 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
-import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
     selectNeedAuthAction, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
-import * as actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
-function* profileCreateEthAddress ({ data }) {
+function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
     const channel = Channel.server.auth.generateEthKey;
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield apply(channel, channel.send, [{ password: data }]);
+    yield apply(channel, channel.send, [{ password: passphrase, password1: passphrase1 }]);
 }
 
 function* profileDeleteLogged () {
@@ -69,12 +67,14 @@ function* profileGetBalance ({ unit = 'ether' }) {
 function* profileGetData ({ akashaId, full = false }) {
     const channel = Channel.server.profile.getProfileData;
     yield apply(channel, channel.send, [{ akashaId, full }]);
+    yield put(actions.profileIsFollower([akashaId])); // eslint-disable-line no-use-before-define
+    yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
-function* profileGetList ({ profileAddresses }) {
+function* profileGetList ({ akashaIds }) {
     const channel = Channel.server.profile.getProfileList;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [profileAddresses]);
+    yield apply(channel, channel.send, [akashaIds]);
 }
 
 function* profileGetLocal () {
@@ -282,7 +282,6 @@ function* watchProfileGetDataChannel () {
         if (resp.error) {
             yield put(actions.profileGetDataError(resp.error));
         } else {
-            yield fork(profileSaveAkashaIds, [resp.data.akashaId]); // eslint-disable-line
             yield put(actions.profileGetDataSuccess(resp.data));
         }
     }
@@ -294,14 +293,14 @@ function* watchProfileGetLocalChannel () {
         if (resp.error) {
             yield put(actions.profileGetLocalError(resp.error));
         } else {
-            const profileAddresses = [];
-            resp.data.forEach((data) => {
-                if (data.profile) {
-                    profileAddresses.push({ profile: data.profile });
+            const akashaIds = [];
+            resp.data.collection.forEach((data) => {
+                if (data.akashaId) {
+                    akashaIds.push({ akashaId: data.akashaId });
                 }
             });
-            yield put(actions.profileGetList(profileAddresses));
-            yield put(actions.profileGetLocalSuccess(resp.data));
+            yield put(actions.profileGetList(akashaIds));
+            yield put(actions.profileGetLocalSuccess(resp.data.collection));
         }
     }
 }
@@ -386,6 +385,7 @@ function* watchProfileSendTipChannel () {
         const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -399,6 +399,7 @@ function* watchProfileUnfollowChannel () {
         const { actionId } = resp.request;
         if (resp.error) {
             yield put(actions.profileUnfollowError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -438,7 +439,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
     yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+    yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);

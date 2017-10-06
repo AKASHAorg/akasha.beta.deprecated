@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { filter } from './set-filter';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getProfileData from '../profile/profile-data';
@@ -30,7 +30,7 @@ const VALUE_UNIT = 'ether';
 
 const hydrateWithProfile = (cb, profile, entry, extra) => {
     const batch = [];
-    batch.push(getProfileData.execute({ profile: profile }));
+    batch.push(getProfileData.execute({ akashaId: profile }));
     batch.push(getEntry.execute({ entryId: entry }));
     Promise.all(batch)
         .then((result) => {
@@ -41,7 +41,7 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
         });
 };
 
-const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
+const emitMention = Promise.coroutine(function* (event, akashaId, cb) {
     let message;
     const unmarshall = GethConnector.getInstance().web3.toUtf8(event.payload);
 
@@ -79,7 +79,7 @@ const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
  * Get total number of your follows
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: number }, cb) {
+const execute = Promise.coroutine(function* (data: { stop?: boolean, newerThan?: number }, cb) {
     if (!contracts.instance) {
         return { running: false };
     }
@@ -187,7 +187,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: 
             cb({ message: err.message, type: eventTypes.FOLLOWING });
         }
         getProfileData
-            .execute({ profile: event.args.follower })
+            .execute({ akashaId: event.args.follower })
             .then((data) => {
                 queue.push(
                     cb,
@@ -207,9 +207,9 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: 
         }
         resolveProfile
             .execute({ ethAddress: event.args.from })
-            .then((profile) => {
+            .then((profile: any) => {
                 const ethers = GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
-                return getProfileData.execute({ profile: profile.profileAddress })
+                return getProfileData.execute({ akashaId: profile.profileAddress })
                     .then((resolvedProfile) => {
                         queue.push(
                             cb,

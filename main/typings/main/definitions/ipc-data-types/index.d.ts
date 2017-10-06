@@ -19,6 +19,7 @@ interface IPCmanager {
     channel: string;
     listen: boolean;
 }
+
 /////////// ipfs models \\\\\\\\\\\\\
 interface IpfsLink {
     '/': string;  // ex: { '/': 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' }
@@ -32,6 +33,7 @@ type multiRes = {
     lg?: mediaSource,
     xl?: mediaSource
 };
+
 interface ProfileModel {
     firstName: string;
     lastName: string;
@@ -55,6 +57,7 @@ interface CommentModel {
     content: any; // ipfs hash
     date: Date;
 }
+
 /////////////////// ipfs models \\\\\\\\\\\\\\\\\\\\\\\\\
 
 // Define type of `data`
@@ -103,6 +106,7 @@ interface IpfsgetConfigResponse extends MainResponse {
         storagePath: string;
     }
 }
+
 interface IpfsResolveResponse extends MainResponse {
     data: {
         content: any;
@@ -118,6 +122,7 @@ interface IpfsSetConfigRequest {
     };
     restart?: boolean;
 }
+
 interface IpfsSetConfigResponse extends MainResponse {
     data: {
         set: boolean
@@ -132,6 +137,7 @@ interface IpfsGetPortsResponse {
     },
     request: any
 }
+
 // channels.server.geth.restart
 interface GethRestartRequest {
     timer?: number;
@@ -161,8 +167,7 @@ interface IpfsStopRequest {
 // channels.server.auth.login
 interface AuthLoginRequest {
     account: string;
-    password: Uint8Array;
-    registering: boolean;
+    password: Buffer;
     rememberTime: number; // number of minutes to remember the password
 }
 
@@ -188,7 +193,8 @@ interface AuthLogoutResponse extends MainResponse {
 
 // channels.server.auth.generateEthKey
 interface AuthKeygenRequest {
-    password: Uint8Array;
+    password: Buffer;
+    password1: Buffer;
 }
 
 // channels.client.auth.generateEthKey
@@ -242,6 +248,7 @@ interface EmitMinedResponse extends MainResponse {
         watching: boolean;
     };
 }
+
 /////////////////////////  </ TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 /////////////////////////  < Registry > \\\\\\\\\\\\\\\\\\\\\\\\
@@ -276,6 +283,8 @@ interface ProfileByAddressResponse extends MainResponse {
 interface ProfileCreateRequest extends AuthRequest {
     akashaId: string;
     ipfs: IpfsProfileCreateRequest;
+    donations: boolean;
+    ethAddress: string;
 }
 
 interface ProfileCreateResponse extends MainResponse {
@@ -287,6 +296,7 @@ interface ProfileCreateResponse extends MainResponse {
 interface ProfileUpdateRequest extends AuthRequest {
     ipfs: IpfsProfileCreateRequest;
 }
+
 interface ProfileUpdateResponse extends MainResponse {
     data: {
         tx: string;
@@ -307,6 +317,7 @@ interface GenericErrorEventResponse extends MainResponse {
 
 interface ProfileErrorEventRequest extends GenericErrorEventRequest {
 }
+
 interface ProfileErrorEventResponse extends GenericErrorEventResponse {
 }
 
@@ -322,8 +333,10 @@ interface GenericFromEventRequest extends ProfileErrorEventRequest {
 
 interface ProfileRegisteredEventRequest extends GenericFromEventRequest {
 }
+
 interface ProfileRegisteredEventResponse extends GenericFromEventResponse {
 }
+
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 ////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -335,6 +348,7 @@ type multiResPost = {
     lg?: mediaSourcePost,
     xl?: mediaSourcePost
 };
+
 interface IpfsProfileCreateRequest {
     firstName: string;
     lastName: string;
@@ -346,7 +360,6 @@ interface IpfsProfileCreateRequest {
 
 interface ProfileDataRequest {
     akashaId: string;
-    profile?: string; // profile contract address
     short?: boolean;
     full?: boolean; // resolve full profile from ipfs
     resolveImages?: boolean; // resolve media to buffer
@@ -363,7 +376,7 @@ interface ProfileDataResponse {
 }
 
 interface BalanceRequest {
-    etherBase?: string;
+    ethAddress?: string;
     unit?: string; // ether/wei/etc
 }
 
@@ -393,7 +406,8 @@ interface ProfileUnregisterRequest extends AuthRequest {
 }
 
 interface ProfileFollowRequest extends AuthRequest {
-    akashaId: string;
+    akashaId?: string;
+    ethAddress?: string;
 }
 
 interface ProfileFollowResponse extends MainResponse {
@@ -403,7 +417,8 @@ interface ProfileFollowResponse extends MainResponse {
 }
 
 interface GetFollowerCountRequest {
-    akashaId: string;
+    akashaId?: string;
+    ethAddress?: string;
 }
 
 interface GetFollowersRequest {
@@ -423,6 +438,7 @@ interface GetFollowingResponse extends MainResponse {
         following: string[];
     }
 }
+
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////////// < TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -513,6 +529,7 @@ interface TagsFromToRequest {
     from: number;
     to: number;
 }
+
 interface TagsFromToResponse extends MainResponse {
     data: {
         from: number;
@@ -520,6 +537,7 @@ interface TagsFromToResponse extends MainResponse {
         tags: string[];
     }
 }
+
 /////////////////////// </ TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -527,6 +545,7 @@ interface TagsFromToResponse extends MainResponse {
 interface EntryCreateRequest extends AuthRequest {
     content: any;
     tags: string[];
+    entryType: number;
 }
 
 interface EntryEditRequest extends EntryCreateRequest {
@@ -541,8 +560,8 @@ interface EntryCreateResponse extends MainResponse {
 
 interface EntryUpdateRequest extends AuthRequest {
     content: any;
-    tags: string[],
     entryId: string;
+    tags: string[];
 }
 
 interface EntryUpdateResponse extends MainResponse {
@@ -554,14 +573,15 @@ interface EntryUpdateResponse extends MainResponse {
 interface EntryUpvoteRequest extends AuthRequest {
     entryId: string; // entry address
     weight: number;
-    value: number;
-    extra: any;
+    ethAddress: string;
 }
+
 interface EntryUpvoteResponse extends MainResponse {
     data: {
         tx: string;
     };
 }
+
 interface EntryOpenedVotesRequest {
     address: string; // entry address
 }
@@ -636,6 +656,8 @@ interface EntriesOfResponse extends MainResponse {
 interface EntryGetRequest {
     entryId: string;
     full?: boolean;
+    ethAddress?: string;
+    akashaId?: string;
     version?: number;
 }
 
@@ -645,6 +667,7 @@ interface EntryGetResponse extends MainResponse {
         content: any;
     }
 }
+
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////// < COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -705,6 +728,7 @@ interface GetCommentCountResponse extends MainResponse {
         address: string; // entry address
     }
 }
+
 interface GetCommentAtRequest {
     address: string; //entry address
     id: number; // comment id
@@ -719,4 +743,5 @@ interface GetCommentAtResponse extends MainResponse {
         id: number;
     }
 }
+
 /////////////////// </ COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

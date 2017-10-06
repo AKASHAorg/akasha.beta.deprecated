@@ -1,31 +1,27 @@
 import PropTypes from 'prop-types';
-/* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
-import { Divider, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import throttle from 'lodash.throttle';
-import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
+import classNames from 'classnames';
 import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageContent,
     EntryPageHeader } from '../';
+import { EntryComment } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
-import styles from './entry-page.scss';
-import { Tooltip } from 'antd';
+
 const COMMENT_FETCH_LIMIT = 25;
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
 class EntryPage extends Component {
     state = {
-        publisherTitleShadow: false,
+        showInHeader: false
     };
 
     componentDidMount () {
         const { entry, entryGetFull, location, match } = this.props;
         const { params } = match;
         const { version } = parse(location.search);
-        ReactTooltip.rebuild();
         this.checkNewCommentsInterval = setInterval(
             this.checkNewComments,
             CHECK_NEW_COMMENTS_INTERVAL * 1000
@@ -39,8 +35,8 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { entry, entryGetFull, entryGetLatestVersion, fetchingFullEntry, location, match,
-            pendingComments } = this.props;
+        const { commentsClean, entry, entryGetFull, entryGetLatestVersion,
+            fetchingFullEntry, location, match, pendingComments } = this.props;
         const { params } = match;
         const nextParams = nextProps.match.params;
         const { version } = parse(nextProps.location.search);
@@ -50,6 +46,7 @@ class EntryPage extends Component {
         if ((params.entryId !== nextParams.entryId && entry.get('entryId') !== nextParams.entryId) ||
                 (version !== undefined && version !== location.query.version)) {
             const versionNr = isNaN(Number(version)) ? null : Number(version);
+            commentsClean();
             entryGetFull(nextParams.entryId, versionNr);
             this.fetchComments(nextParams.entryId);
         }
@@ -82,14 +79,17 @@ class EntryPage extends Component {
         clearInterval(this.checkNewCommentsInterval);
         entryCleanFull();
         commentsClean();
-        ReactTooltip.hide();
     }
 
-    getContainerRef = el => (this.container = el);
+    getContainerRef = (el) => { this.container = el; };
 
-    getListHeaderRef = el => (this.listHeader = el);
+    getListHeaderRef = (el) => { this.listHeader = el; };
 
-    getTriggerRef = el => (this.trigger = el);
+    getTriggerRef = (el) => { this.trigger = el; };
+
+    getEditorRef = (editor) => {
+        this.commentEditor = editor && editor.refs.clickAwayableElement;
+    };
 
     fetchComments = (entryId) => {
         this.props.commentsIterator(entryId, COMMENT_FETCH_LIMIT);
@@ -100,10 +100,9 @@ class EntryPage extends Component {
         commentsCheckNew(match.params.entryId);
     };
 
-    handleContentScroll = (ev) => {
+    handleContentScroll = () => {
         const { commentsMoreIterator, match, newComments } = this.props;
         const { params } = match;
-        const scrollTop = ev.srcElement.scrollTop;
         if (this.trigger && isInViewport(this.trigger, 150)) {
             commentsMoreIterator(params.entryId);
         }
@@ -119,42 +118,32 @@ class EntryPage extends Component {
                 });
             }
         }
-        if (scrollTop > 0 && !this.state.publisherTitleShadow) {
-            this.setState({
-                publisherTitleShadow: true
-            });
-        } else if (scrollTop === 0 && this.state.publisherTitleShadow) {
-            this.setState({
-                publisherTitleShadow: false
-            });
-        }
-    }
+    };
 
     throttledHandler = throttle(this.handleContentScroll, 300);
-
-    selectProfile = () => {
-        const { entry, history } = this.props;
-        const profileAddress = entry.entryEth.publisher;
-        history.push(`/${profileAddress}`);
-    };
 
     render () {
         const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
             licenses, loggedProfileData, newComments } = this.props;
-        const { palette } = this.context.muiTheme;
-        const { publisherTitleShadow, showInHeader } = this.state;
-        const buttonClassName = showInHeader ? styles.button_fixed : styles.button_absolute;
+        const { showInHeader } = this.state;
+        const buttonWrapperClass = classNames({
+            'entry-page__button-wrapper_fixed': showInHeader,
+            'entry-page__button-wrapper_absolute': !showInHeader
+        });
+        const commentsCount = entry && entry.get('commentsCount');
 
         const component = !entry || fetchingFullEntry ?
             null :
-            (<div className={styles.entry_page_inner}>
-              <div id="content-section" className={styles.content_section}>
+            (<div className="entry-page__inner">
+              <div id="content-section" className="entry-page__content">
                 <EntryPageHeader
+                  containerRef={this.container}
                   latestVersion={latestVersion}
-                  publisherTitleShadow={publisherTitleShadow}
                 />
                 {entry.content &&
                   <EntryPageContent
+                    commentEditor={this.commentEditor}
+                    containerRef={this.container}
                     entry={entry}
                     highlightSave={highlightSave}
                     latestVersion={latestVersion}
@@ -162,48 +151,55 @@ class EntryPage extends Component {
                   />
                 }
                 {!entry.content &&
-                  <div className={styles.unresolved_entry} style={{ color: palette.disabledColor }}>
+                  <div className="entry-page__unresolved-placeholder">
                     {intl.formatMessage(entryMessages.unresolvedEntry)}
                   </div>
                 }
-              </div>
-              <div className={styles.entry_infos}>
                 {entry.content && <EntryPageActions entry={entry} containerRef={this.container} />}
+              </div>
+              <div className="entry-page__comments">
+                <div className="entry-page__comments-header">
+                  <span className="entry-page__comments-title">
+                    {commentsCount ?
+                        intl.formatMessage(entryMessages.publicDiscussion) :
+                        intl.formatMessage(entryMessages.writeComment)
+                    }
+                  </span>
+                  {!!commentsCount &&
+                    <div className="flex-center">
+                      <span>
+                        {intl.formatMessage(entryMessages.commentsCount, { count: commentsCount })}
+                      </span>
+                      <svg className="entry-page__comment-icon" viewBox="0 0 20 20">
+                        <EntryComment />
+                      </svg>
+                    </div>
+                  }
+                </div>
                 <CommentEditor
                   actionAdd={actionAdd}
                   containerRef={this.container}
                   entryId={entry.get('entryId')}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
-                  ref={editor => (this.commentEditor = editor)}
+                  ref={this.getEditorRef}
                 />
                 <div
                   id="comments-section"
-                  className={styles.comments_section}
-                  ref={el => (this.commentsSectionRef = el)}
+                  ref={(el) => { this.commentsSectionRef = el; }}
                 >
-                  <div ref={this.getListHeaderRef} style={{ position: 'relative', zIndex: 2 }}>
-                    <h4>
-                      {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
-                    </h4>
+                  <div className="entry-page__new-comments-wrapper" ref={this.getListHeaderRef}>
                     {newComments.size > 0 &&
-                      <div className={`row middle-xs ${buttonClassName}`}>
-                        <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
-                          <FlatButton
-                            primary
-                            label={intl.formatMessage(entryMessages.newComments, {
+                      <div className={buttonWrapperClass}>
+                        <div style={{ position: 'relative' }}>
+                          <div className="content-link entry-page__new-comments" onClick={commentsLoadNew}>
+                            {intl.formatMessage(entryMessages.newComments, {
                                 count: newComments.size
                             })}
-                            hoverColor="#ececec"
-                            backgroundColor="#FFF"
-                            style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
-                            labelStyle={{ fontSize: 12 }}
-                            onClick={commentsLoadNew}
-                          />
+                          </div>
                         </div>
                       </div>
                     }
-                    <Divider />
                   </div>
                   <CommentsList containerRef={this.container} getTriggerRef={this.getTriggerRef} />
                 </div>
@@ -212,22 +208,17 @@ class EntryPage extends Component {
 
         return (
           <div
-            className={styles.root}
+            className="entry-page"
             id="entry-page-root"
             ref={this.getContainerRef}
-            style={{ backgroundColor: palette.entryPageBackground }}
           >
-            <DataLoader flag={!entry || fetchingFullEntry} size={80} style={{ paddingTop: '120px' }}>
+            <DataLoader flag={!entry || fetchingFullEntry} size="large" style={{ paddingTop: '120px' }}>
               {component}
             </DataLoader>
           </div>
         );
     }
 }
-
-EntryPage.contextTypes = {
-    muiTheme: PropTypes.shape(),
-};
 
 EntryPage.propTypes = {
     actionAdd: PropTypes.func.isRequired,
@@ -242,7 +233,6 @@ EntryPage.propTypes = {
     entryGetLatestVersion: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
     highlightSave: PropTypes.func.isRequired,
-    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),

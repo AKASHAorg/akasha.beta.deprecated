@@ -1,9 +1,13 @@
 import * as Promise from 'bluebird';
 import { gethHelper } from '@akashaproject/geth-connector';
+import contracts from '../../contracts';
 
-const execute = Promise.coroutine(function*() {
+const execute = Promise.coroutine(function* () {
     const state = yield gethHelper.inSync();
     if (!state.length) {
+        if (!contracts.instance) {
+            yield contracts.init().then(() => console.log('contracts inited'));
+        }
         return { synced: true };
     }
     if (state.length === 2) {

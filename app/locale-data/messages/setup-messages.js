@@ -6,11 +6,6 @@ const setupMessages = defineMessages({
         description: 'backup button label',
         defaultMessage: 'Backup keys'
     },
-    changeGethDataDir: {
-        id: 'app.setup.changeGethDataDir',
-        description: 'Label for changing geth data directory',
-        defaultMessage: 'Change this if geth has different data directory'
-    },
     createIdentity: {
         id: 'app.setup.createIdentity',
         description: 'Create identity button label',
@@ -20,11 +15,6 @@ const setupMessages = defineMessages({
         id: 'app.setup.gethDataDirPath',
         description: 'geth datadir path field label',
         defaultMessage: 'Geth Datadir path'
-    },
-    changeGethAlreadyStarted: {
-        id: 'app.setup.changeGethAlreadyStarted',
-        description: 'input field placeholder text',
-        defaultMessage: 'Change this if geth is already started with --ipcpath'
     },
     gethIPCPath: {
         id: 'app.setup.gethIPCPath',
@@ -41,55 +31,15 @@ const setupMessages = defineMessages({
         description: 'geth network id placeholder',
         defaultMessage: 'Geth network id'
     },
-    gethAutodag: {
-        id: 'app.setup.gethAutodag',
-        description: 'geth autodag flag',
-        defaultMessage: 'Autodag'
-    },
-    gethFast: {
-        id: 'app.setup.gethFast',
-        description: 'geth fast flag',
-        defaultMessage: 'Fast'
-    },
-    gethMine: {
-        id: 'app.setup.gethMine',
-        description: 'geth mine flag',
-        defaultMessage: 'Mine'
-    },
-    gethMinerThreads: {
-        id: 'app.setup.gethMinerThreads',
-        description: 'number of threads used for mining',
-        defaultMessage: 'Miner threads'
-    },
     importKeys: {
         id: 'app.setup.importKeys',
         description: 'Label for import keys button',
         defaultMessage: 'Import keys'
     },
-    changeIfIpfsRunning: {
-        id: 'app.setup.changeIfIpfsRunning',
-        description: 'ipfs input field placeholder',
-        defaultMessage: 'Change this if ipfs daemon is already running'
-    },
-    changeGethCacheSize: {
-        id: 'app.setup.changeGethCacheSize',
-        description: 'geth cache size input label',
-        defaultMessage: 'Change geth cache size (min. 512MB)'
-    },
-    gethCacheSizeError: {
-        id: 'app.setup.gethCacheSizeError',
-        description: 'error shown when user sets a cache size lower than 512mb',
-        defaultMessage: 'Cache size should not be less than 512Mb'
-    },
     ipfsStoragePath: {
         id: 'app.setup.ipfsStoragePath',
         description: 'ipfs input field label',
         defaultMessage: 'IPFS storage path'
-    },
-    changeIpfsStoragePath: {
-        id: 'app.setup.changeIpfsStoragePath',
-        description: 'ipfs input field label',
-        defaultMessage: 'Change IPFS directory'
     },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
@@ -105,11 +55,6 @@ const setupMessages = defineMessages({
         id: 'app.setup.ipfsSwarmPort',
         description: 'ipfs input field label',
         defaultMessage: 'IPFS swarm port'
-    },
-    firstTimeSetupTitle: {
-        id: 'app.setup.firstTimeSetupTitle',
-        description: 'title for first time setup page',
-        defaultMessage: 'First time setup'
     },
     configuration: {
         id: 'app.setup.configuration',
@@ -176,25 +121,6 @@ const setupMessages = defineMessages({
         description: 'suggestion text',
         defaultMessage: 'We\'ll suggest incredible stuff to read based on your interests.'
     },
-    akashaNextGenNetwork: {
-        id: 'app.setup.akashaNextGenNetwork',
-        description: 'akasha next gen description',
-        defaultMessage: `AKASHA is a next-generation social blogging network powered by a new
-                        kind of world computer known as Ethereum and the
-                        Inter Planetary File System.`
-    },
-    youHaveNotHeared: {
-        id: 'app.setup.youHavenNotHeared',
-        description: 'You have not heard about these :)',
-        defaultMessage: `If you haven’t heard of these technologies before don’t worry, simply
-                        click next and we’ll take care of the rest.`
-    },
-    ifYouHaveEth: {
-        id: 'app.setup.ifYouHaveEth',
-        description: 'if you already have Ethereum',
-        defaultMessage: `If you already have the Ethereum Go client or IPFS installed on your
-                        machine please choose the advanced option.`
-    },
     expressSetup: {
         id: 'app.setup.expressSetup',
         description: 'Express setup option checkbox',
@@ -255,22 +181,6 @@ const setupMessages = defineMessages({
         description: 'state of block sync',
         defaultMessage: 'Synchronization is paused'
     },
-    syncResuming: {
-        id: 'app.setup.syncResuming',
-        description: 'state of block sync',
-        defaultMessage: 'Resuming synchronization...'
-    },
-    disconnected: {
-        id: 'app.setup.disconnected',
-        description: 'disconnected',
-        defaultMessage: 'Disconnected'
-    },
-    beforeSyncStart: {
-        id: 'app.setup.beforeSyncStart',
-        description: 'Message to show before sync is starting',
-        defaultMessage: `We are starting synchronization with the Ethereum world computer.
-                        Please be patient.`
-    },
     onSyncStart: {
         id: 'app.setup.onSyncStart',
         description: 'Message to show when synchronizing',
@@ -285,20 +195,10 @@ const setupMessages = defineMessages({
                         continue. You can start it manually from the status bar in the header or
                         click NEXT to start it automatically.`
     },
-    initializingTitle: {
-        id: 'app.setup.initializingTitle',
-        description: 'Title for initializing state page',
-        defaultMessage: 'Initializing'
-    },
     noProfilesFound: {
         id: 'app.setup.noProfilesFound',
         description: 'message if no local profiles found.',
         defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
-    },
-    findingProfiles: {
-        id: 'app.setup.findingProfiles',
-        description: 'when we are trying to discover local profiles with akasha account',
-        defaultMessage: 'Finding profiles..'
     },
     findingPeers: {
         id: 'app.setup.findingPeers',
@@ -333,30 +233,10 @@ const setupMessages = defineMessages({
             other {connected}
         }`
     },
-    peers: {
-        id: 'app.setup.peers',
-        description: 'base plural form of peer',
-        defaultMessage: 'peers'
-    },
     details: {
         id: 'app.setup.details',
         description: 'details button label',
         defaultMessage: 'details'
-    },
-    retry: {
-        id: 'app.setup.retry',
-        description: 'try again',
-        defaultMessage: 'Retry'
-    },
-    retryStep: {
-        id: 'app.setup.retryStep',
-        description: 'retry current step',
-        defaultMessage: 'Retry Step'
-    },
-    identityRegistered: {
-        id: 'app.setup.identityRegistered',
-        description: 'panel title when identity registered',
-        defaultMessage: 'Identity Registered!'
     },
     gethStopped: {
         id: 'app.setup.gethStopped',

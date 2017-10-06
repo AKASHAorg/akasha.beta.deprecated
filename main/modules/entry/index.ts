@@ -4,13 +4,11 @@ import entryTagIterator from './entry-tag-iterator';
 import entryProfileIterator from './entry-profile-iterator';
 import getEntry from './get-entry';
 import publishEntry from './publish-entry';
-import updateEntry from './update-entry';
 import canClaim from './can-claim';
 import claimDeposit from './claim-deposit';
 import downVoteEntry from './downvote-entry';
 import entryScore from './entry-score';
 import isActive from './entry-is-active';
-import getDepositBalance from './get-deposit-balance';
 import upVoteEntry from './upvote-entry';
 import voteCost from './vote-cost';
 import voteCount from './vote-count';
@@ -32,12 +30,10 @@ export default [
     entryCountTag,
     getEntry,
     publishEntry,
-    updateEntry,
     canClaim,
     claimDeposit,
     downVoteEntry,
     entryScore,
-    getDepositBalance,
     getEntriesStream,
     upVoteEntry,
     voteCost,

@@ -8,11 +8,10 @@ const initialState = new AppRecord();
 const appState = createReducer(initialState, {
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
-        const indexToRemove = state.get('notifications').findIndex(notific =>
-            notific.id === notification.id);
-
+        const indexToRemove = state.get('displayedNotifications').findIndex(displayId =>
+            displayId === notification.displayId);
         return state.merge({
-            notifications: state.get('notifications').delete(indexToRemove)
+            displayedNotifications: state.get('displayedNotifications').delete(indexToRemove)
         });
     },
 
@@ -33,8 +32,11 @@ const appState = createReducer(initialState, {
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
 
-    [types.PROFILE_LOGIN_SUCCESS]: state =>
-        state.set('showAuthDialog', false),
+    [types.NOTIFICATION_DISPLAY]: (state, { notification }) => {
+        return state.merge({
+            displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
+        });
+    },
 
     [types.PROFILE_LOGOUT]: state =>
         state.merge({
@@ -51,9 +53,13 @@ const appState = createReducer(initialState, {
         return state.set('showSecondarySidebar', !state.get('showSecondarySidebar'));
     },
 
-    [types.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
-        notifications: state.get('notifications').push(new NotificationRecord(notification))
-    }),
+    [types.SHOW_NOTIFICATION]: (state, { notification }) => {
+        const lastNotification = state.get('notifications').last();
+        notification.displayId = lastNotification ? lastNotification.get('displayId') + 1 : 1;
+        return state.merge({
+            notifications: state.get('notifications').push(new NotificationRecord(notification))
+        });
+    },
 
     [types.SHOW_REPORT_MODAL]: state =>
         state.set('showReportModal', true),
@@ -62,9 +68,6 @@ const appState = createReducer(initialState, {
         state.merge({
             showTerms: true
         }),
-
-    [types.TOGGLE_AUTH_DIALOG]: state =>
-        state.set('showAuthDialog', !state.get('showAuthDialog')),
 
     [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
         state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),

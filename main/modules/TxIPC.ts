@@ -3,7 +3,6 @@ import ModuleEmitter from '../event/ModuleEmitter';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
 import txModule from './tx';
-
 import WebContents = Electron.WebContents;
 
 class TxIPC extends ModuleEmitter {

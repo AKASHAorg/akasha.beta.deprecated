@@ -1,10 +1,12 @@
 import * as Promise from 'bluebird';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
+
 export enum ObjectType {PROFILE = 1, ENTRY = 2, COMMENT = 3}
+
 export enum OperationType {ADD = 1, REMOVE = 2}
 
-const execute = Promise.coroutine(function*(data: { type: ObjectType, id: string | string[], operation: OperationType }) {
+const execute = Promise.coroutine(function* (data: { type: ObjectType, id: string | string[], operation: OperationType }) {
     let hashRoot;
     switch (data.type) {
         case ObjectType.PROFILE:

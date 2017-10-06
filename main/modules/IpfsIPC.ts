@@ -50,7 +50,10 @@ class IpfsIPC extends ModuleEmitter {
         IpfsConnector.getInstance().on(
             ipfsEvents.DOWNLOAD_PROGRESS,
             (stats) => {
-                this.fireEvent(channels.client.ipfs.startService, mainResponse({ downloading: true, progress: stats }, {}));
+                this.fireEvent(channels.client.ipfs.startService, mainResponse({
+                    downloading: true,
+                    progress: stats
+                }, {}));
             }
         );
         return this;

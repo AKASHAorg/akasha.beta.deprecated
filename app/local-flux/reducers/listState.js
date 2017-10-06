@@ -53,22 +53,8 @@ const listState = createReducer(initialState, {
             searchResults: data
         }),
 
-    [types.LIST_UPDATE_ENTRY_IDS]: state =>
-        state.setIn(['flags', 'updatingLists'], true),
-
-    [types.LIST_UPDATE_ENTRY_IDS_ERROR]: state =>
-        state.setIn(['flags', 'updatingLists'], false),
-
-    [types.LIST_UPDATE_ENTRY_IDS_SUCCESS]: (state, { data }) => {
-        let byName = state.get('byName');
-        data.forEach((list) => {
-            byName = byName.set(list.name, createListRecord(list));
-        });
-        return state.merge({
-            byName,
-            flags: state.get('flags').set('updatingLists', false)
-        });
-    },
+    [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data }) =>
+        state.setIn(['byName', data.name], createListRecord(data)),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });

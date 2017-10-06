@@ -1,42 +1,54 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Avatar } from 'antd';
 import { getInitials } from '../../utils/dataModule';
 
 const AvatarPresenter = (props) => {
-    const { akashaId, className, firstName, history, image, lastName, link, onClick, size } = props;
-    const clickHandler = (ev) => {
-        if (link && akashaId) {
-            history.push(`/@${akashaId}`);
+    const { akashaId, className, firstName, image, lastName, link, onClick, size } = props;
+    const initials = !image && (firstName || lastName) && getInitials(firstName, lastName).toUpperCase();
+    const sizes = { small: 'sm', standard: 'base', large: 'lg' };
+    const base = 'avatar_with-initials';
+    const avatar = initials ?
+      (<div
+        className={`avatar ${base} ${base}_${sizes[size]} ${className || ''}`}
+        onClick={onClick}
+        style={{ cursor: onClick || link ? 'pointer' : 'default' }}
+      >
+        {initials &&
+          <div
+            className="flex-center"
+            style={{ cursor: onClick || link ? 'pointer' : 'default' }}
+          >
+            {initials}
+          </div>
         }
-        if (onClick) {
-            onClick(ev);
-        }
-    };
-
-    return (
-      <Avatar
-        className={`avatar ${className}`}
-        icon={(firstName || lastName) ? '' : 'user'}
-        onClick={clickHandler}
+      </div>) :
+      (<Avatar
+        className={`avatar ${className || ''}`}
+        icon={'user'}
+        onClick={onClick}
         shape="square"
         size={size}
-        src={image}
-        style={{ cursor: onClick || link ? 'pointer' : 'inherit' }}
-      >
-        {!image && (firstName || lastName) &&
-            getInitials(firstName, lastName).toUpperCase()
-        }
-      </Avatar>
-    );
+        src={image && image}
+        style={{ cursor: onClick || link ? 'pointer' : 'default' }}
+      />);
+
+    if (link) {
+        return (
+          <Link to={{ pathname: `/@${akashaId}`, state: { overlay: true } }}>
+            {avatar}
+          </Link>
+        );
+    }
+
+    return avatar;
 };
 
 AvatarPresenter.propTypes = {
     akashaId: PropTypes.string,
     className: PropTypes.string,
     firstName: PropTypes.string,
-    history: PropTypes.shape().isRequired,
     image: PropTypes.string,
     lastName: PropTypes.string,
     link: PropTypes.bool,
@@ -48,4 +60,4 @@ AvatarPresenter.defaultProps = {
     size: 'standard' // 32X32px
 };
 
-export default withRouter(AvatarPresenter);
+export default AvatarPresenter;

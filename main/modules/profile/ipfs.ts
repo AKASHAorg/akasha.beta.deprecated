@@ -78,7 +78,7 @@ export const create = Promise.coroutine(function* (data: IpfsProfileCreateReques
  *
  * @type {Function}
  */
-export const getShortProfile = Promise.coroutine(function* (hash: string, resolveAvatar = false) {
+export const getShortProfile = Promise.coroutine(function* (hash: string, resolveAvatar: boolean) {
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }
@@ -107,13 +107,12 @@ export const getShortProfile = Promise.coroutine(function* (hash: string, resolv
  *
  * @type {Function}
  */
-export const resolveProfile = Promise.coroutine(function* (hash: string, resolveImages = false) {
+export const resolveProfile = Promise.coroutine(function* (hash: string, resolveImages: boolean) {
     if (profiles.getFull(hash)) {
         return Promise.resolve(profiles.getFull(hash));
     }
     let constructed = {
         [ProfileSchema.LINKS]: [],
-        [ProfileSchema.ABOUT]: '',
         [ProfileSchema.BACKGROUND_IMAGE]: ''
     };
     const shortProfile = yield getShortProfile(hash, resolveImages);

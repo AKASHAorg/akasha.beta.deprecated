@@ -15,8 +15,17 @@ export const ActionState = Record({
     allActions: new List(),
     byId: new Map(),
     needAuth: null,
-    needTransferConfirm: null,
-    needWeightConfirm: null,
+    pending: new Map({
+        claim: new Map(),
+        comment: new Map(),
+        commentVote: new Map(),
+        createTag: new Map(),
+        entryVote: new Map(),
+        follow: new Map(),
+        profileRegister: false,
+        profileUpdate: false,
+        sendTip: new Map(),
+    }),
     published: new List(),
     publishing: new List()
 });

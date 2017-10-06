@@ -23,7 +23,7 @@ class SendTipForm extends Component {
     };
 
     render () {
-        const { balance, form, intl, name, onCancel, sendingTip } = this.props;
+        const { balance, form, intl, name, onCancel, tipPending } = this.props;
         const { getFieldDecorator, getFieldError } = form;
         const amountError = getFieldError('amount');
         const maxAmount = Number(formatBalance((balance - 0.1).toString(), 7));
@@ -43,13 +43,13 @@ class SendTipForm extends Component {
             <FormItem
               className="send-tip-form__form-item"
               colon={false}
+              help={amountError || extra}
               label={
                 <span className="uppercase">
                   {intl.formatMessage(formMessages.aethAmountLabel)}
                 </span>
               }
               validateStatus={amountError ? 'error' : ''}
-              help={amountError || extra}
             >
               {getFieldDecorator('amount', {
                   initialValue: 0.001,
@@ -64,7 +64,7 @@ class SendTipForm extends Component {
                   min={0.001}
                   max={maxAmount}
                   onKeyDown={this.handleKeyDown}
-                  placeholder="Tip amount"
+                  placeholder={intl.formatMessage(profileMessages.tipAmount)}
                   step={0.001}
                 />
               )}
@@ -88,13 +88,13 @@ class SendTipForm extends Component {
             </FormItem>
             <div className="send-tip-form__actions">
               <Button className="send-tip-form__button" onClick={onCancel}>
-                <span className="send-tip-form__button-label">                
+                <span className="send-tip-form__button-label">
                   {intl.formatMessage(generalMessages.cancel)}
                 </span>
               </Button>
               <Button
                 className="send-tip-form__button"
-                disabled={!!amountError || sendingTip}
+                disabled={!!amountError || tipPending}
                 htmlType="submit"
                 onClick={this.onSubmit}
                 type="primary"
@@ -116,7 +116,7 @@ SendTipForm.propTypes = {
     name: PropTypes.string.isRequired,
     onCancel: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
-    sendingTip: PropTypes.bool
+    tipPending: PropTypes.bool
 };
 
 export default Form.create()(injectIntl(SendTipForm));

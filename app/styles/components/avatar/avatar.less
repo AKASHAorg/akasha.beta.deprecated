@@ -1,5 +1,43 @@
 .avatar {
-    border-radius: 4px;
     overflow: hidden;
     text-align: center;
+
+    .ant-avatar-string {
+        position: absolute;
+        left: 5px !important;
+        right: 5px;
+        top: 5px;
+        bottom: 5px;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &_with-initials {
+        background-color: @avatar-bg;
+        border-radius: @avatar-border-radius;
+        color: white;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: normal;
+
+        &_sm {
+            width: @avatar-size-sm;
+            height: @avatar-size-sm;
+            font-size: 14px;
+        }
+    
+        &_base {
+            width: @avatar-size-base;
+            height: @avatar-size-base;
+            font-size: 20px;
+        }
+    
+        &_lg {
+            width: @avatar-size-lg;
+            height: @avatar-size-lg;
+            font-size: 32px;
+        }
+    }
 }

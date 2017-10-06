@@ -50,4 +50,5 @@ class LicensesIPC extends ModuleEmitter {
         return this;
     }
 }
+
 export default LicensesIPC;

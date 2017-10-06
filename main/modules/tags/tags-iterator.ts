@@ -1,34 +1,36 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
+import { GethConnector } from '@akashaproject/geth-connector';
+
+const tagIterator = {
+    'id': '/tagIterator',
+    'type': 'object',
+    'properties': {
+        'limit': { 'type': 'number' },
+        'toBlock': { 'type': 'number' },
+    },
+    'required': ['toBlock']
+};
 
 /**
  * Get a tags created
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.tags.getFirstTag();
-    if (currentId === '0') {
-        return { collection: [] };
-    }
-    let currentName;
-    const maxResults = (data.limit) ? data.limit : 20;
-    const results = [];
-    let counter = 0;
-    if (!data.start) {
-        currentName = yield contracts.instance.tags.getTagName(currentId);
-        results.push({ tagId: currentId, tagName: currentName });
-        counter = 1;
-    }
-    while (counter < maxResults) {
-        currentId = yield contracts.instance.tags.getNextTag(currentId);
-        if (currentId === '0') {
+const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number }) {
+    const v = new schema.Validator();
+    v.validate(data, tagIterator, { throwError: true });
+
+    const collection = [];
+    const maxResults = data.limit || 5;
+    const fetched = yield contracts.fromEvent(contracts.instance.Tags.TagCreate, {}, data.toBlock, maxResults);
+    for (let event of fetched.results) {
+        collection.push({ tag: GethConnector.getInstance().web3.toUtf8(event.args.tag) });
+        if (collection.length === maxResults) {
             break;
         }
-        currentName = yield contracts.instance.tags.getTagName(currentId);
-        results.push({ tagId: currentId, tagName: currentName });
-        counter++;
     }
-    return { collection: results, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock };
 });
 
 export default { execute, name: 'tagIterator' };

@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Tooltip } from 'antd';
-import { LogoButton } from './';
-import { ChatIcon, PeopleIcon,
-    SearchIcon, StreamsIcon } from './svg';
-import { generalMessages } from '../locale-data/messages';
+import { Button, Tooltip, Icon } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
+import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
 
 class Sidebar extends Component {
     state = {
@@ -25,11 +23,6 @@ class Sidebar extends Component {
         }));
     }
 
-    getWrapperProps = message => ({
-        'data-tip': this.props.intl.formatMessage(message),
-        'data-place': 'right'
-    });
-
     _isSidebarVisible = (location) => {
         /**
          * specify blacklisted routes
@@ -45,8 +38,8 @@ class Sidebar extends Component {
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
+                const draftId = genId();
                 if (path === '/draft/article/new') {
-                    const draftId = genId();
                     draftCreate({
                         id: draftId,
                         akashaId: loggedProfile.get('akashaId'),
@@ -76,109 +69,90 @@ class Sidebar extends Component {
     }
 
     render () {
-        const { activeDashboard, intl, loggedProfileData, location } = this.props;
-        const { showEntryMenu } = this.state;
-        const hasAkashaId = !!loggedProfileData.get('akashaId');
-
+        const { activeDashboard, history, loggedProfileData, location } = this.props;
+        const isLoggedIn = !!loggedProfileData.get('akashaId');
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
-            <div className="sidebar__entry-icon" style={{ zIndex: showEntryMenu ? 5 : 0 }} >
-              <Tooltip
-                placement={showEntryMenu ? 'bottom' : 'right'}
-                title={
-                    intl.formatMessage(showEntryMenu ? generalMessages.close : generalMessages.addNewEntry)
-                }
-              >
-                <Button
-                  icon={showEntryMenu ? 'close' : 'edit'}
-                  type="sidebar-icon"
-                  size="large"
-                  className="borderless sidebar__icon-button"
-                  disabled={!hasAkashaId}
-                  ghost
+            <div className="sidebar__nav-container">
+              <Icon className="content-link" onClick={history.goBack} type="left" />
+              <Icon className="content-link" onClick={history.goForward} type="right" />
+            </div>
+            <div className="sidebar__entry-icon" >
+              <div>
+                <AddEntryIcon
+                  disabled={!isLoggedIn}
+                  isActive={this._checkActiveIcon('draft/new')}
                   onClick={this._toggleEntryMenu}
                 />
-              </Tooltip>
-              <div
-                className={
+                <div
+                  className={
                     `sidebar__entry-menu
                     sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
                 }
-              >
-                <ul className="sidebar__entry-menu-buttons">
-                  <li>
-                    <Tooltip
-                      title="Text Entry"
-                      placement="bottom"
-                    >
-                      <Button
-                        type="entry-menu-button"
-                        size="large"
-                        className="borderless"
-                        icon="file"
-                        ghost
-                        onClick={this._navigateTo('/draft/article/new')}
-                      />
-                    </Tooltip>
-                  </li>
-                  <li>
-                    <Tooltip
-                      title="Link Entry"
-                      placement="bottom"
-                    >
-                      <Button
-                        type="entry-menu-button"
-                        size="large"
-                        className="borderless"
-                        icon="link"
-                        ghost
-                        onClick={this._navigateTo('/draft/link/new')}
-                      />
-                    </Tooltip>
-                  </li>
-                </ul>
+                >
+                  <ul className="sidebar__entry-menu-buttons">
+                    <li>
+                      <Tooltip
+                        title="Text Entry"
+                        placement="bottom"
+                      >
+                        <Button
+                          type="entry-menu-button"
+                          size="large"
+                          className="borderless"
+                          icon="file"
+                          ghost
+                          onClick={this._navigateTo('/draft/article/new')}
+                        />
+                      </Tooltip>
+                    </li>
+                    <li>
+                      <Tooltip
+                        title="Link Entry"
+                        placement="bottom"
+                      >
+                        <Button
+                          type="entry-menu-button"
+                          size="large"
+                          className="borderless"
+                          icon="link"
+                          ghost
+                          onClick={this._navigateTo('/draft/link/new')}
+                        />
+                      </Tooltip>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div className="sidebar__search-icon">
-              <Tooltip
-                placement="right"
-                title={intl.formatMessage(generalMessages.search)}
-              >
+              <div>
                 <Link to="/search/entries">
                   <SearchIcon
                     isActive={this._checkActiveIcon('search')}
                   />
                 </Link>
-              </Tooltip>
+              </div>
             </div>
             <div className="sidebar__stream-icon" >
-              <Tooltip
-                title={intl.formatMessage(generalMessages.stream)}
-                placement="right"
-              >
-                <Link to={`${activeDashboard ? `/dashboard/${activeDashboard}` : '/dashboard'}`}>
+              <div>
+                <Link to={`/dashboard/${activeDashboard || ''}`}>
                   <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
                 </Link>
-              </Tooltip>
-              <Tooltip
-                title={intl.formatMessage(generalMessages.people)}
-                placement="right"
-              >
+              </div>
+              <div>
                 <Link to="/people">
                   <PeopleIcon isActive={this._checkActiveIcon('people')} />
                 </Link>
-              </Tooltip>
-              <Tooltip
-                title={intl.formatMessage(generalMessages.chat)}
-                placement="right"
-              >
+              </div>
+              <div>
                 <Link to="/chat">
                   <ChatIcon isActive={this._checkActiveIcon('chat')} />
                 </Link>
-              </Tooltip>
-            </div>
-            <div className="sidebar__logo">
-              <LogoButton />
+              </div>
+              <div>
+                <Link to="/profileoverview/overview">
+                  <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
+                </Link>
+              </div>
             </div>
             <div
               className={
@@ -196,11 +170,11 @@ Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftCreate: PropTypes.func,
     history: PropTypes.shape(),
-    intl: PropTypes.shape(),
+    draftsCount: PropTypes.number,
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
 };
 
-export default Sidebar;
+export default withRouter(Sidebar);

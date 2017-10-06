@@ -1,0 +1,80 @@
+.vote-popover {
+    width: 260px;
+
+    &__title {
+        color: @heading-color;
+        font-weight: 500;
+        padding: 10px 0px;
+    }
+
+    &__form-item {
+        height: 64px;
+        margin-bottom: 10px;
+
+        .ant-form-explain {
+            font-size: 12px;
+        }
+
+        // For some reason, the input is placed 1px lower
+        .ant-input-number-input {
+            position: relative;
+            top: -1px;
+        }
+    }
+
+    &__extra {
+        line-height: 1;
+        font-size: 12px;
+    }
+
+    &__slider {
+        display: inline-block;
+        width: ~'calc(100% - 30px)';
+        margin: 6px;
+
+        .ant-slider-rail {
+            height: 6px;
+        }
+
+        .ant-slider-track {
+            height: 6px;
+        }
+
+        .ant-slider-step {
+            height: 6px;
+        }
+
+        .ant-slider-handle {
+            height: 16px;
+            width: 16px;
+        }
+    }
+
+    &__weight {
+        width: 30px;
+        flex: 0 0 auto;
+        color: @heading-color;
+        font-weight: 500;      
+        padding-left: 5px;  
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__button {
+        margin-left: 10px;
+    }
+
+    &__button-label {
+        font-size: 13px;
+        font-weight: normal;
+    }
+
+    &__icon {
+        &_disabled {
+            color: @disabled-color;
+        }
+    }
+}

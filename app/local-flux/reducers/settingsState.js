@@ -164,7 +164,13 @@ const settingsState = createReducer(initialState, {
             })
         }),
 
+    [types.PROFILE_LOGOUT_SUCCESS]: state =>
+        state.set('userSettings', new UserSettings()),
+
     [types.USER_SETTINGS_CLEAR]: state =>
+        state.set('userSettings', new UserSettings()),
+
+    [types.USER_SETTINGS_REQUEST]: state =>
         state.set('userSettings', new UserSettings()),
 
     [types.USER_SETTINGS_SUCCESS]: (state, { data }) =>

@@ -6,6 +6,11 @@ const tagMessages = defineMessages({
         description: 'placeholder for tag editor field',
         defaultMessage: '#category...'
     },
+    addToDashboard: {
+        id: 'app.tag.addToDashboard',
+        description: 'add tag to dashboard button',
+        defaultMessage: 'Add to dashboard'
+    },
     recommendedTags: {
         id: 'app.tag.recommendedTags',
         description: 'tags recommended by Akasha',
@@ -42,4 +47,5 @@ const tagMessages = defineMessages({
         defaultMessage: 'Unsubscribe'
     }
 });
+
 export { tagMessages };

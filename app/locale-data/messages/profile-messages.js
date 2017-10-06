@@ -6,16 +6,6 @@ export const profileMessages = defineMessages({
         description: 'Activity section title',
         defaultMessage: 'activity'
     },
-    createProfileTitle: {
-        id: 'app.profileTitle',
-        description: 'Modal title for new identity form',
-        defaultMessage: 'Create new identity'
-    },
-    optionalDetailsLabel: {
-        id: 'app.profile.optionalDetailsLabel',
-        description: 'Label for optional details checkbox',
-        defaultMessage: 'Optional details'
-    },
     avatarTitle: {
         id: 'app.profile.avatarTitle',
         description: 'Avatar section title',
@@ -35,11 +25,6 @@ export const profileMessages = defineMessages({
         id: 'app.profile.contacts',
         description: 'Contacts card title',
         defaultMessage: 'Contacts'
-    },
-    darkTheme: {
-        id: 'app.profile.darkTheme',
-        description: 'dark theme switch label',
-        defaultMessage: 'Dark Theme'
     },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
@@ -86,150 +71,15 @@ export const profileMessages = defineMessages({
         description: 'remove crypto button label',
         defaultMessage: 'Remove cryptocurrency link'
     },
-    keepAccUnlockedLabel: {
-        id: 'app.profile.keepAccUnlocked',
-        description: 'Label for "Keep Account Unlocked For" checkbox',
-        defaultMessage: 'Keep account unlocked for'
-    },
-    registeringIdentity: {
-        id: 'app.profile.registeringIdentity',
-        description: 'Registering identity status',
-        defaultMessage: 'Registering identity'
-    },
-    yourIdentityIsBroadcasted: {
-        id: 'app.profile.yourIdentityIsBroadcasted',
-        description: 'describing that identity is broadcasted into network',
-        defaultMessage: 'Your identity is broadcasted into the AKASHA private network.'
-    },
-    willTakeFewMoments: {
-        id: 'app.profile.willTakeFewMinutes',
-        description: 'action `will take a few moments` to complete',
-        defaultMessage: 'This will take a few moments'
-    },
-    TEMP_PROFILE_CREATE: {
-        id: 'app.profile.tempProfileCreate',
-        description: 'creating a temp profile status message',
-        defaultMessage: 'Creating a temporary profile'
-    },
-    TEMP_PROFILE_CREATE_SUCCESS: {
-        id: 'app.profile.tempProfileCreateSuccess',
-        description: 'a temporary profile was successfully saved to database',
-        defaultMessage: 'Profile data saved to a local database'
-    },
-    ETH_ADDRESS_CREATE: {
-        id: 'app.profile.ethAddressCreate',
-        description: 'Message status when generating eth key',
-        defaultMessage: 'Creating local Ethereum key'
-    },
-    ETH_ADDRESS_CREATE_SUCCESS: {
-        id: 'app.profile.ethAddressCreateSuccess',
-        description: 'Message status when eth key generated',
-        defaultMessage: 'Ethereum key created'
-    },
-    FUND_FROM_FAUCET: {
-        id: 'app.profile.fundFromFaucet',
-        description: 'Message status when request to faucet started',
-        defaultMessage: 'Requesting aethers from AKASHA'
-    },
-    FUND_FROM_FAUCET_SUCCESS: {
-        id: 'app.profile.fundFromFaucetSuccess',
-        description: 'Message status when faucet request accepted',
-        defaultMessage: 'Request accepted.\nTransaction id is: {faucetTx}'
-    },
-    TEMP_PROFILE_FAUCET_TX_MINED: {
-        id: 'app.profile.tempProfileFaucetTxMined',
-        description: 'Message status when waiting for mined event',
-        defaultMessage: 'Waiting for faucet transaction to be mined.'
-    },
-    TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS: {
-        id: 'app.profile.tempProfileFaucetTxMinedSuccess',
-        description: 'Message status when tx mined',
-        defaultMessage: 'Faucet Transaction successfully mined.'
-    },
-    TEMP_PROFILE_LOGIN: {
-        id: 'app.profile.tempProfileLogin',
-        description: 'Message status when login requested',
-        defaultMessage: 'Logging in with @{akashaId}'
-    },
-    TEMP_PROFILE_LOGIN_SUCCESS: {
-        id: 'app.profile.tempProfileLoginSuccess',
-        description: 'Message status when login succeded',
-        defaultMessage: 'Login was successful'
-    },
-    TEMP_PROFILE_PUBLISH: {
-        id: 'app.profile.tempProfilePublish',
-        description: 'Message status when publish profile requested',
-        defaultMessage: 'Publishing your profile'
-    },
-    TEMP_PROFILE_PUBLISH_SUCCESS: {
-        id: 'app.profile.tempProfilePublishSuccess',
-        description: 'Message status when profile was published',
-        defaultMessage: 'Profile published.\nTransaction id is: {publishTx}'
-    },
-    TEMP_PROFILE_PUBLISH_TX_MINED: {
-        id: 'app.profile.tempProfilePublishTxMined',
-        description: 'Message status when waiting for mined event for publish tx',
-        defaultMessage: 'Waiting for publish transaction to be mined'
-    },
-    TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS: {
-        id: 'app.profile.tempProfilePublishTxMinedSuccess',
-        description: 'Message status when publish tx mined',
-        defaultMessage: 'Publish transaction mined'
-    },
-    findingProfiles: {
-        id: 'app.profile.findingProfiles',
-        description: 'Message status when there are no temporary profiles in stores yet. But might be in database',
-        defaultMessage: 'Finding profiles to publish...'
-    },
-    finishingProfileCreation: {
-        id: 'app.profile.finishingProfileCreation',
-        description: 'Message status when all steps completed and data cleanup takes longer than expected.',
-        defaultMessage: 'Finishing profile publishing.'
-    },
-    enjoyAkasha: {
-        id: 'app.profile.enjoyAkasha',
-        description: 'button label when register complete',
-        defaultMessage: 'Enjoy AKASHA'
-    },
-    tipsBeforeStart: {
-        id: 'app.profile.tipsBeforeStart',
-        description: 'Title for some tips before using AKASHA',
-        defaultMessage: 'Tips before you get started'
-    },
-    weCannotHelpRecover: {
-        id: 'app.profile.weCannotHelpRecover',
-        description: 'text explaining we cannot recover lost passphrases',
-        defaultMessage: 'Since we cannot help you recover passphrases, or identities make sure to:'
-    },
-    writePassKeepSafe: {
-        id: 'app.profile.writePassKeepSafe',
-        description: 'a tip for storing passphrase safely',
-        defaultMessage: 'Write down your passphrase and keep it safe'
-    },
-    backupYourId: {
-        id: 'app.profile.backupYourId',
-        description: 'tip to backup your id',
-        defaultMessage: 'Backup your ID (in the next screen) and don’t be sorry later'
-    },
-    dontShareKey: {
-        id: 'app.profile.dontShareKey',
-        description: 'tip to not share the key with anyone',
-        defaultMessage: 'Don’t (ever) share your key with other people'
-    },
-    personalProfile: {
-        id: 'app.profile.personalProfile',
-        description: 'Title for edit profile panel',
-        defaultMessage: 'Personal profile'
+    entries: {
+        id: 'app.profile.entries',
+        description: 'Title for entries card',
+        defaultMessage: 'Entries'
     },
     follow: {
         id: 'app.profile.follow',
         description: 'follow a profile',
         defaultMessage: 'Follow'
-    },
-    unfollow: {
-        id: 'app.profile.unfollow',
-        description: 'unfollow a profile',
-        defaultMessage: 'Unfollow'
     },
     followers: {
         id: 'app.profile.followers',
@@ -246,7 +96,7 @@ export const profileMessages = defineMessages({
     },
     following: {
         id: 'app.profile.following',
-        description: 'Label for following tab',
+        description: 'following an user',
         defaultMessage: 'Following'
     },
     followings: {
@@ -262,20 +112,10 @@ export const profileMessages = defineMessages({
             other {followings}
         }`
     },
-    allEntries: {
-        id: 'app.profile.allEntries',
-        description: 'Label for all entries tab',
-        defaultMessage: 'All entries'
-    },
     highlights: {
         id: 'app.profile.highlights',
         description: 'title for highlights card',
         defaultMessage: 'Highlights'
-    },
-    interestingPeople: {
-        id: 'app.profile.interestingPeople',
-        description: 'Label for interesting people tab',
-        defaultMessage: 'Interesting people'
     },
     lists: {
         id: 'app.profile.lists',
@@ -287,10 +127,40 @@ export const profileMessages = defineMessages({
         description: 'Title for my balance card',
         defaultMessage: 'My Balance'
     },
+    myEntries: {
+        id: 'app.profile.myEntries',
+        description: 'Title for my entries',
+        defaultMessage: 'My Entries'
+    },
+    myProfile: {
+        id: 'app.profile.myProfile',
+        description: 'Title for profile overview sidebar',
+        defaultMessage: 'MY PROFILE'
+    },
+    noProfiles: {
+        id: 'app.entry.noProfiles',
+        description: 'placeholder for empty profiles list',
+        defaultMessage: 'No profiles'
+    },
+    overview: {
+        id: 'app.profile.overview',
+        description: 'Title for overview card',
+        defaultMessage: 'Overview'
+    },
+    settings: {
+        id: 'app.profile.settings',
+        description: 'Title for profile settings',
+        defaultMessage: 'Profile Settings'
+    },
     receive: {
         id: 'app.profile.receive',
         description: 'Receive button label',
         defaultMessage: 'Receive'
+    },
+    rewardsAndGoals: {
+        id: 'app.profile.rewardsAndGoals',
+        description: 'Title for rewards and goals card',
+        defaultMessage: 'Rewards and Goals'
     },
     send: {
         id: 'app.profile.send',
@@ -312,14 +182,29 @@ export const profileMessages = defineMessages({
         description: 'title for send tip form',
         defaultMessage: 'Send tip to {name}'
     },
-    disableNotifications: {
-        id: 'app.profile.disableNotifications',
-        description: 'tooltip for disable notifications button',
-        defaultMessage: 'Disable notifications'
+    support: {
+        id: 'app.profile.support',
+        description: 'support an user financially',
+        defaultMessage: 'Support'
     },
-    enableNotifications: {
-        id: 'app.profile.enableNotifications',
-        description: 'tooltip for enable notifications button',
-        defaultMessage: 'Enable notifications'
+    supported: {
+        id: 'app.profile.supported',
+        description: 'supported by someone',
+        defaultMessage: 'Supported'
+    },
+    supporting: {
+        id: 'app.profile.supporting',
+        description: 'supporting someone',
+        defaultMessage: 'Supporting'
+    },
+    tipAmount: {
+        id: 'app.profile.tipAmount',
+        description: 'placeholder for tip amount input',
+        defaultMessage: 'Tip amount'
+    },
+    unfollow: {
+        id: 'app.profile.unfollow',
+        description: 'unfollow a profile',
+        defaultMessage: 'Unfollow'
     }
 });

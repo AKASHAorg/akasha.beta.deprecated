@@ -182,9 +182,8 @@ class TagEditor extends Component {
             tagInputWidth: this._getTextWidth(ev.target.value).width + 20,
         }, () => {
             if (this.state.partialTag.length > 2) {
-                this.props.tagSearch({
-                    tag: this.state.partialTag,
-                    localOnly: true
+                this.props.tagSearchLocal({
+                    tagName: this.state.partialTag,
                 });
             } else {
                 this.props.searchResetResults();
@@ -208,9 +207,8 @@ class TagEditor extends Component {
         }, () => {
             if (this.state.inputHasFocus) {
                 if (this.state.partialTag.length > 2) {
-                    this.props.tagSearch({
-                        tag: this.state.partialTag,
-                        localOnly: true,
+                    this.props.tagSearchLocal({
+                        tagName: this.state.partialTag,
                     });
                 }
             }
@@ -335,7 +333,7 @@ TagEditor.propTypes = {
     match: PropTypes.shape(),
     nodeRef: PropTypes.func,
     onTagUpdate: PropTypes.func,
-    tagSearch: PropTypes.func,
+    tagSearchLocal: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     tags: PropTypes.shape(),

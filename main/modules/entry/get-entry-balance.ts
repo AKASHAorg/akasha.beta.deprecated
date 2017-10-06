@@ -1,7 +1,16 @@
 import * as Promise from 'bluebird';
-import { constructed as contracts } from '../../contracts/index';
-import { GethConnector } from '@akashaproject/geth-connector';
+import contracts from '../../contracts/index';
+import schema from '../utils/jsonschema';
 
+export const getEntryBalance = {
+    'id': '/getEntryBalance',
+    'type': 'array',
+    'items': {
+        'type': 'string'
+    },
+    'uniqueItems': true,
+    'minItems': 1
+};
 /**
  * Get current balance of an entry
  * @type {Function}
@@ -12,27 +21,24 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function*(data: { entryId: string[], unit: 'ether' }) {
-        if (!Array.isArray(data.entryId)) {
-            throw new Error('data.entryId must be an array');
-        }
-
-        const requests = data.entryId.map((id) => {
-            return contracts.instance.entries
-                .getEntryFund(id)
-                .then((balanceAddress) => {
-                    if (!balanceAddress) {
-                        return { balance: 'claimed', unit: data.unit, entryId: id };
-                    }
-                    return GethConnector.getInstance().web3.eth.getBalanceAsync(balanceAddress)
-                        .then((weiAmount) => {
-                            const balance = GethConnector.getInstance().web3.fromWei(weiAmount, data.unit);
-                            return { balance: balance.toString(10), unit: data.unit, entryId: id };
-                        });
+    function* (data: string[]) {
+        const v = new schema.Validator();
+        v.validate(data, getEntryBalance, { throwError: true });
+        const collection = [];
+        const requests = data.map((id) => {
+            return contracts.instance.Votes.getRecord(id).then((result) => {
+                const [_totalVotes, _score, _endPeriod, _totalKarma, _claimed] = result;
+                collection.push({
+                    entryId: id,
+                    totalVotes: _totalVotes.toString(10),
+                    score: _score.toString(10),
+                    endPeriod: (new Date(_endPeriod.toNumber() * 1000)).toISOString(),
+                    totalKarma: _totalKarma.toString(10),
+                    claimed: _claimed
                 });
+            });
         });
-
-        const collection = yield Promise.all(requests);
+        yield Promise.all(requests);
         return { collection };
     });
 

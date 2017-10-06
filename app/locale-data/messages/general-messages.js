@@ -27,6 +27,11 @@ const generalMessages = defineMessages({
         description: 'aeth token',
         defaultMessage: 'AETH'
     },
+    amount: {
+        id: 'app.general.amount',
+        description: 'currency amount',
+        defaultMessage: 'Amount'
+    },
     akasha: {
         id: 'app.general.akasha',
         description: 'AKASHA',
@@ -36,11 +41,6 @@ const generalMessages = defineMessages({
         id: 'app.general.back',
         description: 'navigate back',
         defaultMessage: 'Back'
-    },
-    by: {
-        id: 'app.general.by',
-        description: 'entry is written `by`',
-        defaultMessage: 'by'
     },
     cancel: {
         id: 'app.general.cancel',
@@ -67,16 +67,6 @@ const generalMessages = defineMessages({
         description: 'close',
         defaultMessage: 'Close'
     },
-    comingSoon: {
-        id: 'app.general.comingSoon',
-        description: 'tooltip for sidebar disabled button',
-        defaultMessage: 'Coming soon'
-    },
-    completed: {
-        id: 'app.general.completed',
-        description: 'completed button label',
-        defaultMessage: 'Completed'
-    },
     completeProfileCrumb: {
         id: 'app.general.completeProfileCrumb',
         description: 'breadcrumb to display when a profile is created',
@@ -87,10 +77,10 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
-    connected: {
-        id: 'app.general.connected',
-        description: 'connected status',
-        defaultMessage: 'connected'
+    create: {
+        id: 'app.general.create',
+        description: 'create',
+        defaultMessage: 'Create'
     },
     create: {
         id: 'app.general.create',
@@ -120,7 +110,17 @@ const generalMessages = defineMessages({
     editProfile: {
         id: 'app.general.editProfile',
         description: 'Edit profile button label',
-        defaultMessage: 'Edit Profile'
+        defaultMessage: 'Edit profile'
+    },
+    essence: {
+        id: 'app.general.essence',
+        description: 'essence',
+        defaultMessage: 'Essence'
+    },
+    essenceTotalScore: {
+        id: 'app.general.essenceTotalScore',
+        description: 'essence total score',
+        defaultMessage: 'Essence total score'
     },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
@@ -155,11 +155,6 @@ const generalMessages = defineMessages({
             other {hours}
         }`
     },
-    importIdentityLabel: {
-        id: 'app.general.importIdentityLabel',
-        description: 'Import identity button label',
-        defaultMessage: 'Import identity'
-    },
     ipfsServiceOff: {
         id: 'app.general.ipfsServiceOff',
         description: 'ipfs client service is stopped',
@@ -174,6 +169,16 @@ const generalMessages = defineMessages({
         id: 'app.general.join',
         description: 'join button label',
         defaultMessage: 'Join'
+    },
+    karma: {
+        id: 'app.general.karma',
+        description: 'karma',
+        defaultMessage: 'Karma'
+    },
+    karmaTotalScore: {
+        id: 'app.general.karmaTotalScore',
+        description: 'karma total score',
+        defaultMessage: 'Karma total score'
     },
     leave: {
         id: 'app.general.leave',
@@ -200,15 +205,10 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar my entries button',
         defaultMessage: 'My entries'
     },
-    nextButtonLabel: {
-        id: 'app.general.nextButtonLabel',
+    next: {
+        id: 'app.general.next',
         description: 'Label for Next button',
-        defaultMessage: 'next'
-    },
-    noErrors: {
-        id: 'app.general.noErrors',
-        description: 'placeholder for empty error list',
-        defaultMessage: 'No errors'
+        defaultMessage: 'Next'
     },
     notes: {
         id: 'app.general.notes',
@@ -225,6 +225,11 @@ const generalMessages = defineMessages({
         description: 'pause button label',
         defaultMessage: 'Pause'
     },
+    pending: {
+        id: 'app.general.pending',
+        description: 'an action is pending',
+        defaultMessage: 'Pending'
+    },
     people: {
         id: 'app.general.people',
         description: 'tooltip for sidebar people button',
@@ -235,15 +240,20 @@ const generalMessages = defineMessages({
         description: 'Message to show while images are being precessed',
         defaultMessage: 'Processing image'
     },
+    profileOverview: {
+        id: 'app.general.profileOverview',
+        description: 'button label for profile overview',
+        defaultMessage: 'Profile Overview'
+    },
     publish: {
         id: 'app.general.publish',
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
-    refresh: {
-        id: 'app.general.refresh',
-        description: 'refresh button label',
-        defaultMessage: 'Refresh'
+    reply: {
+        id: 'app.general.reply',
+        description: 'reply',
+        defaultMessage: 'Reply'
     },
     reset: {
         id: 'app.general.reset',
@@ -275,35 +285,20 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar search button',
         defaultMessage: 'Search'
     },
-    sendFeedback: {
-        id: 'app.general.sendFeedback',
-        description: 'send feedback button label',
-        defaultMessage: 'Send feedback'
-    },
     send: {
         id: 'app.general.send',
         description: 'send button label',
         defaultMessage: 'Send'
-    },
-    serviceStoppedWarning: {
-        id: 'app.createProfile.serviceStoppedWarning',
-        description: 'message to be displayed when geth and/or IPFS are/is stopped',
-        defaultMessage: 'Geth and IPFS must be started'
     },
     settings: {
         id: 'app.general.settings',
         description: 'settings button label',
         defaultMessage: 'Settings'
     },
-    showMore: {
-        id: 'app.general.showMore',
-        description: 'label for button that loads more data',
-        defaultMessage: 'Show more'
-    },
-    signOut: {
-        id: 'app.general.signOut',
-        description: 'sign out button label',
-        defaultMessage: 'Sign out'
+    skipStep: {
+        id: 'app.general.skipStep',
+        description: 'label for skip button',
+        defaultMessage: 'Skip this step'
     },
     start: {
         id: 'app.general.start',
@@ -352,6 +347,11 @@ const generalMessages = defineMessages({
         id: 'app.general.upgrading',
         description: 'Upgrading services',
         defaultMessage: 'Upgrading'
+    },
+    vote: {
+        id: 'app.general.vote',
+        description: 'Vote',
+        defaultMessage: 'Vote'
     }
 });
 export { generalMessages };

@@ -1,13 +1,13 @@
 import * as Promise from 'bluebird';
 import settings from './settings';
 import { GethConnector } from '@akashaproject/geth-connector';
-import { constructed as contracts } from '../../contracts/index';
+import contracts from '../../contracts/index';
 import { BASE_URL, generalSettings } from '../../config/settings';
 import { getShortProfile } from '../profile/ipfs';
 import { stripHexPrefix } from 'ethereumjs-util';
 
 let chat;
-const transform = Promise.coroutine(function*(data: { payload: string, sent: number, hash: string }) {
+const transform = Promise.coroutine(function* (data: { payload: string, sent: number, hash: string }) {
     let obj, rootHash, userMedia;
     let response = {
         timeStamp: 0,
@@ -25,13 +25,13 @@ const transform = Promise.coroutine(function*(data: { payload: string, sent: num
         response.profileAddress = yield contracts.instance.registry.addressOf(obj.akashaId);
         response.messageHash = data.hash;
         rootHash = yield contracts.instance.profile.getIpfs(response.profileAddress);
-        userMedia = yield getShortProfile(rootHash);
+        userMedia = yield getShortProfile(rootHash, false);
         response.timeStamp = data.sent;
     }
     return Object.assign({}, obj, response, userMedia);
 });
 
-const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: string }, cb: any) {
+const execute = Promise.coroutine(function* (data: { stop?: boolean, channel?: string }, cb: any) {
         if (data.stop) {
             if (chat) {
                 chat.stopWatching(() => {

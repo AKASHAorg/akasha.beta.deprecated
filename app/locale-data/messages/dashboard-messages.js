@@ -26,10 +26,10 @@ const dashboardMessages = defineMessages({
         description: 'subtitle for add new tag column',
         defaultMessage: 'Please select a tag'
     },
-    chat: {
-        id: 'app.dashboard.chat',
-        description: 'label for chat column',
-        defaultMessage: 'Channel'
+    addToNewDashboard: {
+        id: 'app.list.addToNewDashboard',
+        description: 'title for new dashboard form',
+        defaultMessage: 'Add to a new board'
     },
     collection: {
         id: 'app.dashboard.collection',
@@ -46,6 +46,26 @@ const dashboardMessages = defineMessages({
         description: 'title for "following stream" column',
         defaultMessage: 'followed users'
     },
+    createNew: {
+        id: 'app.dashboard.createNew',
+        description: 'label for create new ',
+        defaultMessage: 'Create a new board'
+    },
+    dashboardName: {
+        id: 'app.dashboard.dashboardName',
+        description: 'label for dashboard name input',
+        defaultMessage: 'Board name'
+    },
+    dashboardNameRequired: {
+        id: 'app.list.dashboardNameRequired',
+        description: 'required error message for dashboard name input',
+        defaultMessage: 'Board name is required'
+    },
+    dashboardNameUnique: {
+        id: 'app.dashboard.dashboardNameUnique',
+        description: 'unique name error message for dashboard',
+        defaultMessage: 'This board already exists'
+    },
     latest: {
         id: 'app.dashboard.latest',
         description: 'label for latest entries column',
@@ -56,10 +76,20 @@ const dashboardMessages = defineMessages({
         description: 'header for dashboards secondary sidebar',
         defaultMessage: 'My boards'
     },
+    namePlaceholder: {
+        id: 'app.dashboard.namePlaceholder',
+        description: 'placeholder for dashboard name input',
+        defaultMessage: 'Type board name'
+    },
     profile: {
         id: 'app.dashboard.profile',
         description: 'label for profile column',
         defaultMessage: 'User'
+    },
+    searchForBoard: {
+        id: 'app.dashboard.searchForBoard',
+        description: 'placeholder for board search input',
+        defaultMessage: 'Search for board...'
     },
     stream: {
         id: 'app.dashboard.stream',

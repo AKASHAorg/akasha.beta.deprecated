@@ -11,6 +11,7 @@ import * as actionStatus from '../../constants/action-status';
 
 const Channel = global.Channel;
 const TAG_LIMIT = 30;
+const TAG_SEARCH_LIMIT = 10;
 let tagFetchAllTask;
 
 function* cancelTagIterator () {
@@ -68,55 +69,30 @@ function* tagSave ({ data }) {
     }
 }
 
-function* tagSearch ({ tag, start = 0, limit = tagSearchLimit }) {
+function* tagSearch ({ tagName }) {
+    const channel = Channel.server.tags.searchTag;
+    yield call(enableChannel, channel, Channel.client.tags.manager);
+    yield apply(channel, channel.send, [{ tagName, limit: TAG_SEARCH_LIMIT }]);
+}
+
+function* tagSearchLocal ({ tag, start = 0, limit = tagSearchLimit }) {
     try {
         const tags = yield apply(tagService, tagService.tagSearch, [tag, start, limit]);
         yield (start) ?
-        put(actions.tagSearchMoreSuccess(tags.tags, tags.count)) :
-        put(actions.tagSearchSuccess(tags.tags, tags.count));
+            put(actions.tagSearchLocalMoreSuccess(tags.tags, tags.count)) :
+            put(actions.tagSearchLocalSuccess(tags.tags, tags.count));
         yield put(actions.tagGetEntriesCount(tags.tags.map(tagName => ({ tagName }))));
     } catch (error) {
         yield (start) ?
-        put(actions.tagSearchMoreError(error)) :
-        put(actions.tagSearchError(error));
-    }
-}
-// intentionally left here...
-function* tagsGetSuggestions ({ tag, start = 0, limit = tagSearchLimit }) {
-    try {
-        const response = yield call([tagService, tagService.tagSearch], tag.tag, start, limit);
-        yield put(actions.tagSearchSuccess(response.tags, response.count));
-    } catch (ex) {
-        yield put(actions.tagSearchError(ex));
+            put(actions.tagSearchLocalMoreError(error)) :
+            put(actions.tagSearchLocalError(error));
     }
 }
 // Action watchers
 
-function* watchTagGetEntriesCount () {
-    yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
-}
-
 function* watchTagIterator () {
     yield take(types.TAG_ITERATOR);
     tagFetchAllTask = yield fork(tagIterator);
-}
-
-function* watchTagSave () {
-    yield takeEvery(types.TAG_SAVE, tagSave);
-}
-
-function* watchTagSearch () {
-    yield takeLatest(types.TAG_SEARCH, (action) => {
-        const { tag } = action;
-        if (tag.localOnly) {
-            return tagsGetSuggestions(action);
-        }
-        return tagSearch(action);
-    });
-}
-
-function* watchTagSearchMore () {
-    yield takeLatest(types.TAG_SEARCH_MORE, tagSearch);
 }
 
 // Channel watchers
@@ -166,29 +142,34 @@ function* watchTagIteratorChannel () {
     }
 }
 
-// function* watchTagSearchChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.tags.searchTag);
-//         if (resp.error) {
-//             yield put(actions.tagSearchError(resp.error));
-//         } else {
-//             yield put(actions.tagSearchSuccess(resp.data));
-//             yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
-//         }
-//     }
-// }
+function* watchTagSearchChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.tags.searchTag);
+        if (resp.error) {
+            yield put(actions.tagSearchError(resp.error));
+        } else {
+            const query = yield select(state => state.tagState.get('searchQuery'));
+            if (query === resp.request.tagName) {
+                yield put(actions.tagSearchSuccess(resp.data.collection));
+                yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
+            }
+        }
+    }
+}
 
 export function* registerTagListeners () {
     yield fork(watchTagCreateChannel);
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagIteratorChannel);
+    yield fork(watchTagSearchChannel);
 }
 
 export function* watchTagActions () {
     yield takeEvery(types.TAG_CREATE, tagCreate);
-    yield fork(watchTagGetEntriesCount);
+    yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
     yield fork(watchTagIterator);
-    yield fork(watchTagSave);
-    yield fork(watchTagSearch);
-    yield fork(watchTagSearchMore);
+    yield takeEvery(types.TAG_SAVE, tagSave);
+    yield takeLatest(types.TAG_SEARCH, tagSearch);
+    yield takeLatest(types.TAG_SEARCH_LOCAL, tagSearchLocal);
+    yield takeLatest(types.TAG_SEARCH_LOCAL_MORE, tagSearchLocal);
 }

@@ -3,13 +3,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 import { selectFullEntry, selectLoggedAccount, selectLoggedAkashaId } from '../../local-flux/selectors';
 import { getBreadcrumbs } from '../../utils/url-utils';
 import { PanelLink } from '../';
 
-const Breadcrumbs = (props, { muiTheme }) => {
+const Breadcrumbs = (props) => {
     const { location, loginName, match, panel, paramsMapping } = props;
-    const { palette } = muiTheme;
     const { parts, routes } = getBreadcrumbs(location.pathname, panel);
 
     // Replace an url parameter with its corresponding value in the breadcrumb
@@ -42,16 +42,14 @@ const Breadcrumbs = (props, { muiTheme }) => {
     };
 
     return (
-      <div className="flex-center-y" style={{ height: '100%' }}>
+      <div className="flex-center-y breadcrumbs">
         {parts.map((part, index) => {
             const isLast = index === parts.length - 1;
+            const className = classNames('breadcrumbs__part', {
+                breadcrumbs__part_last: isLast
+            });
             const breadcrumb = (
-              <span
-                style={{
-                    fontWeight: isLast && '600',
-                    color: isLast ? palette.textColor : palette.disabledColor
-                }}
-              >
+              <span className={className}>
                 {beautifyName(part)}
               </span>
             );
@@ -67,7 +65,7 @@ const Breadcrumbs = (props, { muiTheme }) => {
                   </Link>
                 }
                 {!isLast &&
-                  <span style={{ cursor: 'default', color: palette.disabledColor, padding: '0 10px' }}>
+                  <span className="breadcrumbs__separator">
                     {'>'}
                   </span>
                 }
@@ -76,10 +74,6 @@ const Breadcrumbs = (props, { muiTheme }) => {
         })}
       </div>
     );
-};
-
-Breadcrumbs.contextTypes = {
-    muiTheme: PropTypes.shape()
 };
 
 Breadcrumbs.propTypes = {

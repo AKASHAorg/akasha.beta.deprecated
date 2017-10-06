@@ -71,29 +71,11 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['canClaim'], new Map(canClaim));
     },
 
-    [types.ENTRY_CLAIM]: (state, { entryId }) =>
-        state.setIn(['flags', 'claimPending', entryId], true),
-
-    [types.ENTRY_CLAIM_ERROR]: (state, { entryId }) =>
-        state.setIn(['flags', 'claimPending', entryId], false),
-
-    [types.ENTRY_CLAIM_SUCCESS]: (state, { data }) =>
-        state.setIn(['flags', 'claimPending', data.entryId], false),
-
     [types.ENTRY_CLEAN_FULL]: state =>
         state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
             fullEntry: null
         }),
-
-    [types.ENTRY_DOWNVOTE]: (state, { entryId }) =>
-        state.setIn(['flags', 'votePending', entryId], true),
-
-    [types.ENTRY_DOWNVOTE_ERROR]: (state, { entryId }) =>
-        state.setIn(['flags', 'votePending', entryId], false),
-
-    [types.ENTRY_DOWNVOTE_SUCCESS]: (state, { data }) =>
-        state.setIn(['flags', 'votePending', data.entryId], false),
 
     [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
         const balance = {};
@@ -215,15 +197,6 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_UPVOTE]: (state, { entryId }) =>
-        state.setIn(['flags', 'votePending', entryId], true),
-
-    [types.ENTRY_UPVOTE_ERROR]: (state, { entryId }) =>
-        state.setIn(['flags', 'votePending', entryId], false),
-
-    [types.ENTRY_UPVOTE_SUCCESS]: (state, { data }) =>
-        state.setIn(['flags', 'votePending', data.entryId], false),
 
     [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) => {
         const voteCost = {};

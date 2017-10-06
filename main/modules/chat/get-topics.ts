@@ -2,7 +2,7 @@ import settings from './settings';
 import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 
-const execute = Promise.coroutine(function*() {
+const execute = Promise.coroutine(function* () {
     const topics = [];
 
     for (let topic of settings.TOPICS) {

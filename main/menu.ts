@@ -110,13 +110,13 @@ export async function initMenu(mainWindow: any) {
             submenu: [
                 {
                     label: 'Learn More',
-                    click () {
+                    click() {
                         shell.openExternal('https://github.com/AkashaProject/Alpha/wiki/FAQ');
                     }
                 },
                 {
                     label: 'Report Issue',
-                    click () {
+                    click() {
                         shell.openExternal('https://github.com/AkashaProject/Alpha/issues/new');
                     }
                 },
@@ -125,7 +125,7 @@ export async function initMenu(mainWindow: any) {
                 },
                 {
                     label: 'Clear Cache',
-                    click () {
+                    click() {
                         session.defaultSession.clearCache(function () {
                             console.log('cleared cache');
                         });
@@ -134,7 +134,7 @@ export async function initMenu(mainWindow: any) {
                 ,
                 {
                     label: 'Reset App Data',
-                    click () {
+                    click() {
                         session.defaultSession.clearStorageData(null, function () {
                             console.log('cleared storage app data');
                         });
@@ -145,7 +145,7 @@ export async function initMenu(mainWindow: any) {
                 },
                 {
                     label: 'About AKASHA',
-                    click () {
+                    click() {
                         shell.openExternal('http://akasha.world');
                     }
                 },

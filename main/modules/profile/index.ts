@@ -13,8 +13,11 @@ import followingList from './following-list';
 import getProfileList from './get-profile-list';
 import sendTip from './send-tip';
 import resolveProfileIpfsHash from './resolve-profile-ipfs-hash';
+import toggleDonations from './toggle-donations';
+import bondAeth from './bond-aeth';
 
 export default [
+    bondAeth,
     currentBalance,
     followProfile,
     followersCount,
@@ -29,5 +32,6 @@ export default [
     followingIterator,
     getProfileList,
     sendTip,
-    resolveProfileIpfsHash
+    resolveProfileIpfsHash,
+    toggleDonations
 ];

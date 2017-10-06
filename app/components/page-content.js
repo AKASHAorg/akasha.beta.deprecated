@@ -7,12 +7,9 @@ const PageContent = ({ children, showSecondarySidebar }) => (
   </div>
 );
 
-PageContent.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 PageContent.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
+    showSecondarySidebar: PropTypes.bool,
 };
 
 export default PageContent;

@@ -11,7 +11,7 @@ export const selectActiveDashboard = (state) => {
         return null;
     }
     return state.dashboardState.getIn([
-        'dashboardById',
+        'dashboardByName',
         activeDashboard
     ]);
 };
@@ -22,7 +22,7 @@ export const selectActiveDashboardId = (state) => {
         return null;
     }
     return state.dashboardState.getIn([
-        'dashboardById',
+        'dashboardByName',
         activeDashboardName,
         'id'
     ]);
@@ -33,6 +33,10 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 export const selectAllComments = state => state.commentsState.get('byId').toList();
 
 export const selectAllLicenses = state => state.licenseState.get('byId');
+
+export const selectAllPendingClaims = state => state.actionState.getIn(['pending', 'claim']);
+
+export const selectAllPendingVotes = state => state.actionState.getIn(['pending', 'entryVote']);
 
 export const selectBalance = state => state.profileState.get('balance');
 
@@ -50,6 +54,8 @@ export const selectColumnLastBlock = (state, columnId) =>
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
 
+export const selectColumns = state => state.dashboardState.get('columnById');
+
 export const selectColumnSuggestions = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'suggestions']);
 
@@ -61,10 +67,19 @@ export const selectCommentsFlag = (state, flag, id) => {
 };
 
 export const selectDashboardId = (state, name) =>
-    state.dashboardState.getIn(['dashboardById', name, 'id']);
+    state.dashboardState.getIn(['dashboardByName', name, 'id']);
 
-export const selectDashboards = state =>
-    state.dashboardState.get('dashboardById');
+export const selectDashboards = (state) => {
+    const search = selectDashboardSearch(state);
+    if (!search) {
+        return state.dashboardState.get('dashboardByName');
+    }
+    return state.dashboardState.get('dashboardByName').filter(dashboard =>
+        dashboard.get('name').toLowerCase().includes(search.toLowerCase())
+    );
+};
+
+export const selectDashboardSearch = state => state.dashboardState.get('search');
 
 export const selectDraftById = (state, draftId) =>
     state.draftState.getIn(['drafts', draftId]);
@@ -82,7 +97,35 @@ export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', i
 export const selectEthAddress = (state, profileAddress) =>
     state.profileState.getIn(['ethAddresses', profileAddress]);
 
+export const selectFetchingFollowers = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
+
+export const selectFetchingFollowings = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingFollowings', akashaId]);
+
+export const selectFetchingMoreFollowers = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowers', akashaId]);
+
+export const selectFetchingMoreFollowings = (state, akashaId) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowings', akashaId]);
+
 export const selectFirstComment = state => state.commentsState.get('firstComm');
+
+export const selectFollowers = (state, akashaId) => {
+    const followers = state.profileState.getIn(['followers', akashaId]);
+    if (followers) {
+        return followers.map(id => selectProfile(state, id));
+    }
+    return new List();
+};
+
+export const selectFollowings = (state, akashaId) => {
+    const followings = state.profileState.getIn(['followings', akashaId]);
+    if (followings) {
+        return followings.map(id => selectProfile(state, id));
+    }
+    return new List();
+};
 
 export const selectFullEntry = state =>
     state.entryState.get('fullEntry');
@@ -110,10 +153,10 @@ export const selectHighlightSearch = state => state.highlightState.get('search')
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
 export const selectLastFollower = (state, akashaId) =>
-    state.profileState.getIn(['followers', akashaId]).last();
+    state.profileState.getIn(['lastFollower', akashaId]);
 
 export const selectLastFollowing = (state, akashaId) =>
-    state.profileState.getIn(['followings', akashaId]).last();
+    state.profileState.getIn(['lastFollowing', akashaId]);
 
 export const selectLastGethLog = state =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
@@ -135,8 +178,8 @@ export const selectListNextEntries = (state, name, limit) => {
 };
 
 export const selectLists = (state) => {
-    const searchResults = state.listState.get('searchResults');
     if (state.listState.get('search')) {
+        const searchResults = state.listState.get('searchResults');
         return searchResults.map(name => state.listState.getIn(['byName', name]));
     }
     return state.listState.get('byName').toList();
@@ -162,28 +205,32 @@ export const selectLoggedProfile = state => state.profileState.get('loggedProfil
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
 
+export const selectMoreFollowers = (state, akashaId) =>
+    state.profileState.getIn(['moreFollowers', akashaId]);
+
+export const selectMoreFollowings = (state, akashaId) =>
+    state.profileState.getIn(['moreFollowings', akashaId]);
+
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
-
-export const selectNeedTransferAction = state =>
-    state.actionState.getIn(['byId', state.actionState.get('needTransferConfirm')]);
-
-export const selectNeedWeightAction = state =>
-    state.actionState.getIn(['byId', state.actionState.get('needWeightConfirm')]);
 
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
-export const selectPendingComments = (state, entryId) => {
-    // const pendingComments = state.appState
-    //     .get('pendingActions')
-    //     .filter(act =>
-    //         act.get('type') === actionTypes.comment &&
-    //         act.get('status') === 'publishing' &&
-    //         act.getIn(['payload', 'entryId']) === entryId);
-    // return pendingComments;
-    return new List();
-};
+export const selectPendingClaim = (state, entryId) =>
+    !!state.actionState.getIn(['pending', 'claim', entryId]);
+
+export const selectPendingComments = (state, entryId) =>
+    state.actionState.getIn(['pending', 'comment', entryId]) || new List();
+
+export const selectPendingFollow = (state, akashaId) =>
+    !!state.actionState.getIn(['pending', 'follow', akashaId]);
+
+export const selectPendingTip = (state, akashaId) =>
+    !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
+
+export const selectPendingVote = (state, entryId) =>
+    !!state.actionState.getIn(['pending', 'entryVote', entryId]);
 
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
@@ -204,13 +251,14 @@ export const selectSearchEntries = state =>
 
 export const selectSearchQuery = state => state.searchState.get('query');
 
-export const selectTagMargins = state => state.tagState.get('margins');
+export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
 
-export const selectTagGetEntriesCount = state =>
-    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
+export const selectTagMargins = state => state.tagState.get('margins');
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 
 export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
+
+export const selectVoteCost = state => state.entryState.get('voteCostByWeight');
 
 /* eslint-enable no-use-before-define */

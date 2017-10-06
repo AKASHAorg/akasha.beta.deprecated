@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DataLoader } from 'shared-components';
+import { DataLoader } from '../../../../../components';
 import ChatMessage from './chat-message';
 
 class ChatMessagesList extends Component {
