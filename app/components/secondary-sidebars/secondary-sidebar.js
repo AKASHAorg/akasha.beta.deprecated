@@ -14,7 +14,7 @@ SecondarySidebar.contextTypes = {
 };
 
 SecondarySidebar.propTypes = {
-    children: PropTypes.element,
+    children: PropTypes.node,
     shown: PropTypes.bool
 };
 

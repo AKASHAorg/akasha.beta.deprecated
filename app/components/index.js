@@ -52,7 +52,6 @@ export ListPopover from './popovers/list-popover';
 export LogsDetails from './logs/logs-details';
 export LogsList from './logs/logs-list';
 export LoginForm from './forms/login-form';
-export LogoButton from './logo-button';
 export MentionDecorators from './mention-decorator/mention-decorator';
 export MentionSuggestions from './mention-suggestions/mention-suggestions';
 export MyBalance from './profile-overview/my-balance';

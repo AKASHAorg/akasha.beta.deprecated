@@ -6,7 +6,6 @@ const entryMessages = defineMessages({
         description: 'claim button tooltip when it was already claimed',
         defaultMessage: 'Already claimed'
     },
-<<<<<<< HEAD
     allowedImageTypes: {
         id: 'app.entry.allowedImageTypes',
         description: 'types of images allowed',
@@ -21,12 +20,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.linkEntryType',
         description: 'entry of type link',
         defaultMessage: 'Link Entries'
-=======
+    },
     alreadyVoted: {
         id: 'app.entry.alreadyVoted',
         description: 'vote button tooltip when it was already voted',
         defaultMessage: 'You have already voted on this entry'
->>>>>>> develop
     },
     blockNr: {
         id: 'app.entry.blockNr',
