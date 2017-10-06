@@ -8,6 +8,7 @@ import Logger from './Logger';
 import gethModule from './geth';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
+import * as throttle from 'lodash.throttle';
 
 const peers = require('../config/peers.json');
 
@@ -53,19 +54,18 @@ class GethIPC extends ModuleEmitter {
     }
 
     private _download() {
+        const sendProgress = (stats) => {
+            this.fireEvent(channels.client.geth.startService, mainResponse({
+                downloading: true,
+                progress: stats
+            }, {}));
+        };
         GethConnector.getInstance().on(
             CONSTANTS.DOWNLOAD_STARTED, () => {
                 this.fireEvent(channels.client.geth.startService, mainResponse({ downloading: true }, {}));
             }
         );
-        GethConnector.getInstance().on(
-            CONSTANTS.DOWNLOAD_PROGRESS, (stats) => {
-                this.fireEvent(channels.client.geth.startService, mainResponse({
-                    downloading: true,
-                    progress: stats
-                }, {}));
-            }
-        );
+        GethConnector.getInstance().on(CONSTANTS.DOWNLOAD_PROGRESS, throttle(sendProgress, 250));
         return this;
     }
 

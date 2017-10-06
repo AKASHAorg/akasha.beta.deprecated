@@ -8,6 +8,7 @@ import { join } from 'path';
 import ipfsModule from './ipfs';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
+import * as throttle from 'lodash.throttle';
 import WebContents = Electron.WebContents;
 
 class IpfsIPC extends ModuleEmitter {
@@ -40,6 +41,12 @@ class IpfsIPC extends ModuleEmitter {
     }
 
     private _download() {
+        const sendProgress = (stats) => {
+            this.fireEvent(channels.client.ipfs.startService, mainResponse({
+                downloading: true,
+                progress: stats
+            }, {}));
+        };
         IpfsConnector.getInstance().on(
             ipfsEvents.DOWNLOAD_STARTED,
             () => {
@@ -47,15 +54,7 @@ class IpfsIPC extends ModuleEmitter {
             }
         );
 
-        IpfsConnector.getInstance().on(
-            ipfsEvents.DOWNLOAD_PROGRESS,
-            (stats) => {
-                this.fireEvent(channels.client.ipfs.startService, mainResponse({
-                    downloading: true,
-                    progress: stats
-                }, {}));
-            }
-        );
+        IpfsConnector.getInstance().on(ipfsEvents.DOWNLOAD_PROGRESS, throttle(sendProgress, 250));
         return this;
     }
 

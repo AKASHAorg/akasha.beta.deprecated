@@ -25,6 +25,8 @@ const execute = Promise.coroutine(function* (data: BalanceRequest) {
     const weiAmount = yield GethConnector.getInstance().web3.eth.getBalanceAsync(etherBase);
     const [free, bonded, cycling] = yield contracts.instance.AETH.getTokenRecords(etherBase);
     const [manaTotal, manaSpent, manaRemaining] = yield contracts.instance.Essence.mana(etherBase);
+    const [karma, essence] = yield contracts.instance.Essence.getCollected(etherBase);
+    const essenceValue = yield contracts.instance.Essence.aethValueFrom(essence);
     const symbol = yield contracts.instance.AETH.symbol();
     const totalAeth = free.plus(bonded).plus(cycling);
     const balance = fromWei(weiAmount, unit);
@@ -40,6 +42,11 @@ const execute = Promise.coroutine(function* (data: BalanceRequest) {
             total: (fromWei(manaTotal)).toFormat(5),
             spent: (fromWei(manaSpent)).toFormat(5),
             remaining: (fromWei(manaRemaining)).toFormat(5)
+        },
+        karma: { total: (fromWei(karma)).toFormat(5) },
+        essence: {
+            total: (fromWei(essence)).toFormat(5),
+            aethValue: (fromWei(essenceValue)).toFormat(5)
         }
         , unit, etherBase
     };
