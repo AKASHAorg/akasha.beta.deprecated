@@ -2,7 +2,7 @@ import { Record, Map, List } from 'immutable';
 import { TempProfileRecord, TempProfileStatus } from '../records';
 
 const TempProfileModelRecord = Record({
-    tempProfile: new TempProfileRecord(),
+    tempProfile: TempProfileRecord(),
     status: new TempProfileStatus()
 });
 
@@ -19,7 +19,7 @@ export default class TempProfileModel extends TempProfileModelRecord {
             about = '',
             akashaId,
             avatar,
-            backgroundImage = {},
+            backgroundImage = new Map(),
             baseUrl,
             crypto,
             ethAddress,

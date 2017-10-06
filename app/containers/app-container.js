@@ -122,13 +122,13 @@ class AppContainer extends Component {
                       {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
-                      <SecondarySidebar>
+                      <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
                         <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                         <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
-                      <PageContent>
+                      <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                         <Route path="/profileoverview/overview" component={ProfileOverview} />
                         <Route path="/profileoverview/mybalance" component={MyBalance} />
                         <Route path="/profileoverview/myentries" component={MyEntries} />

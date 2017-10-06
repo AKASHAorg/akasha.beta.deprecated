@@ -103,7 +103,7 @@ class ImageUploader extends Component {
     _getImageSrc = (image) => {
         const { baseUrl } = this.props;
         let { containerSize = 320 } = this.props;
-        if (!image.isEmpty()) {
+        if (!(image.size === 0)) {
             if (this.container) {
                 containerSize = this.container.clientWidth;
             }
@@ -151,7 +151,7 @@ class ImageUploader extends Component {
             <div>
               {processingFinished &&
                 initialImage &&
-                !initialImage.isEmpty() &&
+                !(initialImage.size === 0) &&
                 <img
                   src={this._getImageSrc(initialImage)}
                   className={`image-uploader__img image-uploader__img${imageLoaded && '_loaded'}`}
@@ -160,7 +160,7 @@ class ImageUploader extends Component {
                 />
               }
               {processingFinished &&
-                !initialImage.isEmpty() &&
+                !(initialImage.size === 0) &&
                 !imageLoaded &&
                 <div
                   className="image-uploader__generating-preview"
@@ -187,7 +187,7 @@ class ImageUploader extends Component {
                   </div>
                 </div>
               }
-              {processingFinished && initialImage && !initialImage.isEmpty() &&
+              {processingFinished && initialImage && !(initialImage.size === 0) &&
                 <div className="image-uploader__clear-image-button">
                   <Button
                     type="standard"
@@ -197,7 +197,7 @@ class ImageUploader extends Component {
                 </div>
               }
             </div>
-            {(!initialImage || initialImage.isEmpty()) && processingFinished &&
+            {(!initialImage || (initialImage.size === 0)) && processingFinished &&
               <div
                 className={
                     `image-uploader__empty-container
@@ -220,7 +220,7 @@ class ImageUploader extends Component {
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
               accept="image/*"
-              title={(!initialImage || initialImage.isEmpty()) ?
+              title={(!initialImage || (initialImage.size === 0)) ?
                 intl.formatMessage(generalMessages.chooseImage) :
                 intl.formatMessage(generalMessages.chooseAnotherImage)}
             />
