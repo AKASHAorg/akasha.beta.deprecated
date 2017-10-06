@@ -4,11 +4,10 @@ import { getShortProfile, resolveProfile } from './ipfs';
 import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
 import followingCount from './following-count';
 import followersCount from './followers-count';
-// import entryCountProfile from '../entry/entry-count-profile';
-// import subsCount from '../tags/subs-count';
 import { profileAddress } from './helpers';
 import { encodeHash } from '../ipfs/helpers';
 import { unpad } from 'ethereumjs-util';
+import entryCountProfile from '../entry/entry-count-profile';
 import schema from '../utils/jsonschema';
 
 export const getProfileData = {
@@ -19,7 +18,8 @@ export const getProfileData = {
         'short': { 'type': 'boolean' },
         'full': { 'type': 'boolean' },
         'resolveImages': { 'type': 'boolean' }
-    }
+    },
+    'required': ['akashaId']
 };
 
 /**
@@ -37,10 +37,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
         fn, digestSize, hash] = yield contracts.instance.ProfileResolver.resolve(akashaIdHash);
     const foCount = yield followingCount.execute({ ethAddress });
     const fwCount = yield followersCount.execute({ ethAddress });
-    // const entriesCount = yield entryCountProfile.execute({ ethAddress });
-    // const subscriptionsCount = yield subsCount.execute({ ethAddress });
-    const entriesCount = { count: 1 };
-    const subscriptionsCount = { count: 1 };
+    const entriesCount = yield entryCountProfile.execute({ ethAddress });
+    const commentsCount = yield contracts.instance.Comments.totalCommentsOf(ethAddress);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         if (data.short) {
@@ -65,7 +63,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
             followingCount: foCount.count,
             followersCount: fwCount.count,
             entriesCount: entriesCount.count,
-            subscriptionsCount: subscriptionsCount.count,
+            commentsCount: commentsCount.toString(10),
             [BASE_URL]: generalSettings.get(BASE_URL),
             profile: profileAddress
         },
