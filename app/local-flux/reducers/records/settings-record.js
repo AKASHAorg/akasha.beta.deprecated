@@ -1,6 +1,6 @@
 import { Record } from 'immutable';
 
-const GethSettings = Record({
+export const GethSettings = Record({
     autodag: null,
     cache: null,
     datadir: null,
@@ -12,13 +12,13 @@ const GethSettings = Record({
     syncmode: 'fast',
 });
 
-const PortsRecord = Record({
+export const PortsRecord = Record({
     apiPort: null,
     gatewayPort: null,
     swarmPort: null
 });
 
-const IpfsSettings = Record({
+export const IpfsSettings = Record({
     ports: new PortsRecord(),
     storagePath: null,
 });
@@ -27,12 +27,12 @@ const Notifications = Record({
     muted: []
 });
 
-const PasswordPreference = Record({
+export const PasswordPreference = Record({
     remember: false,
     time: null
 });
 
-const UserSettings = Record({
+export const UserSettings = Record({
     ethAddress: null,
     lastBlockNr: null,
     latestMention: null,
@@ -41,7 +41,7 @@ const UserSettings = Record({
     passwordPreference: new PasswordPreference()
 });
 
-const GeneralSettings = Record({
+export const GeneralSettings = Record({
     theme: 'light',
     configurationSaved: false,
     darkTheme: false,
@@ -55,7 +55,7 @@ const Flags = Record({
     savingUserSettings: false
 });
 
-const SettingsRecord = Record({
+export const SettingsRecord = Record({
     geth: new GethSettings(),
     defaultGethSettings: new GethSettings(),
     ipfs: new IpfsSettings(),
@@ -64,6 +64,3 @@ const SettingsRecord = Record({
     userSettings: new UserSettings(),
     general: new GeneralSettings(),
 });
-
-export default SettingsRecord;
-export { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference, PortsRecord, UserSettings };

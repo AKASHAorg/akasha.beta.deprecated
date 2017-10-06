@@ -1,7 +1,8 @@
 import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { ErrorRecord, LoggedProfile, ProfileRecord, ProfileState } from './records';
+import { AethBalance, Balance, ErrorRecord, LoggedProfile, ManaBalance, ProfileRecord,
+    ProfileState } from './records';
 
 const initialState = new ProfileState();
 
@@ -152,7 +153,12 @@ const profileState = createReducer(initialState, {
         if (state.getIn(['loggedProfile', 'ethAddress']) !== data.etherBase) {
             return state;
         }
-        return state.set('balance', data.balance);
+        const balance = new Balance().merge({
+            aeth: new AethBalance(data.AETH),
+            eth: data.balance,
+            mana: new ManaBalance(data.mana)
+        });
+        return state.set('balance', balance);
     },
 
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>

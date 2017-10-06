@@ -1,0 +1,39 @@
+.shift-down-form {
+    height: 330px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0px;
+
+    &__title {
+        font-size: 18px;
+        color: @heading-color;
+    }
+
+    &__balances {
+        display: flex;
+        justify-content: space-between;
+        padding: 36px 0px;
+        line-height: 1;
+    }
+
+    &__balance-label {
+        text-transform: uppercase;
+        font-size: 13px;
+    }
+
+    &__balance-value {
+        margin-top: 6px;
+        font-size: 22px;
+    }
+
+    &__actions {
+        flex: 1 1 auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+    &__button {
+        margin-left: 12px;
+    }
+}

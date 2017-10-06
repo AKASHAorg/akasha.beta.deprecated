@@ -12,7 +12,7 @@ import { selectBlockNumber, selectColumnLastBlock, selectEntry, selectFullEntry,
 import * as actionStatus from '../../constants/action-status';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 6;
+const ALL_STREAM_LIMIT = 11;
 const ENTRY_ITERATOR_LIMIT = 6;
 const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
