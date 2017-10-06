@@ -15,17 +15,23 @@ import sendTip from './send-tip';
 import resolveProfileIpfsHash from './resolve-profile-ipfs-hash';
 import toggleDonations from './toggle-donations';
 import bondAeth from './bond-aeth';
+import cycleAeth from './aeth-cycle';
+import freeAeth from './aeth-free';
+import transformEssence from './transform-essence';
 
 export default [
     bondAeth,
+    cycleAeth,
     currentBalance,
     followProfile,
     followersCount,
     followingCount,
     followingList,
+    freeAeth,
     isFollower,
     isFollowing,
     profileData,
+    transformEssence,
     unfollowProfile,
     updateProfile,
     followersIterator,
