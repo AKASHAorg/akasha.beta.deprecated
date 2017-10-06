@@ -19,7 +19,7 @@ const channels = {
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
         'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf', 'getEntryBalance', 'getEntryList',
         'editEntry', 'pin', 'followingStreamIterator', 'allStreamIterator', 'getLatestEntryVersion', 'getEntryIpfsHash',
-        'resolveEntriesIpfsHash'],
+        'resolveEntriesIpfsHash', 'canClaimVote', 'claimVote'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator', 'commentsParentIterator',
         'getProfileComments', 'resolveCommentsIpfsHash'],

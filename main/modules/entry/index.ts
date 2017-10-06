@@ -24,8 +24,12 @@ import allStreamIterator from './all-stream-iterator';
 import getLatestEntryVersion from './get-latest-entry-version';
 import getEntryIpfsHash from './get-entry-ipfs-hash';
 import resolveEntriesIpfsHash from './resolve-entries-ipfs-hash';
+import canClaimVote from './can-claim-vote';
+import claimVote from './claim-vote';
 
 export default [
+    canClaimVote,
+    claimVote,
     entryCountProfile,
     entryCountTag,
     getEntry,
