@@ -1,4 +1,4 @@
-.root {
+.secondary-sidebar {
     position: fixed;
     left: 64px;
     top: 0;
@@ -7,4 +7,8 @@
     overflow-y: auto;
     overflow-x: hidden;
     border-right: 1px #ddd solid;
+    transition: left 0.218s @ease-in-out;
+    &_collapsed {
+        left: -264px;
+    }
 }

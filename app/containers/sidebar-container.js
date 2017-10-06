@@ -14,7 +14,8 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: selectLoggedProfileData(state),
         notificationsCount: state.notificationsState.get('youNrFeed'),
-        searchQuery: state.searchState.get('query')
+        searchQuery: state.searchState.get('query'),
+        userSelectedLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
     };
 }
 
