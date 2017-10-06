@@ -38,11 +38,12 @@ class Sidebar extends Component {
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
+                console.log(loggedProfile, 'the loggedProfile');
                 const draftId = genId();
                 if (path === '/draft/article/new') {
                     draftCreate({
                         id: draftId,
-                        akashaId: loggedProfile.get('akashaId'),
+                        akashaId: loggedProfile.get('account'),
                         content: {
                             featuredImage: {},
                             licence: userSelectedLicence,
@@ -69,8 +70,8 @@ class Sidebar extends Component {
     }
 
     render () {
-        const { activeDashboard, history, loggedProfileData, location } = this.props;
-        const isLoggedIn = !!loggedProfileData.get('akashaId');
+        const { activeDashboard, history, location } = this.props;
+
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
             <div className="sidebar__nav-container">
@@ -80,7 +81,6 @@ class Sidebar extends Component {
             <div className="sidebar__entry-icon" >
               <div>
                 <AddEntryIcon
-                  disabled={!isLoggedIn}
                   isActive={this._checkActiveIcon('draft/new')}
                   onClick={this._toggleEntryMenu}
                 />
@@ -170,10 +170,8 @@ Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftCreate: PropTypes.func,
     history: PropTypes.shape(),
-    draftsCount: PropTypes.number,
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
 };
 

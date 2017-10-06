@@ -19,7 +19,7 @@ const TempProfile = Record({
     address: '',
     ethAddress: '',
     avatar: null,
-    backgroundImage: {},
+    backgroundImage: new Map(),
     baseUrl: '',
     about: '',
     links: new List(),

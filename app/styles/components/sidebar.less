@@ -46,6 +46,37 @@
         align-items: flex-end;
     }
 
+    &__entry-menu {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        display: none;
+        padding: 0 14px;
+        z-index: 10;
+        &-buttons {
+            display: flex;
+        }
+        &_active {
+            left: 64px;
+            display: block;
+        }
+    }
+
+    &__overlay {
+        position: fixed;
+        top: 0;
+        left: 64px;
+        bottom: 0;
+        right: 100%;
+        background: fadeout(@sidebar-overlay-bg, 20%);
+        transition: right 0.213s ease-in-out;
+        cursor: pointer;
+        &_visible {
+            right: 0;
+            transition: right 0.213s ease-in-out;
+        }
+    }
+
     &__nav-container {
         display: flex;
         justify-content: space-between;
