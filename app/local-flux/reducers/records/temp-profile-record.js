@@ -1,6 +1,6 @@
 import { Record, List } from 'immutable';
 
-const TempProfileStatus = Record({
+export const TempProfileStatus = Record({
     faucetRequested: false,
     publishRequested: false,
     faucetTx: null,
@@ -9,7 +9,7 @@ const TempProfileStatus = Record({
     token: null
 });
 
-const TempProfile = Record({
+export const TempProfileRecord = Record({
     localId: '',
     firstName: '',
     lastName: '',
@@ -25,6 +25,3 @@ const TempProfile = Record({
     links: new List(),
     crypto: new List()
 });
-
-export { TempProfileStatus };
-export default TempProfile;

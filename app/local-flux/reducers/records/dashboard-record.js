@@ -1,10 +1,10 @@
 import { List, Map, Record } from 'immutable';
 
-export const Flags = Record({
+const Flags = Record({
     firstDashboardReady: false
 });
 
-export const ColumnFlags = Record({
+const ColumnFlags = Record({
     fetchingEntries: false,
     fetchingMoreEntries: false,
     moreEntries: false

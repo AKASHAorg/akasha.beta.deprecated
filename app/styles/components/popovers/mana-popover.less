@@ -1,0 +1,40 @@
+.mana-popover {
+    width: 320px;
+
+    &__progress {
+        .ant-progress-circle-trail {
+            stroke: @mana-color;
+            opacity: 0.2;
+        }
+
+        .ant-progress-circle-path {
+            stroke: @mana-color;
+        }
+    }
+
+    &__content {
+        height: 330px;
+        padding: 8px 24px;
+    }
+
+    &__title {
+        font-size: 18px;
+        color: @heading-color;
+    }
+
+    &__mana-score {
+        color: @heading-color;
+        font-weight: 600;
+        padding-left: 10px;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__button {
+        width: ~'calc(50% - 6px)';
+        padding: 0px 8px;
+    }
+}

@@ -1,6 +1,6 @@
 import { List, Map, Record } from 'immutable';
 
-export const Flags = Record({
+const Flags = Record({
     fetchingLists: false,
     searching: false,
     updatingLists: false

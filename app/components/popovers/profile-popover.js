@@ -7,7 +7,7 @@ import { Button, Icon, Popover, Spin } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
+import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -307,7 +307,7 @@ ProfilePopover.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        balance: selectBalance(state),
+        balance: selectEthBalance(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),

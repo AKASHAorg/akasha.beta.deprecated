@@ -96,6 +96,8 @@ export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags',
 
 export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
 
+export const selectEthBalance = state => state.profileState.getIn(['balance', 'eth']);    
+
 export const selectFetchingFollowers = (state, akashaId) =>
     state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
 
@@ -203,6 +205,8 @@ export const selectLoggedProfile = state => state.profileState.get('loggedProfil
 
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'ethAddress']));
+
+export const selectManaBalance = state => state.profileState.getIn(['balance', 'mana', 'remaining']);    
 
 export const selectMoreFollowers = (state, ethAddress) =>
     state.profileState.getIn(['moreFollowers', ethAddress]);

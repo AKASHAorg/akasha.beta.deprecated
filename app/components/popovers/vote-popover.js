@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { selectBalance, selectVoteCost } from '../../local-flux/selectors';
+import { selectEthBalance, selectVoteCost } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 const FormItem = Form.Item;
@@ -206,7 +206,7 @@ VotePopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
+        balance: selectEthBalance(state),
         voteCost: selectVoteCost(state)
     };
 }
