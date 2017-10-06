@@ -8,14 +8,16 @@ import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { hideTerms, bootstrapHome } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
+import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
+    TagSearchPage, SidebarContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
-    GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, Notification,
-    PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
+    GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, NewEntrySecondarySidebar,
+    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -122,6 +124,7 @@ class AppContainer extends Component {
                       }
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                         <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
@@ -135,6 +138,8 @@ class AppContainer extends Component {
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route exact path="/@:akashaId" component={ProfilePage} />
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                          <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
+                          <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
@@ -144,7 +149,12 @@ class AppContainer extends Component {
                           </div>
                         }
                       </PageContent>
-                      <TopBar />
+                      <TopBar
+                        showSecondarySidebar={appState.get('showSecondarySidebar')}
+                        location={location}
+                        history={history}
+                        intl={intl}
+                      />
                     </div>
                   </DataLoader>
                 }
@@ -205,6 +215,7 @@ export default connect(
     mapStateToProps,
     {
         bootstrapHome,
+        draftCreate,
         entryVoteCost,
         errorDeleteFatal,
         gethGetStatus,

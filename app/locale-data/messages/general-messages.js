@@ -79,7 +79,7 @@ const generalMessages = defineMessages({
     },
     create: {
         id: 'app.general.create',
-        description: 'create',
+        description: 'Create button label',
         defaultMessage: 'Create'
     },
     created: {

@@ -17,6 +17,7 @@ const AppRecord = Record({
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
     showReportModal: null,
+    showSecondarySidebar: true, // must default to true
     showTerms: false,
 });
 

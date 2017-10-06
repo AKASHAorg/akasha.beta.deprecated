@@ -1,0 +1,100 @@
+@tag-item-bg-color: #B4BCC8;
+@tag-item-bg-color-should-register: #F96969;
+@tag-item-bg-color-registering: #F5BD62;
+
+.tag-editor {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+    &__input {
+        outline: none;
+        background: transparent;
+        border: none;
+        min-width: 15%;
+        padding: 2px 8px;
+        &:disabled::-webkit-input-placeholder {
+            color: #C8C8C8;
+        }
+    }
+    &__tag-item {
+        border-radius: 3px;
+        background-color: @tag-item-bg-color;
+        padding: 4px 8px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        color: @text-color-dark;
+        font-size: 12px;
+        cursor: default;
+        user-select: none;
+        &:hover {
+            background-color: lighten(@tag-item-bg-color, 5%);
+        }
+        &_should-register {
+            background-color: @tag-item-bg-color-should-register;
+            &:hover {
+                background-color: lighten(@tag-item-bg-color-should-register, 5%);
+            }
+        }
+        &_registering {
+            background-color: @tag-item-bg-color-registering;
+            &:hover {
+                background-color: lighten(@tag-item-bg-color-registering, 5%);
+            }
+        }
+    }
+    .tag-item {
+        &__delete-button {
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        &__info-button {
+            margin-left: 4px;
+            border-radius: 50%;
+            width: 17px;
+            height: 17px;
+            display: inline-block;
+            text-align: center;
+            background-color: rgba(0,0,0,0.16);
+        }
+    }
+}
+.tag-editor__suggestions-container {
+    min-width: 125px;
+    .ant-popover-inner-content {
+        padding: 4px;
+    }
+}
+.tag-editor__suggestion-item {
+    padding: 4px 8px 4px 4px;
+    border-radius: 3px;
+    user-select: none;
+    font-size: 13px;
+    cursor: pointer;
+    &:hover {
+        background-color: #EDEDED;
+    }
+    &_selected {
+        background-color: #ECF6FF;
+    }
+}
+.tag-editor {
+    &__tag-item-popover-content {
+        max-width: 220px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    &__tag-item-popover-message {
+        margin-bottom: 24px;
+    }
+    &__tag-item-popover-actions {
+        text-align: right;
+        .ant-btn {
+            margin-left: 8px;
+        }
+        .ant-btn-sm {
+            font-size: 13px;
+        }
+    }
+}

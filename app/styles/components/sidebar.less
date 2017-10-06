@@ -12,16 +12,26 @@
     will-change: left;
     max-width: 64px;
     background-color: #f3f3f3;
+    padding-top: 24px;
+
+    &__entry-icon {
+        position: relative;
+        text-align: center;
+    }
+
+    &__icon-button {
+        font-size: 24px;
+        padding: 0 12px;
+        color: @text-color;
+        &.active {
+            background-color: @avatar-bg;
+        }
+    }
 
     &_shown {
         left: 0;
         transition: left 0.175s ease-in-out;
         will-change: left;
-    }
-
-    &__entry-icon {
-        flex-grow: 1;
-        padding: 14px;
     }
 
     &__stream-icon {

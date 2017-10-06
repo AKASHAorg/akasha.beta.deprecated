@@ -3,6 +3,7 @@ import { ActionRecord, ActionState } from './action-record';
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
 import { CommentData, CommentRecord, CommentsState } from './comments-record';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
+import { DraftLicence, DraftContent, Draft } from './draft-record';
 import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
@@ -30,6 +31,9 @@ export {
     CommentsState,
     DashboardRecord,
     DashboardState,
+    Draft,
+    DraftContent,
+    DraftLicence,
     EntriesStream,
     EntryContent,
     EntryEth,
