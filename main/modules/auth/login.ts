@@ -6,7 +6,7 @@ const login = {
     'id': '/login',
     'type': 'object',
     'properties': {
-        'account': { 'type': 'any', 'format': 'address' },
+        'ethAddress': { 'type': 'any', 'format': 'address' },
         'password': { 'type': 'any', 'format': 'buffer' },
         'rememberTime': { 'type': 'number' }
     },
@@ -16,7 +16,7 @@ const execute = Promise.coroutine(function* (data: AuthLoginRequest) {
     const v = new schema.Validator();
     v.validate(data, login, { throwError: true });
 
-    return Auth.login(data.account, data.password, data.rememberTime);
+    return Auth.login(data.ethAddress, data.password, data.rememberTime);
 });
 
 export default { execute, name: 'login' };
