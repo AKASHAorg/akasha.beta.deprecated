@@ -83,7 +83,7 @@ export class Auth {
                             vrs: fromRpcSig(signedString)
                         };
                         this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                        return { token: addHexPrefix(clientToken.toString('hex')), expiration, account: acc };
+                        return { token: addHexPrefix(clientToken.toString('hex')), expiration, ethAddress: acc };
                     });
             });
     }

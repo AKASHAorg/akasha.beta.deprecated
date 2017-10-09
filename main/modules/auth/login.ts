@@ -10,7 +10,7 @@ const login = {
         'password': { 'type': 'any', 'format': 'buffer' },
         'rememberTime': { 'type': 'number' }
     },
-    'required': ['account', 'password']
+    'required': ['ethAddress', 'password']
 };
 const execute = Promise.coroutine(function* (data: AuthLoginRequest) {
     const v = new schema.Validator();
