@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Select } from 'antd';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectAllLicenses, selectLoggedAccount } from '../../local-flux/selectors';
+import { selectAllLicenses, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { formMessages } from '../../locale-data/messages';
 import { ProfilePanelsHeader, RememberPassphraseSelect } from '../';
 
@@ -38,11 +38,11 @@ class UserSettingsPanel extends Component {
     };
 
     onSaveSettings = () => {
-        const { loggedAccount } = this.props;
+        const { loggedEthAddress } = this.props;
         const { defaultLicense, unlockTime } = this.state;
         const passwordPreference = { remember: true, time: unlockTime };
         const payload = { defaultLicense, passwordPreference };
-        this.props.userSettingsSave(loggedAccount, payload);
+        this.props.userSettingsSave(loggedEthAddress, payload);
         this.setState({
             isDirty: false
         });
@@ -118,7 +118,7 @@ class UserSettingsPanel extends Component {
 UserSettingsPanel.propTypes = {
     intl: PropTypes.shape(),
     licenses: PropTypes.shape(),
-    loggedAccount: PropTypes.string.isRequired,
+    loggedEthAddress: PropTypes.string.isRequired,
     savingUserSettings: PropTypes.bool,
     userSettings: PropTypes.shape(),
     userSettingsSave: PropTypes.func.isRequired
@@ -127,7 +127,7 @@ UserSettingsPanel.propTypes = {
 function mapStateToProps (state) {
     return {
         licenses: selectAllLicenses(state),
-        loggedAccount: selectLoggedAccount(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
         savingUserSettings: state.settingsState.getIn(['flags', 'savingUserSettings']),
         userSettings: state.settingsState.get('userSettings')
     };

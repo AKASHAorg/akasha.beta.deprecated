@@ -86,14 +86,14 @@ function* profileGetLocal () {
 export function* profileGetLogged () {
     try {
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
-        if (loggedProfile.get('account')) {
+        if (loggedProfile.get('ethAddress')) {
             return;
         }
         const profile = yield apply(profileService, profileService.profileGetLogged);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
-        if (profile && profile.profile) {
-            yield call(profileGetData, { akashaId: profile.akashaId, full: true });
+        if (profile && profile.ethAddress) {
+            yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));

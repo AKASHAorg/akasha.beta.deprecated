@@ -2,7 +2,7 @@ import { all, apply, call, fork, put, select, take } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
-import { selectLoggedAccount } from '../selectors';
+import { selectLoggedEthAddress } from '../selectors';
 import * as settingsService from '../services/settings-service';
 
 export function* generalSettingsRequest () {
@@ -89,22 +89,22 @@ function* saveConfiguration (action) {
     yield call(saveGeneralSettings, { configurationSaved: true });
 }
 
-export function* userSettingsRequest (account) {
+export function* userSettingsRequest (ethAddress) {
     try {
-        if (!account) {
-            account = yield select(selectLoggedAccount);
+        if (!ethAddress) {
+            ethAddress = yield select(selectLoggedEthAddress);
         }
-        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [account]);
+        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [ethAddress]);
         yield put(actions.userSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.userSettingsError({ message: error.toString() }));
     }
 }
 
-function* userSettingsSave (account, payload) {
+function* userSettingsSave (ethAddress, payload) {
     try {
         const resp = yield apply(
-            settingsService, settingsService.userSettingsSave, [account, payload]
+            settingsService, settingsService.userSettingsSave, [ethAddress, payload]
         );
         yield put(actions.userSettingsSaveSuccess(resp));
         // yield put(appActions.showNotification({ id: 'userSettingsSaveSuccess' }));
@@ -146,14 +146,14 @@ function* watchSaveConfiguration () {
 function* watchUserSettingsRequest () {
     while (true) {
         const action = yield take(types.USER_SETTINGS_REQUEST);
-        yield fork(userSettingsRequest, action.account);
+        yield fork(userSettingsRequest, action.ethAddress);
     }
 }
 
 function* watchUserSettingsSave () {
     while (true) {
         const action = yield take(types.USER_SETTINGS_SAVE);
-        yield fork(userSettingsSave, action.account, action.payload);
+        yield fork(userSettingsSave, action.ethAddress, action.payload);
     }
 }
 

@@ -28,11 +28,11 @@ export const editNotes = ({ id, notes }) =>
             .catch(reject);
     });
 
-export const getAll = account =>
+export const getAll = ethAddress =>
     new Promise((resolve, reject) => {
         highlightDB.highlights
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .toArray()
             .then(resolve)
             .catch(reject);
@@ -42,17 +42,17 @@ export const saveHighlight = highlight =>
     new Promise((resolve, reject) => {
         const timestamp = new Date().getTime();
         highlight.timestamp = timestamp;
-        highlight.id = `${timestamp}-${highlight.account}`;
+        highlight.id = `${timestamp}-${highlight.ethAddress}`;
         highlightDB.highlights.put(highlight)
             .then(() => resolve(highlight))
             .catch(err => reject(err));
     });
 
-export const searchHighlight = ({ account, search }) =>
+export const searchHighlight = ({ ethAddress, search }) =>
     new Promise((resolve, reject) => {
         highlightDB.highlights
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .filter((highlight) => {
                 let { content = '', notes = '' } = highlight;
                 content = content.toLowerCase();

@@ -1,13 +1,13 @@
 import { apply, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/list-actions';
 import * as types from '../constants';
-import { selectLoggedAccount } from '../selectors';
+import { selectLoggedEthAddress } from '../selectors';
 import * as listService from '../services/list-service';
 
 function* listAdd ({ name, description, entryIds = [] }) {
     try {
-        const account = yield select(selectLoggedAccount);
-        const list = { account, name, description, entryIds };
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const list = { ethAddress, name, description, entryIds };
         const { id, timestamp } = yield apply(listService, listService.addList, [list]);
         yield put(actions.listAddSuccess({ id, timestamp, ...list }));
     } catch (error) {
@@ -26,8 +26,8 @@ function* listDelete ({ listId, name }) {
 
 function* listDeleteEntry ({ name, entryId }) {
     try {
-        const account = yield select(selectLoggedAccount);
-        const list = yield apply(listService, listService.deleteEntry, [{ account, name, entryId }]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const list = yield apply(listService, listService.deleteEntry, [{ ethAddress, name, entryId }]);
         yield put(actions.listDeleteEntrySuccess(list));
     } catch (error) {
         yield put(actions.listDeleteEntryError(error));
@@ -36,8 +36,8 @@ function* listDeleteEntry ({ name, entryId }) {
 
 export function* listGetAll () {
     try {
-        const account = yield select(selectLoggedAccount);
-        const lists = yield apply(listService, listService.getAllLists, [account]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const lists = yield apply(listService, listService.getAllLists, [ethAddress]);
         yield put(actions.listGetAllSuccess(lists));
     } catch (error) {
         yield put(actions.listGetAllError(error));
@@ -46,8 +46,8 @@ export function* listGetAll () {
 
 function* listGetFull ({ name }) {
     try {
-        const account = yield select(selectLoggedAccount);
-        const data = yield apply(listService, listService.getList, [{ account, name }]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(listService, listService.getList, [{ ethAddress, name }]);
         yield put(actions.listGetFullSucess(data));
     } catch (error) {
         yield put(actions.listGetFullError(error));
@@ -56,9 +56,9 @@ function* listGetFull ({ name }) {
 
 function* listSearch ({ search }) {
     try {
-        const account = yield select(selectLoggedAccount);
+        const ethAddress = yield select(selectLoggedEthAddress);
         search = search.toLowerCase();
-        const data = yield apply(listService, listService.searchList, [{ account, search }]);
+        const data = yield apply(listService, listService.searchList, [{ ethAddress, search }]);
         yield put(actions.listSearchSuccess(data));
     } catch (error) {
         yield put(actions.listSearchError(error));
@@ -67,11 +67,11 @@ function* listSearch ({ search }) {
 
 function* listToggleEntry ({ listName, entryId }) {
     try {
-        const account = yield select(selectLoggedAccount);
+        const ethAddress = yield select(selectLoggedEthAddress);
         const list = yield apply(
             listService,
             listService.toggleEntry,
-            [{ account, listName, entryId }]
+            [{ ethAddress, listName, entryId }]
         );
         yield put(actions.listToggleEntrySuccess(list));
     } catch (error) {

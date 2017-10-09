@@ -179,9 +179,9 @@ const saveSettings = (table, payload) =>
 export const generalSettingsRequest = () => getSettings('general');
 export const gethSettingsRequest = () => getSettings('geth');
 export const ipfsSettingsRequest = () => getSettings('ipfs');
-export const userSettingsRequest = account =>
+export const userSettingsRequest = ethAddress =>
     new Promise((resolve, reject) =>
-        settingsDB.user.where('account').equals(account).toArray()
+        settingsDB.user.where('ethAddress').equals(ethAddress).toArray()
             .then(data => resolve(data[0] || {}))
             .catch(error => reject(error))
     );
@@ -189,13 +189,13 @@ export const userSettingsRequest = account =>
 export const generalSettingsSave = payload => saveSettings('general', payload);
 export const gethSettingsSave = payload => saveSettings('geth', payload);
 export const ipfsSettingsSave = payload => saveSettings('ipfs', payload);
-export const userSettingsSave = (account, payload) =>
+export const userSettingsSave = (ethAddress, payload) =>
     new Promise((resolve, reject) => {
-        settingsDB.user.where('account').equals(account).toArray()
+        settingsDB.user.where('ethAddress').equals(ethAddress).toArray()
             .then((data) => {
-                const resp = { account, ...payload };
+                const resp = { ethAddress, ...payload };
                 if (data.length) {
-                    settingsDB.user.where('account').equals(account).modify(payload)
+                    settingsDB.user.where('ethAddress').equals(ethAddress).modify(payload)
                         .then(() => resolve(resp))
                         .catch(error => reject(error));
                 } else {

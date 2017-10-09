@@ -10,16 +10,16 @@ class AuthProfileList extends Component {
     container = null;
     selectedElement = null;
     state = {
-        hoveredAccount: null,
-        selectedAccount: null
+        hoveredEthAddress: null,
+        selectedEthAddress: null
     };
 
     componentDidUpdate (prevProps, prevState) {
-        const { selectedAccount } = this.state;
-        if (selectedAccount && selectedAccount !== prevState.selectedAccount) {
+        const { selectedEthAddress } = this.state;
+        if (selectedEthAddress && selectedEthAddress !== prevState.selectedEthAddress) {
             this.clearTimeout();
             // This check is delayed because the transitions must be finished first
-            this.timeout = setTimeout(this.checkIfVisible, 310, [selectedAccount]);
+            this.timeout = setTimeout(this.checkIfVisible, 310, [selectedEthAddress]);
         }
     }
 
@@ -29,7 +29,7 @@ class AuthProfileList extends Component {
 
     componentClickAway = () => {
         this.setState({
-            selectedAccount: null
+            selectedEthAddress: null
         });
     };
 
@@ -39,8 +39,8 @@ class AuthProfileList extends Component {
         }
     }
 
-    checkIfVisible = (selectedAccount) => {
-        const el = document.getElementById(`account-${selectedAccount}`);
+    checkIfVisible = (selectedEthAddress) => {
+        const el = document.getElementById(`ethAddress-${selectedEthAddress}`);
         const { visible, scrollTop } = isVisible(el, this.container);
         if (el && this.container && !visible) {
             this.container.scrollTop -= scrollTop;
@@ -67,38 +67,39 @@ class AuthProfileList extends Component {
 
     onCancelLogin = () => {
         this.setState({
-            selectedAccount: null
+            selectedEthAddress: null
         });
     };
 
     onSubmitLogin = () => {};
 
-    onMouseEnter = (account) => {
+    onMouseEnter = (ethAddress) => {
         this.setState({
-            hoveredAccount: account,
+            hoveredEthAddress: ethAddress,
         });
     };
 
     onMouseLeave = () => {
         this.setState({
-            hoveredAccount: null
+            hoveredEthAddress: null
         });
     };
 
-    onSelectAccount = (account) => {
+    onSelectEthAddress = (ethAddress) => {
         this.setState({
-            selectedAccount: account
+            selectedEthAddress: ethAddress
         });
     };
 
-    renderListItem = (account, profile) => {
-        const { hoveredAccount, selectedAccount } = this.state;
+    renderListItem = (profile) => {
+        const { hoveredEthAddress, selectedEthAddress } = this.state;
         const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
         const avatar = profile.get('avatar');
         const akashaId = profile.get('akashaId');
-        const isSelected = account === selectedAccount;
-        const isHovered = account === hoveredAccount && !isSelected;
-        const onClick = isSelected ? undefined : () => this.onSelectAccount(account);
+        const ethAddress = profile.get('ethAddress');
+        const isSelected = ethAddress === selectedEthAddress;
+        const isHovered = ethAddress === hoveredEthAddress && !isSelected;
+        const onClick = isSelected ? undefined : () => this.onSelectEthAddress(ethAddress);
         const header = (
           <div className="auth-profile-list__card-header">
             <Avatar
@@ -109,7 +110,7 @@ class AuthProfileList extends Component {
             />
             <div className="auth-profile-list__header-text">
               <div className="overflow-ellipsis heading auth-profile-list__name">
-                {akashaId ? profileName : account}
+                {akashaId ? profileName : ethAddress}
               </div>
               {akashaId &&
                 <div className="auth-profile-list__akasha-id">
@@ -123,14 +124,14 @@ class AuthProfileList extends Component {
         return (
           <div
             className="auth-profile-list__profile-card"
-            id={`account-${account}`}
-            key={account}
+            id={`ethAddress-${ethAddress}`}
+            key={ethAddress}
             onClick={onClick}
-            onMouseEnter={() => this.onMouseEnter(account)}
+            onMouseEnter={() => this.onMouseEnter(ethAddress)}
             onMouseLeave={this.onMouseLeave}
             style={{
                 backgroundColor: isHovered ? '#fcfcfc' : '#fff',
-                opacity: selectedAccount && !isSelected ? 0.3 : 1
+                opacity: selectedEthAddress && !isSelected ? 0.3 : 1
             }}
           >
             {header}
@@ -141,12 +142,11 @@ class AuthProfileList extends Component {
             >
               {isSelected &&
                 <LoginForm
-                  account={account}
                   akashaId={akashaId}
+                  ethAddress={ethAddress}
                   getInputRef={this.getInputRef}
                   onCancel={this.onCancelLogin}
                   onSubmit={this.onSubmitLogin}
-                  profile={profile.get('profile')}
                 />
               }
             </ReactCSSTransitionGroup>
@@ -183,7 +183,7 @@ class AuthProfileList extends Component {
                 className="auth-profile-list__list-wrapper"
                 ref={this.getContainerRef}
               >
-                {profiles.map(({ account, profile }) => this.renderListItem(account, profile))}
+                {profiles.map(profile => this.renderListItem(profile))}
               </div>
             </div>
           </DataLoader>

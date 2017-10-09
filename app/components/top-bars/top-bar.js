@@ -11,9 +11,9 @@ import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
         const { history, loggedProfile } = nextProps;
-        const oldLoggedProfileAccount = this.props.loggedProfile.get('account');
+        const oldLoggedProfileAccount = this.props.loggedProfile.get('ethAddress');
         // the condition below is equivalent to a successful logout action
-        if ((!loggedProfile.get('account') && oldLoggedProfileAccount) || !oldLoggedProfileAccount) {
+        if ((!loggedProfile.get('ethAddress') && oldLoggedProfileAccount) || !oldLoggedProfileAccount) {
             history.push('/setup/authenticate');
         }
     }

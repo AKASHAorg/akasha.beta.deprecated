@@ -8,15 +8,15 @@ import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboardId,
-    selectLoggedAccount } from '../selectors';
+    selectLoggedEthAddress } from '../selectors';
 
 function* dashboardAdd ({ name, columns = [] }) {
     try {
-        const account = yield select(selectLoggedAccount);
+        const ethAddress = yield select(selectLoggedEthAddress);
         const dashboard = yield apply(
             dashboardService,
             dashboardService.addDashboard,
-            [{ account, columns, name }]
+            [{ ethAddress, columns, name }]
         );
         yield put(actions.dashboardAddSuccess(dashboard));
     } catch (error) {
@@ -72,8 +72,8 @@ function* dashboardDeleteColumn ({ columnId }) {
 
 export function* dashboardGetActive () {
     try {
-        const account = yield select(selectLoggedAccount);
-        const data = yield apply(dashboardService, dashboardService.getActive, [account]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(dashboardService, dashboardService.getActive, [ethAddress]);
         yield put(actions.dashboardGetActiveSuccess(data && data.name));
     } catch (error) {
         yield put(actions.dashboardGetActiveError(error));
@@ -82,8 +82,8 @@ export function* dashboardGetActive () {
 
 export function* dashboardGetAll () {
     try {
-        const account = yield select(selectLoggedAccount);
-        const data = yield apply(dashboardService, dashboardService.getAll, [account]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(dashboardService, dashboardService.getAll, [ethAddress]);
         yield put(actions.dashboardGetAllSuccess(data));
     } catch (error) {
         yield put(actions.dashboardGetAllError(error));
@@ -119,8 +119,8 @@ function* dashboardGetTagSuggestions (request) {
 
 function* dashboardSetActive ({ name }) {
     try {
-        const account = yield select(selectLoggedAccount);
-        yield apply(dashboardService, dashboardService.setActive, [{ account, name }]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        yield apply(dashboardService, dashboardService.setActive, [{ ethAddress, name }]);
         yield put(actions.dashboardSetActiveSuccess(name));
     } catch (error) {
         yield put(actions.dashboardSetActiveError(error));

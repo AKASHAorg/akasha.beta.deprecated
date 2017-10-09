@@ -4,7 +4,7 @@ import * as actions from '../actions/highlight-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
 import * as highlightService from '../services/highlight-service';
-import { selectLoggedAccount } from '../selectors';
+import { selectLoggedEthAddress } from '../selectors';
 
 function* highlightDelete ({ id }) {
     try {
@@ -26,8 +26,8 @@ function* highlightEditNotes ({ type, ...payload }) {
 
 export function* highlightGetAll () {
     try {
-        const account = yield select(selectLoggedAccount);
-        const data = yield apply(highlightService, highlightService.getAll, [account]);
+        const ethAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(highlightService, highlightService.getAll, [ethAddress]);
         yield put(actions.highlightGetAllSuccess(data));
     } catch (error) {
         yield put(actions.highlightGetAllError(error));
@@ -36,11 +36,11 @@ export function* highlightGetAll () {
 
 function* highlightSave ({ payload }) {
     try {
-        const account = yield select(selectLoggedAccount);
+        const ethAddress = yield select(selectLoggedEthAddress);
         const highlight = yield apply(
             highlightService,
             highlightService.saveHighlight,
-            [{ account, ...payload }]
+            [{ ethAddress, ...payload }]
         );
         yield put(actions.highlightSaveSuccess(highlight));
         yield put(appActions.showNotification({
@@ -55,9 +55,13 @@ function* highlightSave ({ payload }) {
 
 function* highlightSearch ({ search }) {
     try {
-        const account = yield select(selectLoggedAccount);
+        const ethAddress = yield select(selectLoggedEthAddress);
         search = search.toLowerCase();
-        const data = yield apply(highlightService, highlightService.searchHighlight, [{ account, search }]);
+        const data = yield apply(
+            highlightService,
+            highlightService.searchHighlight,
+            [{ ethAddress, search }]
+        );
         yield put(actions.highlightSearchSuccess(data));
     } catch (error) {
         yield put(actions.highlightSearchError(error));

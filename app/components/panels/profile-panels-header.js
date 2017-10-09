@@ -12,7 +12,7 @@ import { Breadcrumbs, PanelLink } from '../';
 const ProfilePanelsHeader = (props) => {
     const { location, loggedProfile, match, intl } = props;
     const loggedAkashaId = loggedProfile.get('akashaId');
-    const loggedAccount = loggedProfile.get('account');
+    const loggedEthAddress = loggedProfile.get('ethAddress');
 
     if (!location.pathname.includes('/panel')) {
         return null;
@@ -25,7 +25,7 @@ const ProfilePanelsHeader = (props) => {
             <div style={{ lineHeight: '48px' }}>
               {!loggedAkashaId && match.params.panelName === 'editprofile' ?
                 <span>
-                  {loggedAkashaId || loggedAccount} &gt;
+                  {loggedAkashaId || loggedEthAddress} &gt;
                     <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b>
                 </span> :
                 <Breadcrumbs panel />

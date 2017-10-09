@@ -8,7 +8,7 @@ import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
     userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectGethStatus, selectIpfsStatus, selectLoggedAccount,
+import { selectGethStatus, selectIpfsStatus, selectLoggedEthAddress,
     selectProfileFlag } from '../../local-flux/selectors';
 import { Input, RememberPassphrase } from '../';
 
@@ -22,12 +22,12 @@ class LoginForm extends Component {
     };
 
     componentDidMount () {
-        const { account } = this.props;
-        this.props.userSettingsRequest(account);
+        const { ethAddress } = this.props;
+        this.props.userSettingsRequest(ethAddress);
     }
 
     componentWillReceiveProps (nextProps) {
-        const { history, loggedAccount, passwordPreference } = nextProps;
+        const { history, loggedEthAddress, passwordPreference } = nextProps;
         if (passwordPreference.remember !== this.props.passwordPreference.remember ||
                 passwordPreference.time !== this.props.passwordPreference.time) {
             this.setState({
@@ -35,7 +35,7 @@ class LoginForm extends Component {
                 unlockTime: passwordPreference.time || 5
             });
         }
-        if (loggedAccount) {
+        if (loggedEthAddress) {
             this.props.userSettingsClear();
             this.props.profileClearLoginErrors();
             history.push('/dashboard');
@@ -80,7 +80,7 @@ class LoginForm extends Component {
 
     handleLogin = (ev) => {
         ev.preventDefault();
-        const { account, akashaId, profile } = this.props;
+        const { akashaId, ethAddress } = this.props;
         let unlockTime = 1;
         if (this.state.isChecked) {
             unlockTime = this.state.unlockTime;
@@ -89,18 +89,17 @@ class LoginForm extends Component {
             remember: this.state.isChecked,
             time: this.state.unlockTime
         };
-        this.props.userSettingsSave(account, { passwordPreference });
+        this.props.userSettingsSave(ethAddress, { passwordPreference });
         this.props.profileLogin({
-            account,
+            ethAddress,
             akashaId,
             password: this.state.passphrase,
-            profile,
             rememberTime: unlockTime
         });
     };
 
     render () {
-        const { account, gethStatus, getInputRef, intl, ipfsStatus, loginErrors, loginPending } = this.props;
+        const { ethAddress, gethStatus, getInputRef, intl, ipfsStatus, loginErrors, loginPending } = this.props;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
 
@@ -111,7 +110,7 @@ class LoginForm extends Component {
                 label={intl.formatMessage(formMessages.ethereumAddress)}
                 readOnly
                 size="large"
-                value={account}
+                value={ethAddress}
               />
               <FormItem
                 className="login-form__form-item"
@@ -163,19 +162,18 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-    account: PropTypes.string.isRequired,
     akashaId: PropTypes.string,
+    ethAddress: PropTypes.string.isRequired,
     gethStatus: PropTypes.shape().isRequired,
     getInputRef: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
-    loggedAccount: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     loginErrors: PropTypes.shape().isRequired,
     loginPending: PropTypes.bool,
     onCancel: PropTypes.func.isRequired,
     passwordPreference: PropTypes.shape(),
-    profile: PropTypes.string,
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
     userSettingsClear: PropTypes.func.isRequired,
@@ -187,7 +185,7 @@ function mapStateToProps (state) {
     return {
         gethStatus: selectGethStatus(state),
         ipfsStatus: selectIpfsStatus(state),
-        loggedAccount: selectLoggedAccount(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
         loginErrors: state.profileState.get('loginErrors'),
         loginPending: selectProfileFlag(state, 'loginPending'),
         passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),

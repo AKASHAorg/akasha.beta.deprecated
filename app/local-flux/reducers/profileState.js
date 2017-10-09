@@ -15,7 +15,7 @@ const addProfileData = (byId, { ...profileData }) => {
     if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;
     }
-    return byId.set(profileData.akashaId, new ProfileRecord(profileData));
+    return byId.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
 
 const commentsIteratorHandler = (state, { data }) => {
@@ -81,7 +81,6 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
-            ethAddresses: new Map(),
             localProfiles: new List()
         }),
 
@@ -233,19 +232,14 @@ const profileState = createReducer(initialState, {
         }),
 
     [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
-        let ethAddresses = state.get('ethAddresses');
         let localProfiles = new List();
         let byId = state.get('byId');
         data.forEach((prf) => {
-            if (prf.akashaId) {
-                byId = addProfileData(byId, prf);
-            }
-            ethAddresses = ethAddresses.set(prf.ethAddress, prf.akashaId);
+            byId = addProfileData(byId, prf);
             localProfiles = localProfiles.push(prf.ethAddress);
         });
         return state.merge({
             byId,
-            ethAddresses,
             flags: state.get('flags').merge({
                 fetchingLocalProfiles: false,
                 localProfilesFetched: true

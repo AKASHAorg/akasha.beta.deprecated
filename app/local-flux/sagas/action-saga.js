@@ -1,6 +1,5 @@
-import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { apply, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
-import * as appActions from '../actions/app-actions';
 import * as commentsActions from '../actions/comments-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as entryActions from '../actions/entry-actions';
@@ -8,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectAction, selectLoggedAkashaId, selectTokenExpiration } from '../selectors';
+import { selectAction, selectLoggedEthAddress } from '../selectors';
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -64,8 +63,8 @@ const publishSuccessActions = {
  */
 function* actionGetPending () {
     try {
-        const loggedAkashaId = yield select(selectLoggedAkashaId);
-        const data = yield apply(actionService, actionService.getPendingActions, [loggedAkashaId]);
+        const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(actionService, actionService.getPendingActions, [loggedEthAddress]);
         yield put(actions.actionGetPendingSuccess(data));
         if (data.length) {
             const txs = [];

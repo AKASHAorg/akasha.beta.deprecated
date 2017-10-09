@@ -6,7 +6,7 @@ import { Button, Form, Input } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
 import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
 import { showTerms } from '../local-flux/actions/app-actions';
-import { selectLoggedAccount, selectProfileFlag } from '../local-flux/selectors';
+import { selectLoggedEthAddress, selectProfileFlag } from '../local-flux/selectors';
 
 const FormItem = Form.Item;
 
@@ -19,8 +19,8 @@ class NewIdentity extends Component {
     };
 
     componentWillReceiveProps (nextProps) {
-        const { loggedAccount, history } = this.props;
-        if (!loggedAccount && nextProps.loggedAccount) {
+        const { loggedEthAddress, history } = this.props;
+        if (!loggedEthAddress && nextProps.loggedEthAddress) {
             history.push('/setup/new-identity-interests');
         }
     }
@@ -177,7 +177,7 @@ NewIdentity.propTypes = {
     form: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
-    loggedAccount: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     loginPending: PropTypes.bool,
     profileCreateEthAddress: PropTypes.func.isRequired,
     showTerms: PropTypes.func.isRequired
@@ -186,7 +186,7 @@ NewIdentity.propTypes = {
 function mapStateToProps (state) {
     return {
         ethAddressPending: selectProfileFlag(state, 'ethAddressPending'),
-        loggedAccount: selectLoggedAccount(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
         loginPending: selectProfileFlag(state, 'loginPending')
     };
 }

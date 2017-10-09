@@ -1,12 +1,12 @@
 import Dexie from 'dexie';
 
-const dbName = 'settings-akasha-alpha-' + process.env.NODE_ENV;
+const dbName = `settings-akasha-alpha-${process.env.NODE_ENV}`;
 const settingsDB = new Dexie(dbName);
 settingsDB.version(1).stores({
     geth: '&name, autodag, cache, datadir, fast, ipcpath, mine, minerthreads, networkid',
     ipfs: '&name, ipfsPath',
     flags: '&name, requestStartupChange',
-    user: '&account, akashaId, autoCrashReports',
+    user: '&ethAddress, akashaId, autoCrashReports',
     general: '&name'
 });
 
