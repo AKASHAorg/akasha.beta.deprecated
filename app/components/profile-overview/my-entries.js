@@ -76,7 +76,7 @@ function mapStateToProps (state) {
         fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
         fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
         profileEntries: selectProfileEntries(state, akashaId),
-        profiles: state.profileState.get('byId'),
+        profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
     };
 }

@@ -5,9 +5,9 @@ import { ErrorRecord, LoggedProfile, ProfileRecord, ProfileState } from './recor
 
 const initialState = new ProfileState();
 
-const addProfileData = (byId, { ...profileData }) => {
+const addProfileData = (byEthAddress, { ...profileData }) => {
     if (!profileData) {
-        return byId;
+        return byEthAddress;
     }
     profileData.followersCount = Number(profileData.followersCount);
     profileData.followingCount = Number(profileData.followingCount);
@@ -15,7 +15,7 @@ const addProfileData = (byId, { ...profileData }) => {
     if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;
     }
-    return byId.set(profileData.ethAddress, new ProfileRecord(profileData));
+    return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
 
 const commentsIteratorHandler = (state, { data }) => {
@@ -183,7 +183,7 @@ const profileState = createReducer(initialState, {
     },
 
     [types.PROFILE_GET_BALANCE_SUCCESS]: (state, { data }) => {
-        if (state.getIn(['loggedProfile', 'account']) !== data.etherBase) {
+        if (state.getIn(['loggedProfile', 'ethAddress']) !== data.etherBase) {
             return state;
         }
         return state.set('balance', data.balance);
@@ -214,7 +214,7 @@ const profileState = createReducer(initialState, {
             return state;
         }
         return state.merge({
-            byId: addProfileData(state.get('byId'), data),
+            byEthAddress: addProfileData(state.get('byEthAddress'), data),
             flags: state.get('flags').setIn(['pendingListProfiles', data.akashaId], false)
         });
     },
@@ -233,13 +233,13 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
         let localProfiles = new List();
-        let byId = state.get('byId');
+        let byEthAddress = state.get('byEthAddress');
         data.forEach((prf) => {
-            byId = addProfileData(byId, prf);
+            byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
             localProfiles = localProfiles.push(prf.ethAddress);
         });
         return state.merge({
-            byId,
+            byEthAddress,
             flags: state.get('flags').merge({
                 fetchingLocalProfiles: false,
                 localProfilesFetched: true
@@ -349,8 +349,8 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_TOGGLE_INTEREST]: (state, { interest, interestType }) => {
         const interestState = state.getIn(['interests', interestType]);
         const newList = interestState.includes(interest) ?
-                        interestState.delete(interestState.indexOf(interest)) :
-                        interestState.push(interest);
+            interestState.delete(interestState.indexOf(interest)) :
+            interestState.push(interest);
         return state.setIn(['interests', interestType], newList);
     },
 
