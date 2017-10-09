@@ -41,7 +41,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
     const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
     const decodedHash = decodeHash(ipfsHash);
 
-    const txData = contracts.instance.Entries.publishArticle.request(...decodedHash, data.tags, data.entryType, { gas: 2000000 });
+    const txData = contracts.instance.Entries.publishArticle.request(...decodedHash, data.tags, { gas: 2000000 });
     ipfsEntry = null;
     delete data.content;
     delete data.tags;
