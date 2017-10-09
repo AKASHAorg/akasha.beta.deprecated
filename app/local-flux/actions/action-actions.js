@@ -1,8 +1,8 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const actionAdd = (akashaId, actionType, payload) =>
-    action(types.ACTION_ADD, { akashaId, actionType, payload });
+export const actionAdd = (ethAddress, actionType, payload) =>
+    action(types.ACTION_ADD, { ethAddress, actionType, payload });
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
 export const actionGetPending = () => action(types.ACTION_GET_PENDING);
 

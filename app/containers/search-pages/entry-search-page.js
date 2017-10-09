@@ -46,7 +46,7 @@ EntrySearchPage.propTypes = {
 function mapStateToProps (state) {
     return {
         entries: selectSearchEntries(state),
-        profiles: state.profileState.get('byId'),
+        profiles: state.profileState.get('byEthAddress'),
         fetchingEntries: state.searchState.getIn(['flags', 'queryPending']),
         fetchingMoreEntries: state.searchState.getIn(['flags', 'moreQueryPending']),
         query: state.searchState.get('query'),

@@ -56,12 +56,18 @@ function* profileFollowingsIterator ({ akashaId }) {
 
 function* profileGetBalance ({ unit = 'ether' }) {
     const channel = Channel.server.profile.getBalance;
-    const account = yield select(state => state.profileState.getIn(['loggedProfile', 'account']));
-    if (!account) {
+    const ethAddress = yield select(state => state.profileState.getIn(['loggedProfile', 'ethAddress']));
+    if (!ethAddress) {
         return;
     }
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ etherBase: account, unit }]);
+    yield apply(channel, channel.send, [{ etherBase: ethAddress, unit }]);
+}
+
+function* profileGetByAddress ({ ethAddress }) {
+    const channel = Channel.server.registry.getByAddress;
+    // yield call(enableChannel, channel, Channel.client.profile.manager);
+    yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
 function* profileGetData ({ akashaId, full = false }) {
@@ -210,9 +216,9 @@ function* watchProfileCreateEthAddressChannel () {
             yield put(actions.profileCreateEthAddressError(resp.error));
         } else {
             yield put(actions.profileCreateEthAddressSuccess(resp.data));
-            const account = resp.data.address;
+            const ethAddress = resp.data.address;
             const { password } = resp.request;
-            yield put(actions.profileLogin({ account, password }));
+            yield put(actions.profileLogin({ ethAddress, password }));
         }
     }
 }
@@ -272,6 +278,22 @@ function* watchProfileGetBalanceChannel () {
             yield put(actions.profileGetBalanceError(resp.error));
         } else {
             yield put(actions.profileGetBalanceSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileGetByAddressChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.registry.getByAddress);
+        if (resp.error) {
+            yield put(actions.profileGetByAddressError(resp.error));
+        } else {
+            yield put(actions.profileGetByAddressSuccess(resp.data));
+            if (resp.data.akashaId) {
+                yield put(actions.profileGetData(resp.data.akashaId, true));
+            } else {
+                yield put(actions.isFollower(resp.data.ethAddress));
+            }
         }
     }
 }
@@ -413,6 +435,7 @@ export function* registerProfileListeners () {
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
     yield fork(watchProfileGetBalanceChannel);
+    yield fork(watchProfileGetByAddressChannel);
     yield fork(watchProfileGetDataChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
@@ -431,6 +454,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
     yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
     yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
+    yield takeEvery(types.PROFILE_GET_BY_ADDRESS, profileGetByAddress);
     yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
     yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
     yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);

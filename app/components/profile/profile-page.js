@@ -2,24 +2,34 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
-import { profileGetData } from '../../local-flux/actions/profile-actions';
+import { profileGetByAddress, profileGetData } from '../../local-flux/actions/profile-actions';
 import { selectProfile } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
 
 class ProfilePage extends Component {
     componentDidMount () {
-        const akashaId = this.props.match.params.akashaId;
-        this.props.profileGetData(akashaId, true);
+        const { akashaId, ethAddress } = this.props.match.params;
+        if (akashaId) {
+            this.props.profileGetData(akashaId, true);
+        }
+        if (ethAddress) {
+            this.props.profileGetByAddress(`0x${ethAddress}`);
+        }
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.match.params.akashaId !== this.props.match.params.akashaId) {
-            this.props.profileGetData(nextProps.match.params.akashaId, true);
+        const { akashaId, ethAddress } = nextProps.match.params;
+        if (akashaId && akashaId !== this.props.match.params.akashaId) {
+            this.props.profileGetData(akashaId, true);
+        }
+        if (ethAddress && ethAddress !== this.props.match.params.ethAddress) {
+            this.props.profileGetByAddress(`0x${ethAddress}`);
         }
     }
 
     render () {
         const { match, profileData } = this.props;
+        const { akashaId, ethAddress } = match;
         return (
           <DataLoader
             flag={!profileData}
@@ -29,10 +39,12 @@ class ProfilePage extends Component {
           >
             <div className="profile-page">
               <ProfileDetails
-                akashaId={match.params.akashaId}
+                akashaId={akashaId}
+                ethAddress={ethAddress}
               />
               <ProfileActivity
-                akashaId={match.params.akashaId}
+                akashaId={akashaId}
+                ethAddress={ethAddress}
               />
             </div>
           </DataLoader>
@@ -42,7 +54,8 @@ class ProfilePage extends Component {
 
 ProfilePage.propTypes = {
     profileData: PropTypes.shape(),
-    profileGetData: PropTypes.func,
+    profileGetByAddress: PropTypes.func.isRequired,
+    profileGetData: PropTypes.func.isRequired,
     match: PropTypes.shape()
 };
 
@@ -58,6 +71,7 @@ export default connect(
     {
         entryMoreProfileIterator,
         entryProfileIterator,
+        profileGetByAddress,
         profileGetData,
     }
 )(ProfilePage);

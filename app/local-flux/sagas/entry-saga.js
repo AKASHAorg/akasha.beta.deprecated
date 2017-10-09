@@ -7,7 +7,7 @@ import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
-import { selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
+import { selectBlockNumber, selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
@@ -203,7 +203,8 @@ function* entryMoreTagIterator ({ columnId, tagName }) {
 function* entryNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT }]);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock }]);
 }
 
 function* entryProfileIterator ({ columnId, ethAddress, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {

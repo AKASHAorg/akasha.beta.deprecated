@@ -48,7 +48,7 @@ const Interests = Record({
 
 const ProfileState = Record({
     balance: null,
-    byId: new Map(),
+    byEthAddress: new Map(),
     errors: new List(), // to be removed
     fetchingFullLoggedProfile: false, // to be removed
     flags: new Flags(),
