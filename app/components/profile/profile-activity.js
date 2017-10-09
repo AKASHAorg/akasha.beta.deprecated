@@ -139,7 +139,7 @@ function mapStateToProps (state, ownProps) {
         moreFollowers: selectMoreFollowers(state, akashaId),
         moreFollowings: selectMoreFollowings(state, akashaId),
         profileEntries: selectProfileEntries(state, akashaId),
-        profiles: state.profileState.get('byId'),
+        profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
     };
 }

@@ -137,15 +137,19 @@ class AppContainer extends Component {
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route exact path="/@:akashaId" component={ProfilePage} />
+                          <Route exact path="/0x:ethAddress" component={ProfilePage} />
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                          <Route path="/0x:ethAddress/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
                         {isOverlay &&
                           <div>
                             <Route exact path="/@:akashaId" component={ProfilePage} />
+                            <Route exact path="/0x:ethAddress" component={ProfilePage} />
                             <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                            <Route path="/0x:ethAddress/:entryId(\d+)" component={EntryPageContainer} />
                           </div>
                         }
                       </PageContent>

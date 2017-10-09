@@ -165,7 +165,7 @@ function mapStateToProps (state, ownProps) {
         loggedAkashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
         pendingClaims: selectAllPendingClaims(state),
         pendingVotes: selectAllPendingVotes(state),
-        profiles: state.profileState.get('byId'),
+        profiles: state.profileState.get('byEthAddress'),
     };
 }
 
