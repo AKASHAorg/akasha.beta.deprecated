@@ -26,14 +26,20 @@ const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: nu
     const maxResults = data.limit || 5;
     const fetched = yield contracts.fromEvent(contracts.instance.Entries.Publish, {}, data.toBlock, maxResults);
     for (let event of fetched.results) {
-        const tags = event.args.tagsPublished.map((tag) => {
-            return GethConnector.getInstance().web3.toUtf8(tag);
+
+        const captureIndex = yield contracts
+            .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId }, data.toBlock, 10);
+
+        const tags = captureIndex.results.map(function (ev) {
+            return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
         });
+
         const author = yield resolve.execute({ ethAddress: event.args.author });
+
         collection.push({
-            tags,
-            entryType: GethConnector.getInstance().web3.toDecimal(event.args.entryType),
+            entryType: GethConnector.getInstance().web3.toDecimal(captureIndex.results[0].args.entryType),
             entryId: event.args.entryId,
+            tags,
             author
         });
         if (collection.length === maxResults) {
