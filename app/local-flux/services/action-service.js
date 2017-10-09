@@ -17,11 +17,11 @@ export const getActionByTx = tx =>
             .catch(reject);
     });
 
-export const getPendingActions = akashaId =>
+export const getPendingActions = ethAddress =>
     new Promise((resolve, reject) => {
         actionDB.actions
-            .where('[akashaId+status]')
-            .equals([akashaId, actionStatus.publishing])
+            .where('[ethAddress+status]')
+            .equals([ethAddress, actionStatus.publishing])
             .toArray()
             .then(resolve)
             .catch(reject);

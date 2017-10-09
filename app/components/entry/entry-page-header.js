@@ -221,7 +221,7 @@ function mapStateToProps (state) {
         entry,
         existingDraft,
         loggedAkashaId: selectLoggedAkashaId(state),
-        publisher: state.profileState.getIn(['byId', akashaId]),
+        publisher: state.profileState.getIn(['byEthAddress', akashaId]),
     };
 }
 

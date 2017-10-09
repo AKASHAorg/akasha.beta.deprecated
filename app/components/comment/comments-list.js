@@ -115,7 +115,7 @@ function mapStateToProps (state) {
         loggedProfileData: selectLoggedProfileData(state),
         moreComments: state.commentsState.get('moreComments'),
         pendingComments: selectPendingComments(state, entry.get('entryId')),
-        profiles: state.profileState.get('byId')
+        profiles: state.profileState.get('byEthAddress')
     };
 }
 

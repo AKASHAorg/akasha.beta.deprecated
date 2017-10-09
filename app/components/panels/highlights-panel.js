@@ -77,7 +77,7 @@ HighlightsPanel.propTypes = {
 function mapStateToProps (state) {
     return {
         highlights: selectHighlights(state),
-        profiles: state.profileState.get('byId'),
+        profiles: state.profileState.get('byEthAddress'),
         search: selectHighlightSearch(state),
     };
 }
