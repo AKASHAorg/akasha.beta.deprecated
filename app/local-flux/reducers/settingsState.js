@@ -1,6 +1,4 @@
 import * as types from '../constants';
-import * as settingsTypes from '../constants/SettingsConstants';
-import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 import { ErrorRecord, GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, SettingsRecord, UserSettings } from './records';
@@ -74,19 +72,19 @@ const settingsState = createReducer(initialState, {
             flags: state.get('flags').merge({ savingIpfsSettings: false })
         }),
 
-    [settingsTypes.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
-        state.merge({
-            userSettings: state.get('userSettings').merge({
-                latestMention: data
-            })
-        }),
+    // [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
+    //     state.merge({
+    //         userSettings: state.get('userSettings').merge({
+    //             latestMention: data
+    //         })
+    //     }),
 
-    [settingsTypes.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-        }),
+    // [types.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
+    //     state.merge({
+    //         errors: state.get('errors').push(new ErrorRecord(error)),
+    //     }),
 
-    [settingsTypes.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
+    // [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
     [types.GENERAL_SETTINGS]: state =>
         state.setIn(['flags', 'generalSettingsPending'], true),
@@ -188,7 +186,7 @@ const settingsState = createReducer(initialState, {
             userSettings: getUserSettings(data)
         }),
 
-    [appTypes.CLEAN_STORE]: state =>
+    [types.CLEAN_STORE]: state =>
         state.merge({
             userSettings: new UserSettings()
         }),

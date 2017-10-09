@@ -22,11 +22,11 @@ class NewEntrySecondarySidebar extends Component {
     };
 
     componentDidMount () {
-        const { akashaId } = this.props;
-        this.props.draftsGetCount({ akashaId });
+        const { ethAddress } = this.props;
+        this.props.draftsGetCount({ ethAddress });
         this.props.entryProfileIterator({
             column: null,
-            akashaId,
+            ethAddress,
             limit: 0,
             asDrafts: true
         });
@@ -34,17 +34,17 @@ class NewEntrySecondarySidebar extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { draftsFetched, draftsCount } = nextProps;
-        const { akashaId } = this.props;
+        const { ethAddress } = this.props;
         if (!draftsFetched && (draftsCount > 0)) {
-            this.props.draftsGet({ akashaId });
+            this.props.draftsGet({ ethAddress });
         }
     }
 
     createNewDraft = (id, type) => {
-        const { akashaId, userSelectedLicence } = this.props;
+        const { ethAddress, userSelectedLicence } = this.props;
         this.props.draftCreate({
             id,
-            akashaId,
+            ethAddress,
             content: {
                 featuredImage: {},
                 licence: userSelectedLicence,
@@ -68,8 +68,8 @@ class NewEntrySecondarySidebar extends Component {
     }
 
     _handleDraftDelete = (draftId) => {
-        const { akashaId } = this.props;
-        this.props.draftDelete({ draftId, akashaId });
+        const { ethAddress } = this.props;
+        this.props.draftDelete({ draftId, ethAddress });
     }
 
     _showDraftDeleteConfirm = (ev, draftId) => {
@@ -394,7 +394,7 @@ class NewEntrySecondarySidebar extends Component {
     }
 }
 NewEntrySecondarySidebar.propTypes = {
-    akashaId: PropTypes.string,
+    ethAddress: PropTypes.string,
     draftsCount: PropTypes.number,
     draftCreate: PropTypes.func,
     draftDelete: PropTypes.func,
@@ -411,7 +411,7 @@ NewEntrySecondarySidebar.propTypes = {
 };
 const mapStateToProps = state => ({
     draftsCount: state.draftState.get('draftsCount'),
-    akashaId: selectLoggedAkashaId(state),
+    ethAddress: state.profileState.getIn(['loggedProfile', 'ethAddress']),
     draftsFetched: state.draftState.get('draftsFetched'),
     drafts: state.draftState.get('drafts'),
     resolvingHashes: state.draftState.get('resolvingHashes'),

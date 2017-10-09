@@ -48,7 +48,7 @@ function* draftCreate ({ data }) {
  */
 function* draftsGet ({ data }) {
     try {
-        const response = yield call([draftService, draftService.draftsGet], data.akashaId);
+        const response = yield call([draftService, draftService.draftsGet], data.ethAddress);
         let drafts = new Map();
         if (response.length > 0) {
             response.forEach((draft) => {
@@ -98,7 +98,9 @@ function* draftUpdate ({ data }) {
 
 function* draftsGetCount ({ data }) {
     try {
-        const response = yield call([draftService, draftService.draftsGetCount], { akashaId: data.akashaId });
+        const response = yield call([draftService, draftService.draftsGetCount], {
+            ethAddress: data.ethAddress
+        });
         yield put(draftActions.draftsGetCountSuccess({ count: response }));
     } catch (ex) {
         yield put(draftActions.draftsGetCountError({ error: ex }));

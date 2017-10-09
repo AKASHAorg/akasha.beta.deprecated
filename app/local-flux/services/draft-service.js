@@ -18,7 +18,7 @@ export const draftCreate = draft =>
         });
 
 export const draftCreateOrUpdate = ({ draft }) => {
-    const { tags, id, akashaId, content, localChanges } = draft;
+    const { tags, id, ethAddress, content, localChanges } = draft;
     return entriesDB.drafts
         .where('id')
         .equals(draft.id)
@@ -28,7 +28,7 @@ export const draftCreateOrUpdate = ({ draft }) => {
                 return draftCreate({
                     tags,
                     id,
-                    akashaId,
+                    ethAddress,
                     content,
                     localChanges
                 });
@@ -36,7 +36,7 @@ export const draftCreateOrUpdate = ({ draft }) => {
             return draftModify({
                 tags,
                 id,
-                akashaId,
+                ethAddress,
                 content,
                 localChanges,
             });
@@ -52,10 +52,10 @@ entriesDB.drafts.where('id')
     .then(() => draftId)
     .catch(reason => reason);
 
-export const draftsGet = akashaId =>
+export const draftsGet = ethAddress =>
     entriesDB.drafts
-        .where('akashaId')
-        .equals(akashaId)
+        .where('ethAddress')
+        .equals(ethAddress)
         .toArray();
 
 export const draftGetById = draftId =>
@@ -68,9 +68,9 @@ export const draftSave = data =>
     entriesDB.drafts.put(data.draft)
         .then(() => data.draft);
 
-export const draftsGetCount = ({ akashaId }) =>
+export const draftsGetCount = ({ ethAddress }) =>
     entriesDB.drafts
-        .where('akashaId')
-        .equals(akashaId)
+        .where('ethAddress')
+        .equals(ethAddress)
         .count();
 

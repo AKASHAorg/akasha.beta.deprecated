@@ -8,7 +8,7 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import { selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
-    selectIsFollower, selectListNextEntries, selectLoggedAkashaId, selectToken } from '../selectors';
+    selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
 const Channel = global.Channel;
@@ -76,17 +76,17 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const canClaim = Channel.server.entry.canClaim;
     yield call(enableExtraChannels);
-    const loggedAkashaId = yield select(selectLoggedAkashaId);
-    const isOwnEntry = publisher && loggedAkashaId === publisher.akashaId;
-    yield apply(getVoteOf, getVoteOf.send, [[{ akashaId: loggedAkashaId, entryId }]]);
-    yield put(profileActions.profileResolveIpfsHash([publisher.ipfsHash], 'fullEntry', [publisher.akashaId]));
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const isOwnEntry = publisher && loggedEthAddress === publisher.ethAddress;
+    yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
+    yield put(profileActions.profileResolveIpfsHash([publisher.ipfsHash], 'fullEntry', [publisher.ethAddress]));
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
     } else {
-        const isFollower = yield select(state => selectIsFollower(state, publisher.akashaId));
+        const isFollower = yield select(state => selectIsFollower(state, publisher.ethAddress));
         if (isFollower === undefined) {
-            yield put(profileActions.profileIsFollower([publisher.akashaId]));
+            yield put(profileActions.profileIsFollower([publisher.ethAddress]));
         }
     }
 }
@@ -101,23 +101,23 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) {
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const getVoteOf = Channel.server.entry.getVoteOf;
     yield call(enableExtraChannels);
-    const loggedAkashaId = yield select(selectLoggedAkashaId);
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
     const allEntries = [];
     const ownEntries = [];
     const entryIpfsHashes = [];
     const entryIds = [];
     const profileIpfsHashes = [];
-    const akashaIds = [];
+    const ethAddresses = [];
     entries.forEach((entry) => {
-        const akashaId = entry.entryEth.publisher.akashaId;
-        allEntries.push({ akashaId: loggedAkashaId, entryId: entry.entryId });
+        const ethAddress = entry.entryEth.publisher.ethAddress;
+        allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         entryIpfsHashes.push(entry.entryEth.ipfsHash);
         entryIds.push(entry.entryId);
-        if (akashaId && !akashaIds.includes(akashaId)) {
-            akashaIds.push(akashaId);
+        if (ethAddress && !ethAddresses.includes(ethAddress)) {
+            ethAddresses.push(ethAddress);
             profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
         }
-        if (akashaId && loggedAkashaId === akashaId) {
+        if (ethAddress && loggedEthAddress === ethAddress) {
             ownEntries.push(entry.entryId);
         }
     });
@@ -127,8 +127,8 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) {
         entryIds,
         asDrafts
     }));
-    yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, akashaIds));
-    yield put(profileActions.profileIsFollower(akashaIds));
+    yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, ethAddresses));
+    yield put(profileActions.profileIsFollower(ethAddresses));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
@@ -159,8 +159,8 @@ function* entryGetScore ({ entryId }) {
 function* entryGetVoteOf ({ entryId }) {
     const channel = Channel.server.entry.getVoteOf;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const akashaId = yield select(selectLoggedAkashaId);
-    yield apply(channel, channel.send, [[{ akashaId, entryId }]]);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(channel, channel.send, [[{ ethAddress, entryId }]]);
 }
 
 function* entryIsActive ({ entryId }) {
@@ -182,10 +182,10 @@ function* entryMoreNewestIterator ({ columnId }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
 }
 
-function* entryMoreProfileIterator ({ columnId, akashaId }) {
+function* entryMoreProfileIterator ({ columnId, ethAddress }) {
     const channel = Channel.server.entry.entryProfileIterator;
     const start = yield select(state => selectColumnLastEntry(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, akashaId }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, ethAddress }]);
 }
 
 function* entryMoreStreamIterator ({ columnId }) {
@@ -206,10 +206,10 @@ function* entryNewestIterator ({ columnId }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT }]);
 }
 
-function* entryProfileIterator ({ columnId, akashaId, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
+function* entryProfileIterator ({ columnId, ethAddress, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit, akashaId, asDrafts }]);
+    yield apply(channel, channel.send, [{ columnId, limit, ethAddress, asDrafts }]);
 }
 
 function* entryResolveIpfsHash ({ ipfsHash, columnId, entryIds, asDrafts, full }) {
@@ -231,14 +231,14 @@ function* entryTagIterator ({ columnId, tagName }) {
 }
 
 function* entryVoteSuccess (entryId) {
-    const loggedAkashaId = yield select(selectLoggedAkashaId);
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
     let entry = yield select(state => selectEntry(state, entryId));
     const fullEntry = yield select(selectFullEntry);
     if (!entry && fullEntry && fullEntry.get('entryId') === entryId) {
         entry = fullEntry;
     }
     const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
-    if (publisher && publisher === loggedAkashaId) {
+    if (publisher && publisher === loggedEthAddress) {
         yield put(actions.entryCanClaim(entryId));
         yield put(actions.entryGetBalance(entryId));
     }

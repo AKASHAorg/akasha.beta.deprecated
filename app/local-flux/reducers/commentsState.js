@@ -1,6 +1,5 @@
 import { Map } from 'immutable';
 import * as types from '../constants';
-import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 import { CommentData, CommentRecord, CommentsState } from './records';
 
@@ -50,9 +49,7 @@ const iteratorHandler = (state, collection) => {
 };
 
 const commentsState = createReducer(initialState, {
-    [appTypes.CLEAN_STORE]: () => initialState,
-
-    // *************** NEW REDUCERS **********************
+    [types.CLEAN_STORE]: () => initialState,
 
     [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, { data }) => {
         if (!data.collection.length) {

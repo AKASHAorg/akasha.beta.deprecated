@@ -192,14 +192,13 @@ class TagEditor extends Component {
     }
     _handleTagRegister = tagName =>
         (ev) => {
-            const { actionAdd, akashaId } = this.props;
+            const { actionAdd, ethAddress } = this.props;
             const payload = {
-                akashaId,
+                ethAddress,
                 tagName
             };
-            actionAdd(akashaId, actionTypes.tagCreate, payload);
+            actionAdd(ethAddress, actionTypes.tagCreate, payload);
             ev.preventDefault();
-            console.log('register this tag on blockchain', tagName);
         }
     _changeInputFocus = focusState =>
         () => setTimeout(() => this.setState({
@@ -328,7 +327,7 @@ class TagEditor extends Component {
 
 TagEditor.propTypes = {
     actionAdd: PropTypes.func,
-    akashaId: PropTypes.string,
+    ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
     nodeRef: PropTypes.func,

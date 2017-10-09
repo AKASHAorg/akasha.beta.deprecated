@@ -13,11 +13,27 @@ import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedAkashaId } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { Step } = Steps;
 const { confirm } = Modal;
+
+const EditorNotReadyPlaceholder = ({ message, loading }) => (
+  <div className="editor-not-ready">
+    {loading &&
+      <div className="editor-not-ready__loader">Loading</div>
+    }
+    <div className="editor-not-ready__message">
+      {message}
+    </div>
+  </div>
+);
+
+EditorNotReadyPlaceholder.propTypes = {
+    message: PropTypes.string,
+    loading: PropTypes.bool
+};
 
 class NewEntryPage extends Component {
     state = {
@@ -27,12 +43,12 @@ class NewEntryPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingHashes,
             userDefaultLicence } = nextProps;
-        const { akashaId } = this.props;
+        const { loggedProfile } = this.props;
         const draftIsPublished = resolvingHashes.includes(match.params.draftId);
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
             this.props.draftCreate({
                 id: match.params.draftId,
-                akashaId,
+                ethAddress: loggedProfile.get('ethAddress'),
                 content: {
                     licence: userDefaultLicence,
                     featuredImage: {},
@@ -50,9 +66,9 @@ class NewEntryPage extends Component {
     }
 
     _handleTitleChange = (ev) => {
-        const { match, akashaId, draftObj } = this.props;
+        const { match, loggedProfile, draftObj } = this.props;
         this.props.draftUpdate(draftObj.merge({
-            akashaId,
+            ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').merge({
                 title: ev.target.value
             }),
@@ -106,16 +122,24 @@ class NewEntryPage extends Component {
 
     _handlePublish = (ev) => {
         ev.preventDefault();
-        const { draftObj, akashaId, match } = this.props;
+        const { draftObj, loggedProfile, match } = this.props;
         const publishPayload = {
             id: draftObj.id,
             title: draftObj.getIn(['content', 'title']),
             type: match.params.draftType
         };
         if (draftObj.onChain) {
-            return this.props.actionAdd(akashaId, actionTypes.draftPublishUpdate, { draft: publishPayload });
+            return this.props.actionAdd(
+                loggedProfile.get('account'),
+                actionTypes.draftPublishUpdate,
+                { draft: publishPayload }
+            );
         }
-        return this.props.actionAdd(akashaId, actionTypes.draftPublish, { draft: publishPayload });
+        return this.props.actionAdd(
+            loggedProfile.get('account'),
+            actionTypes.draftPublish,
+            { draft: publishPayload }
+        );
     }
 
     _handleVersionRevert = (version) => {
@@ -232,7 +256,7 @@ class NewEntryPage extends Component {
 
     render () {
         const { showPublishPanel } = this.state;
-        const { akashaId, baseUrl, showSecondarySidebar, intl, draftObj,
+        const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingHashes } = this.props;
         if (!draftObj || !draftObj.content) {
             return (
@@ -293,7 +317,7 @@ class NewEntryPage extends Component {
                     match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
-                    akashaId={akashaId}
+                    ethAddress={loggedProfile.get('ethAddress')}
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
@@ -367,7 +391,6 @@ class NewEntryPage extends Component {
 
 NewEntryPage.propTypes = {
     actionAdd: PropTypes.func,
-    akashaId: PropTypes.string,
     baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
@@ -378,6 +401,7 @@ NewEntryPage.propTypes = {
     entryGetFull: PropTypes.func,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
     resolvingHashes: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
@@ -390,12 +414,12 @@ NewEntryPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-    akashaId: selectLoggedAkashaId(state),
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
     draftsFetched: state.draftState.get('draftsFetched'),
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
+    loggedProfile: selectLoggedProfile(state),
     resolvingHashes: state.draftState.get('resolvingHashes'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
