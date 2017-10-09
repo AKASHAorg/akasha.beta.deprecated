@@ -10,7 +10,7 @@ const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
             drafts: state.get('drafts').set(data.id, DraftModel.createDraft(data)),
-            selection: state.get('selection').setIn([data.id, data.akashaId], new Map({
+            selection: state.get('selection').setIn([data.id, data.ethAddress], new Map({
                 selectionState: data.selectionState
             }))
         }),
@@ -20,7 +20,7 @@ const draftState = createReducer(initialState, {
             drafts: state.get('drafts').updateIn([data.draft.id], draft =>
                 draft.merge(data.draft).set('saved', false)),
             selection: state.get('selection').setIn(
-                [data.draft.id, data.draft.akashaId],
+                [data.draft.id, data.draft.ethAddress],
                 data.selectionState
             ),
         }),
@@ -40,15 +40,15 @@ const draftState = createReducer(initialState, {
             })),
 
     [types.DRAFT_AUTOSAVE_SUCCESS]: (state, { data }) =>
-    state.withMutations(stateMap =>
-        stateMap.updateIn(['drafts', data.id], draft =>
-            draft.merge({
-                saved: true,
-                saving: false,
-                localChanges: true,
-                updated_at: data.updated_at
-            })).set('draftsCount', state.get('drafts').size)
-    ),
+        state.withMutations(stateMap =>
+            stateMap.updateIn(['drafts', data.id], draft =>
+                draft.merge({
+                    saved: true,
+                    saving: false,
+                    localChanges: true,
+                    updated_at: data.updated_at
+                })).set('draftsCount', state.get('drafts').size)
+        ),
 
     [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { data }) =>
         state.setIn(['drafts', data.draft.id], data.draft),

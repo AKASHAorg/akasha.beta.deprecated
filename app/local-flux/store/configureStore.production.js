@@ -4,7 +4,7 @@ import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
 
 const finalCreateStore = compose(
-  applyMiddleware(thunk, sagaMiddleware)
+    applyMiddleware(thunk, sagaMiddleware)
 )(createStore);
 
 export default function configureStore (initialState) {

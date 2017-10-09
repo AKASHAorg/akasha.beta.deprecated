@@ -105,8 +105,8 @@ export const entryMoreNewestIteratorError = (error, req) => {
 export const entryMoreNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
 
-export const entryMoreProfileIterator = (columnId, akashaId) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, akashaId });
+export const entryMoreProfileIterator = (columnId, ethAddress) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, ethAddress });
 export const entryMoreProfileIteratorError = (error, req) => {
     error.code = 'EMPIE01';
     error.messageId = 'entryMoreProfileIterator';
@@ -147,8 +147,8 @@ export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
 
-export const entryProfileIterator = ({ columnId, akashaId, limit, asDrafts }) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { columnId, akashaId, limit, asDrafts });
+export const entryProfileIterator = ({ columnId, ethAddress, limit, asDrafts }) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { columnId, ethAddress, limit, asDrafts });
 export const entryProfileIteratorError = (error, req) => {
     error.code = 'EPIE01';
     error.messageId = 'entryProfileIterator';

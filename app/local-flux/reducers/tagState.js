@@ -1,7 +1,6 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { fromJS, List, Map, Record } from 'immutable';
 import * as tagTypes from '../constants/TagConstants';
-import * as appTypes from '../constants/AppConstants';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -50,7 +49,7 @@ const tagState = createReducer(initialState, {
 
     [tagTypes.REGISTER_TAG_ERROR]: registerFlagHandler,
 
-    [appTypes.CLEAN_STORE]: () => initialState,
+    [types.CLEAN_STORE]: () => initialState,
 
     // ************ NEW REDUCERS **********************
 

@@ -6,34 +6,34 @@ import { EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
 
 const initialState = new EntryState();
 
-const getEntryRecord = entry =>
-        new EntryRecord(entry).withMutations((mEntry) => {
-            if (entry.content) {
-                mEntry.set('content', new EntryContent(entry.content));
-            }
-            mEntry.set('entryEth', new EntryEth(entry.entryEth));
-            if (entry.entryEth.publisher) {
-                mEntry.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.akashaId);
-            }
-        });
+const createEntryRecord = ({ entry }) =>
+    new EntryRecord(entry).withMutations((mEntry) => {
+        if (entry.content) {
+            mEntry.set('content', new EntryContent(entry.content));
+        }
+        mEntry.set('entryEth', new EntryEth(entry.entryEth));
+        if (entry.entryEth.publisher) {
+            mEntry.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.ethAddress);
+        }
+    });
 
 const entryIteratorHandler = (state, { data }) =>
     state.withMutations((mState) => {
         const moreEntries = data.limit === data.collection.length;
         data.collection.forEach((entry, index) => {
-            const publisherAkashaId = entry.entryEth.publisher.akashaId;
+            const publisherEthAddress = entry.entryEth.publisher.ethAddress;
             // the request is made for n + 1 entries to determine if there are more entries left
             // if this is the case, ignore the extra entry
             if (!moreEntries || index !== data.collection.length - 1) {
-                let newEntry = getEntryRecord(entry);
+                let newEntry = createEntryRecord(entry);
                 const oldContent = state.getIn(['byId', entry.entryId, 'content']);
                 // it shouldn't reset the entry content
                 if (!newEntry.get('content') && oldContent) {
                     newEntry = newEntry.set('content', oldContent);
                 }
                 mState.setIn(['byId', entry.entryId], newEntry)
-                    .setIn(['byAkashaId', publisherAkashaId],
-                        new List(mState.getIn(['byAkashaId', publisherAkashaId])).push(entry.entryId)
+                    .setIn(['byEthAddress', publisherEthAddress],
+                        new List(mState.getIn(['byEthAddress', publisherEthAddress])).push(entry.entryId)
                     );
             }
         });
@@ -43,19 +43,6 @@ const entryIteratorHandler = (state, { data }) =>
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    // [searchTypes.QUERY_SUCCESS]: querySuccessHandler,
-
-    // [searchTypes.MORE_QUERY_SUCCESS]: querySuccessHandler,
-
-    // [searchTypes.RESET_RESULTS]: state =>
-    //     state.merge({
-    //         entries: state.get('entries').filter(entry => entry.get('type') !== 'searchEntry')
-    //     }),
-
-    // [appTypes.CLEAN_STORE]: () => initialState,
-
-    // ************************* NEW REDUCERS ******************************
-
     [types.COMMENTS_GET_COUNT_SUCCESS]: (state, { data }) => {
         if (state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
             return state.setIn(['fullEntry', 'commentsCount'], data.count);
@@ -106,7 +93,7 @@ const entryState = createReducer(initialState, {
 
         return state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: getEntryRecord(data),
+            fullEntry: createEntryRecord(data),
             fullEntryLatestVersion: latestVersion
         });
     },

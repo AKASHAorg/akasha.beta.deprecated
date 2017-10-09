@@ -12,7 +12,7 @@ export const draftCreateSuccess = data => action(types.DRAFT_CREATE_SUCCESS, { d
 export const draftCreateError = data => action(types.DRAFT_CREATE_ERROR, { data });
 
 /**
- * Get all drafts of an akashaId
+ * Get all drafts of an ethAddress
  */
 
 export const draftsGet = data => action(types.DRAFTS_GET, { data });
@@ -83,7 +83,7 @@ export const draftRevertToVersionError = error => action(types.DRAFT_REVERT_TO_V
 export const draftRevertToVersionSuccess = data => action(types.DRAFT_REVERT_TO_VERSION_SUCCESS, { data });
 
 /**
- * Get drafts count for an akashaId
+ * Get drafts count for an ethAddress
  */
 export const draftsGetCount = data => action(types.DRAFTS_GET_COUNT, { data });
 export const draftsGetCountSuccess = data => action(types.DRAFTS_GET_COUNT_SUCCESS, { data });
