@@ -192,13 +192,13 @@ export const selectListSearch = state => state.listState.get('search');
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')
-        .map(account => ({ account, profile: selectProfileByAccount(state, account) }));
-
-export const selectLoggedAccount = state =>
-    state.profileState.getIn(['loggedProfile', 'account']);
+        .map(ethAddress => selectProfile(state, ethAddress));
 
 export const selectLoggedAkashaId = state =>
     state.profileState.getIn(['loggedProfile', 'akashaId']);
+
+export const selectLoggedEthAddress = state =>
+    state.profileState.getIn(['loggedProfile', 'ethAddress']);
 
 export const selectLoggedProfile = state => state.profileState.get('loggedProfile');
 
@@ -232,13 +232,8 @@ export const selectPendingTip = (state, akashaId) =>
 export const selectPendingVote = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'entryVote', entryId]);
 
-export const selectProfile = (state, akashaId) =>
-    state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
-
-export const selectProfileByAccount = (state, account) => {
-    const akashaId = state.profileState.getIn(['ethAddresses', account]);
-    return state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
-};
+export const selectProfile = (state, ethAddress) =>
+    state.profileState.getIn(['byId', ethAddress]) || new ProfileRecord();
 
 export const selectProfileEntries = (state, akashaId) =>
     state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)

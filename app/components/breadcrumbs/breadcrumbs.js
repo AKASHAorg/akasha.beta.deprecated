@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { selectFullEntry, selectLoggedAccount, selectLoggedAkashaId } from '../../local-flux/selectors';
+import { selectFullEntry, selectLoggedEthAddress, selectLoggedAkashaId } from '../../local-flux/selectors';
 import { getBreadcrumbs } from '../../utils/url-utils';
 import { PanelLink } from '../';
 
@@ -96,7 +96,7 @@ function mapStateToProps (state) {
         return result;
     });
     return {
-        loginName: selectLoggedAkashaId(state) || selectLoggedAccount(state),
+        loginName: selectLoggedAkashaId(state) || selectLoggedEthAddress(state),
         paramsMapping: {
             entryId: entryMap.toJS(),
             highlightId: highlightsMap.toJS()

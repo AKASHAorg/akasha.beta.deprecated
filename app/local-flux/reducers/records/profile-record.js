@@ -7,6 +7,7 @@ export const ProfileRecord = Record({
     backgroundImage: [],
     baseUrl: '',
     entriesCount: null,
+    ethAddress: null,
     firstName: '',
     followersCount: null,
     followingCount: null,
@@ -18,11 +19,10 @@ export const ProfileRecord = Record({
 });
 
 export const LoggedProfile = Record({
-    account: null,
-    token: null,
+    akashaId: null,
+    ethAddress: null,
     expiration: null,
-    profile: null,
-    akashaId: null
+    token: null,
 });
 
 const Flags = Record({
@@ -37,6 +37,7 @@ const Flags = Record({
     fetchingProfileList: false,
     localProfilesFetched: false,
     loginPending: false,
+    pendingListProfiles: new Map(),
     resolvingIpfsHash: new Map(),
 });
 
@@ -49,7 +50,6 @@ const ProfileState = Record({
     balance: null,
     byId: new Map(),
     errors: new List(), // to be removed
-    ethAddresses: new Map(),
     fetchingFullLoggedProfile: false, // to be removed
     flags: new Flags(),
     followers: new Map(),

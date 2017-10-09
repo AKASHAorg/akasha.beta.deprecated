@@ -2,7 +2,7 @@
     "extends": ["airbnb", "plugin:import/electron"],
     "plugins": ["babel"],
     "rules": {
-        "indent": [2, 4, {"SwitchCase": 1}],
+        "indent": [2, 4, {"SwitchCase": 1, "ignoredNodes": ["JSXElement *"]}],
         "comma-dangle": [0],
         "comma-style": ["error", "last"],
         "complexity": [2, 10],

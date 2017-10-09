@@ -28,8 +28,8 @@ export const addDashboard = payload =>
     new Promise((resolve, reject) => {
         const timestamp = new Date().getTime();
         payload.timestamp = timestamp;
-        payload.id = `${timestamp}-${payload.account}`;
-        const { account, name } = payload;
+        payload.id = `${timestamp}-${payload.ethAddress}`;
+        const { ethAddress, name } = payload;
         if (payload.columns && payload.columns.length) {
             payload.columns = payload.columns.map((col) => {
                 const id = genId();
@@ -38,7 +38,7 @@ export const addDashboard = payload =>
         }
         dashboardDB.dashboards.put(payload)
             .then(() =>
-                dashboardDB.activeDashboard.put({ account, name })
+                dashboardDB.activeDashboard.put({ ethAddress, name })
                     .then(() => resolve(payload))
             )
             .catch(err => reject(err));
@@ -70,21 +70,21 @@ export const deleteDashboard = id =>
             .catch(reject);
     });
 
-export const getActive = account =>
+export const getActive = ethAddress =>
     new Promise((resolve, reject) => {
         dashboardDB.activeDashboard
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .first()
             .then(resolve)
             .catch(reject);
     });
 
-export const getAll = account =>
+export const getAll = ethAddress =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboards
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .toArray()
             .then(resolve)
             .catch(reject);

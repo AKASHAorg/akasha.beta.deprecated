@@ -194,7 +194,7 @@ export const saveGeneralSettingsError = (error) => {
 export const saveGeneralSettingsSuccess = data =>
     action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
 export const userSettingsClear = () => action(types.USER_SETTINGS_CLEAR);
-export const userSettingsRequest = account => action(types.USER_SETTINGS_REQUEST, { account });
+export const userSettingsRequest = ethAddress => action(types.USER_SETTINGS_REQUEST, { ethAddress });
 
 export const userSettingsError = (error) => {
     error.code = 'USE01';
@@ -202,8 +202,8 @@ export const userSettingsError = (error) => {
     return action(types.USER_SETTINGS_ERROR, { error });
 };
 
-export const userSettingsSave = (account, payload) =>
-    action(types.USER_SETTINGS_SAVE, { account, payload });
+export const userSettingsSave = (ethAddress, payload) =>
+    action(types.USER_SETTINGS_SAVE, { ethAddress, payload });
 
 export const userSettingsSaveError = (error) => {
     error.code = 'USSE01';

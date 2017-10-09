@@ -4,17 +4,17 @@ export const addList = payload =>
     new Promise((resolve, reject) => {
         const timestamp = new Date().getTime();
         payload.timestamp = timestamp;
-        payload.id = `${timestamp}-${payload.account}`;
+        payload.id = `${timestamp}-${payload.ethAddress}`;
         listDB.lists.put({ ...payload })
             .then(id => resolve({ id, timestamp }))
             .catch(err => reject(err));
     });
 
-// export const deleteEntry = ({ account, name, entryId }) =>
+// export const deleteEntry = ({ ethAddress, name, entryId }) =>
 //     new Promise((resolve, reject) => {
 //         listDB.lists
-//             .where('[account+name]')
-//             .equals([account, name])
+//             .where('[ethAddress+name]')
+//             .equals([ethAddress, name])
 //             .toArray()
 //             .then((lists) => {
 //                 const list = lists[0];
@@ -43,31 +43,31 @@ export const deleteList = listId =>
             .catch(reject);
     });
 
-export const getAllLists = account =>
+export const getAllLists = ethAddress =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .toArray()
             .then(resolve)
             .catch(reject);
     });
 
-export const getList = ({ account, name }) =>
+export const getList = ({ ethAddress, name }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('[account+name]')
-            .equals([account, name])
+            .where('[ethAddress+name]')
+            .equals([ethAddress, name])
             .first()
             .then(resolve)
             .catch(reject);
     });
 
-export const searchList = ({ account, search }) =>
+export const searchList = ({ ethAddress, search }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('account')
-            .equals(account)
+            .where('ethAddress')
+            .equals(ethAddress)
             .filter((list) => {
                 let { name = '', description = '' } = list;
                 name = name.toLowerCase();
@@ -79,11 +79,11 @@ export const searchList = ({ account, search }) =>
             .catch(reject);
     });
 
-// export const updateEntryIds = ({ account, listNames, entryId }) =>
+// export const updateEntryIds = ({ ethAddress, listNames, entryId }) =>
 //     new Promise((resolve, reject) => {
 //         listDB.lists
-//             .where('account')
-//             .equals(account)
+//             .where('ethAddress')
+//             .equals(ethAddress)
 //             .toArray()
 //             .then((lists) => {
 //                 const modifiedLists = [];
@@ -113,11 +113,11 @@ export const searchList = ({ account, search }) =>
 //             .catch(err => reject(err));
 //     });
 
-export const toggleEntry = ({ account, listName, entryId }) =>
+export const toggleEntry = ({ ethAddress, listName, entryId }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('[account+name]')
-            .equals([account, listName])
+            .where('[ethAddress+name]')
+            .equals([ethAddress, listName])
             .toArray()
             .then((data) => {
                 const list = data[0];
