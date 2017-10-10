@@ -11,15 +11,13 @@ import { selectBlockNumber, selectColumnLastEntry, selectColumnLastBlock, select
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
-const Channel = global.Channel;
+const { Channel } = global;
 const ALL_STREAM_LIMIT = 11;
 const ENTRY_ITERATOR_LIMIT = 6;
 const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
 function* enableExtraChannels () {
-    const getVoteOf = Channel.server.entry.getVoteOf;
-    const getEntryBalance = Channel.server.entry.getEntryBalance;
-    const canClaim = Channel.server.entry.canClaim;
+    const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield all([
         call(enableChannel, getVoteOf, Channel.client.entry.manager),
         call(enableChannel, getEntryBalance, Channel.client.entry.manager),
@@ -72,9 +70,7 @@ function* entryGetBalance ({ entryId }) {
 }
 
 function* entryGetExtraOfEntry (entryId, publisher) {
-    const getVoteOf = Channel.server.entry.getVoteOf;
-    const getEntryBalance = Channel.server.entry.getEntryBalance;
-    const canClaim = Channel.server.entry.canClaim;
+    const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const isOwnEntry = publisher && loggedEthAddress === publisher.ethAddress;
@@ -91,60 +87,64 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     }
 }
 
-export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) {
+export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { // eslint-disable-line
     // requests are made for n+1 entries, but the last one
     // should be ignored if the limit is fulfilled
     const entries = collection.length === limit ?
         collection.slice(0, -1) :
         collection;
-    const canClaim = Channel.server.entry.canClaim;
-    const getEntryBalance = Channel.server.entry.getEntryBalance;
-    const getVoteOf = Channel.server.entry.getVoteOf;
+    const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const allEntries = [];
+    const akashaIds = [];
     const ownEntries = [];
-    const entryIpfsHashes = [];
-    const entryIds = [];
-    const profileIpfsHashes = [];
     const ethAddresses = [];
+    console.log('collection', collection);
     entries.forEach((entry) => {
-        const ethAddress = entry.entryEth.publisher.ethAddress;
+        const { akashaId, ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
-        entryIpfsHashes.push(entry.entryEth.ipfsHash);
-        entryIds.push(entry.entryId);
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
-            profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
+        }
+        if (akashaId && !akashaIds.includes(akashaId)) {
+            akashaIds.push(akashaId);
         }
         if (ethAddress && loggedEthAddress === ethAddress) {
             ownEntries.push(entry.entryId);
         }
     });
-    yield put(actions.entryResolveIpfsHash({
-        ipfsHash: entryIpfsHashes,
-        columnId,
-        entryIds,
-        asDrafts
-    }));
-    yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, ethAddresses));
+    // yield put(actions.entryResolveIpfsHash({
+    //     ipfsHash: entryIpfsHashes,
+    //     columnId,
+    //     entryIds,
+    //     asDrafts
+    // }));
+    // yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, ethAddresses));
     yield put(profileActions.profileIsFollower(ethAddresses));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
+    for (let i = 0; i < akashaIds.length; i++) {
+        yield put(profileActions.profileGetData(akashaIds[i]));
+    }
+    for (let i = 0; i < entries.length; i++) {
+        const { author, entryId } = entries[i];
+        yield put(actions.entryGetShort({ entryId, ethAddress: author.ethAddress, context: columnId }));
+    }
 }
 
 function* entryGetFull ({ entryId, version, asDraft }) {
-    yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
+    // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ entryId, full: true, version, asDraft }]);
 }
 
 function* entryGetLatestVersion ({ entryId }) {
-    yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
+    // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ entryId, full: true, latestVersion: true }]);
@@ -154,6 +154,12 @@ function* entryGetScore ({ entryId }) {
     const channel = Channel.server.entry.getScore;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ entryId }]);
+}
+
+function* entryGetShort ({ context, entryId, ethAddress }) {
+    const channel = Channel.server.entry.getEntry;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [{ context, entryId, ethAddress }]);
 }
 
 function* entryGetVoteOf ({ entryId }) {
@@ -179,7 +185,7 @@ function* entryListIterator ({ name }) {
 function* entryMoreNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
     const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1, more: true }]);
 }
 
 function* entryMoreProfileIterator ({ columnId, ethAddress }) {
@@ -238,8 +244,8 @@ function* entryVoteSuccess (entryId) {
     if (!entry && fullEntry && fullEntry.get('entryId') === entryId) {
         entry = fullEntry;
     }
-    const publisher = entry && entry.get('entryId') === entryId && entry.getIn(['entryEth', 'publisher']);
-    if (publisher && publisher === loggedEthAddress) {
+    const authorEthAddress = entry && entry.getIn(['author', 'ethAddress']);
+    if (authorEthAddress && authorEthAddress === loggedEthAddress) {
         yield put(actions.entryCanClaim(entryId));
         yield put(actions.entryGetBalance(entryId));
     }
@@ -322,25 +328,29 @@ function* watchEntryGetBalanceChannel () {
 }
 
 function* watchEntryGetChannel () {
-    const resp = yield take(actionChannels.entry.getEntry);
-    if (resp.error) {
-        if (resp.request.asDraft) {
-            yield put(actions.entryGetFullAsDraftError(resp.error));
+    while (true) {
+        const resp = yield take(actionChannels.entry.getEntry);
+        if (resp.error) {
+            if (resp.request.asDraft) {
+                yield put(actions.entryGetFullAsDraftError(resp.error));
+            } else if (resp.request.latestVersion) {
+                yield put(actions.entryGetLatestVersionError(resp.error));
+            } else if (resp.request.full) {
+                yield put(actions.entryGetFullError(resp.error));
+            } else {
+                yield put(actions.entryGetShortError(resp.error, resp.request));
+            }
+        } else if (resp.request.asDraft) {
+            yield put(actions.entryGetFullAsDraftSuccess(resp.data));
         } else if (resp.request.latestVersion) {
-            yield put(actions.entryGetLatestVersionError(resp.error));
+            const { content } = resp.data;
+            yield put(actions.entryGetLatestVersionSuccess(content && content.version));
         } else if (resp.request.full) {
-            yield put(actions.entryGetFullError(resp.error));
+            yield put(actions.entryGetFullSuccess(resp.data));
+            yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
         } else {
-            yield put(actions.entryGetError(resp.error));
+            yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }
-    } else if (resp.request.asDraft) {
-        yield put(actions.entryGetFullAsDraftSuccess(resp.data));
-    } else if (resp.request.latestVersion) {
-        const { content } = resp.data;
-        yield put(actions.entryGetLatestVersionSuccess(content && content.version));
-    } else if (resp.request.full) {
-        yield put(actions.entryGetFullSuccess(resp.data));
-        yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
     }
 }
 
@@ -394,19 +404,19 @@ function* watchEntryNewestIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.allStreamIterator);
         if (resp.error) {
-            if (resp.request.toBlock) {
+            if (resp.request.more) {
                 yield put(actions.entryMoreNewestIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryNewestIteratorError(resp.error, resp.request));
             }
         } else {
-            if (resp.data.toBlock) {
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            if (resp.request.more) {
                 yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
             }
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -537,7 +547,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryClaimChannel);
     yield fork(watchEntryDownvoteChannel);
     yield fork(watchEntryGetBalanceChannel);
-    // yield fork(watchEntryGetChannel);
+    yield fork(watchEntryGetChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
     yield fork(watchEntryIsActiveChannel);
@@ -561,6 +571,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeLatest(types.ENTRY_GET_FULL, entryGetFull);
     yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
     yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
+    yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);
     yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
     yield takeEvery(types.ENTRY_IS_ACTIVE, entryIsActive);
     yield takeEvery(types.ENTRY_LIST_ITERATOR, entryListIterator);

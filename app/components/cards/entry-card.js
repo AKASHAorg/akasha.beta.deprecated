@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover } from '../';
+import { ProfileRecord } from '../../local-flux/reducers/records';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -19,15 +20,15 @@ class EntryCard extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
-        const { blockNr, canClaimPending, claimPending, entry, entryResolvingIpfsHash,
-            fetchingEntryBalance, publisher, style, votePending } = nextProps;
+        const { author, blockNr, canClaimPending, claimPending, entry,
+            fetchingEntryBalance, isPending, style, votePending } = nextProps;
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
-            entryResolvingIpfsHash !== this.props.entryResolvingIpfsHash ||
+            isPending !== this.props.isPending ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
-            !publisher.equals(this.props.publisher) ||
+            !author.equals(this.props.author) ||
             (style && style.width !== this.props.style.width) ||
             votePending !== this.props.votePending ||
             nextState.expanded !== this.state.expanded ||
@@ -46,8 +47,8 @@ class EntryCard extends Component {
     };
 
     isOwnEntry = () => {
-        const { entry, loggedAkashaId } = this.props;
-        return entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId;
+        const { entry, loggedEthAddress } = this.props;
+        return entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
     };
 
     isPossiblyUnsafe = () => {
@@ -108,14 +109,13 @@ class EntryCard extends Component {
     );
 
     render () {
-        const { containerRef, entry, entryResolvingIpfsHash, existingDraft, style,
-            publisher } = this.props;
+        const { author, containerRef, entry, existingDraft, isPending, style } = this.props;
         const content = entry.get('content');
         const latestVersion = content && content.get('version');
-        if (entryResolvingIpfsHash) {
+        if (isPending) {
             return this.renderResolvingPlaceholder();
         }
-        if (!publisher) {
+        if (!author) {
             console.error('cannot resolve publisher');
         }
         const cardClass = classNames('entry-card', {
@@ -130,12 +130,12 @@ class EntryCard extends Component {
             style={style}
             title={
               <EntryCardHeader
+                author={author}
                 containerRef={containerRef}
                 entry={entry}
                 isNotSafe={this.isPossiblyUnsafe()}
                 isOwnEntry={this.isOwnEntry()}
                 openVersionsPanel={this.openVersionsPanel}
-                publisher={publisher}
               />
             }
           >
@@ -224,14 +224,14 @@ class EntryCard extends Component {
                 </div>
               }
             </CardHeader> */}
-            {!content && !entryResolvingIpfsHash &&
+            {!content && !isPending &&
               <div style={{ height: '240px' }}>Cannot resolve content</div>
             }
             {content &&
               <Link
                 className="unstyled-link"
                 to={{
-                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
+                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
                     state: { overlay: true }
                 }}
               >
@@ -244,7 +244,7 @@ class EntryCard extends Component {
               <Link
                 className="unstyled-link"
                 to={{
-                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
+                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
                     state: { overlay: true }
                 }}
               >
@@ -287,6 +287,10 @@ class EntryCard extends Component {
     }
 }
 
+EntryCard.defaultProps = {
+    author: new ProfileRecord()
+};
+
 EntryCard.propTypes = {
     blockNr: PropTypes.number,
     canClaimPending: PropTypes.bool,
@@ -298,12 +302,12 @@ EntryCard.propTypes = {
     hidePanel: PropTypes.func,
     style: PropTypes.shape(),
 
+    author: PropTypes.shape().isRequired,
     containerRef: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
-    entryResolvingIpfsHash: PropTypes.bool,
     history: PropTypes.shape().isRequired,
-    loggedAkashaId: PropTypes.string,
-    publisher: PropTypes.shape(),
+    isPending: PropTypes.bool,
+    loggedEthAddress: PropTypes.string,
     votePending: PropTypes.bool,
 };
 

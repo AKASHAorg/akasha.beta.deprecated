@@ -1,5 +1,10 @@
 import { List, Map, Record } from 'immutable';
 
+export const EntryAuthor = Record({
+    akashaId: null,
+    ethAddress: null,
+});
+
 export const EntryContent = Record({
     draft: {},
     excerpt: null,
@@ -11,34 +16,24 @@ export const EntryContent = Record({
     wordCount: null
 });
 
-export const EntryEth = Record({
-    blockNr: null,
-    ipfsHash: null,
-    publisher: null,
-    unixStamp: null
-});
-
 export const EntryRecord = Record({
-    active: null,
+    author: new EntryAuthor(),
     baseUrl: '',
     commentsCount: 0,
     content: EntryContent(),
-    entryEth: EntryEth(),
+    endPeriod: null,
     entryId: null,
+    publishDate: null,
     score: null,
-});
-
-const EntriesStream = Record({
-    akashaId: null,
-    profiles: new List(),
-    tags: new List()
+    totalKarma: null,
+    totalVotes: null
 });
 
 const Flags = Record({
     fetchingEntryBalance: false,
     fetchingFullEntry: false,
     isActivePending: false,
-    resolvingIpfsHash: new Map(),
+    pendingEntries: new Map(),
 });
 
 export const EntryPageOverlay = Record({
@@ -49,12 +44,10 @@ export const EntryPageOverlay = Record({
 export const EntryState = Record({
     balance: new Map(),
     byId: new Map(),
-    byAkashaId: new Map(),
     canClaim: new Map(),
     published: new List(),
     flags: new Flags(),
     fetchingEntriesCount: false,
-    entriesStream: new EntriesStream(),
     entryPageOverlay: new EntryPageOverlay(),
     fullEntry: null,
     fullEntryLatestVersion: null,

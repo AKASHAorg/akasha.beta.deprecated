@@ -29,17 +29,6 @@ const commentsIteratorHandler = (state, { data }) => {
     return state.set('byId', byId);
 };
 
-const entryIteratorHandler = (state, { data }) => {
-    let byId = state.get('byId');
-    data.collection.forEach((entry) => {
-        const publisher = entry.entryEth.publisher;
-        if (publisher && !byId.get(publisher.akashaId)) {
-            byId = addProfileData(byId, publisher);
-        }
-    });
-    return state.set('byId', byId);
-};
-
 const getLastIndex = (collection) => {
     if (collection.length) {
         return collection[collection.length - 1].index;
@@ -60,24 +49,6 @@ const profileState = createReducer(initialState, {
         }
         return state.set('byId', addProfileData(state.get('byId'), publisher));
     },
-
-    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
-
-    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
@@ -197,7 +168,7 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
         state.merge({
-            byId: addProfileData(state.get('byId'), data),
+            byEthAddress: addProfileData(state.get('byEthAddress'), data),
             flags: state.get('flags').set('fetchingProfileData', false)
         }),
 
@@ -383,9 +354,6 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
-
-    [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler
 });
 
 export default profileState;

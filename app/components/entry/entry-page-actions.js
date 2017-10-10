@@ -10,7 +10,7 @@ import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
-    selectLoggedAkashaId, selectPendingClaim, selectPendingVote,
+    selectLoggedEthAddress, selectPendingClaim, selectPendingVote,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -32,19 +32,18 @@ class EntryPageAction extends Component {
     };
 
     handleVote = ({ type, value, weight }) => {
-        const { entry, loggedAkashaId, publisher } = this.props;
+        const { entry, loggedEthAddress } = this.props;
         const payload = {
             entryId: entry.entryId,
             entryTitle: entry.content.title,
-            publisherAkashaId: publisher && publisher.get('akashaId'),
             value,
             weight
         };
-        this.props.actionAdd(loggedAkashaId, type, payload);
+        this.props.actionAdd(loggedEthAddress, type, payload);
     };
 
     handleClaim = () => {
-        const { canClaim, entry, loggedAkashaId } = this.props;
+        const { canClaim, entry, loggedEthAddress } = this.props;
         if (!canClaim) {
             return;
         }
@@ -52,7 +51,7 @@ class EntryPageAction extends Component {
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };
-        this.props.actionAdd(loggedAkashaId, actionTypes.claim, payload);
+        this.props.actionAdd(loggedEthAddress, actionTypes.claim, payload);
     };
 
     render () {
@@ -173,6 +172,7 @@ EntryPageAction.defaultProps = {
 
 EntryPageAction.propTypes = {
     actionAdd: PropTypes.func.isRequired,
+    author: PropTypes.shape(),
     canClaim: PropTypes.bool,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
@@ -188,27 +188,26 @@ EntryPageAction.propTypes = {
     listSearch: PropTypes.func.isRequired,
     listSearchKeyword: PropTypes.string,
     listToggleEntry: PropTypes.func.isRequired,
-    loggedAkashaId: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     noVotesBar: PropTypes.bool,
-    publisher: PropTypes.shape(),
     votePending: PropTypes.bool,
     voteWeight: PropTypes.number,
 };
 
 function mapStateToProps (state, ownProps) {
     const entry = ownProps.entry;
-    const loggedAkashaId = selectLoggedAkashaId(state);
+    const loggedEthAddress = selectLoggedEthAddress(state);
     return {
+        author: selectProfile(state, entry.getIn(['author', 'ethAddress'])),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: selectPendingClaim(state, entry.get('entryId')),
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        isOwnEntry: loggedAkashaId === entry.getIn(['entryEth', 'publisher']),
+        isOwnEntry: loggedEthAddress === entry.getIn(['author', 'ethAddress']),
         lists: selectLists(state),
         listSearchKeyword: selectListSearch(state),
-        loggedAkashaId,
-        publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
+        loggedEthAddress,
         votePending: selectPendingVote(state, entry.get('entryId')),
         voteWeight: selectEntryVote(state, entry.get('entryId'))
     };
