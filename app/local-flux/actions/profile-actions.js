@@ -64,6 +64,15 @@ export const profileGetBalanceError = (error) => {
 };
 
 export const profileGetBalanceSuccess = data => action(types.PROFILE_GET_BALANCE_SUCCESS, { data });
+export const profileGetByAddress = ethAddress => action(types.PROFILE_GET_BY_ADDRESS, { ethAddress });
+
+export const profileGetByAddressError = (error, request) => {
+    error.code = 'PGBAE01';
+    error.messageId = 'profileGetByAddress';
+    return action(types.PROFILE_GET_BY_ADDRESS_ERROR, { error, request });
+};
+
+export const profileGetByAddressSuccess = data => action(types.PROFILE_GET_BY_ADDRESS_SUCCESS, { data });
 export const profileGetData = (akashaId, full) => action(types.PROFILE_GET_DATA, { akashaId, full });
 
 export const profileGetDataError = (error) => {

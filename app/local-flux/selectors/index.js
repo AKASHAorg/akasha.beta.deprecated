@@ -43,6 +43,8 @@ export const selectBalance = state => state.profileState.get('balance');
 export const selectBaseUrl = state =>
     state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
 
+export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
+
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entries'])
@@ -94,9 +96,6 @@ export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags',
 
 export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
 
-export const selectEthAddress = (state, profileAddress) =>
-    state.profileState.getIn(['ethAddresses', profileAddress]);
-
 export const selectFetchingFollowers = (state, akashaId) =>
     state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
 
@@ -111,18 +110,18 @@ export const selectFetchingMoreFollowings = (state, akashaId) =>
 
 export const selectFirstComment = state => state.commentsState.get('firstComm');
 
-export const selectFollowers = (state, akashaId) => {
-    const followers = state.profileState.getIn(['followers', akashaId]);
+export const selectFollowers = (state, ethAddress) => {
+    const followers = state.profileState.getIn(['followers', ethAddress]);
     if (followers) {
-        return followers.map(id => selectProfile(state, id));
+        return followers.map(ethAddr => selectProfile(state, ethAddr));
     }
     return new List();
 };
 
-export const selectFollowings = (state, akashaId) => {
-    const followings = state.profileState.getIn(['followings', akashaId]);
+export const selectFollowings = (state, ethAddress) => {
+    const followings = state.profileState.getIn(['followings', ethAddress]);
     if (followings) {
-        return followings.map(id => selectProfile(state, id));
+        return followings.map(ethAddr => selectProfile(state, ethAddr));
     }
     return new List();
 };
@@ -134,7 +133,7 @@ export const selectGethStatus = state => state.externalProcState.getIn(['geth', 
 
 export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
 
-export const selectIsFollower = (state, akashaId) => state.profileState.getIn(['isFollower', akashaId]);
+export const selectIsFollower = (state, ethAddress) => state.profileState.getIn(['isFollower', ethAddress]);
 
 export const selectHighlight = (state, id) => state.highlightState.getIn(['byId', id]);
 
@@ -152,11 +151,11 @@ export const selectHighlightSearch = state => state.highlightState.get('search')
 
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
-export const selectLastFollower = (state, akashaId) =>
-    state.profileState.getIn(['lastFollower', akashaId]);
+export const selectLastFollower = (state, ethAddress) =>
+    state.profileState.getIn(['lastFollower', ethAddress]);
 
-export const selectLastFollowing = (state, akashaId) =>
-    state.profileState.getIn(['lastFollowing', akashaId]);
+export const selectLastFollowing = (state, ethAddress) =>
+    state.profileState.getIn(['lastFollowing', ethAddress]);
 
 export const selectLastGethLog = state =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
@@ -203,13 +202,13 @@ export const selectLoggedEthAddress = state =>
 export const selectLoggedProfile = state => state.profileState.get('loggedProfile');
 
 export const selectLoggedProfileData = state =>
-    selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
+    selectProfile(state, state.profileState.getIn(['loggedProfile', 'ethAddress']));
 
-export const selectMoreFollowers = (state, akashaId) =>
-    state.profileState.getIn(['moreFollowers', akashaId]);
+export const selectMoreFollowers = (state, ethAddress) =>
+    state.profileState.getIn(['moreFollowers', ethAddress]);
 
-export const selectMoreFollowings = (state, akashaId) =>
-    state.profileState.getIn(['moreFollowings', akashaId]);
+export const selectMoreFollowings = (state, ethAddress) =>
+    state.profileState.getIn(['moreFollowings', ethAddress]);
 
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
@@ -233,7 +232,7 @@ export const selectPendingVote = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'entryVote', entryId]);
 
 export const selectProfile = (state, ethAddress) =>
-    state.profileState.getIn(['byId', ethAddress]) || new ProfileRecord();
+    state.profileState.getIn(['byEthAddress', ethAddress]) || new ProfileRecord();
 
 export const selectProfileEntries = (state, akashaId) =>
     state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
