@@ -225,7 +225,8 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
         let isFollower = state.get('isFollower');
         data.collection.forEach((resp) => {
-            isFollower = isFollower.set(resp.following, resp.result);
+            const { addressFollowing, result } = resp;
+            isFollower = isFollower.set(addressFollowing, result);
         });
         return state.set('isFollower', isFollower);
     },

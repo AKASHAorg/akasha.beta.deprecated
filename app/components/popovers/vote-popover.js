@@ -32,15 +32,15 @@ class VotePopover extends Component {
     }
 
     canVote = () => {
-        const { disabled, votePending, voteWeight } = this.props;
-        return !disabled && !votePending && !voteWeight;
+        const { disabled, votePending, vote } = this.props;
+        return !disabled && !votePending && vote === '0';
     };
 
     getTooltip = () => {
-        const { intl, type, votePending, voteWeight } = this.props;
+        const { intl, type, votePending, vote } = this.props;
         if (votePending) {
             return intl.formatMessage(entryMessages.votePending);
-        } else if (voteWeight) {
+        } else if (vote) {
             return intl.formatMessage(entryMessages.alreadyVoted);
         } else if (type.includes('Downvote')) {
             return intl.formatMessage(entryMessages.downvote);
@@ -78,10 +78,10 @@ class VotePopover extends Component {
     validateWeight = (rule, value, callback) => {
         const { balance, intl, voteCost } = this.props;
         if (!Number.isInteger(value)) {
-            callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min, max }));
+            callback(intl.formatMessage(formMessages.voteIntegerError, { min, max }));
         }
         if (value < min || value > max) {
-            callback(intl.formatMessage(formMessages.voteWeightRangeError, { min, max }));
+            callback(intl.formatMessage(formMessages.voteRangeError, { min, max }));
             return;
         }
         if (!balance || balance <= voteCost.get(value.toString())) {
@@ -202,7 +202,7 @@ VotePopover.propTypes = {
     type: PropTypes.string.isRequired,
     voteCost: PropTypes.shape().isRequired,
     votePending: PropTypes.bool,
-    voteWeight: PropTypes.number
+    vote: PropTypes.string
 };
 
 function mapStateToProps (state) {

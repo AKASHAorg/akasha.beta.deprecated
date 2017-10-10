@@ -73,7 +73,6 @@ function* profileGetByAddress ({ ethAddress }) {
 function* profileGetData ({ akashaId, full = false }) {
     const channel = Channel.server.profile.getProfileData;
     yield apply(channel, channel.send, [{ akashaId, full }]);
-    yield put(actions.profileIsFollower([akashaId])); // eslint-disable-line no-use-before-define
     yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
@@ -98,8 +97,8 @@ export function* profileGetLogged () {
         const profile = yield apply(profileService, profileService.profileGetLogged);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
-        if (profile && profile.ethAddress) {
-            yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
+        if (profile && profile.akashaId) {
+            yield call(profileGetData, { akashaId: profile.akashaId, full: true });
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));

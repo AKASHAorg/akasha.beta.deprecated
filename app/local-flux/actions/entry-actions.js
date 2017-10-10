@@ -82,27 +82,22 @@ export const entryGetShortError = (error, request) => {
 export const entryGetShortSuccess = (data, request) =>
     action(types.ENTRY_GET_SHORT_SUCCESS, { data, request });
 export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
+
 export const entryGetVoteOfError = (error) => {
     error.code = 'EGVOE01';
     error.messageId = 'entryGetVoteOf';
     return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
 };
+
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
-
-export const entryIsActive = entryId => action(types.ENTRY_IS_ACTIVE, { entryId });
-export const entryIsActiveError = (error) => {
-    error.code = 'EIAE01';
-    error.messageId = 'entryIsActive';
-    return action(types.ENTRY_IS_ACTIVE_ERROR, { error });
-};
-export const entryIsActiveSuccess = data => action(types.ENTRY_IS_ACTIVE_SUCCESS, { data });
-
 export const entryListIterator = name => action(types.ENTRY_LIST_ITERATOR, { name });
+
 export const entryListIteratorError = (error) => {
     error.code = 'ELIE01';
     error.messageId = 'entryListIterator';
     return action(types.ENTRY_LIST_ITERATOR_ERROR, { error });
 };
+
 export const entryListIteratorSuccess = (data, request) =>
     action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 

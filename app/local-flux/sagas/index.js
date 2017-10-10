@@ -3,7 +3,7 @@ import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import { searchHandshake } from '../actions/search-actions';
-import { selectLoggedAkashaId } from '../selectors';
+import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
 import * as commentsSaga from './comments-saga';
@@ -58,7 +58,7 @@ function* launchHomeActions () {
     yield fork(listSaga.listGetAll);
     yield fork(settingsSaga.userSettingsRequest);
     yield fork(tagSaga.tagGetMargins);
-    if (yield select(selectLoggedAkashaId)) {
+    if (yield select(selectLoggedEthAddress)) {
         yield put(actionActions.actionGetPending());
     }
     yield put(searchHandshake());
