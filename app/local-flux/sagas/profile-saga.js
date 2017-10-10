@@ -5,7 +5,7 @@ import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
-import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
+import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
     selectNeedAuthAction, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
@@ -106,13 +106,15 @@ export function* profileGetLogged () {
     }
 }
 
-function* profileIsFollower ({ followings, akashaId }) {
+function* profileIsFollower ({ followings, ethAddress }) {
     const channel = Channel.server.profile.isFollower;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    if (!akashaId) {
-        akashaId = yield select(selectLoggedAkashaId);
+    if (!ethAddress) {
+        ethAddress = yield select(selectLoggedEthAddress);
     }
-    const payload = followings.map(following => ({ akashaId, following }));
+    const payload = followings.map(following => (
+        { ethAddressFollower: ethAddress, ethAddressFollowing: following }
+    ));
     yield apply(channel, channel.send, [payload]);
 }
 
@@ -321,7 +323,9 @@ function* watchProfileGetLocalChannel () {
                     akashaIds.push({ akashaId: data.akashaId });
                 }
             });
-            yield put(actions.profileGetList(akashaIds));
+            if (akashaIds.length) {
+                yield put(actions.profileGetList(akashaIds));
+            }
             yield put(actions.profileGetLocalSuccess(resp.data.collection));
         }
     }
