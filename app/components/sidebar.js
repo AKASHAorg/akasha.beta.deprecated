@@ -38,18 +38,17 @@ class Sidebar extends Component {
                 overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
-                console.log(loggedProfile, 'the loggedProfile');
                 const draftId = genId();
                 if (path === '/draft/article/new') {
                     draftCreate({
                         id: draftId,
-                        akashaId: loggedProfile.get('account'),
+                        ethAddress: loggedProfile.get('ethAddress'),
                         content: {
                             featuredImage: {},
                             licence: userSelectedLicence,
                         },
                         tags: [],
-                        type: 'article',
+                        entryType: 'article',
                     });
                     return history.push(`/draft/article/${draftId}`);
                 }

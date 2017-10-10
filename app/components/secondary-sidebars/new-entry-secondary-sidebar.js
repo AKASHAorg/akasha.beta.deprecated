@@ -8,7 +8,6 @@ import { EntrySecondarySidebarItem } from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
-import { selectLoggedAkashaId } from '../../local-flux/selectors';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 
@@ -40,7 +39,7 @@ class NewEntrySecondarySidebar extends Component {
         }
     }
 
-    createNewDraft = (id, type) => {
+    createNewDraft = (id, entryType) => {
         const { ethAddress, userSelectedLicence } = this.props;
         this.props.draftCreate({
             id,
@@ -50,7 +49,7 @@ class NewEntrySecondarySidebar extends Component {
                 licence: userSelectedLicence,
             },
             tags: [],
-            type,
+            entryType,
         });
     }
 
@@ -103,7 +102,7 @@ class NewEntrySecondarySidebar extends Component {
     _handleTypeChange = type =>
         (ev) => {
             const { drafts, history } = this.props;
-            const draftToPush = drafts.filter(draft => draft.type === type).first();
+            const draftToPush = drafts.filter(draft => draft.entryType === type).first();
             let draftId;
             /**
              * Push to first draft of the selected type!
@@ -127,9 +126,9 @@ class NewEntrySecondarySidebar extends Component {
 
     _handleDraftCreate = () => {
         const draftId = genId();
-        const type = this.props.match.params.draftType;
-        this.createNewDraft(draftId, type);
-        this.props.history.push(`/draft/${type}/${draftId}`);
+        const entryType = this.props.match.params.draftType;
+        this.createNewDraft(draftId, entryType);
+        this.props.history.push(`/draft/${entryType}/${draftId}`);
     }
 
     _getEntryTypePopover = () => {
@@ -140,8 +139,8 @@ class NewEntrySecondarySidebar extends Component {
             <ul
               className="new-entry-secondary-sidebar__entry-type-list"
             >
-              {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-              entryTypes.map(type => (
+              {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
+              {entryTypes.map(type => (
                 <li
                   key={type}
                   className={
@@ -180,7 +179,7 @@ class NewEntrySecondarySidebar extends Component {
     _getFilteredDrafts = (drafts, resolvingHashes, draftType) =>
         drafts.filter((draft) => {
             const isPublished = !!(draft.entryEth && draft.entryEth.ipfsHash);
-            return draft.type === draftType &&
+            return draft.entryType === draftType &&
                 (isPublished ? draft.content && draft.content.title : true);
         });
 
@@ -243,7 +242,7 @@ class NewEntrySecondarySidebar extends Component {
         const { draftType } = match.params;
         const draftsByType = drafts
             .filter(drft =>
-                !drft.onChain && drft.type === draftType)
+                !drft.onChain && drft.entryType === draftType)
             .sort((a, b) =>
                 new Date(a.created_at) > new Date(b.created_at)
             );
@@ -349,7 +348,7 @@ class NewEntrySecondarySidebar extends Component {
                   <div className="new-entry-secondary-sidebar__draft-list-title">Published</div>
                   {!searching &&
                     drafts.filter(drft =>
-                        drft.onChain && drft.type === match.params.draftType)
+                        drft.onChain && drft.entryType === match.params.draftType)
                     .map(draft => (
                       <div key={`${draft.id}`}>
                         <EntrySecondarySidebarItem

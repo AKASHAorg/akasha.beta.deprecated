@@ -1,4 +1,4 @@
-import { Record, Map, List, fromJS } from 'immutable';
+import { Record, Map, List } from 'immutable';
 import { DraftLicence, DraftContent, Draft, EntryEth } from '../records';
 
 const DraftModelRecord = Record({
@@ -18,7 +18,6 @@ export default class DraftModel extends DraftModelRecord {
         let draftLicence = new DraftLicence();
         let draftContent = new DraftContent();
         let tags = new List();
-
         if (draftObj.content) {
             draftLicence = draftLicence.merge(draftObj.content.licence);
             draftContent = draftContent.mergeDeep({
@@ -32,7 +31,7 @@ export default class DraftModel extends DraftModelRecord {
         }
         const draft = new Draft({
             ...others,
-            akashaId: draftObj.akashaId || draftObj.entryEth.publisher.akashaId,
+            ethAddress: draftObj.ethAddress || draftObj.entryEth.publisher.ethAddress,
             id: draftObj.id ? draftObj.id : draftObj.entryId,
             licence: draftLicence,
             content: draftContent,

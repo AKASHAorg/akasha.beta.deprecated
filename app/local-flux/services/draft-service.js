@@ -46,11 +46,11 @@ export const draftCreateOrUpdate = ({ draft }) => {
 };
 
 export const draftDelete = ({ draftId }) =>
-entriesDB.drafts.where('id')
-    .equals(draftId)
-    .delete()
-    .then(() => draftId)
-    .catch(reason => reason);
+    entriesDB.drafts.where('id')
+        .equals(draftId)
+        .delete()
+        .then(() => draftId)
+        .catch(reason => reason);
 
 export const draftsGet = ethAddress =>
     entriesDB.drafts

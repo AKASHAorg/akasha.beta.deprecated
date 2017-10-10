@@ -11,10 +11,15 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for comment',
         defaultMessage: 'Please confirm that you want to submit this comment.'
     },
-    createTag: {
-        id: 'app.confirmations.createTag',
-        description: 'confirmation message for createTag',
-        defaultMessage: 'Please confirm that you want to create this tag: {value}.'
+    draftPublish: {
+        id: 'app.confirmations.draftPublish',
+        description: 'confirmation for draft publishing',
+        defaultMessage: 'Please confirm that you want to publish this draft.'
+    },
+    draftPublishUpdate: {
+        id: 'app.confirmations.draftPublishUpdate',
+        description: 'confirmation for draft updating',
+        defaultMessage: 'Please confirm that you want to update this entry.'
     },
     entryDownvote: {
         id: 'app.confirmations.entryDownvote',
@@ -51,6 +56,11 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for sendTip',
         defaultMessage: 'Please confirm that you want to send a tip of {value} AETH to @{akashaId}.'
     },
+    tagCreate: {
+        id: 'app.confirmations.createTag',
+        description: 'confirmation message for createTag',
+        defaultMessage: 'Please confirm that you want to create this tag: {value}.'
+    },
     unfollow: {
         id: 'app.confirmations.unfollow',
         description: 'confirmation message for unfollow',
@@ -66,10 +76,15 @@ const confirmationMessages = defineMessages({
         description: 'title for confirmation message for comment',
         defaultMessage: 'Comment'
     },
-    createTagTitle: {
-        id: 'app.confirmations.createTagTitle',
-        description: 'title for confirmation message for createTag',
-        defaultMessage: 'Create Tag'
+    draftPublishTitle: {
+        id: 'app.confirmations.draftPublishTitle',
+        description: 'title for draft publishing`s confirmation message',
+        defaultMessage: 'Publish draft'
+    },
+    draftPublishUpdateTitle: {
+        id: 'app.confirmations.draftPublishUpdateTitle',
+        description: 'title for entry update`s confirmation message',
+        defaultMessage: 'Update entry',
     },
     entryDownvoteTitle: {
         id: 'app.confirmations.entryDownvoteTitle',
@@ -100,6 +115,11 @@ const confirmationMessages = defineMessages({
         id: 'app.confirmations.sendTipTitle',
         description: 'title for confirmation message for sendTip',
         defaultMessage: 'Send Tip'
+    },
+    tagCreateTitle: {
+        id: 'app.confirmations.tagCreateTitle',
+        description: 'title for confirmation message for createTag',
+        defaultMessage: 'Create Tag'
     },
     unfollowTitle: {
         id: 'app.confirmations.unfollowTitle',

@@ -9,6 +9,7 @@ const draftSchema = Dexie.defineClass({
     created_at: Date,
     updated_at: Date,
     localChanges: Boolean,
+    type: String,
     tx: String
 });
 export default draftSchema;
