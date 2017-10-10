@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import * as types from '../constants/NotificationsConstants';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
 const initialState = fromJS({

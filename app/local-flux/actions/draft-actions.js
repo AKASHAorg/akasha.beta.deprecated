@@ -45,7 +45,12 @@ export const draftUpdateError = error => action(types.DRAFT_UPDATE_ERROR, { erro
 
 export const draftAutosave = data => action(types.DRAFT_AUTOSAVE, { data });
 export const draftAutosaveSuccess = data => action(types.DRAFT_AUTOSAVE_SUCCESS, { data });
-export const draftAutosaveError = error => action(types.DRAFT_AUTOSAVE_ERROR, { error });
+export const draftAutosaveError = (error, draftId, draftTitle) => {
+    error.code = 'DAE01';
+    error.messageId = 'draftAutosave';
+    error.values = { draftTitle };
+    return action(types.DRAFT_AUTOSAVE_ERROR, { error, draftId });
+};
 
 /**
  * Delete draft in db and reducer. We must check if the draft is in database
@@ -65,7 +70,12 @@ export const draftPublish = ({ actionId, ...payload }) =>
     action(types.DRAFT_PUBLISH, { actionId, ...payload });
 
 export const draftPublishSuccess = data => action(types.DRAFT_PUBLISH_SUCCESS, { data });
-export const draftPublishError = error => action(types.DRAFT_PUBLISH_ERROR, { error });
+export const draftPublishError = (error, draftId, draftTitle) => {
+    error.code = 'DPE01';
+    error.messageId = 'draftPublish';
+    error.values = { draftTitle };
+    return action(types.DRAFT_PUBLISH_ERROR, { error, draftId });
+};
 
 /**
  * Publish an update of an entry to chain.
@@ -93,7 +103,11 @@ export const draftsGetCountError = error => action(types.DRAFTS_GET_COUNT_ERROR,
  * Get entries as drafts
  */
 export const entriesGetAsDraftsSuccess = data => action(types.ENTRIES_GET_AS_DRAFTS_SUCCESS, { data });
-export const entriesGetAsDraftsError = error => action(types.ENTRIES_GET_AS_DRAFTS_ERROR, { error });
+export const entriesGetAsDraftsError = (error) => {
+    error.code = 'EGADE01';
+    error.messageId = 'entriesGetAsDrafts';
+    return action(types.ENTRIES_GET_AS_DRAFTS_ERROR, { error });
+};
 
 export const entryResolveIpfsHashAsDraftsSuccess = data =>
     action(types.ENTRY_RESOLVE_IPFS_HASH_AS_DRAFTS_SUCCESS, { data });

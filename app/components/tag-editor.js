@@ -28,6 +28,7 @@ class TagEditor extends Component {
             selectedSuggestionIndex: 0,
             canCreateTags: false,
         };
+        this._openedChannels = [];
     }
     componentDidMount () {
         const { tags } = this.props;
@@ -83,6 +84,28 @@ class TagEditor extends Component {
             }
         }
     }
+    openChannel = (channel, manager, cb) => {
+        if (!this._openedChannels.includes(channel.channel)) {
+            manager.on(() => {
+                cb();
+                this._openedChannels.push(channel.channel);
+            });
+            return channel.enable();
+        }
+        return cb();
+    }
+    _checkTagCreationAllowance = () => {
+        const { ethAddress } = this.props;
+        const serverChannel = self.Channel.server.tags.canCreate;
+        const clientChannel = self.Channel.client.tags.canCreate;
+        const manager = self.Channel.client.tags.manager;
+        this.openChannel(serverChannel, manager, () => {
+            clientChannel.on((ev, data) => {
+                console.log(data, 'ATTEEENTTIOOOONNNN!!!!1');
+            });
+            serverChannel.send({ ethAddress });
+        });
+    }
     _checkTagExistence = (tagList) => {
         const serverChannel = window.Channel.server.tags.exists;
         const clientChannel = window.Channel.client.tags.exists;
@@ -94,9 +117,7 @@ class TagEditor extends Component {
                     });
                 }
                 if (!response.data.exists) {
-                    this.setState({
-                        canCreateTags: true
-                    });
+                    return this._checkTagCreationAllowance();
                 }
                 return null;
             };
@@ -327,6 +348,7 @@ class TagEditor extends Component {
 
 TagEditor.propTypes = {
     actionAdd: PropTypes.func,
+    canCreateTags: PropTypes.bool,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     match: PropTypes.shape(),

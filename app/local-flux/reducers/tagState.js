@@ -1,6 +1,5 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { fromJS, List, Map, Record } from 'immutable';
-import * as tagTypes from '../constants/TagConstants';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -22,33 +21,27 @@ const initialState = fromJS({
     searchResults: new List()
 });
 
-const registerFlagHandler = (state, { error, flags }) => {
-    const registerPending = state.getIn(['flags', 'registerPending']);
-    const index = registerPending.findIndex(flag =>
-        flag.tagName === flags.registerPending.tagName);
-    if (error) {
-        flags.registerPending.error = error;
-    }
-    if (index === -1) {
-        return state.merge({
-            flags: state.get('flags').merge({
-                registerPending: state.getIn(['flags', 'registerPending'])
-                    .push(flags.registerPending)
-            }),
-        });
-    }
-    return state.merge({
-        flags: state.get('flags').mergeIn(['registerPending', index], flags.registerPending),
-    });
-};
+// const registerFlagHandler = (state, { error, flags }) => {
+//     const registerPending = state.getIn(['flags', 'registerPending']);
+//     const index = registerPending.findIndex(flag =>
+//         flag.tagName === flags.registerPending.tagName);
+//     if (error) {
+//         flags.registerPending.error = error;
+//     }
+//     if (index === -1) {
+//         return state.merge({
+//             flags: state.get('flags').merge({
+//                 registerPending: state.getIn(['flags', 'registerPending'])
+//                     .push(flags.registerPending)
+//             }),
+//         });
+//     }
+//     return state.merge({
+//         flags: state.get('flags').mergeIn(['registerPending', index], flags.registerPending),
+//     });
+// };
 
 const tagState = createReducer(initialState, {
-    [tagTypes.REGISTER_TAG]: registerFlagHandler,
-
-    [tagTypes.REGISTER_TAG_SUCCESS]: registerFlagHandler,
-
-    [tagTypes.REGISTER_TAG_ERROR]: registerFlagHandler,
-
     [types.CLEAN_STORE]: () => initialState,
 
     // ************ NEW REDUCERS **********************

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS,
+import { MegadraftEditor, editorStateFromRaw, DraftJS,
     createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from '../';
@@ -24,26 +24,6 @@ class EntryEditor extends Component {
             selectionState: null
         };
     }
-    // componentWillReceiveProps (nextProps) {
-    //     let { content } = nextProps;
-    //     if (typeof content === 'string') {
-    //         content = JSON.parse(content);
-    //     }
-    //     if (content && !this.props.content) {
-    //         const newEditorState = this.getUpdatedEditorState(this.state.editorState, content);
-    //         this.setState({
-    //             editorState: newEditorState,
-    //             title: nextProps.title
-    //         });
-    //     }
-    // }
-
-    // shouldComponentUpdate (nextProps, nextState) {
-    //     return (nextProps.title !== this.props.title) ||
-    //         (nextProps.content !== this.props.content) ||
-    //         (nextProps.selectionState !== this.props.selectionState) ||
-    //         (nextState.sidebarOpen !== this.state.sidebarOpen);
-    // }
 
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
@@ -70,24 +50,19 @@ class EntryEditor extends Component {
     _handleKeyPress = (ev) => {
         ev.preventDefault();
         if (ev.key === 'Enter') {
-            this._focusEditor();
+            this._changeEditorFocus(true);
         }
     }
-    _focusEditor = () => {
-        const editorContainerNode = this.editor.refs.editor;
-        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
-        contentEditableNode.focus();
-    }
-    _blurEditor = () => {
-        const editorContainerNode = this.editor.refs.editor;
-        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
-        contentEditableNode.blur();
+    _changeEditorFocus = (focusState) => {
+        const { editorState } = this.props;
+        const selectionState = editorState.getSelection();
+        const focusedSelection = selectionState.set('hasFocus', focusState);
+        return this._handleEditorChange(EditorState.acceptSelection(editorState, focusedSelection));
     }
     _checkEditorFocus = () => {
+        const { editorState } = this.props;
         if (this.editor) {
-            const editorContainerNode = this.editor.refs.editor;
-            const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
-            return (contentEditableNode && contentEditableNode.isSameNode(document.activeElement));
+            return editorState.getSelection().getHasFocus();
         }
         return false;
     }
@@ -120,7 +95,7 @@ class EntryEditor extends Component {
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
-              onClick={this._focusEditor}
+              onClick={() => this._changeEditorFocus(true)}
             >
               <MegadraftEditor
                 ref={(edtr) => {
@@ -168,10 +143,6 @@ EntryEditor.propTypes = {
     editorRef: PropTypes.func,
     editorState: PropTypes.shape(),
     readOnly: PropTypes.bool,
-    content: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.shape()
-    ]),
     onAutosave: PropTypes.func,
     editorPlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,

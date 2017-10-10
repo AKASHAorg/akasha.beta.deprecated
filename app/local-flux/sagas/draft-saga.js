@@ -82,7 +82,11 @@ function* draftAutoSave ({ data }) {
         yield put(draftActions.draftAutosaveSuccess(response));
     } catch (ex) {
         console.error(ex, 'exception thrown');
-        yield put(draftActions.draftAutosaveError({ error: ex }));
+        yield put(draftActions.draftAutosaveError(
+            { error: ex },
+            data.draft.id,
+            data.draft.content.title
+        ));
     }
 }
 
@@ -125,8 +129,9 @@ function* draftPublish ({ actionId, draft }) {
     draftToPublish.content.draft = JSON.parse(
         editorStateToJSON(draftFromState.getIn(['content', 'draft']))
     );
-    console.log(draftToPublish);
-    delete draftToPublish.content.featuredImage;
+    if (draftToPublish.entryType === 'article') {
+        draftToPublish.entryType = 1;
+    }
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield call([channel, channel.send], {
         actionId,
@@ -134,6 +139,7 @@ function* draftPublish ({ actionId, draft }) {
         token,
         tags: draftToPublish.tags,
         content: draftToPublish.content,
+        entryType: draftToPublish.entryType,
     });
 }
 
@@ -186,7 +192,11 @@ function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
         if (response.error) {
-            yield put(draftActions.draftPublishError(response.error));
+            yield put(draftActions.draftPublishError(
+                response.error,
+                response.request.id,
+                response.request.content.title
+            ));
         } else {
             yield put(actionActions.actionUpdate({
                 id: response.request.actionId,
@@ -201,7 +211,11 @@ function* watchDraftPublishUpdateChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.editEntry);
         if (response.error) {
-            yield put(draftActions.draftPublishUpdateError(response.error));
+            yield put(draftActions.draftPublishUpdateError(
+                response.error,
+                response.request.id,
+                response.request.content.title
+            ));
         } else {
             yield put(actionActions.actionUpdate({
                 id: response.request.actionId,

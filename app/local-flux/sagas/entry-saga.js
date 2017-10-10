@@ -422,27 +422,25 @@ function* watchEntryProfileIteratorChannel () {
             } else {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
             }
+        } else if (resp.request.start) {
+            yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
+        } else if (resp.request.asDrafts) {
+            yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
+            const reqObj = resp.data.collection.map(entry => ({
+                ipfsHash: [entry.entryEth.ipfsHash],
+                entryIds: [entry.entryId]
+            })).reduce((prev, curr) => ({
+                ipfsHash: prev.ipfsHash.concat(curr.ipfsHash),
+                entryIds: prev.entryIds.concat(curr.entryIds),
+                columnId: null,
+                asDrafts: true,
+                full: true,
+            }));
+            yield put(actions.entryResolveIpfsHash(reqObj));
         } else {
-            if (resp.request.start) {
-                yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
-                yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
-            } else if (resp.request.asDrafts) {
-                yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
-                const reqObj = resp.data.collection.map(entry => ({
-                    ipfsHash: [entry.entryEth.ipfsHash],
-                    entryIds: [entry.entryId]
-                })).reduce((prev, curr) => ({
-                    ipfsHash: prev.ipfsHash.concat(curr.ipfsHash),
-                    entryIds: prev.entryIds.concat(curr.entryIds),
-                    columnId: null,
-                    asDrafts: true,
-                    full: true,
-                }));
-                yield put(actions.entryResolveIpfsHash(reqObj));
-            } else {
-                yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
-                yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
-            }
+            yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
         }
     }
 }

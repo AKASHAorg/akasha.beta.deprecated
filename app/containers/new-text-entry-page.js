@@ -54,7 +54,7 @@ class NewEntryPage extends Component {
                     featuredImage: {},
                 },
                 tags: [],
-                type: 'article',
+                entryType: 'article',
             });
         }
     }

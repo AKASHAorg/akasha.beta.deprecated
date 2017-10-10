@@ -36,7 +36,7 @@ export const Draft = Record({
     /**
      * Draft + published fields
      */
-    akashaId: null,
+    ethAddress: null,
     onChain: false,
     content: new DraftContent(),
     created_at: null,
@@ -46,6 +46,6 @@ export const Draft = Record({
     saving: false,
     localChanges: false,
     tags: new List(),
-    type: 'article',
+    entryType: 'article',
     updated_at: null,
 });

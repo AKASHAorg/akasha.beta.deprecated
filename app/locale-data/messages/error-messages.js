@@ -66,6 +66,21 @@ const errorMessages = defineMessages({
         description: 'update column error message',
         defaultMessage: 'An error occurred while updating your column'
     },
+    draftAutosave: {
+        id: 'app.error.draftAutosave',
+        description: 'draft autosave error message',
+        defaultMessage: 'Cannot save latest changes of this draft!'
+    },
+    draftPublish: {
+        id: 'app.error.draftPublish',
+        description: 'draft publish error message',
+        defaultMessage: 'An error occured while publishing draft "{draftTitle}"'
+    },
+    entriesGetAsDrafts: {
+        id: 'app.error.entriesGetAsDrafts',
+        description: 'entries get as drafts error',
+        defaultMessage: 'There was an error when trying to fetch your entries! Showing local drafts only!',
+    },
     entryClaim: {
         id: 'app.error.entryClaim',
         description: 'claim entry balance error message',
@@ -185,6 +200,11 @@ const errorMessages = defineMessages({
         id: 'app.error.profileGetLocal',
         description: 'get local profiles error',
         defaultMessage: 'An error occured while fetching local profiles'
+    },
+    profileGetList: {
+        id: 'app.error.profileGetList',
+        description: 'get profiles list error',
+        defaultMessage: 'An error occured while getting the list of profiles'
     },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',

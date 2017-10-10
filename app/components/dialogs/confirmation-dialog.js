@@ -56,13 +56,13 @@ class ConfirmationDialog extends Component {
         } else {
             const { unlockIsChecked, unlockTimer, userPassword } = this.state;
             const account = loggedProfile.get('account');
-            const akashaId = loggedProfile.get('akashaId');
+            const ethAddress = loggedProfile.get('ethAddress');
             const profile = loggedProfile.get('profile');
             const rememberTime = unlockIsChecked ? unlockTimer : 1;
             const passwordPreference = { remember: unlockIsChecked, time: unlockTimer };
             this.props.userSettingsSave(loggedProfile.get('account'), { passwordPreference });
             this.props.profileLogin({
-                account, akashaId, password: userPassword, profile, reauthenticate: true, rememberTime
+                account, ethAddress, password: userPassword, profile, reauthenticate: true, rememberTime
             });
         }
     };
@@ -89,6 +89,7 @@ class ConfirmationDialog extends Component {
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
+        console.log(actionTypeTitle, 'type title');
         return (
           <Modal
             visible
