@@ -32,7 +32,6 @@ export const EntryRecord = Record({
 const Flags = Record({
     fetchingEntryBalance: false,
     fetchingFullEntry: false,
-    isActivePending: false,
     pendingEntries: new Map(),
 });
 

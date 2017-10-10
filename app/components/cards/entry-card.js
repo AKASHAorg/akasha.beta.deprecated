@@ -111,15 +111,14 @@ class EntryCard extends Component {
     render () {
         const { author, containerRef, entry, existingDraft, isPending, style } = this.props;
         const content = entry.get('content');
+        // TODO use getLatestEntryVersion channel
         const latestVersion = content && content.get('version');
         if (isPending) {
             return this.renderResolvingPlaceholder();
         }
-        if (!author) {
-            console.error('cannot resolve publisher');
-        }
+        const hasContent = !!content.get('title');
         const cardClass = classNames('entry-card', {
-            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !content
+            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent
         });
 
         return (
@@ -224,10 +223,10 @@ class EntryCard extends Component {
                 </div>
               }
             </CardHeader> */}
-            {!content && !isPending &&
+            {!hasContent && !isPending &&
               <div style={{ height: '240px' }}>Cannot resolve content</div>
             }
-            {content &&
+            {hasContent &&
               <Link
                 className="unstyled-link"
                 to={{
@@ -240,7 +239,7 @@ class EntryCard extends Component {
                 </div>
               </Link>
             }
-            {content &&
+            {hasContent &&
               <Link
                 className="unstyled-link"
                 to={{
@@ -253,7 +252,7 @@ class EntryCard extends Component {
                 </div>
               </Link>
             }
-            {content &&
+            {hasContent &&
               <div className="entry-card__tags">
                 {content.get('tags').map(tag => (
                   <TagPopover
@@ -264,7 +263,7 @@ class EntryCard extends Component {
                 ))}
               </div>
             }
-            {content &&
+            {hasContent &&
               <EntryPageActions
                 containerRef={containerRef}
                 entry={entry}
