@@ -272,8 +272,8 @@ function* entryUpvoteSuccess ({ data }) {
 function* entryVoteCost () {
     const channel = Channel.server.entry.voteCost;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const weight = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    yield apply(channel, channel.send, [{ weight }]);
+    const weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    yield apply(channel, channel.send, [weights]);
 }
 
 // Channel watchers

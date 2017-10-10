@@ -120,6 +120,18 @@ function* actionSave (id) {
     }
 }
 
+function* actionPublished ({ receipt }) {
+    const { blockNumber, cumulativeGasUsed, transactionHash } = receipt;
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
+    const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+    if (action && action.get('ethAddress') === loggedEthAddress) {
+        const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+        yield put(actions.actionUpdate(changes));
+        yield put(profileActions.profileGetBalance());
+    }
+}
+
 /**
  * React to action updates, depending on the new action status
  * Important: the "changes" object must contain the id of the action
@@ -144,5 +156,6 @@ function* actionUpdate ({ changes }) {
 export function* watchActionActions () {
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
+    yield takeEvery(types.ACTION_PUBLISHED, actionPublished);
     yield takeEvery(types.ACTION_UPDATE, actionUpdate);
 }

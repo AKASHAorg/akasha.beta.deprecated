@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import { calculateReadingTime } from '../../utils/dataModule';
+import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
@@ -13,7 +13,7 @@ const EntryCardHeader = (props) => {
     const wordCount = (content && content.get('wordCount')) || 0;
     const readingTime = calculateReadingTime(wordCount);
     const latestVersion = content && content.get('version');
-    const displayName = entry.getIn(['author', 'akashaId']) || entry.getIn(['author', 'ethAddress']);
+    const displayName = getDisplayName({ akashaId: entry.getIn(['author', 'akashaId']), ethAddress });
     const publishedMessage = latestVersion ?
         (<span>
           <span onClick={openVersionsPanel} className="link">

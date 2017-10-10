@@ -14,6 +14,7 @@ export const actionGetPendingError = (error) => {
 
 export const actionGetPendingSuccess = data => action(types.ACTION_GET_PENDING_SUCCESS, { data });
 export const actionPublish = id => action(types.ACTION_PUBLISH, { id });
+export const actionPublished = receipt => action(types.ACTION_PUBLISHED, { receipt });
 
 export const actionSaveError = (error) => {
     error.code = 'ASE01';
