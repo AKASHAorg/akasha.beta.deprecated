@@ -33,7 +33,7 @@ const PasswordPreference = Record({
 });
 
 const UserSettings = Record({
-    akashaId: null,
+    ethAddress: null,
     lastBlockNr: null,
     latestMention: null,
     defaultLicense: null,

@@ -46,11 +46,12 @@ class ProfilePopover extends Component {
     };
 
     onFollow = () => {
-        const { ethAddress, isFollower, loggedEthAddress } = this.props;
+        const { ethAddress, isFollower, loggedEthAddress, profile } = this.props;
+        const akashaId = profile.get('akashaId');
         if (isFollower) {
-            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { akashaId, ethAddress });
         } else {
-            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { akashaId, ethAddress });
         }
     };
 
@@ -76,9 +77,10 @@ class ProfilePopover extends Component {
     };
 
     sendTip = ({ value, message }) => {
-        const { loggedEthAddress, profile } = this.props;
+        const { ethAddress, loggedEthAddress, profile } = this.props;
         this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
             akashaId: profile.akashaId,
+            ethAddress,
             firstName: profile.firstName,
             lastName: profile.lastName,
             message,

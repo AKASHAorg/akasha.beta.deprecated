@@ -191,7 +191,7 @@ EntryPageAction.propTypes = {
     loggedEthAddress: PropTypes.string,
     noVotesBar: PropTypes.bool,
     votePending: PropTypes.bool,
-    voteWeight: PropTypes.number,
+    voteWeight: PropTypes.string,
 };
 
 function mapStateToProps (state, ownProps) {

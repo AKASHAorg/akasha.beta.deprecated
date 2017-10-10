@@ -1,9 +1,9 @@
 import { List, Record, Map } from 'immutable';
 
 export const ActionRecord = Record({
-    akashaId: null,
     blockNumber: null,
     cumulativeGasUsed: null,
+    ethAddress: null,
     id: null,
     payload: new Map(),
     status: null,
