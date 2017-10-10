@@ -27,7 +27,7 @@ const execute = Promise.coroutine(function* (data: BalanceRequest) {
     const [manaTotal, manaSpent, manaRemaining] = yield contracts.instance.Essence.mana(etherBase);
     const [karma, essence] = yield contracts.instance.Essence.getCollected(etherBase);
     const essenceValue = yield contracts.instance.Essence.aethValueFrom(essence);
-    const symbol = yield contracts.instance.AETH.symbol();
+    const symbol = 'AETH'; // yield contracts.instance.AETH.symbol();
     const totalAeth = free.plus(bonded).plus(cycling);
     const balance = fromWei(weiAmount, unit);
     return {
