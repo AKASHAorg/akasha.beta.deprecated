@@ -29,6 +29,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
 
     let entry;
     const ethAddress = yield profileAddress(data);
+    const votingPeriod = yield contracts.instance.Entries.voting_period();
     const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(ethAddress, data.entryId);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
@@ -44,7 +45,8 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         [BASE_URL]: generalSettings.get(BASE_URL),
         totalVotes: _totalVotes.toString(10),
         score: _score.toString(10),
-        endPeriod: (new Date(_endPeriod.toNumber() * 1000)).toISOString(),
+        publishDate: (_endPeriod.minus(votingPeriod)).toNumber(),
+        endPeriod: _endPeriod.toNumber(),
         totalKarma: _totalKarma.toString(10),
         content: entry,
         commentsCount: cCount.collection[0].length ? (cCount.collection[0].count).toString(10) : 0

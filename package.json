@@ -228,6 +228,7 @@
         "prop-types": "15.6.0",
         "ramda": "0.24.1",
         "request": "2.83.0",
+        "search-index": "^0.13.0",
         "winston": "2.3.1"
     },
     "devEngines": {
