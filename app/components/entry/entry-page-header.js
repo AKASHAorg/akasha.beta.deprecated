@@ -84,7 +84,7 @@ class EntryPageHeader extends Component {
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
         const wordCount = entry.getIn(['content', 'wordCount']) || 0;
-        const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
+        const publishDate = new Date(entry.get('publishDate') * 1000);
         const readingTime = calculateReadingTime(wordCount);
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
         let publishedMessage;

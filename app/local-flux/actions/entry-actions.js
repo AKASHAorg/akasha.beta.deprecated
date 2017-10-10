@@ -66,11 +66,21 @@ export const entryGetLatestVersionSuccess = data =>
 export const entryGetScore = entryId => action(types.ENTRY_GET_SCORE, { entryId });
 export const entryGetScoreError = (error) => {
     error.code = 'EGSE01';
-    error.messageId = 'entryGetError';
+    error.messageId = 'entryGetScore';
     return action(types.ENTRY_GET_SCORE_ERROR, { error });
 };
 export const entryGetScoreSuccess = data => action(types.ENTRY_GET_SCORE_SUCCESS, { data });
+export const entryGetShort = ({ context, entryId, ethAddress }) =>
+    action(types.ENTRY_GET_SHORT, { context, entryId, ethAddress });
 
+export const entryGetShortError = (error, request) => {
+    error.code = 'EGSE02';
+    error.messageId = 'entryGetShort';
+    return action(types.ENTRY_GET_SHORT_ERROR, { error, request });
+};
+
+export const entryGetShortSuccess = (data, request) =>
+    action(types.ENTRY_GET_SHORT_SUCCESS, { data, request });
 export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
 export const entryGetVoteOfError = (error) => {
     error.code = 'EGVOE01';

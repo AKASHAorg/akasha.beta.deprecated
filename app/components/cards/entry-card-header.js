@@ -6,65 +6,69 @@ import { calculateReadingTime } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
-    const { containerRef, entry, intl, openVersionsPanel, publisher } = props;
+    const { author, containerRef, entry, intl, openVersionsPanel } = props;
+    const ethAddress = entry.getIn(['author', 'ethAddress']);
     const content = entry.get('content');
-    const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
+    const publishDate = new Date(entry.get('publishDate') * 1000);
     const wordCount = (content && content.get('wordCount')) || 0;
     const readingTime = calculateReadingTime(wordCount);
     const latestVersion = content && content.get('version');
+    const displayName = entry.getIn(['author', 'akashaId']) || entry.getIn(['author', 'ethAddress']);
     const publishedMessage = latestVersion ?
-      (<span>
-        <span onClick={openVersionsPanel} className="link">
-          {intl.formatMessage(entryMessages.published)}
-        </span>
-        <span> *</span>
-      </span>) :
-      intl.formatMessage(entryMessages.published);
+        (<span>
+          <span onClick={openVersionsPanel} className="link">
+            {intl.formatMessage(entryMessages.published)}
+          </span>
+          <span> *</span>
+        </span>) :
+        intl.formatMessage(entryMessages.published);
 
     return (
       <div className="entry-card-header">
-        <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
+        <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
           <Avatar
             className="entry-card-header__avatar"
-            firstName={publisher.get('firstName')}
-            image={publisher.get('avatar')}
-            lastName={publisher.get('lastName')}
+            firstName={author && author.get('firstName')}
+            image={author && author.get('avatar')}
+            lastName={author && author.get('lastName')}
             size="small"
           />
         </ProfilePopover>
         <div className="entry-card-header__text">
-          <ProfilePopover akashaId={publisher.get('akashaId')} containerRef={containerRef}>
+          <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
             <span className="content-link">
-              {publisher.get('akashaId')}
+              {displayName}
             </span>
           </ProfilePopover>
-          <div className="entry-card-header__subtitle">
-            <span style={{ paddingRight: '5px' }}>
-              {publishedMessage}
-            </span>
-            <span>
-              {intl.formatRelative(publishDate)}
-            </span>
-            <span style={{ padding: '0 5px' }}>|</span>
-            {readingTime.hours &&
-              intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })
-            }
-            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
-            <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
-          </div>
+          {entry.get('publishDate') &&
+            <div className="entry-card-header__subtitle">
+              <span style={{ paddingRight: '5px' }}>
+                {publishedMessage}
+              </span>
+              <span>
+                {intl.formatRelative(publishDate)}
+              </span>
+              <span style={{ padding: '0 5px' }}>|</span>
+              {readingTime.hours &&
+                intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })
+              }
+              {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
+              <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
+            </div>
+          }
         </div>
       </div>
     );
 };
 
 EntryCardHeader.propTypes = {
+    author: PropTypes.shape(),
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     isNotSafe: PropTypes.bool,
     isOwnEntry: PropTypes.bool,
     openVersionsPanel: PropTypes.func.isRequired,
-    publisher: PropTypes.shape()
 };
 
 export default injectIntl(EntryCardHeader);

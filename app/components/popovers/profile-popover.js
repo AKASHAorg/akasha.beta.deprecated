@@ -7,7 +7,7 @@ import { Button, Icon, Popover, Spin } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectIsFollower, selectLoggedAkashaId, selectPendingFollow,
+import { selectBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { Avatar, SendTipForm } from '../';
@@ -46,11 +46,11 @@ class ProfilePopover extends Component {
     };
 
     onFollow = () => {
-        const { akashaId, isFollower, loggedAkashaId } = this.props;
+        const { ethAddress, isFollower, loggedEthAddress } = this.props;
         if (isFollower) {
-            this.props.actionAdd(loggedAkashaId, actionTypes.unfollow, { akashaId });
+            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { ethAddress });
         } else {
-            this.props.actionAdd(loggedAkashaId, actionTypes.follow, { akashaId });
+            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { ethAddress });
         }
     };
 
@@ -76,8 +76,8 @@ class ProfilePopover extends Component {
     };
 
     sendTip = ({ value, message }) => {
-        const { loggedAkashaId, profile } = this.props;
-        this.props.actionAdd(loggedAkashaId, actionTypes.sendTip, {
+        const { loggedEthAddress, profile } = this.props;
+        this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
             akashaId: profile.akashaId,
             firstName: profile.firstName,
             lastName: profile.lastName,
@@ -141,11 +141,15 @@ class ProfilePopover extends Component {
     };
 
     renderContent () {
-        const { akashaId, balance, intl, loggedAkashaId, profile, tipPending } = this.props;
+        const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
+        if (!profile) {
+            return null;
+        }
+        const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
         const name = firstName || lastName ? `${firstName} ${lastName}` : null;
-        const isOwnProfile = akashaId === loggedAkashaId;
+        const isOwnProfile = ethAddress === loggedEthAddress;
 
         if (this.state.sendTip) {
             return (
@@ -287,28 +291,28 @@ ProfilePopover.defaultProps = {
 
 ProfilePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    akashaId: PropTypes.string.isRequired,
     balance: PropTypes.string,
     children: PropTypes.node.isRequired,
     containerRef: PropTypes.shape(),
+    ethAddress: PropTypes.string.isRequired,
     followPending: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     isFollower: PropTypes.bool,
-    loggedAkashaId: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     placement: PropTypes.string,
     profile: PropTypes.shape().isRequired,
     tipPending: PropTypes.bool
 };
 
 function mapStateToProps (state, ownProps) {
-    const { akashaId } = ownProps;
+    const { ethAddress } = ownProps;
     return {
         balance: selectBalance(state),
-        followPending: selectPendingFollow(state, akashaId),
-        isFollower: selectIsFollower(state, akashaId),
-        loggedAkashaId: selectLoggedAkashaId(state),
-        profile: selectProfile(state, akashaId),
-        tipPending: selectPendingTip(state, akashaId)
+        followPending: selectPendingFollow(state, ethAddress),
+        isFollower: selectIsFollower(state, ethAddress),
+        loggedEthAddress: selectLoggedEthAddress(state),
+        profile: selectProfile(state, ethAddress),
+        tipPending: selectPendingTip(state, ethAddress)
     };
 }
 
