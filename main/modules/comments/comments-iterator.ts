@@ -34,7 +34,7 @@ const execute = Promise.coroutine(function* (data: { toBlock: number,
                 parent: data.parent,
                 author: data.author
             },
-            data.toBlock, maxResults);
+            data.toBlock, maxResults, {});
     for (let event of fetched.results) {
         const comment = yield fetchComment.execute({ commentId: event.args.id, entryId: event.args.entryId });
         collection.push(Object.assign({}, comment, { commentId: event.args.id }));
