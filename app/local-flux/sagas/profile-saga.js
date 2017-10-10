@@ -8,6 +8,7 @@ import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
     selectNeedAuthAction, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
+import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
@@ -28,17 +29,18 @@ function* profileDeleteLogged () {
     }
 }
 
-function* profileFollow ({ actionId, akashaId }) {
+function* profileFollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.followProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+    yield apply(channel, channel.send, [{ token, actionId, ethAddress }]);
 }
 
 function* profileFollowSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'followProfileSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
@@ -180,23 +182,25 @@ function* profileSendTip ({ actionId, akashaId, receiver, value }) {
 }
 
 function* profileSendTipSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'sendTipSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
-function* profileUnfollow ({ actionId, akashaId }) {
+function* profileUnfollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+    yield apply(channel, channel.send, [{ token, actionId, ethAddress }]);
 }
 
 function* profileUnfollowSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'unfollowProfileSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
@@ -231,6 +235,8 @@ function* watchProfileFollowChannel () {
         if (resp.error) {
             yield put(actions.profileFollowError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -411,7 +417,7 @@ function* watchProfileSendTipChannel () {
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
-        } else {
+        } else if (!resp.data.receipt) {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
         }
@@ -425,6 +431,8 @@ function* watchProfileUnfollowChannel () {
         if (resp.error) {
             yield put(actions.profileUnfollowError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

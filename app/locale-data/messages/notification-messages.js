@@ -24,22 +24,22 @@ const notificationMessages = defineMessages({
     followingProfile: {
         id: 'app.notification.followingProfile',
         description: 'Notification to be displayed when follow transaction is sent',
-        defaultMessage: 'Following @{akashaId} ...'
+        defaultMessage: 'Following {displayName} ...'
     },
     followProfileSuccess: {
         id: 'app.notification.followProfileSuccess',
         description: 'Notification to be displayed when follow transaction was mined',
-        defaultMessage: 'You are now following @{akashaId}'
+        defaultMessage: 'You are now following {displayName}'
     },
     unfollowingProfile: {
         id: 'app.notification.unfollowingProfile',
         description: 'Notification to be displayed when unfollow transaction is sent',
-        defaultMessage: 'Unfollowing @{akashaId} ...'
+        defaultMessage: 'Unfollowing {displayName} ...'
     },
     unfollowProfileSuccess: {
         id: 'app.notification.unfollowProfileSuccess',
         description: 'Notification to be displayed when unfollow transaction was mined',
-        defaultMessage: 'You are not following @{akashaId} anymore'
+        defaultMessage: 'You are not following {displayName} anymore'
     },
     registeringTag: {
         id: 'app.notification.registeringTag',
@@ -129,22 +129,22 @@ const notificationMessages = defineMessages({
     sendingTip: {
         id: 'app.notification.sendingTip',
         description: 'Notification to be displayed when tip transaction is sent',
-        defaultMessage: 'Sending tip to @{akashaId} ...'
+        defaultMessage: 'Sending tip to {displayName} ...'
     },
     sendTipSuccess: {
         id: 'app.notification.sendTipSuccess',
         description: 'Notification to be displayed when tip transaction was successfully mined',
-        defaultMessage: 'You have successfully tipped @{akashaId}'
+        defaultMessage: 'You have successfully tipped {displayName}'
     },
     notificationsEnabledSuccess: {
         id: 'app.notification.notificationsEnabledSuccess',
         description: 'message to be displayed when notifications were enabled for a specific user',
-        defaultMessage: 'Notifications enabled for @{akashaId}'
+        defaultMessage: 'Notifications enabled for {displayName}'
     },
     notificationsDisabledSuccess: {
         id: 'app.notification.notificationsDisabledSuccess',
         description: 'message to be displayed when notifications were disabled for a specific user',
-        defaultMessage: 'Notifications disabled for @{akashaId}'
+        defaultMessage: 'Notifications disabled for {displayName}'
     },
     channelStarred: {
         id: 'app.notification.channelStarred',

@@ -34,7 +34,7 @@ const confirmationMessages = defineMessages({
     follow: {
         id: 'app.confirmations.follow',
         description: 'confirmation message for follow',
-        defaultMessage: 'Please confirm that you want to follow @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to follow {displayName}.'
     },
     passphrase: {
         id: 'app.confirmations.passphrase',
@@ -54,7 +54,7 @@ const confirmationMessages = defineMessages({
     sendTip: {
         id: 'app.confirmations.sendTip',
         description: 'confirmation message for sendTip',
-        defaultMessage: 'Please confirm that you want to send a tip of {value} AETH to @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to send a tip of {value} AETH to {displayName}.'
     },
     tagCreate: {
         id: 'app.confirmations.createTag',
@@ -64,7 +64,7 @@ const confirmationMessages = defineMessages({
     unfollow: {
         id: 'app.confirmations.unfollow',
         description: 'confirmation message for unfollow',
-        defaultMessage: 'Please confirm that you want to unfollow @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to unfollow {displayName}.'
     },
     claimTitle: {
         id: 'app.confirmations.claimTitle',
