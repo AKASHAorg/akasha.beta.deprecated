@@ -29,7 +29,7 @@ const execute = Promise.coroutine(
         const collection = [];
         const maxResults = data.limit || 5;
         const fetched = yield contracts.fromEvent(contracts.instance.Entries.Publish,
-            { author: data.author, entryType: data.entryType }, data.toBlock, maxResults);
+            { author: data.author, entryType: data.entryType }, data.toBlock, maxResults, {});
         for (let event of fetched.results) {
             const tags = event.args.tagsPublished.map((tag) => {
                 return GethConnector.getInstance().web3.toUtf8(tag);

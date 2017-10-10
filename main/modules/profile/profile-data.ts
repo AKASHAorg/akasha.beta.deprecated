@@ -15,11 +15,11 @@ export const getProfileData = {
     'type': 'object',
     'properties': {
         'akashaId': { 'type': 'string' },
+        'ethAddress': {'type': 'string', 'format': 'address'},
         'short': { 'type': 'boolean' },
         'full': { 'type': 'boolean' },
         'resolveImages': { 'type': 'boolean' }
-    },
-    'required': ['akashaId']
+    }
 };
 
 /**

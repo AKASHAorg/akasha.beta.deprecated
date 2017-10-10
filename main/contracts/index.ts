@@ -1,5 +1,6 @@
 const initContracts = require('@akashaproject/contracts.js');
 import { GethConnector } from '@akashaproject/geth-connector';
+import { descend, filter, last, prop, sortWith, uniq } from 'ramda';
 import auth from '../modules/auth/Auth';
 
 class Contracts {
@@ -46,10 +47,11 @@ class Contracts {
         });
     }
 
-    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number) {
+    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number, options: { lastIndex?: number }) {
         const step = 5300;
         return new Promise((resolve, reject) => {
             let results = [];
+            const filterIndex = (record) => record.blockNumber < toBlock || record.logIndex < options.lastIndex;
             const fetch = (to) => {
                 let fromBlock = to - step;
                 if (fromBlock < 0) {
@@ -60,11 +62,16 @@ class Contracts {
                     if (err) {
                         return reject(err);
                     }
-                    results = results.concat(data);
+                    const filteredData = (options.lastIndex) ? filter(filterIndex, data) : data;
+
+                    results = uniq(results.concat(filteredData));
                     if (results.length < limit && fromBlock > 0) {
                         return fetch(fromBlock);
                     }
-                    return resolve({ results, fromBlock });
+
+                    const sortedResults = sortWith([descend(prop('blockNumber')), descend(prop('logIndex'))], results);
+                    const lastIndex = last(sortedResults).logIndex;
+                    return resolve({ results: sortedResults, fromBlock, lastIndex });
                 });
             };
             fetch(toBlock);

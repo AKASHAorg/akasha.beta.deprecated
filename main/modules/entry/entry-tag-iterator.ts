@@ -20,21 +20,25 @@ const entryTagIterator = {
  * Get a tags created
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number, tagName: string, ethAddress?: string }) {
+const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number,
+    tagName: string, ethAddress?: string, lastIndex?: number }) {
     const v = new schema.Validator();
     v.validate(data, entryTagIterator, { throwError: true });
 
     const collection = [];
     const maxResults = data.limit || 5;
     const fetched = yield contracts.fromEvent(contracts.instance.Entries.TagIndex,
-        { tagName: data.tagName, author: data.ethAddress }, data.toBlock, maxResults);
+        { tagName: data.tagName, author: data.ethAddress }, data.toBlock,
+        maxResults, { lastIndex: data.lastIndex });
 
     for (let event of fetched.results) {
         const fetchedPublish = yield contracts
-            .fromEvent(contracts.instance.Entries.Publish, { entryId: event.args.entryId }, data.toBlock, 1);
+            .fromEvent(contracts.instance.Entries.Publish, { entryId: event.args.entryId },
+                data.toBlock, 1, {});
 
         const captureIndex = yield contracts
-            .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId }, data.toBlock, 10);
+            .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
+                data.toBlock, 10, {});
 
         const tags = captureIndex.results.map(function (ev) {
             return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
@@ -52,7 +56,7 @@ const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: nu
             break;
         }
     }
-    return { collection: collection, lastBlock: fetched.fromBlock };
+    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
 });
 
 export default { execute, name: 'entryTagIterator' };
