@@ -23,8 +23,8 @@ export const profileDeleteLoggedError = (error) => {
 };
 
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
-export const profileFollow = ({ actionId, akashaId }) =>
-    action(types.PROFILE_FOLLOW, { actionId, akashaId });
+export const profileFollow = ({ actionId, ethAddress }) =>
+    action(types.PROFILE_FOLLOW, { actionId, ethAddress });
 
 export const profileFollowError = (error, request) => {
     error.code = 'PFE01';
@@ -198,8 +198,8 @@ export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCE
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
 
-export const profileUnfollow = ({ actionId, akashaId }) =>
-    action(types.PROFILE_UNFOLLOW, { actionId, akashaId });
+export const profileUnfollow = ({ actionId, ethAddress }) =>
+    action(types.PROFILE_UNFOLLOW, { actionId, ethAddress });
 
 export const profileUnfollowError = (error, request) => {
     error.code = 'PUE01';
