@@ -1,43 +1,55 @@
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
-import { EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
+import { EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
     EntryState } from './records';
 
 const initialState = new EntryState();
 
-const createEntryRecord = ({ entry }) =>
+const createEntryRecord = entry =>
     new EntryRecord(entry).withMutations((mEntry) => {
         if (entry.content) {
             mEntry.set('content', new EntryContent(entry.content));
         }
-        mEntry.set('entryEth', new EntryEth(entry.entryEth));
-        if (entry.entryEth.publisher) {
-            mEntry.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.ethAddress);
-        }
     });
 
-const entryIteratorHandler = (state, { data }) =>
-    state.withMutations((mState) => {
-        const moreEntries = data.limit === data.collection.length;
-        data.collection.forEach((entry, index) => {
-            const publisherEthAddress = entry.entryEth.publisher.ethAddress;
-            // the request is made for n + 1 entries to determine if there are more entries left
-            // if this is the case, ignore the extra entry
-            if (!moreEntries || index !== data.collection.length - 1) {
-                let newEntry = createEntryRecord(entry);
-                const oldContent = state.getIn(['byId', entry.entryId, 'content']);
-                // it shouldn't reset the entry content
-                if (!newEntry.get('content') && oldContent) {
-                    newEntry = newEntry.set('content', oldContent);
-                }
-                mState.setIn(['byId', entry.entryId], newEntry)
-                    .setIn(['byEthAddress', publisherEthAddress],
-                        new List(mState.getIn(['byEthAddress', publisherEthAddress])).push(entry.entryId)
-                    );
-            }
-        });
+const createEntryWithAuthor = entry =>
+    new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
+
+const entryIteratorHandler = (state, { data }) => {
+    const moreEntries = data.limit === data.collection.length;
+    let byId = state.get('byId');
+    data.collection.forEach((entry, index) => {
+        if (
+            !state.getIn(['byId', entry.entryId]) &&
+            (!moreEntries || index !== data.collection.length - 1)
+        ) {
+            const newEntry = createEntryWithAuthor(entry);
+            byId = byId.set(entry.entryId, newEntry);
+        }
     });
+    return state.set('byId', byId);
+};
+    // state.withMutations((mState) => {
+    //     const moreEntries = data.limit === data.collection.length;
+    //     data.collection.forEach((entry, index) => {
+    //         const publisherEthAddress = entry.author.ethAddress;
+    //         // the request is made for n + 1 entries to determine if there are more entries left
+    //         // if this is the case, ignore the extra entry
+    //         if (!moreEntries || index !== data.collection.length - 1) {
+    //             let newEntry = createEntryRecord(entry);
+    //             const oldContent = state.getIn(['byId', entry.entryId, 'content']);
+    //             // it shouldn't reset the entry content
+    //             if (!newEntry.get('content') && oldContent) {
+    //                 newEntry = newEntry.set('content', oldContent);
+    //             }
+    //             mState.setIn(['byId', entry.entryId], newEntry)
+    //                 .setIn(['byEthAddress', publisherEthAddress],
+    //                     new List(mState.getIn(['byEthAddress', publisherEthAddress])).push(entry.entryId)
+    //                 );
+    //         }
+    //     });
+    // });
 
 /**
  * State of the entries and drafts
@@ -93,7 +105,7 @@ const entryState = createReducer(initialState, {
 
         return state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: createEntryRecord(data),
+            fullEntry: createEntryRecord(data.entry),
             fullEntryLatestVersion: latestVersion
         });
     },
@@ -112,6 +124,32 @@ const entryState = createReducer(initialState, {
                 state.get('byId') :
                 state.get('byId').setIn([data.entryId, 'score'], data.score),
             fullEntry
+        });
+    },
+
+    [types.ENTRY_GET_SHORT]: (state, { entryId, context }) => {
+        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+        pendingEntries = pendingEntries.set(entryId, true);
+        return state.setIn(['flags', 'pendingEntries', context], pendingEntries);
+    },
+
+    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+        const { entryId, context } = request;
+        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+        pendingEntries = pendingEntries.set(entryId, false);
+        return state.setIn(['flags', 'pendingEntries', context], pendingEntries);
+    },
+
+    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
+        const { entryId, context } = request;
+        data.entryId = entryId;
+        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+        pendingEntries = pendingEntries.set(entryId, false);
+        const oldEntry = state.getIn(['byId', entryId]);
+        const newEntry = createEntryRecord(data).set('author', oldEntry.get('author'));
+        return state.merge({
+            byId: state.get('byId').set(entryId, newEntry),
+            flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
         });
     },
 
