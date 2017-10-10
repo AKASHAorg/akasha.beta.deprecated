@@ -142,7 +142,7 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
-        if (!profile) {
+        if (!profile.get('akashaId')) {
             return null;
         }
         const akashaId = profile.get('akashaId');
