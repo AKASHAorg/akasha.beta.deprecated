@@ -26,7 +26,6 @@ class TopBar extends PureComponent {
     _closePanel = () => {
         const { history, location } = this.props;
         const rootPath = location.pathname.split('/panel/')[0];
-        console.log('location state', location.state);
         return history.replace(`${rootPath}${location.search}`, { ...location.state });
     }
     _renderComponent = (Component, injectedProps) =>

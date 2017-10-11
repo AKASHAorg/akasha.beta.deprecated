@@ -41,14 +41,14 @@ export const entryGetBalanceError = (error) => {
 };
 export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
 
-export const entryGetFull = ({ entryId, version, asDraft }) =>
-    action(types.ENTRY_GET_FULL, { entryId, version, asDraft });
+export const entryGetFull = ({ akashaId, entryId, ethAddress, version, asDraft }) =>
+    action(types.ENTRY_GET_FULL, { akashaId, entryId, ethAddress, version, asDraft });
 export const entryGetFullError = (error) => {
     error.code = 'EGFE01';
     error.messageId = 'entryGetFull';
     return action(types.ENTRY_GET_FULL_ERROR, { error });
 };
-export const entryGetFullSuccess = data => action(types.ENTRY_GET_FULL_SUCCESS, { data });
+export const entryGetFullSuccess = (data, request) => action(types.ENTRY_GET_FULL_SUCCESS, { data, request });
 
 export const entryGetFullAsDraft = data => action(types.ENTRY_GET_FULL_AS_DRAFT, { data });
 export const entryGetFullAsDraftError = error => action(types.ENTRY_GET_FULL_AS_DRAFT_ERROR, { error });

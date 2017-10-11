@@ -30,7 +30,7 @@ class CommentThread extends Component {
     };
 
     render () {
-        const { actionAdd, comments, containerRef, depth, entryAuthor, entryId, intl,
+        const { actionAdd, comments, containerRef, depth, entryId, ethAddress, intl,
             loggedProfileData, onReply, onReplyClose, parentId, pendingComments,
             profiles, replyTo } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
@@ -55,7 +55,7 @@ class CommentThread extends Component {
           <Comment
             comment={comment}
             containerRef={containerRef}
-            entryAuthor={entryAuthor}
+            ethAddress={ethAddress}
             key={`${comment.commentId}-fetchedComments`}
             loggedAkashaId={loggedProfileData.get('akashaId')}
             onReply={onReply}
@@ -67,8 +67,8 @@ class CommentThread extends Component {
               comments={comments}
               containerRef={containerRef}
               depth={(depth + 1)}
-              entryAuthor={entryAuthor}
               entryId={entryId}
+              ethAddress={ethAddress}
               intl={intl}
               loggedProfileData={loggedProfileData}
               onReply={onReply}
@@ -86,6 +86,7 @@ class CommentThread extends Component {
                       actionAdd={actionAdd}
                       containerRef={containerRef}
                       entryId={entryId}
+                      ethAddress={ethAddress}
                       intl={intl}
                       isReply
                       loggedProfileData={loggedProfileData}
@@ -117,7 +118,7 @@ CommentThread.propTypes = {
     comments: PropTypes.shape(),
     containerRef: PropTypes.shape(),
     depth: PropTypes.number,
-    entryAuthor: PropTypes.string,
+    ethAddress: PropTypes.string.isRequired,
     entryId: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),

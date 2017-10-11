@@ -42,13 +42,8 @@ const profileState = createReducer(initialState, {
 
     [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
-        const { publisher } = data.entryEth;
-        if (!publisher) {
-            return state;
-        }
-        return state.set('byId', addProfileData(state.get('byId'), publisher));
-    },
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
+        state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
@@ -71,7 +66,6 @@ const profileState = createReducer(initialState, {
         state.set('loggedProfile', new LoggedProfile()),
 
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
-        console.log('follow success data', data);
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
@@ -161,17 +155,8 @@ const profileState = createReducer(initialState, {
         return state.set('balance', data.balance);
     },
 
-    [types.PROFILE_GET_DATA]: state =>
-        state.setIn(['flags', 'fetchingProfileData'], true),
-
-    [types.PROFILE_GET_DATA_ERROR]: state =>
-        state.setIn(['flags', 'fetchingProfileData'], false),
-
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
-        state.merge({
-            byEthAddress: addProfileData(state.get('byEthAddress'), data),
-            flags: state.get('flags').set('fetchingProfileData', false)
-        }),
+        state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data)),
 
     [types.PROFILE_GET_LIST]: (state, { akashaIds }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
@@ -336,7 +321,6 @@ const profileState = createReducer(initialState, {
     },
 
     [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
-        console.log('unfollow success data', data);
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);

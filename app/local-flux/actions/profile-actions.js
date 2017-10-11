@@ -73,7 +73,8 @@ export const profileGetByAddressError = (error, request) => {
 };
 
 export const profileGetByAddressSuccess = data => action(types.PROFILE_GET_BY_ADDRESS_SUCCESS, { data });
-export const profileGetData = (akashaId, full) => action(types.PROFILE_GET_DATA, { akashaId, full });
+export const profileGetData = ({ akashaId, ethAddress, full }) =>
+    action(types.PROFILE_GET_DATA, { akashaId, ethAddress, full });
 
 export const profileGetDataError = (error) => {
     error.code = 'PGDE01';

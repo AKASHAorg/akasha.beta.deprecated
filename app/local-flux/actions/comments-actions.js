@@ -20,8 +20,8 @@ export const commentsGetCountError = (error) => {
 };
 
 export const commentsGetCountSuccess = data => action(types.COMMENTS_GET_COUNT_SUCCESS, { data });
-export const commentsIterator = (entryId, limit, start, reverse) =>
-    action(types.COMMENTS_ITERATOR, { entryId, limit, start, reverse });
+export const commentsIterator = (entryId, limit) =>
+    action(types.COMMENTS_ITERATOR, { entryId, limit });
 
 export const commentsIteratorError = (error) => {
     error.code = 'CIE01';

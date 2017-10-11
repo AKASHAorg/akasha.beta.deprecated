@@ -222,7 +222,7 @@ class CommentEditor extends Component {
     };
 
     handleCommentCreate = () => {
-        const { actionAdd, entryId, loggedProfileData, parent = '0' } = this.props;
+        const { actionAdd, entryId, ethAddress, loggedProfileData, parent = '0' } = this.props;
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const rawContent = convertToRaw(editorState.getCurrentContent());
@@ -230,6 +230,7 @@ class CommentEditor extends Component {
             content: JSON.stringify(rawContent),
             date: new Date().toISOString(),
             entryId,
+            ethAddress,
             mentions,
             parent,
             nonPersistentFields: ['content', 'mentions']
@@ -338,8 +339,8 @@ class CommentEditor extends Component {
           >
             <div className="comment-editor__avatar">
               <ProfilePopover
-                akashaId={loggedProfileData.get('akashaId')}
                 containerRef={containerRef}
+                ethAddress={loggedProfileData.get('ethAddress')}
               >
                 <Avatar
                   firstName={loggedProfileData.get('firstName')}
@@ -388,7 +389,8 @@ class CommentEditor extends Component {
 CommentEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
-    entryId: PropTypes.string,
+    entryId: PropTypes.string.isRequired,
+    ethAddress: PropTypes.string.isRequired,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     onClose: PropTypes.func,
