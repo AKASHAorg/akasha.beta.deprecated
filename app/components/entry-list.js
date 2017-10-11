@@ -20,6 +20,12 @@ class EntryList extends Component {
         window.addEventListener('resize', this.throttledHandler);
     }
 
+    componentDidUpdate (prevProps) {
+        if (prevProps.fetchingEntries && !this.props.fetchingEntries) {
+            this.checkTrigger();
+        }
+    }
+
     componentWillUnmount () {
         if (this.container) {
             this.container.removeEventListener('scroll', this.throttledHandler);

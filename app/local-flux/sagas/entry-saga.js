@@ -7,7 +7,7 @@ import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnLastBlock, selectEntry, selectFullEntry,
+import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectEntry, selectFullEntry,
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
@@ -177,11 +177,12 @@ function* entryListIterator ({ name }) {
 
 function* entryMoreNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ALL_STREAM_LIMIT, toBlock, more: true }]
+        [{ columnId, limit: ALL_STREAM_LIMIT, toBlock, lastIndex, more: true }]
     );
 }
 
