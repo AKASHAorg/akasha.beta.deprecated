@@ -56,6 +56,9 @@ export const selectColumnLastBlock = (state, columnId) =>
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
 
+export const selectColumnLastIndex = (state, columnId) =>
+    state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);
+
 export const selectColumns = state => state.dashboardState.get('columnById');
 
 export const selectColumnSuggestions = (state, columnId) =>

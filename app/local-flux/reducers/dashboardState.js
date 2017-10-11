@@ -24,20 +24,16 @@ const entryIteratorSuccess = (state, { data, req }) => {
     if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
         return state;
     }
-    const moreEntries = req.limit === data.collection.length;
     const entryIds = data.collection.map(entry => entry.entryId);
-    // the request is made for n + 1 entries to determine if there are more entries left
-    // if this is the case, drop the extra entry
-    if (moreEntries) {
-        entryIds.pop();
-    }
+
     return state.mergeIn(['columnById', req.columnId], {
         entries: new List(entryIds),
         flags: state.getIn(['columnById', req.columnId, 'flags']).merge({
             fetchingEntries: false,
-            moreEntries
+            moreEntries: !!data.lastBlock
         }),
-        lastBlock: data.lastBlock || null
+        lastBlock: data.lastBlock,
+        lastIndex: data.lastIndex
     });
 };
 
@@ -59,20 +55,16 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
     if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
         return state;
     }
-    const moreEntries = data.limit === data.collection.length;
     const newIds = data.collection.map(entry => entry.entryId);
-    // the request is made for n + 1 entries to determine if there are more entries left
-    // if this is the case, drop the extra entry
-    if (moreEntries) {
-        newIds.pop();
-    }
+
     return state.mergeIn(['columnById', req.columnId], {
         entries: state.getIn(['columnById', req.columnId, 'entries']).push(...newIds),
         flags: state.getIn(['columnById', req.columnId, 'flags']).merge({
             fetchingMoreEntries: false,
-            moreEntries
+            moreEntries: !!data.lastBlock
         }),
-        lastBlock: data.lastBlock || null
+        lastBlock: data.lastBlock || null,
+        lastIndex: data.lastIndex
     });
 };
 

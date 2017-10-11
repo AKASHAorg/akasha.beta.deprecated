@@ -16,6 +16,7 @@ export const ColumnRecord = Record({
     flags: new ColumnFlags(),
     large: false,
     lastBlock: null,
+    lastIndex: null,
     suggestions: new List(),
     type: null,
     value: '',
