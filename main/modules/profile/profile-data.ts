@@ -38,7 +38,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
         akashaId = resolved.akashaId;
     }
     akashaId = akashaId || data.akashaId;
-    const akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(akashaId);
+    const akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(akashaId || '');
     const [, , donationsEnabled,
         fn, digestSize, hash] = yield contracts.instance.ProfileResolver.resolve(akashaIdHash);
     const foCount = yield followingCount.execute({ ethAddress });
