@@ -20,7 +20,12 @@ const execute = Promise.coroutine(function* (data: TxRequestData) {
     v.validate(data, getTransaction, { throwError: true });
 
     const requests = data.transactionHash.map((txHash) => {
-        return GethConnector.getInstance().web3.eth.getTransactionReceiptAsync(txHash);
+        return GethConnector
+            .getInstance()
+            .web3.eth
+            .getTransactionReceiptAsync(txHash).then((receipt) => {
+                return Object.assign({}, receipt, { success: receipt.status === '0x1' });
+            });
     });
     return Promise.all(requests);
 });

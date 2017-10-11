@@ -31,8 +31,11 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     v.validate(data, getProfileData, { throwError: true });
 
     let profile;
+    let akashaIdHash = '';
     const ethAddress = yield profileAddress(data);
-    const akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
+    if (data.akashaId) {
+        akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
+    }
     const [, address, donationsEnabled,
         fn, digestSize, hash] = yield contracts.instance.ProfileResolver.resolve(akashaIdHash);
     const foCount = yield followingCount.execute({ ethAddress });
@@ -58,7 +61,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     return Object.assign(
         {
             akashaId: data.akashaId,
-            ethAddress: address,
+            ethAddress: data.ethAddress || address,
             donationsEnabled: donationsEnabled,
             followingCount: foCount.count,
             followersCount: fwCount.count,
