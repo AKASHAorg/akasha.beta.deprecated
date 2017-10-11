@@ -21,8 +21,8 @@ export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { dat
 
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
 
-export const entryDownvote = ({ actionId, entryId, entryTitle, weight, value }) =>
-    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, weight, value });
+export const entryDownvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
+    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
 
 export const entryDownvoteError = (error, entryId, entryTitle) => {
     error.code = 'EDE01';
@@ -191,8 +191,8 @@ export const entryTagIteratorError = (error, req) => {
 export const entryTagIteratorSuccess = (data, req) =>
     action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
 
-export const entryUpvote = ({ actionId, entryId, entryTitle, weight, value }) =>
-    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, weight, value });
+export const entryUpvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
+    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
 export const entryUpvoteError = (error, entryId, entryTitle) => {
     error.code = 'EUE01';
     error.messageId = 'entryUpvote';
