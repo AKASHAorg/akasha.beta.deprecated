@@ -184,8 +184,8 @@ export const profileSaveLoggedError = (error) => {
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
 
-export const profileSendTip = ({ actionId, akashaId, message, receiver, value }) =>
-    action(types.PROFILE_SEND_TIP, { actionId, akashaId, message, receiver, value });
+export const profileSendTip = ({ actionId, akashaId, ethAddress, message, receiver, value }) =>
+    action(types.PROFILE_SEND_TIP, { actionId, akashaId, ethAddress, message, receiver, value });
 
 export const profileSendTipError = (error, request) => {
     error.code = 'PSTE01';

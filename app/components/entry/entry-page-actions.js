@@ -31,12 +31,12 @@ class EntryPageAction extends Component {
         });
     };
 
-    handleVote = ({ type, value, weight }) => {
+    handleVote = ({ type, weight }) => {
         const { entry, loggedEthAddress } = this.props;
         const payload = {
             entryId: entry.entryId,
             entryTitle: entry.content.title,
-            value,
+            ethAddress: entry.author.ethAddress,
             weight
         };
         this.props.actionAdd(loggedEthAddress, type, payload);
@@ -55,18 +55,16 @@ class EntryPageAction extends Component {
     };
 
     render () {
-        const { canClaim, canClaimPending, claimPending, containerRef, entry, entryBalance,
-            fetchingEntryBalance, intl, isOwnEntry, lists, listSearchKeyword, noVotesBar,
-            votePending, voteWeight } = this.props;
-        const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
-            && (!fetchingEntryBalance || entryBalance !== undefined);
+        const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
+            lists, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
+        const showBalance = isOwnEntry && canClaim !== undefined && entryBalance !== undefined;
         const voteIconClass = 'entry-actions__vote-icon';
         const claimIconClass = classNames('entry-actions__claim-icon', {
             disabled: claimPending,
             'entry-actions__claim-icon_claimed': !canClaim,
             'content-link': canClaim
         });
-        const voteProps = { containerRef, iconClassName: voteIconClass, votePending, voteWeight };
+        const voteProps = { containerRef, iconClassName: voteIconClass, votePending, vote };
         const upvotePercent = 70;
         const downvotePercent = 30;
         const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {
@@ -85,9 +83,9 @@ class EntryPageAction extends Component {
                       type={actionTypes.entryUpvote}
                       {...voteProps}
                     />
-                    {voteWeight > 0 &&
+                    {vote > 0 &&
                       <div className="entry-actions__existing-vote entry-actions__existing-vote_upvote">
-                        +{voteWeight}
+                        +{vote}
                       </div>
                     }
                   </div>
@@ -102,9 +100,9 @@ class EntryPageAction extends Component {
                       type={actionTypes.entryDownvote}
                       {...voteProps}
                     />
-                    {voteWeight < 0 &&
+                    {vote < 0 &&
                       <div className="entry-actions__existing-vote entry-actions__existing-vote_downvote">
-                        {voteWeight}
+                        {vote}
                       </div>
                     }
                   </div>
@@ -133,18 +131,16 @@ class EntryPageAction extends Component {
                 }
                 {showBalance &&
                   <div className="entry-actions__balance-container">
-                    {!entry.active &&
-                      <Tooltip
-                        title={!canClaim ?
-                            intl.formatMessage(entryMessages.alreadyClaimed) :
-                            intl.formatMessage(entryMessages.claim)
-                        }
-                      >
-                        <svg className={claimIconClass} onClick={this.handleClaim} viewBox="0 0 16 16">
-                          <ToolbarEthereum />
-                        </svg>
-                      </Tooltip>
-                    }
+                    <Tooltip
+                      title={!canClaim ?
+                          intl.formatMessage(entryMessages.alreadyClaimed) :
+                          intl.formatMessage(entryMessages.claim)
+                      }
+                    >
+                      <svg className={claimIconClass} onClick={this.handleClaim} viewBox="0 0 16 16">
+                        <ToolbarEthereum />
+                      </svg>
+                    </Tooltip>
                     {entryBalance !== 'claimed' &&
                       <div className="entry-actions__balance">
                         {entryBalance} AETH
@@ -165,10 +161,6 @@ class EntryPageAction extends Component {
         );
     }
 }
-
-EntryPageAction.defaultProps = {
-    voteWeight: 0
-};
 
 EntryPageAction.propTypes = {
     actionAdd: PropTypes.func.isRequired,
@@ -191,7 +183,7 @@ EntryPageAction.propTypes = {
     loggedEthAddress: PropTypes.string,
     noVotesBar: PropTypes.bool,
     votePending: PropTypes.bool,
-    voteWeight: PropTypes.string,
+    vote: PropTypes.string,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -209,7 +201,7 @@ function mapStateToProps (state, ownProps) {
         listSearchKeyword: selectListSearch(state),
         loggedEthAddress,
         votePending: selectPendingVote(state, entry.get('entryId')),
-        voteWeight: selectEntryVote(state, entry.get('entryId'))
+        vote: selectEntryVote(state, entry.get('entryId'))
     };
 }
 

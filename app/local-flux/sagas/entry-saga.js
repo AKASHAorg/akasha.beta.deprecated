@@ -48,11 +48,15 @@ function* entryClaimSuccess ({ data }) {
     }));
 }
 
-function* entryDownvote ({ actionId, entryId, entryTitle, weight, value }) {
+function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
     const channel = Channel.server.entry.downvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, entryId, entryTitle, ethAddress, weight, value }]
+    );
 }
 
 function* entryDownvoteSuccess ({ data }) {
@@ -254,11 +258,15 @@ function* entryVoteSuccess (entryId) {
     yield put(actions.entryGetVoteOf(entryId));
 }
 
-function* entryUpvote ({ actionId, entryId, entryTitle, weight, value }) {
+function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
     const channel = Channel.server.entry.upvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, entryId, entryTitle, ethAddress, weight, value }]
+    );
 }
 
 function* entryUpvoteSuccess ({ data }) {
@@ -310,6 +318,8 @@ function* watchEntryDownvoteChannel () {
         if (resp.error) {
             yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -496,6 +506,8 @@ function* watchEntryUpvoteChannel () {
         if (resp.error) {
             yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

@@ -19,7 +19,7 @@ class SendTipForm extends Component {
         ev.preventDefault();
         const { form, onSubmit } = this.props;
         const { amount, message } = form.getFieldsValue();
-        onSubmit({ message, value: amount });
+        onSubmit({ message, value: amount.toString() });
     };
 
     render () {

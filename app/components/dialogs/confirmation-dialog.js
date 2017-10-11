@@ -56,14 +56,13 @@ class ConfirmationDialog extends Component {
             this.setState({ userIsLoggedIn: Date.parse(tokenExpiration) - 3000 > Date.now() });
         } else {
             const { unlockIsChecked, unlockTimer, userPassword } = this.state;
-            const account = loggedProfile.get('account');
             const ethAddress = loggedProfile.get('ethAddress');
-            const profile = loggedProfile.get('profile');
+            const akashaId = loggedProfile.get('akashaId');
             const rememberTime = unlockIsChecked ? unlockTimer : 1;
             const passwordPreference = { remember: unlockIsChecked, time: unlockTimer };
-            this.props.userSettingsSave(loggedProfile.get('account'), { passwordPreference });
+            this.props.userSettingsSave(ethAddress, { passwordPreference });
             this.props.profileLogin({
-                account, ethAddress, password: userPassword, profile, reauthenticate: true, rememberTime
+                akashaId, ethAddress, password: userPassword, reauthenticate: true, rememberTime
             });
         }
     };
@@ -90,14 +89,9 @@ class ConfirmationDialog extends Component {
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
-        let message;
         if ([actionTypes.follow, actionTypes.unfollow, actionTypes.sendTip].includes(actionType)) {
-            const displayName = getDisplayName(payload);
-            message = intl.formatMessage(confirmationMessages[actionType], { displayName });
-        } else {
-            message = intl.formatMessage(confirmationMessages[actionType], { ...payload });
+            payload.displayName = getDisplayName(payload);
         }
-
         return (
           <Modal
             visible
@@ -113,7 +107,7 @@ class ConfirmationDialog extends Component {
             zIndex={1040}
             width={450}
           >
-            <div>{message}</div>
+            <div>{intl.formatMessage(confirmationMessages[actionType], { ...payload })}</div>
             {!this.state.userIsLoggedIn &&
               <div>
                 <div>

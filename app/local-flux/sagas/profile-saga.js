@@ -168,7 +168,7 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
-function* profileSendTip ({ actionId, akashaId, receiver, value }) {
+function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value }) {
     const channel = Channel.server.profile.tip;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
@@ -176,6 +176,7 @@ function* profileSendTip ({ actionId, akashaId, receiver, value }) {
         token,
         actionId,
         akashaId,
+        ethAddress,
         receiver,
         value
     }]);
@@ -363,11 +364,10 @@ function* watchProfileLoginChannel () {
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
-        const { akashaId, profile, reauthenticate } = resp.request;
-        if (akashaId && profile) {
+        const { akashaId, reauthenticate } = resp.request;
+        if (akashaId && !reauthenticate) {
             resp.data.akashaId = akashaId;
-            resp.data.profile = profile;
-            yield call(profileGetData, { akashaId, reauthenticate: true });
+            yield call(profileGetData, { akashaId, full: true });
         }
         if (reauthenticate) {
             const needAuthAction = yield select(selectNeedAuthAction);
@@ -417,7 +417,9 @@ function* watchProfileSendTipChannel () {
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
-        } else if (!resp.data.receipt) {
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+        } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
         }
