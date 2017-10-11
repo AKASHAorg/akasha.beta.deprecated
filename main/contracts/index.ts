@@ -31,7 +31,13 @@ class Contracts {
                     if (receipt != null) {
                         return resolve({
                             tx: tx,
-                            receipt: receipt
+                            receipt: {
+                                gasUsed: receipt.gasUsed,
+                                cumulativeGasUsed: receipt.cumulativeGasUsed,
+                                transactionHash: receipt.transactionHash,
+                                blockNumber: receipt.blockNumber,
+                                success: receipt.status === '0x1'
+                            }
                         });
                     }
 
