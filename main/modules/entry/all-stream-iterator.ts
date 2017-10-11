@@ -8,6 +8,7 @@ const allStreamIterator = {
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
+        'lastIndex': {'type': 'number'}
     },
     'required': ['toBlock']
 };

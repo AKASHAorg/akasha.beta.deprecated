@@ -9,7 +9,8 @@ import { followersIterator } from './followers-iterator';
  * Get followed profiles of id
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number, akashaId?: string, ethAddress?: string, lastIndex?: number }) {
+const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number,
+    akashaId?: string, ethAddress?: string, lastIndex?: number }) {
     const v = new schema.Validator();
     v.validate(data, followersIterator, { throwError: true });
 
