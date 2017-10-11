@@ -3,7 +3,8 @@ import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
 
-export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: number, limit: number, lastIndex?: number, args: any }) {
+export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: number, limit: number,
+    lastIndex?: number, args: any }) {
     const collection = [];
     const fetched = yield contracts
         .fromEvent(contracts.instance.Entries.Publish, data.args, data.toBlock,

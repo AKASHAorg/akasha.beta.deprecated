@@ -85,6 +85,39 @@ class Contracts {
 
     }
 
+    public fromEventFilter(ethEvent: any, args: any, toBlock: number | string, limit: number,
+                           options: { lastIndex?: number }, aditionalFilter: (data) => boolean) {
+        const step = 8300;
+        return new Promise((resolve, reject) => {
+            let results = [];
+            const filterIndex = (record) => record.blockNumber < toBlock || record.logIndex < options.lastIndex;
+            const fetch = (to) => {
+                let fromBlock = to - step;
+                if (fromBlock < 0) {
+                    fromBlock = 0;
+                }
+                const event = ethEvent(args, { fromBlock, toBlock: to });
+                event.get((err, data) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    const filteredData = filter(aditionalFilter, filter(filterIndex, data));
+                    results = uniq(results.concat(filteredData));
+                    if (results.length < limit && fromBlock > 0) {
+                        return fetch(fromBlock);
+                    }
+
+                    const sortedResults = sortWith([descend(prop('blockNumber')), descend(prop('logIndex'))], results);
+                    const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
+                    return resolve({ results: sortedResults, fromBlock, lastIndex });
+                });
+            };
+            fetch(toBlock);
+        });
+
+    }
+
 }
 
 export default new Contracts();
