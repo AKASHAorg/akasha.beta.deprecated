@@ -76,7 +76,7 @@ class Contracts {
                     }
 
                     const sortedResults = sortWith([descend(prop('blockNumber')), descend(prop('logIndex'))], results);
-                    const lastIndex = last(sortedResults).logIndex;
+                    const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
                     return resolve({ results: sortedResults, fromBlock, lastIndex });
                 });
             };
