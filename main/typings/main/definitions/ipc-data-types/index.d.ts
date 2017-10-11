@@ -360,6 +360,7 @@ interface IpfsProfileCreateRequest {
 
 interface ProfileDataRequest {
     akashaId: string;
+    ethAddress?: string;
     short?: boolean;
     full?: boolean; // resolve full profile from ipfs
     resolveImages?: boolean; // resolve media to buffer
