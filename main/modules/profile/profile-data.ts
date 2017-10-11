@@ -8,6 +8,7 @@ import { profileAddress } from './helpers';
 import { encodeHash } from '../ipfs/helpers';
 import { unpad } from 'ethereumjs-util';
 import entryCountProfile from '../entry/entry-count-profile';
+import resolveEthAddress from '../registry/resolve-ethaddress';
 import schema from '../utils/jsonschema';
 
 export const getProfileData = {
@@ -30,13 +31,15 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     const v = new schema.Validator();
     v.validate(data, getProfileData, { throwError: true });
 
-    let profile;
-    let akashaIdHash = '';
+    let profile, akashaId;
     const ethAddress = yield profileAddress(data);
-    if (data.akashaId) {
-        akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
+    if (data.ethAddress) {
+        const resolved = yield resolveEthAddress.execute({ethAddress: data.ethAddress});
+        akashaId = resolved.akashaId;
     }
-    const [, address, donationsEnabled,
+    akashaId = akashaId || data.akashaId;
+    const akashaIdHash = yield contracts.instance.ProfileRegistrar.hash(akashaId);
+    const [, , donationsEnabled,
         fn, digestSize, hash] = yield contracts.instance.ProfileResolver.resolve(akashaIdHash);
     const foCount = yield followingCount.execute({ ethAddress });
     const fwCount = yield followersCount.execute({ ethAddress });
@@ -60,8 +63,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
 
     return Object.assign(
         {
-            akashaId: data.akashaId,
-            ethAddress: data.ethAddress || address,
+            akashaId: akashaId,
+            ethAddress: ethAddress,
             donationsEnabled: donationsEnabled,
             followingCount: foCount.count,
             followersCount: fwCount.count,
