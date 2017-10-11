@@ -54,13 +54,13 @@ class Comment extends Component {
     }
 
     isLogged = () => {
-        const { comment, loggedAkashaId } = this.props;
-        return loggedAkashaId === comment.data.profile;
+        const { comment, loggedEthAddress } = this.props;
+        return loggedEthAddress === comment.data.profile;
     };
 
     isEntryAuthor = () => {
-        const { comment, entryAuthor } = this.props;
-        return comment.data.profile === entryAuthor;
+        const { comment, ethAddress } = this.props;
+        return comment.data.profile === ethAddress;
     }
 
     onChange = (editorState) => { this.setState({ editorState }); };
@@ -187,9 +187,9 @@ Comment.propTypes = {
     children: PropTypes.node,
     comment: PropTypes.shape(),
     containerRef: PropTypes.shape(),
-    entryAuthor: PropTypes.string,
+    ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
-    loggedAkashaId: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     onReply: PropTypes.func.isRequired,
     profiles: PropTypes.shape(),
     showReplyButton: PropTypes.bool,

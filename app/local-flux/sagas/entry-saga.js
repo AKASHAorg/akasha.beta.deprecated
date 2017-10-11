@@ -12,7 +12,7 @@ import { selectBlockNumber, selectColumnLastBlock, selectEntry, selectFullEntry,
 import * as actionStatus from '../../constants/action-status';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 11;
+const ALL_STREAM_LIMIT = 6;
 const ENTRY_ITERATOR_LIMIT = 6;
 const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
@@ -73,19 +73,19 @@ function* entryGetBalance ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId: [entryId] }]);
 }
 
-function* entryGetExtraOfEntry (entryId, publisher) {
+function* entryGetExtraOfEntry (entryId, ethAddress) {
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
-    const isOwnEntry = publisher && loggedEthAddress === publisher.ethAddress;
+    const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
     yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
     } else {
-        const isFollower = yield select(state => selectIsFollower(state, publisher.ethAddress));
+        const isFollower = yield select(state => selectIsFollower(state, ethAddress));
         if (isFollower === undefined) {
-            yield put(profileActions.profileIsFollower([publisher.ethAddress]));
+            yield put(profileActions.profileIsFollower([ethAddress]));
         }
     }
 }
@@ -100,17 +100,13 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const allEntries = [];
-    const akashaIds = [];
     const ownEntries = [];
     const ethAddresses = [];
     entries.forEach((entry) => {
-        const { akashaId, ethAddress } = entry.author;
+        const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
-        }
-        if (akashaId && !akashaIds.includes(akashaId)) {
-            akashaIds.push(akashaId);
         }
         if (ethAddress && loggedEthAddress === ethAddress) {
             ownEntries.push(entry.entryId);
@@ -129,8 +125,8 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
         yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
-    for (let i = 0; i < akashaIds.length; i++) {
-        yield put(profileActions.profileGetData(akashaIds[i]));
+    for (let i = 0; i < ethAddresses.length; i++) {
+        yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
     }
     for (let i = 0; i < entries.length; i++) {
         const { author, entryId } = entries[i];
@@ -138,11 +134,12 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     }
 }
 
-function* entryGetFull ({ entryId, version, asDraft }) {
+function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft }) {
     // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId, full: true, version, asDraft }]);
+    yield apply(channel, channel.send, [{ akashaId, entryId, ethAddress, full: true, version, asDraft }]);
+    yield put(profileActions.profileGetData({ ethAddress }));
 }
 
 function* entryGetLatestVersion ({ entryId }) {
@@ -358,8 +355,8 @@ function* watchEntryGetChannel () {
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
         } else if (resp.request.full) {
-            yield put(actions.entryGetFullSuccess(resp.data));
-            yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
+            yield put(actions.entryGetFullSuccess(resp.data, resp.request));
+            yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
         } else {
             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }

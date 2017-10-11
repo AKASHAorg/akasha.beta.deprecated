@@ -4,13 +4,13 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { Button, Icon, Spin } from 'antd';
 import classNames from 'classnames';
-import { Avatar } from '../';
+import { Avatar, DisplayName } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { selectIsFollower, selectLoggedAkashaId, selectPendingFollow, selectPendingTip,
+import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 
 class ProfileDetails extends Component {
@@ -43,20 +43,20 @@ class ProfileDetails extends Component {
     };
 
     onFollow = () => {
-        const { isFollower, loggedAkashaId, profileData } = this.props;
-        const akashaId = profileData.get('akashaId');
+        const { isFollower, loggedEthAddress, profileData } = this.props;
+        const ethAddress = profileData.get('ethAddress');
         if (isFollower) {
-            this.props.actionAdd(loggedAkashaId, actionTypes.unfollow, { akashaId });
+            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { ethAddress });
         } else {
-            this.props.actionAdd(loggedAkashaId, actionTypes.follow, { akashaId });
+            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { ethAddress });
         }
     };
 
     sendTip = () => {
-        const { profileData } = this.props;
-        const { akashaId, firstName, lastName, profile } = profileData;
-        const payload = { akashaId, firstName, lastName, receiver: profile };
-        this.props.actionAdd(this.props.loggedAkashaId, actionTypes.sendTip, payload);
+        const { loggedEthAddress, profileData } = this.props;
+        const { akashaId, ethAddress, firstName, lastName } = profileData;
+        const payload = { akashaId, ethAddress, firstName, lastName };
+        this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, payload);
     };
 
     renderFollowButton = () => {
@@ -114,17 +114,17 @@ class ProfileDetails extends Component {
 
     render () {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
-        const { about, avatar, backgroundImage, links, firstName, lastName,
+        const { about, akashaId, avatar, backgroundImage, links, firstName, lastName,
             followersCount, followingCount } = profileData;
-        const { akashaId, intl, loggedAkashaId, tipPending } = this.props;
-        const isOwnProfile = akashaId === loggedAkashaId;
+        const { ethAddress, intl, loggedEthAddress, tipPending } = this.props;
+        const isOwnProfile = ethAddress === loggedEthAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
+        const displayName = firstName || lastName ?
+            `${firstName} ${lastName}` :
+            <DisplayName akashaId={akashaId} ethAddress={ethAddress} />;
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
-        const nameClass = classNames('overflow-ellipsis profile-details__name', {
-            'profile-details__name_own-profile': isOwnProfile
-        });
 
         return (
           <div className="profile-details">
@@ -149,11 +149,11 @@ class ProfileDetails extends Component {
                 />
               </div>
               <div className="profile-details__heading">
-                <div className={nameClass}>
-                  {firstName} {lastName}
+                <div className="overflow-ellipsis profile-details__name">
+                  {displayName}
                 </div>
-                <div className="profile-details__karma">
-                  @{akashaId}
+                <div>
+                  {(firstName || lastName) && `@${akashaId}`}
                 </div>
               </div>
             </div>
@@ -241,22 +241,23 @@ class ProfileDetails extends Component {
 
 ProfileDetails.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    akashaId: PropTypes.string.isRequired,
+    ethAddress: PropTypes.string.isRequired,
     followPending: PropTypes.bool,
     intl: PropTypes.shape(),
     isFollower: PropTypes.bool,
-    loggedAkashaId: PropTypes.string,
+    loggedEthAddress: PropTypes.string,
     profileData: PropTypes.shape(),
     tipPending: PropTypes.bool,
 };
 
 function mapStateToProps (state, ownProps) {
+    const { ethAddress } = ownProps;
     return {
-        followPending: selectPendingFollow(state, ownProps.akashaId),
-        isFollower: selectIsFollower(state, ownProps.akashaId),
-        loggedAkashaId: selectLoggedAkashaId(state),
-        profileData: selectProfile(state, ownProps.akashaId),
-        tipPending: selectPendingTip(state, ownProps.akashaId)
+        followPending: selectPendingFollow(state, ethAddress),
+        isFollower: selectIsFollower(state, ethAddress),
+        loggedEthAddress: selectLoggedEthAddress(state),
+        profileData: selectProfile(state, ethAddress),
+        tipPending: selectPendingTip(state, ethAddress)
     };
 }
 

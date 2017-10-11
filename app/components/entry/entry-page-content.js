@@ -28,11 +28,6 @@ class EntryPageContent extends Component {
 
     getPopupContainer = () => this.props.containerRef || document.body;
 
-    navigateToTag = (ev, tagName) => {
-        const { history } = this.props;
-        history.push(`/tag/${tagName}`);
-    };
-
     highlightSave = (text) => {
         const { entry, highlightSave, latestVersion } = this.props;
         highlightSave({
@@ -105,6 +100,7 @@ class EntryPageContent extends Component {
               </h1>
               <div className="entry-page-content__content">
                 <SelectableEditor
+                  baseUrl={entry.get('baseUrl')}
                   draft={entry.getIn(['content', 'draft'])}
                   highlightSave={this.highlightSave}
                   startComment={commentEditor && commentEditor.insertHighlight}
@@ -138,7 +134,6 @@ EntryPageContent.propTypes = {
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     highlightSave: PropTypes.func.isRequired,
-    history: PropTypes.shape(),
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),
 };

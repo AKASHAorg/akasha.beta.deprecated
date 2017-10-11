@@ -93,10 +93,12 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
 
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data, request }) => {
         if (!state.getIn(['flags', 'fetchingFullEntry'])) {
             return state;
         }
+        const { entryId, ethAddress } = request;
+        data.entryId = entryId;
         const fullEntry = state.get('fullEntry');
         const version = data.content && data.content.version;
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
@@ -105,7 +107,7 @@ const entryState = createReducer(initialState, {
 
         return state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: createEntryRecord(data.entry),
+            fullEntry: createEntryRecord(data).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
     },

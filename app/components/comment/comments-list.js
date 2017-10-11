@@ -60,8 +60,8 @@ class CommentList extends Component {
                 comments={comments}
                 containerRef={containerRef}
                 depth={1}
-                entryAuthor={entry.getIn(['entryEth', 'publisher'])}
                 entryId={entry.get('entryId')}
+                ethAddress={entry.getIn(['author', 'ethAddress'])}
                 loggedProfileData={loggedProfileData}
                 onReply={this.handleReply}
                 onReplyClose={this.resetReplies}

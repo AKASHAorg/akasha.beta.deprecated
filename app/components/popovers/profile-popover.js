@@ -10,6 +10,7 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 import { Avatar, SendTipForm } from '../';
 
 class ProfilePopover extends Component {
@@ -84,7 +85,6 @@ class ProfilePopover extends Component {
             firstName: profile.firstName,
             lastName: profile.lastName,
             message,
-            receiver: profile.profile,
             value
         });
     };
@@ -144,9 +144,6 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
-        if (!profile.get('akashaId')) {
-            return null;
-        }
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
@@ -171,6 +168,7 @@ class ProfilePopover extends Component {
               <div className="profile-popover__avatar-wrapper" onClick={() => this.onVisibleChange(false)}>
                 <Avatar
                   akashaId={profile.get('akashaId')}
+                  ethAddress={ethAddress}
                   firstName={profile.get('firstName')}
                   image={profile.get('avatar')}
                   lastName={profile.get('lastName')}
@@ -182,10 +180,10 @@ class ProfilePopover extends Component {
                 <Link
                   className="unstyled-link"
                   onClick={() => this.onVisibleChange(false)}
-                  to={{ pathname: `/@${profile.get('akashaId')}`, state: { overlay: true } }}
+                  to={{ pathname: `/${ethAddress}`, state: { overlay: true } }}
                 >
                   <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
-                    {name || `@${akashaId}`}
+                    {name || getDisplayName({ akashaId, ethAddress })}
                   </div>
                 </Link>
                 {name &&

@@ -52,9 +52,10 @@ class ImageBlock extends Component {
     }
 
     _getImageSrc = () => {
-        const { files, media } = this.props.data;
+        const { baseUrl, data } = this.props;
+        const { files, media } = data;
         const { width } = this.props;
-        const widths = [320, 700, 1280, 1920];
+        const widths = [320, 700, 1920];
         let fileKey = findClosestMatch(widths[width], files, media);
         if ((media === 'xl' || media === 'xxl') && this.baseNodeRef) {
             fileKey = findClosestMatch(this.baseNodeRef.parentNode.clientWidth, files, media);
@@ -66,29 +67,18 @@ class ImageBlock extends Component {
         return {
             width: files[fileKey].width,
             height: files[fileKey].height,
-            src: `${window.entry__baseUrl}/${files[fileKey].src}`
+            src: `${baseUrl}/${files[fileKey].src}`
         };
     }
-    _getPlaceholderSize = () => {
-        const { media, files } = this.props.data;
-        const computedImageSrc = this._getImageSrc();
-        const placeholderNode = this.placeholderNodeRef;
-        console.log(placeholderNode, 'plc node');
-        if (placeholderNode) {
 
-        }
-        return {
-            width: 100,
-            height: 100
-        };
-    }
     _onLargeImageLoad = () => {
         this.setState({
             imageLoaded: true
         });
     }
     render () {
-        const { caption, files } = this.props.data;
+        const { baseUrl, data } = this.props;
+        const { caption, files } = data;
         const { isPlaying, imageLoaded } = this.state;
         const baseNodeStyle = this._getBaseNodeStyle();
         return (
@@ -125,7 +115,7 @@ class ImageBlock extends Component {
                   style={{
                       width: this._getImageSrc().width,
                       height: this._getImageSrc().height,
-                      maxWidth: '100%',
+                      // maxWidth: '100%',
                       overflow: 'hidden',
                       position: 'relative',
                       opacity: imageLoaded ? 0 : 1,
@@ -136,7 +126,7 @@ class ImageBlock extends Component {
                   ref={(node) => { this.placeholderNodeRef = node; }}
                 >
                   <img
-                    src={`${window.entry__baseUrl}/${files.xs.src}`}
+                    src={`${baseUrl}/${files.xs.src}`}
                     style={{
                         filter: 'blur(30px)',
                         transform: 'scale(1)',
@@ -164,6 +154,7 @@ class ImageBlock extends Component {
     }
 }
 ImageBlock.propTypes = {
+    baseUrl: PropTypes.string.isRequired,
     data: PropTypes.shape({
         files: PropTypes.shape(),
         caption: PropTypes.string,
@@ -177,6 +168,6 @@ ImageBlock.propTypes = {
 
 export default withWidth({
     largeWidth: 1920,
-    mediumWidth: 728,
+    mediumWidth: 700,
     smallWidth: 320
 })(ImageBlock);

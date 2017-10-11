@@ -33,7 +33,6 @@ const Flags = Record({
     fetchingLoggedProfile: false,
     fetchingMoreFollowers: new Map(),
     fetchingMoreFollowings: new Map(),
-    fetchingProfileData: false,
     fetchingProfileList: false,
     localProfilesFetched: false,
     loginPending: false,

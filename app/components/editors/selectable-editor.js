@@ -216,7 +216,8 @@ class SelectableEditor extends Component {
     };
 
     render () {
-        const { showPopover } = this.state;
+        const { baseUrl } = this.props;
+        const { editorState, showPopover } = this.state;
 
         return (
           <div
@@ -226,10 +227,10 @@ class SelectableEditor extends Component {
           >
             <div ref={(el) => { this.editorWrapper = el; }}>
               <MegadraftEditor
-                readOnly
-                editorState={this.state.editorState}
+                editorState={editorState}
                 onChange={this.handleChange}
-                plugins={[readOnlyImagePlugin]}
+                plugins={[readOnlyImagePlugin({ baseUrl })]}
+                readOnly
               />
             </div>
             {showPopover && this.renderPopover()}
@@ -239,6 +240,7 @@ class SelectableEditor extends Component {
 }
 
 SelectableEditor.propTypes = {
+    baseUrl: PropTypes.string.isRequired,
     draft: PropTypes.shape().isRequired,
     highlightSave: PropTypes.func.isRequired,
     intl: PropTypes.shape(),

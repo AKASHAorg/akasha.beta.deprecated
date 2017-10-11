@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
-import { profileGetByAddress, profileGetData } from '../../local-flux/actions/profile-actions';
+import { profileGetData } from '../../local-flux/actions/profile-actions';
 import { selectProfile } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
 
@@ -10,26 +10,28 @@ class ProfilePage extends Component {
     componentDidMount () {
         const { akashaId, ethAddress } = this.props.match.params;
         if (akashaId) {
-            this.props.profileGetData(akashaId, true);
+            this.props.profileGetData({ akashaId, full: true });
         }
         if (ethAddress) {
-            this.props.profileGetByAddress(`0x${ethAddress}`);
+            this.props.profileGetData({ ethAddress: `0x${ethAddress}`, full: true });
         }
     }
 
     componentWillReceiveProps (nextProps) {
         const { akashaId, ethAddress } = nextProps.match.params;
         if (akashaId && akashaId !== this.props.match.params.akashaId) {
-            this.props.profileGetData(akashaId, true);
+            this.props.profileGetData({ akashaId, full: true });
         }
         if (ethAddress && ethAddress !== this.props.match.params.ethAddress) {
-            this.props.profileGetByAddress(`0x${ethAddress}`);
+            this.props.profileGetData({ ethAddress: `0x${ethAddress}`, full: true });
         }
     }
 
     render () {
         const { match, profileData } = this.props;
-        const { akashaId, ethAddress } = match;
+        const { akashaId, ethAddress } = match.params;
+        const prefixed = `0x${ethAddress}`;
+
         return (
           <DataLoader
             flag={!profileData}
@@ -40,11 +42,11 @@ class ProfilePage extends Component {
             <div className="profile-page">
               <ProfileDetails
                 akashaId={akashaId}
-                ethAddress={ethAddress}
+                ethAddress={prefixed}
               />
               <ProfileActivity
                 akashaId={akashaId}
-                ethAddress={ethAddress}
+                ethAddress={prefixed}
               />
             </div>
           </DataLoader>
@@ -54,15 +56,15 @@ class ProfilePage extends Component {
 
 ProfilePage.propTypes = {
     profileData: PropTypes.shape(),
-    profileGetByAddress: PropTypes.func.isRequired,
     profileGetData: PropTypes.func.isRequired,
     match: PropTypes.shape()
 };
 
 function mapStateToProps (state, ownProps) {
-    const akashaId = ownProps.match.params.akashaId;
+    const { ethAddress } = ownProps.match.params;
+    const prefixed = `0x${ethAddress}`;
     return {
-        profileData: selectProfile(state, akashaId),
+        profileData: selectProfile(state, prefixed),
     };
 }
 
@@ -71,7 +73,6 @@ export default connect(
     {
         entryMoreProfileIterator,
         entryProfileIterator,
-        profileGetByAddress,
         profileGetData,
     }
 )(ProfilePage);
