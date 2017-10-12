@@ -103,7 +103,7 @@ class ImageUploader extends Component {
     _getImageSrc = (image) => {
         const { baseUrl } = this.props;
         let { containerSize = 320 } = this.props;
-        if (!(image.size === 0)) {
+        if (image.size > 0) {
             if (this.container) {
                 containerSize = this.container.clientWidth;
             }
@@ -140,7 +140,6 @@ class ImageUploader extends Component {
     render () {
         const { multiFiles, intl, initialImage } = this.props;
         const { imageLoaded, processingFinished, progress, error, highlightDropZone } = this.state;
-
         return (
           <div
             ref={(container) => { this.container = container; }}
@@ -149,9 +148,7 @@ class ImageUploader extends Component {
             onDragLeave={this._diminishDropZone}
           >
             <div>
-              {processingFinished &&
-                initialImage &&
-                !(initialImage.size === 0) &&
+              {processingFinished && initialImage && initialImage.size !== 0 &&
                 <img
                   src={this._getImageSrc(initialImage)}
                   className={`image-uploader__img image-uploader__img${imageLoaded && '_loaded'}`}
@@ -159,9 +156,7 @@ class ImageUploader extends Component {
                   alt=""
                 />
               }
-              {processingFinished &&
-                !(initialImage.size === 0) &&
-                !imageLoaded &&
+              {processingFinished && initialImage.size !== 0 && !imageLoaded &&
                 <div
                   className="image-uploader__generating-preview"
                 >
@@ -187,7 +182,7 @@ class ImageUploader extends Component {
                   </div>
                 </div>
               }
-              {processingFinished && initialImage && !(initialImage.size === 0) &&
+              {processingFinished && initialImage && initialImage.size !== 0 &&
                 <div className="image-uploader__clear-image-button">
                   <Button
                     type="standard"
