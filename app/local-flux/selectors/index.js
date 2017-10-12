@@ -223,11 +223,15 @@ export const selectNeedAuthAction = state =>
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
+export const selectPendingBondAeth = state => state.actionState.getIn(['pending', 'bondAeth']);
+
 export const selectPendingClaim = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'claim', entryId]);
 
 export const selectPendingComments = (state, entryId) =>
     state.actionState.getIn(['pending', 'comment', entryId]) || new List();
+
+export const selectPendingCycleAeth = state => state.actionState.getIn(['pending', 'cycleAeth']);
 
 export const selectPendingFollow = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'follow', akashaId]);

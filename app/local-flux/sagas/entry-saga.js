@@ -12,8 +12,8 @@ import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, select
 import * as actionStatus from '../../constants/action-status';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 11;
-const ENTRY_ITERATOR_LIMIT = 6;
+const ALL_STREAM_LIMIT = 10;
+const ENTRY_ITERATOR_LIMIT = 5;
 const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
 function* enableExtraChannels () {
@@ -204,11 +204,12 @@ function* entryMoreStreamIterator ({ columnId }) {
 
 function* entryMoreTagIterator ({ columnId, tagName }) {
     const channel = Channel.server.entry.entryTagIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, tagName, more: true }]
+        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName, more: true }]
     );
 }
 

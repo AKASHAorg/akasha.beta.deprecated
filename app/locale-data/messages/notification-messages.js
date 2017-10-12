@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 const notificationMessages = defineMessages({
+    bondAethSuccess: {
+        id: 'app.notification.bondAethSuccess',
+        description: 'notification to be displayed when bond/manafy AETH transaction was mined',
+        defaultMessage: 'You successfully manafied {amount} AETH'
+    },
+    cycleAethSuccess: {
+        id: 'app.notification.cycleAethSuccess',
+        description: 'notification to be displayed when unlock/cycle AETH transaction was mined',
+        defaultMessage: 'You successfully cycled {amount} AETH'
+    },
     highlightSaveSuccess: {
         id: 'app.notification.highlightSaveSuccess',
         description: 'Notification to be displayed when a highlight has been saved',

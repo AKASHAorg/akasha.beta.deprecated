@@ -1,5 +1,7 @@
+export const bondAeth = 'bondAeth';
 export const claim = 'claim';
 export const comment = 'comment';
+export const cycleAeth = 'cycleAeth';
 export const tagCreate = 'tagCreate';
 export const draftPublish = 'draftPublish';
 export const draftPublishUpdate = 'draftPublishUpdate';

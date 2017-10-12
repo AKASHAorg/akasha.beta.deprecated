@@ -14,12 +14,14 @@ const createAction = (action) => {
 };
 
 const addPendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { claim, comment, commentDownvote, commentUpvote, createTag,
+    const { bondAeth, claim, comment, commentDownvote, commentUpvote, createTag, cycleAeth,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
         sendTip, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
     switch (action.type) {
+        case bondAeth:
+            return pending.set(action.type, true);
         case claim:
             return pending.setIn([action.type, entryId], action.id);
         case entryDownvote:
@@ -41,6 +43,8 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
             return pending.setIn(['commentVote', entryId, commentId], action.id);
         case createTag:
             return pending.setIn([createTag, tag], action.id);
+        case cycleAeth:
+            return pending.set(action.type, true);
         case follow:
         case unfollow:
             return pending.setIn(['follow', ethAddress], action.id);
@@ -55,18 +59,22 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
 };
 
 const removePendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { claim, comment, commentDownvote, commentUpvote, createTag,
+    const { bondAeth, claim, comment, commentDownvote, commentUpvote, cycleAeth, createTag,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
         sendTip, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
     switch (action.type) {
+        case bondAeth:
+            return pending.set(action.type, false);
         case claim:
         case comment:
             pendingComments = pending.getIn([action.type, entryId]).filter((comm) => {
                 return comm.id !== action.id;
             });
             return pending.setIn([action.type, entryId], pendingComments);
+        case cycleAeth:
+            return pending.set(action.type, false);
         case entryDownvote:
         case entryUpvote:
             return pending.deleteIn(['entryVote', entryId]);

@@ -41,6 +41,26 @@ const confirmationMessages = defineMessages({
         description: 'request passphrase',
         defaultMessage: 'Please insert your passphrase to proceed with the process.'
     },
+    bondAeth: {
+        id: 'app.confirmations.bondAeth',
+        description: 'confirmation message for bond/manafy AETH',
+        defaultMessage: 'Please confirm that you want to manafy {amount} AETH'
+    },
+    bondAethTitle: {
+        id: 'app.confirmations.bondAethTitle',
+        description: 'title for confirmation message for bond/manafy AETH',
+        defaultMessage: 'Manafy'
+    },
+    cycleAeth: {
+        id: 'app.confirmations.cycleAeth',
+        description: 'confirmation message for cycle AETH',
+        defaultMessage: 'Please confirm that you want to cycle {amount} AETH'
+    },
+    cycleAethTitle: {
+        id: 'app.confirmations.cycleAethTitle',
+        description: 'title for confirmation message for cycle AETH',
+        defaultMessage: 'Cycle'
+    },
     profileRegister: {
         id: 'app.confirmations.profileRegister',
         description: 'confirmation message for profileRegister',

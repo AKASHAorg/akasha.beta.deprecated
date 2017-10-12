@@ -51,6 +51,11 @@ const formMessages = defineMessages({
         description: 'placeholder for passphrase input',
         defaultMessage: 'Type your passphrase'
     },
+    amountToShift: {
+        id: 'app.form.amountToShift',
+        description: 'label for shift amount slider',
+        defaultMessage: 'Please select an amount to shift'
+    },
     confirmPassphrase: {
         id: 'app.form.confirmPassphrase',
         description: 'label for passphrase fghfgconfirmation input',
@@ -60,6 +65,26 @@ const formMessages = defineMessages({
         id: 'app.form.confirmPassphraseToContinue',
         description: 'Label for confirming passphrase',
         defaultMessage: 'You need to confirm your passphrase to continue'
+    },
+    freeAeth: {
+        id: 'app.form.freeAeth',
+        description: 'label for free AETH value',
+        defaultMessage: 'Free AETH'
+    },
+    gasAmountError: {
+        id: 'app.form.gasAmountError',
+        description: 'Error displayed when gas amount is not between limits',
+        defaultMessage: 'Gas amount must be between {min} and {max}'
+    },
+    manaTotalScore: {
+        id: 'app.form.manaTotalScore',
+        description: 'label for mana total score',
+        defaultMessage: 'Mana total score'
+    },
+    name: {
+        id: 'app.inputField.name',
+        description: 'Placeholder for name input field',
+        defaultMessage: 'Name'
     },
     passphraseConfirmError: {
         id: 'app.form.passphraseConfirmError',
@@ -76,6 +101,26 @@ const formMessages = defineMessages({
         description: 'error message for required fields',
         defaultMessage: 'This field is required'
     },
+    shiftDownMana: {
+        id: 'app.form.shiftDownMana',
+        description: 'title for shift down mana form',
+        defaultMessage: 'Shift down mana'
+    },
+    shiftDownManaHelp: {
+        id: 'app.form.shiftDownManaHelp',
+        description: 'label for shift down mana slider',
+        defaultMessage: '{value} AETH will be unlocked in 2 days'
+    },
+    shiftUpMana: {
+        id: 'app.form.shiftUpMana',
+        description: 'title for shift up mana form',
+        defaultMessage: 'Shift up mana'
+    },
+    shiftUpManaHelp: {
+        id: 'app.form.shiftUpManaHelp',
+        description: 'label for shift up mana slider',
+        defaultMessage: '{value} AETH will generate {value} Mana daily'
+    },
     title: {
         id: 'app.inputField.title',
         description: 'Placeholder for title input field',
@@ -85,16 +130,6 @@ const formMessages = defineMessages({
         id: 'app.inputField.url',
         description: 'Placeholder for url input field',
         defaultMessage: 'URL'
-    },
-    name: {
-        id: 'app.inputField.name',
-        description: 'Placeholder for name input field',
-        defaultMessage: 'Name'
-    },
-    gasAmountError: {
-        id: 'app.form.gasAmountError',
-        description: 'Error displayed when gas amount is not between limits',
-        defaultMessage: 'Gas amount must be between {min} and {max}'
     },
     voteWeightIntegerError: {
         id: 'app.form.voteWeightIntegerError',
