@@ -1,5 +1,5 @@
 import { Record, Map, List } from 'immutable';
-import { DraftLicence, DraftContent, Draft, EntryEth } from '../records';
+import { License, DraftContent, Draft } from '../records';
 
 const DraftModelRecord = Record({
     drafts: new Map(),
@@ -14,8 +14,7 @@ const DraftModelRecord = Record({
 export default class DraftModel extends DraftModelRecord {
     static createDraft (draftObj) {
         const { selectionState, ...others } = draftObj;
-        const entryEth = new EntryEth(draftObj.entryEth);
-        let draftLicence = new DraftLicence();
+        let draftLicence = new License();
         let draftContent = new DraftContent();
         let tags = new List();
         if (draftObj.content) {
@@ -23,7 +22,7 @@ export default class DraftModel extends DraftModelRecord {
             draftContent = draftContent.mergeDeep({
                 ...draftObj.content,
                 licence: draftLicence,
-                featuredImage: draftObj.featuredImage ? draftObj.featuredImage : new Map()
+                featuredImage: draftObj.content.featuredImage ? draftObj.content.featuredImage : new Map()
             });
         }
         if (draftObj.tags && draftObj.tags.length) {
@@ -31,11 +30,10 @@ export default class DraftModel extends DraftModelRecord {
         }
         const draft = new Draft({
             ...others,
-            ethAddress: draftObj.ethAddress || draftObj.entryEth.publisher.ethAddress,
+            ethAddress: draftObj.ethAddress,
             id: draftObj.id ? draftObj.id : draftObj.entryId,
             licence: draftLicence,
             content: draftContent,
-            entryEth,
             tags,
         });
         return draft;

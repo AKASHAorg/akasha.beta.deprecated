@@ -194,8 +194,7 @@ function* watchDraftPublishChannel () {
         if (response.error) {
             yield put(draftActions.draftPublishError(
                 response.error,
-                response.request.id,
-                response.request.content.title
+                response.request.id
             ));
         } else {
             yield put(actionActions.actionUpdate({

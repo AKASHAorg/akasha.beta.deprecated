@@ -6,8 +6,8 @@ import { fromJS } from 'immutable';
 import { Icon, Row, Col, Button, Steps, Popover, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
-import { draftCreate, draftsGet, draftUpdate, draftAutosave,
-    draftsGetCount, draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
+    draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
@@ -42,7 +42,7 @@ class NewEntryPage extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingHashes,
-            userDefaultLicence } = nextProps;
+            userDefaultLicense } = nextProps;
         const { loggedProfile } = this.props;
         const draftIsPublished = resolvingHashes.includes(match.params.draftId);
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
@@ -50,11 +50,11 @@ class NewEntryPage extends Component {
                 id: match.params.draftId,
                 ethAddress: loggedProfile.get('ethAddress'),
                 content: {
-                    licence: userDefaultLicence,
+                    licence: userDefaultLicense,
                     featuredImage: {},
                 },
                 tags: [],
-                entryType: 'article',
+                entryType: match.params.draftType,
             });
         }
     }
@@ -245,7 +245,7 @@ class NewEntryPage extends Component {
           <Steps
             progressDot={this._getProgressDot}
             current={latestVersion + 1}
-            className="text-entry-page__timeline-steps"
+            className="edit-entry-page__timeline-steps"
           >
             {
               this._getTimelineSteps(timelineItems, localChanges, version)
@@ -275,9 +275,9 @@ class NewEntryPage extends Component {
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         return (
-          <div className="text-entry-page">
+          <div className="edit-entry-page article-page">
             <div
-              className="text-entry-page__publish-options"
+              className="edit-entry-page__publish-options"
               onClick={this._showPublishOptionsPanel}
             >
               <Icon
@@ -288,16 +288,16 @@ class NewEntryPage extends Component {
             </div>
             <Row
               type="flex"
-              className="text-entry-page__content"
+              className="edit-entry-page__content"
             >
               <Col
                 span={showPublishPanel ? 17 : 24}
-                className="text-entry-page__editor-wrapper"
+                className="edit-entry-page__editor-wrapper"
               >
-                <div className="text-entry-page__editor">
+                <div className="edit-entry-page__editor">
                   <textarea
                     ref={this._createRef('titleInput')}
-                    className="text-entry-page__title-input-field"
+                    className="edit-entry-page__title-input-field"
                     placeholder="Title"
                     onChange={this._handleTitleChange}
                     value={title}
@@ -311,7 +311,7 @@ class NewEntryPage extends Component {
                     intl={intl}
                   />
                 </div>
-                <div className="text-entry-page__tag-editor">
+                <div className="edit-entry-page__tag-editor">
                   <TagEditor
                     ref={this._createRef('tagEditor')}
                     match={match}
@@ -331,8 +331,8 @@ class NewEntryPage extends Component {
               <Col
                 span={6}
                 className={
-                    `text-entry-page__publish-options-panel-wrapper
-                    text-entry-page__publish-options-panel-wrapper${showPublishPanel ? '_open' : ''}`
+                    `edit-entry-page__publish-options-panel-wrapper
+                    edit-entry-page__publish-options-panel-wrapper${showPublishPanel ? '_open' : ''}`
                 }
               >
                 <PublishOptionsPanel
@@ -351,24 +351,24 @@ class NewEntryPage extends Component {
               </Col>
               <div
                 className={
-                    `text-entry-page__footer-wrapper
-                    text-entry-page__footer-wrapper${showSecondarySidebar ? '' : '_full'}`
+                    `edit-entry-page__footer-wrapper
+                    edit-entry-page__footer-wrapper${showSecondarySidebar ? '' : '_full'}`
                 }
               >
-                <div className="text-entry-page__footer">
-                  <div className="text-entry-page__footer-timeline-wrapper">
+                <div className="edit-entry-page__footer">
+                  <div className="edit-entry-page__footer-timeline-wrapper">
                     {onChain && (localChanges || latestVersion > 0) &&
                       <div
                         className={
-                          `text-entry-page__footer-timeline
-                          text-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
+                          `edit-entry-page__footer-timeline
+                          edit-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
                         }
                       >
                         {this._createTimeline()}
                       </div>
                     }
                   </div>
-                  <div className="text-entry-page__footer-actions">
+                  <div className="edit-entry-page__footer-actions">
                     <Button
                       size="large"
                       type="primary"
@@ -410,7 +410,7 @@ NewEntryPage.propTypes = {
     tagSearch: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
-    userDefaultLicence: PropTypes.shape(),
+    userDefaultLicense: PropTypes.shape(),
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -435,7 +435,6 @@ export default connect(
         draftCreate,
         draftsGet,
         draftUpdate,
-        draftAutosave,
         draftsGetCount,
         draftRevertToVersion,
         entryGetFull,

@@ -242,12 +242,11 @@ class NewEntrySecondarySidebar extends Component {
         const { draftType } = match.params;
         const draftsByType = drafts
             .filter(drft =>
-                !drft.onChain && drft.entryType === draftType)
+                (!drft.get('onChain') && drft.get('entryType') === draftType))
             .sort((a, b) =>
-                new Date(a.created_at) > new Date(b.created_at)
+                new Date(a.get('created_at')) > new Date(b.get('created_at'))
             );
         const searchResults = this._getSearchResults(drafts, resolvingHashes, match.params.draftType);
-
         return (
           <div
             className="new-entry-secondary-sidebar"
@@ -334,9 +333,9 @@ class NewEntrySecondarySidebar extends Component {
                 {!searching &&
                     draftsByType.map(draft => (
                       <EntrySecondarySidebarItem
-                        active={(draft.id === currentDraftId)}
-                        key={draft.id}
-                        draft={draft}
+                        active={(draft.get('id') === currentDraftId)}
+                        key={draft.get('id')}
+                        draft={draft.toJS()}
                         intl={intl}
                         onItemClick={this._onDraftItemClick}
                         onDraftDelete={this._showDraftDeleteConfirm}
@@ -348,39 +347,41 @@ class NewEntrySecondarySidebar extends Component {
                   <div className="new-entry-secondary-sidebar__draft-list-title">Published</div>
                   {!searching &&
                     drafts.filter(drft =>
-                        drft.onChain && drft.entryType === match.params.draftType)
+                        drft.get('onChain') && drft.get('entryType') === draftType)
                     .map(draft => (
-                      <div key={`${draft.id}`}>
+                      <div key={`${draft.get('id')}`}>
                         <EntrySecondarySidebarItem
-                          active={(draft.id === currentDraftId)}
-                          key={draft.id}
-                          draft={draft}
+                          active={(draft.get('id') === currentDraftId)}
+                          key={draft.get('id')}
+                          draft={draft.toJS()}
                           intl={intl}
                           onItemClick={this._onDraftItemClick}
                           onDraftDelete={this._showDraftDeleteConfirm}
                           showDraftMenuDropdown={this._showDraftMenuDropdown}
                           onPreviewCreate={this._createDraftPreviewLink}
-                          published={draft.onChain}
-                          localChanges={draft.localChanges}
-                          unresolved={resolvingHashes.includes(draft.entryEth.ipfsHash)}
+                          published={draft.get('onChain')}
+                          localChanges={draft.get('localChanges')}
+                          unresolved={resolvingHashes.includes(draft.getIn(['entryEth', 'ipfsHash']))}
                         />
                       </div>
                   )).toList()}
-                  {searching && searchResults.filter(drft => drft.original.onChain).map(draft => (
-                    <EntrySecondarySidebarItem
-                      active={(draft.original.id === currentDraftId)}
-                      key={draft.original.id}
-                      draft={draft.original}
-                      intl={intl}
-                      matchString={draft.string}
-                      onItemClick={this._onDraftItemClick}
-                      onDraftDelete={this._showDraftDeleteConfirm}
-                      showDraftMenuDropdown={this._showDraftMenuDropdown}
-                      onPreviewCreate={this._createDraftPreviewLink}
-                      published={draft.original.onChain}
-                      localChanges={draft.original.localChanges}
-                      unresolved={resolvingHashes.includes(draft.original.entryEth.ipfsHash)}
-                    />
+                  {searching && searchResults.filter(drft =>
+                      drft.original.onChain && drft.original.entryType === draftType)
+                      .map(draft => (
+                        <EntrySecondarySidebarItem
+                          active={(draft.original.id === currentDraftId)}
+                          key={draft.original.id}
+                          draft={draft.original}
+                          intl={intl}
+                          matchString={draft.string}
+                          onItemClick={this._onDraftItemClick}
+                          onDraftDelete={this._showDraftDeleteConfirm}
+                          showDraftMenuDropdown={this._showDraftMenuDropdown}
+                          onPreviewCreate={this._createDraftPreviewLink}
+                          published={draft.original.onChain}
+                          localChanges={draft.original.localChanges}
+                          unresolved={resolvingHashes.includes(draft.original.entryEth.ipfsHash)}
+                        />
                   ))}
                   {searching && searchResults.length === 0 &&
                     <div>No drafts matching your search criteria were found.</div>

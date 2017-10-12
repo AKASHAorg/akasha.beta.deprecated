@@ -1,7 +1,15 @@
-.text-entry-page {
+.edit-entry-page {
     position: relative;
     overflow-y: auto;
     height: ~"calc(100% - 64px)";
+    &__url-input-field {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
     &__title-input-field {
         font-size: 30px;
         line-height: 1.2;
@@ -91,7 +99,7 @@
         }
     }
 }
-.text-entry-page__timeline-steps {
+.edit-entry-page__timeline-steps {
     .ant-steps-status-none {
         .ant-steps-tail {
             > i {

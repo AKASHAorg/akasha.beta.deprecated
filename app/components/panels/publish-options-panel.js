@@ -39,7 +39,6 @@ class PublishOptionsPanel extends Component {
         this.props.onExcerptChange(ev.target.value);
     }
     _handleFeaturedImageChange = (image) => {
-        console.log(image, 'the image');
         this.props.onFeaturedImageChange(image);
     }
     render () {

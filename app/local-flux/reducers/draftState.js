@@ -95,7 +95,6 @@ const draftState = createReducer(initialState, {
                 if (!mState.getIn(['drafts', entry.entryId])) {
                     mState.setIn(['drafts', entry.entryId], DraftModel.createDraft({
                         ...entry,
-                        type: 'article',
                         onChain: true
                     }));
                 } else {
