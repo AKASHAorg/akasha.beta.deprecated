@@ -40,8 +40,21 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
     let ipfsEntry = new IpfsEntry();
     const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
     const decodedHash = decodeHash(ipfsHash);
-
-    const txData = contracts.instance.Entries.publishArticle.request(...decodedHash, data.tags, { gas: 2000000 });
+    let publishMethod;
+    switch (data.entryType) {
+        case 0:
+            publishMethod = contracts.instance.Entries.publishArticle;
+            break;
+        case 1:
+            publishMethod = contracts.instance.Entries.publishLink;
+            break;
+        case 2:
+            publishMethod = contracts.instance.Entries.publishMedia;
+            break;
+        default:
+            publishMethod = contracts.instance.Entries.publishOther;
+    }
+    const txData = publishMethod.request(...decodedHash, data.tags, { gas: 2000000 });
     ipfsEntry = null;
     delete data.content;
     delete data.tags;
