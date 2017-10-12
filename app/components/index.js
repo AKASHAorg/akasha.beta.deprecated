@@ -100,7 +100,7 @@ export ServiceStatusBar from './service-status-bar';
 export SetupHeader from './setup/setup-header';
 export SetupHeaderSplit from './setup/setup-header-split';
 export SetupPages from './setup/setup-pages';
-export ShiftDownForm from './forms/shift-down-form';
+export ShiftForm from './forms/shift-form';
 export Sidebar from './sidebar';
 export StreamColumn from './columns/stream-column';
 export SvgIcon from './svg-icon/svg-icon';
