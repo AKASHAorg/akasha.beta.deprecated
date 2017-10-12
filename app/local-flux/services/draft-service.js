@@ -18,7 +18,7 @@ export const draftCreate = draft =>
         });
 
 export const draftCreateOrUpdate = ({ draft }) => {
-    const { tags, id, ethAddress, content, localChanges } = draft;
+    const { tags, id, ethAddress, content, localChanges, hasCard, entryType } = draft;
     return entriesDB.drafts
         .where('id')
         .equals(draft.id)
@@ -30,7 +30,9 @@ export const draftCreateOrUpdate = ({ draft }) => {
                     id,
                     ethAddress,
                     content,
-                    localChanges
+                    localChanges,
+                    hasCard,
+                    entryType,
                 });
             }
             return draftModify({
@@ -39,6 +41,8 @@ export const draftCreateOrUpdate = ({ draft }) => {
                 ethAddress,
                 content,
                 localChanges,
+                hasCard,
+                entryType
             });
         })
         .then(() => entriesDB.drafts.where('id').equals(draft.id).first())

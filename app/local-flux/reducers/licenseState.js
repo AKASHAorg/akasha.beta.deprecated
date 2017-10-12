@@ -1,4 +1,4 @@
-import { LicenseState, LicenseRecord } from './records';
+import { LicenseState, LicenseDescription } from './records';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -10,14 +10,13 @@ const licenseState = createReducer(initialState, {
         let byId = state.get('byId');
         data.licenses.forEach((license) => {
             allIds = allIds.add(license.id);
-            byId = byId.set(license.id, new LicenseRecord(license));
+            byId = byId.set(license.id, new LicenseDescription(license));
         });
         return state.merge({
             allIds,
             byId,
         });
     },
-
 });
 
 export default licenseState;

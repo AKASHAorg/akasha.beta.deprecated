@@ -1,15 +1,18 @@
 import { Map, Record, Set } from 'immutable';
 
-const LicenseRecord = Record({
+export const License = Record({
+    parent: '2',
+    id: '4'
+});
+
+export const LicenseDescription = Record({
     description: [],
     id: null,
     label: null,
-    parent: null
+    parent: null,
 });
 
-const LicenseState = Record({
+export const LicenseState = Record({
     allIds: new Set(),
     byId: new Map(),
 });
-
-export { LicenseRecord, LicenseState };

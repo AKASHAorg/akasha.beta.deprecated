@@ -116,4 +116,5 @@ export TopBarRightSide from './top-bars/top-bar-right-side';
 export UserSettingsPanel from './panels/user-settings-panel';
 export UserWalletPanel from './panels/user-wallet-panel';
 export VotePopover from './popovers/vote-popover';
+export WebsiteInfoCard from './cards/website-info-card';
 /* eslint-enable import/no-named-as-default */

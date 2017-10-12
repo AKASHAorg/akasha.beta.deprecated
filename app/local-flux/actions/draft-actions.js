@@ -70,10 +70,9 @@ export const draftPublish = ({ actionId, ...payload }) =>
     action(types.DRAFT_PUBLISH, { actionId, ...payload });
 
 export const draftPublishSuccess = data => action(types.DRAFT_PUBLISH_SUCCESS, { data });
-export const draftPublishError = (error, draftId, draftTitle) => {
+export const draftPublishError = (error, draftId) => {
     error.code = 'DPE01';
     error.messageId = 'draftPublish';
-    error.values = { draftTitle };
     return action(types.DRAFT_PUBLISH_ERROR, { error, draftId });
 };
 

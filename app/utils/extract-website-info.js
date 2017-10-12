@@ -1,4 +1,4 @@
-import { htmlParser } from './html-parser';
+import { htmlParser, youtubeParser } from './parsers';
 // <meta
 //    property="meta.attributes.property.textContent"
 //    content="meta.attributes.content.textContent"
@@ -20,45 +20,74 @@ const targetTags = {
     ],
     tags: [
         'title',
+        'h1',
+        'h2',
+        'p'
+    ],
+    ids: [
+        'description',
+        ''
     ]
 };
-const formatUrl = (url, prefix) => {
-    if (url.startsWith(`${prefix}://`)) {
+
+const supportedProtocols = ['http:', 'https:'];
+
+const parseUrl = (url) => {
+    const link = document.createElement('a');
+    link.href = url;
+    return {
+        host: link.host,
+        hostname: link.hostname,
+        pathname: link.pathname,
+        origin: link.origin,
+        protocol: link.protocol,
+        search: link.search,
+        href: link.href,
+    };
+};
+
+const formatUrl = (url) => {
+    const urlPrefix = parseUrl(url).protocol;
+
+    if (urlPrefix && supportedProtocols.includes(urlPrefix)) {
         return url;
     }
-    return `${prefix}://${url}`;
+    return `${supportedProtocols[0]}//${url}`;
 };
-const makeRequest = url =>
-    new Promise((resolve) => {
-        fetch(url).then((res) => {
-
-            return resolve(res);
-        });
-    });
 
 export const extractWebsiteInfo = (url) => {
     const reqHeaders = new Headers();
     reqHeaders.append('Content-Type', 'text/html');
 
-    url = formatUrl(url, 'http');
+    url = formatUrl(url);
 
     const requestParams = {
         method: 'GET',
         headers: reqHeaders,
         mode: 'cors'
     };
+
     const req = new Request(url, requestParams);
-    fetch(req)
+    return fetch(req)
         .then((res) => {
             if (!res.ok) {
-                return console.log('request failed!');
+                return Promise.reject('request failed!');
             }
             if ((res.ok && res.redirected) || redirectCodes.includes(res.status)) {
                 console.log('request redirected... retrying to', res.url);
-                return fetch(new Request(res.url, requestParams)).then(resp => resp.text());
+                return fetch(new Request(res.url, requestParams)).then(resp => resp);
             }
-            return res.text();
+            return res;
+        }).then((res) => {
+            const finalUrl = parseUrl(res.url);
+            const superParser = new DOMParser();
+            return res.text().then((htmlString) => {
+                const htmlContent = superParser.parseFromString(htmlString, 'text/html');
+                if (finalUrl.hostname.includes('youtube.com') || finalUrl.includes('youtu.be')) {
+                    return youtubeParser(htmlContent, finalUrl, targetTags);
+                }
+                return htmlParser(htmlContent, finalUrl, targetTags);
+            });
         })
-        .then(text => htmlParser(text, targetTags, url))
-        .catch(err => console.error(err, 'some fetching errors'));
+        .catch(err => Promise.reject(err));
 };

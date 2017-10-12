@@ -1,4 +1,5 @@
 import { Record } from 'immutable';
+import { License } from './license-record';
 
 const GethSettings = Record({
     autodag: null,
@@ -36,7 +37,7 @@ const UserSettings = Record({
     akashaId: null,
     lastBlockNr: null,
     latestMention: null,
-    defaultLicense: null,
+    defaultLicense: License(),
     notifications: new Notifications(),
     passwordPreference: new PasswordPreference()
 });
