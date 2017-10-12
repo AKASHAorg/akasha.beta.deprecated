@@ -1,5 +1,24 @@
 import { List, Map, Record } from 'immutable';
 
+export const AethBalance = Record({
+    bonded: null,
+    cycling: null,
+    free: null,
+    total: null
+});
+
+export const ManaBalance = Record({
+    remaining: null,
+    spent: null,
+    total: null
+});
+
+export const Balance = Record({
+    aeth: new AethBalance(),
+    eth: null,
+    mana: new ManaBalance(),
+});
+
 export const ProfileRecord = Record({
     about: '',
     akashaId: '',
@@ -33,7 +52,6 @@ const Flags = Record({
     fetchingLoggedProfile: false,
     fetchingMoreFollowers: new Map(),
     fetchingMoreFollowings: new Map(),
-    fetchingProfileData: false,
     fetchingProfileList: false,
     localProfilesFetched: false,
     loginPending: false,
@@ -46,8 +64,8 @@ const Interests = Record({
     profile: new List()
 });
 
-const ProfileState = Record({
-    balance: null,
+export const ProfileState = Record({
+    balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
     errors: new List(), // to be removed
@@ -68,5 +86,3 @@ const ProfileState = Record({
     moreFollowings: new Map(),
     profiles: new List(), // to be removed
 });
-
-export default ProfileState;

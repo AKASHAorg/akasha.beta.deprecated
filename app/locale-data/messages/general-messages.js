@@ -190,6 +190,11 @@ const generalMessages = defineMessages({
         description: 'Logout button label',
         defaultMessage: 'Logout'
     },
+    mana: {
+        id: 'app.general.mana',
+        description: 'mana',
+        defaultMessage: 'Mana'
+    },
     minCount: {
         id: 'app.general.minutesCount',
         description: 'short form of minutes count',
@@ -289,6 +294,11 @@ const generalMessages = defineMessages({
         id: 'app.general.settings',
         description: 'settings button label',
         defaultMessage: 'Settings'
+    },
+    shift: {
+        id: 'app.general.shift',
+        description: 'convert tokens',
+        defaultMessage: 'Shift'
     },
     skipStep: {
         id: 'app.general.skipStep',

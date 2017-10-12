@@ -18,6 +18,7 @@ import bondAeth from './bond-aeth';
 import cycleAeth from './aeth-cycle';
 import freeAeth from './aeth-free';
 import transformEssence from './transform-essence';
+import manaBurned from './mana-burned';
 
 export default [
     bondAeth,
@@ -30,6 +31,7 @@ export default [
     freeAeth,
     isFollower,
     isFollowing,
+    manaBurned,
     profileData,
     transformEssence,
     unfollowProfile,

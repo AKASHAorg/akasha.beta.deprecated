@@ -34,12 +34,32 @@ const confirmationMessages = defineMessages({
     follow: {
         id: 'app.confirmations.follow',
         description: 'confirmation message for follow',
-        defaultMessage: 'Please confirm that you want to follow @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to follow {displayName}.'
     },
     passphrase: {
         id: 'app.confirmations.passphrase',
         description: 'request passphrase',
         defaultMessage: 'Please insert your passphrase to proceed with the process.'
+    },
+    bondAeth: {
+        id: 'app.confirmations.bondAeth',
+        description: 'confirmation message for bond/manafy AETH',
+        defaultMessage: 'Please confirm that you want to manafy {amount} AETH'
+    },
+    bondAethTitle: {
+        id: 'app.confirmations.bondAethTitle',
+        description: 'title for confirmation message for bond/manafy AETH',
+        defaultMessage: 'Manafy'
+    },
+    cycleAeth: {
+        id: 'app.confirmations.cycleAeth',
+        description: 'confirmation message for cycle AETH',
+        defaultMessage: 'Please confirm that you want to cycle {amount} AETH'
+    },
+    cycleAethTitle: {
+        id: 'app.confirmations.cycleAethTitle',
+        description: 'title for confirmation message for cycle AETH',
+        defaultMessage: 'Cycle'
     },
     profileRegister: {
         id: 'app.confirmations.profileRegister',
@@ -54,7 +74,7 @@ const confirmationMessages = defineMessages({
     sendTip: {
         id: 'app.confirmations.sendTip',
         description: 'confirmation message for sendTip',
-        defaultMessage: 'Please confirm that you want to send a tip of {value} AETH to @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to send a tip of {value} AETH to {displayName}.'
     },
     tagCreate: {
         id: 'app.confirmations.createTag',
@@ -64,7 +84,7 @@ const confirmationMessages = defineMessages({
     unfollow: {
         id: 'app.confirmations.unfollow',
         description: 'confirmation message for unfollow',
-        defaultMessage: 'Please confirm that you want to unfollow @{akashaId}.'
+        defaultMessage: 'Please confirm that you want to unfollow {displayName}.'
     },
     claimTitle: {
         id: 'app.confirmations.claimTitle',

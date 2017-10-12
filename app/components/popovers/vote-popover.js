@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { selectBalance, selectVoteCost } from '../../local-flux/selectors';
+import { selectEthBalance, selectVoteCost } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 const FormItem = Form.Item;
-const min = 1;
-const max = 10;
+const MIN = 1;
+const MAX = 10;
 
 class VotePopover extends Component {
     state = {
@@ -32,15 +32,15 @@ class VotePopover extends Component {
     }
 
     canVote = () => {
-        const { disabled, votePending, voteWeight } = this.props;
-        return !disabled && !votePending && !voteWeight;
+        const { disabled, votePending, vote } = this.props;
+        return !disabled && !votePending && vote === '0';
     };
 
     getTooltip = () => {
-        const { intl, type, votePending, voteWeight } = this.props;
+        const { intl, type, votePending, vote } = this.props;
         if (votePending) {
             return intl.formatMessage(entryMessages.votePending);
-        } else if (voteWeight) {
+        } else if (vote && vote !== '0') {
             return intl.formatMessage(entryMessages.alreadyVoted);
         } else if (type.includes('Downvote')) {
             return intl.formatMessage(entryMessages.downvote);
@@ -56,10 +56,9 @@ class VotePopover extends Component {
 
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { form, onSubmit, type, voteCost } = this.props;
+        const { form, onSubmit, type } = this.props;
         const weight = form.getFieldValue('weight');
-        const value = voteCost.get(weight.toString());
-        onSubmit({ type, value, weight });
+        onSubmit({ type, weight });
     };
 
     onVisibleChange = (popoverVisible) => {
@@ -70,7 +69,7 @@ class VotePopover extends Component {
             // Delay state reset until popover animation is finished
             this.timeout = setTimeout(() => {
                 this.timeout = null;
-                this.props.form.setFieldsValue({ weight: min });
+                this.props.form.setFieldsValue({ weight: MIN });
             }, 100);
         }
     };
@@ -78,10 +77,10 @@ class VotePopover extends Component {
     validateWeight = (rule, value, callback) => {
         const { balance, intl, voteCost } = this.props;
         if (!Number.isInteger(value)) {
-            callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min, max }));
+            callback(intl.formatMessage(formMessages.voteIntegerError, { min: MIN, max: MAX }));
         }
-        if (value < min || value > max) {
-            callback(intl.formatMessage(formMessages.voteWeightRangeError, { min, max }));
+        if (value < MAX || value > MAX) {
+            callback(intl.formatMessage(formMessages.voteRangeError, { min: MIN, max: MAX }));
             return;
         }
         if (!balance || balance <= voteCost.get(value.toString())) {
@@ -103,7 +102,7 @@ class VotePopover extends Component {
         const weightError = getFieldError('weight');
         const extra = (
           <span className="vote-popover__extra">
-            {intl.formatMessage(formMessages.voteWeightExtra, { min, max })}
+            {intl.formatMessage(formMessages.voteWeightExtra, { min: MIN, max: MAX })}
           </span>
         );
         const weight = getFieldValue('weight');
@@ -121,7 +120,7 @@ class VotePopover extends Component {
             >
               <div className="flex-center">
                 {getFieldDecorator('weight', {
-                    initialValue: min,
+                    initialValue: MIN,
                     rules: [{
                         required: true,
                         message: intl.formatMessage(formMessages.voteWeightRequired)
@@ -131,8 +130,8 @@ class VotePopover extends Component {
                 })(
                   <Slider
                     className="vote-popover__slider"
-                    min={min}
-                    max={max}
+                    min={MIN}
+                    max={MAX}
                     tipFormatter={null}
                   />
                 )}
@@ -202,12 +201,12 @@ VotePopover.propTypes = {
     type: PropTypes.string.isRequired,
     voteCost: PropTypes.shape().isRequired,
     votePending: PropTypes.bool,
-    voteWeight: PropTypes.number
+    vote: PropTypes.string
 };
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
+        balance: selectEthBalance(state),
         voteCost: selectVoteCost(state)
     };
 }

@@ -1,7 +1,8 @@
 import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { ErrorRecord, LoggedProfile, ProfileRecord, ProfileState } from './records';
+import { AethBalance, Balance, ErrorRecord, LoggedProfile, ManaBalance, ProfileRecord,
+    ProfileState } from './records';
 
 const initialState = new ProfileState();
 
@@ -42,13 +43,8 @@ const profileState = createReducer(initialState, {
 
     [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
-        const { publisher } = data.entryEth;
-        if (!publisher) {
-            return state;
-        }
-        return state.set('byId', addProfileData(state.get('byId'), publisher));
-    },
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
+        state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
@@ -71,31 +67,31 @@ const profileState = createReducer(initialState, {
         state.set('loggedProfile', new LoggedProfile()),
 
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
-        const { akashaId } = data;
-        const loggedAkashaId = state.getIn(['loggedProfile', 'akashaId']);
-        const loggedProfile = state.getIn(['byId', loggedAkashaId]);
+        const { ethAddress } = data;
+        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
+        const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
         const followingCount = loggedProfile.get('followingCount');
-        const profile = state.getIn(['byId', akashaId]);
+        const profile = state.getIn(['byEthAddress', ethAddress]);
         const oldFollowers = state.get('followers');
         const oldFollowings = state.get('followings');
-        const followersList = oldFollowers.get(akashaId);
-        const followingsList = oldFollowings.get(loggedAkashaId);
+        const followersList = oldFollowers.get(ethAddress);
+        const followingsList = oldFollowings.get(loggedEthAddress);
         const followers = followersList ?
-            oldFollowers.set(akashaId, followersList.unshift(loggedAkashaId)) :
+            oldFollowers.set(ethAddress, followersList.unshift(loggedEthAddress)) :
             oldFollowers;
         const followings = followingsList ?
-            oldFollowings.set(loggedAkashaId, followingsList.unshift(akashaId)) :
+            oldFollowings.set(loggedEthAddress, followingsList.unshift(ethAddress)) :
             oldFollowings;
         return state.merge({
-            byId: state.get('byId').merge({
-                [akashaId]: profile ?
+            byEthAddress: state.get('byEthAddress').merge({
+                [ethAddress]: profile ?
                     profile.set('followersCount', +profile.get('followersCount') + 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount + 1)
+                [loggedEthAddress]: loggedProfile.set('followingCount', +followingCount + 1)
             }),
             followers,
             followings,
-            isFollower: state.get('isFollower').set(akashaId, true)
+            isFollower: state.get('isFollower').set(ethAddress, true)
         });
     },
 
@@ -157,20 +153,16 @@ const profileState = createReducer(initialState, {
         if (state.getIn(['loggedProfile', 'ethAddress']) !== data.etherBase) {
             return state;
         }
-        return state.set('balance', data.balance);
+        const balance = new Balance().merge({
+            aeth: new AethBalance(data.AETH),
+            eth: data.balance,
+            mana: new ManaBalance(data.mana)
+        });
+        return state.set('balance', balance);
     },
 
-    [types.PROFILE_GET_DATA]: state =>
-        state.setIn(['flags', 'fetchingProfileData'], true),
-
-    [types.PROFILE_GET_DATA_ERROR]: state =>
-        state.setIn(['flags', 'fetchingProfileData'], false),
-
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
-        state.merge({
-            byEthAddress: addProfileData(state.get('byEthAddress'), data),
-            flags: state.get('flags').set('fetchingProfileData', false)
-        }),
+        state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data)),
 
     [types.PROFILE_GET_LIST]: (state, { akashaIds }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
@@ -219,13 +211,22 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_LOGGED_SUCCESS]: (state, { data }) =>
-        state.set('loggedProfile', new LoggedProfile(data)),
+    [types.PROFILE_GET_LOGGED_SUCCESS]: (state, { data }) => {
+        const { akashaId, ethAddress } = data;
+        if (akashaId) {
+            return state.set('loggedProfile', new LoggedProfile(data));
+        }
+        return state.merge({
+            byEthAddress: state.get('byEthAddress').set(ethAddress, new ProfileRecord({ ethAddress })),
+            loggedProfile: new LoggedProfile(data)
+        });
+    },
 
     [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
         let isFollower = state.get('isFollower');
         data.collection.forEach((resp) => {
-            isFollower = isFollower.set(resp.following, resp.result);
+            const { addressFollowing, result } = resp;
+            isFollower = isFollower.set(addressFollowing, result);
         });
         return state.set('isFollower', isFollower);
     },
@@ -326,31 +327,31 @@ const profileState = createReducer(initialState, {
     },
 
     [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
-        const { akashaId } = data;
-        const loggedAkashaId = state.getIn(['loggedProfile', 'akashaId']);
-        const loggedProfile = state.getIn(['byId', loggedAkashaId]);
+        const { ethAddress } = data;
+        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
+        const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
         const followingCount = loggedProfile.get('followingCount');
-        const profile = state.getIn(['byId', akashaId]);
+        const profile = state.getIn(['byEthAddress', ethAddress]);
         const oldFollowers = state.get('followers');
         const oldFollowings = state.get('followings');
-        const followersList = oldFollowers.get(akashaId);
-        const followingsList = oldFollowings.get(loggedAkashaId);
+        const followersList = oldFollowers.get(ethAddress);
+        const followingsList = oldFollowings.get(loggedEthAddress);
         const followers = followersList ?
-            oldFollowers.set(akashaId, followersList.filter(id => id !== loggedAkashaId)) :
+            oldFollowers.set(ethAddress, followersList.filter(id => id !== loggedEthAddress)) :
             oldFollowers;
         const followings = followingsList ?
-            oldFollowings.set(loggedAkashaId, followingsList.filter(id => id !== akashaId)) :
+            oldFollowings.set(loggedEthAddress, followingsList.filter(id => id !== ethAddress)) :
             oldFollowings;
         return state.merge({
-            byId: state.get('byId').merge({
-                [akashaId]: profile ?
+            byEthAddress: state.get('byEthAddress').merge({
+                [ethAddress]: profile ?
                     profile.set('followersCount', +profile.get('followersCount') - 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingCount', +followingCount - 1)
+                [loggedEthAddress]: loggedProfile.set('followingCount', +followingCount - 1)
             }),
             followers,
             followings,
-            isFollower: state.get('isFollower').set(akashaId, false)
+            isFollower: state.get('isFollower').set(ethAddress, false)
         });
     },
 

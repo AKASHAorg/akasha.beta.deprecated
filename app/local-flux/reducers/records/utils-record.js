@@ -4,8 +4,6 @@ const Flags = Record({
     backupPending: false
 });
 
-const UtilsState = Record({
+export const UtilsState = Record({
     flags: new Flags(),
 });
-
-export default UtilsState;

@@ -29,8 +29,10 @@ class EntryPage extends Component {
         if (!entry || entry.get('entryId') !== params.entryId ||
                 (version !== undefined && entry.getIn(['content', 'version']) !== version)) {
             const versionNr = isNaN(Number(version)) ? null : Number(version);
-            entryGetFull(params.entryId, versionNr);
-            this.fetchComments(params.entryId);
+            const { akashaId, entryId, ethAddress } = params;
+            const prefixed = `0x${ethAddress}`;
+            entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+            this.fetchComments(entryId);
         }
     }
 
@@ -39,16 +41,18 @@ class EntryPage extends Component {
             fetchingFullEntry, location, match, pendingComments } = this.props;
         const { params } = match;
         const nextParams = nextProps.match.params;
+        const { akashaId, entryId, ethAddress } = nextParams;
+        const prefixed = `0x${ethAddress}`;
         const { version } = parse(nextProps.location.search);
         if (!nextProps.fetchingFullEntry && fetchingFullEntry) {
-            entryGetLatestVersion(nextProps.match.params.entryId);
+            // entryGetLatestVersion(entryId);
         }
-        if ((params.entryId !== nextParams.entryId && entry.get('entryId') !== nextParams.entryId) ||
+        if ((params.entryId !== entryId && entry.get('entryId') !== entryId) ||
                 (version !== undefined && version !== location.query.version)) {
             const versionNr = isNaN(Number(version)) ? null : Number(version);
             commentsClean();
-            entryGetFull(nextParams.entryId, versionNr);
-            this.fetchComments(nextParams.entryId);
+            entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+            this.fetchComments(entryId);
         }
         if (!this.listenerRegistered && this.container) {
             this.container.addEventListener('scroll', this.throttledHandler);
@@ -180,6 +184,7 @@ class EntryPage extends Component {
                   actionAdd={actionAdd}
                   containerRef={this.container}
                   entryId={entry.get('entryId')}
+                  ethAddress={entry.getIn(['author', 'ethAddress'])}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
                   ref={this.getEditorRef}

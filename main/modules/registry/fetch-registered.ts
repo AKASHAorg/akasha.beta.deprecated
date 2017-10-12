@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: {toBlock: number, limit?: num
 
     const collection = [];
     const maxResults = data.limit || 5;
-    const fetched = yield contracts.fromEvent(contracts.instance.ProfileRegistrar.Register, {}, data.toBlock, maxResults);
+    const fetched = yield contracts.fromEvent(contracts.instance.ProfileRegistrar.Register, {}, data.toBlock, maxResults, {});
     for (let event of fetched.results) {
         collection.push({ akashaId: GethConnector.getInstance().web3.toUtf8(event.args.label) });
     }

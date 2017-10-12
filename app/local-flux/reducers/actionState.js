@@ -14,12 +14,14 @@ const createAction = (action) => {
 };
 
 const addPendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { claim, comment, commentDownvote, commentUpvote, createTag,
+    const { bondAeth, claim, comment, commentDownvote, commentUpvote, createTag, cycleAeth,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
         sendTip, unfollow } = actionTypes;
-    const { akashaId, commentId, entryId, tag } = action.payload;
+    const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
     switch (action.type) {
+        case bondAeth:
+            return pending.set(action.type, true);
         case claim:
             return pending.setIn([action.type, entryId], action.id);
         case entryDownvote:
@@ -41,11 +43,13 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
             return pending.setIn(['commentVote', entryId, commentId], action.id);
         case createTag:
             return pending.setIn([createTag, tag], action.id);
+        case cycleAeth:
+            return pending.set(action.type, true);
         case follow:
         case unfollow:
-            return pending.setIn(['follow', akashaId], action.id);
+            return pending.setIn(['follow', ethAddress], action.id);
         case sendTip:
-            return pending.setIn([action.type, akashaId], action.id);
+            return pending.setIn([action.type, ethAddress], action.id);
         case profileRegister:
         case profileUpdate:
             return pending.set(action.type, true);
@@ -55,18 +59,22 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
 };
 
 const removePendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { claim, comment, commentDownvote, commentUpvote, createTag,
+    const { bondAeth, claim, comment, commentDownvote, commentUpvote, cycleAeth, createTag,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
         sendTip, unfollow } = actionTypes;
-    const { akashaId, commentId, entryId, tag } = action.payload;
+    const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
     switch (action.type) {
+        case bondAeth:
+            return pending.set(action.type, false);
         case claim:
         case comment:
             pendingComments = pending.getIn([action.type, entryId]).filter((comm) => {
                 return comm.id !== action.id;
             });
             return pending.setIn([action.type, entryId], pendingComments);
+        case cycleAeth:
+            return pending.set(action.type, false);
         case entryDownvote:
         case entryUpvote:
             return pending.deleteIn(['entryVote', entryId]);
@@ -77,9 +85,9 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
             return pending.deleteIn([createTag, tag]);
         case follow:
         case unfollow:
-            return pending.deleteIn(['follow', akashaId]);
+            return pending.deleteIn(['follow', ethAddress]);
         case sendTip:
-            return pending.deleteIn([action.type, akashaId]);
+            return pending.deleteIn([action.type, ethAddress]);
         case profileRegister:
         case profileUpdate:
             return pending.set(action.type, false);
@@ -89,10 +97,10 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
 };
 
 const actionState = createReducer(initialState, {
-    [types.ACTION_ADD]: (state, { akashaId, payload, actionType }) => {
+    [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
         const id = `${new Date().getTime()}-${actionType}`;
         const status = actionStatus.needAuth;
-        const action = createAction({ id, akashaId, payload, status, type: actionType });
+        const action = createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, action),
             [status]: id

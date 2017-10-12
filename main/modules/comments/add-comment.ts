@@ -27,7 +27,7 @@ const execute = Promise.coroutine(function* (data: any, cb) {
     const ipfsHash = yield create(data.content);
     const decodedHash = decodeHash(ipfsHash);
     const replyTo = data.parent || '0';
-    const txData = yield contracts.instance
+    const txData = contracts.instance
         .Comments.publish.request(data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
 
     const transaction = yield contracts.send(txData, data.token, cb);

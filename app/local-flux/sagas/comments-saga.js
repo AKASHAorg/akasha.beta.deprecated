@@ -4,7 +4,7 @@ import * as actionActions from '../actions/action-actions';
 import * as actions from '../actions/comments-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
-import { selectFirstComment, selectLastComment, selectToken } from '../selectors';
+import { selectBlockNumber, selectFirstComment, selectLastComment, selectToken } from '../selectors';
 
 const Channel = global.Channel;
 
@@ -22,7 +22,8 @@ function* commentsGetCount ({ entryId }) {
 function* commentsIterator ({ entryId, start, limit = 25, reverse, checkNew }) {
     const channel = Channel.server.comments.commentsIterator;
     yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ entryId, start, limit, reverse, checkNew }]);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ entryId, toBlock, limit, reverse, checkNew }]);
 }
 
 function* commentsMoreIterator ({ entryId }) {

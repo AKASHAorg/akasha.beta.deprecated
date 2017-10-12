@@ -8,7 +8,7 @@ export const NotificationRecord = Record({
     values: new Map(),
 });
 
-const AppRecord = Record({
+export const AppRecord = Record({
     appReady: false,
     homeReady: false,
     notifications: new List(),
@@ -20,5 +20,3 @@ const AppRecord = Record({
     showSecondarySidebar: true, // must default to true
     showTerms: false,
 });
-
-export default AppRecord;

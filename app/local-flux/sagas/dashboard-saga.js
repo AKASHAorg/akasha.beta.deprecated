@@ -160,9 +160,8 @@ function* dashboardUpdateNewColumn ({ changes }) {
         const { suggestions } =
             yield call(dashboardGetTagSuggestions, { tag: changes.value, context: 'column' });
         if (suggestions) {
-            const request = suggestions.map(tagName => ({ tagName }));
             yield call(delay, 200);
-            yield put(tagActions.tagGetEntriesCount(request));
+            yield put(tagActions.tagGetEntriesCount(suggestions));
         }
     }
 }

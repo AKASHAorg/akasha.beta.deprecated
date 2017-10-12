@@ -93,10 +93,12 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
 
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data, request }) => {
         if (!state.getIn(['flags', 'fetchingFullEntry'])) {
             return state;
         }
+        const { entryId, ethAddress } = request;
+        data.entryId = entryId;
         const fullEntry = state.get('fullEntry');
         const version = data.content && data.content.version;
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
@@ -105,7 +107,7 @@ const entryState = createReducer(initialState, {
 
         return state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: createEntryRecord(data.entry),
+            fullEntry: createEntryRecord(data).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
     },
@@ -156,30 +158,9 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
         const votes = {};
         data.collection.forEach((res) => {
-            votes[res.entryId] = res.weight;
+            votes[res.entryId] = res.vote;
         });
         return state.mergeIn(['votes'], new Map(votes));
-    },
-
-    [types.ENTRY_IS_ACTIVE]: state =>
-        state.setIn(['flags', 'isActivePending'], true),
-
-    [types.ENTRY_IS_ACTIVE_ERROR]: state =>
-        state.setIn(['flags', 'isActivePending'], false),
-
-    [types.ENTRY_IS_ACTIVE_SUCCESS]: (state, { data }) => {
-        const entry = state.getIn(['byId', data.entryId]);
-        const oldFullEntry = state.get('fullEntry');
-        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
-            oldFullEntry.set('active', data.active) :
-            oldFullEntry;
-        return state.merge({
-            byId: !entry ?
-                state.get('byId') :
-                state.get('byId').setIn([data.entryId, 'active'], data.active),
-            flags: state.get('flags').set('isActivePending', false),
-            fullEntry
-        });
     },
 
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,

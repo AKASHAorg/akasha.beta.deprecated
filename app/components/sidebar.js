@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Tooltip, Icon } from 'antd';
+import { Button, Icon, Progress, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
+import { ManaPopover } from './';
 
 class Sidebar extends Component {
     state = {
@@ -165,6 +166,19 @@ class Sidebar extends Component {
                   <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
                 </Link>
               </div>
+            </div>
+            <div className="flex-center-x sidebar__progress-wrapper">
+              <ManaPopover />
+            </div>
+            <div className="flex-center-x sidebar__progress-wrapper">
+              <Progress
+                className="sidebar__essence-progress"
+                format={() => <Icon type="question-circle-o" />}
+                percent={Math.random() * 100}
+                strokeWidth={10}
+                type="circle"
+                width={32}
+              />
             </div>
             <div
               className={
