@@ -1,7 +1,9 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import { encodeHash } from '../ipfs/helpers';
+import { getCommentContent } from './ipfs';
 import resolve from '../registry/resolve-ethaddress';
+import { unpad } from 'ethereumjs-util';
 
 /**
  * Get comment data for an entry
@@ -14,14 +16,16 @@ const execute = Promise.coroutine(function* (data: { entryId: string, commentId:
     ] = yield contracts.instance.Comments.getComment(data.entryId, data.commentId);
     const ipfsHash = encodeHash(fn, digestSize, hash);
     const author = yield resolve.execute({ ethAddress: ethAddress });
-
-    return {
-        parent,
+    const content = yield getCommentContent(ipfsHash);
+    return Object.assign(
+        {},
+        content,
+        {
+        parent: (!!unpad(parent)) ? parent : null,
         author,
         deleted,
-        publishDate: (new Date(publishDate.toNumber() * 1000)).toISOString(),
-        ipfsHash
-    };
+        publishDate: publishDate.toNumber()
+    });
 });
 
 export default { execute, name: 'getComment' };
