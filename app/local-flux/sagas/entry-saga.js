@@ -112,13 +112,6 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
             ownEntries.push(entry.entryId);
         }
     });
-    // yield put(actions.entryResolveIpfsHash({
-    //     ipfsHash: entryIpfsHashes,
-    //     columnId,
-    //     entryIds,
-    //     asDrafts
-    // }));
-    // yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, ethAddresses));
     yield put(profileActions.profileIsFollower(ethAddresses));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
@@ -351,7 +344,7 @@ function* watchEntryGetChannel () {
                 yield put(actions.entryGetShortError(resp.error, resp.request));
             }
         } else if (resp.request.asDraft) {
-            yield put(actions.entryGetFullAsDraftSuccess(resp.data));
+            yield put(actions.entryGetFullAsDraftSuccess({ ...resp.data, ...resp.request }));
         } else if (resp.request.latestVersion) {
             // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
@@ -438,17 +431,14 @@ function* watchEntryProfileIteratorChannel () {
             yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
         } else if (resp.request.asDrafts) {
             yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
-            const reqObj = resp.data.collection.map(entry => ({
-                ipfsHash: [entry.entryEth.ipfsHash],
-                entryIds: [entry.entryId]
-            })).reduce((prev, curr) => ({
-                ipfsHash: prev.ipfsHash.concat(curr.ipfsHash),
-                entryIds: prev.entryIds.concat(curr.entryIds),
-                columnId: null,
-                asDrafts: true,
-                full: true,
-            }));
-            // yield put(actions.entryResolveIpfsHash(reqObj));
+            const ethAddress = resp.request.ethAddress;
+            for (let i = resp.data.collection.length - 1; i >= 0; i--) {
+                yield put(actions.entryGetFull({
+                    entryId: resp.data.collection[i].entryId,
+                    ethAddress,
+                    asDraft: true
+                }));
+            }
         } else {
             yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
             yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
@@ -549,7 +539,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
     yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
     yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);
-    yield takeLatest(types.ENTRY_GET_FULL, entryGetFull);
+    yield takeEvery(types.ENTRY_GET_FULL, entryGetFull);
     yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
     yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
     yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);

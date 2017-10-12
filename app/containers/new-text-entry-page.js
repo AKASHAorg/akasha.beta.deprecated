@@ -41,10 +41,10 @@ class NewEntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched, entriesFetched, resolvingHashes,
+        const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
             userDefaultLicense } = nextProps;
         const { loggedProfile } = this.props;
-        const draftIsPublished = resolvingHashes.includes(match.params.draftId);
+        const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
             this.props.draftCreate({
                 id: match.params.draftId,
@@ -77,8 +77,9 @@ class NewEntryPage extends Component {
     }
 
     _handleEditorChange = (editorState) => {
-        const { draftObj } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').mergeDeep({
                 draft: editorState,
             }),
@@ -86,28 +87,38 @@ class NewEntryPage extends Component {
     }
 
     _handleTagUpdate = (tagList) => {
-        const { draftObj } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
             tags: draftObj.get('tags').clear().concat(tagList),
         }));
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
-        const { draftObj } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(
-            draftObj.mergeIn(['content', 'licence', licenceField], licence)
+            draftObj.merge({
+                ethAddress: loggedProfile.get('ethAddress'),
+                content: draftObj.get('content').mergeIn(['licence', licenceField], licence)
+            })
         );
     }
 
     _handleExcerptChange = (excerpt) => {
-        const { draftObj } = this.props;
-        this.props.draftUpdate(draftObj.mergeIn(['content', 'excerpt'], excerpt));
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
+            content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
+        }));
     }
 
     _handleFeaturedImageChange = (image) => {
-        const { draftObj } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(
-            draftObj.setIn(['content', 'featuredImage'], fromJS(image))
+            draftObj.merge({
+                ethAddress: loggedProfile.get('ethAddress'),
+                content: draftObj.get('content').set('featuredImage', fromJS(image))
+            })
         );
     }
 
@@ -130,13 +141,13 @@ class NewEntryPage extends Component {
         };
         if (draftObj.onChain) {
             return this.props.actionAdd(
-                loggedProfile.get('account'),
+                loggedProfile.get('ethAddress'),
                 actionTypes.draftPublishUpdate,
                 { draft: publishPayload }
             );
         }
         return this.props.actionAdd(
-            loggedProfile.get('account'),
+            loggedProfile.get('ethAddress'),
             actionTypes.draftPublish,
             { draft: publishPayload }
         );
@@ -257,13 +268,13 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
-            tagSuggestions, tagSuggestionsCount, match, licences, resolvingHashes } = this.props;
-        if (!draftObj || !draftObj.content) {
+            tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries } = this.props;
+        if (!draftObj || !draftObj.get('content')) {
             return (
               <div>Finding Draft</div>
             );
         }
-        const unresolved = draftObj.entryEth.ipfsHash && resolvingHashes.includes(draftObj.entryEth.ipfsHash);
+        const unresolved = draftObj && resolvingEntries.includes(draftObj.get('id'));
         if (unresolved) {
             return (
               <div>
@@ -403,7 +414,7 @@ NewEntryPage.propTypes = {
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
-    resolvingHashes: PropTypes.shape(),
+    resolvingEntries: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
@@ -420,7 +431,7 @@ const mapStateToProps = (state, ownProps) => ({
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     loggedProfile: selectLoggedProfile(state),
-    resolvingHashes: state.draftState.get('resolvingHashes'),
+    resolvingEntries: state.draftState.get('resolvingEntries'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('resultsCount'),

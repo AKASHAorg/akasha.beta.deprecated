@@ -65,6 +65,7 @@ function imageCreator (arrayBuffer, baseUrl) {
     const arr = Object.keys(arrayBuffer).map(key => arrayBuffer[key]);
     const blobFile = new Blob([new Uint8Array(arr)]);
     return window.URL.createObjectURL(blobFile);
+    // return null;
 }
 /**
  * Utility to extract first image from draftjs generated content;

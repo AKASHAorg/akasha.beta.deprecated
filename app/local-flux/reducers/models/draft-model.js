@@ -8,7 +8,7 @@ const DraftModelRecord = Record({
     selection: new Map(),
     draftsFetched: false,
     entriesFetched: false,
-    resolvingHashes: new List(),
+    resolvingEntries: new List(),
 });
 
 export default class DraftModel extends DraftModelRecord {

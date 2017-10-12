@@ -23,10 +23,10 @@ class NewLinkEntryPage extends Component {
         };
     }
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched, entriesFetched, resolvingHashes,
+        const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
             userDefaultLicense } = nextProps;
         const { loggedProfile } = this.props;
-        const draftIsPublished = resolvingHashes.includes(match.params.draftId);
+        const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
             this.props.draftCreate({
                 id: match.params.draftId,
@@ -63,7 +63,6 @@ class NewLinkEntryPage extends Component {
             }
             Promise.all(filePromises).then((results) => {
                 let promise = Promise.resolve();
-                console.log(results, 'some results');
                 if (results[0]) {
                     promise = uploadImage(results[0]);
                 }
@@ -226,7 +225,7 @@ NewLinkEntryPage.propTypes = {
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
-    resolvingHashes: PropTypes.shape(),
+    resolvingEntries: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
@@ -243,7 +242,7 @@ const mapStateToProps = (state, ownProps) => ({
     draftsFetched: state.draftState.get('draftsFetched'),
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
-    resolvingHashes: state.draftState.get('resolvingHashes'),
+    resolvingEntries: state.draftState.get('resolvingEntries'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('resultsCount'),

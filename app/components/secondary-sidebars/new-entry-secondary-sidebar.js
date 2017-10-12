@@ -176,12 +176,9 @@ class NewEntrySecondarySidebar extends Component {
         // this.props.createDraftPreviewLink()
     }
 
-    _getFilteredDrafts = (drafts, resolvingHashes, draftType) =>
-        drafts.filter((draft) => {
-            const isPublished = !!(draft.entryEth && draft.entryEth.ipfsHash);
-            return draft.entryType === draftType &&
-                (isPublished ? draft.content && draft.content.title : true);
-        });
+    _getFilteredDrafts = (drafts, resolvingEntries, draftType) =>
+        drafts.filter(draft =>
+            draft.entryType === draftType && draft.content && draft.content.title);
 
     _toggleSearchBarVisibility = (ev) => {
         ev.preventDefault();
@@ -204,14 +201,14 @@ class NewEntrySecondarySidebar extends Component {
         });
     };
 
-    _getSearchResults = (drafts, resolvingHashes, draftType) => {
+    _getSearchResults = (drafts, resolvingEntries, draftType) => {
         const searchOptions = {
             pre: '<b>',
             post: '</b>',
             extract: el => el.content.title,
         };
         if (this.state.searching) {
-            const allDrafts = this._getFilteredDrafts(drafts, resolvingHashes, draftType);
+            const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
             return fuzzy.filter(this.state.searchString, allDrafts.toList().toJS(), searchOptions);
         }
         return null;
@@ -236,7 +233,7 @@ class NewEntrySecondarySidebar extends Component {
     }
 
     render () {
-        const { drafts, intl, match, resolvingHashes } = this.props;
+        const { drafts, intl, match, resolvingEntries } = this.props;
         const { searchBarVisible, searching, searchString } = this.state;
         const currentDraftId = match.params.draftId;
         const { draftType } = match.params;
@@ -246,7 +243,7 @@ class NewEntrySecondarySidebar extends Component {
             .sort((a, b) =>
                 new Date(a.get('created_at')) > new Date(b.get('created_at'))
             );
-        const searchResults = this._getSearchResults(drafts, resolvingHashes, match.params.draftType);
+        const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
         return (
           <div
             className="new-entry-secondary-sidebar"
@@ -361,7 +358,7 @@ class NewEntrySecondarySidebar extends Component {
                           onPreviewCreate={this._createDraftPreviewLink}
                           published={draft.get('onChain')}
                           localChanges={draft.get('localChanges')}
-                          unresolved={resolvingHashes.includes(draft.getIn(['entryEth', 'ipfsHash']))}
+                          unresolved={resolvingEntries.includes(draft.get('id'))}
                         />
                       </div>
                   )).toList()}
@@ -380,7 +377,7 @@ class NewEntrySecondarySidebar extends Component {
                           onPreviewCreate={this._createDraftPreviewLink}
                           published={draft.original.onChain}
                           localChanges={draft.original.localChanges}
-                          unresolved={resolvingHashes.includes(draft.original.entryEth.ipfsHash)}
+                          unresolved={resolvingEntries.includes(draft.original.id)}
                         />
                   ))}
                   {searching && searchResults.length === 0 &&
@@ -406,7 +403,7 @@ NewEntrySecondarySidebar.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
-    resolvingHashes: PropTypes.shape(),
+    resolvingEntries: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
 };
 const mapStateToProps = state => ({
@@ -414,7 +411,7 @@ const mapStateToProps = state => ({
     ethAddress: state.profileState.getIn(['loggedProfile', 'ethAddress']),
     draftsFetched: state.draftState.get('draftsFetched'),
     drafts: state.draftState.get('drafts'),
-    resolvingHashes: state.draftState.get('resolvingHashes'),
+    resolvingEntries: state.draftState.get('resolvingEntries'),
     userSelectedLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
 });
 
