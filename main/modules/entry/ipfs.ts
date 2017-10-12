@@ -47,7 +47,7 @@ class IpfsEntry {
                 return IpfsConnector.getInstance().api
                     .add(content.featuredImage[imSize].src, true, is(String, mediaData))
                     .then((obj) => {
-                        return { [imSize]: obj.hash };
+                        return { [imSize]: Object.assign({}, content.featuredImage[imSize], { src: obj.hash }) };
                     });
             });
             ipfsApiRequests.push(
