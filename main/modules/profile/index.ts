@@ -19,8 +19,12 @@ import cycleAeth from './aeth-cycle';
 import freeAeth from './aeth-free';
 import transformEssence from './transform-essence';
 import manaBurned from './mana-burned';
+import cyclingStates from './cycling-states';
+import transfer from './transfer';
 
 export default [
+    transfer,
+    cyclingStates,
     bondAeth,
     cycleAeth,
     currentBalance,
