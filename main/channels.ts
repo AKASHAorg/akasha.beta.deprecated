@@ -31,7 +31,7 @@ const channels = {
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
         'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
         'getFollowingList', 'getProfileList', 'tip', 'resolveProfileIpfsHash', 'toggleDonations', 'bondAeth',
-        'cycleAeth', 'freeAeth', 'transformEssence', 'manaBurned'],
+        'cycleAeth', 'freeAeth', 'transformEssence', 'manaBurned', 'cyclingStates', 'transfer'],
 
     registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
         'getByAddress', 'unregister'],
