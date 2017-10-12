@@ -14,10 +14,38 @@ const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
+function* profileBondAeth ({ actionId, amount }) {
+    const channel = Channel.server.profile.bondAeth;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileBondAethSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'bondAethSuccess',
+        values: { amount: data.amount },
+    }));
+}
+
 function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
     const channel = Channel.server.auth.generateEthKey;
     yield call(enableChannel, channel, Channel.client.auth.manager);
     yield apply(channel, channel.send, [{ password: passphrase, password1: passphrase1 }]);
+}
+
+function* profileCycleAeth ({ actionId, amount }) {
+    const channel = Channel.server.profile.cycleAeth;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileCycleAethSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'cycleAethSuccess',
+        values: { amount: data.amount },
+    }));
 }
 
 function* profileDeleteLogged () {
@@ -215,6 +243,25 @@ function* profileUpdateLogged (loggedProfile) {
 
 // Channel watchers
 
+function* watchProfileBondAethChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.bondAeth);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileCreateEthAddressChannel () {
     while (true) {
         const resp = yield take(actionChannels.auth.generateEthKey);
@@ -225,6 +272,25 @@ function* watchProfileCreateEthAddressChannel () {
             const ethAddress = resp.data.address;
             const { password } = resp.request;
             yield put(actions.profileLogin({ ethAddress, password }));
+        }
+    }
+}
+
+function* watchProfileCycleAethChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.cycleAeth);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileCycleAethError(resp.error, resp.request.amount));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileCycleAethError({}, resp.request.amount));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -444,7 +510,9 @@ function* watchProfileUnfollowChannel () {
 }
 
 export function* registerProfileListeners () {
+    yield fork(watchProfileBondAethChannel);
     yield fork(watchProfileCreateEthAddressChannel);
+    yield fork(watchProfileCycleAethChannel);
     yield fork(watchProfileFollowChannel);
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
@@ -461,7 +529,11 @@ export function* registerProfileListeners () {
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
+    yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
+    yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
     yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
+    yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
+    yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
     yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
     yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);

@@ -20,8 +20,10 @@ import * as actionTypes from '../../constants/action-types';
  *   the payload (destructured). See actionPublish below
  */
 const publishActions = {
+    [actionTypes.bondAeth]: profileActions.profileBondAeth,
     [actionTypes.claim]: entryActions.entryClaim,
     [actionTypes.comment]: commentsActions.commentsPublish,
+    [actionTypes.cycleAeth]: profileActions.profileCycleAeth,
     [actionTypes.tagCreate]: tagActions.tagCreate,
     [actionTypes.draftPublish]: draftActions.draftPublish,
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdate,
@@ -41,8 +43,10 @@ const publishActions = {
  * These ACs should receive one parameter: the action's payload object
  */
 const publishSuccessActions = {
+    [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
+    [actionTypes.cycleAeth]: profileActions.profileCycleAethSuccess,
     [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
     [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
@@ -121,12 +125,13 @@ function* actionSave (id) {
 }
 
 function* actionPublished ({ receipt }) {
-    const { blockNumber, cumulativeGasUsed, transactionHash } = receipt;
+    const { blockNumber, cumulativeGasUsed, success, transactionHash } = receipt;
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
     const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
     if (action && action.get('ethAddress') === loggedEthAddress) {
-        const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+        const status = actionStatus.published;
+        const changes = { id: actionId, blockNumber, cumulativeGasUsed, status, success };
         yield put(actions.actionUpdate(changes));
         yield put(profileActions.profileGetBalance());
     }
@@ -145,7 +150,7 @@ function* actionUpdate ({ changes }) {
     if (changes.status === actionStatus.published) {
         yield fork(actionSave, changes.id);
         const publishSuccessAction = publishSuccessActions[action.get('type')];
-        if (publishSuccessAction) {
+        if (publishSuccessAction && changes.success) {
             yield put(publishSuccessAction(action.get('payload').toJS()));
         }
     }
