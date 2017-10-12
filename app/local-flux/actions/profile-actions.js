@@ -1,6 +1,17 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
+export const profileBondAeth = ({ actionId, amount }) =>
+    action(types.PROFILE_BOND_AETH, { actionId, amount });
+
+export const profileBondAethError = (error, amount) => {
+    error.code = 'PBAE01';
+    error.messageId = 'profileBondAeth';
+    error.values = { amount };
+    return action(types.PROFILE_BOND_AETH_ERROR, { error });
+};
+
+export const profileBondAethSuccess = data => action(types.PROFILE_BOND_AETH_SUCCESS, { data });
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
@@ -14,6 +25,17 @@ export const profileCreateEthAddressError = (error) => {
 
 export const profileCreateEthAddressSuccess = data =>
     action(types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS, { data });
+export const profileCycleAeth = ({ actionId, amount }) =>
+    action(types.PROFILE_CYCLE_AETH, { actionId, amount });
+
+export const profileCycleAethError = (error, amount) => {
+    error.code = 'PCAE01';
+    error.messageId = 'profileCycleAeth';
+    error.values = { amount };
+    return action(types.PROFILE_CYCLE_AETH_ERROR, { error });
+};
+
+export const profileCycleAethSuccess = data => action(types.PROFILE_CYCLE_AETH_SUCCESS, { data });
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 
 export const profileDeleteLoggedError = (error) => {
@@ -55,6 +77,16 @@ export const profileFollowingsIteratorError = (error, request) => {
 export const profileFollowingsIteratorSuccess = data =>
     action(types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
 export const profileFollowSuccess = data => action(types.PROFILE_FOLLOW_SUCCESS, { data });
+export const profileFreeAeth = ({ actionId, amount }) =>
+    action(types.PROFILE_FREE_AETH, { actionId, amount });
+
+export const profileFreeAethError = (error) => {
+    error.code = 'PFAE01';
+    error.messageId = 'profileFreeAeth';
+    return action(types.PROFILE_FREE_AETH_ERROR, { error });
+};
+
+export const profileFreeAethSuccess = data => action(types.PROFILE_FREE_AETH_SUCCESS, { data });
 export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
 
 export const profileGetBalanceError = (error) => {

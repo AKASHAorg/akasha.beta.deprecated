@@ -3,8 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { RadarChart, ShiftDownForm } from '../';
-import { selectBalance } from '../../local-flux/selectors';
+import { RadarChart, ShiftForm } from '../';
+import * as actionTypes from '../../constants/action-types';
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { selectBalance, selectLoggedEthAddress, selectPendingBondAeth,
+    selectPendingCycleAeth } from '../../local-flux/selectors';
+import { generalMessages } from '../../locale-data/messages';
 
 const DEFAULT = 'default';
 const SHIFT_DOWN = 'shiftDown';
@@ -44,29 +48,46 @@ class ManaPopover extends Component {
 
     onCancel = () => { this.setState({ page: DEFAULT }); };
 
+    onShiftDownSubmit = (amount) => {
+        const { loggedEthAddress } = this.props;
+        this.props.actionAdd(loggedEthAddress, actionTypes.cycleAeth, { amount });
+    };
+
+    onShiftUpSubmit = (amount) => {
+        const { loggedEthAddress } = this.props;
+        this.props.actionAdd(loggedEthAddress, actionTypes.bondAeth, { amount });
+    };
+
     renderContent = () => {
-        const { balance } = this.props;
+        const { balance, bondAethPending, cycleAethPending, intl } = this.props;
         const { page } = this.state;
         const manaColor = 'rgba(48,179,33, 0.3)';
-
         if (page === SHIFT_DOWN) {
             return (
-              <ShiftDownForm
+              <ShiftForm
                 balance={balance}
                 onCancel={this.onCancel}
                 onShift={this.onShiftDownSubmit}
+                type="shiftDownMana"
               />
             );
         }
 
         if (page === SHIFT_UP) {
-            return <div>shift up</div>;
+            return (
+              <ShiftForm
+                balance={balance}
+                onCancel={this.onCancel}
+                onShift={this.onShiftUpSubmit}
+                type="shiftUpMana"
+              />
+            );
         }
 
         return (
           <div className="mana-popover__content">
             <div className="flex-center-x mana-popover__title">
-              Mana
+              {intl.formatMessage(generalMessages.mana)}
               <span className="mana-popover__mana-score">
                 {balance.getIn(['mana', 'remaining'])}
               </span>
@@ -102,6 +123,7 @@ class ManaPopover extends Component {
             <div className="mana-popover__actions">
               <Button
                 className="mana-popover__button"
+                disabled={cycleAethPending}
                 onClick={this.onShiftDown}
                 size="large"
               >
@@ -110,6 +132,7 @@ class ManaPopover extends Component {
               </Button>
               <Button
                 className="mana-popover__button"
+                disabled={bondAethPending}
                 onClick={this.onShiftUp}
                 size="large"
               >
@@ -122,6 +145,11 @@ class ManaPopover extends Component {
     };
 
     render () {
+        const { balance } = this.props;
+        const remaining = Number(balance.getIn(['mana', 'remaining']));
+        const total = Number(balance.getIn(['mana', 'total']));
+        const percent = (remaining / total) * 100;
+
         return (
           <Popover
             content={this.renderContent()}
@@ -135,7 +163,7 @@ class ManaPopover extends Component {
               <Progress
                 className="mana-popover__progress"
                 format={() => <Icon type="question-circle-o" />}
-                percent={Math.random() * 100}
+                percent={percent}
                 strokeWidth={10}
                 type="circle"
                 width={32}
@@ -147,13 +175,26 @@ class ManaPopover extends Component {
 }
 
 ManaPopover.propTypes = {
-    balance: PropTypes.shape(),
+    actionAdd: PropTypes.func.isRequired,
+    balance: PropTypes.shape().isRequired,
+    bondAethPending: PropTypes.bool,
+    cycleAethPending: PropTypes.bool,
+    intl: PropTypes.shape().isRequired,
+    loggedEthAddress: PropTypes.string,
 };
 
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
+        bondAethPending: selectPendingBondAeth(state),
+        cycleAethPending: selectPendingCycleAeth(state),
+        loggedEthAddress: selectLoggedEthAddress(state)
     };
 }
 
-export default connect(mapStateToProps)(Form.create()(injectIntl(ManaPopover)));
+export default connect(
+    mapStateToProps,
+    {
+        actionAdd
+    }
+)(Form.create()(injectIntl(ManaPopover)));
