@@ -196,6 +196,16 @@ const errorMessages = defineMessages({
         description: 'an error with no code',
         defaultMessage: 'Unexpected Error'
     },
+    profileBondAeth: {
+        id: 'app.error.profileBondAeth',
+        description: 'bond/manafy aeth error',
+        defaultMessage: 'An error occured while manafying {amount} AETH'
+    },
+    profileCycleAeth: {
+        id: 'app.error.profileCycleAeth',
+        description: 'cycle aeth error',
+        defaultMessage: 'An error occured while cycling {amount} AETH'
+    },
     profileGetLocal: {
         id: 'app.error.profileGetLocal',
         description: 'get local profiles error',

@@ -2,17 +2,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Form, Modal } from 'antd';
+import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration } from '../../local-flux/selectors';
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Input, RememberPassphrase } from '../';
+import { getDisplayName } from '../../utils/dataModule';
 
 const FormItem = Form.Item;
 
 class ConfirmationDialog extends Component {
-
     constructor (props) {
         super(props);
         this.state = {
@@ -39,10 +40,10 @@ class ConfirmationDialog extends Component {
         });
     };
 
-    onunlockTimerChange = (ev) => {
+    onunlockTimerChange = (val) => {
         this.setState({
             unlockIsChecked: true,
-            unlockTimer: ev
+            unlockTimer: Number(val)
         });
     }
 
@@ -55,14 +56,13 @@ class ConfirmationDialog extends Component {
             this.setState({ userIsLoggedIn: Date.parse(tokenExpiration) - 3000 > Date.now() });
         } else {
             const { unlockIsChecked, unlockTimer, userPassword } = this.state;
-            const account = loggedProfile.get('account');
             const ethAddress = loggedProfile.get('ethAddress');
-            const profile = loggedProfile.get('profile');
+            const akashaId = loggedProfile.get('akashaId');
             const rememberTime = unlockIsChecked ? unlockTimer : 1;
             const passwordPreference = { remember: unlockIsChecked, time: unlockTimer };
-            this.props.userSettingsSave(loggedProfile.get('account'), { passwordPreference });
+            this.props.userSettingsSave(ethAddress, { passwordPreference });
             this.props.profileLogin({
-                account, ethAddress, password: userPassword, profile, reauthenticate: true, rememberTime
+                akashaId, ethAddress, password: userPassword, reauthenticate: true, rememberTime
             });
         }
     };
@@ -89,7 +89,9 @@ class ConfirmationDialog extends Component {
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
-        console.log(actionTypeTitle, 'type title');
+        if ([actionTypes.follow, actionTypes.unfollow, actionTypes.sendTip].includes(actionType)) {
+            payload.displayName = getDisplayName(payload);
+        }
         return (
           <Modal
             visible
@@ -105,9 +107,7 @@ class ConfirmationDialog extends Component {
             zIndex={1040}
             width={450}
           >
-            <div>
-              {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
-            </div>
+            <div>{intl.formatMessage(confirmationMessages[actionType], { ...payload })}</div>
             {!this.state.userIsLoggedIn &&
               <div>
                 <div>

@@ -20,8 +20,10 @@ const commentsIterator = {
  * Get entries indexed by tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock: number,
-    limit?: number, entryId?: string, parent?: string, author?: string }) {
+const execute = Promise.coroutine(function* (data: {
+    toBlock: number,
+    limit?: number, entryId?: string, parent?: string, author?: string, lastIndex?: number
+}) {
 
     const v = new schema.Validator();
     v.validate(data, commentsIterator, { throwError: true });
@@ -34,13 +36,17 @@ const execute = Promise.coroutine(function* (data: { toBlock: number,
                 parent: data.parent,
                 author: data.author
             },
-            data.toBlock, maxResults);
+            data.toBlock, maxResults, { lastIndex: data.lastIndex });
     for (let event of fetched.results) {
-        const comment = yield fetchComment.execute({ commentId: event.args.id, entryId: event.args.entryId });
+        const comment = yield fetchComment.execute({
+            commentId: event.args.id,
+            entryId: event.args.entryId,
+            noResolve: true
+        });
         collection.push(Object.assign({}, comment, { commentId: event.args.id }));
     }
 
-    return { collection: collection, lastBlock: fetched.fromBlock };
+    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
 });
 
 export default { execute, name: 'commentsIterator' };

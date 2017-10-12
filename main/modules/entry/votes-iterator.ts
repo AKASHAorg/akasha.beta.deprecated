@@ -19,14 +19,15 @@ const votesIterator = {
  * Get individual votes of entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number, entryId: string }) {
+const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number, entryId: string, lastIndex?: number }) {
     const v = new schema.Validator();
     v.validate(data, votesIterator, { throwError: true });
 
     const collection = [];
     const maxResults = data.limit || 5;
     const filter = {target: data.entryId, voteType: 0};
-    const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults);
+    const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
+        { lastIndex: data.lastIndex });
     for (let event of fetched.results) {
         collection.push({ ethAddress: event.args.voter, weight: (event.args.weight).toString(10), negative: event.args.negative });
         if (collection.length === maxResults) {
@@ -34,7 +35,7 @@ const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: n
         }
     }
 
-    return { collection: collection, lastBlock: fetched.fromBlock };
+    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
 });
 
 export default { execute, name: 'votesIterator' };

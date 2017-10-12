@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Row, Col, Card } from 'antd';
-import { selectBalance, selectHighlightsCount, selectListsCount,
+import { selectEthBalance, selectHighlightsCount, selectListsCount,
     selectLoggedProfileData } from '../../local-flux/selectors';
 import { profileMessages } from '../../locale-data/messages';
 import { PanelLink } from '../';
@@ -105,7 +105,7 @@ ProfileOverview.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
+        balance: selectEthBalance(state),
         highlightsCount: selectHighlightsCount(state),
         listsCount: selectListsCount(state),
         loggedProfileData: selectLoggedProfileData(state)

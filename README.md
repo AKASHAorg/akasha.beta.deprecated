@@ -1,5 +1,6 @@
 Install :
-- `npm install --no-optional`
+- `npm install`
+- `./node_modules/.bin/electron-rebuild`
 
 Run :
 - `npm run dev` (start both main and renderer)

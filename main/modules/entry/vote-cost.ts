@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
+import GethConnector from '@akashaproject/geth-connector/lib/GethConnector';
 
 export const voteCost = {
     'id': '/voteCost',
@@ -27,7 +28,8 @@ const execute = Promise.coroutine(
         const requests = data.map((w) => {
             return contracts.instance.Votes.getEssenceCost(w)
                 .then((cost) => {
-                    return { cost, weight: w };
+                    const ethCost = GethConnector.getInstance().web3.fromWei(cost, 'ether');
+                    return { cost: ethCost.toString(10), weight: w };
                 });
         });
 

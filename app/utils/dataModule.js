@@ -40,6 +40,21 @@ export const calculateReadingTime = (wordCount = 0, options = {}) => {
     };
 };
 
+export const getDisplayAddress = (ethAddress) => {
+    if (!ethAddress.length === 42 || !ethAddress.startsWith('0x')) {
+        console.error(`${ethAddress} is not a valid address`);
+        return '';
+    }
+    return `${ethAddress.slice(0, 6)}...${ethAddress.slice(38)}`;
+};
+
+export const getDisplayName = ({ akashaId, ethAddress }) => {
+    if (akashaId) {
+        return `@${akashaId}`;
+    }
+    return getDisplayAddress(ethAddress);
+};
+
 export const getWordCount = (content) => {
     const plainText = content.getPlainText('');
     const matchWords = plainText.match(/[^~`!¡@#$%^&*()_\-+={}\[\]|\\:;"'<,>.?¿\/\s]+/g);

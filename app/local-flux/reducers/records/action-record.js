@@ -1,12 +1,13 @@
 import { List, Record, Map } from 'immutable';
 
 export const ActionRecord = Record({
-    akashaId: null,
     blockNumber: null,
     cumulativeGasUsed: null,
+    ethAddress: null,
     id: null,
     payload: new Map(),
     status: null,
+    success: null,
     tx: null,
     type: null
 });
@@ -16,9 +17,11 @@ export const ActionState = Record({
     byId: new Map(),
     needAuth: null,
     pending: new Map({
+        bondAeth: false,
         claim: new Map(),
         comment: new Map(),
         commentVote: new Map(),
+        cycleAeth: false,
         createTag: new Map(),
         entryVote: new Map(),
         follow: new Map(),

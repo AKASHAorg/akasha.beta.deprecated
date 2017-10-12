@@ -7,6 +7,7 @@ import { unpad } from 'ethereumjs-util';
 import { profileAddress } from '../profile/helpers';
 import { getFullContent, getShortContent } from './ipfs';
 import commentsCount from '../comments/comments-count';
+import { dbs } from '../search/indexes';
 
 export const getEntry = {
     'id': '/getEntry',
@@ -36,11 +37,18 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         entry = (data.full || data.version) ?
             yield getFullContent(ipfsHash, data.version).timeout(SHORT_WAIT_TIME) :
             yield getShortContent(ipfsHash).timeout(SHORT_WAIT_TIME);
+
+        dbs.entry.searchIndex.concurrentAdd({}, [{
+            id: data.entryId,
+            ethAddress: ethAddress,
+            title: entry.title,
+            excerpt: entry.excerpt,
+            version: data.version
+        }], (err) => { if (err) { console.warn('error storing index', err); } });
     }
 
     const [_totalVotes, _score, _endPeriod, _totalKarma,] = yield contracts.instance.Votes.getRecord(data.entryId);
     const cCount = yield commentsCount.execute([data.entryId]);
-
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
         totalVotes: _totalVotes.toString(10),

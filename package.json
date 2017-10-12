@@ -109,6 +109,7 @@
         "babili-webpack-plugin": "0.1.2",
         "chai": "4.1.2",
         "chai-immutable": "1.6.0",
+        "chart.js": "2.7.0",
         "co-mocha": "1.2.0",
         "concurrently": "3.5.0",
         "cross-env": "5.0.5",

@@ -21,8 +21,8 @@ export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { dat
 
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
 
-export const entryDownvote = ({ actionId, entryId, entryTitle, weight, value }) =>
-    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, weight, value });
+export const entryDownvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
+    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
 
 export const entryDownvoteError = (error, entryId, entryTitle) => {
     error.code = 'EDE01';
@@ -41,14 +41,14 @@ export const entryGetBalanceError = (error) => {
 };
 export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
 
-export const entryGetFull = ({ entryId, version, asDraft }) =>
-    action(types.ENTRY_GET_FULL, { entryId, version, asDraft });
+export const entryGetFull = ({ akashaId, entryId, ethAddress, version, asDraft }) =>
+    action(types.ENTRY_GET_FULL, { akashaId, entryId, ethAddress, version, asDraft });
 export const entryGetFullError = (error) => {
     error.code = 'EGFE01';
     error.messageId = 'entryGetFull';
     return action(types.ENTRY_GET_FULL_ERROR, { error });
 };
-export const entryGetFullSuccess = data => action(types.ENTRY_GET_FULL_SUCCESS, { data });
+export const entryGetFullSuccess = (data, request) => action(types.ENTRY_GET_FULL_SUCCESS, { data, request });
 
 export const entryGetFullAsDraft = data => action(types.ENTRY_GET_FULL_AS_DRAFT, { data });
 export const entryGetFullAsDraftError = error => action(types.ENTRY_GET_FULL_AS_DRAFT_ERROR, { error });
@@ -82,27 +82,22 @@ export const entryGetShortError = (error, request) => {
 export const entryGetShortSuccess = (data, request) =>
     action(types.ENTRY_GET_SHORT_SUCCESS, { data, request });
 export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
+
 export const entryGetVoteOfError = (error) => {
     error.code = 'EGVOE01';
     error.messageId = 'entryGetVoteOf';
     return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
 };
+
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
-
-export const entryIsActive = entryId => action(types.ENTRY_IS_ACTIVE, { entryId });
-export const entryIsActiveError = (error) => {
-    error.code = 'EIAE01';
-    error.messageId = 'entryIsActive';
-    return action(types.ENTRY_IS_ACTIVE_ERROR, { error });
-};
-export const entryIsActiveSuccess = data => action(types.ENTRY_IS_ACTIVE_SUCCESS, { data });
-
 export const entryListIterator = name => action(types.ENTRY_LIST_ITERATOR, { name });
+
 export const entryListIteratorError = (error) => {
     error.code = 'ELIE01';
     error.messageId = 'entryListIterator';
     return action(types.ENTRY_LIST_ITERATOR_ERROR, { error });
 };
+
 export const entryListIteratorSuccess = (data, request) =>
     action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 
@@ -196,8 +191,8 @@ export const entryTagIteratorError = (error, req) => {
 export const entryTagIteratorSuccess = (data, req) =>
     action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
 
-export const entryUpvote = ({ actionId, entryId, entryTitle, weight, value }) =>
-    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, weight, value });
+export const entryUpvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
+    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
 export const entryUpvoteError = (error, entryId, entryTitle) => {
     error.code = 'EUE01';
     error.messageId = 'entryUpvote';

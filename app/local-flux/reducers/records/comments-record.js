@@ -1,4 +1,4 @@
-import { List, Map, Record, Set } from 'immutable';
+import { List, Map, Record } from 'immutable';
 
 export const CommentData = Record({
     active: null,

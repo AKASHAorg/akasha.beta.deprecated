@@ -7,9 +7,10 @@ import { Button, Icon, Popover, Spin } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
+import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 import { Avatar, SendTipForm } from '../';
 
 class ProfilePopover extends Component {
@@ -46,11 +47,12 @@ class ProfilePopover extends Component {
     };
 
     onFollow = () => {
-        const { ethAddress, isFollower, loggedEthAddress } = this.props;
+        const { ethAddress, isFollower, loggedEthAddress, profile } = this.props;
+        const akashaId = profile.get('akashaId');
         if (isFollower) {
-            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { akashaId, ethAddress });
         } else {
-            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { akashaId, ethAddress });
         }
     };
 
@@ -76,13 +78,13 @@ class ProfilePopover extends Component {
     };
 
     sendTip = ({ value, message }) => {
-        const { loggedEthAddress, profile } = this.props;
+        const { ethAddress, loggedEthAddress, profile } = this.props;
         this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
             akashaId: profile.akashaId,
+            ethAddress,
             firstName: profile.firstName,
             lastName: profile.lastName,
             message,
-            receiver: profile.profile,
             value
         });
     };
@@ -142,9 +144,6 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
-        if (!profile) {
-            return null;
-        }
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
@@ -169,6 +168,7 @@ class ProfilePopover extends Component {
               <div className="profile-popover__avatar-wrapper" onClick={() => this.onVisibleChange(false)}>
                 <Avatar
                   akashaId={profile.get('akashaId')}
+                  ethAddress={ethAddress}
                   firstName={profile.get('firstName')}
                   image={profile.get('avatar')}
                   lastName={profile.get('lastName')}
@@ -180,10 +180,10 @@ class ProfilePopover extends Component {
                 <Link
                   className="unstyled-link"
                   onClick={() => this.onVisibleChange(false)}
-                  to={{ pathname: `/@${profile.get('akashaId')}`, state: { overlay: true } }}
+                  to={{ pathname: `/${ethAddress}`, state: { overlay: true } }}
                 >
                   <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
-                    {name || `@${akashaId}`}
+                    {name || getDisplayName({ akashaId, ethAddress })}
                   </div>
                 </Link>
                 {name &&
@@ -307,7 +307,7 @@ ProfilePopover.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        balance: selectBalance(state),
+        balance: selectEthBalance(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),

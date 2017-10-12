@@ -164,6 +164,7 @@ class ImageBlock extends Component {
     }
 }
 ImageBlock.propTypes = {
+    baseUrl: PropTypes.string.isRequired,
     data: PropTypes.shape({
         files: PropTypes.shape(),
         caption: PropTypes.string,

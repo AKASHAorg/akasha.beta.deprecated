@@ -9,8 +9,8 @@ import classNames from 'classnames';
 import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide } from '../../local-flux/actions/entry-actions';
-import { selectFullEntry, selectLoggedAkashaId } from '../../local-flux/selectors';
-import { calculateReadingTime } from '../../utils/dataModule';
+import { selectFullEntry, selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
+import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 
 class EntryPageHeader extends Component {
     state = {
@@ -60,21 +60,21 @@ class EntryPageHeader extends Component {
     };
 
     renderAvatar = () => {
-        const { containerRef, publisher } = this.props;
-        if (!publisher) {
-            return <Avatar className="entry-page-header__avatar" />;
+        const { author, containerRef } = this.props;
+        if (!author.get('ethAddress')) {
+            return <Avatar className="entry-page-header__avatar" size="small" />;
         }
 
         return (
           <ProfilePopover
-            akashaId={publisher.get('akashaId')}
             containerRef={containerRef}
+            ethAddress={author.get('ethAddress')}
           >
             <Avatar
               className="entry-page-header__avatar"
-              firstName={publisher.get('firstName')}
-              image={publisher.avatar}
-              lastName={publisher.get('lastName')}
+              firstName={author.get('firstName')}
+              image={author.get('avatar')}
+              lastName={author.get('lastName')}
               size="small"
             />
           </ProfilePopover>
@@ -137,9 +137,11 @@ class EntryPageHeader extends Component {
     };
 
     render () {
-        const { containerRef, entry, existingDraft, intl, latestVersion, loggedAkashaId,
-            publisher } = this.props;
-        const isOwnEntry = entry && loggedAkashaId === entry.getIn(['entryEth', 'publisher']);
+        const { author, containerRef, entry, existingDraft, intl, latestVersion,
+            loggedEthAddress } = this.props;
+        const ethAddress = entry.getIn(['author', 'ethAddress']);
+        const akashaId = author.get('akashaId');
+        const isOwnEntry = loggedEthAddress === ethAddress;
         const buttonClass = classNames('entry-page-header__button', {
             'content-link': entry.get('active'),
             'entry-page-header__button_disabled': !entry.get('active')
@@ -151,12 +153,14 @@ class EntryPageHeader extends Component {
               {this.renderAvatar()}
               <div className="entry-page-header__info">
                 <div className="entry-page-header__author">
-                  {publisher &&
+                  {author.get('ethAddress') &&
                     <ProfilePopover
-                      akashaId={publisher.get('akashaId')}
+                      ethAddress={ethAddress}
                       containerRef={containerRef}
                     >
-                      <span className="content-link">{publisher.akashaId}</span>
+                      <span className="content-link">
+                        {getDisplayName({ akashaId, ethAddress })}
+                      </span>
                     </ProfilePopover>
                   }
                 </div>
@@ -199,29 +203,29 @@ class EntryPageHeader extends Component {
 }
 
 EntryPageHeader.propTypes = {
-    containerRef: PropTypes.shape(),
+    author: PropTypes.shape(),
+    containerRef: PropTypes.shape().isRequired,
     entry: PropTypes.shape(),
     existingDraft: PropTypes.shape(),
-    history: PropTypes.shape(),
-    intl: PropTypes.shape(),
+    history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     latestVersion: PropTypes.number,
     location: PropTypes.shape(),
-    loggedAkashaId: PropTypes.string.isRequired,
-    match: PropTypes.shape(),
-    publisher: PropTypes.shape(),
+    loggedEthAddress: PropTypes.string.isRequired,
+    match: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state) {
     const entry = selectFullEntry(state);
-    const akashaId = entry && entry.getIn(['entryEth', 'publisher']);
+    const ethAddress = entry && entry.getIn(['author', 'ethAddress']);
     const drafts = state.draftState.get('drafts');
     const existingDraft = entry &&
         drafts.find(draft => draft.get('entryId') === entry.get('entryId'));
     return {
+        author: selectProfile(state, ethAddress),
         entry,
         existingDraft,
-        loggedAkashaId: selectLoggedAkashaId(state),
-        publisher: state.profileState.getIn(['byEthAddress', akashaId]),
+        loggedEthAddress: selectLoggedEthAddress(state),
     };
 }
 

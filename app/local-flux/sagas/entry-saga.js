@@ -7,13 +7,13 @@ import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnLastEntry, selectColumnLastBlock, selectEntry, selectFullEntry,
+import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectEntry, selectFullEntry,
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 11;
-const ENTRY_ITERATOR_LIMIT = 6;
+const ALL_STREAM_LIMIT = 10;
+const ENTRY_ITERATOR_LIMIT = 5;
 const ENTRY_LIST_ITERATOR_LIMIT = 10;
 
 function* enableExtraChannels () {
@@ -48,11 +48,15 @@ function* entryClaimSuccess ({ data }) {
     }));
 }
 
-function* entryDownvote ({ actionId, entryId, entryTitle, weight, value }) {
+function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
     const channel = Channel.server.entry.downvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, entryId, entryTitle, ethAddress, weight, value }]
+    );
 }
 
 function* entryDownvoteSuccess ({ data }) {
@@ -69,20 +73,19 @@ function* entryGetBalance ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId: [entryId] }]);
 }
 
-function* entryGetExtraOfEntry (entryId, publisher) {
+function* entryGetExtraOfEntry (entryId, ethAddress) {
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
-    const isOwnEntry = publisher && loggedEthAddress === publisher.ethAddress;
+    const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
     yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
-    yield put(profileActions.profileResolveIpfsHash([publisher.ipfsHash], 'fullEntry', [publisher.ethAddress]));
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
     } else {
-        const isFollower = yield select(state => selectIsFollower(state, publisher.ethAddress));
+        const isFollower = yield select(state => selectIsFollower(state, ethAddress));
         if (isFollower === undefined) {
-            yield put(profileActions.profileIsFollower([publisher.ethAddress]));
+            yield put(profileActions.profileIsFollower([ethAddress]));
         }
     }
 }
@@ -97,18 +100,13 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const allEntries = [];
-    const akashaIds = [];
     const ownEntries = [];
     const ethAddresses = [];
-    console.log('collection', collection);
     entries.forEach((entry) => {
-        const { akashaId, ethAddress } = entry.author;
+        const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
-        }
-        if (akashaId && !akashaIds.includes(akashaId)) {
-            akashaIds.push(akashaId);
         }
         if (ethAddress && loggedEthAddress === ethAddress) {
             ownEntries.push(entry.entryId);
@@ -124,11 +122,11 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     yield put(profileActions.profileIsFollower(ethAddresses));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
-        yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
+        yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
-    for (let i = 0; i < akashaIds.length; i++) {
-        yield put(profileActions.profileGetData(akashaIds[i]));
+    for (let i = 0; i < ethAddresses.length; i++) {
+        yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
     }
     for (let i = 0; i < entries.length; i++) {
         const { author, entryId } = entries[i];
@@ -136,11 +134,12 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     }
 }
 
-function* entryGetFull ({ entryId, version, asDraft }) {
+function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft }) {
     // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId, full: true, version, asDraft }]);
+    yield apply(channel, channel.send, [{ akashaId, entryId, ethAddress, full: true, version, asDraft }]);
+    yield put(profileActions.profileGetData({ ethAddress }));
 }
 
 function* entryGetLatestVersion ({ entryId }) {
@@ -169,12 +168,6 @@ function* entryGetVoteOf ({ entryId }) {
     yield apply(channel, channel.send, [[{ ethAddress, entryId }]]);
 }
 
-function* entryIsActive ({ entryId }) {
-    const channel = Channel.server.entry.isActive;
-    yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId }]);
-}
-
 function* entryListIterator ({ name }) {
     const channel = Channel.server.entry.getEntryList;
     const entryIds = yield select(state => selectListNextEntries(state, name, ENTRY_LIST_ITERATOR_LIMIT));
@@ -185,25 +178,39 @@ function* entryListIterator ({ name }) {
 function* entryMoreNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
     const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1, more: true }]);
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, limit: ALL_STREAM_LIMIT, toBlock, lastIndex, more: true }]
+    );
 }
 
 function* entryMoreProfileIterator ({ columnId, ethAddress }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const start = yield select(state => selectColumnLastEntry(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, ethAddress }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, more: true }]
+    );
 }
 
 function* entryMoreStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock: toBlock - 1 }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, more: true }]);
 }
 
 function* entryMoreTagIterator ({ columnId, tagName }) {
     const channel = Channel.server.entry.entryTagIterator;
-    const start = yield select(state => selectColumnLastEntry(state, columnId));
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, tagName }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName, more: true }]
+    );
 }
 
 function* entryNewestIterator ({ columnId }) {
@@ -216,25 +223,22 @@ function* entryNewestIterator ({ columnId }) {
 function* entryProfileIterator ({ columnId, ethAddress, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit, ethAddress, asDrafts }]);
-}
-
-function* entryResolveIpfsHash ({ ipfsHash, columnId, entryIds, asDrafts, full }) {
-    const channel = Channel.server.entry.resolveEntriesIpfsHash;
-    yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ ipfsHash, columnId, entryIds, asDrafts, full }]);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId, limit, ethAddress, asDrafts, toBlock }]);
 }
 
 function* entryStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT }]);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock }]);
 }
 
 function* entryTagIterator ({ columnId, tagName }) {
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName }]);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName, toBlock }]);
 }
 
 function* entryVoteSuccess (entryId) {
@@ -253,11 +257,15 @@ function* entryVoteSuccess (entryId) {
     yield put(actions.entryGetVoteOf(entryId));
 }
 
-function* entryUpvote ({ actionId, entryId, entryTitle, weight, value }) {
+function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
     const channel = Channel.server.entry.upvote;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle, weight, value }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, entryId, entryTitle, ethAddress, weight, value }]
+    );
 }
 
 function* entryUpvoteSuccess ({ data }) {
@@ -271,8 +279,8 @@ function* entryUpvoteSuccess ({ data }) {
 function* entryVoteCost () {
     const channel = Channel.server.entry.voteCost;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const weight = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    yield apply(channel, channel.send, [{ weight }]);
+    const weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    yield apply(channel, channel.send, [weights]);
 }
 
 // Channel watchers
@@ -309,6 +317,8 @@ function* watchEntryDownvoteChannel () {
         if (resp.error) {
             yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -343,11 +353,12 @@ function* watchEntryGetChannel () {
         } else if (resp.request.asDraft) {
             yield put(actions.entryGetFullAsDraftSuccess(resp.data));
         } else if (resp.request.latestVersion) {
+            // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
         } else if (resp.request.full) {
-            yield put(actions.entryGetFullSuccess(resp.data));
-            yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
+            yield put(actions.entryGetFullSuccess(resp.data, resp.request));
+            yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
         } else {
             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }
@@ -372,17 +383,6 @@ function* watchEntryGetVoteOfChannel () {
             yield put(actions.entryGetVoteOfError(resp.error));
         } else {
             yield put(actions.entryGetVoteOfSuccess(resp.data));
-        }
-    }
-}
-
-function* watchEntryIsActiveChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.isActive);
-        if (resp.error) {
-            yield put(actions.entryIsActiveError(resp.error));
-        } else {
-            yield put(actions.entryIsActiveSuccess(resp.data));
         }
     }
 }
@@ -426,16 +426,16 @@ function* watchEntryProfileIteratorChannel () {
         const resp = yield take(actionChannels.entry.entryProfileIterator);
         const { columnId, limit, asDrafts } = resp.request;
         if (resp.error) {
-            if (resp.request.start) {
+            if (resp.request.more) {
                 yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
             } else if (resp.request.asDrafts) {
                 yield put(draftActions.entriesGetAsDraftsError(resp.error, resp.request));
             } else {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.start) {
-            yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+        } else if (resp.request.more) {
             yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
+            yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
         } else if (resp.request.asDrafts) {
             yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
             const reqObj = resp.data.collection.map(entry => ({
@@ -448,29 +448,10 @@ function* watchEntryProfileIteratorChannel () {
                 asDrafts: true,
                 full: true,
             }));
-            yield put(actions.entryResolveIpfsHash(reqObj));
+            // yield put(actions.entryResolveIpfsHash(reqObj));
         } else {
-            yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
-        }
-    }
-}
-
-function* watchEntryResolveIpfsHashChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
-        if (resp.error) {
-            if (resp.request.asDrafts) {
-                yield put(draftActions.entryResolveIpfsHashAsDraftsError(resp.error, resp.request));
-            } else {
-                yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
-            }
-        } else if (resp.request.asDrafts && resp.data.entry) {
-            if (resp.data.entry) {
-                yield put(draftActions.entryResolveIpfsHashAsDraftsSuccess(resp.data, resp.request));
-            }
-        } else {
-            yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
+            yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
         }
     }
 }
@@ -479,19 +460,19 @@ function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
         if (resp.error) {
-            if (resp.request.toBlock) {
+            if (resp.request.more) {
                 yield put(actions.entryMoreStreamIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryStreamIteratorError(resp.error, resp.request));
             }
         } else {
-            if (resp.data.toBlock) {
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            if (resp.data.more) {
                 yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
             }
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -500,19 +481,19 @@ function* watchEntryTagIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryTagIterator);
         if (resp.error) {
-            if (resp.request.start) {
+            if (resp.request.more) {
                 yield put(actions.entryMoreTagIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryTagIteratorError(resp.error, resp.request));
             }
         } else {
-            if (resp.request.start) {
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            if (resp.request.more) {
                 yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
             }
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -524,6 +505,8 @@ function* watchEntryUpvoteChannel () {
         if (resp.error) {
             yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -550,11 +533,9 @@ export function* registerEntryListeners () {
     yield fork(watchEntryGetChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
-    yield fork(watchEntryIsActiveChannel);
     yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);
-    yield fork(watchEntryResolveIpfsHashChannel);
     yield fork(watchEntryStreamIteratorChannel);
     yield fork(watchEntryTagIteratorChannel);
     yield fork(watchEntryUpvoteChannel);
@@ -573,7 +554,6 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
     yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);
     yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
-    yield takeEvery(types.ENTRY_IS_ACTIVE, entryIsActive);
     yield takeEvery(types.ENTRY_LIST_ITERATOR, entryListIterator);
     yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
     yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
@@ -581,7 +561,6 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
     yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
     yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
-    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
     yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
     yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
     yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);

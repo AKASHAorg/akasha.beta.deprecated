@@ -56,6 +56,9 @@ export const selectColumnLastBlock = (state, columnId) =>
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
 
+export const selectColumnLastIndex = (state, columnId) =>
+    state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);
+
 export const selectColumns = state => state.dashboardState.get('columnById');
 
 export const selectColumnSuggestions = (state, columnId) =>
@@ -95,6 +98,8 @@ export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canCl
 export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags', flag]);
 
 export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
+
+export const selectEthBalance = state => state.profileState.getIn(['balance', 'eth']);    
 
 export const selectFetchingFollowers = (state, akashaId) =>
     state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
@@ -204,6 +209,8 @@ export const selectLoggedProfile = state => state.profileState.get('loggedProfil
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'ethAddress']));
 
+export const selectManaBalance = state => state.profileState.getIn(['balance', 'mana', 'remaining']);    
+
 export const selectMoreFollowers = (state, ethAddress) =>
     state.profileState.getIn(['moreFollowers', ethAddress]);
 
@@ -216,11 +223,15 @@ export const selectNeedAuthAction = state =>
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
+export const selectPendingBondAeth = state => state.actionState.getIn(['pending', 'bondAeth']);
+
 export const selectPendingClaim = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'claim', entryId]);
 
 export const selectPendingComments = (state, entryId) =>
     state.actionState.getIn(['pending', 'comment', entryId]) || new List();
+
+export const selectPendingCycleAeth = state => state.actionState.getIn(['pending', 'cycleAeth']);
 
 export const selectPendingFollow = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'follow', akashaId]);

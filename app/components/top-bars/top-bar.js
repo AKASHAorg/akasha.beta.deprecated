@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Breadcrumbs, DashboardTopBar, PanelLink, Panels, TopBarRightSide, NewEntryTopBar } from '../';
-import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
+import { Breadcrumbs, DashboardTopBar, NewEntryTopBar, PanelLink, Panels, TopBarRightSide } from '../';
+import { selectEthBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
@@ -26,7 +26,6 @@ class TopBar extends PureComponent {
     _closePanel = () => {
         const { history, location } = this.props;
         const rootPath = location.pathname.split('/panel/')[0];
-        console.log('location state', location.state);
         return history.replace(`${rootPath}${location.search}`, { ...location.state });
     }
     _renderComponent = (Component, injectedProps) =>
@@ -123,7 +122,7 @@ TopBar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    balance: selectBalance(state),
+    balance: selectEthBalance(state),
     fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
     loggedProfile: selectLoggedProfile(state),
     loggedProfileData: selectLoggedProfileData(state),

@@ -1,6 +1,6 @@
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { ErrorRecord, GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
+import { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, SettingsRecord, UserSettings } from './records';
 
 const initialState = new SettingsRecord();

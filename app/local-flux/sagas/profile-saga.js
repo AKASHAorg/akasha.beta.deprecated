@@ -8,15 +8,44 @@ import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
     selectNeedAuthAction, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
+import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
+function* profileBondAeth ({ actionId, amount }) {
+    const channel = Channel.server.profile.bondAeth;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileBondAethSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'bondAethSuccess',
+        values: { amount: data.amount },
+    }));
+}
+
 function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
     const channel = Channel.server.auth.generateEthKey;
     yield call(enableChannel, channel, Channel.client.auth.manager);
     yield apply(channel, channel.send, [{ password: passphrase, password1: passphrase1 }]);
+}
+
+function* profileCycleAeth ({ actionId, amount }) {
+    const channel = Channel.server.profile.cycleAeth;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileCycleAethSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'cycleAethSuccess',
+        values: { amount: data.amount },
+    }));
 }
 
 function* profileDeleteLogged () {
@@ -28,17 +57,18 @@ function* profileDeleteLogged () {
     }
 }
 
-function* profileFollow ({ actionId, akashaId }) {
+function* profileFollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.followProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+    yield apply(channel, channel.send, [{ token, actionId, ethAddress }]);
 }
 
 function* profileFollowSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'followProfileSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
@@ -70,10 +100,9 @@ function* profileGetByAddress ({ ethAddress }) {
     yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
-function* profileGetData ({ akashaId, full = false }) {
+function* profileGetData ({ akashaId, ethAddress, full = false }) {
     const channel = Channel.server.profile.getProfileData;
-    yield apply(channel, channel.send, [{ akashaId, full }]);
-    yield put(actions.profileIsFollower([akashaId])); // eslint-disable-line no-use-before-define
+    yield apply(channel, channel.send, [{ akashaId, ethAddress, full }]);
     yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
@@ -98,8 +127,8 @@ export function* profileGetLogged () {
         const profile = yield apply(profileService, profileService.profileGetLogged);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
-        if (profile && profile.ethAddress) {
-            yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
+        if (profile && profile.akashaId) {
+            yield call(profileGetData, { akashaId: profile.akashaId, full: true });
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));
@@ -167,7 +196,7 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
-function* profileSendTip ({ actionId, akashaId, receiver, value }) {
+function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value }) {
     const channel = Channel.server.profile.tip;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
@@ -175,29 +204,32 @@ function* profileSendTip ({ actionId, akashaId, receiver, value }) {
         token,
         actionId,
         akashaId,
+        ethAddress,
         receiver,
         value
     }]);
 }
 
 function* profileSendTipSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'sendTipSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
-function* profileUnfollow ({ actionId, akashaId }) {
+function* profileUnfollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, actionId, akashaId }]);
+    yield apply(channel, channel.send, [{ token, actionId, ethAddress }]);
 }
 
 function* profileUnfollowSuccess ({ data }) {
+    const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'unfollowProfileSuccess',
-        values: { akashaId: data.akashaId },
+        values: { displayName },
     }));
 }
 
@@ -210,6 +242,25 @@ function* profileUpdateLogged (loggedProfile) {
 }
 
 // Channel watchers
+
+function* watchProfileBondAethChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.bondAeth);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
 
 function* watchProfileCreateEthAddressChannel () {
     while (true) {
@@ -225,6 +276,25 @@ function* watchProfileCreateEthAddressChannel () {
     }
 }
 
+function* watchProfileCycleAethChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.cycleAeth);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileCycleAethError(resp.error, resp.request.amount));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileCycleAethError({}, resp.request.amount));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileFollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followProfile);
@@ -232,6 +302,8 @@ function* watchProfileFollowChannel () {
         if (resp.error) {
             yield put(actions.profileFollowError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -291,8 +363,9 @@ function* watchProfileGetByAddressChannel () {
             yield put(actions.profileGetByAddressError(resp.error));
         } else {
             yield put(actions.profileGetByAddressSuccess(resp.data));
-            if (resp.data.akashaId) {
-                yield put(actions.profileGetData(resp.data.akashaId, true));
+            const { akashaId } = resp.data;
+            if (akashaId) {
+                yield put(actions.profileGetData({ akashaId, full: true }));
             } else {
                 yield put(actions.isFollower(resp.data.ethAddress));
             }
@@ -358,11 +431,10 @@ function* watchProfileLoginChannel () {
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
-        const { akashaId, profile, reauthenticate } = resp.request;
-        if (akashaId && profile) {
+        const { akashaId, reauthenticate } = resp.request;
+        if (akashaId && !reauthenticate) {
             resp.data.akashaId = akashaId;
-            resp.data.profile = profile;
-            yield call(profileGetData, { akashaId, reauthenticate: true });
+            yield call(profileGetData, { akashaId, full: true });
         }
         if (reauthenticate) {
             const needAuthAction = yield select(selectNeedAuthAction);
@@ -412,6 +484,8 @@ function* watchProfileSendTipChannel () {
         if (resp.error) {
             yield put(actions.profileSendTipError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -426,6 +500,8 @@ function* watchProfileUnfollowChannel () {
         if (resp.error) {
             yield put(actions.profileUnfollowError(resp.error, resp.request));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -434,7 +510,9 @@ function* watchProfileUnfollowChannel () {
 }
 
 export function* registerProfileListeners () {
+    yield fork(watchProfileBondAethChannel);
     yield fork(watchProfileCreateEthAddressChannel);
+    yield fork(watchProfileCycleAethChannel);
     yield fork(watchProfileFollowChannel);
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
@@ -451,7 +529,11 @@ export function* registerProfileListeners () {
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
+    yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
+    yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
     yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
+    yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
+    yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
     yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
     yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);

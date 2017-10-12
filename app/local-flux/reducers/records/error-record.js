@@ -1,6 +1,6 @@
 import { List, Map, Record } from 'immutable';
 
-const ErrorRecord = Record({
+export const ErrorRecord = Record({
     code: null,
     fatal: false,
     from: {},
@@ -11,7 +11,7 @@ const ErrorRecord = Record({
     values: {}
 });
 
-const ErrorState = Record({
+export const ErrorState = Record({
     allIds: new List(),
     byId: new Map(),
     byType: new Map(),
@@ -19,6 +19,3 @@ const ErrorState = Record({
     nonFatalErrors: new List(),
     reportError: new Map(),
 });
-
-export default ErrorRecord;
-export { ErrorState };
