@@ -127,8 +127,8 @@ export function* profileGetLogged () {
         const profile = yield apply(profileService, profileService.profileGetLogged);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
-        if (profile && profile.akashaId) {
-            yield call(profileGetData, { akashaId: profile.akashaId, full: true });
+        if (profile && profile.ethAddress) {
+            yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));

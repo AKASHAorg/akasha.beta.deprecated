@@ -1,7 +1,7 @@
-import { Map } from 'immutable';
+import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { CommentData, CommentRecord, CommentsState } from './records';
+import { CommentAuthor, CommentData, CommentRecord, CommentsState } from './records';
 
 const initialState = new CommentsState();
 
@@ -17,18 +17,8 @@ const comparator = (a, b) => {
     return 0;
 };
 
-const getCommentRecord = (comment) => {
-    let record = new CommentRecord(comment);
-    record = record.set('data', new CommentData(comment.data));
-    const { profile, content } = comment.data;
-    if (profile) {
-        record = record.setIn(['data', 'profile'], profile.akashaId);
-    }
-    if (content && typeof content === 'string') {
-        record = record.setIn(['data', 'content'], JSON.parse(content));
-    }
-    return record;
-};
+const createCommentWithAuthor = comment =>
+    new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
 
 const iteratorHandler = (state, collection) => {
     let byId = state.get('byId');
@@ -36,7 +26,7 @@ const iteratorHandler = (state, collection) => {
     let lastComm = collection[0].commentId;
     const oldMargins = { firstComm: state.get('firstComm'), lastComm: state.get('lastComm') };
     collection.forEach((comm) => {
-        byId = byId.set(comm.commentId, getCommentRecord(comm));
+        // byId = byId.set(comm.commentId, getCommentRecord(comm));
     });
     byId = byId.sort(comparator);
     firstComm = !oldMargins.firstComm || Number(firstComm) < Number(oldMargins.firstComm) ?
@@ -64,24 +54,38 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
-    [types.COMMENTS_ITERATOR]: state =>
-        state.setIn(['flags', 'fetchingComments'], true),
+    [types.COMMENTS_ITERATOR]: (state, { parent }) =>
+        state.setIn(['flags', 'fetchingComments', parent], true),
 
-    [types.COMMENTS_ITERATOR_ERROR]: state =>
-        state.setIn(['flags', 'fetchingComments'], false),
+    [types.COMMENTS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingComments', request.parent], false),
 
     [types.COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        if (!data.collection.length) {
-            return state.setIn(['flags', 'fetchingComments'], false);
-        }
-        const { byId, firstComm, lastComm } = iteratorHandler(state, data.collection);
+        let byId = state.get('byId');
+        const parent = request.parent;
+        let list = state.getIn(['byParent', parent]) || new List();
+        data.collection.forEach((comm) => {
+            comm.entryId = request.entryId;
+            const comment = createCommentWithAuthor(comm);
+            byId = byId.set(comm.commentId, comment);
+            list = list.push(comm.commentId);
+        });
         return state.merge({
             byId,
-            firstComm: firstComm || null,
-            flags: state.get('flags').set('fetchingComments', false),
-            lastComm: lastComm || null,
-            moreComments: data.collection.length === request.limit
+            byParent: state.get('byParent').set(parent, list),
+            flags: state.get('flags').setIn(['fetchingComments', parent], false),
+            lastBlock: state.get('lastBlock').set(parent, data.lastBlock),
+            lastIndex: state.get('lastIndex').set(parent, data.lastIndex),
+            moreComments: state.get('moreComments').set(parent, !!data.lastBlock)
         });
+        // const { byId, firstComm, lastComm } = iteratorHandler(state, data.collection);
+        // return state.merge({
+        //     byId,
+        //     firstComm: firstComm || null,
+        //     flags: state.get('flags').set('fetchingComments', false),
+        //     lastComm: lastComm || null,
+        //     moreComments: !!data.lastBlock
+        // });
     },
 
     [types.COMMENTS_LOAD_NEW]: (state) => {
@@ -101,23 +105,47 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_MORE_ITERATOR]: state =>
-        state.setIn(['flags', 'fetchingMoreComments'], true),
+    [types.COMMENTS_MORE_ITERATOR]: (state, { parent }) =>
+        state.setIn(['flags', 'fetchingMoreComments', parent], true),
 
-    [types.COMMENTS_MORE_ITERATOR_ERROR]: state =>
-        state.setIn(['flags', 'fetchingMoreComments'], false),
+    [types.COMMENTS_MORE_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'fetchingMoreComments', request.parent], false),
 
     [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, { data, request }) => {
         if (!data.collection.length) {
-            return state.setIn(['flags', 'fetchingMoreComments'], false);
+            return state.setIn(['flags', 'fetchingMoreComments', request.parent], false);
         }
         const { byId, firstComm, lastComm } = iteratorHandler(state, data.collection);
         return state.merge({
             byId,
             firstComm: firstComm || null,
-            flags: state.get('flags').set('fetchingMoreComments', false),
+            flags: state.get('flags').setIn(['fetchingMoreComments', request.parent], false),
             lastComm: lastComm || null,
-            moreComments: data.collection.length === request.limit
+            moreComments: state.get('moreComments').set(parent, !!data.lastBlock)
+        });
+    },
+
+    [types.COMMENTS_RESOLVE_IPFS_HASH]: (state, { ipfsHashes, commentIds }) => {
+        let byHash = state.get('byHash');
+        let resolvingComments = state.getIn(['flags', 'resolvingComments']);
+        ipfsHashes.forEach((hash, index) => {
+            resolvingComments = resolvingComments.set(hash, true);
+            byHash = byHash.set(hash, commentIds[index]);
+        });
+        return state.merge({
+            byHash,
+            flags: state.get('flags').set('resolvingComments', resolvingComments)
+        });
+    },
+
+    [types.COMMENTS_RESOLVE_IPFS_HASH_ERROR]: (state, { data }) =>
+        state.setIn(['flags', 'resolvingComments', data], false),
+
+    [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data }) => {
+        const commentId = state.getIn(['byHash', data.ipfsHash]);
+        return state.merge({
+            byId: state.get('byId').setIn([commentId, 'content'], data.content),
+            flags: state.get('flags').setIn(['resolvingComments', data.ipfsHash], false)
         });
     },
 

@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { selectCommentsForParent, selectLoggedProfileData } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 
 class CommentThread extends Component {
     componentDidUpdate (prevProps) {
@@ -13,11 +17,12 @@ class CommentThread extends Component {
     }
 
     shouldComponentUpdate (nextProps) {
-        const { comments, pendingComments, profiles, replyTo } = nextProps;
+        const { comment, pendingComments, profiles, replies, replyTo } = nextProps;
         if (
-            !comments.equals(this.props.comments) ||
+            !comment.equals(this.props.comment) ||
             !pendingComments.equals(this.props.pendingComments) ||
             !profiles.equals(this.props.profiles) ||
+            !replies.equals(this.props.replies) ||
             replyTo !== this.props.replyTo
         ) {
             return true;
@@ -29,85 +34,89 @@ class CommentThread extends Component {
         this.commentEditorRef = editor && editor.refs.clickAwayableElement;
     };
 
-    render () {
-        const { actionAdd, comments, containerRef, depth, entryId, ethAddress, intl,
-            loggedProfileData, onReply, onReplyClose, parentId, pendingComments,
-            profiles, replyTo } = this.props;
-        let filteredComments = comments.filter(comm => comm.data.parent === parentId);
-        let optimisticComments = pendingComments.filter(action =>
-            action.getIn(['payload', 'parent']) === parentId);
-        if (depth > 1) {
-            filteredComments = filteredComments.reverse();
-        } else {
-            optimisticComments = optimisticComments.reverse();
-        }
-        optimisticComments = optimisticComments
+    renderOptimisticComments = () => {
+        const { containerRef, comment, loggedProfileData, pendingComments } = this.props;
+        const optimisticComments = pendingComments.filter(action =>
+            action.getIn(['payload', 'parent']) === comment.commentId
+        );
+        console.log('optimistic comments', optimisticComments);
+
+        return optimisticComments
             .toArray()
             .map(commAction => (
               <OptimisticComment
                 comment={commAction}
                 containerRef={containerRef}
                 key={commAction.id}
-                loggedAkashaId={loggedProfileData.get('akashaId')}
+                loggedProfileData={loggedProfileData}
               />
             ));
-        const comms = filteredComments.map(comment => (
+    };
+
+    renderReplies = () => {
+        const { containerRef, ethAddress, loggedProfileData, profiles, replies,
+            resolvingComments } = this.props;
+        return replies.map(comment => (
           <Comment
             comment={comment}
             containerRef={containerRef}
             ethAddress={ethAddress}
-            key={`${comment.commentId}-fetchedComments`}
-            loggedAkashaId={loggedProfileData.get('akashaId')}
-            onReply={onReply}
+            key={comment.commentId}
+            loggedEthAddress={loggedProfileData.get('ethAddress')}
             profiles={profiles}
-            showReplyButton={(depth <= 2)}
-          >
-            <CommentThread
-              actionAdd={actionAdd}
-              comments={comments}
+            resolvingComment={resolvingComments.get(comment.ipfsHash)}
+          />
+        ));
+    };
+
+    renderEditor = () => {
+        const { containerRef, comment, entryId, ethAddress, intl, loggedProfileData,
+            onReplyClose, profiles } = this.props;
+        const author = profiles.get(comment.getIn(['author', 'ethAddress']));
+        const name = getDisplayName({
+            akashaId: author.get('akashaId'),
+            ethAddress: author.get('ethAddress')
+        });
+        return (
+          <div>
+            <CommentEditor
+              actionAdd={this.props.actionAdd}
               containerRef={containerRef}
-              depth={(depth + 1)}
               entryId={entryId}
               ethAddress={ethAddress}
               intl={intl}
+              isReply
               loggedProfileData={loggedProfileData}
-              onReply={onReply}
-              onReplyClose={onReplyClose}
-              parentId={`${comment.commentId}`}
-              pendingComments={pendingComments}
-              profiles={profiles}
-              replyTo={replyTo}
+              onClose={onReplyClose}
+              parent={comment.commentId}
+              placeholder={intl.formatMessage(entryMessages.writeReplyTo, { name })}
+              ref={this.getEditorRef}
             />
-            {replyTo === comment.commentId && (() => {
-                const author = profiles.get(comment.getIn(['data', 'profile']));
-                return (
-                  <div>
-                    <CommentEditor
-                      actionAdd={actionAdd}
-                      containerRef={containerRef}
-                      entryId={entryId}
-                      ethAddress={ethAddress}
-                      intl={intl}
-                      isReply
-                      loggedProfileData={loggedProfileData}
-                      onClose={onReplyClose}
-                      parent={comment.commentId}
-                      placeholder={intl.formatMessage(entryMessages.writeReplyTo, {
-                          name: `@${author.get('akashaId')}`
-                      })}
-                      ref={this.getEditorRef}
-                    />
-                  </div>
-                );
-            })()}
-          </Comment>
-        ));
+          </div>
+        );
+    };
+
+    render () {
+        const { comment, containerRef, ethAddress, loggedProfileData, onReply,
+            profiles, replies, replyTo, resolvingComments } = this.props;
 
         return (
           <div className="comment-thread">
-            {depth <= 1 && optimisticComments}
-            {comms.toJS()}
-            {depth > 1 && optimisticComments}
+            <Comment
+              comment={comment}
+              containerRef={containerRef}
+              ethAddress={ethAddress}
+              key={comment.commentId}
+              loggedEthAddress={loggedProfileData.get('ethAddress')}
+              onReply={onReply}
+              profiles={profiles}
+              resolvingComment={resolvingComments.get(comment.ipfsHash)}
+              showReplyButton
+            >
+              {!!replies.size && this.renderReplies()}
+              {this.renderOptimisticComments()}
+              {replyTo === comment.commentId && this.renderEditor()}
+            </Comment>
           </div>
         );
     }
@@ -115,19 +124,36 @@ class CommentThread extends Component {
 
 CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    comments: PropTypes.shape(),
+    comment: PropTypes.shape().isRequired,
     containerRef: PropTypes.shape(),
-    depth: PropTypes.number,
-    ethAddress: PropTypes.string.isRequired,
     entryId: PropTypes.string,
+    ethAddress: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),
     onReply: PropTypes.func.isRequired,
     onReplyClose: PropTypes.func.isRequired,
-    parentId: PropTypes.string,
     pendingComments: PropTypes.shape(),
     profiles: PropTypes.shape(),
+    replies: PropTypes.shape().isRequired,
     replyTo: PropTypes.string,
+    resolvingComments: PropTypes.shape().isRequired,
 };
 
-export default injectIntl(CommentThread);
+function mapStateToProps (state, ownProps) {
+    const { comment } = ownProps;
+    return {
+        entryId: state.entryState.getIn(['fullEntry', 'entryId']),
+        ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
+        loggedProfileData: selectLoggedProfileData(state),
+        profiles: state.profileState.get('byEthAddress'),
+        replies: selectCommentsForParent(state, comment.commentId),
+        resolvingComments: state.commentsState.getIn(['flags', 'resolvingComments'])
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        actionAdd
+    }
+)(injectIntl(CommentThread));

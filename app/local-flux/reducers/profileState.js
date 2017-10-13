@@ -19,16 +19,16 @@ const addProfileData = (byEthAddress, { ...profileData }) => {
     return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
 
-const commentsIteratorHandler = (state, { data }) => {
-    let byId = state.get('byId');
-    data.collection.forEach((comm) => {
-        const publisher = comm.data.profile;
-        if (publisher && !byId.get(publisher.akashaId)) {
-            byId = addProfileData(byId, publisher);
-        }
-    });
-    return state.set('byId', byId);
-};
+// const commentsIteratorHandler = (state, { data }) => {
+//     let byId = state.get('byId');
+//     data.collection.forEach((comm) => {
+//         const publisher = comm.data.profile;
+//         if (publisher && !byId.get(publisher.akashaId)) {
+//             byId = addProfileData(byId, publisher);
+//         }
+//     });
+//     return state.set('byId', byId);
+// };
 
 const getLastIndex = (collection) => {
     if (collection.length) {
@@ -39,9 +39,9 @@ const getLastIndex = (collection) => {
 
 const profileState = createReducer(initialState, {
 
-    [types.COMMENTS_ITERATOR_SUCCESS]: commentsIteratorHandler,
+    // [types.COMMENTS_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
-    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
+    // [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
         state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),

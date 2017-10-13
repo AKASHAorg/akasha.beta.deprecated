@@ -10,7 +10,6 @@ import { EntryComment } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 
-const COMMENT_FETCH_LIMIT = 25;
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
 class EntryPage extends Component {
@@ -96,7 +95,7 @@ class EntryPage extends Component {
     };
 
     fetchComments = (entryId) => {
-        this.props.commentsIterator(entryId, COMMENT_FETCH_LIMIT);
+        this.props.commentsIterator({ entryId, parent: '0' });
     };
 
     checkNewComments = () => {
@@ -108,7 +107,7 @@ class EntryPage extends Component {
         const { commentsMoreIterator, match, newComments } = this.props;
         const { params } = match;
         if (this.trigger && isInViewport(this.trigger, 150)) {
-            commentsMoreIterator(params.entryId);
+            commentsMoreIterator({ entryId: params.entryId, parent: '0' });
         }
         if (newComments.size) {
             const rect = this.listHeader.getBoundingClientRect();
@@ -187,6 +186,7 @@ class EntryPage extends Component {
                   ethAddress={entry.getIn(['author', 'ethAddress'])}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
+                  parent="0"
                   ref={this.getEditorRef}
                 />
                 <div

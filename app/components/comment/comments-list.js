@@ -2,11 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { List } from 'immutable';
 import { entryMessages } from '../../locale-data/messages';
-import { CommentThread, DataLoader } from '../';
-import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectAllComments, selectCommentsFlag, selectLoggedProfileData,
+import { CommentThread, DataLoader, OptimisticComment } from '../';
+import { selectCommentsFlag, selectCommentsForParent, selectLoggedProfileData,
     selectPendingComments } from '../../local-flux/selectors';
 
 class CommentList extends Component {
@@ -22,13 +20,12 @@ class CommentList extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        const { comments, fetchingComments, fetchingMoreComments, pendingComments, profiles } = this.props;
+        const { comments, fetchingComments, fetchingMoreComments, pendingComments } = this.props;
         if (
             !nextProps.comments.equals(comments) ||
             nextProps.fetchingComments !== fetchingComments ||
             nextProps.fetchingMoreComments !== fetchingMoreComments ||
             !nextProps.pendingComments.equals(pendingComments) ||
-            !nextProps.profiles.equals(profiles) ||
             nextState.replyTo !== this.state.replyTo
         ) {
             return true;
@@ -49,28 +46,33 @@ class CommentList extends Component {
     };
 
     render () {
-        const { comments, containerRef, entry, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
-            loggedProfileData, moreComments, pendingComments, profiles } = this.props;
-
+        const { comments, containerRef, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
+            loggedProfileData, moreComments, pendingComments } = this.props;
+        const optimisticComments = pendingComments
+            .filter(action => action.getIn(['payload', 'parent']) === '0')
+            .reverse()
+            .toArray();
         return (
           <div className="comment-list">
-            {comments.size > 0 &&
-              <CommentThread
-                actionAdd={this.props.actionAdd}
-                comments={comments}
+            {optimisticComments && optimisticComments.map(commAction => (
+              <OptimisticComment
+                comment={commAction}
                 containerRef={containerRef}
-                depth={1}
-                entryId={entry.get('entryId')}
-                ethAddress={entry.getIn(['author', 'ethAddress'])}
+                key={commAction.id}
                 loggedProfileData={loggedProfileData}
+              />
+            ))}
+            {comments.map(comm => (
+              <CommentThread
+                comment={comm}
+                containerRef={containerRef}
+                key={comm.commentId}
                 onReply={this.handleReply}
                 onReplyClose={this.resetReplies}
-                parentId="0"
                 pendingComments={pendingComments}
-                profiles={profiles}
                 replyTo={this.state.replyTo}
               />
-            }
+            ))}
             {fetchingComments &&
               <div className="comment-list__loading">
                 {`${intl.formatMessage(entryMessages.loadingComments)}...`}
@@ -91,10 +93,8 @@ class CommentList extends Component {
 }
 
 CommentList.propTypes = {
-    actionAdd: PropTypes.func.isRequired,
-    comments: PropTypes.shape(),
+    comments: PropTypes.shape().isRequired,
     containerRef: PropTypes.shape(),
-    entry: PropTypes.shape(),
     fetchingComments: PropTypes.bool,
     fetchingMoreComments: PropTypes.bool,
     getTriggerRef: PropTypes.func.isRequired,
@@ -102,26 +102,18 @@ CommentList.propTypes = {
     loggedProfileData: PropTypes.shape().isRequired,
     moreComments: PropTypes.bool,
     pendingComments: PropTypes.shape(),
-    profiles: PropTypes.shape(),
 };
 
 function mapStateToProps (state) {
-    const entry = state.entryState.get('fullEntry');
+    const entryId = state.entryState.getIn(['fullEntry', 'entryId']);
     return {
-        comments: selectAllComments(state),
-        entry,
-        fetchingComments: entry && selectCommentsFlag(state, 'fetchingComments'),
-        fetchingMoreComments: entry && selectCommentsFlag(state, 'fetchingMoreComments'),
+        comments: selectCommentsForParent(state, '0'),
+        fetchingComments: selectCommentsFlag(state, 'fetchingComments', '0'),
+        fetchingMoreComments: selectCommentsFlag(state, 'fetchingMoreComments', '0'),
         loggedProfileData: selectLoggedProfileData(state),
-        moreComments: state.commentsState.get('moreComments'),
-        pendingComments: selectPendingComments(state, entry.get('entryId')),
-        profiles: state.profileState.get('byEthAddress')
+        moreComments: state.commentsState.getIn(['moreComments', '0']),
+        pendingComments: selectPendingComments(state, entryId),
     };
 }
 
-export default connect(
-    mapStateToProps,
-    {
-        actionAdd
-    }
-)(injectIntl(CommentList));
+export default connect(mapStateToProps)(injectIntl(CommentList));

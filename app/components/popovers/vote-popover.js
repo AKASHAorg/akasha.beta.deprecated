@@ -77,10 +77,10 @@ class VotePopover extends Component {
     validateWeight = (rule, value, callback) => {
         const { balance, intl, voteCost } = this.props;
         if (!Number.isInteger(value)) {
-            callback(intl.formatMessage(formMessages.voteIntegerError, { min: MIN, max: MAX }));
+            callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min: MIN, max: MAX }));
         }
-        if (value < MAX || value > MAX) {
-            callback(intl.formatMessage(formMessages.voteRangeError, { min: MIN, max: MAX }));
+        if (value < MIN || value > MAX) {
+            callback(intl.formatMessage(formMessages.voteWeightRangeError, { min: MIN, max: MAX }));
             return;
         }
         if (!balance || balance <= voteCost.get(value.toString())) {
