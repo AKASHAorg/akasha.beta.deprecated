@@ -13,7 +13,7 @@ import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile, selectSelectionState } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { Step } = Steps;
@@ -38,6 +38,7 @@ EditorNotReadyPlaceholder.propTypes = {
 class NewEntryPage extends Component {
     state = {
         showPublishPanel: false,
+        errors: {},
     }
 
     componentWillReceiveProps (nextProps) {
@@ -54,7 +55,7 @@ class NewEntryPage extends Component {
                     featuredImage: {},
                 },
                 tags: [],
-                entryType: match.params.draftType,
+                entryType: 'article',
             });
         }
     }
@@ -74,6 +75,12 @@ class NewEntryPage extends Component {
             }),
             id: match.params.draftId,
         }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                title: null,
+            }
+        }));
     }
 
     _handleEditorChange = (editorState) => {
@@ -84,6 +91,12 @@ class NewEntryPage extends Component {
                 draft: editorState,
             }),
         }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                draft: null,
+            }
+        }));
     }
 
     _handleTagUpdate = (tagList) => {
@@ -91,6 +104,12 @@ class NewEntryPage extends Component {
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
             tags: draftObj.get('tags').clear().concat(tagList),
+        }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                tags: null,
+            }
         }));
     }
 
@@ -110,6 +129,12 @@ class NewEntryPage extends Component {
             ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
         }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                excerpt: null,
+            }
+        }));
     }
 
     _handleFeaturedImageChange = (image) => {
@@ -128,6 +153,30 @@ class NewEntryPage extends Component {
         });
     }
 
+    validateData = () =>
+        new Promise((resolve, reject) => {
+            const { draftObj } = this.props;
+            const excerpt = draftObj.getIn(['content', 'excerpt']);
+            const draftState = draftObj.getIn(['content', 'draft']);
+            if (draftObj.getIn(['content', 'title']).length === 0) {
+                return reject({ title: 'Title must not be empty' });
+            }
+
+            if (!draftState.getCurrentContent().hasText()) {
+                return reject({ draft: 'Cannot create an article without content!' });
+            }
+
+            if (draftObj.get('tags').size === 0) {
+                return reject({ tags: 'You must add at least 1 tag' });
+            }
+            if (excerpt.length > 120) {
+                return this.setState({
+                    showPublishPanel: true
+                }, () => reject({ excerpt: 'Excerpt must not be longer than 120 characters' }));
+            }
+            return resolve();
+        });
+
     _createRef = nodeName =>
         (node) => { this[nodeName] = node; };
 
@@ -139,18 +188,22 @@ class NewEntryPage extends Component {
             title: draftObj.getIn(['content', 'title']),
             type: match.params.draftType
         };
-        if (draftObj.onChain) {
+        this.validateData().then(() => {
+            if (draftObj.onChain) {
+                return this.props.actionAdd(
+                    loggedProfile.get('ethAddress'),
+                    actionTypes.draftPublishUpdate,
+                    { draft: publishPayload }
+                );
+            }
             return this.props.actionAdd(
                 loggedProfile.get('ethAddress'),
-                actionTypes.draftPublishUpdate,
+                actionTypes.draftPublish,
                 { draft: publishPayload }
             );
-        }
-        return this.props.actionAdd(
-            loggedProfile.get('ethAddress'),
-            actionTypes.draftPublish,
-            { draft: publishPayload }
-        );
+        }).catch((errors) => {
+            this.setState({ errors });
+        });
     }
 
     _handleVersionRevert = (version) => {
@@ -266,9 +319,10 @@ class NewEntryPage extends Component {
     }
 
     render () {
-        const { showPublishPanel } = this.state;
+        const { showPublishPanel, errors } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
-            tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries } = this.props;
+            tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
+            selectionState } = this.props;
         if (!draftObj || !draftObj.get('content')) {
             return (
               <div>Finding Draft</div>
@@ -283,6 +337,8 @@ class NewEntryPage extends Component {
               </div>
             );
         }
+        const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
+        console.log(currentSelection, selectionState);
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         return (
@@ -313,14 +369,20 @@ class NewEntryPage extends Component {
                     onChange={this._handleTitleChange}
                     value={title}
                   />
+                  {errors.title &&
+                    <small className="edit-entry-page__error-text">{errors.title}</small>
+                  }
                   <TextEntryEditor
                     ref={this._createRef('editor')}
                     onChange={this._handleEditorChange}
                     editorState={draft}
-                    selectionState={this.state.editorState}
+                    selectionState={currentSelection}
                     baseUrl={baseUrl}
                     intl={intl}
                   />
+                  {errors.draft &&
+                    <small className="edit-entry-page__error-text">{errors.draft}</small>
+                  }
                 </div>
                 <div className="edit-entry-page__tag-editor">
                   <TagEditor
@@ -337,6 +399,9 @@ class NewEntryPage extends Component {
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
                   />
+                  {errors.tags &&
+                    <small className="edit-entry-page__error-text">{errors.tags}</small>
+                  }
                 </div>
               </Col>
               <Col
@@ -348,6 +413,7 @@ class NewEntryPage extends Component {
               >
                 <PublishOptionsPanel
                   baseUrl={baseUrl}
+                  errors={errors}
                   intl={intl}
                   onClose={this._handlePublishPanelClose}
                   onLicenceChange={this._handleDraftLicenceChange}
@@ -417,6 +483,7 @@ NewEntryPage.propTypes = {
     resolvingEntries: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
+    selectionState: PropTypes.shape(),
     searchResetResults: PropTypes.func,
     tagSearch: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
@@ -431,6 +498,7 @@ const mapStateToProps = (state, ownProps) => ({
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     loggedProfile: selectLoggedProfile(state),
+    selectionState: state.draftState.get('selection'),
     resolvingEntries: state.draftState.get('resolvingEntries'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),

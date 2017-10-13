@@ -4,6 +4,7 @@ import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel } from './helpers';
 import { selectToken, selectDraftById } from '../selectors';
+import { entryTypes } from '../../constants/entry-types';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
@@ -31,6 +32,7 @@ function* draftCreate ({ data }) {
      */
     const editorState = EditorState.acceptSelection(newEditorState, newSelectionState);
     const { content, ...others } = data;
+    console.log(content, others, 'content and others');
     yield put(draftActions.draftCreateSuccess({
         content: {
             ...content,
@@ -129,9 +131,9 @@ function* draftPublish ({ actionId, draft }) {
     draftToPublish.content.draft = JSON.parse(
         editorStateToJSON(draftFromState.getIn(['content', 'draft']))
     );
-    if (draftToPublish.entryType === 'article') {
-        draftToPublish.entryType = 1;
-    }
+
+    draftToPublish.entryType = entryTypes.findIndex(type => type === draftToPublish.entryType);
+
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield call([channel, channel.send], {
         actionId,

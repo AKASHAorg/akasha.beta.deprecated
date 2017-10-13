@@ -101,7 +101,9 @@ class TagEditor extends Component {
         const manager = self.Channel.client.tags.manager;
         this.openChannel(serverChannel, manager, () => {
             clientChannel.on((ev, data) => {
-                console.log(data, 'ATTEEENTTIOOOONNNN!!!!1');
+                this.setState({
+                    canCreateTags: data.can
+                });
             });
             serverChannel.send({ ethAddress });
         });
@@ -348,7 +350,6 @@ class TagEditor extends Component {
 
 TagEditor.propTypes = {
     actionAdd: PropTypes.func,
-    canCreateTags: PropTypes.bool,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
