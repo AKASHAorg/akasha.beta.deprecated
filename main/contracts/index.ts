@@ -87,8 +87,10 @@ class Contracts {
                         sortWith([descend(prop('blockNumber')),
                                 descend(prop('logIndex'))],
                             results));
-                    const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
-                    return resolve({ results: sortedResults, fromBlock, lastIndex });
+                    const lastLog = last(sortedResults);
+                    const lastIndex = lastLog ? lastLog.logIndex : 0;
+                    const lastBlock = lastLog ? lastLog.blockNumber : 0;
+                    return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
             fetch(toBlock);
@@ -129,8 +131,10 @@ class Contracts {
                         sortWith([descend(prop('blockNumber')),
                                 descend(prop('logIndex'))],
                             results));
-                    const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
-                    return resolve({ results: sortedResults, fromBlock, lastIndex });
+                    const lastLog = last(sortedResults);
+                    const lastIndex = lastLog ? lastLog.logIndex : 0;
+                    const lastBlock = lastLog ? lastLog.blockNumber : 0;
+                    return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
             fetch(toBlock);
