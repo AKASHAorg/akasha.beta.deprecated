@@ -4,11 +4,11 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
 
 export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: number, limit: number,
-    lastIndex?: number, args: any }) {
+    lastIndex?: number, args: any, reversed?: boolean }) {
     const collection = [];
     const fetched = yield contracts
         .fromEvent(contracts.instance.Entries.Publish, data.args, data.toBlock,
-            data.limit, { lastIndex: data.lastIndex });
+            data.limit, { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (let event of fetched.results) {
 
         const captureIndex = yield contracts
@@ -35,10 +35,11 @@ export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: nu
     return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
 });
 
-export const fetchFromTagIndex = Promise.coroutine(function* (data: { toBlock: number, limit: number, lastIndex?: number, args: any }) {
+export const fetchFromTagIndex = Promise.coroutine(function* (data: { toBlock: number, limit: number,
+    lastIndex?: number, args: any, reversed?: boolean }) {
     const collection = [];
     const fetched = yield contracts.fromEvent(contracts.instance.Entries.TagIndex,
-        data.args, data.toBlock, data.limit, { lastIndex: data.lastIndex });
+        data.args, data.toBlock, data.limit, { lastIndex: data.lastIndex, reversed: data.reversed || false });
 
     for (let event of fetched.results) {
         const fetchedPublish = yield contracts

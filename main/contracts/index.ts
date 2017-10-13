@@ -1,6 +1,6 @@
 const initContracts = require('@akashaproject/contracts.js');
 import { GethConnector } from '@akashaproject/geth-connector';
-import { descend, filter, last, prop, sortWith, uniq } from 'ramda';
+import { descend, filter, last, prop, sortWith, take, uniq } from 'ramda';
 import auth from '../modules/auth/Auth';
 
 class Contracts {
@@ -53,17 +53,25 @@ class Contracts {
         });
     }
 
-    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number, options: { lastIndex?: number }) {
+    public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number,
+                     options: { lastIndex?: number, reversed?: boolean }) {
         const step = 5300;
         return new Promise((resolve, reject) => {
             let results = [];
-            const filterIndex = (record) => record.blockNumber < toBlock || record.logIndex < options.lastIndex;
+            let filterIndex;
+            if (!options.reversed) {
+                filterIndex = (record) => record.blockNumber < toBlock ||
+                    (record.blockNumber === toBlock && record.logIndex < options.lastIndex);
+            } else {
+                filterIndex = (record) => record.blockNumber > toBlock;
+            }
+
             const fetch = (to) => {
-                let fromBlock = to - step;
+                let fromBlock = (options.reversed) ? toBlock : to - step;
                 if (fromBlock < 0) {
                     fromBlock = 0;
                 }
-                const event = ethEvent(args, { fromBlock, toBlock: to });
+                const event = ethEvent(args, { fromBlock, toBlock: (options.reversed) ? 'latest' : to });
                 event.get((err, data) => {
                     if (err) {
                         return reject(err);
@@ -71,11 +79,14 @@ class Contracts {
                     const filteredData = (options.lastIndex) ? filter(filterIndex, data) : data;
 
                     results = uniq(results.concat(filteredData));
-                    if (results.length < limit && fromBlock > 0) {
+                    if (results.length < limit && fromBlock > 0 && !options.reversed) {
                         return fetch(fromBlock);
                     }
 
-                    const sortedResults = sortWith([descend(prop('blockNumber')), descend(prop('logIndex'))], results);
+                    const sortedResults = take(limit,
+                        sortWith([descend(prop('blockNumber')),
+                                descend(prop('logIndex'))],
+                            results));
                     const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
                     return resolve({ results: sortedResults, fromBlock, lastIndex });
                 });
@@ -86,17 +97,23 @@ class Contracts {
     }
 
     public fromEventFilter(ethEvent: any, args: any, toBlock: number | string, limit: number,
-                           options: { lastIndex?: number }, aditionalFilter: (data) => boolean) {
+                           options: { lastIndex?: number, reversed?: boolean }, aditionalFilter: (data) => boolean) {
         const step = 8300;
         return new Promise((resolve, reject) => {
             let results = [];
-            const filterIndex = (record) => record.blockNumber < toBlock || record.logIndex < options.lastIndex;
+            let filterIndex;
+            if (!options.reversed) {
+                filterIndex = (record) => record.blockNumber < toBlock ||
+                    (record.blockNumber === toBlock && record.logIndex < options.lastIndex);
+            } else {
+                filterIndex = (record) => record.blockNumber > toBlock;
+            }
             const fetch = (to) => {
-                let fromBlock = to - step;
+                let fromBlock = (options.reversed) ? toBlock : to - step;
                 if (fromBlock < 0) {
                     fromBlock = 0;
                 }
-                const event = ethEvent(args, { fromBlock, toBlock: to });
+                const event = ethEvent(args, { fromBlock, toBlock: (options.reversed) ? 'latest' : to });
                 event.get((err, data) => {
                     if (err) {
                         return reject(err);
@@ -104,11 +121,14 @@ class Contracts {
 
                     const filteredData = filter(aditionalFilter, filter(filterIndex, data));
                     results = uniq(results.concat(filteredData));
-                    if (results.length < limit && fromBlock > 0) {
+                    if (results.length < limit && fromBlock > 0 && !options.reversed) {
                         return fetch(fromBlock);
                     }
 
-                    const sortedResults = sortWith([descend(prop('blockNumber')), descend(prop('logIndex'))], results);
+                    const sortedResults = take(limit,
+                        sortWith([descend(prop('blockNumber')),
+                                descend(prop('logIndex'))],
+                            results));
                     const lastIndex = sortedResults.length ? last(sortedResults).logIndex : 0;
                     return resolve({ results: sortedResults, fromBlock, lastIndex });
                 });
