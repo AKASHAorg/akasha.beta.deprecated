@@ -32,7 +32,6 @@ function* draftCreate ({ data }) {
      */
     const editorState = EditorState.acceptSelection(newEditorState, newSelectionState);
     const { content, ...others } = data;
-    console.log(content, others, 'content and others');
     yield put(draftActions.draftCreateSuccess({
         content: {
             ...content,
