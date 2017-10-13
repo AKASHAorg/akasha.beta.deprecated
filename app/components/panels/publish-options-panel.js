@@ -18,6 +18,7 @@ class PublishOptionsPanel extends Component {
         return nextProps.excerpt !== this.props.excerpt ||
             !nextProps.selectedLicence.equals(this.props.selectedLicence) ||
             !nextProps.featuredImage.equals(this.props.featuredImage) ||
+            nextProps.errors.excerpt !== this.props.errors.excerpt ||
             nextState.scrolled !== this.state.scrolled;
     }
 
@@ -43,7 +44,7 @@ class PublishOptionsPanel extends Component {
     }
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
-            excerpt, baseUrl } = this.props;
+            excerpt, baseUrl, errors } = this.props;
         return (
           <div className="publish-options-panel">
             <div
@@ -115,7 +116,7 @@ class PublishOptionsPanel extends Component {
                   onChange={this._handleFeaturedImageChange}
                   useIpfs
                 />
-                <div>{intl.formatMessage(entryMessages.allowedImageTypes)}</div>
+                <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>
               </div>
               <div
                 className="publish-options-panel__excerpt-container"
@@ -133,7 +134,12 @@ class PublishOptionsPanel extends Component {
                   onChange={this._handleExcerptChange}
                   value={excerpt}
                 />
-                <div>{intl.formatMessage(validationMessages.maxExcerptLength)}</div>
+                {errors.excerpt &&
+                  <small className="edit-entry-page__error-text">{errors.excerpt}</small>
+                }
+                {!errors.excerpt &&
+                  <small>{intl.formatMessage(validationMessages.maxExcerptLength)}</small>
+                }
               </div>
             </div>
           </div>
@@ -143,6 +149,7 @@ class PublishOptionsPanel extends Component {
 
 PublishOptionsPanel.propTypes = {
     baseUrl: PropTypes.string,
+    errors: PropTypes.shape(),
     excerpt: PropTypes.string,
     intl: PropTypes.shape(),
     onClose: PropTypes.func,

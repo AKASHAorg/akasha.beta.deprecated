@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import createHashHistory from 'history/createHashHistory';
 import Route from 'react-router-dom/Route';
 import { ConnectedRouter } from 'react-router-redux';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
 import ConnectedIntlProvider from './connected-intl-provider';
 import rootSaga from './local-flux/sagas';
@@ -25,8 +24,6 @@ const store = configureStore();
 sagaMiddleware.run(rootSaga);
 
 window.Perf = ReactPerf;
-
-injectTapEventPlugin();
 
 render(
   <Provider store={store} >
