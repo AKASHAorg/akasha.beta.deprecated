@@ -201,7 +201,7 @@ class ProfilePopover extends Component {
                 </div>
                 <Icon className="profile-popover__counter-icon" type="message" />
                 <div className="profile-popover__counter-text">
-                  {profile.get('commentsCount') || 3}
+                  {profile.get('commentsCount')}
                 </div>
                 <Icon className="profile-popover__counter-icon" type="trophy" />
                 <div className="profile-popover__counter-text">

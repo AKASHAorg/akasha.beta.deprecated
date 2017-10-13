@@ -12,6 +12,7 @@ import { ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
 
@@ -21,9 +22,10 @@ class Comment extends Component {
     constructor (props) {
         super(props);
 
-        const content = convertFromRaw(props.comment.data.content);
+        const content = props.comment.content && convertFromRaw(props.comment.content);
+        const editorState = content ? EditorState.createWithContent(content) : EditorState.createEmpty();
         this.state = {
-            editorState: EditorState.createWithContent(content),
+            editorState,
             isExpanded: null,
         };
 
@@ -35,6 +37,20 @@ class Comment extends Component {
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }
 
+    componentWillReceiveProps (nextProps) {
+        const { comment } = nextProps;
+        if (comment.content && !this.props.comment.content) {
+            try {
+                const content = convertFromRaw(JSON.parse(comment.content));
+                this.setState({
+                    editorState: EditorState.createWithContent(content)
+                });
+            } catch (error) {
+                console.error('comment content is wrong format', error);
+            }
+        }
+    }
+
     componentDidMount () {
         const { comment } = this.props;
         let { isExpanded } = this.state;
@@ -42,7 +58,7 @@ class Comment extends Component {
         if (this.editorWrapperRef) {
             contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
         }
-        if (!comment.data.content) {
+        if (!comment.content) {
             isExpanded = null;
         }
         if (contentHeight > 170) {
@@ -55,12 +71,12 @@ class Comment extends Component {
 
     isLogged = () => {
         const { comment, loggedEthAddress } = this.props;
-        return loggedEthAddress === comment.data.profile;
+        return loggedEthAddress === comment.author.ethAddress;
     };
 
     isEntryAuthor = () => {
         const { comment, ethAddress } = this.props;
-        return comment.data.profile === ethAddress;
+        return comment.author.ethAddress === ethAddress;
     }
 
     onChange = (editorState) => { this.setState({ editorState }); };
@@ -86,13 +102,26 @@ class Comment extends Component {
         );
     };
 
+    renderPlaceholder = () => {
+        return (
+            <div>PLACEHOLDER</div>
+        );
+    };
+
     render () {
-        const { comment, containerRef, children, intl, onReply, profiles, showReplyButton } = this.props;
+        const { comment, containerRef, children, intl, onReply, profiles, resolvingComment,
+            showReplyButton } = this.props;
+
+        if (resolvingComment) {
+            return this.renderPlaceholder();
+        }
+
         const { editorState, isExpanded } = this.state;
-        const { data } = comment;
-        const { date, content } = data;
-        const author = profiles.get(data.profile);
-        const authorAkashaId = author && author.get('akashaId');
+        const publishDate = comment.publishDate;
+        const content = comment.content;
+        const ethAddress = comment.author.ethAddress;
+        const author = profiles.get(ethAddress);
+        const akashaId = author && author.get('akashaId');
         const authorClass = classNames('content-link comment__author-name', {
             'comment__author-name_logged': this.isLogged(),
             'comment__author-name_author': !this.isLogged() && this.isEntryAuthor()
@@ -114,7 +143,7 @@ class Comment extends Component {
                   {...voteProps}
                 />
                 <span className="comment__score">
-                  {Math.round(Math.random() * 100)}
+                  {comment.score}
                 </span>
                 <VotePopover
                   onSubmit={() => {}}
@@ -125,14 +154,14 @@ class Comment extends Component {
               <div className="comment__main">
                 <div className="flex-center-y comment__header">
                   {author &&
-                    <ProfilePopover akashaId={authorAkashaId} containerRef={containerRef}>
+                    <ProfilePopover ethAddress={comment.author.ethAddress} containerRef={containerRef}>
                       <div className={authorClass}>
-                        {authorAkashaId}
+                        {getDisplayName({ akashaId, ethAddress })}
                       </div>
                     </ProfilePopover>
                   }
                   <span className="comment__publish-date">
-                    {date && intl.formatRelative(new Date(date))}
+                    {publishDate && intl.formatRelative(new Date(publishDate * 1000))}
                   </span>
                 </div>
                 {content &&
@@ -148,7 +177,7 @@ class Comment extends Component {
                   </div>
                 }
                 {!content &&
-                  <div className="comment__placeholder">
+                  <div className="comment__placeholder-icon">
                     <Tooltip
                       getPopupContainer={() => containerRef || document.body}
                       title={intl.formatMessage(entryMessages.unresolvedComment)}
@@ -156,6 +185,9 @@ class Comment extends Component {
                       <Icon className="comment__placeholder-icon" type="share-alt" />
                     </Tooltip>
                   </div>
+                }
+                {!content &&
+                  <div className="comment__placeholder">Cannot resolve content</div>
                 }
                 {isExpanded !== null && this.renderExpandButton()}
                 {showReplyButton && content &&
@@ -190,8 +222,9 @@ Comment.propTypes = {
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     loggedEthAddress: PropTypes.string,
-    onReply: PropTypes.func.isRequired,
+    onReply: PropTypes.func,
     profiles: PropTypes.shape(),
+    resolvingComment: PropTypes.bool,
     showReplyButton: PropTypes.bool,
 };
 

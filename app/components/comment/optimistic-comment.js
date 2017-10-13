@@ -10,6 +10,7 @@ import decorateComponentWithProps from 'decorate-component-with-props';
 import { Spin } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { entryMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 import { ProfilePopover, VotePopover } from '../';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
@@ -74,9 +75,11 @@ class OptimisticComment extends Component {
     };
 
     render () {
-        const { comment, containerRef, intl, loggedAkashaId } = this.props;
+        const { comment, containerRef, intl, loggedProfileData } = this.props;
         const { editorState, isExpanded } = this.state;
         const { date } = comment.payload.toJS();
+        const ethAddress = loggedProfileData.get('ethAddress');
+        const akashaId = loggedProfileData.get('akashaId');
         const authorClass = classNames('content-link comment__author-name', 'comment__author-name_logged');
         const bodyClass = classNames('comment__body', {
             comment__body_collapsed: isExpanded === false,
@@ -105,9 +108,9 @@ class OptimisticComment extends Component {
               </div>
               <div className="comment__main">
                 <div className="flex-center-y comment__header">
-                  <ProfilePopover akashaId={loggedAkashaId} containerRef={containerRef}>
+                  <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
                     <div className={authorClass}>
-                      {loggedAkashaId}
+                      {getDisplayName({ akashaId, ethAddress })}
                     </div>
                   </ProfilePopover>
                   <span className="comment__publish-date">
@@ -137,7 +140,7 @@ OptimisticComment.propTypes = {
     containerRef: PropTypes.shape(),
     comment: PropTypes.shape(),
     intl: PropTypes.shape(),
-    loggedAkashaId: PropTypes.string,
+    loggedProfileData: PropTypes.shape().isRequired,
 };
 
 export default injectIntl(OptimisticComment);

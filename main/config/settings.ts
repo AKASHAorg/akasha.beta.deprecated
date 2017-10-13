@@ -37,7 +37,10 @@ export const BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d
 export const GETH_LOGGER = 'geth';
 export const IPFS_LOGGER = 'ipfs';
 
-export const IPFS_PEER_ID = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
+export const IPFS_PEER_ID = [
+    '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh',
+    '/ip4/46.101.222.96/tcp/4001/ipfs/QmWfVX1MTacGQ1to1u17MtHPpgANR1UJk9h6JqtbYaRKre'
+];
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');
 generalSettings.set(HANDSHAKE_DONE, false);
