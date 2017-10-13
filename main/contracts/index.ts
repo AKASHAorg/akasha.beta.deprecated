@@ -89,7 +89,7 @@ class Contracts {
                             results));
                     const lastLog = last(sortedResults);
                     const lastIndex = lastLog ? lastLog.logIndex : 0;
-                    const lastBlock = lastLog ? lastLog.blockNumber : 0;
+                    const lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
                     return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
@@ -133,7 +133,7 @@ class Contracts {
                             results));
                     const lastLog = last(sortedResults);
                     const lastIndex = lastLog ? lastLog.logIndex : 0;
-                    const lastBlock = lastLog ? lastLog.blockNumber : 0;
+                    const lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
                     return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
