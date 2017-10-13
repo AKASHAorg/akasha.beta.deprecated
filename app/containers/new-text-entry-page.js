@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
+import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Popover, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
@@ -13,9 +14,10 @@ import { tagSearch } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile, selectSelectionState } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
+const { EditorState } = DraftJS;
 const { Step } = Steps;
 const { confirm } = Modal;
 
@@ -317,7 +319,7 @@ class NewEntryPage extends Component {
           </Steps>
         );
     }
-
+    /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
@@ -338,9 +340,13 @@ class NewEntryPage extends Component {
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
-        console.log(currentSelection, selectionState);
+        console.log(currentSelection, 'current selection');
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
+        let draftWithSelection = draft;
+        if (currentSelection && currentSelection.size > 0 && !currentSelection.getHasFocus()) {
+            draftWithSelection = EditorState.forceSelection(draft, currentSelection);
+        }
         return (
           <div className="edit-entry-page article-page">
             <div
@@ -375,7 +381,7 @@ class NewEntryPage extends Component {
                   <TextEntryEditor
                     ref={this._createRef('editor')}
                     onChange={this._handleEditorChange}
-                    editorState={draft}
+                    editorState={draftWithSelection}
                     selectionState={currentSelection}
                     baseUrl={baseUrl}
                     intl={intl}

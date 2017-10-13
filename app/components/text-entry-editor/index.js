@@ -88,11 +88,8 @@ class EntryEditor extends Component {
         return null;
     };
     render () {
-        const { editorPlaceholder, readOnly, editorState, selectionState } = this.props;
-        let editrState = EditorState.set(editorState, { decorator: this.decorators });
-        if (selectionState) {
-            editrState = EditorState.acceptSelection(editrState, selectionState);
-        }
+        const { editorPlaceholder, readOnly, editorState } = this.props;
+        const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
           <div className="text-entry-editor">
             <div
