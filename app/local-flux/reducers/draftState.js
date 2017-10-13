@@ -2,11 +2,10 @@ import { Map } from 'immutable';
 import { editorStateFromRaw } from 'megadraft';
 import { DraftModel } from './models';
 import { createReducer } from './create-reducer';
+import { entryTypes } from '../../constants/entry-types';
 import * as types from '../constants';
 
 const initialState = new DraftModel();
-
-const entryTypes = ['article', 'link', 'media'];
 
 const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
