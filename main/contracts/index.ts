@@ -1,6 +1,6 @@
 const initContracts = require('@akashaproject/contracts.js');
 import { GethConnector } from '@akashaproject/geth-connector';
-import { descend, filter, last, prop, sortWith, take, uniq } from 'ramda';
+import { descend, filter, last, prop, sortWith, take, uniq, head } from 'ramda';
 import auth from '../modules/auth/Auth';
 
 class Contracts {
@@ -87,9 +87,14 @@ class Contracts {
                         sortWith([descend(prop('blockNumber')),
                                 descend(prop('logIndex'))],
                             results));
-                    const lastLog = last(sortedResults);
+                    const lastLog = options.reversed ? head(sortedResults) : last(sortedResults);
                     const lastIndex = lastLog ? lastLog.logIndex : 0;
-                    const lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
+                    let lastBlock;
+                    if (options.reversed) {
+                       lastBlock = lastLog ? lastLog.blockNumber : fromBlock;
+                    } else {
+                        lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
+                    }
                     return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
@@ -131,9 +136,14 @@ class Contracts {
                         sortWith([descend(prop('blockNumber')),
                                 descend(prop('logIndex'))],
                             results));
-                    const lastLog = last(sortedResults);
+                    const lastLog = options.reversed ? head(sortedResults) : last(sortedResults);
                     const lastIndex = lastLog ? lastLog.logIndex : 0;
-                    const lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
+                    let lastBlock;
+                    if (options.reversed) {
+                        lastBlock = lastLog ? lastLog.blockNumber : fromBlock;
+                    } else {
+                        lastBlock = lastLog ? (sortedResults.length === limit && fromBlock !== 0) ? lastLog.blockNumber : 0 : 0;
+                    }
                     return resolve({ results: sortedResults, fromBlock: lastBlock, lastIndex });
                 });
             };
