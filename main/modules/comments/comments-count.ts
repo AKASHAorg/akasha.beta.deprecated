@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: string[]) {
 
     for (let entryId of data) {
         const count = yield contracts.instance.Comments.totalComments(entryId);
-        collection.push({ count, entryId });
+        collection.push({ count: count.toNumber(), entryId });
     }
 
     return { collection };
