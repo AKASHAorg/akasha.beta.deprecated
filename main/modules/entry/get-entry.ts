@@ -57,7 +57,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         endPeriod: _endPeriod.toNumber(),
         totalKarma: _totalKarma.toString(10),
         content: entry,
-        commentsCount: cCount.collection[0].length ? (cCount.collection[0].count).toString(10) : 0
+        commentsCount: cCount.collection.length ? cCount.collection[0].count : 0
     };
 });
 

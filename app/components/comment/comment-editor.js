@@ -87,7 +87,7 @@ class CommentEditor extends Component {
         this.editor = null;
 
         this.state = {
-            editorFocused: !!props.parent,
+            editorFocused: props.parent !== '0',
             editorState: EditorState.createEmpty(),
         };
 
@@ -101,7 +101,7 @@ class CommentEditor extends Component {
     }
 
     componentDidMount () {
-        if (this.props.parent && this.editor) {
+        if (this.props.parent !== '0' && this.editor) {
             setTimeout(this.editor.focus, 0);
         }
     }
@@ -120,7 +120,7 @@ class CommentEditor extends Component {
         if (!editorFocused) {
             return;
         }
-        const shouldCloseEditor = parent && !this.hasText();
+        const shouldCloseEditor = parent !== '0' && !this.hasText();
         if (shouldCloseEditor) {
             onClose();
         } else {
@@ -222,7 +222,7 @@ class CommentEditor extends Component {
     };
 
     handleCommentCreate = () => {
-        const { actionAdd, entryId, ethAddress, loggedProfileData, parent = '0' } = this.props;
+        const { actionAdd, entryId, ethAddress, loggedProfileData, parent } = this.props;
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const rawContent = convertToRaw(editorState.getCurrentContent());
@@ -235,7 +235,7 @@ class CommentEditor extends Component {
             parent,
             nonPersistentFields: ['content', 'mentions']
         };
-        actionAdd(loggedProfileData.get('akashaId'), actionTypes.comment, payload);
+        actionAdd(loggedProfileData.get('ethAddress'), actionTypes.comment, payload);
     };
 
     resetEditorState = () => {
@@ -333,10 +333,7 @@ class CommentEditor extends Component {
         }
 
         return (
-          <div
-            className="comment-editor"
-            ref={this.getBaseNodeRef}
-          >
+          <div className="comment-editor" ref={this.getBaseNodeRef}>
             <div className="comment-editor__avatar">
               <ProfilePopover
                 containerRef={containerRef}

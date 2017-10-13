@@ -90,19 +90,14 @@ function* entryGetExtraOfEntry (entryId, ethAddress) {
     }
 }
 
-export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { // eslint-disable-line
-    // requests are made for n+1 entries, but the last one
-    // should be ignored if the limit is fulfilled
-    const entries = collection.length === limit ?
-        collection.slice(0, -1) :
-        collection;
+export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslint-disable-line
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const allEntries = [];
     const ownEntries = [];
     const ethAddresses = [];
-    entries.forEach((entry) => {
+    collection.forEach((entry) => {
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
@@ -121,8 +116,8 @@ export function* entryGetExtraOfList (collection, limit, columnId, asDrafts) { /
     for (let i = 0; i < ethAddresses.length; i++) {
         yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
     }
-    for (let i = 0; i < entries.length; i++) {
-        const { author, entryId } = entries[i];
+    for (let i = 0; i < collection.length; i++) {
+        const { author, entryId } = collection[i];
         yield put(actions.entryGetShort({ entryId, ethAddress: author.ethAddress, context: columnId }));
     }
 }
@@ -389,7 +384,7 @@ function* watchEntryListIteratorChannel () {
             yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
         }
         const { listName } = resp.request;
-        yield fork(entryGetExtraOfList, resp.data.collection, null, listName);
+        yield fork(entryGetExtraOfList, resp.data.collection, listName);
     }
 }
 
@@ -403,8 +398,8 @@ function* watchEntryNewestIteratorChannel () {
                 yield put(actions.entryNewestIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            const { columnId } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.request.more) {
                 yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
             } else {
@@ -417,7 +412,7 @@ function* watchEntryNewestIteratorChannel () {
 function* watchEntryProfileIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryProfileIterator);
-        const { columnId, limit, asDrafts } = resp.request;
+        const { columnId, asDrafts } = resp.request;
         if (resp.error) {
             if (resp.request.more) {
                 yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
@@ -427,7 +422,7 @@ function* watchEntryProfileIteratorChannel () {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
             }
         } else if (resp.request.more) {
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
+            yield fork(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
             yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
         } else if (resp.request.asDrafts) {
             yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
@@ -440,7 +435,7 @@ function* watchEntryProfileIteratorChannel () {
                 }));
             }
         } else {
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId, asDrafts);
+            yield fork(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
             yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
         }
     }
@@ -456,8 +451,8 @@ function* watchEntryStreamIteratorChannel () {
                 yield put(actions.entryStreamIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            const { columnId } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.data.more) {
                 yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
@@ -477,8 +472,8 @@ function* watchEntryTagIteratorChannel () {
                 yield put(actions.entryTagIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId, limit } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+            const { columnId } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.request.more) {
                 yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
             } else {

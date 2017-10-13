@@ -1,5 +1,10 @@
 import { List, Map, Record } from 'immutable';
 
+export const CommentAuthor = Record({
+    akashaId: null,
+    ethAddress: null
+});
+
 export const CommentData = Record({
     active: null,
     parent: null,
@@ -10,24 +15,37 @@ export const CommentData = Record({
 });
 
 export const CommentRecord = Record({
-    entryId: null,
-    data: new CommentData(),
+    author: new CommentAuthor(),
     commentId: null,
+    content: null,
+    deleted: null,
+    endPeriod: null,
+    entryId: null,
+    ipfsHash: null,
+    isPublishing: false,
+    parent: null,
+    publishDate: null,
+    score: null,
     tempTx: null,
-    isPublishing: false
+    totalVotes: null,
 });
 
 const Flags = Record({
-    fetchingComments: false,
-    fetchingMoreComments: false
+    fetchingComments: new Map(),
+    fetchingMoreComments: new Map(),
+    resolvingComments: new Map()
 });
 
 export const CommentsState = Record({
     byId: new Map(),
+    byParent: new Map(),
+    byHash: new Map(),
     errors: new List(),
     firstComm: null,
     flags: new Flags(),
     lastComm: null,
-    moreComments: false,
+    lastBlock: new Map(),
+    lastIndex: new Map(),
+    moreComments: new Map(),
     newComments: new Map(),
 });

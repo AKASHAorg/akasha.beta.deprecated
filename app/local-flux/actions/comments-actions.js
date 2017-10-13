@@ -20,24 +20,25 @@ export const commentsGetCountError = (error) => {
 };
 
 export const commentsGetCountSuccess = data => action(types.COMMENTS_GET_COUNT_SUCCESS, { data });
-export const commentsIterator = (entryId, limit) =>
-    action(types.COMMENTS_ITERATOR, { entryId, limit });
+export const commentsIterator = ({ entryId, parent, more }) =>
+    action(types.COMMENTS_ITERATOR, { entryId, parent, more });
 
-export const commentsIteratorError = (error) => {
+export const commentsIteratorError = (error, request) => {
     error.code = 'CIE01';
     error.messageId = 'commentsIterator';
-    return action(types.COMMENTS_ITERATOR_ERROR, { error });
+    return action(types.COMMENTS_ITERATOR_ERROR, { error, request });
 };
 
 export const commentsIteratorSuccess = (data, request) =>
     action(types.COMMENTS_ITERATOR_SUCCESS, { data, request });
 export const commentsLoadNew = () => action(types.COMMENTS_LOAD_NEW);
-export const commentsMoreIterator = entryId => action(types.COMMENTS_MORE_ITERATOR, { entryId });
+export const commentsMoreIterator = ({ entryId, parent }) =>
+    action(types.COMMENTS_MORE_ITERATOR, { entryId, parent });
 
-export const commentsMoreIteratorError = (error) => {
+export const commentsMoreIteratorError = (error, request) => {
     error.code = 'CMIE01';
     error.messageId = 'commentsMoreIterator';
-    return action(types.COMMENTS_MORE_ITERATOR_ERROR, { error });
+    return action(types.COMMENTS_MORE_ITERATOR_ERROR, { error, request });
 };
 
 export const commentsMoreIteratorSuccess = (data, request) =>
@@ -52,4 +53,14 @@ export const commentsPublishError = (error) => {
 };
 
 export const commentsPublishSuccess = data => action(types.COMMENTS_PUBLISH_SUCCESS, { data });
+export const commentsResolveIpfsHash = (ipfsHashes, commentIds) =>
+    action(types.COMMENTS_RESOLVE_IPFS_HASH, { ipfsHashes, commentIds });
 
+export const commentsResolveIpfsHashError = (error) => {
+    error.code = 'CRIHE01';
+    error.messageId = 'commentsResolveIpfsHash';
+    return action(types.COMMENTS_RESOLVE_IPFS_HASH_ERROR, { error });
+};
+
+export const commentsResolveIpfsHashSuccess = data =>
+    action(types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS, { data });

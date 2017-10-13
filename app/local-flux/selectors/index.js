@@ -30,8 +30,6 @@ export const selectActiveDashboardId = (state) => {
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
-export const selectAllComments = state => state.commentsState.get('byId').toList();
-
 export const selectAllLicenses = state => state.licenseState.get('byId');
 
 export const selectAllPendingClaims = state => state.actionState.getIn(['pending', 'claim']);
@@ -63,6 +61,17 @@ export const selectColumns = state => state.dashboardState.get('columnById');
 
 export const selectColumnSuggestions = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'suggestions']);
+
+export const selectComment = (state, id) => state.commentsState.getIn(['byId', id]);
+
+export const selectCommentLastBlock = (state, parent) => state.commentsState.getIn(['lastBlock', parent]);
+
+export const selectCommentLastIndex = (state, parent) => state.commentsState.getIn(['lastIndex', parent]);
+
+export const selectCommentsForParent = (state, parent) => {
+    const list = state.commentsState.getIn(['byParent', parent]) || new List();
+    return list.map(id => selectComment(state, id));
+};
 
 export const selectCommentsFlag = (state, flag, id) => {
     if (id) {

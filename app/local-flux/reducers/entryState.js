@@ -17,13 +17,9 @@ const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
 const entryIteratorHandler = (state, { data }) => {
-    const moreEntries = data.limit === data.collection.length;
     let byId = state.get('byId');
-    data.collection.forEach((entry, index) => {
-        if (
-            !state.getIn(['byId', entry.entryId]) &&
-            (!moreEntries || index !== data.collection.length - 1)
-        ) {
+    data.collection.forEach((entry) => {
+        if (!state.getIn(['byId', entry.entryId])) {
             const newEntry = createEntryWithAuthor(entry);
             byId = byId.set(entry.entryId, newEntry);
         }
