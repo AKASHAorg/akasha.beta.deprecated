@@ -1,4 +1,4 @@
-@import '~megadraft/lib/styles/megadraft.scss';
+@import '~megadraft/dist/css/megadraft.css';
 
 /**
  * Editor styles override
@@ -90,17 +90,33 @@
     }
 }
 
-.megadraft-editor .sidemenu__item {
-    margin-left: 8px;
-    max-width: 32px;
-    input[type='file'] {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 10;
-        opacity: 0;
+.megadraft-editor {
+    .sidemenu {
+        &__item {
+            margin-left: 8px;
+            max-width: 32px;
+            cursor: pointer;
+            input[type='file'] {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                opacity: 0;
+            }
+        }
+        &__image-button {
+            background-color: @page-bg;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid @text-color;
+            position: relative;
+            font-size: 18px;
+            padding-top: 6px;
+        }
     }
 }
 

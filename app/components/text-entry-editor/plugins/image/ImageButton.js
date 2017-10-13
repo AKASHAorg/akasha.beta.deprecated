@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { insertDataBlock, DraftJS } from 'megadraft';
-import { IconButton } from 'material-ui';
-import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
+import { Icon } from 'antd';
 import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
 import { genId } from '../../../../utils/dataModule';
 import { uploadImage } from '../../../../local-flux/services/utils-service';
@@ -20,23 +19,24 @@ export default class BlockButton extends Component {
         };
     }
 
-    _triggerFileBrowser = () => {
+    _triggerFileBrowser = (ev) => {
         if (this.props.onClick) {
             this.props.onClick();
         }
         this.fileInput.value = '';
-        this.fileInput.click();
+        // this.fileInput.click();
         this.setState({
             error: ''
         });
+        ev.stopPropagation();
     }
+
     _handleImageProgress = (currentProgress) => {
         const { onImageProgress } = this.props;
         if (onImageProgress) onImageProgress(currentProgress);
     }
 
     _handleImageAdd = (ev) => {
-        ev.persist();
         const files = this.fileInput.files;
         const filePromises = getResizedImages(files, {
             minWidth: 320,
@@ -73,7 +73,6 @@ export default class BlockButton extends Component {
                 if (document.activeElement.contentEditable === 'true') {
                     document.activeElement.blur();
                 }
-                console.log('the img hashes are:', imgHashes);
                 this.props.onChange(insertDataBlock(this.props.editorState, {
                     files: imgHashes,
                     ...data
@@ -87,32 +86,20 @@ export default class BlockButton extends Component {
     render () {
         return (
           <div>
-            <IconButton
-              onTouchTap={this._triggerFileBrowser}
-              style={{
-                  width: 32,
-                  height: 32,
-                  padding: 0,
-                  borderRadius: '50%',
-                  border: '1px solid #444'
-              }}
-              iconStyle={{
-                  fill: 'transparent',
-                  stroke: '#444',
-                  strokeWidth: '1px',
-                  width: 20,
-                  height: 20
-              }}
+            <Icon
               title="Add an image"
+              shape="circle"
+              type="camera-o"
+              className="sidemenu__image-button"
+              onClick={this._triggerFileBrowser}
             >
-              <PhotoCircle />
-            </IconButton>
-            <input
-              ref={((input) => { this.fileInput = input; })}
-              type="file"
-              accept="image/*"
-              onChange={this._handleImageAdd}
-            />
+              <input
+                ref={((input) => { this.fileInput = input; })}
+                type="file"
+                accept="image/*"
+                onChange={this._handleImageAdd}
+              />
+            </Icon>
           </div>
         );
     }

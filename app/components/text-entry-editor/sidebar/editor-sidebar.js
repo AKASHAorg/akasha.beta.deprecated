@@ -15,11 +15,12 @@ class SideBar extends Component {
         return (nextState.top !== this.state.top) ||
             (nextState.sidebarVisible !== this.state.sidebarVisible) ||
             (nextState.left !== this.state.left) ||
-            (nextProps.editorState !== this.props.editorState) ||
+            !nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()) ||
             (nextProps.editorHasFocus !== this.props.editorHasFocus);
     }
     componentDidUpdate () {
         this.updateSidebarPosition();
+        console.log('well, guess what! DID UPDATE!!!');
     }
     componentWillUnmount () {
         this.setState({
@@ -39,10 +40,8 @@ class SideBar extends Component {
             this.setState({
                 sidebarVisible: false
             });
-            return null;
         }
         let node = selection.getRangeAt(0).startContainer;
-
         do {
             if (node.getAttribute && node.getAttribute('data-block') === 'true') {
                 return node;
@@ -65,9 +64,10 @@ class SideBar extends Component {
         const element = this.getSelectedBlockElement();
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
-        if (!element || !container || isBlackListed) {
-            return;
-        }
+        console.log(element, container, isBlackListed);
+        // if (!element || !container || isBlackListed) {
+        //     return;
+        // }
         const containerTop =
             (container.getBoundingClientRect().top) - document.documentElement.clientTop;
         const cursorNode = element.querySelector('span');
@@ -81,12 +81,14 @@ class SideBar extends Component {
             left
         });
     }
+
     resetSidebarPosition = () => {
         this.setState({
             top: -1,
             sidebarVisible: false
         });
     }
+
     updateSidebarPosition = () => {
         if (this.updatingPosition) {
             clearImmediate(this.updatingPosition);
@@ -94,11 +96,13 @@ class SideBar extends Component {
         this.updatingPosition = null;
         this.updatingPosition = setImmediate(() => this.setSidebarPosition());
     }
+
     render () {
         const isVisible = this.state.sidebarVisible;
         if (this.props.readOnly) {
             return null;
         }
+        console.log('rerender sidebar');
         return (
           <div ref={(container) => { this.container = container; }} >
             <div
@@ -111,7 +115,7 @@ class SideBar extends Component {
             >
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
-                  sidebarVisible={isVisible}
+                  sidebarVisible
                   editorState={this.props.editorState}
                   onChange={this.onChange}
                   plugins={this.getValidSidebarPlugins()}

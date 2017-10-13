@@ -88,8 +88,11 @@ class EntryEditor extends Component {
         return null;
     };
     render () {
-        const { editorPlaceholder, readOnly, editorState } = this.props;
-        const editrState = EditorState.set(editorState, { decorator: this.decorators });
+        const { editorPlaceholder, readOnly, editorState, selectionState } = this.props;
+        let editrState = EditorState.set(editorState, { decorator: this.decorators });
+        if (selectionState) {
+            editrState = EditorState.acceptSelection(editrState, selectionState);
+        }
         return (
           <div className="text-entry-editor">
             <div
@@ -146,6 +149,7 @@ EntryEditor.propTypes = {
     onAutosave: PropTypes.func,
     editorPlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,
+    selectionState: PropTypes.shape(),
     onChange: PropTypes.func,
     onError: PropTypes.func,
     baseUrl: PropTypes.string,
