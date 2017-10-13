@@ -22,7 +22,7 @@ const commentsIterator = {
  */
 const execute = Promise.coroutine(function* (data: {
     toBlock: number,
-    limit?: number, entryId?: string, parent?: string, author?: string, lastIndex?: number
+    limit?: number, entryId?: string, parent?: string, author?: string, lastIndex?: number, reversed?: boolean
 }) {
 
     const v = new schema.Validator();
@@ -36,7 +36,7 @@ const execute = Promise.coroutine(function* (data: {
                 parent: data.parent,
                 author: data.author
             },
-            data.toBlock, maxResults, { lastIndex: data.lastIndex });
+            data.toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed });
     for (let event of fetched.results) {
         const comment = yield fetchComment.execute({
             commentId: event.args.id,
