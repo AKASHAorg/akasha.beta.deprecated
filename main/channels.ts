@@ -22,7 +22,7 @@ const channels = {
         'resolveEntriesIpfsHash', 'canClaimVote', 'claimVote'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator', 'commentsParentIterator',
-        'getProfileComments', 'resolveCommentsIpfsHash'],
+        'getProfileComments', 'resolveCommentsIpfsHash', 'upvote', 'downvote'],
 
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
