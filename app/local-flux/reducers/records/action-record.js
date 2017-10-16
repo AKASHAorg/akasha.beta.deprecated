@@ -15,6 +15,7 @@ export const ActionRecord = Record({
 export const ActionState = Record({
     allActions: new List(),
     byId: new Map(),
+    byType: new Map(),
     needAuth: null,
     pending: new Map({
         bondAeth: false,

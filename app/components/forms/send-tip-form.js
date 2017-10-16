@@ -55,7 +55,7 @@ class SendTipForm extends Component {
                   initialValue: 0.001,
                   rules: [{
                       required: true,
-                      message: intl.formatMessage(formMessages.aethAmountRequired)
+                      message: intl.formatMessage(formMessages.amountRequired)
                   }],
               })(
                 <InputNumber
