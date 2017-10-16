@@ -4,6 +4,7 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
+import pinner, { ObjectType, OperationType } from '../pinner/runner';
 
 export const upvote = {
     'id': '/upvote',
@@ -33,8 +34,15 @@ const execute = Promise.coroutine(function* (data: {
         throw new Error('Vote weight value must be between 1-10');
     }
 
-    const txData = contracts.instance.Votes.voteComment.request(data.weight, data.entryId, data.commentId, false, { gas: 200000 });
+    const txData = contracts.instance.Votes.voteComment.request(data.weight, data.entryId, data.commentId, false, { gas: 500000 });
     const transaction = yield contracts.send(txData, data.token, cb);
+
+    pinner.execute({
+        type: ObjectType.COMMENT,
+        id: { entryId: data.entryId, commentId: data.commentId },
+        operation: OperationType.ADD
+    }).then(() => {});
+
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
 

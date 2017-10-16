@@ -8,6 +8,8 @@ import getProfileComments from './get-profile-comments';
 import resolveCommentsIpfsHash from './resolve-comments-ipfs-hash';
 import downvoteComment from './downvote-comment';
 import upvoteComment from './upvote-comment';
+import voteOf from './vote-of';
+import getScore from './get-score';
 
 export default [
     addComment,
@@ -19,5 +21,7 @@ export default [
     getProfileComments,
     resolveCommentsIpfsHash,
     downvoteComment,
-    upvoteComment
+    upvoteComment,
+    voteOf,
+    getScore
 ];
