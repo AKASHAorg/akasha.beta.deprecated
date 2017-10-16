@@ -244,17 +244,6 @@ function* entryTagIterator ({ columnId, tagName }) {
 }
 
 function* entryVoteSuccess (entryId) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
-    let entry = yield select(state => selectEntry(state, entryId));
-    const fullEntry = yield select(selectFullEntry);
-    if (!entry && fullEntry && fullEntry.get('entryId') === entryId) {
-        entry = fullEntry;
-    }
-    const authorEthAddress = entry && entry.getIn(['author', 'ethAddress']);
-    if (authorEthAddress && authorEthAddress === loggedEthAddress) {
-        yield put(actions.entryCanClaim(entryId));
-        yield put(actions.entryGetBalance(entryId));
-    }
     yield put(actions.entryGetScore(entryId));
     yield put(actions.entryGetVoteOf(entryId));
 }

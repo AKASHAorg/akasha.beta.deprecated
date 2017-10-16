@@ -1,7 +1,7 @@
 import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { CommentAuthor, CommentData, CommentRecord, CommentsState } from './records';
+import { CommentAuthor, CommentRecord, CommentsState } from './records';
 
 const initialState = new CommentsState();
 
@@ -20,36 +20,67 @@ const comparator = (a, b) => {
 const createCommentWithAuthor = comment =>
     new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
 
-const iteratorHandler = (state, collection) => {
-    let byId = state.get('byId');
-    let firstComm = collection[collection.length - 1].commentId;
-    let lastComm = collection[0].commentId;
-    const oldMargins = { firstComm: state.get('firstComm'), lastComm: state.get('lastComm') };
-    collection.forEach((comm) => {
-        // byId = byId.set(comm.commentId, getCommentRecord(comm));
+// const iteratorHandler = (state, collection) => {
+//     let byId = state.get('byId');
+//     let firstComm = collection[collection.length - 1].commentId;
+//     let lastComm = collection[0].commentId;
+//     const oldMargins = { firstComm: state.get('firstComm'), lastComm: state.get('lastComm') };
+//     collection.forEach((comm) => {
+//         // byId = byId.set(comm.commentId, getCommentRecord(comm));
+//     });
+//     byId = byId.sort(comparator);
+//     firstComm = !oldMargins.firstComm || Number(firstComm) < Number(oldMargins.firstComm) ?
+//         firstComm :
+//         oldMargins.firstComm;
+//     lastComm = !oldMargins.lastComm || Number(lastComm) > Number(oldMargins.lastComm) ?
+//         lastComm :
+//         oldMargins.lastComm;
+//     return { byId, firstComm, lastComm };
+// };
+
+const sortByScore = (byId, list) => {
+    return list.sort((a, b) => {
+        const commA = byId.get(a);
+        const commB = byId.get(b);
+
+        if (commA.score > commB.score) {
+            return -1;
+        }
+        if (commA.score < commB.score) {
+            return 1;
+        }
+        if (commA.publishDate > commB.publishDate) {
+            return -1;
+        }
+        if (commA.publishDate < commB.publishDate) {
+            return 1;
+        }
+        return 0;
     });
-    byId = byId.sort(comparator);
-    firstComm = !oldMargins.firstComm || Number(firstComm) < Number(oldMargins.firstComm) ?
-        firstComm :
-        oldMargins.firstComm;
-    lastComm = !oldMargins.lastComm || Number(lastComm) > Number(oldMargins.lastComm) ?
-        lastComm :
-        oldMargins.lastComm;
-    return { byId, firstComm, lastComm };
 };
 
 const commentsState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
-    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, { data }) => {
-        if (!data.collection.length) {
-            return state;
+    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, { data, request }) => {
+        const { collection, lastBlock } = data;
+        if (!collection.length) {
+            return state.setIn(['newComments', 'lastBlock'], lastBlock);
         }
-        let newComments = state.get('newComments');
-        data.collection.forEach((comm) => {
-            newComments = newComments.set(comm.commentId, getCommentRecord(comm));
+        let byId = state.get('byId');
+        let comments = state.getIn(['newComments', 'comments']);
+        collection.forEach((comm) => {
+            comm.entryId = request.entryId;
+            // TODO Remove this
+            comm.score = (Math.random() * 100).toFixed(0).toString();
+            const comment = createCommentWithAuthor(comm);
+            byId = byId.set(comm.commentId, comment);
+            comments = comments.push(comm.commentId);
         });
-        return state.set('newComments', newComments);
+        return state.merge({
+            byId,
+            newComments: state.get('newComments').merge({ lastBlock, comments })
+        });
     },
 
     [types.COMMENTS_CLEAN]: () => initialState,
@@ -65,43 +96,67 @@ const commentsState = createReducer(initialState, {
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
+            // TODO Remove this            
+            comm.score = (Math.random() * 100).toFixed(0).toString();
             comm.entryId = request.entryId;
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
-            list = list.push(comm.commentId);
+            list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
         });
+        list = sortByScore(byId, list);
+
         return state.merge({
             byId,
             byParent: state.get('byParent').set(parent, list),
             flags: state.get('flags').setIn(['fetchingComments', parent], false),
             lastBlock: state.get('lastBlock').set(parent, data.lastBlock),
             lastIndex: state.get('lastIndex').set(parent, data.lastIndex),
-            moreComments: state.get('moreComments').set(parent, !!data.lastBlock)
+            moreComments: state.get('moreComments').set(parent, !!data.lastBlock),
+            newestCommentBlock: state.get('newestCommentBlock').set(parent, request.toBlock)
         });
-        // const { byId, firstComm, lastComm } = iteratorHandler(state, data.collection);
-        // return state.merge({
-        //     byId,
-        //     firstComm: firstComm || null,
-        //     flags: state.get('flags').set('fetchingComments', false),
-        //     lastComm: lastComm || null,
-        //     moreComments: !!data.lastBlock
-        // });
+    },
+
+    [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, { data, request }) => {
+        let byId = state.get('byId');
+        const parent = request.parent;
+        let list = state.getIn(['byParent', parent]) || new List();
+        data.collection.forEach((comm) => {
+            comm.entryId = request.entryId;
+            // TODO Remove this
+            comm.score = (Math.random() * 100).toFixed(0).toString();
+            const comment = createCommentWithAuthor(comm);
+            byId = byId.set(comm.commentId, comment);
+            list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
+        });
+        list = sortByScore(byId, list);
+
+        return state.merge({
+            byId,
+            byParent: state.get('byParent').set(parent, list),
+            newComments: state.get('newComments').set('lastBlock', data.lastBlock),
+            newestCommentBlock: state.get('newestCommentBlock').set(parent, data.lastBlock)
+        });
     },
 
     [types.COMMENTS_LOAD_NEW]: (state) => {
-        if (!state.get('newComments').size) {
+        const newComments = state.getIn(['newComments', 'comments']);
+        if (!newComments.size) {
             return state;
         }
-        const newComments = state.get('newComments').sort(comparator);
-        let lastComm = Number(newComments.first().commentId);
-        const oldLastComm = state.get('lastComm');
-        lastComm = !oldLastComm || Number(lastComm) > Number(oldLastComm) ?
-            lastComm :
-            oldLastComm;
+        const byId = state.get('byId');
+        let byParent = state.get('byParent');
+        let newestCommentBlock = state.get('newestCommentBlock');
+        newComments.forEach((id) => {
+            const comment = state.getIn(['byId', id]);
+            const parent = comment.get('parent') || '0';
+            const list = sortByScore(byId, byParent.get(parent).push(id));
+            byParent = byParent.set(parent, list.push(id));
+            newestCommentBlock = newestCommentBlock.set(parent, state.getIn(['newComments', 'lastBlock']));
+        });
         return state.merge({
-            byId: state.get('byId').merge(newComments).sort(comparator),
-            lastComm,
-            newComments: new Map()
+            byParent,
+            newComments: state.get('newComments').set('comments', new List()),
+            newestCommentBlock
         });
     },
 
@@ -112,15 +167,21 @@ const commentsState = createReducer(initialState, {
         state.setIn(['flags', 'fetchingMoreComments', request.parent], false),
 
     [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        if (!data.collection.length) {
-            return state.setIn(['flags', 'fetchingMoreComments', request.parent], false);
-        }
-        const { byId, firstComm, lastComm } = iteratorHandler(state, data.collection);
+        let byId = state.get('byId');
+        const parent = request.parent;
+        let list = state.getIn(['byParent', parent]) || new List();
+        data.collection.forEach((comm) => {
+            comm.entryId = request.entryId;
+            const comment = createCommentWithAuthor(comm);
+            byId = byId.set(comm.commentId, comment);
+            list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
+        });
         return state.merge({
             byId,
-            firstComm: firstComm || null,
-            flags: state.get('flags').setIn(['fetchingMoreComments', request.parent], false),
-            lastComm: lastComm || null,
+            byParent: state.get('byParent').set(parent, list),
+            flags: state.get('flags').setIn(['fetchingMoreComments', parent], false),
+            lastBlock: state.get('lastBlock').set(parent, data.lastBlock),
+            lastIndex: state.get('lastIndex').set(parent, data.lastIndex),
             moreComments: state.get('moreComments').set(parent, !!data.lastBlock)
         });
     },
@@ -143,6 +204,9 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data }) => {
         const commentId = state.getIn(['byHash', data.ipfsHash]);
+        if (!data.ipfsHash) {
+            return state;
+        }
         return state.merge({
             byId: state.get('byId').setIn([commentId, 'content'], data.content),
             flags: state.get('flags').setIn(['resolvingComments', data.ipfsHash], false)

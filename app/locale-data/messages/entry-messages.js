@@ -199,6 +199,11 @@ const entryMessages = defineMessages({
         description: 'message when loading comments for the first time',
         defaultMessage: 'Loading comments'
     },
+    loadMoreReplies: {
+        id: 'app.entry.loadMoreReplies',
+        description: 'label for load more replies button',
+        defaultMessage: 'Load more replies'
+    },
     newComments: {
         id: 'app.entry.newComments',
         description: 'Message to show when new comments were published',

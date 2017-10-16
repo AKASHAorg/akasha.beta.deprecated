@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
@@ -11,6 +12,9 @@ import { Icon, Tooltip } from 'antd';
 import { ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { selectComment, selectLoggedEthAddress, selectPendingCommentVote,
+    selectProfile, selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
@@ -22,7 +26,7 @@ class Comment extends Component {
     constructor (props) {
         super(props);
 
-        const content = props.comment.content && convertFromRaw(props.comment.content);
+        const content = props.comment.content && convertFromRaw(JSON.parse(props.comment.content));
         const editorState = content ? EditorState.createWithContent(content) : EditorState.createEmpty();
         this.state = {
             editorState,
@@ -88,6 +92,16 @@ class Comment extends Component {
         });
     };
 
+    handleVote = ({ type, weight }) => {
+        const { comment, entryId, loggedEthAddress } = this.props;
+        const payload = {
+            commentId: comment.commentId,
+            entryId,
+            weight
+        };
+        this.props.actionAdd(loggedEthAddress, type, payload);
+    };
+
     renderExpandButton = () => {
         const { intl } = this.props;
         const label = this.state.isExpanded ?
@@ -109,8 +123,8 @@ class Comment extends Component {
     };
 
     render () {
-        const { comment, containerRef, children, intl, onReply, profiles, resolvingComment,
-            showReplyButton } = this.props;
+        const { author, comment, containerRef, children, intl, onReply, resolvingComment,
+            showReplyButton, votePending } = this.props;
 
         if (resolvingComment) {
             return this.renderPlaceholder();
@@ -120,7 +134,6 @@ class Comment extends Component {
         const publishDate = comment.publishDate;
         const content = comment.content;
         const ethAddress = comment.author.ethAddress;
-        const author = profiles.get(ethAddress);
         const akashaId = author && author.get('akashaId');
         const authorClass = classNames('content-link comment__author-name', {
             'comment__author-name_logged': this.isLogged(),
@@ -131,14 +144,14 @@ class Comment extends Component {
             comment__body_expanded: isExpanded === true
         });
         const iconClassName = 'comment__vote-icon';
-        const voteProps = { containerRef, iconClassName, votePending: false, voteWeight: 0 };
+        const voteProps = { containerRef, iconClassName, votePending, vote: '0' };
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
             <div className="comment__inner">
               <div className="comment__votes">
                 <VotePopover
-                  onSubmit={() => {}}
+                  onSubmit={this.handleVote}
                   type={actionTypes.commentUpvote}
                   {...voteProps}
                 />
@@ -146,7 +159,7 @@ class Comment extends Component {
                   {comment.score}
                 </span>
                 <VotePopover
-                  onSubmit={() => {}}
+                  onSubmit={this.handleVote}
                   type={actionTypes.commentDownvote}
                   {...voteProps}
                 />
@@ -216,16 +229,39 @@ class Comment extends Component {
 }
 
 Comment.propTypes = {
+    actionAdd: PropTypes.func.isRequired,
+    author: PropTypes.shape(),
     children: PropTypes.node,
     comment: PropTypes.shape(),
     containerRef: PropTypes.shape(),
+    entryId: PropTypes.string.isRequired,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     loggedEthAddress: PropTypes.string,
     onReply: PropTypes.func,
-    profiles: PropTypes.shape(),
     resolvingComment: PropTypes.bool,
     showReplyButton: PropTypes.bool,
+    votePending: PropTypes.bool
 };
 
-export default injectIntl(Comment);
+function mapStateToProps (state, ownProps) {
+    const { commentId } = ownProps;
+    const ethAddress = state.entryState.getIn(['fullEntry', 'author', 'ethAddress']);
+    const comment = selectComment(state, commentId);
+    return {
+        author: selectProfile(state, comment.author.ethAddress),
+        comment,
+        entryId: state.entryState.getIn(['fullEntry', 'entryId']),
+        ethAddress,
+        loggedEthAddress: selectLoggedEthAddress(state),
+        resolvingComment: selectResolvingComment(state, comment.ipfsHash),
+        votePending: !!selectPendingCommentVote(state, commentId)
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        actionAdd
+    }
+)(injectIntl(Comment));

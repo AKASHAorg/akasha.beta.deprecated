@@ -28,8 +28,8 @@ const execute = Promise.coroutine(function* (data: ProfileFollowRequest, cb) {
     const txData = contracts.instance.Feed.follow.request(address, { gas: 400000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     mixed.flush();
-    pinner.execute({ type: ObjectType.PROFILE, id: data.akashaId, operation: OperationType.ADD });
-    return { tx: transaction.tx, receipt: transaction.receipt, akashaId: data.akashaId };
+    pinner.execute({ type: ObjectType.PROFILE, id: address, operation: OperationType.ADD }).then(() => {});
+    return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
 export default { execute, name: 'followProfile', hasStream: true };

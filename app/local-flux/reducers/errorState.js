@@ -26,6 +26,8 @@ const addNewError = (state, { error }) => {
 
 const errorState = createReducer(initialState, {
     [types.BACKUP_KEYS_ERROR]: addNewError,
+    [types.COMMENTS_DOWNVOTE_ERROR]: addNewError,
+    [types.COMMENTS_UPVOTE_ERROR]: addNewError,
     [types.DASHBOARD_ADD_COLUMN_ERROR]: addNewError,
     [types.DASHBOARD_ADD_ERROR]: addNewError,
     [types.DASHBOARD_DELETE_COLUMN_ERROR]: addNewError,
