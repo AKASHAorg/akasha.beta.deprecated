@@ -18,7 +18,11 @@ const execute = Promise.coroutine(function* (data: EntryUpvoteRequest, cb) {
 
     const txData = contracts.instance.Votes.voteEntry.request(data.weight, data.entryId, false, data.ethAddress, { gas: 200000 });
     const transaction = yield contracts.send(txData, data.token, cb);
-    pinner.execute({ type: ObjectType.ENTRY, id: data.entryId, operation: OperationType.ADD });
+    pinner.execute({
+        type: ObjectType.ENTRY,
+        id: { entryId: data.entryId, ethAddress: data.ethAddress },
+        operation: OperationType.ADD
+    });
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
