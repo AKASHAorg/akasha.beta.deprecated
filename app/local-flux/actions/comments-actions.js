@@ -1,7 +1,7 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const commentsCheckNew = entryId => action(types.COMMENTS_CHECK_NEW, { entryId });
+export const commentsCheckNew = ({ entryId }) => action(types.COMMENTS_CHECK_NEW, { entryId });
 
 export const commentsCheckNewError = (error) => {
     error.code = 'CCNE01';
@@ -9,7 +9,8 @@ export const commentsCheckNewError = (error) => {
     return action(types.COMMENTS_CHECK_NEW_ERROR, { error });
 };
 
-export const commentsCheckNewSuccess = data => action(types.COMMENTS_CHECK_NEW_SUCCESS, { data });
+export const commentsCheckNewSuccess = (data, request) =>
+    action(types.COMMENTS_CHECK_NEW_SUCCESS, { data, request });
 export const commentsClean = () => action(types.COMMENTS_CLEAN);
 export const commentsGetCount = entryId => action(types.COMMENTS_GET_COUNT, { entryId });
 
@@ -31,6 +32,8 @@ export const commentsIteratorError = (error, request) => {
 
 export const commentsIteratorSuccess = (data, request) =>
     action(types.COMMENTS_ITERATOR_SUCCESS, { data, request });
+export const commentsIteratorReversedSuccess = (data, request) =>
+    action(types.COMMENTS_ITERATOR_REVERSED_SUCCESS, { data, request });
 export const commentsLoadNew = () => action(types.COMMENTS_LOAD_NEW);
 export const commentsMoreIterator = ({ entryId, parent }) =>
     action(types.COMMENTS_MORE_ITERATOR, { entryId, parent });

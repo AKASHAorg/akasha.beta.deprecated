@@ -16,7 +16,7 @@ function mapStateToProps (state) {
         latestVersion: state.entryState.get('fullEntryLatestVersion'),
         licenses: state.licenseState.get('byId'),
         loggedProfileData: selectLoggedProfileData(state),
-        newComments: state.commentsState.get('newComments'),
+        newComments: state.commentsState.getIn(['newComments', 'comments']),
         pendingComments: selectPendingComments(state, entry && entry.get('entryId')),
     };
 }

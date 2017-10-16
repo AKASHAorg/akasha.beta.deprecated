@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectCommentsForParent, selectLoggedProfileData } from '../../local-flux/selectors';
+import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
+import { selectCommentsForParent, selectLoggedProfileData,
+    selectMoreComments } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -34,12 +36,16 @@ class CommentThread extends Component {
         this.commentEditorRef = editor && editor.refs.clickAwayableElement;
     };
 
+    loadMoreReplies = () => {
+        const { comment, entryId } = this.props;
+        this.props.commentsMoreIterator({ entryId, parent: comment.commentId });
+    }
+
     renderOptimisticComments = () => {
         const { containerRef, comment, loggedProfileData, pendingComments } = this.props;
         const optimisticComments = pendingComments.filter(action =>
             action.getIn(['payload', 'parent']) === comment.commentId
         );
-        console.log('optimistic comments', optimisticComments);
 
         return optimisticComments
             .toArray()
@@ -56,7 +62,7 @@ class CommentThread extends Component {
     renderReplies = () => {
         const { containerRef, ethAddress, loggedProfileData, profiles, replies,
             resolvingComments } = this.props;
-        return replies.map(comment => (
+        return replies.reverse().map(comment => (
           <Comment
             comment={comment}
             containerRef={containerRef}
@@ -97,7 +103,7 @@ class CommentThread extends Component {
     };
 
     render () {
-        const { comment, containerRef, ethAddress, loggedProfileData, onReply,
+        const { comment, containerRef, ethAddress, intl, loggedProfileData, moreReplies, onReply,
             profiles, replies, replyTo, resolvingComments } = this.props;
 
         return (
@@ -115,6 +121,11 @@ class CommentThread extends Component {
             >
               {!!replies.size && this.renderReplies()}
               {this.renderOptimisticComments()}
+              {moreReplies &&
+                <div className="content-link comment-thread__replies-button" onClick={this.loadMoreReplies}>
+                  {intl.formatMessage(entryMessages.loadMoreReplies)}
+                </div>
+              }
               {replyTo === comment.commentId && this.renderEditor()}
             </Comment>
           </div>
@@ -125,11 +136,13 @@ class CommentThread extends Component {
 CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     comment: PropTypes.shape().isRequired,
+    commentsMoreIterator: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string,
     ethAddress: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),
+    moreReplies: PropTypes.bool,
     onReply: PropTypes.func.isRequired,
     onReplyClose: PropTypes.func.isRequired,
     pendingComments: PropTypes.shape(),
@@ -145,6 +158,7 @@ function mapStateToProps (state, ownProps) {
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
         ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
         loggedProfileData: selectLoggedProfileData(state),
+        moreReplies: selectMoreComments(state, comment.commentId),
         profiles: state.profileState.get('byEthAddress'),
         replies: selectCommentsForParent(state, comment.commentId),
         resolvingComments: state.commentsState.getIn(['flags', 'resolvingComments'])
@@ -154,6 +168,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        actionAdd
+        actionAdd,
+        commentsMoreIterator,
     }
 )(injectIntl(CommentThread));

@@ -163,8 +163,6 @@ export const selectHighlightsCount = state => state.highlightState.get('byId').s
 
 export const selectHighlightSearch = state => state.highlightState.get('search');
 
-export const selectLastComment = state => state.commentsState.get('lastComm');
-
 export const selectLastFollower = (state, ethAddress) =>
     state.profileState.getIn(['lastFollower', ethAddress]);
 
@@ -220,6 +218,8 @@ export const selectLoggedProfileData = state =>
 
 export const selectManaBalance = state => state.profileState.getIn(['balance', 'mana', 'remaining']);
 
+export const selectMoreComments = (state, parent) => state.commentsState.getIn(['moreComments', parent]);
+
 export const selectMoreFollowers = (state, ethAddress) =>
     state.profileState.getIn(['moreFollowers', ethAddress]);
 
@@ -228,6 +228,12 @@ export const selectMoreFollowings = (state, ethAddress) =>
 
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
+
+export const selectNewCommentsBlock = state =>
+    state.commentsState.getIn(['newComments', 'lastBlock']) || selectBlockNumber(state);
+
+export const selectNewestCommentBlock = (state, parent) =>
+    state.commentsState.getIn(['newestCommentBlock', parent]);
 
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
