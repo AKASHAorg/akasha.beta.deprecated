@@ -107,8 +107,12 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
             ownEntries.push(entry.entryId);
         }
     });
-    yield put(profileActions.profileIsFollower(ethAddresses));
-    yield apply(getVoteOf, getVoteOf.send, [allEntries]);
+    if (ethAddresses.length) {
+        yield put(profileActions.profileIsFollower(ethAddresses));
+    }
+    if (allEntries.length) {
+        yield apply(getVoteOf, getVoteOf.send, [allEntries]);
+    }
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
