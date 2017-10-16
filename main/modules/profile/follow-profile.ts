@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function* (data: ProfileFollowRequest, cb) {
     const txData = contracts.instance.Feed.follow.request(address, { gas: 400000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     mixed.flush();
-    pinner.execute({ type: ObjectType.PROFILE, id: address, operation: OperationType.ADD });
+    pinner.execute({ type: ObjectType.PROFILE, id: address, operation: OperationType.ADD }).then(() => {});
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
