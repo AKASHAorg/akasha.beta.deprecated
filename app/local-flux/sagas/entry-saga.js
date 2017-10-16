@@ -126,12 +126,22 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
     }
 }
 
-function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft }) {
+function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, revert }) {
     // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ akashaId, entryId, ethAddress, full: true, version, asDraft }]);
-    yield put(profileActions.profileGetData({ ethAddress }));
+    yield apply(channel, channel.send, [{
+        akashaId,
+        entryId,
+        ethAddress,
+        full: true,
+        version,
+        asDraft,
+        revert
+    }]);
+    if (!asDraft) {
+        yield put(profileActions.profileGetData({ ethAddress }));
+    }
 }
 
 function* entryGetLatestVersion ({ entryId }) {

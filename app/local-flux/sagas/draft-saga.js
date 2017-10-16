@@ -174,18 +174,12 @@ function* draftPublishUpdateSuccess ({ data }) {
 }
 
 function* draftRevert ({ data }) {
-    const { version, id } = data;
-    const channel = Channel.server.entry.getEntry;
+    const { id } = data;
     try {
-        yield call([draftService, draftService.draftDelete], { draftId: id });
-        yield call(enableChannel, channel, Channel.client.entry.manager);
-        yield call([channel, channel.send], {
-            entryId: id,
-            version,
-            full: true
-        });
+        const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
+        yield put(draftActions.draftRevertToVersionSuccess({ ...resp, id }));
     } catch (ex) {
-        console.error(ex);
+        yield put(draftActions.draftRevertToVersionError({ error: ex }));
     }
 }
 

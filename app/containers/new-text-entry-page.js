@@ -10,7 +10,7 @@ import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
-import { tagSearch } from '../local-flux/actions/tag-actions';
+import { tagSearchLocal } from '../local-flux/actions/tag-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
@@ -45,8 +45,10 @@ class NewEntryPage extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
-            userDefaultLicense } = nextProps;
+            userDefaultLicense, selectionState } = nextProps;
         const { loggedProfile } = this.props;
+        const ethAddress = loggedProfile.get('ethAddress');
+        const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
         const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
             this.props.draftCreate({
@@ -59,6 +61,16 @@ class NewEntryPage extends Component {
                 tags: [],
                 entryType: 'article',
             });
+        }
+        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId) {
+            if (currentSelection) {
+                this.editor.updateCaretPosition(currentSelection);
+            } else {
+                const selection = EditorState.moveSelectionToEnd(
+                    draftObj.getIn(['content', 'draft'])
+                ).getSelection();
+                this.editor.updateCaretPosition(selection);
+            }
         }
     }
 
@@ -209,7 +221,7 @@ class NewEntryPage extends Component {
     }
 
     _handleVersionRevert = (version) => {
-        const { draftObj } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         this.props.draftRevertToVersion({
             version,
             id: draftObj.id
@@ -217,7 +229,9 @@ class NewEntryPage extends Component {
         this.props.entryGetFull({
             entryId: draftObj.id,
             version,
-            asDraft: true
+            asDraft: true,
+            revert: true,
+            ethAddress: loggedProfile.get('ethAddress'),
         });
     }
 
@@ -344,7 +358,7 @@ class NewEntryPage extends Component {
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         let draftWithSelection = draft;
-        if (currentSelection && currentSelection.size > 0 && !currentSelection.getHasFocus()) {
+        if (currentSelection && currentSelection.size > 0 && currentSelection.getHasFocus()) {
             draftWithSelection = EditorState.forceSelection(draft, currentSelection);
         }
         return (
@@ -389,10 +403,9 @@ class NewEntryPage extends Component {
                   {errors.draft &&
                     <small className="edit-entry-page__error-text">{errors.draft}</small>
                   }
-                </div>
-                <div className="edit-entry-page__tag-editor">
                   <TagEditor
                     ref={this._createRef('tagEditor')}
+                    className="edit-entry-page__tag-editor"
                     match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
@@ -400,7 +413,7 @@ class NewEntryPage extends Component {
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
-                    tagSearch={this.props.tagSearch}
+                    tagSearchLocal={this.props.tagSearchLocal}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
@@ -491,7 +504,7 @@ NewEntryPage.propTypes = {
     secondarySidebarToggle: PropTypes.func,
     selectionState: PropTypes.shape(),
     searchResetResults: PropTypes.func,
-    tagSearch: PropTypes.func,
+    tagSearchLocal: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicense: PropTypes.shape(),
@@ -523,7 +536,7 @@ export default connect(
         draftsGetCount,
         draftRevertToVersion,
         entryGetFull,
-        tagSearch,
+        tagSearchLocal,
         searchResetResults,
     }
 )(injectIntl(NewEntryPage));

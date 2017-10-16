@@ -25,6 +25,32 @@ export default function configureStore (initialState) {
             store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
         );
     }
-    global.__store = store;
+    self.redux__store = store;
+    self.findIPCChannelByHash = (hash) => {
+        Object.keys(self.Channel).forEach((rootKey) => {
+            const rootCh = self.Channel[rootKey];
+            Object.keys(rootCh).forEach((modKey) => {
+                const mod = rootCh[modKey];
+                Object.keys(mod).forEach((chKey) => {
+                    if (chKey === 'manager') {
+                        if (mod[chKey] === hash) {
+                            console.log(
+                                `found ${rootKey} channel:`,
+                                `Channel.${rootKey}.${modKey}.${chKey}`
+                            );
+                        }
+                    } else {
+                        if (mod[chKey].channel === hash) {
+                            return console.log(
+                                `found ${rootKey} channel:`,
+                                `Channel.${rootKey}.${modKey}.${chKey}`
+                            );
+                        }
+                        return null;
+                    }
+                });
+            });
+        });
+    };
     return store;
 }
