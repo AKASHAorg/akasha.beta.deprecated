@@ -13,7 +13,7 @@ const execute = Promise.coroutine(function* (data: ProfileExistsRequest) {
     v.validate(data, checkIdFormat, { throwError: true });
 
     const exists = yield contracts.instance.ProfileResolver.addr(data.akashaId);
-    const idValid = yield contracts.instance.ProfileRegistrar.checkFormat(data.akashaId);
+    const idValid = yield contracts.instance.ProfileRegistrar.check_format(data.akashaId);
     return { exists: !!unpad(exists), idValid, akashaId: data.akashaId };
 });
 
