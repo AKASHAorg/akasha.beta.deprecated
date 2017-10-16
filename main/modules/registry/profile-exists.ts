@@ -11,8 +11,8 @@ import { checkIdFormat } from './check-id-format';
 const execute = Promise.coroutine(function* (data: ProfileExistsRequest) {
     const v = new schema.Validator();
     v.validate(data, checkIdFormat, { throwError: true });
-
-    const exists = yield contracts.instance.ProfileResolver.addr(data.akashaId);
+    const idHash = yield contracts.instance.ProfileRegistrar.hash(data.akashaId);
+    const exists = yield contracts.instance.ProfileResolver.addr(idHash);
     const idValid = yield contracts.instance.ProfileRegistrar.check_format(data.akashaId);
     return { exists: !!unpad(exists), idValid, akashaId: data.akashaId };
 });
