@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: EntryUpvoteRequest, cb) {
         type: ObjectType.ENTRY,
         id: { entryId: data.entryId, ethAddress: data.ethAddress },
         operation: OperationType.ADD
-    });
+    }).then(() => {});
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
 

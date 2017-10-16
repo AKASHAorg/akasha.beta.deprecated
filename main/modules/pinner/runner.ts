@@ -20,16 +20,12 @@ const execute = Promise.coroutine(function* (data: { type: ObjectType, id: any, 
             }
             break;
         case ObjectType.ENTRY:
-            const entryEth = yield contracts.instance.entries.getEntry(data.id);
-            hashRoot = entryEth.ipfsHash;
+            const [fnE, digestSizeE, hashE] = yield contracts.instance.Entries.getEntry(data.id.ethAddress, data.id.entryId);
+            hashRoot = encodeHash(fnE, digestSizeE, hashE);
             break;
         case ObjectType.COMMENT:
-            if (data.id.length !== 2 || !Array.isArray(data.id)) {
-                throw new Error('Comments must provide [entryId, commentdId]');
-            }
-            //  id is [entryId:string, commentId: string]
-            const commentEth = yield contracts.instance.comments.getComment.apply(this, data.id);
-            hashRoot = commentEth.ipfsHash;
+            const [, , , , fnC, digestSizeC, hashC] = yield contracts.instance.Comments.getComment(data.id.entryId, data.id.commentId);
+            hashRoot = encodeHash(fnC, digestSizeC, hashC);
             break;
         default:
             throw new Error('No known type specified');
