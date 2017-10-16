@@ -2,6 +2,7 @@ import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effe
 import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as actions from '../actions/comments-actions';
+import * as appActions from '../actions/app-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
@@ -9,13 +10,28 @@ import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, sele
     selectNewestCommentBlock, selectToken } from '../selectors';
 
 const Channel = global.Channel;
-const COMMENT_FETCH_LIMIT = 5;
-const REPLIES_FETCH_LIMIT = 5;
+const COMMENT_FETCH_LIMIT = 50;
+const REPLIES_FETCH_LIMIT = 25;
 
 function* commentsCheckNew ({ entryId }) {
     const toBlock = yield select(selectNewCommentsBlock);
-    console.log('to block', toBlock);
     yield call(commentsIterator, { entryId, toBlock, reversed: true, checkNew: true }); // eslint-disable-line
+}
+
+function* commentsDownvote ({ actionId, commentId, entryId, weight }) {
+    const channel = Channel.server.comments.downvote;
+    yield call(enableChannel, channel, Channel.client.comments.manager);
+    const token = yield select(selectToken);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, commentId, entryId, weight }]
+    );
+}
+
+function* commentsDownvoteSuccess ({ data }) {
+    // yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+    yield put(appActions.showNotification({ id: 'downvoteCommentSuccess' }));
 }
 
 function* commentsGetCount ({ entryId }) {
@@ -102,7 +118,47 @@ function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) {
     yield apply(channel, channel.send, [ipfsHashes, commentIds]);
 }
 
+function* commentsUpvote ({ actionId, commentId, entryId, weight }) {
+    const channel = Channel.server.comments.upvote;
+    yield call(enableChannel, channel, Channel.client.comments.manager);
+    const token = yield select(selectToken);
+    yield apply(
+        channel,
+        channel.send,
+        [{ actionId, token, commentId, entryId, weight }]
+    );
+}
+
+function* commentsUpvoteSuccess ({ data }) {
+    // yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+    yield put(appActions.showNotification({ id: 'upvoteCommentSuccess' }));
+}
+
+// function* commentsVoteSuccess ({ commentId }) {
+//     yield put(actions.entryGetScore(entryId));
+//     yield put(actions.entryGetVoteOf(entryId));
+// }
+
 // Channel watchers
+
+function* watchCommentsDownvoteChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.comments.downvote);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.commentsDownvoteError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.commentsDownvoteError({}, resp.request));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
 
 function* watchCommentsGetCountChannel () {
     while (true) {
@@ -185,14 +241,37 @@ function* watchCommentsResolveIpfsHashChannel () {
     }
 }
 
+function* watchCommentsUpvoteChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.comments.upvote);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.commentsUpvoteError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.commentsUpvoteError({}, resp.request));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 export function* registerCommentsListeners () {
+    yield fork(watchCommentsDownvoteChannel);
     yield fork(watchCommentsGetCountChannel);
     yield fork(watchCommentsIteratorChannel);
     yield fork(watchCommentsPublishChannel);
     yield fork(watchCommentsResolveIpfsHashChannel);
+    yield fork(watchCommentsUpvoteChannel);
 }
 
 export function* watchCommentsActions () {
+    yield takeEvery(types.COMMENTS_DOWNVOTE, commentsDownvote);
+    yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
     yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
     yield takeEvery(types.COMMENTS_ITERATOR, commentsIterator);
@@ -200,6 +279,8 @@ export function* watchCommentsActions () {
     yield takeEvery(types.COMMENTS_PUBLISH, commentsPublish);
     yield takeEvery(types.COMMENTS_PUBLISH_SUCCESS, commentsPublishSuccess);
     yield takeEvery(types.COMMENTS_RESOLVE_IPFS_HASH, commentsResolveIpfsHash);
+    yield takeEvery(types.COMMENTS_UPVOTE, commentsUpvote);
+    yield takeEvery(types.COMMENTS_UPVOTE_SUCCESS, commentsUpvoteSuccess);
 }
 
 export function* registerWatchers () {

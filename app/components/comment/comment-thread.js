@@ -5,8 +5,8 @@ import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
-import { selectCommentsForParent, selectLoggedProfileData,
-    selectMoreComments } from '../../local-flux/selectors';
+import { selectCommentsForParent, selectLoggedProfileData, selectMoreComments,
+    selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -19,11 +19,10 @@ class CommentThread extends Component {
     }
 
     shouldComponentUpdate (nextProps) {
-        const { comment, pendingComments, profiles, replies, replyTo } = nextProps;
+        const { comment, pendingComments, replies, replyTo } = nextProps;
         if (
             !comment.equals(this.props.comment) ||
             !pendingComments.equals(this.props.pendingComments) ||
-            !profiles.equals(this.props.profiles) ||
             !replies.equals(this.props.replies) ||
             replyTo !== this.props.replyTo
         ) {
@@ -60,25 +59,19 @@ class CommentThread extends Component {
     };
 
     renderReplies = () => {
-        const { containerRef, ethAddress, loggedProfileData, profiles, replies,
-            resolvingComments } = this.props;
-        return replies.reverse().map(comment => (
+        const { containerRef, replies } = this.props;
+        return replies.map(comment => (
           <Comment
-            comment={comment}
+            commentId={comment.commentId}
             containerRef={containerRef}
-            ethAddress={ethAddress}
             key={comment.commentId}
-            loggedEthAddress={loggedProfileData.get('ethAddress')}
-            profiles={profiles}
-            resolvingComment={resolvingComments.get(comment.ipfsHash)}
           />
         ));
     };
 
     renderEditor = () => {
-        const { containerRef, comment, entryId, ethAddress, intl, loggedProfileData,
-            onReplyClose, profiles } = this.props;
-        const author = profiles.get(comment.getIn(['author', 'ethAddress']));
+        const { author, containerRef, comment, entryId, ethAddress, intl, loggedProfileData,
+            onReplyClose } = this.props;
         const name = getDisplayName({
             akashaId: author.get('akashaId'),
             ethAddress: author.get('ethAddress')
@@ -103,20 +96,15 @@ class CommentThread extends Component {
     };
 
     render () {
-        const { comment, containerRef, ethAddress, intl, loggedProfileData, moreReplies, onReply,
-            profiles, replies, replyTo, resolvingComments } = this.props;
+        const { comment, containerRef, intl, moreReplies, onReply, replies, replyTo } = this.props;
 
         return (
           <div className="comment-thread">
             <Comment
-              comment={comment}
+              commentId={comment.commentId}
               containerRef={containerRef}
-              ethAddress={ethAddress}
               key={comment.commentId}
-              loggedEthAddress={loggedProfileData.get('ethAddress')}
               onReply={onReply}
-              profiles={profiles}
-              resolvingComment={resolvingComments.get(comment.ipfsHash)}
               showReplyButton
             >
               {!!replies.size && this.renderReplies()}
@@ -135,6 +123,7 @@ class CommentThread extends Component {
 
 CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
+    author: PropTypes.shape(),
     comment: PropTypes.shape().isRequired,
     commentsMoreIterator: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
@@ -146,22 +135,19 @@ CommentThread.propTypes = {
     onReply: PropTypes.func.isRequired,
     onReplyClose: PropTypes.func.isRequired,
     pendingComments: PropTypes.shape(),
-    profiles: PropTypes.shape(),
     replies: PropTypes.shape().isRequired,
     replyTo: PropTypes.string,
-    resolvingComments: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     const { comment } = ownProps;
     return {
+        author: selectProfile(state, comment.author.ethAddress),
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
         ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
         loggedProfileData: selectLoggedProfileData(state),
         moreReplies: selectMoreComments(state, comment.commentId),
-        profiles: state.profileState.get('byEthAddress'),
         replies: selectCommentsForParent(state, comment.commentId),
-        resolvingComments: state.commentsState.getIn(['flags', 'resolvingComments'])
     };
 }
 

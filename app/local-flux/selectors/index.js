@@ -246,6 +246,9 @@ export const selectPendingClaim = (state, entryId) =>
 export const selectPendingComments = (state, entryId) =>
     state.actionState.getIn(['pending', 'comment', entryId]) || new List();
 
+export const selectPendingCommentVote = (state, commentId) =>
+    state.actionState.getIn(['pending', 'commentVote', commentId]);
+
 export const selectPendingCycleAeth = state => state.actionState.getIn(['pending', 'cycleAeth']);
 
 export const selectPendingFollow = (state, akashaId) =>
@@ -265,6 +268,9 @@ export const selectProfileEntries = (state, akashaId) =>
         .toList();
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectResolvingComment = (state, commentId) =>
+    state.commentsState.getIn(['flags', 'resolvingComments', commentId]);
 
 export const selectSearchEntries = state =>
     state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
