@@ -166,7 +166,7 @@ const draftState = createReducer(initialState, {
                 });
             }
 
-            if (existingDraft && !existingDraft.get('localChanges')) {
+            if ((existingDraft && !existingDraft.get('localChanges')) || data.revert) {
                 const { draftParts, tags, ...newDraftContent } = content;
                 mState.mergeIn(['drafts', entryId], DraftModel.createDraft({
                     ...existingDraft.toJS(),

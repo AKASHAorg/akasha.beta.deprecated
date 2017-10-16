@@ -40,9 +40,16 @@ class TagEditor extends Component {
         const { tags, match } = nextProps;
         const { draftId } = match.params;
         if (draftId !== this.props.match.params.draftId) {
-            if (tags && tags.size > 0) {
-                this._checkTagExistence(tags);
+            if (this.channelCb) {
+                this.removeExistsListener();
             }
+            this.setState({
+                partialTag: ''
+            }, () => {
+                if (tags && tags.size > 0) {
+                    this._checkTagExistence(tags);
+                }
+            });
         }
     }
     // capture up and down keys.
@@ -131,7 +138,14 @@ class TagEditor extends Component {
             }
         });
     }
-
+    removeExistsListener = () => {
+        window.Channel.client.tags.exists.removeListener(this.channelCb);
+    }
+    componentWillUnmount () {
+        if (this.channelCb) {
+            this.removeExistsListener();
+        }
+    }
     _addNewTag = (tagName, existent) => {
         const { tags } = this.props;
         this.setState({
@@ -278,7 +292,7 @@ class TagEditor extends Component {
         const { tagSuggestionsCount, intl, tags } = this.props;
         return (
           <div
-            className="tag-editor"
+            className={`tag-editor ${this.props.className}`}
             ref={this.props.nodeRef}
           >
             { /* eslint-disable react/no-array-index-key */ }
@@ -350,6 +364,7 @@ class TagEditor extends Component {
 
 TagEditor.propTypes = {
     actionAdd: PropTypes.func,
+    className: PropTypes.string,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     match: PropTypes.shape(),

@@ -28,7 +28,25 @@ class EntryEditor extends Component {
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
     };
+    // @TODO: investigate another option to update the scroll position
+    // such that the caret should be in viewport
+    updateCaretPosition = (newSelectionState) => {
+        const anchorKey = newSelectionState.getAnchorKey();
+        this.setState({
+            caretPosition: anchorKey
+        }, () => {
+            const dataKey = `${anchorKey}-0-0`;
+            const targetNode = Array.from(
+                document.querySelectorAll('div[data-offset-key][data-editor][data-block]')
+            ).filter(node =>
+                node.attributes['data-offset-key'] &&
+                    node.attributes['data-offset-key'].nodeValue === dataKey);
 
+            if (targetNode.length) {
+                targetNode[0].scrollIntoViewIfNeeded(true);
+            }
+        });
+    };
     _handleImageError = (imageBlockKey, err) => {
         this.setState(prevState => ({
             errors: [prevState.errors, {
@@ -118,6 +136,7 @@ class EntryEditor extends Component {
                 placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
                 tabIndex="0"
                 hasFocus={this._checkEditorFocus()}
+                spellCheck
               />
               <MentionSuggestions
                 ref={this.setSuggestionsRef}

@@ -1,6 +1,5 @@
 .edit-entry-page {
     position: relative;
-    overflow-y: auto;
     height: ~"calc(100% - 64px)";
     &__error-text {
         color: @error-color;
@@ -22,9 +21,13 @@
         font-weight: 400;
         resize: none;
         background: transparent;
+        width: 700px;
+        margin: 0 auto;
+        display: inherit;
     }
     &__content {
         height: 100%;
+        overflow: hidden
     }
     &__publish-options {
         position: fixed;
@@ -51,16 +54,21 @@
         padding-top: 48px;
         text-align: center;
         transition: width 0.218s @ease-in-out;
+        height: 100%;
+        overflow-y: auto;
     }
     &__editor {
-        min-height: ~"calc(100% - 64px)";
+        // min-height: ~"calc(100% - 64px)";
+        height: 100%;
     }
     &__editor,
     &__tag-editor {
         text-align: left;
-        width: 700px;
         display: block;
         margin: 0 auto;
+    }
+    &__tag-editor {
+        width: 700px;
     }
     &__footer-wrapper {
         position: fixed;
