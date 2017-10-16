@@ -44,11 +44,14 @@ class ShiftForm extends Component {
 
     getMaxAmount = () => {
         const { balance, type } = this.props;
+        let value;
         switch (type) {
             case 'shiftDownMana':
-                return Number(balance.getIn(['mana', 'total']));
+                value = balance.getIn(['mana', 'total']).replace(',', '');
+                return Number(value);
             case 'shiftUpMana':
-                return Number(balance.getIn(['aeth', 'free']));
+                value = balance.getIn(['aeth', 'free']).replace(',', '');
+                return Number(value);
             default:
                 return 0;
         }
