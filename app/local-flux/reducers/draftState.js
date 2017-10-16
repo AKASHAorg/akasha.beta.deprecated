@@ -11,9 +11,7 @@ const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
             drafts: state.get('drafts').set(data.id, DraftModel.createDraft(data)),
-            selection: state.get('selection').setIn([data.id, data.ethAddress], new Map({
-                selectionState: data.selectionState
-            }))
+            selection: state.get('selection').setIn([data.id, data.ethAddress], data.selectionState)
         }),
 
     [types.DRAFT_UPDATE_SUCCESS]: (state, { data }) =>
