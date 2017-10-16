@@ -340,7 +340,7 @@ class NewEntryPage extends Component {
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
-        console.log(currentSelection, 'current selection');
+        // console.log(currentSelection, 'current selection');
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         let draftWithSelection = draft;

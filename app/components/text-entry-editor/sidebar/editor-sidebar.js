@@ -19,9 +19,8 @@ class SideBar extends Component {
             (nextProps.editorHasFocus !== this.props.editorHasFocus);
     }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()))
+        // if (nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()))
         this.updateSidebarPosition();
-        console.log('well, guess what! DID UPDATE!!!');
     }
     componentWillUnmount () {
         this.setState({
@@ -66,7 +65,7 @@ class SideBar extends Component {
         const element = this.getSelectedBlockElement();
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
-        console.log(element, container, isBlackListed);
+        // console.log(element, container, isBlackListed);
         if (!element || !container || isBlackListed) {
             return;
         }
