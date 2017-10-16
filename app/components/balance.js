@@ -4,17 +4,18 @@ import { injectIntl } from 'react-intl';
 import { generalMessages } from '../locale-data/messages';
 import { formatBalance } from '../utils/number-formatter';
 
-const Balance = ({ balance, intl, onClick }) => {
+const Balance = ({ balance, intl, short, type }) => {
     if (!balance) {
         return null;
     }
+    const length = short ? 4 : 7;
     return (
-      <div className="flex-center-y" style={{ height: '100%', cursor: 'pointer' }} onClick={onClick}>
-        <div style={{ flex: '1 1 auto', marginRight: '5px' }}>
-          {balance && formatBalance(balance, 7)}
+      <div className="content-link flex-center-y balance">
+        <div className="balance__value">
+          {balance && formatBalance(balance, length)}
         </div>
-        <div style={{ flex: '0 0 auto' }}>
-          {intl.formatMessage(generalMessages.aeth)}
+        <div className="balance__symbol">
+          {intl.formatMessage(generalMessages[type])}
         </div>
       </div>
     );
@@ -23,7 +24,8 @@ const Balance = ({ balance, intl, onClick }) => {
 Balance.propTypes = {
     balance: PropTypes.string,
     intl: PropTypes.shape(),
-    onClick: PropTypes.func
+    short: PropTypes.bool,
+    type: PropTypes.string.isRequired,
 };
 
 export default injectIntl(Balance);

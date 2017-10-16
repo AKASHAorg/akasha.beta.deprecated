@@ -77,6 +77,11 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
+    copy: {
+        id: 'app.general.copy',
+        description: 'copy',
+        defaultMessage: 'Copy'
+    },
     create: {
         id: 'app.general.create',
         description: 'Create button label',
@@ -117,6 +122,11 @@ const generalMessages = defineMessages({
         description: 'essence total score',
         defaultMessage: 'Essence total score'
     },
+    eth: {
+        id: 'app.general.eth',
+        description: 'ether symbol',
+        defaultMessage: 'ETH'
+    },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
         description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
@@ -141,6 +151,11 @@ const generalMessages = defineMessages({
         id: 'app.general.help',
         description: 'Help button label',
         defaultMessage: 'Help'
+    },
+    history: {
+        id: 'app.general.history',
+        description: 'transactions history',
+        defaultMessage: 'History'
     },
     hoursCount: {
         id: 'app.general.hoursCount',
@@ -343,6 +358,11 @@ const generalMessages = defineMessages({
         description: 'Terms of Service and Privacy Policy',
         defaultMessage: 'Terms of Service and Privacy Policy'
     },
+    transactionFailed: {
+        id: 'app.general.transactionFailed',
+        description: 'transaction has failed',
+        defaultMessage: 'Transaction has failed'
+    },
     update: {
         id: 'app.general.update',
         description: 'Update data',
@@ -357,6 +377,11 @@ const generalMessages = defineMessages({
         id: 'app.general.vote',
         description: 'Vote',
         defaultMessage: 'Vote'
+    },
+    wallet: {
+        id: 'app.general.wallet',
+        description: 'wallet',
+        defaultMessage: 'Wallet'
     }
 });
 export { generalMessages };

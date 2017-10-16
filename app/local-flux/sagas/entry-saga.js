@@ -127,7 +127,6 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
 }
 
 function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, revert }) {
-    // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{
@@ -145,7 +144,6 @@ function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, rever
 }
 
 function* entryGetLatestVersion ({ entryId }) {
-    // yield fork(watchEntryGetChannel); // eslint-disable-line no-use-before-define
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ entryId, full: true, latestVersion: true }]);
@@ -153,19 +151,16 @@ function* entryGetLatestVersion ({ entryId }) {
 
 function* entryGetScore ({ entryId }) {
     const channel = Channel.server.entry.getScore;
-    yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
 function* entryGetShort ({ context, entryId, ethAddress }) {
     const channel = Channel.server.entry.getEntry;
-    yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ context, entryId, ethAddress }]);
 }
 
 function* entryGetVoteOf ({ entryId }) {
     const channel = Channel.server.entry.getVoteOf;
-    yield call(enableChannel, channel, Channel.client.entry.manager);
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(channel, channel.send, [[{ ethAddress, entryId }]]);
 }

@@ -244,7 +244,28 @@ export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCE
 
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
+export const profileTransferAeth = ({ actionId, akashaId, ethAddress, tokenAmount }) =>
+    action(types.PROFILE_TRANSFER_AETH, { actionId, akashaId, ethAddress, tokenAmount });
 
+export const profileTransferAethError = (error, request) => {
+    error.code = 'PTAE01';
+    error.messageId = 'profileTransferAeth';
+    error.values = { tokenAmount: request.tokenAmount };
+    return action(types.PROFILE_TRANSFER_AETH_ERROR, { error });
+};
+
+export const profileTransferAethSuccess = data => action(types.PROFILE_TRANSFER_AETH_SUCCESS, { data });
+export const profileTransferEth = ({ actionId, akashaId, ethAddress, value }) =>
+    action(types.PROFILE_TRANSFER_ETH, { actionId, akashaId, ethAddress, value });
+
+export const profileTransferEthError = (error, request) => {
+    error.code = 'PTEE01';
+    error.messageId = 'profileTransferEth';
+    error.values = { value: request.value };
+    return action(types.PROFILE_TRANSFER_ETH_ERROR, { error });
+};
+
+export const profileTransferEthSuccess = data => action(types.PROFILE_TRANSFER_ETH_SUCCESS, { data });
 export const profileUnfollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_UNFOLLOW, { actionId, ethAddress });
 

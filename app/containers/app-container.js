@@ -4,9 +4,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { hideTerms, bootstrapHome } from '../local-flux/actions/app-actions';
+import { bootstrapHome, hideTerms, toggleAethWallet,
+    toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
@@ -18,7 +20,7 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, N
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, NewEntrySecondarySidebar,
     Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit,
-    SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar } from '../components';
+    SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar, WalletPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -77,7 +79,7 @@ class AppContainer extends Component {
             this.bootstrappingHome = false;
         }
 
-        // check if wee need to bootstrap home
+        // check if we need to bootstrap home
         if (shouldBootstrapHome && !this.bootstrappingHome && !appState.get('homeReady')) {
             this.props.bootstrapHome();
             this.props.entryVoteCost();
@@ -107,6 +109,7 @@ class AppContainer extends Component {
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
+        const showWallet = appState.get('showWallet');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
 
@@ -159,6 +162,13 @@ class AppContainer extends Component {
                         history={history}
                         intl={intl}
                       />
+                      {!!showWallet &&
+                        <WalletPanel
+                          showWallet={showWallet}
+                          toggleAethWallet={this.props.toggleAethWallet}
+                          toggleEthWallet={this.props.toggleEthWallet}
+                        />
+                      }
                     </div>
                   </DataLoader>
                 }
@@ -203,6 +213,8 @@ AppContainer.propTypes = {
     location: PropTypes.shape().isRequired,
     needAuth: PropTypes.string,
     theme: PropTypes.string,
+    toggleAethWallet: PropTypes.func.isRequired,
+    toggleEthWallet: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -227,5 +239,7 @@ export default connect(
         hideTerms,
         // hideReportModal,
         licenseGetAll,
+        toggleAethWallet,
+        toggleEthWallet
     }
 )(injectIntl(AppContainer));

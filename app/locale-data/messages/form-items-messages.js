@@ -1,20 +1,30 @@
 import { defineMessages } from 'react-intl';
 
 const formMessages = defineMessages({
+    addressRequired: {
+        id: 'app.form.addressRequired',
+        description: 'receiver input required error message',
+        defaultMessage: 'You must specify an username or an ethereum address'
+    },
     aethAmountLabel: {
         id: 'app.form.aethAmount',
         description: 'aeth amount input label',
         defaultMessage: 'AETH amount'
     },
-    aethAmountRequired: {
-        id: 'app.form.aethAmountRequired',
-        description: 'aeth amount input required error message',
-        defaultMessage: 'AETH amount is required'
+    amountRequired: {
+        id: 'app.form.amountRequired',
+        description: 'amount input required error message',
+        defaultMessage: 'Amount is required'
     },
     maxAethAmountLabel: {
         id: 'app.form.maxAethAmount',
         description: 'max aeth amount label',
         defaultMessage: 'max. {balance}'
+    },
+    maxEthAmount: {
+        id: 'app.form.maxEthAmount',
+        description: 'max ETH amount transferable',
+        defaultMessage: '{eth} ETH transferable'
     },
     messageOptional: {
         id: 'app.form.messageOptional',
