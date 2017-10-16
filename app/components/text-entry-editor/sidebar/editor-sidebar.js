@@ -18,9 +18,9 @@ class SideBar extends Component {
             !nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()) ||
             (nextProps.editorHasFocus !== this.props.editorHasFocus);
     }
-    componentDidUpdate () {
+    componentWillReceiveProps (nextProps) {
+        // if (nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()))
         this.updateSidebarPosition();
-        console.log('well, guess what! DID UPDATE!!!');
     }
     componentWillUnmount () {
         this.setState({
@@ -36,10 +36,11 @@ class SideBar extends Component {
         const selection = window.getSelection();
         const startKey = editorState.getSelection().getStartKey();
         const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-        if (selection.rangeCount === 0 || hasText) {
+        if (selection.rangeCount === 0) {
             this.setState({
                 sidebarVisible: false
             });
+            return null;
         }
         let node = selection.getRangeAt(0).startContainer;
         do {
@@ -64,10 +65,10 @@ class SideBar extends Component {
         const element = this.getSelectedBlockElement();
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
-        console.log(element, container, isBlackListed);
-        // if (!element || !container || isBlackListed) {
-        //     return;
-        // }
+        // console.log(element, container, isBlackListed);
+        if (!element || !container || isBlackListed) {
+            return;
+        }
         const containerTop =
             (container.getBoundingClientRect().top) - document.documentElement.clientTop;
         const cursorNode = element.querySelector('span');
@@ -98,11 +99,9 @@ class SideBar extends Component {
     }
 
     render () {
-        const isVisible = this.state.sidebarVisible;
         if (this.props.readOnly) {
             return null;
         }
-        console.log('rerender sidebar');
         return (
           <div ref={(container) => { this.container = container; }} >
             <div
