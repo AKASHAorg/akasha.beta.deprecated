@@ -38,7 +38,7 @@ export const registerProfile = {
         'token': {'type': 'string'}
 
     },
-    'required': ['akashaId', 'ethAddress', 'donations', 'ipfs', 'token']
+    'required': ['akashaId', 'ethAddress', 'donationsEnabled', 'ipfs', 'token']
 };
 /**
  * Register a new AKASHA ID
