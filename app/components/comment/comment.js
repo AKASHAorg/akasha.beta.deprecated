@@ -22,7 +22,7 @@ class Comment extends Component {
     constructor (props) {
         super(props);
 
-        const content = props.comment.content && convertFromRaw(props.comment.content);
+        const content = props.comment.content && convertFromRaw(JSON.parse(props.comment.content));
         const editorState = content ? EditorState.createWithContent(content) : EditorState.createEmpty();
         this.state = {
             editorState,

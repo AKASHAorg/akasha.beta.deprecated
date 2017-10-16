@@ -36,16 +36,20 @@ const Flags = Record({
     resolvingComments: new Map()
 });
 
+const NewComments = Record({
+    lastBlock: null,
+    comments: new List()
+});
+
 export const CommentsState = Record({
     byId: new Map(),
     byParent: new Map(),
     byHash: new Map(),
     errors: new List(),
-    firstComm: null,
     flags: new Flags(),
-    lastComm: null,
     lastBlock: new Map(),
     lastIndex: new Map(),
     moreComments: new Map(),
-    newComments: new Map(),
+    newComments: new NewComments(),
+    newestCommentBlock: new Map(),
 });

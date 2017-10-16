@@ -100,7 +100,7 @@ class EntryPage extends Component {
 
     checkNewComments = () => {
         const { commentsCheckNew, match } = this.props;
-        commentsCheckNew(match.params.entryId);
+        commentsCheckNew({ entryId: match.params.entryId });
     };
 
     handleContentScroll = () => {
