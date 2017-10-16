@@ -5,6 +5,22 @@ const appendZero = (str, length) => {
     return str;
 };
 
+export const balanceToNumber = (balance, precision = 0) => {
+    if (!balance) {
+        return 0;
+    }
+    let [integer, decimals] = balance.split('.');
+    integer = integer.replace(',', '');
+    let result = integer;
+    if (decimals && decimals.length > precision) {
+        decimals = decimals.slice(0, precision);
+    }
+    if (decimals && decimals.length) {
+        result = `${result}.${decimals}`;
+    }
+    return Number(result);
+};
+
 export const formatBalance = (balance, length) => {
     if (!balance) {
         return '';

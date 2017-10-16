@@ -26,6 +26,16 @@ const errorMessages = defineMessages({
         description: 'backup keys error message',
         defaultMessage: 'Generating backup has failed. Try again'
     },
+    commentsDownvote: {
+        id: 'app.error.commentsDownvote',
+        description: 'comment downvote error',
+        defaultMessage: 'An error occurred  while downvoting a comment'
+    },
+    commentsUpvote: {
+        id: 'app.error.commentsUpvote',
+        description: 'comment upvote error',
+        defaultMessage: 'An error occurred  while upvoting a comment'
+    },
     dashboardAdd: {
         id: 'app.error.dashboardAdd',
         description: 'add dashboard error message',

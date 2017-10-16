@@ -37,10 +37,7 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
             return pending.setIn([action.type, entryId], pendingComments.push(createAction(action)));
         case commentDownvote:
         case commentUpvote:
-            if (!pending.getIn(['commentVote', entryId])) {
-                return pending.setIn(['commentVote', entryId], new Map({ [commentId]: action.id }));
-            }
-            return pending.setIn(['commentVote', entryId, commentId], action.id);
+            return pending.setIn(['commentVote', commentId], action.id);
         case createTag:
             return pending.setIn([createTag, tag], action.id);
         case cycleAeth:
@@ -80,7 +77,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
             return pending.deleteIn(['entryVote', entryId]);
         case commentDownvote:
         case commentUpvote:
-            return pending.deleteIn(['commentVote', entryId, commentId]);
+            return pending.deleteIn(['commentVote', commentId]);
         case createTag:
             return pending.deleteIn([createTag, tag]);
         case follow:

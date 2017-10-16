@@ -12,6 +12,16 @@ export const commentsCheckNewError = (error) => {
 export const commentsCheckNewSuccess = (data, request) =>
     action(types.COMMENTS_CHECK_NEW_SUCCESS, { data, request });
 export const commentsClean = () => action(types.COMMENTS_CLEAN);
+export const commentsDownvote = ({ actionId, commentId, entryId, weight }) =>
+    action(types.COMMENTS_DOWNVOTE, { actionId, commentId, entryId, weight });
+
+export const commentsDownvoteError = (error, request) => {
+    error.code = 'CDE01';
+    error.messageId = 'commentsDownvote';
+    return action(types.COMMENTS_DOWNVOTE_ERROR, { error, request });
+};
+
+export const commentsDownvoteSuccess = data => action(types.COMMENTS_DOWNVOTE_SUCCESS, { data });
 export const commentsGetCount = entryId => action(types.COMMENTS_GET_COUNT, { entryId });
 
 export const commentsGetCountError = (error) => {
@@ -67,3 +77,13 @@ export const commentsResolveIpfsHashError = (error) => {
 
 export const commentsResolveIpfsHashSuccess = data =>
     action(types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS, { data });
+export const commentsUpvote = ({ actionId, commentId, entryId, weight }) =>
+    action(types.COMMENTS_UPVOTE, { actionId, commentId, entryId, weight });
+
+export const commentsUpvoteError = (error, request) => {
+    error.code = 'CDE01';
+    error.messageId = 'commentsUpvote';
+    return action(types.COMMENTS_UPVOTE_ERROR, { error, request });
+};
+
+export const commentsUpvoteSuccess = data => action(types.COMMENTS_UPVOTE_SUCCESS, { data });

@@ -38,6 +38,27 @@ const createCommentWithAuthor = comment =>
 //     return { byId, firstComm, lastComm };
 // };
 
+const sortByScore = (byId, list) => {
+    return list.sort((a, b) => {
+        const commA = byId.get(a);
+        const commB = byId.get(b);
+
+        if (commA.score > commB.score) {
+            return -1;
+        }
+        if (commA.score < commB.score) {
+            return 1;
+        }
+        if (commA.publishDate > commB.publishDate) {
+            return -1;
+        }
+        if (commA.publishDate < commB.publishDate) {
+            return 1;
+        }
+        return 0;
+    });
+};
+
 const commentsState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
@@ -50,6 +71,8 @@ const commentsState = createReducer(initialState, {
         let comments = state.getIn(['newComments', 'comments']);
         collection.forEach((comm) => {
             comm.entryId = request.entryId;
+            // TODO Remove this
+            comm.score = (Math.random() * 100).toFixed(0).toString();
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             comments = comments.push(comm.commentId);
@@ -73,11 +96,14 @@ const commentsState = createReducer(initialState, {
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
+            // TODO Remove this            
+            comm.score = (Math.random() * 100).toFixed(0).toString();
             comm.entryId = request.entryId;
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
         });
+        list = sortByScore(byId, list);
 
         return state.merge({
             byId,
@@ -93,18 +119,20 @@ const commentsState = createReducer(initialState, {
     [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
         const parent = request.parent;
-        const list = state.getIn(['byParent', parent]) || new List();
-        let newList = new List();
+        let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
             comm.entryId = request.entryId;
+            // TODO Remove this
+            comm.score = (Math.random() * 100).toFixed(0).toString();
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
-            newList = newList.includes(comm.commentId) ? newList : newList.push(comm.commentId);
+            list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
         });
+        list = sortByScore(byId, list);
 
         return state.merge({
             byId,
-            byParent: state.get('byParent').set(parent, newList.concat(list)),
+            byParent: state.get('byParent').set(parent, list),
             newComments: state.get('newComments').set('lastBlock', data.lastBlock),
             newestCommentBlock: state.get('newestCommentBlock').set(parent, data.lastBlock)
         });
@@ -115,12 +143,13 @@ const commentsState = createReducer(initialState, {
         if (!newComments.size) {
             return state;
         }
+        const byId = state.get('byId');
         let byParent = state.get('byParent');
         let newestCommentBlock = state.get('newestCommentBlock');
         newComments.forEach((id) => {
             const comment = state.getIn(['byId', id]);
             const parent = comment.get('parent') || '0';
-            const list = byParent.get(parent);
+            const list = sortByScore(byId, byParent.get(parent).push(id));
             byParent = byParent.set(parent, list.push(id));
             newestCommentBlock = newestCommentBlock.set(parent, state.getIn(['newComments', 'lastBlock']));
         });

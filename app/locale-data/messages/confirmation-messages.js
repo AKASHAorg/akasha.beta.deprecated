@@ -11,6 +11,26 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for comment',
         defaultMessage: 'Please confirm that you want to submit this comment.'
     },
+    commentDownvote: {
+        id: 'app.confirmations.commentDownvote',
+        description: 'confirmation message for comment downvote',
+        defaultMessage: 'Please confirm that you want to downvote this comment.'
+    },
+    commentDownvoteTitle: {
+        id: 'app.confirmations.commentDownvoteTitle',
+        description: 'title for confirmation message for comment downvote',
+        defaultMessage: 'Downvote'
+    },
+    commentUpvote: {
+        id: 'app.confirmations.commentUpvote',
+        description: 'confirmation message for comment upvote',
+        defaultMessage: 'Please confirm that you want to upvote this comment.'
+    },
+    commentUpvoteTitle: {
+        id: 'app.confirmations.commentUpvoteTitle',
+        description: 'title for confirmation message for comment upvote',
+        defaultMessage: 'Upvote'
+    },
     draftPublish: {
         id: 'app.confirmations.draftPublish',
         description: 'confirmation for draft publishing',
@@ -24,12 +44,12 @@ const confirmationMessages = defineMessages({
     entryDownvote: {
         id: 'app.confirmations.entryDownvote',
         description: 'confirmation message for downvote',
-        defaultMessage: 'Please confirm that you want to downvote.'
+        defaultMessage: 'Please confirm that you want to downvote this entry.'
     },
     entryUpvote: {
         id: 'app.confirmations.entryUpvote',
         description: 'confirmation message for upvote',
-        defaultMessage: 'Please confirm that you want to upvote.'
+        defaultMessage: 'Please confirm that you want to upvote this entry.'
     },
     follow: {
         id: 'app.confirmations.follow',

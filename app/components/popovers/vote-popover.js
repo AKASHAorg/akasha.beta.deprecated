@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { selectEthBalance, selectVoteCost } from '../../local-flux/selectors';
+import { selectManaBalance, selectVoteCost } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 const FormItem = Form.Item;
 const MIN = 1;
@@ -75,7 +76,7 @@ class VotePopover extends Component {
     };
 
     validateWeight = (rule, value, callback) => {
-        const { balance, intl, voteCost } = this.props;
+        const { intl, mana, voteCost } = this.props;
         if (!Number.isInteger(value)) {
             callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min: MIN, max: MAX }));
         }
@@ -83,7 +84,8 @@ class VotePopover extends Component {
             callback(intl.formatMessage(formMessages.voteWeightRangeError, { min: MIN, max: MAX }));
             return;
         }
-        if (!balance || balance <= voteCost.get(value.toString())) {
+        const formatted = balanceToNumber(mana);
+        if (!formatted || formatted <= Number(voteCost.get(value.toString()))) {
             callback(intl.formatMessage(formMessages.notEnoughFunds));
             return;
         }
@@ -191,12 +193,12 @@ class VotePopover extends Component {
 }
 
 VotePopover.propTypes = {
-    balance: PropTypes.string.isRequired,
     containerRef: PropTypes.shape(),
     disabled: PropTypes.bool,
     form: PropTypes.shape().isRequired,
     iconClassName: PropTypes.string,
     intl: PropTypes.shape().isRequired,
+    mana: PropTypes.string.isRequired,
     onSubmit: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
     voteCost: PropTypes.shape().isRequired,
@@ -206,7 +208,7 @@ VotePopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectEthBalance(state),
+        mana: selectManaBalance(state),
         voteCost: selectVoteCost(state)
     };
 }
