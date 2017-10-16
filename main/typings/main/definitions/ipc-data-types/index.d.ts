@@ -283,7 +283,7 @@ interface ProfileByAddressResponse extends MainResponse {
 interface ProfileCreateRequest extends AuthRequest {
     akashaId: string;
     ipfs: IpfsProfileCreateRequest;
-    donations: boolean;
+    donationsEnabled: boolean;
     ethAddress: string;
 }
 
