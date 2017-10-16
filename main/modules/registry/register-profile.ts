@@ -11,7 +11,7 @@ export const registerProfile = {
     'properties': {
         'akashaId': { 'type': 'string', 'minLength': 2 },
         'ethAddress': { 'type': 'string', 'format': 'address' },
-        'donations': {'type': 'boolean'},
+        'donationsEnabled': {'type': 'boolean'},
         'ipfs': {
             'type': 'object',
             'properties': {
@@ -56,7 +56,7 @@ const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
     const [hash, fn, digest] = decodeHash(ipfsHash);
     const txData = contracts.instance
         .ProfileRegistrar
-        .register.request(data.akashaId, data.donations, hash, fn, digest, { gas: 400000, from: data.ethAddress});
+        .register.request(data.akashaId, data.donationsEnabled, hash, fn, digest, { gas: 400000, from: data.ethAddress});
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
