@@ -84,7 +84,7 @@ const errorMessages = defineMessages({
     draftPublish: {
         id: 'app.error.draftPublish',
         description: 'draft publish error message',
-        defaultMessage: 'An error occured while publishing draft "{draftTitle}"'
+        defaultMessage: 'An error occured while publishing draft'
     },
     entriesGetAsDrafts: {
         id: 'app.error.entriesGetAsDrafts',

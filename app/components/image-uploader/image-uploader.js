@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Progress } from 'antd';
 import { Map, fromJS } from 'immutable';
-import R from 'ramda';
+import { equals } from 'ramda';
 import { SvgIcon } from '../';
 import AddImage from '../svg/add-image';
 import { generalMessages } from '../../locale-data/messages';
@@ -23,15 +23,15 @@ class ImageUploader extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        return !R.equals(nextProps.initialImage, this.props.initialImage) ||
-            !R.equals(nextProps.baseUrl, this.props.baseUrl) ||
-            !R.equals(nextProps.containerSize, this.props.containerSize) ||
-            !R.equals(nextState.imageFile, this.state.imageFile) ||
-            !R.equals(nextState.imageLoaded, this.state.imageLoaded) ||
-            !R.equals(nextState.processingFinished, this.state.processingFinished) ||
-            !R.equals(nextState.progress, this.state.progress) ||
-            !R.equals(nextState.error, this.state.error) ||
-            !R.equals(nextState.highlightDropZone, this.state.highlightDropZone);
+        return !equals(nextProps.initialImage, this.props.initialImage) ||
+            !equals(nextProps.baseUrl, this.props.baseUrl) ||
+            !equals(nextProps.containerSize, this.props.containerSize) ||
+            !equals(nextState.imageFile, this.state.imageFile) ||
+            !equals(nextState.imageLoaded, this.state.imageLoaded) ||
+            !equals(nextState.processingFinished, this.state.processingFinished) ||
+            !equals(nextState.progress, this.state.progress) ||
+            !equals(nextState.error, this.state.error) ||
+            !equals(nextState.highlightDropZone, this.state.highlightDropZone);
     }
     _highlightDropZone = (ev) => {
         ev.preventDefault();

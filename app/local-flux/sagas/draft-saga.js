@@ -3,7 +3,7 @@ import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel } from './helpers';
-import { selectToken, selectDraftById } from '../selectors';
+import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
@@ -11,6 +11,7 @@ import * as draftActions from '../actions/draft-actions';
 import * as actionActions from '../actions/action-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
+import * as eProcActions from '../actions/external-process-actions';
 
 const { EditorState, SelectionState } = DraftJS;
 const { Channel } = self;
@@ -144,6 +145,17 @@ function* draftPublish ({ actionId, draft }) {
     });
 }
 
+function* draftPublishSuccess ({ data }) {
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield put(draftActions.draftDelete({ draftId: data.draft.id }));
+    yield put(entryActions.entryProfileIterator({
+        column: null,
+        ethAddress,
+        limit: -1,
+        asDrafts: true
+    }));
+}
+
 function* draftPublishUpdate ({ actionId, draft }) {
     const channel = Channel.server.entry.editEntry;
     const { id } = draft;
@@ -186,11 +198,33 @@ function* draftRevert ({ data }) {
 function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
+        console.log(response, 'this is the response');
         if (response.error) {
             yield put(draftActions.draftPublishError(
                 response.error,
                 response.request.id
             ));
+        } else if (response.data.receipt) {
+            const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+            if (!response.data.receipt.success) {
+                yield put(draftActions.draftPublishError({}, response.request.id));
+            } else {
+                // const gethStatus = yield select(state => state.externalProcState.getIn(['geth', 'status']));
+                console.log('attempt to update blockNr', blockNumber);
+                yield put(eProcActions.gethGetStatusSuccess({
+                    blockNr: blockNumber
+                }, {
+                    geth: {}
+                }));
+                yield put(actionActions.actionUpdate({
+                    id: response.request.actionId,
+                    status: actionStatus.published,
+                    tx: response.data.tx,
+                    blockNumber,
+                    cumulativeGasUsed,
+                    success,
+                }));
+            }
         } else {
             yield put(actionActions.actionUpdate({
                 id: response.request.actionId,
@@ -229,6 +263,7 @@ export function* watchDraftActions () {
     yield fork(registerChannelListeners);
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
+    yield takeEvery(types.DRAFT_PUBLISH_SUCCESS, draftPublishSuccess);
     yield takeEvery(types.DRAFT_PUBLISH_UPDATE, draftPublishUpdate);
     yield takeEvery(types.DRAFT_PUBLISH_UPDATE_SUCCESS, draftPublishUpdateSuccess);
     yield takeEvery(types.DRAFT_REVERT_TO_VERSION, draftRevert);

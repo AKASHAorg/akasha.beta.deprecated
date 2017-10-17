@@ -41,6 +41,7 @@ class NewEntryPage extends Component {
     state = {
         showPublishPanel: false,
         errors: {},
+        shouldResetCaret: false,
     }
 
     componentWillReceiveProps (nextProps) {
@@ -64,13 +65,19 @@ class NewEntryPage extends Component {
         }
         if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId) {
             if (currentSelection) {
-                this.editor.updateCaretPosition(currentSelection);
+                this.setState({
+                    shouldResetCaret: true
+                });
             } else {
                 const selection = EditorState.moveSelectionToEnd(
                     draftObj.getIn(['content', 'draft'])
                 ).getSelection();
                 this.editor.updateCaretPosition(selection);
             }
+        } else {
+            this.setState({
+                shouldResetCaret: false
+            });
         }
     }
 
@@ -335,7 +342,7 @@ class NewEntryPage extends Component {
     }
     /* eslint-disable complexity */
     render () {
-        const { showPublishPanel, errors } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
@@ -358,9 +365,13 @@ class NewEntryPage extends Component {
         const { content, tags, localChanges, onChain } = draftObj;
         const { title, excerpt, latestVersion, licence, draft, featuredImage } = content;
         let draftWithSelection = draft;
-        if (currentSelection && currentSelection.size > 0 && currentSelection.getHasFocus()) {
+
+        if (currentSelection && currentSelection.size > 0 && shouldResetCaret) {
             draftWithSelection = EditorState.forceSelection(draft, currentSelection);
+        } else if (currentSelection && currentSelection.size > 0) {
+            draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
+
         return (
           <div className="edit-entry-page article-page">
             <div

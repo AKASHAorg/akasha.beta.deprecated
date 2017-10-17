@@ -25,6 +25,37 @@ sagaMiddleware.run(rootSaga);
 
 window.Perf = ReactPerf;
 
+// @todo put this somewhere safe and remove from production
+self.findIPCChannelByHash = (hash) => {
+    Object.keys(self.Channel).forEach((rootKey) => {
+        const rootCh = self.Channel[rootKey];
+        Object.keys(rootCh).forEach((modKey) => {
+            const mod = rootCh[modKey];
+            Object.keys(mod).forEach((chKey) => {
+                if (chKey === 'manager') {
+                    if (
+                        (mod[chKey].channel && mod[chKey].channel.includes(hash)) ||
+                        (typeof mod[chKey] === 'string' && mod[chKey].includes(hash))
+                    ) {
+                        console.info(
+                            `found ${rootKey} channel:`,
+                            `Channel.${rootKey}.${modKey}.${chKey} :: \n`,
+                            `channel hash: ${mod[chKey].channel ? mod[chKey].channel : mod[chKey]}`
+                        );
+                    }
+                } else if (mod[chKey].channel.includes(hash)) {
+                    console.info(
+                        `found ${rootKey} channel:`,
+                        `Channel.${rootKey}.${modKey}.${chKey} :: \n`,
+                        `channel hash: ${mod[chKey].channel}`
+                    );
+                }
+            });
+        });
+    });
+};
+
+
 render(
   <Provider store={store} >
     <ConnectedIntlProvider>

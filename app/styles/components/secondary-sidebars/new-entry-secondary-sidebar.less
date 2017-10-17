@@ -1,5 +1,7 @@
 .new-entry-secondary-sidebar {
     font-size: 0.86em;
+    overflow: hidden;
+    height: 100%;
     &__entry-type-list {
         width: 115px;
         font-size: 13px;
@@ -140,7 +142,9 @@
     }
     &__sidebar-body {
         padding: 0 8px;
-
+        height: calc(~"100% - "@top-bar-height);
+        overflow-y: auto;
+        padding-bottom: @top-bar-height;
     }
     &__draft-type-popover {
         .ant-popover-inner-content {
