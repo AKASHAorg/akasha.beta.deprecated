@@ -5,20 +5,12 @@ import { CommentAuthor, CommentRecord, CommentsState } from './records';
 
 const initialState = new CommentsState();
 
-const comparator = (a, b) => {
-    const first = Number(a.commentId);
-    const second = Number(b.commentId);
-    if (first > second) {
-        return -1;
+const createCommentWithAuthor = (comment) => {
+    if (!comment.parent) {
+        comment.parent = '0';
     }
-    if (first < second) {
-        return 1;
-    }
-    return 0;
+    return new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
 };
-
-const createCommentWithAuthor = comment =>
-    new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
 
 // const iteratorHandler = (state, collection) => {
 //     let byId = state.get('byId');
@@ -71,8 +63,6 @@ const commentsState = createReducer(initialState, {
         let comments = state.getIn(['newComments', 'comments']);
         collection.forEach((comm) => {
             comm.entryId = request.entryId;
-            // TODO Remove this
-            comm.score = (Math.random() * 100).toFixed(0).toString();
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             comments = comments.push(comm.commentId);
@@ -85,6 +75,28 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
+    [types.COMMENTS_GET_SCORE_SUCCESS]: (state, { data }) => {
+        const { commentId, score } = data;
+        if (score === state.getIn(['byId', commentId, 'score'])) {
+            return state;
+        }
+        const byId = state.get('byId').setIn([commentId, 'score'], score);
+        const parent = byId.getIn([commentId, 'parent']);
+        const list = sortByScore(byId, state.getIn(['byParent', parent]));
+        return state.merge({
+            byId,
+            byParent: state.get('byParent').set(parent, list)
+        });
+    },
+
+    [types.COMMENTS_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
+        const votes = {};
+        data.collection.forEach((res) => {
+            votes[res.commentId] = res.vote;
+        });
+        return state.mergeIn(['votes'], new Map(votes));
+    },
+
     [types.COMMENTS_ITERATOR]: (state, { parent }) =>
         state.setIn(['flags', 'fetchingComments', parent], true),
 
@@ -96,8 +108,6 @@ const commentsState = createReducer(initialState, {
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
-            // TODO Remove this            
-            comm.score = (Math.random() * 100).toFixed(0).toString();
             comm.entryId = request.entryId;
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
@@ -122,8 +132,6 @@ const commentsState = createReducer(initialState, {
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
             comm.entryId = request.entryId;
-            // TODO Remove this
-            comm.score = (Math.random() * 100).toFixed(0).toString();
             const comment = createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);

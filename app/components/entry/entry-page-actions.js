@@ -58,13 +58,13 @@ class EntryPageAction extends Component {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
             lists, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
         const showBalance = isOwnEntry && canClaim !== undefined && entryBalance !== undefined;
-        const voteIconClass = 'entry-actions__vote-icon';
+        const iconClassName = 'entry-actions__vote-icon';
         const claimIconClass = classNames('entry-actions__claim-icon', {
             disabled: claimPending,
             'entry-actions__claim-icon_claimed': !canClaim,
             'content-link': canClaim
         });
-        const voteProps = { containerRef, iconClassName: voteIconClass, votePending, vote };
+        const voteProps = { containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote };
         const upvotePercent = 70;
         const downvotePercent = 30;
         const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {

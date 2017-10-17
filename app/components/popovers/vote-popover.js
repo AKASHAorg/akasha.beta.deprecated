@@ -33,16 +33,22 @@ class VotePopover extends Component {
     }
 
     canVote = () => {
-        const { disabled, votePending, vote } = this.props;
-        return !disabled && !votePending && vote === '0';
+        const { disabled, isOwnEntity, votePending, vote } = this.props;
+        return !disabled && !isOwnEntity && !votePending && vote === '0';
     };
 
     getTooltip = () => {
-        const { intl, type, votePending, vote } = this.props;
+        const { intl, isOwnEntity, type, votePending, vote } = this.props;
         if (votePending) {
             return intl.formatMessage(entryMessages.votePending);
         } else if (vote && vote !== '0') {
-            return intl.formatMessage(entryMessages.alreadyVoted);
+            return type.includes('entry') ?
+                intl.formatMessage(entryMessages.alreadyVoted) :
+                intl.formatMessage(entryMessages.alreadyVotedComment);
+        } else if (isOwnEntity) {
+            return type.includes('entry') ?
+                intl.formatMessage(entryMessages.votingOwnEntry) :
+                intl.formatMessage(entryMessages.votingOwnComment);
         } else if (type.includes('Downvote')) {
             return intl.formatMessage(entryMessages.downvote);
         } else if (type.includes('Upvote')) {
@@ -198,6 +204,7 @@ VotePopover.propTypes = {
     form: PropTypes.shape().isRequired,
     iconClassName: PropTypes.string,
     intl: PropTypes.shape().isRequired,
+    isOwnEntity: PropTypes.bool,
     mana: PropTypes.string.isRequired,
     onSubmit: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,

@@ -17,6 +17,12 @@
         padding: 6px;
     }
 
+    &__votes-placeholder {
+        width: 14px;
+        height: 100%;
+        background-color: #eee;
+    }
+
     &__votes-icon {
         font-size: 16px;
     }
@@ -51,11 +57,38 @@
         }
     }
 
+    &__author-placeholder {
+        height: 14px;
+        width: 80px;
+        background-color: #eee;
+        display: inline-block;
+        margin-right: 12px;
+    }
+
     &__publish-date {
         padding: 0px 12px 0px 6px;
         font-size: 12px;
         line-height: 22px;
         color: @text-color-secondary;
+    }
+
+    &__publish-date-placeholder {
+        height: 14px;
+        width: 50px;
+        background-color: #eee;
+        display: inline-block;
+    }
+
+    &__content-placeholder {
+        height: 14px;
+        width: 100%;
+        background-color: #eee;
+        margin: 12px 0px 6px;
+
+        &_short {
+            margin-top: 6px;
+            width: 70%;
+        }
     }
 
     &__placeholder {
@@ -98,10 +131,20 @@
     &__expand-button {
         font-size: 12px;
         padding: 4px 0px;
+
+        &_active {
+            color: @primary-color;
+        }
+    }
+
+    &__expand-button-icon {
+        margin-right: 5px;
     }
 
     &__actions {
         height: 32px;
+        display: flex;
+        justify-content: space-between;
     }
 
     &__reply-button {
@@ -115,6 +158,12 @@
             height: 15px;
             margin-right: 5px;
         }
+    }
+
+    &__reply-button-placeholder {
+        height: 14px;
+        width: 42px;
+        background-color: #eee;
     }
 
     &__replies {
