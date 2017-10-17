@@ -13,7 +13,7 @@ import { ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectComment, selectLoggedEthAddress, selectPendingCommentVote,
+import { selectComment, selectCommentVote, selectLoggedEthAddress, selectPendingCommentVote,
     selectProfile, selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -55,7 +55,14 @@ class Comment extends Component {
         }
     }
 
-    componentDidMount () {
+    componentDidUpdate (previousProps) {
+        const { resolvingComment } = previousProps;
+        if (!this.props.resolvingComment && resolvingComment) {
+            this.checkIfExpanded();
+        }
+    }
+
+    checkIfExpanded = () => {
         const { comment } = this.props;
         let { isExpanded } = this.state;
         let contentHeight;
@@ -71,7 +78,7 @@ class Comment extends Component {
         return this.setState({ // eslint-disable-line react/no-did-mount-set-state
             isExpanded
         });
-    }
+    };
 
     isLogged = () => {
         const { comment, loggedEthAddress } = this.props;
@@ -104,27 +111,47 @@ class Comment extends Component {
 
     renderExpandButton = () => {
         const { intl } = this.props;
-        const label = this.state.isExpanded ?
+        const { isExpanded } = this.state;
+        const label = isExpanded ?
             intl.formatMessage(entryMessages.showLess) :
             intl.formatMessage(entryMessages.showMore);
+        const className = classNames('flex-center comment__expand-button', {
+            'comment__expand-button_active': !isExpanded
+        });
         return (
-          <div className="flex-center comment__expand-button">
+          <div className={className}>
             <div className="content-link" onClick={this.toggleExpanded}>
+              <Icon className="comment__expand-button-icon" type={isExpanded ? 'arrow-up' : 'arrow-down'} />
               {label}
             </div>
           </div>
         );
     };
 
-    renderPlaceholder = () => {
-        return (
-            <div>PLACEHOLDER</div>
-        );
-    };
+    renderPlaceholder = () => (
+      <div className="comment">
+        <div className="comment__inner">
+          <div className="comment__votes">
+            <div className="comment__votes-placeholder" />
+          </div>
+          <div className="comment__main">
+            <div className="flex-center-y comment__header">
+              <div className="comment__author-placeholder" />
+              <div className="comment__publish-date-placeholder" />
+            </div>
+            <div className="comment__content-placeholder" />
+            <div className="comment__content-placeholder comment__content-placeholder_short" />
+            <div className="flex-center-y comment__actions">
+              <div className="comment__reply-button-placeholder" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 
     render () {
         const { author, comment, containerRef, children, intl, onReply, resolvingComment,
-            showReplyButton, votePending } = this.props;
+            showReplyButton, vote, votePending } = this.props;
 
         if (resolvingComment) {
             return this.renderPlaceholder();
@@ -144,7 +171,7 @@ class Comment extends Component {
             comment__body_expanded: isExpanded === true
         });
         const iconClassName = 'comment__vote-icon';
-        const voteProps = { containerRef, iconClassName, votePending, vote: '0' };
+        const voteProps = { containerRef, iconClassName, isOwnEntity: this.isLogged(), votePending, vote };
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
@@ -202,7 +229,6 @@ class Comment extends Component {
                 {!content &&
                   <div className="comment__placeholder">Cannot resolve content</div>
                 }
-                {isExpanded !== null && this.renderExpandButton()}
                 {showReplyButton && content &&
                   <div className="flex-center-y comment__actions">
                     <div
@@ -214,6 +240,7 @@ class Comment extends Component {
                       </svg>
                       <span>{intl.formatMessage(generalMessages.reply)}</span>
                     </div>
+                    {isExpanded !== null && this.renderExpandButton()}
                   </div>
                 }
               </div>
@@ -241,6 +268,7 @@ Comment.propTypes = {
     onReply: PropTypes.func,
     resolvingComment: PropTypes.bool,
     showReplyButton: PropTypes.bool,
+    vote: PropTypes.string,
     votePending: PropTypes.bool
 };
 
@@ -255,6 +283,7 @@ function mapStateToProps (state, ownProps) {
         ethAddress,
         loggedEthAddress: selectLoggedEthAddress(state),
         resolvingComment: selectResolvingComment(state, comment.ipfsHash),
+        vote: selectCommentVote(state, commentId),
         votePending: !!selectPendingCommentVote(state, commentId)
     };
 }

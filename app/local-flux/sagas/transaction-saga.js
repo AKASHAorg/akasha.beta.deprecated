@@ -72,6 +72,8 @@ function* watchTransactionGetStatusChannel () {
         const resp = yield take(actionChannels.tx.getTransaction);
         if (resp.error) {
             yield put(actions.transactionGetStatusError(resp.error));
+            console.log('delete action id', resp.request.actionIds[0]);
+            yield put(actionActions.actionDelete(resp.request.actionIds[0]));
         } else {
             const updates = [];
             resp.data.forEach((tx, index) => {

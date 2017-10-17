@@ -31,6 +31,24 @@ export const commentsGetCountError = (error) => {
 };
 
 export const commentsGetCountSuccess = data => action(types.COMMENTS_GET_COUNT_SUCCESS, { data });
+export const commentsGetScore = commentId => action(types.COMMENTS_GET_SCORE, { commentId });
+
+export const commentsGetScoreError = (error) => {
+    error.code = 'CGSE01';
+    error.messageId = 'commentsGetScore';
+    return action(types.COMMENTS_GET_SCORE_ERROR, { error });
+};
+
+export const commentsGetScoreSuccess = data => action(types.COMMENTS_GET_SCORE_SUCCESS, { data });
+export const commentsGetVoteOf = data => action(types.COMMENTS_GET_VOTE_OF, { data });
+
+export const commentsGetVoteOfError = (error) => {
+    error.code = 'CGVOE01';
+    error.messageId = 'commentsGetVoteOf';
+    return action(types.COMMENTS_GET_VOTE_OF_ERROR, { error });
+};
+
+export const commentsGetVoteOfSuccess = data => action(types.COMMENTS_GET_VOTE_OF_SUCCESS, { data });
 export const commentsIterator = ({ entryId, parent, more }) =>
     action(types.COMMENTS_ITERATOR, { entryId, parent, more });
 
