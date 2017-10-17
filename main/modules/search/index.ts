@@ -1,1 +1,2 @@
-export default [];
+import query from './query';
+export default [query];

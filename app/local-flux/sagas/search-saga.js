@@ -12,14 +12,14 @@ const MAX_RETRIES = 3;
 
 function* searchHandshake () {
     const channel = Channel.server.search.handshake;
-    yield call(enableChannel, channel, Channel.client.search.manager);
-    yield apply(channel, channel.send, [{}]);
+    // yield call(enableChannel, channel, Channel.client.search.manager);
+    // yield apply(channel, channel.send, [{}]);
 }
 
 function* searchQuery ({ text, pageSize = entrySearchLimit, offset = 0 }) {
     const channel = Channel.server.search.query;
-    yield call(enableChannel, channel, Channel.client.search.manager);
-    yield apply(channel, channel.send, [{ text, pageSize, offset }]);
+    // yield call(enableChannel, channel, Channel.client.search.manager);
+    // yield apply(channel, channel.send, [{ text, pageSize, offset }]);
 }
 
 // Action watchers
@@ -39,6 +39,7 @@ function* watchSearchQuery () {
 // Channel watchers
 
 function* watchSearchHandshakeChannel () {
+    /*
     while (true) {
         const resp = yield take(actionChannels.search.handshake);
         if (resp.error) {
@@ -54,9 +55,11 @@ function* watchSearchHandshakeChannel () {
             yield put(actions.searchHandshakeSuccess(resp.data, resp.request));
         }
     }
+    */
 }
 
 function* watchSearchQueryChannel () {
+    /*
     const listLimit = entrySearchLimit + 1;
     while (true) {
         const resp = yield take(actionChannels.search.query);
@@ -77,6 +80,7 @@ function* watchSearchQueryChannel () {
             }
         }
     }
+    */
 }
 
 // exports
