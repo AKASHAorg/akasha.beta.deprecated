@@ -8,7 +8,7 @@ class SearchIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'search';
-        this.DEFAULT_MANAGED = ['handshake', 'query'];
+        this.DEFAULT_MANAGED = ['query'];
     }
 
     /**
