@@ -513,6 +513,9 @@ function* watchProfileRegisterChannel () {
             yield put(actions.profileRegisterError(resp.error, resp.request));
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileRegisterError({}));
+            }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -575,6 +578,9 @@ function* watchProfileUpdateChannel () {
             yield put(actions.profileUpdateError(resp.error, resp.request));
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileUpdateError({}));
+            }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));

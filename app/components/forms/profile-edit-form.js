@@ -250,18 +250,11 @@ class ProfileEditForm extends Component {
 
 
     render () {
-        const { intl, isUpdate, tempProfile, form } = this.props;
+        const { intl, isUpdate, tempProfile } = this.props;
         const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
             baseUrl } = tempProfile;
         const { formatMessage } = intl;
-        const linkAddressPrefix = form.getFieldDecorator('linkAddressPrefix', {
-            initialValue: 'http://'
-        })(
-          <Select>
-            <Option value="http://">http://</Option>
-            <Option value="https://">https://</Option>
-          </Select>
-        );
+
         return (
           <div className="profile-edit-form__wrap">
             <div className="profile-edit-form__form-wrapper">
@@ -393,11 +386,10 @@ class ProfileEditForm extends Component {
                           label={intl.formatMessage(formMessages.url)}
                           colon={false}
                           hasFeedback
-                          validateStatus={this._validateField('links', index, 'url') ? 'error' : 'success'}
+                          validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
                           help={this._getErrorMessages('links', index, 'url')}
                         >
                           <Input
-                            addonBefore={linkAddressPrefix}
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}

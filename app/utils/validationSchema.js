@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import * as Joi from 'joi-browser';
 import XRegExp from 'xregexp';
 import { formMessages, validationMessages } from '../locale-data/messages';
 
@@ -20,17 +20,13 @@ export const getProfileSchema = (intl, options) => {
     const baseSchema = Joi.object().keys({
         firstName: Joi
             .string()
-            .required()
+            .allow('')
             .min(2)
             .max(32)
             .regex(nameRegExp)
             .label(intl.formatMessage(formMessages.firstName))
             .options({
                 language: {
-                    any: {
-                        required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
-                    },
                     string: {
                         min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
                         max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
@@ -79,21 +75,20 @@ export const getProfileSchema = (intl, options) => {
                                 }
                             }
                         }),
-                    url: Joi.alternatives().try(
-                        Joi
-                            .string()
-                            .label('URL')
-                            .options({
-                                language: {
-                                    any: {
-                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                    },
-                                    string: {
-                                        uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
-                                    }
+                    url: Joi
+                        .string()
+                        .label('URL')
+                        .uri()
+                        .options({
+                            language: {
+                                any: {
+                                    empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                                },
+                                string: {
+                                    uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
                                 }
-                            })
-                    )
+                            }
+                        })
                 })
             ).label('Link').options({
                 language: {
