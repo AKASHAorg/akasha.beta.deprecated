@@ -101,42 +101,6 @@ export const getProfileSchema = (intl, options) => {
                         includesOne: '{{reason}}'
                     }
                 }
-            }),
-        crypto: Joi
-            .array()
-            .items(
-                Joi
-                    .object()
-                    .keys({
-                        id: Joi.number(),
-                        name: Joi
-                            .string()
-                            .label('Name')
-                            .options({
-                                language: {
-                                    any: {
-                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                    }
-                                }
-                            }),
-                        address: Joi
-                            .string()
-                            .label('Address')
-                            .options({
-                                language: {
-                                    any: {
-                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                    }
-                                }
-                            })
-                    })
-            )
-            .options({
-                language: {
-                    array: {
-                        includesOne: '{{reason}}'
-                    }
-                }
             })
     });
     if (options && !options.isUpdate) {
@@ -163,35 +127,6 @@ export const getProfileSchema = (intl, options) => {
                             regex: {
                                 base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                             }
-                        }
-                    }
-                }),
-            password: Joi
-                .string()
-                .required()
-                .min(8)
-                .label(intl.formatMessage(formMessages.passphrase))
-                .options({
-                    language: {
-                        any: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                        },
-                        string: {
-                            min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                        }
-                    }
-                }),
-            password2: Joi
-                .string()
-                .min(8)
-                .required()
-                .valid(Joi.ref('password'))
-                .label(intl.formatMessage(formMessages.passphraseVerify))
-                .options({
-                    language: {
-                        any: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                            allowOnly: `{{key}} ${intl.formatMessage(validationMessages.passphraseNotMatching)}`
                         }
                     }
                 })

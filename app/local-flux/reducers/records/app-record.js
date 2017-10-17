@@ -16,6 +16,7 @@ export const AppRecord = Record({
     showAppSettings: false,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
+    showProfileEditor: false,
     showReportModal: null,
     showSecondarySidebar: true, // must default to true
     showTerms: false,

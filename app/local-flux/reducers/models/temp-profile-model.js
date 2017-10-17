@@ -1,17 +1,17 @@
-import { Record, Map, List } from 'immutable';
-import { TempProfileRecord, TempProfileStatus } from '../records';
+import { Record, Map, List, fromJS } from 'immutable';
+import { TempProfileRecord } from '../records';
 
 const TempProfileModelRecord = Record({
-    tempProfile: TempProfileRecord(),
-    status: new TempProfileStatus()
+    tempProfile: TempProfileRecord()
 });
 
 export default class TempProfileModel extends TempProfileModelRecord {
     static createTempProfile (profileData) {
-        const { links = [], crypto = [], ...others } = profileData;
+        const { links = [], crypto = [], backgroundImage, ...others } = profileData;
         const tLinks = new List(links.map(link => new Map(link)));
         const tCrypto = new List(crypto.map(currency => new Map(currency)));
-        return new TempProfileRecord({ links: tLinks, crpto: tCrypto, ...others });
+        const tBackgroundImage = fromJS(backgroundImage);
+        return new TempProfileRecord({ links: tLinks, crpto: tCrypto, backgroundImage: tBackgroundImage, ...others });
     }
     static profileToTempProfile (profileData) {
         const {
@@ -19,7 +19,7 @@ export default class TempProfileModel extends TempProfileModelRecord {
             about = '',
             akashaId,
             avatar,
-            backgroundImage = new Map(),
+            backgroundImage,
             baseUrl,
             crypto,
             ethAddress,
@@ -40,8 +40,5 @@ export default class TempProfileModel extends TempProfileModelRecord {
             links,
             crypto
         });
-    }
-    static createStatus (status) {
-        return new TempProfileStatus(status);
     }
 }

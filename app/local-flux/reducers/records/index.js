@@ -16,5 +16,5 @@ export { AethBalance, Balance, LoggedProfile, ManaBalance, ProfileRecord,
     ProfileState } from './profile-record';
 export { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, SettingsRecord, UserSettings } from './settings-record';
-export { TempProfileRecord, TempProfileStatus } from './temp-profile-record';
+export { TempProfileRecord } from './temp-profile-record';
 export { UtilsState } from './utils-record';

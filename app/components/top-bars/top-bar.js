@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
+import { profileLogout } from '../../local-flux/actions/profile-actions';
+import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { Breadcrumbs, DashboardTopBar, NewEntryTopBar, PanelLink, Panels, TopBarRightSide } from '../';
 import { selectEthBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
@@ -78,6 +80,7 @@ class TopBar extends PureComponent {
                     balance={balance}
                     canEditProfile={!!loggedProfile.get('akashaId')}
                     loggedProfileData={loggedProfileData}
+                    profileEditToggle={this.props.profileEditToggle}
                   />
                 </div>
                 <div
@@ -119,6 +122,7 @@ TopBar.propTypes = {
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
+    profileEditToggle: PropTypes.func
 };
 
 const mapStateToProps = state => ({
@@ -130,7 +134,10 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    {},
+    {
+        profileEditToggle,
+        profileLogout,
+    },
     null,
     { pure: false }
 )(withRouter(injectIntl(TopBar)));

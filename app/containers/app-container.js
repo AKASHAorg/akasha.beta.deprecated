@@ -17,7 +17,7 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, N
     TagSearchPage, SidebarContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, NewEntrySecondarySidebar,
-    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage,
+    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit,
     SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -179,6 +179,7 @@ class AppContainer extends Component {
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                 {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
+                {appState.get('showProfileEditor') && <ProfileEdit />}
               </div>
             </DataLoader>
           </MuiThemeProvider>

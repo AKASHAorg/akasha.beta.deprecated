@@ -23,7 +23,7 @@ export const ProfileRecord = Record({
     about: '',
     akashaId: '',
     avatar: null,
-    backgroundImage: [],
+    backgroundImage: new Map(),
     baseUrl: '',
     commentsCount: '0',
     donationsEnabled: false,

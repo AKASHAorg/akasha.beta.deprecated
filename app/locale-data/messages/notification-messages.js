@@ -26,8 +26,8 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when update profile transaction is sent',
         defaultMessage: 'Your profile is updating ...'
     },
-    profileUpdateSuccess: {
-        id: 'app.notification.profileUpdateSuccess',
+    updateProfileSuccess: {
+        id: 'app.notification.updateProfileSuccess',
         description: 'Notification to be displayed when update profile transaction was mined',
         defaultMessage: 'Your profile was successfully updated'
     },
@@ -50,6 +50,11 @@ const notificationMessages = defineMessages({
         id: 'app.notification.unfollowProfileSuccess',
         description: 'Notification to be displayed when unfollow transaction was mined',
         defaultMessage: 'You are not following {displayName} anymore'
+    },
+    registerProfileSuccess: {
+        id: 'app.notification.registerProfileSuccess',
+        description: 'Notification to be displayed when register profile transaction was mined',
+        defaultMessage: 'Your profile was successfully updated'
     },
     registeringTag: {
         id: 'app.notification.registeringTag',

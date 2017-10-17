@@ -1,5 +1,5 @@
 import Pica from 'pica/dist/pica';
-import R from 'ramda';
+import * as R from 'ramda';
 import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width

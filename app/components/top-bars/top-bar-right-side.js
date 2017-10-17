@@ -7,7 +7,8 @@ const TopBarRightSide = ({
     balance,
     canEditProfile,
     loggedProfileData,
-    openNotificationPanel
+    openNotificationPanel,
+    profileEditToggle
 }, { muiTheme }) => (
   <div style={{ display: 'flex', flex: '0 0 auto' }}>
     <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center' }}>
@@ -27,15 +28,16 @@ const TopBarRightSide = ({
         <Balance balance={balance} />
       </PanelLink>
     </div>
-    <div style={{ flex: '0 0 auto' }}>
-      <PanelLink to={canEditProfile ? 'uprofile' : 'editProfile'}>
-        <Avatar
-          firstName={loggedProfileData.get('firstName')}
-          image={loggedProfileData.get('avatar')}
-          lastName={loggedProfileData.get('lastName')}
-          size="small"
-        />
-      </PanelLink>
+    <div
+      style={{ flex: '0 0 auto', cursor: 'pointer' }}
+      onClick={profileEditToggle}
+    >
+      <Avatar
+        firstName={loggedProfileData.get('firstName')}
+        image={loggedProfileData.get('avatar')}
+        lastName={loggedProfileData.get('lastName')}
+        size="small"
+      />
     </div>
   </div>
 );
@@ -49,6 +51,7 @@ TopBarRightSide.propTypes = {
     canEditProfile: PropTypes.bool,
     loggedProfileData: PropTypes.shape(),
     openNotificationPanel: PropTypes.func,
+    profileEditToggle: PropTypes.func
 };
 
 export default TopBarRightSide;

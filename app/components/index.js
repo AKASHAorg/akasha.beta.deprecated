@@ -77,6 +77,8 @@ export PathInputField from './common/path-input-field';
 export ProfileActivity from './profile/profile-activity';
 export ProfileColumn from './columns/profile-column';
 export ProfileDetailsPanel from './panels/user-profile-details';
+export ProfileEdit from './profile-edit';
+export ProfileEditForm from './forms/profile-edit-form';
 export ProfileEditPanel from './panels/profile-edit';
 export ProfileDetails from './profile/profile-details';
 export ProfileList from './profile-list';
