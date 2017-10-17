@@ -1,5 +1,5 @@
 import Pica from 'pica/dist/pica';
-import R from 'ramda';
+import { is } from 'ramda';
 import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
@@ -49,7 +49,7 @@ function findBestMatch (width, obj, initialKey) {
 
 function imageCreator (arrayBuffer, baseUrl) {
     // if arrayBuffer is string it means that it comes from ipfs
-    if (baseUrl && R.is(String, arrayBuffer)) {
+    if (baseUrl && is(String, arrayBuffer)) {
         if (arrayBuffer.includes(`${baseUrl}`) && arrayBuffer !== `${baseUrl}/`) {
             return `${arrayBuffer}`;
         }
@@ -58,7 +58,7 @@ function imageCreator (arrayBuffer, baseUrl) {
         }
         return `${baseUrl}/${arrayBuffer}`;
     }
-    if (R.is(Uint8Array, arrayBuffer)) {
+    if (is(Uint8Array, arrayBuffer)) {
         const blobFile = new Blob([arrayBuffer]);
         return window.URL.createObjectURL(blobFile);
     }

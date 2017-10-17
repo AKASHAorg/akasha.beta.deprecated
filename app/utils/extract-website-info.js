@@ -83,7 +83,7 @@ export const extractWebsiteInfo = (url) => {
             const superParser = new DOMParser();
             return res.text().then((htmlString) => {
                 const htmlContent = superParser.parseFromString(htmlString, 'text/html');
-                if (finalUrl.hostname.includes('youtube.com') || finalUrl.includes('youtu.be')) {
+                if (finalUrl.hostname.includes('youtube.com') || finalUrl.hostname.includes('youtu.be')) {
                     return youtubeParser(htmlContent, finalUrl, targetTags);
                 }
                 return htmlParser(htmlContent, finalUrl, targetTags);

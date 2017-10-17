@@ -20,6 +20,7 @@ class NewLinkEntryPage extends Component {
         super(props);
         this.state = {
             showPublishPanel: false,
+            errors: {}
         };
     }
     componentWillReceiveProps (nextProps) {
@@ -120,12 +121,12 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile } = this.props;
-        const { showPublishPanel } = this.state;
+        const { showPublishPanel, errors } = this.state;
 
         if (!draftObj) {
             return (<div>Finding draft</div>);
         }
-
+        console.log(draftObj, 'draft obj');
         const { content, tags, hasCard, localChanges, onChain } = draftObj;
         const { title, url, excerpt, latestVersion, licence,
             featuredImage, cardInfo, } = content;
@@ -201,6 +202,7 @@ class NewLinkEntryPage extends Component {
                   onFeaturedImageChange={this._handleFeaturedImageChange}
                   title={title}
                   excerpt={excerpt}
+                  errors={errors}
                   featuredImage={featuredImage}
                   selectedLicence={licence}
                   licences={licences}

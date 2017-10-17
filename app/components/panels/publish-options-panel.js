@@ -45,6 +45,7 @@ class PublishOptionsPanel extends Component {
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
             excerpt, baseUrl, errors } = this.props;
+        console.log(this.props, 'some props');
         return (
           <div className="publish-options-panel">
             <div
