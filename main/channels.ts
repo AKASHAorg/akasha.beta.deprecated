@@ -46,7 +46,7 @@ const channels = {
 
     search: ['handshake', 'query'],
 
-    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage']
+    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage', 'manaCosts']
 };
 
 const processes = ['server', 'client'];
