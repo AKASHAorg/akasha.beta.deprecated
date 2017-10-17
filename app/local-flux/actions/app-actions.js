@@ -16,6 +16,8 @@ export const notificationDisplay = notification => action(types.NOTIFICATION_DIS
 // for publishing to blockchain
 export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 
+export const profileEditToggle = () => action(types.PROFILE_EDIT_TOGGLE);
+
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 

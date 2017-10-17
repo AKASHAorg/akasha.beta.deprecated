@@ -3,6 +3,7 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
+import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
@@ -233,6 +234,26 @@ function* profileUnfollowSuccess ({ data }) {
     }));
 }
 
+function* profileUpdate ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) {
+    yield put(appActions.profileEditToggle());
+    const channel = Channel.server.profile.updateProfileData;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    const ipfs = { about, avatar, backgroundImage, firstName, lastName, links };
+    yield apply(channel, channel.send, [{ token, actionId, ipfs }]);
+}
+
+function* profileUpdateSuccess (payload) {
+    const { akashaId, ethAddress } = payload.data;
+    // remove saved temp profile from DB and clear tempProfileState
+    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    // get updated profile data
+    yield call(profileGetData, { akashaId, full: true });
+    yield put(appActions.showNotification({
+        id: 'updateProfileSuccess'
+    }));
+}
+
 function* profileUpdateLogged (loggedProfile) {
     try {
         yield apply(profileService, profileService.profileUpdateLogged, [loggedProfile]);
@@ -240,6 +261,28 @@ function* profileUpdateLogged (loggedProfile) {
         yield put(actions.profileUpdateLoggedError(error));
     }
 }
+
+function* profileRegister ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled,
+    firstName, lastName, links, ethAddress }) {
+    yield put(appActions.profileEditToggle());
+    const channel = Channel.server.registry.registerProfile;
+    yield call(enableChannel, channel, Channel.client.registry.manager);
+    const token = yield select(selectToken);
+    const ipfs = { avatar, address, about, backgroundImage, firstName, lastName, links };
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, donationsEnabled, ethAddress, ipfs }]);
+}
+
+function* profileRegisterSuccess (payload) {
+    const { akashaId, ethAddress } = payload.data;
+    // remove saved temp profile from DB and clear tempProfileState
+    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    // get updated profile data
+    yield call(profileGetData, { akashaId, full: true });
+    yield put(appActions.showNotification({
+        id: 'registerProfileSuccess'
+    }));
+}
+
 
 // Channel watchers
 
@@ -462,6 +505,21 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileRegisterChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.registry.registerProfile);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileRegisterError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileResolveIpfsHashChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.resolveProfileIpfsHash);
@@ -509,6 +567,22 @@ function* watchProfileUnfollowChannel () {
     }
 }
 
+function* watchProfileUpdateChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.updateProfileData);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileUpdateError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
+
 export function* registerProfileListeners () {
     yield fork(watchProfileBondAethChannel);
     yield fork(watchProfileCreateEthAddressChannel);
@@ -526,6 +600,8 @@ export function* registerProfileListeners () {
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileUnfollowChannel);
+    yield fork(watchProfileUpdateChannel);
+    yield fork(watchProfileRegisterChannel);
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
@@ -555,6 +631,10 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
     yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
     yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
+    yield takeEvery(types.PROFILE_UPDATE, profileUpdate);
+    yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
+    yield takeEvery(types.PROFILE_REGISTER, profileRegister);
+    yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
 }
 
 export function* registerWatchers () {

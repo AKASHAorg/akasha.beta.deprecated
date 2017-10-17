@@ -50,6 +50,8 @@ const appState = createReducer(initialState, {
         }
         return state.set('showSecondarySidebar', !state.get('showSecondarySidebar'));
     },
+    [types.PROFILE_EDIT_TOGGLE]: state =>
+        state.set('showProfileEditor', !state.get('showProfileEditor')),
 
     [types.SHOW_NOTIFICATION]: (state, { notification }) => {
         const lastNotification = state.get('notifications').last();

@@ -26,6 +26,11 @@ export const profileMessages = defineMessages({
         description: 'Contacts card title',
         defaultMessage: 'Contacts'
     },
+    editProfileTitle: {
+        id: 'app.profile.editProfileTitle',
+        description: 'Edit profile page title',
+        defaultMessage: 'Edit Profile Information'
+    },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
         description: 'Label for Short description text field',
@@ -66,6 +71,11 @@ export const profileMessages = defineMessages({
         description: 'crypto address label',
         defaultMessage: 'Cryptocurrency Address'
     },
+    registerProfile: {
+        id: 'app.profile.registerProfile',
+        description: 'register profile button label',
+        defaultMessage: 'Register Profile'
+    },
     removeCryptoButtonTitle: {
         id: 'app.profile.removeCryptoButtonTitle',
         description: 'remove crypto button label',
@@ -80,6 +90,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.follow',
         description: 'follow a profile',
         defaultMessage: 'Follow'
+    },
+    updateProfile: {
+        id: 'app.profile.updateProfile',
+        description: 'update a profile',
+        defaultMessage: 'Update Profile'
     },
     followers: {
         id: 'app.profile.followers',
@@ -161,6 +176,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.rewardsAndGoals',
         description: 'Title for rewards and goals card',
         defaultMessage: 'Rewards and Goals'
+    },
+    saveForLater: {
+        id: 'app.profile.saveForLater',
+        description: 'Save for later button label',
+        defaultMessage: 'Save for later'
     },
     send: {
         id: 'app.profile.send',

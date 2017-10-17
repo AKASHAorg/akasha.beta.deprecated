@@ -193,6 +193,20 @@ export const profileMoreFollowingsIteratorError = (error, request) => {
 
 export const profileMoreFollowingsIteratorSuccess = data =>
     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+
+export const profileRegister = ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress }) =>
+    action(types.PROFILE_REGISTER, { actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress });
+
+export const profileRegisterError = (error, req) => {
+    error.code = 'PRE01';
+    error.messageId = 'profileRegister';
+    return action(types.PROFILE_REGISTER_ERROR, { error, req });
+};
+
+export const profileRegisterSuccess = (data, req) =>
+    action(types.PROFILE_REGISTER_SUCCESS, { data, req });
+
+
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
 
@@ -241,6 +255,19 @@ export const profileUnfollowError = (error, request) => {
 };
 
 export const profileUnfollowSuccess = data => action(types.PROFILE_UNFOLLOW_SUCCESS, { data });
+
+export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) =>
+    action(types.PROFILE_UPDATE, { actionId, about, avatar, backgroundImage, firstName, lastName, links });
+
+export const profileUpdateError = (error, req) => {
+    error.code = 'PUE01';
+    error.messageId = 'profileUpdate';
+    return action(types.PROFILE_UPDATE_ERROR, { error, req });
+};
+
+export const profileUpdateSuccess = (data, req) =>
+    action(types.PROFILE_UPDATE_SUCCESS, { data, req });
+
 
 export const profileUpdateLoggedError = (error) => {
     error.code = 'PULE01';

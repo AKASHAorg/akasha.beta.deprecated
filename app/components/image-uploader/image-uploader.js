@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Progress } from 'antd';
-import { Map, fromJS } from 'immutable';
-import R from 'ramda';
+import { fromJS } from 'immutable';
+import * as R from 'ramda';
 import { SvgIcon } from '../';
 import AddImage from '../svg/add-image';
 import { generalMessages } from '../../locale-data/messages';
@@ -101,6 +101,7 @@ class ImageUploader extends Component {
         });
     }
     _getImageSrc = (image) => {
+        image = fromJS(image);
         const { baseUrl } = this.props;
         let { containerSize = 320 } = this.props;
         if (image.size > 0) {
@@ -116,12 +117,9 @@ class ImageUploader extends Component {
         return null;
     }
     _handleClearImage = () => {
-        const { onImageClear, onChange } = this.props;
+        const { onImageClear } = this.props;
         if (typeof onImageClear === 'function') {
             onImageClear();
-        }
-        if (typeof onChange === 'function') {
-            onChange({});
         }
         this.setState({
             processingFinished: true,
