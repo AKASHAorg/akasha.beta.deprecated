@@ -10,13 +10,14 @@ import { unpad } from 'ethereumjs-util';
 import entryCountProfile from '../entry/entry-count-profile';
 import resolveEthAddress from '../registry/resolve-ethaddress';
 import schema from '../utils/jsonschema';
+import { GethConnector } from '@akashaproject/geth-connector';
 
 export const getProfileData = {
     'id': '/getProfileData',
     'type': 'object',
     'properties': {
         'akashaId': { 'type': 'string' },
-        'ethAddress': {'type': 'string', 'format': 'address'},
+        'ethAddress': { 'type': 'string', 'format': 'address' },
         'short': { 'type': 'boolean' },
         'full': { 'type': 'boolean' },
         'resolveImages': { 'type': 'boolean' }
@@ -34,7 +35,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     let profile, akashaId;
     const ethAddress = yield profileAddress(data);
     if (data.ethAddress) {
-        const resolved = yield resolveEthAddress.execute({ethAddress: data.ethAddress});
+        const resolved = yield resolveEthAddress.execute({ ethAddress: data.ethAddress });
         akashaId = resolved.akashaId;
     }
     akashaId = akashaId || data.akashaId;
@@ -45,6 +46,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     const fwCount = yield followersCount.execute({ ethAddress });
     const entriesCount = yield entryCountProfile.execute({ ethAddress });
     const commentsCount = yield contracts.instance.Comments.totalCommentsOf(ethAddress);
+    const [karma,] = yield contracts.instance.Essence.getCollected(ethAddress);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         if (data.short) {
@@ -71,7 +73,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
             entriesCount: entriesCount.count,
             commentsCount: commentsCount.toString(10),
             [BASE_URL]: generalSettings.get(BASE_URL),
-            profile: profileAddress
+            profile: profileAddress,
+            karma: (GethConnector.getInstance().web3.fromWei(karma, 'ether')).toFormat(5)
         },
         profile);
 
