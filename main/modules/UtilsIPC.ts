@@ -8,7 +8,7 @@ class UtilsIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'utils';
-        this.DEFAULT_MANAGED = [];
+        this.DEFAULT_MANAGED = ['manaCosts'];
     }
 
     /**

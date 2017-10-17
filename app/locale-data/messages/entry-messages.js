@@ -24,7 +24,12 @@ const entryMessages = defineMessages({
     alreadyVoted: {
         id: 'app.entry.alreadyVoted',
         description: 'vote button tooltip when it was already voted',
-        defaultMessage: 'You have already voted on this entry'
+        defaultMessage: 'You have already voted this entry'
+    },
+    alreadyVotedComment: {
+        id: 'app.entry.alreadyVotedComment',
+        description: 'vote button tooltip when it was already voted',
+        defaultMessage: 'You have already voted this comment'
     },
     blockNr: {
         id: 'app.entry.blockNr',
@@ -157,12 +162,12 @@ const entryMessages = defineMessages({
     showLess: {
         id: 'app.entry.showLess',
         description: 'label for comment collapse button',
-        defaultMessage: 'Show less'
+        defaultMessage: 'Collapse comment'
     },
     showMore: {
         id: 'app.entry.showMore',
         description: 'label for comment expand button',
-        defaultMessage: 'Show more'
+        defaultMessage: 'Show full comment'
     },
     startComment: {
         id: 'app.entry.startComment',
@@ -313,6 +318,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.votePending',
         description: 'tooltip for vote button in pending state',
         defaultMessage: 'Your vote is pending'
-    }
+    },
+    votingOwnComment: {
+        id: 'app.entry.votingOwnComment',
+        description: 'tooltip for vote button for your own comment',
+        defaultMessage: 'You cannot vote your own comment'
+    },
+    votingOwnEntry: {
+        id: 'app.entry.votingOwnEntry',
+        description: 'tooltip for vote button for your own entry',
+        defaultMessage: 'You cannot vote your own entry'
+    },
 });
 export { entryMessages };

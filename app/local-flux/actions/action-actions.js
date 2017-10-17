@@ -4,6 +4,9 @@ import { action } from './helpers';
 export const actionAdd = (ethAddress, actionType, payload) =>
     action(types.ACTION_ADD, { ethAddress, actionType, payload });
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
+
+export const actionDeleteError = error => action(types.ACTION_DELETE_ERROR, { error });
+
 export const actionGetPending = () => action(types.ACTION_GET_PENDING);
 
 export const actionGetPendingError = (error) => {

@@ -41,7 +41,7 @@ export const calculateReadingTime = (wordCount = 0, options = {}) => {
 };
 
 export const getDisplayAddress = (ethAddress) => {
-    if (!ethAddress.length === 42 || !ethAddress.startsWith('0x')) {
+    if (!ethAddress || !ethAddress.length === 42 || !ethAddress.startsWith('0x')) {
         console.error(`${ethAddress} is not a valid address`);
         return '';
     }
