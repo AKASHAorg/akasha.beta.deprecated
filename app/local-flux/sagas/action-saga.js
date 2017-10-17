@@ -63,6 +63,13 @@ const publishSuccessActions = {
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
+function* actionDelete ({ id }) {
+    try {
+        yield apply(actionService, actionService.deleteAction, [id]);
+    } catch (error) {
+        yield put(actions.actionDeleteError(error));
+    }
+}
 
 /**
  * Fetch all actions with a "publishing" status from local db;
@@ -81,7 +88,9 @@ function* actionGetPending () {
                 txs.push(action.tx);
                 ids.push(action.id);
             });
-            yield put(transactionActions.transactionGetStatus(txs, ids));
+            for (let i = 0; i < txs.length; i++) {
+                yield put(transactionActions.transactionGetStatus([txs[i]], [ids[i]]));
+            }
         }
     } catch (error) {
         yield put(actions.actionGetPendingError(error));
@@ -163,6 +172,7 @@ function* actionUpdate ({ changes }) {
 // Action watchers
 
 export function* watchActionActions () {
+    yield takeEvery(types.ACTION_DELETE, actionDelete);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_PUBLISHED, actionPublished);

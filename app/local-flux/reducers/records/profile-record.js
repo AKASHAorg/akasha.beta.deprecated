@@ -33,6 +33,7 @@ export const ProfileRecord = Record({
     followersCount: null,
     followingCount: null,
     ipfsHash: '',
+    karma: null,
     lastName: '',
     links: [],
     profile: null,

@@ -474,10 +474,12 @@ function* watchProfileLoginChannel () {
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
-        const { akashaId, reauthenticate } = resp.request;
-        if (akashaId && !reauthenticate) {
-            resp.data.akashaId = akashaId;
-            yield call(profileGetData, { akashaId, full: true });
+        const { akashaId, ethAddress, reauthenticate } = resp.request;
+        if (!reauthenticate) {
+            if (akashaId) {
+                resp.data.akashaId = akashaId;
+            }
+            yield call(profileGetData, { ethAddress, full: true });
         }
         if (reauthenticate) {
             const needAuthAction = yield select(selectNeedAuthAction);

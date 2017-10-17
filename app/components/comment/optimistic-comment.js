@@ -86,21 +86,19 @@ class OptimisticComment extends Component {
             comment__body_expanded: isExpanded === true
         });
         const iconClassName = 'comment__vote-icon';
-        const voteProps = { iconClassName, votePending: false, voteWeight: 0 };
+        const voteProps = { iconClassName, isOwnEntity: true, votePending: false, vote: '0' };
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
             <div className="comment__inner">
               <div className="comment__votes">
                 <VotePopover
-                  disabled
                   onSubmit={() => {}}
                   type={actionTypes.commentUpvote}
                   {...voteProps}
                 />
                 <span className="comment__score">0</span>
                 <VotePopover
-                  disabled
                   onSubmit={() => {}}
                   type={actionTypes.commentDownvote}
                   {...voteProps}
