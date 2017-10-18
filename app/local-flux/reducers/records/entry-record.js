@@ -21,6 +21,7 @@ export const EntryRecord = Record({
     baseUrl: '',
     commentsCount: 0,
     content: EntryContent(),
+    entryType: null,
     endPeriod: null,
     entryId: null,
     publishDate: null,

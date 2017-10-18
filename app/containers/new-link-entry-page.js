@@ -9,10 +9,13 @@ import { entryMessages, generalMessages } from '../locale-data/messages';
 import { extractWebsiteInfo } from '../utils/extract-website-info';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { tagSearchLocal } from '../local-flux/actions/tag-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
-import { getResizedImages, findClosestMatch } from '../utils/imageUtils';
+import { getResizedImages } from '../utils/imageUtils';
 import { uploadImage } from '../local-flux/services/utils-service';
+import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
+import * as actionTypes from '../constants/action-types';
 
 self.extract_website_info = extractWebsiteInfo;
 class NewLinkEntryPage extends Component {
@@ -54,7 +57,7 @@ class NewLinkEntryPage extends Component {
     }
     _processUrl = () => {
         const { draftObj, loggedProfile, match } = this.props;
-        const url = draftObj.getIn(['content', 'url']);
+        const url = draftObj.getIn(['content', 'cardInfo', 'url']);
         extractWebsiteInfo(url).then((data) => {
             let filePromises = [];
             if (data.info.image) {
@@ -75,11 +78,11 @@ class NewLinkEntryPage extends Component {
                                 title: data.info.title,
                                 description: data.info.description,
                                 image: uploadedImage || {},
+                                bgColor: data.info.bgColor,
+                                url: data.url
                             },
-                            url: data.url
                         }),
                         id: match.params.draftId,
-                        hasCard: data.info.title && data.info.description,
                     })));
             });
         });
@@ -101,15 +104,98 @@ class NewLinkEntryPage extends Component {
         const { match, loggedProfile, draftObj } = this.props;
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').merge({
+            content: draftObj.get('content').mergeIn(['cardInfo'], {
                 url: ev.target.value,
             }),
             id: match.params.draftId,
         }));
     }
 
+    _handleTagUpdate = (tagList) => {
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
+            tags: draftObj.get('tags').clear().concat(tagList),
+        }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                tags: null,
+            }
+        }));
+    }
+
+    _handleDraftLicenceChange = (licenceField, licence) => {
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftUpdate(
+            draftObj.merge({
+                ethAddress: loggedProfile.get('ethAddress'),
+                content: draftObj.get('content').mergeIn(['licence', licenceField], licence)
+            })
+        );
+    }
+
+    _handleExcerptChange = (excerpt) => {
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
+            content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
+        }));
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                excerpt: null,
+            }
+        }));
+    }
+
+    validateData = () =>
+        new Promise((resolve, reject) => {
+            const { draftObj } = this.props;
+            const excerpt = draftObj.getIn(['content', 'excerpt']);
+            if (draftObj.get('tags').size === 0) {
+                return reject({ tags: 'You must add at least 1 tag' });
+            }
+            if (excerpt.length > 120) {
+                return this.setState({
+                    showPublishPanel: true
+                }, () => reject({ excerpt: 'Excerpt must not be longer than 120 characters' }));
+            }
+            return resolve();
+        });
+
+    _handlePublish = (ev) => {
+        ev.preventDefault();
+        const { draftObj, loggedProfile, match } = this.props;
+        const publishPayload = {
+            id: draftObj.id,
+            title: draftObj.getIn(['content', 'title']),
+            type: match.params.draftType
+        };
+        this.validateData().then(() => {
+            if (draftObj.onChain) {
+                return this.props.actionAdd(
+                    loggedProfile.get('ethAddress'),
+                    actionTypes.draftPublishUpdate,
+                    { draft: publishPayload }
+                );
+            }
+            return this.props.actionAdd(
+                loggedProfile.get('ethAddress'),
+                actionTypes.draftPublish,
+                { draft: publishPayload }
+            );
+        }).catch((errors) => {
+            this.setState({ errors });
+        });
+    }
+
+    componentWillUnmount () {
+        this.props.secondarySidebarToggle({ forceToggle: true });
+    }
+
     _togglePublishPanel = state =>
-        (ev) => {
+        () => {
             this.setState({
                 showPublishPanel: state
             });
@@ -126,10 +212,9 @@ class NewLinkEntryPage extends Component {
         if (!draftObj) {
             return (<div>Finding draft</div>);
         }
-        console.log(draftObj, 'draft obj');
-        const { content, tags, hasCard, localChanges, onChain } = draftObj;
-        const { title, url, excerpt, latestVersion, licence,
-            featuredImage, cardInfo, } = content;
+        const { content, tags, localChanges, onChain } = draftObj;
+        const { excerpt, latestVersion, licence, cardInfo, } = content;
+        const { url, title, description } = cardInfo;
         return (
           <div className="edit-entry-page link-page">
             <div
@@ -160,11 +245,11 @@ class NewLinkEntryPage extends Component {
                     onKeyPress={this._handleKeyPress}
                     value={url}
                   />
-                  {hasCard &&
+                  {(title || description) &&
                     <WebsiteInfoCard
                       baseUrl={baseUrl}
                       cardInfo={cardInfo}
-                      hasCard
+                      hasCard={!!(title || description)}
                       url={url}
                     />
                   }
@@ -179,7 +264,7 @@ class NewLinkEntryPage extends Component {
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
-                    tagSearch={this.props.tagSearch}
+                    tagSearchLocal={this.props.tagSearchLocal}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
@@ -249,7 +334,6 @@ class NewLinkEntryPage extends Component {
 
 NewLinkEntryPage.propTypes = {
     actionAdd: PropTypes.func,
-    akashaId: PropTypes.string,
     baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
@@ -264,7 +348,7 @@ NewLinkEntryPage.propTypes = {
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
-    tagSearch: PropTypes.func,
+    tagSearchLocal: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicense: PropTypes.shape(),
@@ -291,5 +375,7 @@ export default connect(
         draftCreate,
         draftUpdate,
         searchResetResults,
+        tagSearchLocal,
+        secondarySidebarToggle,
     }
 )(injectIntl(NewLinkEntryPage));

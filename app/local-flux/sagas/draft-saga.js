@@ -95,11 +95,17 @@ function* draftAutoSave ({ data }) {
 function* draftUpdate ({ data }) {
     const draftObj = data;
     const draft = data.content.get('draft');
-    const selectionState = draft.getSelection();
-    yield put(draftActions.draftUpdateSuccess({
-        draft: draftObj,
-        selectionState
-    }));
+    if (draftObj.get('entryType') !== 'link') {
+        const selectionState = draft.getSelection();
+        yield put(draftActions.draftUpdateSuccess({
+            draft: draftObj,
+            selectionState
+        }));
+    } else {
+        yield put(draftActions.draftUpdateSuccess({
+            draft: draftObj
+        }));
+    }
 }
 
 function* draftsGetCount ({ data }) {
