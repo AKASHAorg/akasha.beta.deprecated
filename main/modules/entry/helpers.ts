@@ -22,7 +22,7 @@ export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: nu
         const author = yield resolve.execute({ ethAddress: event.args.author });
 
         collection.push({
-            entryType: GethConnector.getInstance().web3.toDecimal(captureIndex.results[0].args.entryType),
+            entryType: GethConnector.getInstance().web3.toDecimal(captureIndex.results.length ? captureIndex.results[0].args.entryType : 0),
             entryId: event.args.entryId,
             tags,
             author
