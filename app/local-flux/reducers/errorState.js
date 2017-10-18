@@ -27,6 +27,7 @@ const addNewError = (state, { error }) => {
 const errorState = createReducer(initialState, {
     [types.BACKUP_KEYS_ERROR]: addNewError,
     [types.COMMENTS_DOWNVOTE_ERROR]: addNewError,
+    [types.COMMENTS_PUBLISH_ERROR]: addNewError,
     [types.COMMENTS_UPVOTE_ERROR]: addNewError,
     [types.DASHBOARD_ADD_COLUMN_ERROR]: addNewError,
     [types.DASHBOARD_ADD_ERROR]: addNewError,
@@ -90,6 +91,8 @@ const errorState = createReducer(initialState, {
     [types.PROFILE_CYCLE_AETH_ERROR]: addNewError,
     [types.PROFILE_GET_LIST_ERROR]: addNewError,
     [types.PROFILE_GET_LOCAL_ERROR]: addNewError,
+    [types.PROFILE_TRANSFER_AETH_ERROR]: addNewError,
+    [types.PROFILE_TRANSFER_ETH_ERROR]: addNewError,
     [types.PUBLISH_PROFILE_ERROR]: addNewError,
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
     [types.SEARCH_QUERY_ERROR]: addNewError,

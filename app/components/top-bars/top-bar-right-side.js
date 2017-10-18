@@ -25,19 +25,13 @@ const TopBarRightSide = ({
     </div>
     <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
       <PanelLink to="wallet">
-        <Balance balance={balance} />
+        <Balance balance={balance.get('eth')} short type="eth" />
       </PanelLink>
     </div>
-    <div
-      style={{ flex: '0 0 auto', cursor: 'pointer' }}
-      onClick={profileEditToggle}
-    >
-      <Avatar
-        firstName={loggedProfileData.get('firstName')}
-        image={loggedProfileData.get('avatar')}
-        lastName={loggedProfileData.get('lastName')}
-        size="small"
-      />
+    <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
+      <PanelLink to="wallet">
+        <Balance balance={balance.getIn(['aeth', 'free'])} short type="aeth" />
+      </PanelLink>
     </div>
   </div>
 );
@@ -47,7 +41,7 @@ TopBarRightSide.contextTypes = {
 };
 
 TopBarRightSide.propTypes = {
-    balance: PropTypes.string,
+    balance: PropTypes.shape().isRequired,
     canEditProfile: PropTypes.bool,
     loggedProfileData: PropTypes.shape(),
     openNotificationPanel: PropTypes.func,

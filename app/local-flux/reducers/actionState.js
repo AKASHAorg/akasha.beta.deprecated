@@ -16,9 +16,10 @@ const createAction = (action) => {
 const addPendingAction = (pending, action) => { // eslint-disable-line complexity
     const { bondAeth, claim, comment, commentDownvote, commentUpvote, createTag, cycleAeth,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
-        sendTip, unfollow } = actionTypes;
+        sendTip, transferEth, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
+    let pendingEthTransfers;
     switch (action.type) {
         case bondAeth:
             return pending.set(action.type, true);
@@ -50,6 +51,12 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
         case profileRegister:
         case profileUpdate:
             return pending.set(action.type, true);
+        case transferEth:
+            pendingEthTransfers = pending.get(action.type);
+            if (!pendingEthTransfers) {
+                return pending.set(action.type, new List([action.id]));
+            }
+            return pending.set(action.type, pendingEthTransfers.push(action.id));
         default:
             return pending;
     }
@@ -58,9 +65,10 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
 const removePendingAction = (pending, action) => { // eslint-disable-line complexity
     const { bondAeth, claim, comment, commentDownvote, commentUpvote, cycleAeth, createTag,
         entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
-        sendTip, unfollow } = actionTypes;
+        sendTip, transferEth, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
+    let pendingEthTransfers;
     switch (action.type) {
         case bondAeth:
             return pending.set(action.type, false);
@@ -88,6 +96,9 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
         case profileRegister:
         case profileUpdate:
             return pending.set(action.type, false);
+        case transferEth:
+            pendingEthTransfers = pending.get(action.type).filter(id => id !== action.id);
+            return pending.set(action.type, pendingEthTransfers);
         default:
             return pending;
     }
@@ -112,6 +123,19 @@ const actionState = createReducer(initialState, {
             byId: state.get('byId').delete(id),
             needAuth: needAuth === id ? null : needAuth,
             pending,
+        });
+    },
+
+    [types.ACTION_GET_BY_TYPE_SUCCESS]: (state, { actionType, data }) => {
+        let byId = state.get('byId');
+        let list = new List();
+        data.forEach((action) => {
+            byId = byId.set(action.id, createAction(action));
+            list = list.push(action.id);
+        });
+        return state.merge({
+            byId,
+            byType: state.get('byType').set(actionType, list)
         });
     },
 

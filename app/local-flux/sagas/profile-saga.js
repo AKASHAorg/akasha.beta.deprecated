@@ -219,6 +219,36 @@ function* profileSendTipSuccess ({ data }) {
     }));
 }
 
+function* profileTransferAeth ({ actionId, akashaId, ethAddress, tokenAmount }) {
+    const channel = Channel.server.profile.transfer;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, ethAddress, tokenAmount }]);
+}
+
+function* profileTransferAethSuccess ({ data }) {
+    const displayName = getDisplayName(data);
+    yield put(appActions.showNotification({
+        id: 'transferAethSuccess',
+        values: { displayName, tokenAmount: data.tokenAmount },
+    }));
+}
+
+function* profileTransferEth ({ actionId, akashaId, ethAddress, value }) {
+    const channel = Channel.server.profile.transfer;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, ethAddress, value }]);
+}
+
+function* profileTransferEthSuccess ({ data }) {
+    const displayName = getDisplayName(data);
+    yield put(appActions.showNotification({
+        id: 'transferEthSuccess',
+        values: { displayName, value: data.value },
+    }));
+}
+
 function* profileUnfollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -556,6 +586,32 @@ function* watchProfileSendTipChannel () {
     }
 }
 
+function* watchProfileTransferChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.transfer);
+        const { actionId, tokenAmount } = resp.request;
+        if (resp.error) {
+            if (tokenAmount) {
+                yield put(actions.profileTransferAethError(resp.error, resp.request));
+            } else {
+                yield put(actions.profileTransferEthError(resp.error, resp.request));
+            }
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                if (tokenAmount) {
+                    yield put(actions.profileTransferAethError({}, resp.request));
+                } else {
+                    yield put(actions.profileTransferEthError({}, resp.request));
+                }
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
@@ -607,6 +663,7 @@ export function* registerProfileListeners () {
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
+    yield fork(watchProfileTransferChannel);
     yield fork(watchProfileUnfollowChannel);
     yield fork(watchProfileUpdateChannel);
     yield fork(watchProfileRegisterChannel);
@@ -637,6 +694,10 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
+    yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
+    yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
+    yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
     yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
     yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
     yield takeEvery(types.PROFILE_UPDATE, profileUpdate);

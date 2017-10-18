@@ -69,6 +69,12 @@ const appState = createReducer(initialState, {
             showTerms: true
         }),
 
+    [types.TOGGLE_AETH_WALLET]: state =>
+        state.set('showWallet', state.get('showWallet') === 'AETH' ? null : 'AETH'),
+
+    [types.TOGGLE_ETH_WALLET]: state =>
+        state.set('showWallet', state.get('showWallet') === 'ETH' ? null : 'ETH'),
+
     [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
         state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),
 

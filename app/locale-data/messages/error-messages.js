@@ -31,6 +31,11 @@ const errorMessages = defineMessages({
         description: 'comment downvote error',
         defaultMessage: 'An error occurred  while downvoting a comment'
     },
+    commentsPublish: {
+        id: 'app.error.commentsPublish',
+        description: 'comment publish error',
+        defaultMessage: 'An error occured while publishing a comment'
+    },
     commentsUpvote: {
         id: 'app.error.commentsUpvote',
         description: 'comment upvote error',
@@ -225,6 +230,16 @@ const errorMessages = defineMessages({
         id: 'app.error.profileGetList',
         description: 'get profiles list error',
         defaultMessage: 'An error occured while getting the list of profiles'
+    },
+    profileTransferAeth: {
+        id: 'app.error.profileTransferAeth',
+        description: 'transfer AETH error',
+        defaultMessage: 'An error occured while transferring {tokenAmount} AETH'
+    },
+    profileTransferEth: {
+        id: 'app.error.profileTransferEth',
+        description: 'transfer ETH error',
+        defaultMessage: 'An error occured while transferring {value} ETH'
     },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',

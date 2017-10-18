@@ -25,6 +25,17 @@ export const getActionByTx = tx =>
             .catch(reject);
     });
 
+export const getActionsByType = (ethAddress, type) =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('[ethAddress+type]')
+            .equals([ethAddress, type])
+            .reverse()
+            .toArray()
+            .then(resolve)
+            .catch(reject);
+    });
+
 export const getPendingActions = ethAddress =>
     new Promise((resolve, reject) => {
         actionDB.actions
