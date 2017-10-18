@@ -9,6 +9,7 @@ export const IMAGE_TYPE = 'image';
 export const max_size = 200 * 1000;
 export const EXCERPT = 'excerpt';
 export const FEATURED_IMAGE = 'featuredImage';
+export const CARD_INFO = 'cardInfo';
 export const DRAFT_PART = 'draft-part';
 export const PREVIOUS_VERSION = 'previous-version';
 
@@ -62,6 +63,13 @@ class IpfsEntry {
                 })
             );
         }
+        if (content.cardInfo) {
+            ipfsApiRequests.push(
+                IpfsConnector.getInstance().api
+                    .add(content.cardInfo)
+                    .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: CARD_INFO }))));
+        }
+
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
                 .add(content.excerpt)
@@ -207,17 +215,13 @@ export const getShortContent = Promise.coroutine(function* (hash) {
     }
     const response = {
         [EXCERPT]: '',
-        [FEATURED_IMAGE]: ''
+        [FEATURED_IMAGE]: '',
+        [CARD_INFO]: ''
     };
     const root = yield IpfsConnector.getInstance().api.get(hash);
-    const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE]);
+    const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE, CARD_INFO]);
     for (let i = 0; i < extraData.length; i++) {
-        if (extraData[i].name === FEATURED_IMAGE) {
-            response[FEATURED_IMAGE] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
-        }
-        if (extraData[i].name === EXCERPT) {
-            response[EXCERPT] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
-        }
+        response[extraData[i].name] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
     }
     const data = Object.assign({}, root, response);
     entries.setShort(hash, data);
