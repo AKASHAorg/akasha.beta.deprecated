@@ -14,7 +14,7 @@ const execute = Promise.coroutine(function* (data: { text: string, pageSize: num
             offset: offset
         })
             .on('data', (data) => {
-                collection.push({ entryId: data.document.id, ethAddress: data.document.ethAddress });
+                collection.push({ entryId: data.document.id, ethAddress: data.document.ethAddress, version: data.document.version });
             }).on('end', () => {
             cb('', { collection, totalHits: count, searching: false });
         });
