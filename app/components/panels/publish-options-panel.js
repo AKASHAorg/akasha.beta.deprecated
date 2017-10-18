@@ -45,7 +45,6 @@ class PublishOptionsPanel extends Component {
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
             excerpt, baseUrl, errors, linkEntry } = this.props;
-        console.log(this.props, 'some props');
         return (
           <div className="publish-options-panel">
             <div
@@ -162,6 +161,7 @@ PublishOptionsPanel.propTypes = {
     onFeaturedImageChange: PropTypes.func,
     featuredImage: PropTypes.shape(),
     licences: PropTypes.shape(),
+    linkEntry: PropTypes.bool,
     selectedLicence: PropTypes.shape()
 };
 

@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, mergeWith } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
@@ -144,8 +144,14 @@ const entryState = createReducer(initialState, {
         data.entryId = entryId;
         let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
         pendingEntries = pendingEntries.set(entryId, false);
-        const oldEntry = state.getIn(['byId', entryId]);
-        const newEntry = createEntryRecord(data).set('author', oldEntry.get('author'));
+
+        const newEntry = state.getIn(['byId', entryId]).mergeWith((old, newVal, key) => {
+            if (key === 'author' || key === 'entryType') {
+                return old;
+            }
+            return newVal;
+        }, createEntryRecord(data));
+
         return state.merge({
             byId: state.get('byId').set(entryId, newEntry),
             flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)

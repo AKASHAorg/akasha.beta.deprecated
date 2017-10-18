@@ -20,18 +20,21 @@ const extractInfoFromHtml = (htmlContent, targetTags) => {
             Object.assign({}, prev, current))
     );
 };
+const makeAbsolute = (url, parsedUrl) => {
+    if (url) {
+        return new URL(url, parsedUrl.href).href;
+    }
+    return null;
+};
 
 const htmlParser = (htmlContent, parsedUrl, targetTags) =>
-    extractInfoFromHtml(htmlContent, targetTags).then((info) => {
-        console.log(info, 'the info');
-        return {
-            url: parsedUrl.href,
-            info: {
-                title: info['og:title'],
-                description: info['og:description'],
-                image: info['og:image']
-            }
-        };
-    });
+    extractInfoFromHtml(htmlContent, targetTags).then(info => ({
+        url: parsedUrl.href,
+        info: {
+            title: info['og:title'],
+            description: info['og:description'],
+            image: makeAbsolute(info['og:image'], parsedUrl)
+        }
+    }));
 
 export default htmlParser;

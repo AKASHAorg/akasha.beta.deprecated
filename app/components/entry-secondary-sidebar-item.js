@@ -52,7 +52,8 @@ const EntrySecondarySidebarItem = ({
         className="draft-list-item__link"
         onClick={ev => onItemClick(ev, `/draft/${draft.entryType}/${draft.id}`)}
       >
-        {(draft.content && draft.content.title) || 'No title' }
+        {draft.entryType === 'article' && ((draft.content && draft.content.title) || 'No title') }
+        {draft.entryType === 'link' && ((draft.content && draft.content.cardInfo.title) || 'No title')}
       </a>
     </div>
     }

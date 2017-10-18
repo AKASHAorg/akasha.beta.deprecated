@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
-import { Icon, Row, Col, Button, Steps, Popover, Modal } from 'antd';
+import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
