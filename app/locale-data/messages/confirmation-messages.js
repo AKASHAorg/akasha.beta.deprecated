@@ -101,6 +101,26 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for createTag',
         defaultMessage: 'Please confirm that you want to create this tag: {value}.'
     },
+    transferAeth: {
+        id: 'app.confirmation.transferAeth',
+        description: 'confirmation message for transfer AETH',
+        defaultMessage: 'Please confirm that you want to transfer {tokenAmount} AETH to {displayName}.'
+    },
+    transferAethTitle: {
+        id: 'app.confirmation.transferAethTitle',
+        description: 'title for confirmation dialog for transfer AETH',
+        defaultMessage: 'Transfer'
+    },
+    transferEth: {
+        id: 'app.confirmation.transferEth',
+        description: 'confirmation message for transfer ETH',
+        defaultMessage: 'Please confirm that you want to transfer {value} ETH to {displayName}.'
+    },
+    transferEthTitle: {
+        id: 'app.confirmation.transferEthTitle',
+        description: 'title for confirmation dialog for transfer ETH',
+        defaultMessage: 'Transfer'
+    },
     unfollow: {
         id: 'app.confirmations.unfollow',
         description: 'confirmation message for unfollow',

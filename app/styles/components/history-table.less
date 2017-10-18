@@ -1,0 +1,39 @@
+.history-table {
+    padding: 24px 32px;
+    font-size: 13px;
+    height: 100%;
+    overflow-y: auto;
+
+    &__header {
+        display: flex;
+        height: 36px;
+    }
+
+    &__row {
+        display: flex;
+        border-top: 2px solid #eee;
+        height: 36px;
+        color: @heading-color;
+        font-weight: 500;
+    }
+
+    &__action {
+        flex: 0 0 auto;
+        width: 164px;
+    }
+
+    &__amount {
+        flex: 0 0 auto;        
+        width: 164px;
+    }
+
+    &__block-number {
+        flex: 0 0 auto;        
+        width: 80px;
+    }
+
+    &__error-icon {
+        font-size: 16px;
+        color: @error-color;
+    }
+}

@@ -199,6 +199,16 @@ const notificationMessages = defineMessages({
         defaultMessage: `You have successfully set the IPFS ports. You need to restart your IPFS
                         service for your changes to be applied.`
     },
+    transferAethSuccess: {
+        id: 'app.notification.transferAethSuccess',
+        description: 'transfer AETH transaction was successfully mined',
+        defaultMessage: 'You successfully transfered {tokenAmount} AETH to {displayName}'
+    },
+    transferEthSuccess: {
+        id: 'app.notification.transferEthSuccess',
+        description: 'transfer ETH transaction was successfully mined',
+        defaultMessage: 'You successfully transfered {value} ETH to {displayName}'
+    },
     userSettingsSaveSuccess: {
         id: 'app.notification.userSettingsSaveSuccess',
         description: 'User settings successfully saved',

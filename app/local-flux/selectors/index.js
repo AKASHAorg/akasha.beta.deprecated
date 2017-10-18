@@ -5,6 +5,9 @@ import { ProfileRecord } from '../reducers/records';
 
 export const selectAction = (state, id) => state.actionState.getIn(['byId', id]);
 
+export const selectActionsByType = (state, type) =>
+    (state.actionState.getIn(['byType', type]) || new List()).map(id => selectAction(state, id));
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {
@@ -258,6 +261,9 @@ export const selectPendingFollow = (state, akashaId) =>
 
 export const selectPendingTip = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
+
+export const selectPendingTransferEth = state =>
+    (state.actionState.getIn(['pending', 'transferEth']) || new List()).map(id => selectAction(state, id));
 
 export const selectPendingVote = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'entryVote', entryId]);
