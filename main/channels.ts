@@ -44,7 +44,7 @@ const channels = {
 
     chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'],
 
-    search: ['query', 'flush'],
+    search: ['query', 'flush', 'syncTags', 'findTags'],
 
     utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage', 'manaCosts']
 };
