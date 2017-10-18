@@ -7,11 +7,7 @@ import { balanceToNumber } from '../../utils/number-formatter';
 
 const FormItem = Form.Item;
 
-class TransferEthForm extends Component {
-    state = {
-
-    };
-
+class TransferForm extends Component {
     onCopy = () => {
         const { ethAddress } = this.props;
         const textArea = document.createElement('textarea');
@@ -27,39 +23,48 @@ class TransferEthForm extends Component {
 
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { form, onSubmit } = this.props;
+        const { form, type, onSubmit } = this.props;
         const { amount, receiver } = form.getFieldsValue();
+        let akashaId, ethAddress, tokenAmount, value; // eslint-disable-line
         if (receiver.length === 42 && receiver.toLowerCase().startsWith('0x')) {
-            onSubmit({ ethAddress: receiver, value: amount.toString() });
-            return;
+            ethAddress = receiver;
+        } else {
+            akashaId = receiver;
         }
-        onSubmit({ akashaId: receiver, value: amount.toString() });
+        if (type === 'eth') {
+            value = amount.toString();
+        } else {
+            tokenAmount = amount.toString();
+        }
+        onSubmit({ akashaId, ethAddress, tokenAmount, value });
     };
 
     render () {
-        const { ethAddress, ethBalance, form, intl, onCancel } = this.props;
+        const { ethAddress, balance, form, intl, onCancel, pendingTransfer, type } = this.props;
         const { getFieldDecorator, getFieldError } = form;
         const amountError = getFieldError('amount');
-        const extra = intl.formatMessage(formMessages.maxEthAmount, { eth: ethBalance });
+        const extra = type === 'eth' ?
+            intl.formatMessage(formMessages.maxEthAmount, { eth: balance }) :
+            intl.formatMessage(formMessages.maxAethAmount, { aeth: balance });
 
         return (
-          <Form className="transfer-eth-form" hideRequiredMark onSubmit={this.onSubmit}>
+          <Form className="transfer-form" hideRequiredMark onSubmit={this.onSubmit}>
             <FormItem
-              className="transfer-eth-form__form-item"
+              className="transfer-form__form-item"
               colon={false}
               label={intl.formatMessage(profileMessages.yourEthAddress)}
             >
               <Input
-                className="transfer-eth-form__input transfer-eth-form__my-address"
+                className="transfer-form__input transfer-form__my-address"
                 readOnly
                 value={ethAddress}
               />
-              <div className="content-link transfer-eth-form__copy-button" onClick={this.onCopy}>
+              <div className="content-link transfer-form__copy-button" onClick={this.onCopy}>
                 {intl.formatMessage(generalMessages.copy)}
               </div>
             </FormItem>
             <FormItem
-              className="transfer-eth-form__form-item"
+              className="transfer-form__form-item"
               colon={false}
               label={intl.formatMessage(profileMessages.sendTo)}
             >
@@ -70,13 +75,13 @@ class TransferEthForm extends Component {
                   }]
               })(
                 <Input
-                  className="transfer-eth-form__input"
+                  className="transfer-form__input"
                   placeholder={intl.formatMessage(profileMessages.receiverPlaceholder)}
                 />
               )}
             </FormItem>
             <FormItem
-              className="transfer-eth-form__form-item"
+              className="transfer-form__form-item"
               colon={false}
               help={amountError || extra}
               label={intl.formatMessage(generalMessages.amount)}
@@ -89,21 +94,22 @@ class TransferEthForm extends Component {
                   }]
               })(
                 <InputNumber
-                  className="transfer-eth-form__input"
-                  max={balanceToNumber(ethBalance, 5)}
+                  className="transfer-form__input"
+                  max={balanceToNumber(balance, 5)}
                   placeholder={intl.formatMessage(profileMessages.amountPlaceholder)}
                   step={0.01}
                 />
               )}
             </FormItem>
-            <div className="transfer-eth-form__actions">
-              <Button className="transfer-eth-form__button" onClick={onCancel} size="large">
+            <div className="transfer-form__actions">
+              <Button className="transfer-form__button" onClick={onCancel} size="large">
                 {intl.formatMessage(generalMessages.cancel)}
               </Button>
               <Button
-                className="transfer-eth-form__button"
-                disabled={!!amountError}
+                className="transfer-form__button"
+                disabled={!!amountError || pendingTransfer}
                 htmlType="submit"
+                loading={pendingTransfer}
                 onClick={this.onSubmit}
                 size="large"
                 type="primary"
@@ -116,13 +122,15 @@ class TransferEthForm extends Component {
     }
 }
 
-TransferEthForm.propTypes = {
+TransferForm.propTypes = {
     ethAddress: PropTypes.string.isRequired,
-    ethBalance: PropTypes.string.isRequired,
+    balance: PropTypes.string.isRequired,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    pendingTransfer: PropTypes.bool,
+    type: PropTypes.string.isRequired,
 };
 
-export default Form.create()(injectIntl(TransferEthForm));
+export default Form.create()(injectIntl(TransferForm));

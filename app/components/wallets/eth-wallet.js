@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Icon, Tabs } from 'antd';
-import { HistoryTable, TransferEthForm } from '../';
+import { HistoryTable, TransferForm } from '../';
 import { transferEth } from '../../constants/action-types';
 import { toggleEthWallet } from '../../local-flux/actions/app-actions';
-import { actionAdd, actionGetByType } from '../../local-flux/actions/action-actions';
-import { selectActionsByType, selectBalance, selectLoggedEthAddress,
-    selectPendingTransferEth } from '../../local-flux/selectors';
+import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
+import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
+    selectPendingActionByType } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 
 const { TabPane } = Tabs;
@@ -21,7 +21,11 @@ class EthWallet extends Component {
     };
 
     componentDidMount () {
-        this.props.actionGetByType(transferEth);
+        this.props.actionGetHistory([transferEth]);
+    }
+
+    componentWillUnmount () {
+        this.props.actionClearHistory();
     }
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
@@ -32,7 +36,7 @@ class EthWallet extends Component {
     };
 
     renderHistory = () => {
-        const { pendingTransactions, sentTransactions } = this.props;
+        const { sentTransactions } = this.props;
         const rows = sentTransactions.map(action => ({
             action: <span><Icon className="eth-wallet__sent-icon" type="arrow-up" />Sent</span>,
             amount: <span>{action.getIn(['payload', 'value'])} ETH</span>,
@@ -44,10 +48,10 @@ class EthWallet extends Component {
         return (
           <HistoryTable rows={rows} />
         );
-    }
+    };
 
     render () {
-        const { balance, intl, loggedEthAddress } = this.props;
+        const { balance, intl, loggedEthAddress, pendingTransfer } = this.props;
         const { activeTab } = this.state;
         return (
           <div className="eth-wallet">
@@ -61,15 +65,17 @@ class EthWallet extends Component {
             <Tabs
               activeKey={activeTab}
               onChange={this.selectTab}
-              tabBarStyle={{ height: '60px', marginBottom: '0px' }}
+              tabBarStyle={{ height: '40px', marginBottom: '0px' }}
               type="card"
             >
               <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
-                <TransferEthForm
+                <TransferForm
                   ethAddress={loggedEthAddress}
-                  ethBalance={balance.get('eth')}
+                  balance={balance.get('eth')}
                   onCancel={this.props.toggleEthWallet}
                   onSubmit={this.onSubmit}
+                  pendingTransfer={pendingTransfer}
+                  type="eth"
                 />
               </TabPane>
               <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
@@ -83,11 +89,12 @@ class EthWallet extends Component {
 
 EthWallet.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    actionGetByType: PropTypes.func.isRequired,
+    actionClearHistory: PropTypes.func.isRequired,
+    actionGetHistory: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string.isRequired,
-    pendingTransactions: PropTypes.shape().isRequired,
+    pendingTransfer: PropTypes.bool,
     sentTransactions: PropTypes.shape().isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
 };
@@ -96,8 +103,8 @@ function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        pendingTransactions: selectPendingTransferEth(state),
-        sentTransactions: selectActionsByType(state, transferEth)
+        pendingTransfer: selectPendingActionByType(state, transferEth),
+        sentTransactions: selectActionsHistory(state)
     };
 }
 
@@ -105,7 +112,8 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        actionGetByType,
+        actionClearHistory,
+        actionGetHistory,
         toggleEthWallet
     }
 )(injectIntl(EthWallet));

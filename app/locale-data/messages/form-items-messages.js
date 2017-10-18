@@ -31,20 +31,55 @@ const formMessages = defineMessages({
         description: 'amount input required error message',
         defaultMessage: 'Amount is required'
     },
-    maxAethAmountLabel: {
+    maxAethAmount: {
         id: 'app.form.maxAethAmount',
+        description: 'max AETH amount transferable',
+        defaultMessage: '{aeth} Transferable AETH'
+    },
+    maxAethAmountLabel: {
+        id: 'app.form.maxAethAmountLabel',
         description: 'max aeth amount label',
         defaultMessage: 'max. {balance}'
+    },
+    maxEssenceAmount: {
+        id: 'app.form.maxEssenceAmount',
+        description: 'max essence amount transformable',
+        defaultMessage: '{essence} Essence available'
     },
     maxEthAmount: {
         id: 'app.form.maxEthAmount',
         description: 'max ETH amount transferable',
         defaultMessage: '{eth} ETH transferable'
     },
+    maxManafiedAethAmount: {
+        id: 'app.form.maxManafiedAethAmount',
+        description: 'max AETH amount that can be cycled',
+        defaultMessage: '{manafied} Manafied AETH'
+    },
     messageOptional: {
         id: 'app.form.messageOptional',
         description: 'tip message input label',
         defaultMessage: 'Message (Optional)'
+    },
+    transformEssenceDisclaimer: {
+        id: 'app.form.transformEssenceDisclaimer',
+        description: 'disclaimer message for transforming essence to AETH',
+        defaultMessage: '{amount} Essence will forge {value} new AETH in your balance.'
+    },
+    transformEssenceMin: {
+        id: 'app.form.transformEssenceMin',
+        description: 'disclaimer message for minimum amount of essence that can be transformed',
+        defaultMessage: 'You need to transform minimum 1000 Essence'
+    },
+    transformManafiedDisclaimer: {
+        id: 'app.form.transformManafiedDisclaimer',
+        description: 'disclaimer message for transforming manafied/bonded AETH to cycling AETH',
+        defaultMessage: '{amount} AETH will cycle back into transferable AETH in 7 days. {amount} Mana will no longer regenerate.'
+    },
+    transformTransferableDisclaimer: {
+        id: 'app.form.transformTransferableDisclaimer',
+        description: 'disclaimer message for transforming manafied/bonded AETH to cycling AETH',
+        defaultMessage: '{amount} AETH will generate {amount} Mana every 24 hours for as long as it is kept in this state.'
     },
     firstName: {
         id: 'app.firstName',
@@ -65,6 +100,11 @@ const formMessages = defineMessages({
         id: 'app.form.ethereumAddress',
         description: 'Placeholder for ethereum address input',
         defaultMessage: 'Ethereum address'
+    },
+    from: {
+        id: 'app.form.from',
+        description: 'from',
+        defaultMessage: 'From'
     },
     passphrase: {
         id: 'app.form.passphrase',
@@ -220,6 +260,11 @@ const formMessages = defineMessages({
         id: 'app.form.tipAmountError',
         description: 'Error displayed when the tip amount is smaller than the minimum allowed value',
         defaultMessage: 'The amount should be at least {minAmount} AETH'
+    },
+    to: {
+        id: 'app.form.to',
+        description: 'to',
+        defaultMessage: 'To'
     },
     updateSettings: {
         id: 'app.form.updateSettings',

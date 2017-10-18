@@ -1,8 +1,13 @@
 .history-table {
-    padding: 24px 32px;
-    font-size: 13px;
     height: 100%;
-    overflow-y: auto;
+    font-size: 13px;
+    padding-right: 4px;
+
+    &__inner {
+        padding: 24px 32px;
+        height: 100%;
+        overflow-y: auto;            
+    }
 
     &__header {
         display: flex;
@@ -29,7 +34,7 @@
 
     &__block-number {
         flex: 0 0 auto;        
-        width: 80px;
+        width: 60px;
     }
 
     &__error-icon {

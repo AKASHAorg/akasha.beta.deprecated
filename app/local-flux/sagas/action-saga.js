@@ -32,11 +32,13 @@ const publishActions = {
     [actionTypes.entryDownvote]: entryActions.entryDownvote,
     [actionTypes.entryUpvote]: entryActions.entryUpvote,
     [actionTypes.follow]: profileActions.profileFollow,
+    [actionTypes.freeAeth]: profileActions.profileFreeAeth,
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
     [actionTypes.sendTip]: profileActions.profileSendTip,
     [actionTypes.transferAeth]: profileActions.profileTransferAeth,
     [actionTypes.transferEth]: profileActions.profileTransferEth,
+    [actionTypes.transformEssence]: profileActions.profileTransformEssence,
     [actionTypes.unfollow]: profileActions.profileUnfollow,
 };
 
@@ -59,11 +61,13 @@ const publishSuccessActions = {
     [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
     [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
+    [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
     [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
     [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
+    [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
@@ -75,17 +79,19 @@ function* actionDelete ({ id }) {
     }
 }
 
-function* actionGetByType ({ actionType }) {
+function* actionGetHistory ({ request }) {
     try {
         const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const input = [];
+        request.forEach(type => input.push([loggedEthAddress, type]));
         const data = yield apply(
             actionService,
             actionService.getActionsByType,
-            [loggedEthAddress, actionType]
+            [input]
         );
-        yield put(actions.actionGetByTypeSuccess(data, actionType));
+        yield put(actions.actionGetHistorySuccess(data, request));
     } catch (error) {
-        yield put(actions.actionGetByTypeError(error));
+        yield put(actions.actionGetHistoryError(error));
     }
 }
 
@@ -191,7 +197,7 @@ function* actionUpdate ({ changes }) {
 
 export function* watchActionActions () {
     yield takeEvery(types.ACTION_DELETE, actionDelete);
-    yield takeEvery(types.ACTION_GET_BY_TYPE, actionGetByType);
+    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_PUBLISHED, actionPublished);

@@ -25,11 +25,11 @@ export const getActionByTx = tx =>
             .catch(reject);
     });
 
-export const getActionsByType = (ethAddress, type) =>
+export const getActionsByType = request =>
     new Promise((resolve, reject) => {
         actionDB.actions
             .where('[ethAddress+type]')
-            .equals([ethAddress, type])
+            .anyOf(request)
             .reverse()
             .toArray()
             .then(resolve)

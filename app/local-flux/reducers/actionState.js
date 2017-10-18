@@ -13,22 +13,40 @@ const createAction = (action) => {
     return new ActionRecord(action).set('payload', payload);
 };
 
+const sortByBlockNr = (byId, list) =>
+    list.sort((a, b) => {
+        const actionA = byId.get(a);
+        const actionB = byId.get(b);
+
+        if (!actionA.blockNumber || actionA.blockNumber > actionB.blockNumber) {
+            return -1;
+        }
+        if (actionA.blockNumber < actionB.blockNumber) {
+            return 1;
+        }
+        return 0;
+    });
+
 const addPendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { bondAeth, claim, comment, commentDownvote, commentUpvote, createTag, cycleAeth,
-        entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
-        sendTip, transferEth, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
-    let pendingEthTransfers;
     switch (action.type) {
-        case bondAeth:
+        case actionTypes.bondAeth:
+        case actionTypes.freeAeth:
+        case actionTypes.transferAeth:
+        case actionTypes.transferEth:
+        case actionTypes.transformEssence:
+        case actionTypes.profileRegister:
+        case actionTypes.profileUpdate:
             return pending.set(action.type, true);
-        case claim:
+        case actionTypes.cycleAeth:
+            return pending.set(action.type, action.payload.amount);
+        case actionTypes.claim:
             return pending.setIn([action.type, entryId], action.id);
-        case entryDownvote:
-        case entryUpvote:
+        case actionTypes.entryDownvote:
+        case actionTypes.entryUpvote:
             return pending.setIn(['entryVote', entryId], action.id);
-        case comment:
+        case actionTypes.comment:
             // Pending comments do not have a unique id, so they will be stored
             // in a List instead of a Map
             pendingComments = pending.getIn([action.type, entryId]);
@@ -36,69 +54,54 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
                 return pending.setIn([action.type, entryId], new List([createAction(action)]));
             }
             return pending.setIn([action.type, entryId], pendingComments.push(createAction(action)));
-        case commentDownvote:
-        case commentUpvote:
+        case actionTypes.commentDownvote:
+        case actionTypes.commentUpvote:
             return pending.setIn(['commentVote', commentId], action.id);
-        case createTag:
-            return pending.setIn([createTag, tag], action.id);
-        case cycleAeth:
-            return pending.set(action.type, true);
-        case follow:
-        case unfollow:
+        case actionTypes.createTag:
+            return pending.setIn([action.type, tag], action.id);
+        case actionTypes.follow:
+        case actionTypes.unfollow:
             return pending.setIn(['follow', ethAddress], action.id);
-        case sendTip:
+        case actionTypes.sendTip:
             return pending.setIn([action.type, ethAddress], action.id);
-        case profileRegister:
-        case profileUpdate:
-            return pending.set(action.type, true);
-        case transferEth:
-            pendingEthTransfers = pending.get(action.type);
-            if (!pendingEthTransfers) {
-                return pending.set(action.type, new List([action.id]));
-            }
-            return pending.set(action.type, pendingEthTransfers.push(action.id));
         default:
             return pending;
     }
 };
 
 const removePendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { bondAeth, claim, comment, commentDownvote, commentUpvote, cycleAeth, createTag,
-        entryDownvote, entryUpvote, follow, profileRegister, profileUpdate,
-        sendTip, transferEth, unfollow } = actionTypes;
     const { commentId, entryId, ethAddress, tag } = action.payload;
     let pendingComments;
-    let pendingEthTransfers;
     switch (action.type) {
-        case bondAeth:
+        case actionTypes.bondAeth:
+        case actionTypes.freeAeth:
+        case actionTypes.transferAeth:
+        case actionTypes.transferEth:
+        case actionTypes.transformEssence:
+        case actionTypes.profileRegister:
+        case actionTypes.profileUpdate:
             return pending.set(action.type, false);
-        case claim:
-        case comment:
+        case actionTypes.cycleAeth:
+            return pending.set(action.type, null);
+        case actionTypes.claim:
+        case actionTypes.comment:
             pendingComments = pending.getIn([action.type, entryId]).filter((comm) => {
                 return comm.id !== action.id;
             });
             return pending.setIn([action.type, entryId], pendingComments);
-        case cycleAeth:
-            return pending.set(action.type, false);
-        case entryDownvote:
-        case entryUpvote:
+        case actionTypes.entryDownvote:
+        case actionTypes.entryUpvote:
             return pending.deleteIn(['entryVote', entryId]);
-        case commentDownvote:
-        case commentUpvote:
+        case actionTypes.commentDownvote:
+        case actionTypes.commentUpvote:
             return pending.deleteIn(['commentVote', commentId]);
-        case createTag:
-            return pending.deleteIn([createTag, tag]);
-        case follow:
-        case unfollow:
+        case actionTypes.createTag:
+            return pending.deleteIn([action.type, tag]);
+        case actionTypes.follow:
+        case actionTypes.unfollow:
             return pending.deleteIn(['follow', ethAddress]);
-        case sendTip:
+        case actionTypes.sendTip:
             return pending.deleteIn([action.type, ethAddress]);
-        case profileRegister:
-        case profileUpdate:
-            return pending.set(action.type, false);
-        case transferEth:
-            pendingEthTransfers = pending.get(action.type).filter(id => id !== action.id);
-            return pending.set(action.type, pendingEthTransfers);
         default:
             return pending;
     }
@@ -115,6 +118,8 @@ const actionState = createReducer(initialState, {
         });
     },
 
+    [types.ACTION_CLEAR_HISTORY]: state => state.set('history', new List()),
+
     [types.ACTION_DELETE]: (state, { id }) => {
         const needAuth = state.get('needAuth');
         const action = state.getIn(['byId', id]);
@@ -126,16 +131,24 @@ const actionState = createReducer(initialState, {
         });
     },
 
-    [types.ACTION_GET_BY_TYPE_SUCCESS]: (state, { actionType, data }) => {
+    [types.ACTION_GET_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),
+
+    [types.ACTION_GET_HISTORY_ERROR]: state =>
+        state.setIn(['flags', 'fetchingHistory'], false),
+
+    [types.ACTION_GET_HISTORY_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
-        let list = new List();
+        const fetchingAethTransfers = state.getIn(['flags', 'fetchingAethTransfers']);
+        let list = fetchingAethTransfers ? new List() : state.get('history');
         data.forEach((action) => {
             byId = byId.set(action.id, createAction(action));
             list = list.push(action.id);
         });
         return state.merge({
             byId,
-            byType: state.get('byType').set(actionType, list)
+            flags: state.get('flags').set('fetchingHistory', false),
+            history: sortByBlockNr(byId, list),
+            historyTypes: new List(request)
         });
     },
 
@@ -171,17 +184,49 @@ const actionState = createReducer(initialState, {
         const newAction = state.getIn(['byId', changes.id]).merge(changes);
         let publishing = state.get('publishing');
         let pending = state.get('pending');
+        const historyTypes = state.get('historyTypes');
+        let history = state.get('history');
         if (changes.status === actionStatus.publishing) {
             publishing = publishing.push(changes.id);
+            if (historyTypes.includes(newAction.type)) {
+                history = history.unshift(newAction.id);
+            }
         } else if (changes.status === actionStatus.published) {
             pending = removePendingAction(pending, newAction.toJS());
             publishing = publishing.filter(id => id !== changes.id);
         }
         return state.merge({
             byId: state.get('byId').set(changes.id, newAction),
+            history,
             needAuth: changes.status === actionStatus.needAuth ? changes.id : state.get('needAuth'),
             pending,
             publishing
+        });
+    },
+
+    [types.PROFILE_AETH_TRANSFERS_ITERATOR]: state =>
+        state.setIn(['flags', 'fetchingAethTransfers'], true),
+
+    [types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR]: state =>
+        state.setIn(['flags', 'fetchingAethTransfers'], false),
+
+    [types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS]: (state, { data }) => {
+        const type = actionTypes.receiveAeth;
+        const fetchingHistory = state.getIn(['flags', 'fetchingHistory']);
+        let byId = state.get('byId');
+        let list = fetchingHistory ? new List() : state.get('history');
+        data.collection.forEach((event) => {
+            const id = `${event.blockNumber}-${event.from.ethAddress}-${type}`;
+            const payload = fromJS({ amount: event.amount });
+            const action = new ActionRecord({ blockNumber: event.blockNumber, id, success: true, type })
+                .set('payload', payload);
+            byId = byId.set(action.id, action);
+            list = list.push(action.id);
+        });
+        return state.merge({
+            byId,
+            flags: state.get('flags').set('fetchingAethTransfers', false),
+            history: sortByBlockNr(byId, list),
         });
     },
 

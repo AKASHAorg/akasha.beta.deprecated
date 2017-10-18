@@ -221,6 +221,11 @@ const errorMessages = defineMessages({
         description: 'cycle aeth error',
         defaultMessage: 'An error occured while cycling {amount} AETH'
     },
+    profileFreeAeth: {
+        id: 'app.error.profileFreeAeth',
+        description: 'free aeth error',
+        defaultMessage: 'An error occured while collecting your cycled AETH'
+    },
     profileGetLocal: {
         id: 'app.error.profileGetLocal',
         description: 'get local profiles error',
@@ -240,6 +245,11 @@ const errorMessages = defineMessages({
         id: 'app.error.profileTransferEth',
         description: 'transfer ETH error',
         defaultMessage: 'An error occured while transferring {value} ETH'
+    },
+    profileTransformEssence: {
+        id: 'app.error.profileTransformEssence',
+        description: 'transform essence error',
+        defaultMessage: 'An error occured while transforming {amount} Essence'
     },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',

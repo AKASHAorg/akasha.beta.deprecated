@@ -11,6 +11,11 @@ const notificationMessages = defineMessages({
         description: 'notification to be displayed when unlock/cycle AETH transaction was mined',
         defaultMessage: 'You successfully cycled {amount} AETH'
     },
+    freeAethSuccess: {
+        id: 'app.notification.freeAethSuccess',
+        description: 'notification to be displayed when collecting cycled AETH transaction was mined',
+        defaultMessage: 'You successfully collected your cycled AETH'
+    },
     highlightSaveSuccess: {
         id: 'app.notification.highlightSaveSuccess',
         description: 'Notification to be displayed when a highlight has been saved',
@@ -40,6 +45,11 @@ const notificationMessages = defineMessages({
         id: 'app.notification.followProfileSuccess',
         description: 'Notification to be displayed when follow transaction was mined',
         defaultMessage: 'You are now following {displayName}'
+    },
+    transformEssenceSuccess: {
+        id: 'app.notification.transformEssenceSuccess',
+        description: 'notification to be displayed when transform Essence transaction was mined',
+        defaultMessage: 'You successfully transformed {amount} Essence'
     },
     unfollowingProfile: {
         id: 'app.notification.unfollowingProfile',

@@ -114,7 +114,6 @@ class ShiftForm extends Component {
             >
               <div className="flex-center">
                 <Slider
-                  className=""
                   min={0}
                   max={this.getMaxAmount()}
                   onChange={this.onChange}

@@ -6,14 +6,23 @@ import * as actions from '../actions/profile-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
-import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
+import { selectBaseUrl, selectBlockNumber, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
     selectNeedAuthAction, selectProfileEditToggle, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
+const TRANSFERS_ITERATOR_LIMIT = 30;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
+
+function* profileAethTransfersIterator () {
+    const channel = Channel.server.profile.transfersIterator;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    const toBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ ethAddress, toBlock, limit: TRANSFERS_ITERATOR_LIMIT }]);
+}
 
 function* profileBondAeth ({ actionId, amount }) {
     const channel = Channel.server.profile.bondAeth;
@@ -47,6 +56,13 @@ function* profileCycleAethSuccess ({ data }) {
         id: 'cycleAethSuccess',
         values: { amount: data.amount },
     }));
+}
+
+function* profileCyclingStates () {
+    const channel = Channel.server.profile.cyclingStates;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
 function* profileDeleteLogged () {
@@ -85,6 +101,17 @@ function* profileFollowingsIterator ({ akashaId }) {
     yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT }]);
 }
 
+function* profileFreeAeth ({ actionId, amount }) {
+    const channel = Channel.server.profile.freeAeth;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileFreeAethSuccess () {
+    yield put(appActions.showNotification({ id: 'freeAethSuccess' }));
+}
+
 function* profileGetBalance ({ unit = 'ether' }) {
     const channel = Channel.server.profile.getBalance;
     const ethAddress = yield select(state => state.profileState.getIn(['loggedProfile', 'ethAddress']));
@@ -97,7 +124,6 @@ function* profileGetBalance ({ unit = 'ether' }) {
 
 function* profileGetByAddress ({ ethAddress }) {
     const channel = Channel.server.registry.getByAddress;
-    // yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
@@ -249,6 +275,20 @@ function* profileTransferEthSuccess ({ data }) {
     }));
 }
 
+function* profileTransformEssence ({ actionId, amount }) {
+    const channel = Channel.server.profile.transformEssence;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, amount, token }]);
+}
+
+function* profileTransformEssenceSuccess ({ data }) {
+    yield put(appActions.showNotification({
+        id: 'transformEssenceSuccess',
+        values: { amount: data.amount },
+    }));
+}
+
 function* profileUnfollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -322,6 +362,17 @@ function* profileRegisterSuccess (payload) {
 
 // Channel watchers
 
+function* watchProfileAethTransfersIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.transfersIterator);
+        if (resp.error) {
+            yield put(actions.profileAethTransfersIteratorError(resp.error));
+        } else {
+            yield put(actions.profileAethTransfersIteratorSuccess(resp.data));
+        }
+    }
+}
+
 function* watchProfileBondAethChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.bondAeth);
@@ -374,6 +425,17 @@ function* watchProfileCycleAethChannel () {
     }
 }
 
+function* watchProfileCyclingStatesChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.cyclingStates);
+        if (resp.error) {
+            yield put(actions.profileCyclingStatesError(resp.error));
+        } else {
+            yield put(actions.profileCyclingStatesSuccess(resp.data));
+        }
+    }
+}
+
 function* watchProfileFollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followProfile);
@@ -420,6 +482,25 @@ function* watchProfileFollowingsIteratorChannel () {
             yield put(actions.profileMoreFollowingsIteratorSuccess(resp.data));
         } else {
             yield put(actions.profileFollowingsIteratorSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileFreeAethChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.freeAeth);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileFreeAethError(resp.error));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileFreeAethError({}));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -618,6 +699,25 @@ function* watchProfileTransferChannel () {
     }
 }
 
+function* watchProfileTransformEssenceChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.transformEssence);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileTransformEssenceError(resp.error, resp.request.amount));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileTransformEssenceError({}, resp.request.amount));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
@@ -653,13 +753,16 @@ function* watchProfileUpdateChannel () {
 }
 
 
-export function* registerProfileListeners () {
+export function* registerProfileListeners () { // eslint-disable-line max-statements
+    yield fork(watchProfileAethTransfersIteratorChannel);
     yield fork(watchProfileBondAethChannel);
     yield fork(watchProfileCreateEthAddressChannel);
     yield fork(watchProfileCycleAethChannel);
+    yield fork(watchProfileCyclingStatesChannel);
     yield fork(watchProfileFollowChannel);
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
+    yield fork(watchProfileFreeAethChannel);
     yield fork(watchProfileGetBalanceChannel);
     yield fork(watchProfileGetByAddressChannel);
     yield fork(watchProfileGetDataChannel);
@@ -670,22 +773,27 @@ export function* registerProfileListeners () {
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileTransferChannel);
+    yield fork(watchProfileTransformEssenceChannel);
     yield fork(watchProfileUnfollowChannel);
     yield fork(watchProfileUpdateChannel);
     yield fork(watchProfileRegisterChannel);
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
+    yield takeEvery(types.PROFILE_AETH_TRANSFERS_ITERATOR, profileAethTransfersIterator);
     yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
     yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
     yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
     yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
     yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
+    yield takeEvery(types.PROFILE_CYCLING_STATES, profileCyclingStates);
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
     yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
     yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
     yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
     yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
+    yield takeEvery(types.PROFILE_FREE_AETH, profileFreeAeth);
+    yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
     yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
     yield takeEvery(types.PROFILE_GET_BY_ADDRESS, profileGetByAddress);
     yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
@@ -704,6 +812,8 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
     yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
     yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
+    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE, profileTransformEssence);
+    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, profileTransformEssenceSuccess);
     yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
     yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
     yield takeEvery(types.PROFILE_UPDATE, profileUpdate);

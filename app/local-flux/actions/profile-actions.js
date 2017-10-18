@@ -1,6 +1,16 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
+export const profileAethTransfersIterator = () => action(types.PROFILE_AETH_TRANSFERS_ITERATOR);
+
+export const profileAethTransfersIteratorError = (error) => {
+    error.code = 'PATIE01';
+    error.messageId = 'profileAethTransfersIterator';
+    return action(types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR, { error });
+};
+
+export const profileAethTransfersIteratorSuccess = data =>
+    action(types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS, { data });
 export const profileBondAeth = ({ actionId, amount }) =>
     action(types.PROFILE_BOND_AETH, { actionId, amount });
 
@@ -36,6 +46,15 @@ export const profileCycleAethError = (error, amount) => {
 };
 
 export const profileCycleAethSuccess = data => action(types.PROFILE_CYCLE_AETH_SUCCESS, { data });
+export const profileCyclingStates = () => action(types.PROFILE_CYCLING_STATES);
+
+export const profileCyclingStatesError = (error) => {
+    error.code = 'PCSE01';
+    error.messageId = 'profileCyclingStates';
+    return action(types.PROFILE_CYCLING_STATES_ERROR, { error });
+};
+
+export const profileCyclingStatesSuccess = data => action(types.PROFILE_CYCLING_STATES_SUCCESS, { data });
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 
 export const profileDeleteLoggedError = (error) => {
@@ -266,6 +285,18 @@ export const profileTransferEthError = (error, request) => {
 };
 
 export const profileTransferEthSuccess = data => action(types.PROFILE_TRANSFER_ETH_SUCCESS, { data });
+export const profileTransformEssence = ({ actionId, amount }) =>
+    action(types.PROFILE_TRANSFORM_ESSENCE, { actionId, amount });
+
+export const profileTransformEssenceError = (error, amount) => {
+    error.code = 'PTEE02';
+    error.messageId = 'profileTransformEssence';
+    error.values = { amount };
+    return action(types.PROFILE_TRANSFORM_ESSENCE_ERROR, { error });
+};
+
+export const profileTransformEssenceSuccess = data =>
+    action(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, { data });
 export const profileUnfollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_UNFOLLOW, { actionId, ethAddress });
 
