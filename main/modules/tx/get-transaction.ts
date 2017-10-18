@@ -24,7 +24,18 @@ const execute = Promise.coroutine(function* (data: TxRequestData) {
             .getInstance()
             .web3.eth
             .getTransactionReceiptAsync(txHash).then((receipt) => {
-                return Object.assign({}, receipt, { success: receipt.status === '0x1' });
+                if (receipt) {
+                    return Object.assign({}, receipt, { success: receipt.status === '0x1' });
+                }
+                return GethConnector.getInstance()
+                    .web3.eth
+                    .getTransactionAsync(txHash)
+                    .then((txHashData) => {
+                        if (txHashData) {
+                            return null;
+                        }
+                        throw new Error(`Tx: ${txHash} could not be found.`);
+                    });
             });
     });
     return Promise.all(requests);
