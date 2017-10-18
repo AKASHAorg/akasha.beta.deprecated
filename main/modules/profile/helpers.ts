@@ -1,5 +1,6 @@
 import contracts from '../../contracts/index';
 import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
 
 export const profileAddress = Promise.coroutine(function*(data) {
     let profileAddress;
@@ -9,8 +10,9 @@ export const profileAddress = Promise.coroutine(function*(data) {
     } else if (data.ethAddress) {
         profileAddress = data.ethAddress;
     }
-    if (!profileAddress) {
-        throw new Error('Must provide an akasha ID or ethereum address');
+
+    if (!!unpad(profileAddress)) {
+        return Promise.resolve(profileAddress);
     }
-    return Promise.resolve(profileAddress);
+    throw new Error('Must provide a valid akasha ID or ethereum address');
 });
