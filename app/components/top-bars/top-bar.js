@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Breadcrumbs, DashboardTopBar, NewEntryTopBar, PanelLink, Panels, TopBarRightSide } from '../';
-import { selectEthBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
+import classNames from 'classnames';
+import { Breadcrumbs, DashboardTopBar, NewEntryTopBar, PanelLink, Panels, TopBarRight } from '../';
+import { toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
+import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
@@ -32,20 +34,14 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, fullEntry, loggedProfile, loggedProfileData, showSecondarySidebar } = this.props;
-        const { muiTheme } = this.context;
-
+        const { balance, fullEntry, showSecondarySidebar } = this.props;
+        const className = classNames('flex-center-y top-bar', {
+            'top-bar_full': !showSecondarySidebar || fullEntry,
+            'top-bar_default': !fullEntry
+        });
         return (
           <div>
-            <div
-              className={
-                  `top-bar
-                  top-bar${showSecondarySidebar ? '' : '_full'}
-                  top-bar${fullEntry ? '_full' : '_default'}
-                  flex-center-y`
-              }
-              style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
-            >
+            <div className={className}>
               <div className="top-bar__inner">
                 <div className="top-bar__content">
                   <div className="top-bar__left-side">
@@ -74,10 +70,10 @@ class TopBar extends PureComponent {
                       path="/@:akashaId"
                     />
                   </div>
-                  <TopBarRightSide
+                  <TopBarRight
                     balance={balance}
-                    canEditProfile={!!loggedProfile.get('akashaId')}
-                    loggedProfileData={loggedProfileData}
+                    toggleAethWallet={this.props.toggleAethWallet}
+                    toggleEthWallet={this.props.toggleEthWallet}
                   />
                 </div>
                 <div
@@ -107,22 +103,20 @@ class TopBar extends PureComponent {
     }
 }
 
-TopBar.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 TopBar.propTypes = {
-    balance: PropTypes.string,
+    balance: PropTypes.shape().isRequired,
     fullEntry: PropTypes.bool,
     history: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
+    toggleAethWallet: PropTypes.func.isRequired,
+    toggleEthWallet: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-    balance: selectEthBalance(state),
+    balance: selectBalance(state),
     fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
     loggedProfile: selectLoggedProfile(state),
     loggedProfileData: selectLoggedProfileData(state),
@@ -130,7 +124,10 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    {},
+    {
+        toggleAethWallet,
+        toggleEthWallet
+    },
     null,
     { pure: false }
 )(withRouter(injectIntl(TopBar)));

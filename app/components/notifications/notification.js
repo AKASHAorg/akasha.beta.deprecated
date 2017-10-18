@@ -38,12 +38,12 @@ class Notification extends Component {
                     const btnClose = () => { notification.close(key); };
                     notification.open({
                         message:
-                          <NotificationHighlightNote
-                            notif={notif}
-                            intl={intl}
-                            editNote={this.props.highlightEditNotes}
-                            btnClose={btnClose}
-                          />,
+  <NotificationHighlightNote
+    notif={notif}
+    intl={intl}
+    editNote={this.props.highlightEditNotes}
+    btnClose={btnClose}
+  />,
                         key,
                         onClose: close
                     });

@@ -32,11 +32,9 @@ const appState = createReducer(initialState, {
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
 
-    [types.NOTIFICATION_DISPLAY]: (state, { notification }) => {
-        return state.merge({
-            displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
-        });
-    },
+    [types.NOTIFICATION_DISPLAY]: (state, { notification }) => state.merge({
+        displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
+    }),
 
     [types.PROFILE_LOGOUT]: state =>
         state.merge({
@@ -52,6 +50,8 @@ const appState = createReducer(initialState, {
         }
         return state.set('showSecondarySidebar', !state.get('showSecondarySidebar'));
     },
+    [types.PROFILE_EDIT_TOGGLE]: state =>
+        state.set('showProfileEditor', !state.get('showProfileEditor')),
 
     [types.SHOW_NOTIFICATION]: (state, { notification }) => {
         const lastNotification = state.get('notifications').last();
@@ -68,6 +68,12 @@ const appState = createReducer(initialState, {
         state.merge({
             showTerms: true
         }),
+
+    [types.TOGGLE_AETH_WALLET]: state =>
+        state.set('showWallet', state.get('showWallet') === 'AETH' ? null : 'AETH'),
+
+    [types.TOGGLE_ETH_WALLET]: state =>
+        state.set('showWallet', state.get('showWallet') === 'ETH' ? null : 'ETH'),
 
     [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
         state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),

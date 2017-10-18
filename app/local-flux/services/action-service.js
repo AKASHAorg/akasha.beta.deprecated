@@ -1,6 +1,14 @@
 import actionDB from './db/action';
 import * as actionStatus from '../../constants/action-status';
 
+export const deleteAction = id =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .delete(id)
+            .then(resolve)
+            .catch(reject);
+    });
+
 export const getActionByTx = tx =>
     new Promise((resolve, reject) => {
         actionDB.actions
@@ -14,6 +22,17 @@ export const getActionByTx = tx =>
                     reject({});
                 }
             })
+            .catch(reject);
+    });
+
+export const getActionsByType = (ethAddress, type) =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('[ethAddress+type]')
+            .equals([ethAddress, type])
+            .reverse()
+            .toArray()
+            .then(resolve)
             .catch(reject);
     });
 

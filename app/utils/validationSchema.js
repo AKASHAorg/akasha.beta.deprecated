@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import * as Joi from 'joi-browser';
 import XRegExp from 'xregexp';
 import { formMessages, validationMessages } from '../locale-data/messages';
 
@@ -19,43 +19,39 @@ const nameRegExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
 export const getProfileSchema = (intl, options) => {
     const baseSchema = Joi.object().keys({
         firstName: Joi
-           .string()
-           .required()
-           .min(2)
-           .max(32)
-           .regex(nameRegExp)
-           .label(intl.formatMessage(formMessages.firstName))
-           .options({
-               language: {
-                   any: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                       empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
-                   },
-                   string: {
-                       min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                       max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                       regex: {
-                           base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
-                       }
-                   }
-               }
-           }),
+            .string()
+            .allow('')
+            .min(2)
+            .max(32)
+            .regex(nameRegExp)
+            .label(intl.formatMessage(formMessages.firstName))
+            .options({
+                language: {
+                    string: {
+                        min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        regex: {
+                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                        }
+                    }
+                }
+            }),
         lastName: Joi
-           .string()
-           .max(32)
-           .regex(nameRegExp)
-           .allow('')
-           .label(intl.formatMessage(formMessages.lastName))
-           .options({
-               language: {
-                   string: {
-                       max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                       regex: {
-                           base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
-                       }
-                   }
-               }
-           }),
+            .string()
+            .max(32)
+            .regex(nameRegExp)
+            .allow('')
+            .label(intl.formatMessage(formMessages.lastName))
+            .options({
+                language: {
+                    string: {
+                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        regex: {
+                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                        }
+                    }
+                }
+            }),
         about: Joi
             .string()
             .allow(''),
@@ -79,10 +75,10 @@ export const getProfileSchema = (intl, options) => {
                                 }
                             }
                         }),
-                    url: Joi.alternatives().try(
-                    Joi
+                    url: Joi
                         .string()
                         .label('URL')
+                        .uri()
                         .options({
                             language: {
                                 any: {
@@ -93,45 +89,8 @@ export const getProfileSchema = (intl, options) => {
                                 }
                             }
                         })
-                    )
                 })
             ).label('Link').options({
-                language: {
-                    array: {
-                        includesOne: '{{reason}}'
-                    }
-                }
-            }),
-        crypto: Joi
-            .array()
-            .items(
-                Joi
-                    .object()
-                    .keys({
-                        id: Joi.number(),
-                        name: Joi
-                            .string()
-                            .label('Name')
-                            .options({
-                                language: {
-                                    any: {
-                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                    }
-                                }
-                            }),
-                        address: Joi
-                            .string()
-                            .label('Address')
-                            .options({
-                                language: {
-                                    any: {
-                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                    }
-                                }
-                            })
-                    })
-            )
-            .options({
                 language: {
                     array: {
                         includesOne: '{{reason}}'
@@ -163,35 +122,6 @@ export const getProfileSchema = (intl, options) => {
                             regex: {
                                 base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                             }
-                        }
-                    }
-                }),
-            password: Joi
-                .string()
-                .required()
-                .min(8)
-                .label(intl.formatMessage(formMessages.passphrase))
-                .options({
-                    language: {
-                        any: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                        },
-                        string: {
-                            min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                        }
-                    }
-                }),
-            password2: Joi
-                .string()
-                .min(8)
-                .required()
-                .valid(Joi.ref('password'))
-                .label(intl.formatMessage(formMessages.passphraseVerify))
-                .options({
-                    language: {
-                        any: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                            allowOnly: `{{key}} ${intl.formatMessage(validationMessages.passphraseNotMatching)}`
                         }
                     }
                 })

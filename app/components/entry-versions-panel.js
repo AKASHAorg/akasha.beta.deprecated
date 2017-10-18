@@ -7,7 +7,6 @@ import { ToolbarVotes } from './svg';
 import { entryMessages } from '../locale-data/messages';
 
 class EntryVersionsPanel extends Component {
-
     componentDidMount () {
         ReactTooltip.rebuild();
     }
@@ -148,7 +147,6 @@ class EntryVersionsPanel extends Component {
           </Dialog>
         );
     }
-
 }
 
 EntryVersionsPanel.contextTypes = {

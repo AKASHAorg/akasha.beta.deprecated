@@ -29,13 +29,13 @@ class ChatMessagesList extends Component {
             }}
           >
             {messages.map(data =>
-              <ChatMessage
+              (<ChatMessage
                 key={data.messageHash}
                 isOwnMessage={loggedProfileAkashaId === data.akashaId}
                 data={data}
                 navigateToChannel={navigateToChannel}
                 onAuthorClick={onAuthorClick}
-              />
+              />)
             )}
           </div>
         );

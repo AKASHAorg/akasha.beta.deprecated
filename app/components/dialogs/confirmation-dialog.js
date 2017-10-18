@@ -89,7 +89,9 @@ class ConfirmationDialog extends Component {
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
-        if ([actionTypes.follow, actionTypes.unfollow, actionTypes.sendTip].includes(actionType)) {
+        const types = [actionTypes.follow, actionTypes.sendTip, actionTypes.transferAeth,
+            actionTypes.transferEth, actionTypes.unfollow];
+        if (types.includes(actionType)) {
             payload.displayName = getDisplayName(payload);
         }
         return (

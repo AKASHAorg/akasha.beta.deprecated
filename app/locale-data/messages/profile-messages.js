@@ -6,6 +6,11 @@ export const profileMessages = defineMessages({
         description: 'Activity section title',
         defaultMessage: 'activity'
     },
+    amountPlaceholder: {
+        id: 'app.profile.amountPlaceholder',
+        description: 'placeholder for amount input',
+        defaultMessage: 'Type an amount'
+    },
     avatarTitle: {
         id: 'app.profile.avatarTitle',
         description: 'Avatar section title',
@@ -25,6 +30,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.contacts',
         description: 'Contacts card title',
         defaultMessage: 'Contacts'
+    },
+    editProfileTitle: {
+        id: 'app.profile.editProfileTitle',
+        description: 'Edit profile page title',
+        defaultMessage: 'Edit Profile Information'
     },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
@@ -66,6 +76,11 @@ export const profileMessages = defineMessages({
         description: 'crypto address label',
         defaultMessage: 'Cryptocurrency Address'
     },
+    registerProfile: {
+        id: 'app.profile.registerProfile',
+        description: 'register profile button label',
+        defaultMessage: 'Register Profile'
+    },
     removeCryptoButtonTitle: {
         id: 'app.profile.removeCryptoButtonTitle',
         description: 'remove crypto button label',
@@ -80,6 +95,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.follow',
         description: 'follow a profile',
         defaultMessage: 'Follow'
+    },
+    updateProfile: {
+        id: 'app.profile.updateProfile',
+        description: 'update a profile',
+        defaultMessage: 'Update Profile'
     },
     followers: {
         id: 'app.profile.followers',
@@ -157,10 +177,20 @@ export const profileMessages = defineMessages({
         description: 'Receive button label',
         defaultMessage: 'Receive'
     },
+    receiverPlaceholder: {
+        id: 'app.profile.receiverPlaceholder',
+        description: 'Placeholder for receiver input',
+        defaultMessage: 'Type an username or paste an ethereum address'
+    },
     rewardsAndGoals: {
         id: 'app.profile.rewardsAndGoals',
         description: 'Title for rewards and goals card',
         defaultMessage: 'Rewards and Goals'
+    },
+    saveForLater: {
+        id: 'app.profile.saveForLater',
+        description: 'Save for later button label',
+        defaultMessage: 'Save for later'
     },
     send: {
         id: 'app.profile.send',
@@ -182,6 +212,11 @@ export const profileMessages = defineMessages({
         description: 'title for send tip form',
         defaultMessage: 'Send tip to {name}'
     },
+    sendTo: {
+        id: 'app.profile.sendTo',
+        description: 'label for receiver input',
+        defaultMessage: 'Send to'
+    },
     support: {
         id: 'app.profile.support',
         description: 'support an user financially',
@@ -202,9 +237,19 @@ export const profileMessages = defineMessages({
         description: 'placeholder for tip amount input',
         defaultMessage: 'Tip amount'
     },
+    totalBalance: {
+        id: 'app.profile.totalBalance',
+        description: 'total ETH balance',
+        defaultMessage: 'Total balance'
+    },
     unfollow: {
         id: 'app.profile.unfollow',
         description: 'unfollow a profile',
         defaultMessage: 'Unfollow'
+    },
+    yourEthAddress: {
+        id: 'app.profile.yourEthAddress',
+        description: 'label for ethereum address input',
+        defaultMessage: 'Your ethereum address'
     }
 });

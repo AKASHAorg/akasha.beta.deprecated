@@ -30,7 +30,7 @@ class AvatarEditr extends Component {
             if (!this.props.image && !this.editor) {
                 return resolve(null);
             }
-            const imageCanvas = this.editor.getImageScaledToCanvas();
+            const imageCanvas = this.editor.getImage();
             return imageCanvas.toBlob((blob) => {
                 const reader = new FileReader();
                 reader.onloadend = ev =>
@@ -74,11 +74,12 @@ class AvatarEditr extends Component {
             avatarImage: files,
             isNewAvatarLoaded: true,
             highlightDropZone: false,
-        }, () => {
-            if (this.props.onImageAdd) {
-                this.props.onImageAdd();
-            }
         });
+    }
+    _handleImageLoad = () => {
+        if (this.props.onImageAdd) {
+            this.props.onImageAdd();
+        }
     }
     _highlightDropZone = (ev) => {
         ev.preventDefault();
@@ -186,6 +187,7 @@ class AvatarEditr extends Component {
                   scale={this.state.avatarScale}
                   rotate={this.state.rotation}
                   onDropFile={this._handleImageAdd}
+                  onLoadSuccess={this._handleImageLoad}
                 />
                 <div className="avatar__controls">
                   <Row type="flex" align="middle" gutter={8}>

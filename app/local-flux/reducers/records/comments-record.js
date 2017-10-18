@@ -52,4 +52,5 @@ export const CommentsState = Record({
     moreComments: new Map(),
     newComments: new NewComments(),
     newestCommentBlock: new Map(),
+    votes: new Map(),
 });

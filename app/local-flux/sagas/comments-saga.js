@@ -6,8 +6,8 @@ import * as appActions from '../actions/app-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
-import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectNewCommentsBlock,
-    selectNewestCommentBlock, selectToken } from '../selectors';
+import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
+    selectNewCommentsBlock, selectNewestCommentBlock, selectToken } from '../selectors';
 
 const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;
@@ -30,7 +30,7 @@ function* commentsDownvote ({ actionId, commentId, entryId, weight }) {
 }
 
 function* commentsDownvoteSuccess ({ data }) {
-    // yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+    yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess' }));
 }
 
@@ -41,9 +41,11 @@ function* commentsGetCount ({ entryId }) {
 }
 
 function* commentsGetExtra (collection, request) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
     const commentIds = [];
     const ethAddresses = [];
     const ipfsHashes = [];
+    const voteOf = [];
     collection.forEach((comment) => {
         const { ethAddress } = comment.author;
         if (!ethAddresses.includes(ethAddress)) {
@@ -51,9 +53,11 @@ function* commentsGetExtra (collection, request) {
         }
         ipfsHashes.push(comment.ipfsHash);
         commentIds.push(comment.commentId);
+        voteOf.push({ commentId: comment.commentId, ethAddress: loggedEthAddress });
     });
     if (ipfsHashes.length) {
         yield put(actions.commentsResolveIpfsHash(ipfsHashes, commentIds));
+        yield put(actions.commentsGetVoteOf(voteOf));
     }
     for (let i = 0; i < ethAddresses.length; i++) {
         yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
@@ -64,6 +68,18 @@ function* commentsGetExtra (collection, request) {
             yield put(actions.commentsIterator({ entryId, parent: commentIds[i] }));
         }
     }
+}
+
+function* commentsGetScore ({ commentId }) {
+    const channel = Channel.server.comments.getScore;
+    yield call(enableChannel, channel, Channel.client.comments.manager);
+    yield apply(channel, channel.send, [{ commentId }]);
+}
+
+function* commentsGetVoteOf ({ data }) {
+    const channel = Channel.server.comments.getVoteOf;
+    yield call(enableChannel, channel, Channel.client.comments.manager);
+    yield apply(channel, channel.send, [data]);
 }
 
 function* commentsIterator ({ entryId, parent, reversed, toBlock, more, checkNew }) {
@@ -130,14 +146,15 @@ function* commentsUpvote ({ actionId, commentId, entryId, weight }) {
 }
 
 function* commentsUpvoteSuccess ({ data }) {
-    // yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+    yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({ id: 'upvoteCommentSuccess' }));
 }
 
-// function* commentsVoteSuccess ({ commentId }) {
-//     yield put(actions.entryGetScore(entryId));
-//     yield put(actions.entryGetVoteOf(entryId));
-// }
+function* commentsVoteSuccess (commentId) {
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield put(actions.commentsGetScore(commentId));
+    yield put(actions.commentsGetVoteOf([{ commentId, ethAddress }]));
+}
 
 // Channel watchers
 
@@ -167,6 +184,28 @@ function* watchCommentsGetCountChannel () {
             yield put(actions.commentsGetCountError(resp.error));
         } else {
             yield put(actions.commentsGetCountSuccess(resp.data));
+        }
+    }
+}
+
+function* watchCommentsGetScoreChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.comments.getScore);
+        if (resp.error) {
+            yield put(actions.commentsGetScoreError(resp.error));
+        } else {
+            yield put(actions.commentsGetScoreSuccess(resp.data));
+        }
+    }
+}
+
+function* watchCommentsGetVoteOfChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.comments.getVoteOf);
+        if (resp.error) {
+            yield put(actions.commentsGetVoteOfError(resp.error));
+        } else {
+            yield put(actions.commentsGetVoteOfSuccess(resp.data));
         }
     }
 }
@@ -263,6 +302,8 @@ function* watchCommentsUpvoteChannel () {
 export function* registerCommentsListeners () {
     yield fork(watchCommentsDownvoteChannel);
     yield fork(watchCommentsGetCountChannel);
+    yield fork(watchCommentsGetScoreChannel);
+    yield fork(watchCommentsGetVoteOfChannel);
     yield fork(watchCommentsIteratorChannel);
     yield fork(watchCommentsPublishChannel);
     yield fork(watchCommentsResolveIpfsHashChannel);
@@ -274,6 +315,8 @@ export function* watchCommentsActions () {
     yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
     yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
+    yield takeEvery(types.COMMENTS_GET_SCORE, commentsGetScore);
+    yield takeEvery(types.COMMENTS_GET_VOTE_OF, commentsGetVoteOf);
     yield takeEvery(types.COMMENTS_ITERATOR, commentsIterator);
     yield takeEvery(types.COMMENTS_MORE_ITERATOR, commentsMoreIterator);
     yield takeEvery(types.COMMENTS_PUBLISH, commentsPublish);

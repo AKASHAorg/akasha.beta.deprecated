@@ -35,6 +35,8 @@ const publishActions = {
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
     [actionTypes.sendTip]: profileActions.profileSendTip,
+    [actionTypes.transferAeth]: profileActions.profileTransferAeth,
+    [actionTypes.transferEth]: profileActions.profileTransferEth,
     [actionTypes.unfollow]: profileActions.profileUnfollow,
 };
 
@@ -60,9 +62,32 @@ const publishSuccessActions = {
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
+    [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
+    [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
+function* actionDelete ({ id }) {
+    try {
+        yield apply(actionService, actionService.deleteAction, [id]);
+    } catch (error) {
+        yield put(actions.actionDeleteError(error));
+    }
+}
+
+function* actionGetByType ({ actionType }) {
+    try {
+        const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const data = yield apply(
+            actionService,
+            actionService.getActionsByType,
+            [loggedEthAddress, actionType]
+        );
+        yield put(actions.actionGetByTypeSuccess(data, actionType));
+    } catch (error) {
+        yield put(actions.actionGetByTypeError(error));
+    }
+}
 
 /**
  * Fetch all actions with a "publishing" status from local db;
@@ -81,7 +106,9 @@ function* actionGetPending () {
                 txs.push(action.tx);
                 ids.push(action.id);
             });
-            yield put(transactionActions.transactionGetStatus(txs, ids));
+            for (let i = 0; i < txs.length; i++) {
+                yield put(transactionActions.transactionGetStatus([txs[i]], [ids[i]]));
+            }
         }
     } catch (error) {
         yield put(actions.actionGetPendingError(error));
@@ -163,6 +190,8 @@ function* actionUpdate ({ changes }) {
 // Action watchers
 
 export function* watchActionActions () {
+    yield takeEvery(types.ACTION_DELETE, actionDelete);
+    yield takeEvery(types.ACTION_GET_BY_TYPE, actionGetByType);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_PUBLISHED, actionPublished);

@@ -6,7 +6,7 @@ const dbName = `profiles-akasha-alpha-${process.env.NODE_ENV}`;
 const profileDB = new Dexie(dbName);
 profileDB.version(1).stores({
     loggedProfile: '&ethAddress, akashaId',
-    tempProfile: '&akashaId'
+    tempProfile: '&ethAddress'
 });
 
 // Add a new table: knownAkashaIds

@@ -10,7 +10,7 @@ import CommentsIPC from './CommentsIPC';
 import LicensesIPC from './LicensesIPC';
 // import NotificationsIPC from './NotificationsIPC';
 // import ChatIPC from './ChatIPC';
-// import SearchIPC from './SearchIPC';
+import SearchIPC from './SearchIPC';
 import UtilsIPC from './UtilsIPC';
 
 export default [
@@ -26,6 +26,6 @@ export default [
     new LicensesIPC(),
     // new NotificationsIPC(),
     // new ChatIPC(),
-    // new SearchIPC(),
+    new SearchIPC(),
     new UtilsIPC()
 ];

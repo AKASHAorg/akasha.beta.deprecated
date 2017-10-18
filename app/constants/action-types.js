@@ -13,4 +13,6 @@ export const profileRegister = 'profileRegister';
 export const profileUpdate = 'profileUpdate';
 export const sendTip = 'sendTip';
 export const tagCreate = 'tagCreate';
+export const transferAeth = 'transferAeth';
+export const transferEth = 'transferEth';
 export const unfollow = 'unfollow';

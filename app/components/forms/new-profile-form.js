@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
-import { SvgIcon, IconButton, RaisedButton,
-    TextField, Divider } from 'material-ui';
+import { Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import ContentAddIcon from 'material-ui/svg-icons/content/add';
-import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Input, Button, Form, Icon, Select } from 'antd';
+import { Row, Col, Input, Button, Form, Select } from 'antd';
 import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
-  generalMessages, validationMessages } from '../../locale-data/messages';
+    generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
 import styles from './new-profile-form.scss';
 
@@ -64,12 +61,12 @@ class NewProfileForm extends Component {
         }
         if (linkType === 'links') {
             updatedTempProfile = tempProfile.setIn([linkType],
-              links.push(new Map({
-                  title: '',
-                  url: '',
-                  type: '',
-                  id: links.size > 0 ? (links.last().get('id') + 1) : 1
-              })));
+                links.push(new Map({
+                    title: '',
+                    url: '',
+                    type: '',
+                    id: links.size > 0 ? (links.last().get('id') + 1) : 1
+                })));
         }
         if (linkType === 'crypto') {
             updatedTempProfile = tempProfile.setIn([linkType],
@@ -98,9 +95,9 @@ class NewProfileForm extends Component {
         const links = tempProfile.get(linkType);
         return () => {
             onProfileUpdate(
-              tempProfile.setIn([linkType],
-                links.filter(link => link.get('id') !== linkId)
-              )
+                tempProfile.setIn([linkType],
+                    links.filter(link => link.get('id') !== linkId)
+                )
             );
         };
     }
@@ -210,7 +207,7 @@ class NewProfileForm extends Component {
         console.log('clearing avatar');
         if (isUpdate) {
             onProfileUpdate(
-              tempProfile.set('avatar', null)
+                tempProfile.set('avatar', null)
             );
         }
     }
@@ -218,7 +215,7 @@ class NewProfileForm extends Component {
         const { isUpdate, tempProfile, onProfileUpdate } = this.props;
         if (isUpdate) {
             onProfileUpdate(
-              tempProfile.set('backgroundImage', {})
+                tempProfile.set('backgroundImage', {})
             );
         }
     }
@@ -235,7 +232,7 @@ class NewProfileForm extends Component {
     _handleSubmit = (ev) => {
         ev.preventDefault();
         const { isUpdate, tempProfile, onSubmit,
-          onProfileUpdate } = this.props;
+            onProfileUpdate } = this.props;
 
         this.props.validate((err) => {
             if (err) {
@@ -268,7 +265,7 @@ class NewProfileForm extends Component {
     render () {
         const { intl, muiTheme, style, isUpdate, tempProfile, form } = this.props;
         const { firstName, lastName, about, links, crypto, formHasErrors, avatar, backgroundImage,
-          baseUrl } = tempProfile;
+            baseUrl } = tempProfile;
         const { formatMessage } = intl;
         const linkAddressPrefix = form.getFieldDecorator('linkAddressPrefix', {
             initialValue: 'http://'
@@ -279,11 +276,7 @@ class NewProfileForm extends Component {
           </Select>
         );
         return (
-          <Row
-            type="flex"
-            className={`${styles.root}`}
-            style={style}
-          >
+          <Row type="flex" className={`${styles.root}`} style={style} >
             <Form
               action=""
               style={{ width: '100%' }}
@@ -532,5 +525,6 @@ const validationHOC = validation(strategy());
 
 export default injectIntl(
     muiThemeable()(
-      Form.create()(validationHOC(NewProfileForm))
-));
+        Form.create()(validationHOC(NewProfileForm))
+    )
+);

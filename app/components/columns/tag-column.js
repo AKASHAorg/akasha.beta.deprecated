@@ -11,7 +11,6 @@ import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/s
 import { COLUMN } from '../../constants/context-types';
 
 class TagColumn extends Component {
-
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');

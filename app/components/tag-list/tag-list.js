@@ -6,7 +6,6 @@ import { DataLoader } from '../';
 import { isInViewport } from '../../utils/domUtils';
 
 class TagList extends Component {
-
     componentDidMount () {
         if (this.container) {
             this.container.addEventListener('scroll', this.throttledHandler);

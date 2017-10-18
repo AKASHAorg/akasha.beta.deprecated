@@ -5,6 +5,9 @@ import { ProfileRecord } from '../reducers/records';
 
 export const selectAction = (state, id) => state.actionState.getIn(['byId', id]);
 
+export const selectActionsByType = (state, type) =>
+    (state.actionState.getIn(['byType', type]) || new List()).map(id => selectAction(state, id));
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {
@@ -67,6 +70,8 @@ export const selectComment = (state, id) => state.commentsState.getIn(['byId', i
 export const selectCommentLastBlock = (state, parent) => state.commentsState.getIn(['lastBlock', parent]);
 
 export const selectCommentLastIndex = (state, parent) => state.commentsState.getIn(['lastIndex', parent]);
+
+export const selectCommentVote = (state, commentId) => state.commentsState.getIn(['votes', commentId]);
 
 export const selectCommentsForParent = (state, parent) => {
     const list = state.commentsState.getIn(['byParent', parent]) || new List();
@@ -256,6 +261,9 @@ export const selectPendingFollow = (state, akashaId) =>
 
 export const selectPendingTip = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
+
+export const selectPendingTransferEth = state =>
+    (state.actionState.getIn(['pending', 'transferEth']) || new List()).map(id => selectAction(state, id));
 
 export const selectPendingVote = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'entryVote', entryId]);

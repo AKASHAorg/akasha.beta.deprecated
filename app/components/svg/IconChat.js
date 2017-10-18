@@ -4,7 +4,6 @@ import CircleIcon from './CircleIcon';
 import { MenuChat } from '../svg';
 
 class IconChat extends Component {
-
     render () {
         const { isActive, onClick } = this.props;
 
