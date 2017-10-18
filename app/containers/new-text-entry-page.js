@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Popover, Modal } from 'antd';
-import { PublishOptionsPanel, TextEntryEditor, TagEditor } from '../components';
+import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
@@ -18,7 +18,7 @@ import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
-const { Step } = Steps;
+
 const { confirm } = Modal;
 
 const EditorNotReadyPlaceholder = ({ message, loading }) => (
@@ -263,68 +263,7 @@ class NewEntryPage extends Component {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
 
-    _getProgressDot = (dot, { status, index }) => {
-        switch (status) {
-            case 'draft':
-                return (
-                  <span className="draft-dot">
-                    {dot}
-                  </span>
-                );
-            case 'published':
-                return (
-                  <Popover content={`Status: ${status}`}>
-                    <a
-                      href="##"
-                      className="published-dot"
-                      onClick={ev => this._showRevertConfirm(ev, index)}
-                    >
-                      {dot}
-                    </a>
-                  </Popover>
-                );
-            case 'published-selected':
-                return (
-                  <Popover
-                    content={'Status: Published'}
-                  >
-                    <a
-                      href="##"
-                      className="published-dot published-dot-selected"
-                      onClick={ev => this._showRevertConfirm(ev, index)}
-                    >
-                      {dot}
-                    </a>
-                  </Popover>
-                );
-            case 'none':
-                return null;
-            default:
-                return dot;
-        }
-        // return <Popover content="test">{dot}</Popover>;
-    }
-
-    _getTimelineSteps = (items, localChanges, selectedVersion) => {
-        /* eslint-disable react/no-array-index-key */
-        const steps = items.map((item, index) => (
-          <Step
-            key={`${index}`}
-            title={`v${index + 1}`}
-            status={`published${(selectedVersion === index) ? '-selected' : ''}`}
-          />
-        ));
-        /* eslint-enable react/no-array-index-key */
-        if (localChanges) {
-            steps.push(
-              <Step key="$localVersion" title="Local Version" status="draft" />
-            );
-        }
-        return steps;
-    }
-
-    _createTimeline = () => {
-        const { draftObj } = this.props;
+    _createTimeline = (draftObj) => {
         const { content, localChanges } = draftObj;
         const { latestVersion, version } = content;
         const timelineItems = [...Array(Number(latestVersion) + 1)];
@@ -471,7 +410,10 @@ class NewEntryPage extends Component {
                           edit-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
                         }
                       >
-                        {this._createTimeline()}
+                        <EntryVersionTimeline
+                          draftObj={draftObj}
+                          onRevertConfirm={this._showRevertConfirm}
+                        />
                       </div>
                     }
                   </div>

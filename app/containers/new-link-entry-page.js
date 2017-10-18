@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Col, Row, Icon } from 'antd';
+import { Col, Row, Icon, Button } from 'antd';
 import { PublishOptionsPanel, TagEditor, WebsiteInfoCard } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
@@ -57,8 +57,8 @@ class NewLinkEntryPage extends Component {
         const url = draftObj.getIn(['content', 'url']);
         extractWebsiteInfo(url).then((data) => {
             let filePromises = [];
-            if (data.info['og:image']) {
-                filePromises = getResizedImages([this._formatUrl(data.info['og:image'], data.url)], {
+            if (data.info.image) {
+                filePromises = getResizedImages([this._formatUrl(data.info.image, data.url)], {
                     ipfsFile: true
                 });
             }
@@ -72,14 +72,14 @@ class NewLinkEntryPage extends Component {
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: draftObj.get('content').merge({
                             cardInfo: {
-                                title: data.info['og:title'],
-                                description: data.info['og:description'],
+                                title: data.info.title,
+                                description: data.info.description,
                                 image: uploadedImage || {},
                             },
                             url: data.url
                         }),
                         id: match.params.draftId,
-                        hasCard: true,
+                        hasCard: data.info.title && data.info.description,
                     })));
             });
         });
@@ -194,20 +194,53 @@ class NewLinkEntryPage extends Component {
                 }
               >
                 <PublishOptionsPanel
+                  linkEntry
                   baseUrl={baseUrl}
                   intl={intl}
                   onClose={this._togglePublishPanel(false)}
                   onLicenceChange={this._handleDraftLicenceChange}
                   onExcerptChange={this._handleExcerptChange}
-                  onFeaturedImageChange={this._handleFeaturedImageChange}
                   title={title}
                   excerpt={excerpt}
                   errors={errors}
-                  featuredImage={featuredImage}
                   selectedLicence={licence}
                   licences={licences}
                 />
               </Col>
+              <div
+                className={
+                    `edit-entry-page__footer-wrapper
+                    edit-entry-page__footer-wrapper${showSecondarySidebar ? '' : '_full'}`
+                }
+              >
+                <div className="edit-entry-page__footer">
+                  <div className="edit-entry-page__footer-timeline-wrapper">
+                    {onChain && (localChanges || latestVersion > 0) &&
+                      <div
+                        className={
+                          `edit-entry-page__footer-timeline
+                          edit-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
+                        }
+                      >
+                        {this._createTimeline()}
+                      </div>
+                    }
+                  </div>
+                  <div className="edit-entry-page__footer-actions">
+                    <Button
+                      size="large"
+                      type="primary"
+                      onClick={this._handlePublish}
+                      loading={draftObj.get('publishing')}
+                    >
+                      {onChain ?
+                        intl.formatMessage(generalMessages.update) :
+                        intl.formatMessage(generalMessages.publish)
+                      }
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Row>
           </div>
         );

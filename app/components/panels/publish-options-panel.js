@@ -44,7 +44,7 @@ class PublishOptionsPanel extends Component {
     }
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
-            excerpt, baseUrl, errors } = this.props;
+            excerpt, baseUrl, errors, linkEntry } = this.props;
         console.log(this.props, 'some props');
         return (
           <div className="publish-options-panel">
@@ -102,23 +102,26 @@ class PublishOptionsPanel extends Component {
                   </RadioGroup>
                 }
               </div>
-              <div
-                className="publish-options-panel__featured-image-container"
-              >
-                <h4
-                  className="publish-options-panel__container-title"
+              {!linkEntry &&
+                <div
+                  className="publish-options-panel__featured-image-container"
                 >
-                  {intl.formatMessage(entryMessages.featuredImage)}
-                </h4>
-                <ImageUploader
-                  baseUrl={baseUrl}
-                  initialImage={featuredImage}
-                  intl={intl}
-                  onChange={this._handleFeaturedImageChange}
-                  useIpfs
-                />
-                <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>
-              </div>
+                  <h4
+                    className="publish-options-panel__container-title"
+                  >
+                    {intl.formatMessage(entryMessages.featuredImage)}
+                  </h4>
+                  <ImageUploader
+                    baseUrl={baseUrl}
+                    initialImage={featuredImage}
+                    intl={intl}
+                    onChange={this._handleFeaturedImageChange}
+                    useIpfs
+                  />
+                  <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>
+                </div>
+              }
+
               <div
                 className="publish-options-panel__excerpt-container"
               >

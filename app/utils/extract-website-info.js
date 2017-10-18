@@ -8,6 +8,9 @@ const redirectCodes = [301, 302, 303, 307, 308];
 const targetTags = {
     metaName: [
         'application-name',
+        'description',
+        'msapplication-TileColor',
+        'msapplication-TileImage',
     ],
     metaProperty: [
         'og:title',
@@ -15,8 +18,6 @@ const targetTags = {
         'og:type',
         'og:url',
         'og:image',
-        'msapplication-TileColor',
-        'msapplication-TileImage',
     ],
     tags: [
         'title',
@@ -81,11 +82,11 @@ export const extractWebsiteInfo = (url) => {
         }).then((res) => {
             const finalUrl = parseUrl(res.url);
             const superParser = new DOMParser();
+            if (finalUrl.hostname.includes('youtube.com') || finalUrl.hostname.includes('youtu.be')) {
+                return youtubeParser(finalUrl);
+            }
             return res.text().then((htmlString) => {
                 const htmlContent = superParser.parseFromString(htmlString, 'text/html');
-                if (finalUrl.hostname.includes('youtube.com') || finalUrl.hostname.includes('youtu.be')) {
-                    return youtubeParser(htmlContent, finalUrl, targetTags);
-                }
                 return htmlParser(htmlContent, finalUrl, targetTags);
             });
         })
