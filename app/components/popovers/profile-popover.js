@@ -205,7 +205,7 @@ class ProfilePopover extends Component {
                 </div>
                 <Icon className="profile-popover__counter-icon" type="trophy" />
                 <div className="profile-popover__counter-text">
-                  85
+                  {profile.get('karma')}
                 </div>
               </div>
               {profile.get('about') &&

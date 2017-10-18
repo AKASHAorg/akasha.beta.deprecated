@@ -13,16 +13,10 @@ export const savePendingAction = (akashaId, pendingAction, payload) => {
             ...payload
         });
     });
-}
-
-export const updatePendingAction = (action) => {
-    return pendingActionsDb.action.update(action);
 };
 
-export const saveActionPayload = (payload) => {
-    return pendingActionsDb.payload.put(payload);
-};
+export const updatePendingAction = action => pendingActionsDb.action.update(action);
 
-export const updateActionPayload = (payload) => {
-    return pendingActionsDb.payload.update(payload);
-};
+export const saveActionPayload = payload => pendingActionsDb.payload.put(payload);
+
+export const updateActionPayload = payload => pendingActionsDb.payload.update(payload);

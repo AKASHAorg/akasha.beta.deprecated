@@ -2,6 +2,56 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { profiles } from '../models/records';
 import { is, isEmpty } from 'ramda';
 import * as Promise from 'bluebird';
+import schema from '../utils/jsonschema';
+
+export const imageSize = {
+    'id': '/imgSize',
+    'type': 'object',
+    'properties': {
+        'src': {'type': 'any'},
+        'width': {'type': 'number'},
+        'height': {'type': 'number'}
+    },
+    'required': ['src', 'width', 'height']
+};
+
+const JSONprofile = {
+    'id': '/JSONprofile',
+    'type': 'object',
+    'properties': {
+        'firstName': { 'type': 'string' },
+        'lastName': { 'type': 'string' },
+        'about': {'type': 'string'},
+        'avatar': {'type': 'any'},
+        'links': {
+          'type': 'array',
+          'items': {
+              'type': 'object',
+              'properties': {
+                  'title': {'type': 'string'},
+                  'url': {'type': 'string'},
+                  'type': {'type': 'string'},
+                  'id': {'type': 'number'}
+              },
+              'required': ['title', 'url', 'type', 'id']
+          },
+            'uniqueItems': true
+        },
+        'backgroundImage': {
+            'type': 'object',
+            'properties': {
+                'xs': {'$ref': '/imgSize'},
+                'sm': {'$ref': '/imgSize'},
+                'md': {'$ref': '/imgSize'},
+                'lg': {'$ref': '/imgSize'},
+                'xl': {'$ref': '/imgSize'},
+            }
+        },
+    }
+};
+
+const v = new schema.Validator();
+v.addSchema(imageSize, '/imgSize');
 
 export const ProfileSchema = {
     AVATAR: 'avatar',
@@ -17,6 +67,7 @@ export const ProfileSchema = {
 export const create = Promise.coroutine(function* (data: IpfsProfileCreateRequest) {
     let saved, tmp, targetHash, keys, pool;
     let i = 0;
+    v.validate(data, JSONprofile, { throwError: true });
     const simpleLinks = [ProfileSchema.AVATAR, ProfileSchema.ABOUT, ProfileSchema.LINKS];
     const root = yield IpfsConnector.getInstance().api.add({ firstName: data.firstName, lastName: data.lastName });
     targetHash = root.hash;
@@ -99,6 +150,7 @@ export const getShortProfile = Promise.coroutine(function* (hash: string, resolv
         aboutPath[ProfileSchema.ABOUT] = yield IpfsConnector.getInstance().api.get(about[0].multihash);
     }
     const fetched = Object.assign({}, profileBase, avatarPath, aboutPath);
+    v.validate(fetched, JSONprofile, { throwError: true });
     profiles.setShort(hash, fetched);
     return fetched;
 });
@@ -122,6 +174,7 @@ export const resolveProfile = Promise.coroutine(function* (hash: string, resolve
         constructed[pool[i].name] = yield IpfsConnector.getInstance().api.get(pool[i].multihash);
     }
     const returned = Object.assign({}, shortProfile, constructed);
+    v.validate(returned, JSONprofile, { throwError: true });
     profiles.setFull(hash, returned);
     return returned;
 });

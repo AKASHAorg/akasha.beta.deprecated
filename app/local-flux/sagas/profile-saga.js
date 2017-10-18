@@ -3,6 +3,7 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
+import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
@@ -218,6 +219,36 @@ function* profileSendTipSuccess ({ data }) {
     }));
 }
 
+function* profileTransferAeth ({ actionId, akashaId, ethAddress, tokenAmount }) {
+    const channel = Channel.server.profile.transfer;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, ethAddress, tokenAmount }]);
+}
+
+function* profileTransferAethSuccess ({ data }) {
+    const displayName = getDisplayName(data);
+    yield put(appActions.showNotification({
+        id: 'transferAethSuccess',
+        values: { displayName, tokenAmount: data.tokenAmount },
+    }));
+}
+
+function* profileTransferEth ({ actionId, akashaId, ethAddress, value }) {
+    const channel = Channel.server.profile.transfer;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, ethAddress, value }]);
+}
+
+function* profileTransferEthSuccess ({ data }) {
+    const displayName = getDisplayName(data);
+    yield put(appActions.showNotification({
+        id: 'transferEthSuccess',
+        values: { displayName, value: data.value },
+    }));
+}
+
 function* profileUnfollow ({ actionId, ethAddress }) {
     const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -233,6 +264,26 @@ function* profileUnfollowSuccess ({ data }) {
     }));
 }
 
+function* profileUpdate ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) {
+    yield put(appActions.profileEditToggle());
+    const channel = Channel.server.profile.updateProfileData;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    const ipfs = { about, avatar, backgroundImage, firstName, lastName, links };
+    yield apply(channel, channel.send, [{ token, actionId, ipfs }]);
+}
+
+function* profileUpdateSuccess (payload) {
+    const { akashaId, ethAddress } = payload.data;
+    // remove saved temp profile from DB and clear tempProfileState
+    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    // get updated profile data
+    yield call(profileGetData, { akashaId, full: true });
+    yield put(appActions.showNotification({
+        id: 'updateProfileSuccess'
+    }));
+}
+
 function* profileUpdateLogged (loggedProfile) {
     try {
         yield apply(profileService, profileService.profileUpdateLogged, [loggedProfile]);
@@ -240,6 +291,28 @@ function* profileUpdateLogged (loggedProfile) {
         yield put(actions.profileUpdateLoggedError(error));
     }
 }
+
+function* profileRegister ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled,
+    firstName, lastName, links, ethAddress }) {
+    yield put(appActions.profileEditToggle());
+    const channel = Channel.server.registry.registerProfile;
+    yield call(enableChannel, channel, Channel.client.registry.manager);
+    const token = yield select(selectToken);
+    const ipfs = { avatar, address, about, backgroundImage, firstName, lastName, links };
+    yield apply(channel, channel.send, [{ token, actionId, akashaId, donationsEnabled, ethAddress, ipfs }]);
+}
+
+function* profileRegisterSuccess (payload) {
+    const { akashaId, ethAddress } = payload.data;
+    // remove saved temp profile from DB and clear tempProfileState
+    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    // get updated profile data
+    yield call(profileGetData, { akashaId, full: true });
+    yield put(appActions.showNotification({
+        id: 'registerProfileSuccess'
+    }));
+}
+
 
 // Channel watchers
 
@@ -431,10 +504,12 @@ function* watchProfileLoginChannel () {
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
-        const { akashaId, reauthenticate } = resp.request;
-        if (akashaId && !reauthenticate) {
-            resp.data.akashaId = akashaId;
-            yield call(profileGetData, { akashaId, full: true });
+        const { akashaId, ethAddress, reauthenticate } = resp.request;
+        if (!reauthenticate) {
+            if (akashaId) {
+                resp.data.akashaId = akashaId;
+            }
+            yield call(profileGetData, { ethAddress, full: true });
         }
         if (reauthenticate) {
             const needAuthAction = yield select(selectNeedAuthAction);
@@ -458,6 +533,24 @@ function* watchProfileLogoutChannel () {
         } else {
             yield call(profileDeleteLogged);
             yield put(actions.profileLogoutSuccess());
+        }
+    }
+}
+
+function* watchProfileRegisterChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.registry.registerProfile);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileRegisterError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileRegisterError({}));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -493,6 +586,32 @@ function* watchProfileSendTipChannel () {
     }
 }
 
+function* watchProfileTransferChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.transfer);
+        const { actionId, tokenAmount } = resp.request;
+        if (resp.error) {
+            if (tokenAmount) {
+                yield put(actions.profileTransferAethError(resp.error, resp.request));
+            } else {
+                yield put(actions.profileTransferEthError(resp.error, resp.request));
+            }
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                if (tokenAmount) {
+                    yield put(actions.profileTransferAethError({}, resp.request));
+                } else {
+                    yield put(actions.profileTransferEthError({}, resp.request));
+                }
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
@@ -508,6 +627,25 @@ function* watchProfileUnfollowChannel () {
         }
     }
 }
+
+function* watchProfileUpdateChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.updateProfileData);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileUpdateError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileUpdateError({}));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 
 export function* registerProfileListeners () {
     yield fork(watchProfileBondAethChannel);
@@ -525,7 +663,10 @@ export function* registerProfileListeners () {
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
+    yield fork(watchProfileTransferChannel);
     yield fork(watchProfileUnfollowChannel);
+    yield fork(watchProfileUpdateChannel);
+    yield fork(watchProfileRegisterChannel);
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
@@ -553,8 +694,16 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
+    yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
+    yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
+    yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
     yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
     yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
+    yield takeEvery(types.PROFILE_UPDATE, profileUpdate);
+    yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
+    yield takeEvery(types.PROFILE_REGISTER, profileRegister);
+    yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
 }
 
 export function* registerWatchers () {

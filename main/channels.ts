@@ -44,9 +44,9 @@ const channels = {
 
     chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'],
 
-    search: ['handshake', 'query'],
+    search: ['query', 'flush', 'syncTags', 'findTags'],
 
-    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage']
+    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage', 'manaCosts']
 };
 
 const processes = ['server', 'client'];

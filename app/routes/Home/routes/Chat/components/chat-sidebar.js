@@ -223,7 +223,7 @@ class ChatSidebar extends Component {
         return (
           <List style={{ paddingTop: 0 }}>
             {channels.map(channel =>
-              <ListItem
+              (<ListItem
                 key={channel}
                 className={`has-hidden-action ${className}`}
                 innerDivStyle={innerDivStyle}
@@ -255,7 +255,7 @@ class ChatSidebar extends Component {
                   {this.renderStarButton(channel)}
                   {hasDeleteButton && this.renderDeleteButton(channel)}
                 </div>
-              </ListItem>
+              </ListItem>)
             )}
           </List>
         );

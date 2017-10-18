@@ -10,7 +10,6 @@ import { entryMoreStreamIterator,
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class StreamColumn extends Component {
-
     componentDidMount () {
         const { column } = this.props;
         if (!column.get('entries').size) {

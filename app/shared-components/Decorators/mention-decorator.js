@@ -10,7 +10,6 @@ const getProfileDataClient = Channel.client.profile.getProfileData;
 const getProfileDataServer = Channel.server.profile.getProfileData;
 
 class MentionComponent extends Component {
-
     constructor (props) {
         super(props);
         existsServer.enable();

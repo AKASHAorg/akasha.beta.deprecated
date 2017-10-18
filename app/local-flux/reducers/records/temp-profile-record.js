@@ -1,22 +1,11 @@
-import { Record, List } from 'immutable';
-
-export const TempProfileStatus = Record({
-    faucetRequested: false,
-    publishRequested: false,
-    faucetTx: null,
-    publishTx: null,
-    currentAction: null,
-    token: null
-});
+import { Record, List, Map } from 'immutable';
 
 export const TempProfileRecord = Record({
     localId: '',
     firstName: '',
     lastName: '',
     akashaId: '',
-    password: '',
-    password2: '',
-    address: '',
+    donationsEnabled: true,
     ethAddress: '',
     avatar: null,
     backgroundImage: new Map(),

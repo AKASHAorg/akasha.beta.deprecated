@@ -6,8 +6,8 @@ class SvgIcon extends PureComponent {
         const { children, style, viewBox, color, className, height, width } = this.props;
         const mergedStyles = Object.assign({
             color,
-            height: height,
-            width: width,
+            height,
+            width,
         }, style);
 
         return (

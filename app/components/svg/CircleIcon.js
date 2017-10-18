@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { IconButton } from 'material-ui';
 
 class CircleIcon extends Component {
-
     constructor (props) {
         super(props);
 

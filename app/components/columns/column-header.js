@@ -115,7 +115,7 @@ class ColumnHeader extends Component {
               {column.get('large') ? 'small' : 'large'}
             </button>
             <button onClick={this.deleteColumn} style={{ marginRight: '20px', flex: '0 0 auto' }}>x</button>
-            {/*<div style={{ flex: '0 0 auto' }}>
+            {/* <div style={{ flex: '0 0 auto' }}>
               <SvgIcon
                 viewBox="0 0 18 18"
                 onClick={() => null}
@@ -129,7 +129,7 @@ class ColumnHeader extends Component {
               >
                 <UserMore />
               </SvgIcon>
-            </div>*/}
+            </div> */}
           </div>
         );
     }

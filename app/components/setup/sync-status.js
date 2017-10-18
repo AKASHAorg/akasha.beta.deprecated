@@ -4,7 +4,6 @@ import { setupMessages } from '../../locale-data/messages';
 import { SyncProgressLoader } from '../';
 
 class SyncStatus extends Component {
-
     renderMessage (message) {
         const { intl } = this.props;
         return (

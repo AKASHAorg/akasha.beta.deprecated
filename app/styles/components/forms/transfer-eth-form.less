@@ -1,0 +1,61 @@
+.transfer-eth-form {
+    padding: 24px;
+    position: relative;
+    height: 100%;
+
+    &__form-item {
+        height: 64px;
+        margin: 10px 0px;
+
+        .ant-form-explain {
+            font-size: 12px;
+        }
+    }
+
+    &__input {
+        color: @heading-color;
+        width: 100%;
+    }
+
+    &__my-address {
+        border-radius: 2px 0 0 2px;
+        width: ~'calc(100% - 46px)';
+    }
+
+    &__copy-button {
+        position: relative;
+        bottom: 1px;
+        color: @primary-color;
+        border-top: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        border-bottom: 1px solid #d9d9d9;
+        width: 46px;
+        height: 36px;
+        font-size: 13px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 24px;
+    }
+
+    &__button {
+        margin-left: 10px;
+    }
+
+    &__button-label {
+        font-size: 13px;
+        font-weight: normal;
+    }
+
+    .ant-form-item-label {
+        text-transform: uppercase;
+    }
+}

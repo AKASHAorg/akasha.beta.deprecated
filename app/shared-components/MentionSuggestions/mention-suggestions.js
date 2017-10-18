@@ -183,7 +183,7 @@ class MentionSuggestions extends Component {
             }}
           >
             {suggestions.map((akashaId, index) =>
-              <div
+              (<div
                 className={`${styles.result} row middle-xs`}
                 key={akashaId}
                 onClick={(ev) => { ev.stopPropagation(); this.replaceText(akashaId); }}
@@ -193,7 +193,7 @@ class MentionSuggestions extends Component {
                 <div className={styles.akashaId}>
                   {`@${akashaId}`}
                 </div>
-              </div>
+              </div>)
             )}
           </div>
         );

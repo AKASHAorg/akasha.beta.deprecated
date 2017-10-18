@@ -17,10 +17,10 @@ class AppSettings extends Component {
     }
 
     handleUpdate = () =>
-    this.props.saveGeneralSettings({
-        locale: this.state.locale,
-        darkTheme: this.state.darkTheme
-    });
+        this.props.saveGeneralSettings({
+            locale: this.state.locale,
+            darkTheme: this.state.darkTheme
+        });
 
     handleSelector = value => this.setState({ locale: value });
 
@@ -30,7 +30,7 @@ class AppSettings extends Component {
         const { generalSettings, intl, sidebar } = this.props;
         const Option = Select.Option;
         return (
-          <div className={'app-settings ' + (sidebar ? 'app-settings_sidebar' : '')}>
+          <div className={`app-settings ${sidebar ? 'app-settings_sidebar' : ''}`}>
             <div className="app-settings__close-wrapper">
               <Icon
                 type="close"

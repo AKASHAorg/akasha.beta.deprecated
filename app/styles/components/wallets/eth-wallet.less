@@ -1,0 +1,72 @@
+.eth-wallet {
+    padding-top: 24px;
+    height: 100%;
+
+    &__header {
+        color: @heading-color;
+        padding: 0px 32px 32px;
+    }
+
+    &__balance {
+        font-size: 32px;
+        margin-right: 12px;
+    }
+
+    &__sent-icon {
+        color: @error-color;
+        margin-right: 6px;
+        font-size: 16px;
+    }
+
+    .ant-tabs {
+        height: ~'calc(100% - 102px)';
+    }
+
+    .ant-tabs-nav {
+        width: 100%;
+    }
+
+    .ant-tabs-content {
+        height: ~'calc(100% - 60px)';
+    }
+
+    .ant-tabs-tabpane {
+        height: 100%;
+    }
+
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container {
+        height: 60px;
+        font-size: @font-size-base;
+    }
+
+    .ant-tabs-bar {
+        height: 60px;
+    }
+
+    .ant-tabs-tab {
+        width: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    & > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+        background: #fff;
+    }
+
+    & > .ant-tabs-card > .ant-tabs-bar {
+        border-color: #fff;
+    }
+
+    & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+        background: #f8f8f8;
+        border-color: transparent;
+        height: 59px;
+    }
+
+    & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+        border-color: #fff;
+        background: #fff;
+        height: 60px;
+    }
+}

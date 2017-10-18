@@ -193,6 +193,20 @@ export const profileMoreFollowingsIteratorError = (error, request) => {
 
 export const profileMoreFollowingsIteratorSuccess = data =>
     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+
+export const profileRegister = ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress }) =>
+    action(types.PROFILE_REGISTER, { actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress });
+
+export const profileRegisterError = (error, req) => {
+    error.code = 'PRE01';
+    error.messageId = 'profileRegister';
+    return action(types.PROFILE_REGISTER_ERROR, { error, req });
+};
+
+export const profileRegisterSuccess = (data, req) =>
+    action(types.PROFILE_REGISTER_SUCCESS, { data, req });
+
+
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
 
@@ -230,7 +244,28 @@ export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCE
 
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
+export const profileTransferAeth = ({ actionId, akashaId, ethAddress, tokenAmount }) =>
+    action(types.PROFILE_TRANSFER_AETH, { actionId, akashaId, ethAddress, tokenAmount });
 
+export const profileTransferAethError = (error, request) => {
+    error.code = 'PTAE01';
+    error.messageId = 'profileTransferAeth';
+    error.values = { tokenAmount: request.tokenAmount };
+    return action(types.PROFILE_TRANSFER_AETH_ERROR, { error });
+};
+
+export const profileTransferAethSuccess = data => action(types.PROFILE_TRANSFER_AETH_SUCCESS, { data });
+export const profileTransferEth = ({ actionId, akashaId, ethAddress, value }) =>
+    action(types.PROFILE_TRANSFER_ETH, { actionId, akashaId, ethAddress, value });
+
+export const profileTransferEthError = (error, request) => {
+    error.code = 'PTEE01';
+    error.messageId = 'profileTransferEth';
+    error.values = { value: request.value };
+    return action(types.PROFILE_TRANSFER_ETH_ERROR, { error });
+};
+
+export const profileTransferEthSuccess = data => action(types.PROFILE_TRANSFER_ETH_SUCCESS, { data });
 export const profileUnfollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_UNFOLLOW, { actionId, ethAddress });
 
@@ -241,6 +276,19 @@ export const profileUnfollowError = (error, request) => {
 };
 
 export const profileUnfollowSuccess = data => action(types.PROFILE_UNFOLLOW_SUCCESS, { data });
+
+export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) =>
+    action(types.PROFILE_UPDATE, { actionId, about, avatar, backgroundImage, firstName, lastName, links });
+
+export const profileUpdateError = (error, req) => {
+    error.code = 'PUE01';
+    error.messageId = 'profileUpdate';
+    return action(types.PROFILE_UPDATE_ERROR, { error, req });
+};
+
+export const profileUpdateSuccess = (data, req) =>
+    action(types.PROFILE_UPDATE_SUCCESS, { data, req });
+
 
 export const profileUpdateLoggedError = (error) => {
     error.code = 'PULE01';

@@ -124,7 +124,7 @@ class ImageBlock extends Component {
                 marginRight: 48,
                 // @TODO: DIRTYHACK!! GET RID OF THIS!!!
                 marginLeft: this.baseNodeRef ?
-                  this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft : 0
+                    this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft : 0
             };
         }
         if (previewImage === 'md') {
