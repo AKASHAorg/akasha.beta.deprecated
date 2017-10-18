@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Col, Row, Icon, Button } from 'antd';
-import { PublishOptionsPanel, TagEditor, WebsiteInfoCard } from '../components';
+import { Col, Row, Icon, Button, Modal } from 'antd';
+import { DraftJS } from 'megadraft';
+import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
+    TagEditor, WebsiteInfoCard } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { extractWebsiteInfo } from '../utils/extract-website-info';
-import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
-    draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { draftCreate, draftUpdate, draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { tagSearchLocal } from '../local-flux/actions/tag-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
@@ -17,13 +19,15 @@ import { uploadImage } from '../local-flux/services/utils-service';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import * as actionTypes from '../constants/action-types';
 
-self.extract_website_info = extractWebsiteInfo;
+const { EditorState } = DraftJS;
+const { confirm } = Modal;
 class NewLinkEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
             showPublishPanel: false,
-            errors: {}
+            errors: {},
+            shouldResetCaret: false,
         };
     }
     componentWillReceiveProps (nextProps) {
@@ -74,13 +78,13 @@ class NewLinkEntryPage extends Component {
                     this.props.draftUpdate(draftObj.merge({
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: draftObj.get('content').merge({
-                            cardInfo: {
+                            cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
                                 title: data.info.title,
                                 description: data.info.description,
                                 image: uploadedImage || {},
                                 bgColor: data.info.bgColor,
                                 url: data.url
-                            },
+                            }),
                         }),
                         id: match.params.draftId,
                     })));
@@ -88,7 +92,14 @@ class NewLinkEntryPage extends Component {
         });
     }
 
-    _handleUrlBlur = this._processUrl
+    _handleUrlBlur = () => {
+        const { draftObj } = this.props;
+        const { content } = draftObj;
+        if (content.getIn(['cardInfo', 'url']).length > 0) {
+            return this._processUrl();
+        }
+        return this.props.draftUpdate(draftObj);
+    }
 
     _handleKeyPress = (ev) => {
         // handle enter key press
@@ -110,7 +121,15 @@ class NewLinkEntryPage extends Component {
             id: match.params.draftId,
         }));
     }
-
+    _handleEditorChange = (editorState) => {
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftUpdate(draftObj.merge({
+            ethAddress: loggedProfile.get('ethAddress'),
+            content: draftObj.get('content').mergeDeep({
+                draft: editorState,
+            }),
+        }));
+    }
     _handleTagUpdate = (tagList) => {
         const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
@@ -190,6 +209,38 @@ class NewLinkEntryPage extends Component {
         });
     }
 
+    _handleVersionRevert = (version) => {
+        const { draftObj, loggedProfile } = this.props;
+        this.props.draftRevertToVersion({
+            version,
+            id: draftObj.id
+        });
+        this.props.entryGetFull({
+            entryId: draftObj.id,
+            version,
+            asDraft: true,
+            revert: true,
+            ethAddress: loggedProfile.get('ethAddress'),
+        });
+    }
+
+    _showRevertConfirm = (ev, version) => {
+        const handleVersionRevert = this._handleVersionRevert.bind(null, version);
+        const { draftObj } = this.props;
+        if (draftObj.localChanges) {
+            confirm({
+                content: 'Are you sure you want to revert this draft?',
+                okText: 'Yes',
+                okType: 'danger',
+                cancelText: 'No',
+                onOk: handleVersionRevert,
+                onCancel () {}
+            });
+        } else {
+            handleVersionRevert();
+        }
+        ev.preventDefault();
+    }
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }
@@ -204,17 +255,26 @@ class NewLinkEntryPage extends Component {
     _createRef = nodeName =>
         (node) => { this[nodeName] = node; }
 
+    /* eslint-disable complexity */
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
-            showSecondarySidebar, loggedProfile } = this.props;
-        const { showPublishPanel, errors } = this.state;
+            showSecondarySidebar, loggedProfile, selectionState } = this.props;
+        const { showPublishPanel, errors, shouldResetCaret } = this.state;
 
         if (!draftObj) {
             return (<div>Finding draft</div>);
         }
+        const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
         const { content, tags, localChanges, onChain } = draftObj;
-        const { excerpt, latestVersion, licence, cardInfo, } = content;
+        const { excerpt, draft, latestVersion, licence, cardInfo } = content;
         const { url, title, description } = cardInfo;
+        let draftWithSelection = draft;
+
+        if (currentSelection && currentSelection.size > 0 && shouldResetCaret) {
+            draftWithSelection = EditorState.forceSelection(draft, currentSelection);
+        } else if (currentSelection && currentSelection.size > 0) {
+            draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
+        }
         return (
           <div className="edit-entry-page link-page">
             <div
@@ -246,12 +306,24 @@ class NewLinkEntryPage extends Component {
                     value={url}
                   />
                   {(title || description) &&
+                  <div>
                     <WebsiteInfoCard
                       baseUrl={baseUrl}
                       cardInfo={cardInfo}
                       hasCard={!!(title || description)}
                       url={url}
                     />
+                    <div>
+                      <TextEntryEditor
+                        ref={this._createRef('editor')}
+                        onChange={this._handleEditorChange}
+                        editorState={draftWithSelection}
+                        selectionState={currentSelection}
+                        baseUrl={baseUrl}
+                        intl={intl}
+                      />
+                    </div>
+                  </div>
                   }
                 </div>
                 <div className="edit-entry-page__tag-editor">
@@ -307,7 +379,10 @@ class NewLinkEntryPage extends Component {
                           edit-entry-page__footer-timeline${latestVersion ? '' : '_empty'}`
                         }
                       >
-                        {this._createTimeline()}
+                        <EntryVersionTimeline
+                          draftObj={draftObj}
+                          onRevertConfirm={this._showRevertConfirm}
+                        />
                       </div>
                     }
                   </div>
@@ -338,13 +413,16 @@ NewLinkEntryPage.propTypes = {
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
+    draftRevertToVersion: PropTypes.func,
     draftsFetched: PropTypes.bool,
     entriesFetched: PropTypes.bool,
+    entryGetFull: PropTypes.func,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
     resolvingEntries: PropTypes.shape(),
+    selectionState: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
@@ -362,6 +440,7 @@ const mapStateToProps = (state, ownProps) => ({
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     resolvingEntries: state.draftState.get('resolvingEntries'),
+    selectionState: state.draftState.get('selection'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('resultsCount'),
@@ -372,8 +451,10 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
+        entryGetFull,
         draftCreate,
         draftUpdate,
+        draftRevertToVersion,
         searchResetResults,
         tagSearchLocal,
         secondarySidebarToggle,

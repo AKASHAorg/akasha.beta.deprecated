@@ -16,7 +16,6 @@ const getHostName = (url) => {
 
 const WebsiteInfoCard = (props) => {
     const { cardInfo, url, baseUrl, hasCard } = props;
-    console.log(hasCard, 'has card?');
     return (
       <Card bodyStyle={{ padding: 0 }} className="website-info-card" noHovering>
         {cardInfo.get('image') &&

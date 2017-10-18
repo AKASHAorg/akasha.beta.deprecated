@@ -1,4 +1,5 @@
 import { List, Map, Record } from 'immutable';
+import { CardInfo } from './draft-record';
 
 export const EntryAuthor = Record({
     akashaId: null,
@@ -6,6 +7,7 @@ export const EntryAuthor = Record({
 });
 
 export const EntryContent = Record({
+    cardInfo: CardInfo(),
     draft: {},
     excerpt: null,
     featuredImage: null,

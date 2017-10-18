@@ -69,6 +69,9 @@ export const extractWebsiteInfo = (url) => {
     };
 
     const req = new Request(url, requestParams);
+    // make a request to verify the url (aka. is not a redirect);
+    // if it`s a redirect, manually follow it;
+    // parse the final url (after any redirect);
     return fetch(req)
         .then((res) => {
             if (!res.ok) {
