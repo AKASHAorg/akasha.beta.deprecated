@@ -30,6 +30,7 @@ export EntryPageContent from './entry/entry-page-content';
 export EntryPageHeader from './entry/entry-page-header';
 export EntrySecondarySidebarItem from './entry-secondary-sidebar-item';
 export EntryVersionsPanel from './entry-versions-panel';
+export EntryVersionTimeline from './timelines/entry-version-timeline';
 export EntryVotesModal from './modals/entry-votes-modal';
 export ErrorNotification from './notifications/error-notification';
 // export ErrorReportingModal from './errors/error-reporting-modal';

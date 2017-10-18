@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card } from 'antd';
-import imageCreator, { findBestMatch } from '../../utils/imageUtils';
+import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
 const getImageSrc = (imageObj, baseUrl) => {
-    const bestMatch = findBestMatch(null, imageObj.toJS(), imageObj.keys()[0]);
+    const bestMatch = findClosestMatch(700, imageObj.toJS(), imageObj.keys()[0]);
     return imageCreator(imageObj.getIn([bestMatch, 'src']), baseUrl);
 };
 
@@ -17,19 +17,17 @@ const getHostName = (url) => {
 const WebsiteInfoCard = (props) => {
     const { cardInfo, url, baseUrl, hasCard } = props;
     return (
-      <Card
-        bodyStyle={{ padding: 0 }}
-        className="website-info-card"
-        noHovering
-      >
-        {cardInfo.get('image') && cardInfo.getIn(['image', 'xs']) &&
-          <img
-            alt="card-cover"
-            style={{
+      <Card bodyStyle={{ padding: 0 }} className="website-info-card" noHovering>
+        {cardInfo.get('image') &&
+          <a href={url} title={url}>
+            <img
+              alt="card-cover"
+              style={{
                 width: '100%'
-            }}
-            src={getImageSrc(cardInfo.get('image'), baseUrl)}
-          />
+              }}
+              src={getImageSrc(cardInfo.get('image'), baseUrl)}
+            />
+          </a>
         }
         <div className="" style={{ padding: '0 12px' }}>
           {cardInfo.get('title') &&

@@ -21,10 +21,17 @@ const extractInfoFromHtml = (htmlContent, targetTags) => {
     );
 };
 
-const htmlParser = (htmlContent, response, targetTags) =>
-    extractInfoFromHtml(htmlContent, targetTags).then(info => ({
-        url: response.url,
-        info
-    }));
+const htmlParser = (htmlContent, parsedUrl, targetTags) =>
+    extractInfoFromHtml(htmlContent, targetTags).then((info) => {
+        console.log(info, 'the info');
+        return {
+            url: parsedUrl.href,
+            info: {
+                title: info['og:title'],
+                description: info['og:description'],
+                image: info['og:image']
+            }
+        };
+    });
 
 export default htmlParser;

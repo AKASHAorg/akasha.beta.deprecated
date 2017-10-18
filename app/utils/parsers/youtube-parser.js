@@ -3,9 +3,9 @@ const getVideoId = (search) => {
     return urlParams.get('v');
 };
 
-const makeApiRequest = (videoId) => {
+const makeApiRequest = (url, contentType = 'application/json') => {
     const reqHeaders = new Headers();
-    reqHeaders.append('Content-Type', 'application/json');
+    reqHeaders.append('Content-Type', contentType);
 
     const requestParams = {
         method: 'GET',
@@ -13,23 +13,30 @@ const makeApiRequest = (videoId) => {
         mode: 'cors'
     };
 
-    const req = new Request(
-        `http://noembed.com/embed?url=http%3A//www.youtube.com/watch%3Fv%3D${videoId}`,
-        requestParams
-    );
+    const req = new Request(url, requestParams);
     return fetch(req);
 };
 
-const youtubeParser = (htmlContent, parsedUrl, targetTags) => {
-    // image is at img.youtube.com/vi/<video id>/maxresdefault.jpg;
+const youtubeParser = (parsedUrl) => {
     const videoId = getVideoId(parsedUrl.search);
-    return makeApiRequest(videoId).then(resp =>
-        // console.log(data.json(), 'data came from youtube')
-        resp.json().then(jsonItem => ({
-            title: jsonItem.title,
-            image: jsonItem.thumbnail_url,
-            description: jsonItem.author_name
-        })));
+    // image is at img.youtube.com/vi/<video id>/maxresdefault.jpg;
+    const noEmbedUrl = `http://noembed.com/embed?url=http%3A//www.youtube.com/watch%3Fv%3D${videoId}`;
+    const hiresImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+    return makeApiRequest(hiresImage, 'image/jpeg').then((imgResponse) => {
+        const hasHighResImage = (imgResponse.status === 200) && imgResponse.ok;
+        console.log(hasHighResImage, imgResponse);
+        return makeApiRequest(noEmbedUrl).then(resp =>
+            // console.log(data.json(), 'data came from youtube')
+            resp.json().then(jsonItem => ({
+                info: {
+                    title: jsonItem.title,
+                    image: hasHighResImage ? hiresImage : jsonItem.thumbnail_url,
+                    description: `by ${jsonItem.author_name}`
+                },
+                url: parsedUrl.href
+            })));
+    });
 };
 
 export default youtubeParser;
