@@ -26,7 +26,7 @@ class NewEntrySecondarySidebar extends Component {
         this.props.entryProfileIterator({
             column: null,
             ethAddress,
-            limit: -1,
+            limit: 0,
             asDrafts: true
         });
     }

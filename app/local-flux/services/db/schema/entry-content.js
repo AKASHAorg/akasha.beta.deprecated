@@ -4,6 +4,7 @@ const CardInfo = {
     description: String,
     image: String,
     bgColor: String,
+    url: String,
 };
 
 const draftJSContent = {
@@ -17,9 +18,6 @@ const entryContent = {
     tags: Array,
     excerpt: String,
     cardInfo: CardInfo,
-    hasCard: Boolean,
-    url: String,
-    // featuredImage: MultiResImage,
     wordCount: Number,
 };
 export default entryContent;
