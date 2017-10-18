@@ -6,6 +6,10 @@ export const dbs = {
     entry: {
         path: pathJoin(app.getPath('userData'), 'entry-index'),
         searchIndex: null
+    },
+    tags: {
+        path: pathJoin(app.getPath('userData'), 'tags-index'),
+        searchIndex: null
     }
 };
 

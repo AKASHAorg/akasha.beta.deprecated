@@ -1,2 +1,4 @@
 import query from './query';
-export default [query];
+import flush from './clear-index';
+
+export default [query, flush];
