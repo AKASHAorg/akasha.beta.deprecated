@@ -32,9 +32,9 @@ const execute = Promise.coroutine(function* (data: TxRequestData) {
                     .getTransactionAsync(txHash)
                     .then((txHashData) => {
                         if (txHashData) {
-                            return null;
+                            return { transactionHash: txHash, blockNumber: null};
                         }
-                        throw new Error(`Tx: ${txHash} could not be found.`);
+                        return null;
                     });
             });
     });
