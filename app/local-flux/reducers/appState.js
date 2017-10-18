@@ -42,7 +42,10 @@ const appState = createReducer(initialState, {
         }),
 
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
-        state.set('homeReady', false),
+        state.merge({
+            homeReady: false,
+            showWallet: null
+        }),
 
     [types.SECONDARY_SIDEBAR_TOGGLE]: (state, { forceToggle }) => {
         if (typeof forceToggle === 'boolean') {

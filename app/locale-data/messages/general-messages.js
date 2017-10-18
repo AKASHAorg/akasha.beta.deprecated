@@ -7,6 +7,11 @@ const generalMessages = defineMessages({
         description: 'abort button label',
         defaultMessage: 'Abort'
     },
+    action: {
+        id: 'app.general.action',
+        description: 'action',
+        defaultMessage: 'Action'
+    },
     addImage: {
         id: 'app.general.addImage',
         description: 'placeholder for image uploader component',
@@ -42,6 +47,11 @@ const generalMessages = defineMessages({
         description: 'navigate back',
         defaultMessage: 'Back'
     },
+    block: {
+        id: 'app.general.block',
+        description: 'block number',
+        defaultMessage: 'Block'
+    },
     cancel: {
         id: 'app.general.cancel',
         description: 'cancel button label',
@@ -67,6 +77,11 @@ const generalMessages = defineMessages({
         description: 'close',
         defaultMessage: 'Close'
     },
+    collect: {
+        id: 'app.general.collect',
+        description: 'collect',
+        defaultMessage: 'Collect'
+    },
     completeProfileCrumb: {
         id: 'app.general.completeProfileCrumb',
         description: 'breadcrumb to display when a profile is created',
@@ -82,6 +97,11 @@ const generalMessages = defineMessages({
         description: 'copy',
         defaultMessage: 'Copy'
     },
+    counter: {
+        id: 'app.general.counter',
+        description: 'counter',
+        defaultMessage: 'Counter'
+    },
     create: {
         id: 'app.general.create',
         description: 'Create button label',
@@ -91,6 +111,11 @@ const generalMessages = defineMessages({
         id: 'app.general.created',
         description: 'created',
         defaultMessage: 'Created'
+    },
+    cycling: {
+        id: 'app.general.cycling',
+        description: 'AETH cycling state',
+        defaultMessage: 'Cycling'
     },
     delete: {
         id: 'app.general.delete',
@@ -209,6 +234,11 @@ const generalMessages = defineMessages({
         id: 'app.general.mana',
         description: 'mana',
         defaultMessage: 'Mana'
+    },
+    manafied: {
+        id: 'app.general.manafied',
+        description: 'AETH manafied/bonded state',
+        defaultMessage: 'Manafied'
     },
     minCount: {
         id: 'app.general.minutesCount',
@@ -367,6 +397,16 @@ const generalMessages = defineMessages({
         id: 'app.general.transactionFailed',
         description: 'transaction has failed',
         defaultMessage: 'Transaction has failed'
+    },
+    transferable: {
+        id: 'app.general.transferable',
+        description: 'AETH transferable/free state',
+        defaultMessage: 'Transferable'
+    },
+    transform: {
+        id: 'app.general.transform',
+        description: 'change the state of AETH tokens',
+        defaultMessage: 'Transform'
     },
     update: {
         id: 'app.general.update',

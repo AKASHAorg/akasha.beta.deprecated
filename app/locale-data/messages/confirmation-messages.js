@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 const confirmationMessages = defineMessages({
+    bondAeth: {
+        id: 'app.confirmations.bondAeth',
+        description: 'confirmation message for bond/manafy AETH',
+        defaultMessage: 'Please confirm that you want to manafy {amount} AETH'
+    },
+    bondAethTitle: {
+        id: 'app.confirmations.bondAethTitle',
+        description: 'title for confirmation message for bond/manafy AETH',
+        defaultMessage: 'Manafy'
+    },
     claim: {
         id: 'app.confirmations.claim',
         description: 'confirmation message for claim',
@@ -31,6 +41,16 @@ const confirmationMessages = defineMessages({
         description: 'title for confirmation message for comment upvote',
         defaultMessage: 'Upvote'
     },
+    cycleAeth: {
+        id: 'app.confirmations.cycleAeth',
+        description: 'confirmation message for cycle AETH',
+        defaultMessage: 'Please confirm that you want to cycle {amount} AETH'
+    },
+    cycleAethTitle: {
+        id: 'app.confirmations.cycleAethTitle',
+        description: 'title for confirmation message for cycle AETH',
+        defaultMessage: 'Cycle'
+    },
     draftPublish: {
         id: 'app.confirmations.draftPublish',
         description: 'confirmation for draft publishing',
@@ -56,30 +76,20 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for follow',
         defaultMessage: 'Please confirm that you want to follow {displayName}.'
     },
+    freeAeth: {
+        id: 'app.confirmations.freeAeth',
+        description: 'confirmation message for free/collect AETH',
+        defaultMessage: 'Please confirm that you want to collect your cycled AETH'
+    },
+    freeAethTitle: {
+        id: 'app.confirmations.freeAethTitle',
+        description: 'title for confirmation message for free/collect AETH',
+        defaultMessage: 'Collect'
+    },
     passphrase: {
         id: 'app.confirmations.passphrase',
         description: 'request passphrase',
         defaultMessage: 'Please insert your passphrase to proceed with the process.'
-    },
-    bondAeth: {
-        id: 'app.confirmations.bondAeth',
-        description: 'confirmation message for bond/manafy AETH',
-        defaultMessage: 'Please confirm that you want to manafy {amount} AETH'
-    },
-    bondAethTitle: {
-        id: 'app.confirmations.bondAethTitle',
-        description: 'title for confirmation message for bond/manafy AETH',
-        defaultMessage: 'Manafy'
-    },
-    cycleAeth: {
-        id: 'app.confirmations.cycleAeth',
-        description: 'confirmation message for cycle AETH',
-        defaultMessage: 'Please confirm that you want to cycle {amount} AETH'
-    },
-    cycleAethTitle: {
-        id: 'app.confirmations.cycleAethTitle',
-        description: 'title for confirmation message for cycle AETH',
-        defaultMessage: 'Cycle'
     },
     profileRegister: {
         id: 'app.confirmations.profileRegister',
@@ -120,6 +130,16 @@ const confirmationMessages = defineMessages({
         id: 'app.confirmation.transferEthTitle',
         description: 'title for confirmation dialog for transfer ETH',
         defaultMessage: 'Transfer'
+    },
+    transformEssence: {
+        id: 'app.confirmations.transformEssence',
+        description: 'confirmation message for transform Essence',
+        defaultMessage: 'Please confirm that you want to transform {amount} Essence'
+    },
+    transformEssenceTitle: {
+        id: 'app.confirmations.transformEssenceTitle',
+        description: 'title for confirmation message for transform Essence',
+        defaultMessage: 'Transform'
     },
     unfollow: {
         id: 'app.confirmations.unfollow',

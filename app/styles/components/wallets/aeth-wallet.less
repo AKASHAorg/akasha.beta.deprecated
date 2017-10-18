@@ -1,0 +1,96 @@
+.aeth-wallet {
+    padding-top: 24px;
+    height: 100%;
+
+    &__header {
+        color: @heading-color;
+        padding: 0px 24px 24px;
+    }
+
+    &__balance {
+        font-size: 32px;
+        margin-right: 12px;
+    }
+
+    &__chart-area {
+        display: flex;
+    }
+
+    &__chart-wrapper {
+        height: 120px;
+        width: 120px;
+        margin: 0px 48px 32px;
+        flex: 0 0 auto;
+    }
+
+    &__chart-legend {
+        flex: 1 1 auto;
+        font-size: 13px;
+    }
+
+    &__legend-row {
+        display: flex;
+        margin-bottom: 6px;
+    }
+
+    &__legend-box {
+        width: 20px;
+        height: 20px;
+        margin-top: 6px;
+        margin-right: 12px;
+        border-radius: 2px;
+
+        &_transferable {
+            background-color: #06d2dc;
+        }
+
+        &_manafied {
+            background-color: #b400ff;
+        }
+
+        &_cycling {
+            background-color: #039eda;
+        }
+    }
+
+    &__legend-label {
+        font-weight: 500;
+    }
+
+    &__sent-icon {
+        color: @error-color;
+        margin-right: 6px;
+        font-size: 16px;
+    }
+
+    &__received-icon {
+        color: @success-color;
+        margin-right: 6px;
+        font-size: 16px;
+    }
+
+    &__transformed-icon {
+        color: @heading-color;
+        margin-right: 6px;
+        font-size: 16px;
+    }
+
+    &__cycling-count {
+        display: inline-block;
+        margin-left: 6px;
+        background-color: #111;
+        color: #fff;
+        height: 16px;
+        padding: 4px;
+        border-radius: 2px;
+        font-size: 11px;
+    }
+
+    .ant-tabs {
+        height: ~'calc(100% - 246px)';
+    }
+
+    .ant-tabs-tab {
+        width: 25%;
+    }
+}

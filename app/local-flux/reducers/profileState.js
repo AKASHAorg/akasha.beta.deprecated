@@ -1,7 +1,7 @@
 import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { AethBalance, Balance, ErrorRecord, LoggedProfile, ManaBalance, ProfileRecord,
+import { AethBalance, Balance, ErrorRecord, EssenceBalance, LoggedProfile, ManaBalance, ProfileRecord,
     ProfileState } from './records';
 
 const initialState = new ProfileState();
@@ -62,6 +62,10 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS]: state =>
         state.setIn(['flags', 'ethAddressPending'], false),
+
+    [types.PROFILE_CYCLING_STATES_SUCCESS]: (state, { data }) => {
+        return state.mergeIn(['cyclingStates'], data);
+    },
 
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
@@ -155,6 +159,7 @@ const profileState = createReducer(initialState, {
         }
         const balance = new Balance().merge({
             aeth: new AethBalance(data.AETH),
+            essence: new EssenceBalance(data.essence),
             eth: data.balance,
             mana: new ManaBalance(data.mana)
         });

@@ -123,7 +123,7 @@ class ManaPopover extends Component {
             <div className="mana-popover__actions">
               <Button
                 className="mana-popover__button"
-                disabled={cycleAethPending}
+                disabled={!!cycleAethPending}
                 onClick={this.onShiftDown}
                 size="large"
               >
@@ -178,7 +178,7 @@ ManaPopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
     bondAethPending: PropTypes.bool,
-    cycleAethPending: PropTypes.bool,
+    cycleAethPending: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
 };

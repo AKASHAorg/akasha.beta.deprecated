@@ -40,3 +40,15 @@ export const formatBalance = (balance, length) => {
     }
     return appendZero(balance, length);
 };
+
+export const removeTrailingZeros = (balance) => {
+    const parts = balance.split('.');
+    if (!parts[1]) {
+        return balance;
+    }
+    const decimals = parts[1].replace(/0+$/, '');
+    if (!decimals) {
+        return parts[0];
+    }
+    return `${parts[0]}.${decimals}`;
+};

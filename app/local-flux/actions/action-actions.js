@@ -3,19 +3,20 @@ import { action } from './helpers';
 
 export const actionAdd = (ethAddress, actionType, payload) =>
     action(types.ACTION_ADD, { ethAddress, actionType, payload });
+export const actionClearHistory = () => action(types.ACTION_CLEAR_HISTORY);
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
 
 export const actionDeleteError = error => action(types.ACTION_DELETE_ERROR, { error });
-export const actionGetByType = actionType => action(types.ACTION_GET_BY_TYPE, { actionType });
+export const actionGetHistory = request => action(types.ACTION_GET_HISTORY, { request });
 
-export const actionGetByTypeError = (error) => {
-    error.code = 'AGBTE01';
-    error.messageId = 'actionGetByType';
-    return action(types.ACTION_GET_BY_TYPE_ERROR, { error });
+export const actionGetHistoryError = (error) => {
+    error.code = 'AGHE01';
+    error.messageId = 'actionGetHistory';
+    return action(types.ACTION_GET_HISTORY_ERROR, { error });
 };
 
-export const actionGetByTypeSuccess = (data, actionType) =>
-    action(types.ACTION_GET_BY_TYPE_SUCCESS, { actionType, data });
+export const actionGetHistorySuccess = (data, request) =>
+    action(types.ACTION_GET_HISTORY_SUCCESS, { data, request });
 export const actionGetPending = () => action(types.ACTION_GET_PENDING);
 
 export const actionGetPendingError = (error) => {

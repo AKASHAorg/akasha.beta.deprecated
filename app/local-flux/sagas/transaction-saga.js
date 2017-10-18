@@ -74,8 +74,12 @@ function* watchTransactionGetStatusChannel () {
             yield put(actions.transactionGetStatusError(resp.error));
         } else {
             const updates = [];
+            const actionIds = [];
             resp.data.forEach((tx, index) => {
-                if (tx) {
+                if (!tx) {
+                    actionIds.push(resp.request.actionIds[index]);
+                }
+                if (tx && tx.blockNumber) {
                     const { blockNumber, cumulativeGasUsed } = tx;
                     const id = resp.request.actionIds[index];
                     const changes = { id, blockNumber, cumulativeGasUsed, status: actionStatus.published };
@@ -84,6 +88,9 @@ function* watchTransactionGetStatusChannel () {
             });
             for (let i = 0; i < updates.length; i++) {
                 yield put(actionActions.actionUpdate(updates[i]));
+            }
+            for (let i = 0; i < actionIds.length; i++) {
+                yield put(actionActions.actionDelete(actionIds[i]));
             }
         }
     }

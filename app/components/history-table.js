@@ -23,19 +23,27 @@ const HistoryTable = ({ intl, rows }) => {
 
     return (
       <div className="history-table">
-        <div className="flex-center-y history-table__header">
-          <div className="history-table__action">Action</div>
-          <div className="history-table__amount">Amount</div>
-          <div className="history-table__block-number">Block number</div>
-        </div>
-        <div className="history-table__body">
-          {rows.map(row => (
-            <div className="flex-center-y history-table__row" key={row.id}>
-              <div className="history-table__action">{row.action}</div>
-              <div className="history-table__amount">{row.amount}</div>
-              <div className="history-table__block-number">{getBlockNumber(row)}</div>
+        <div className="history-table__inner">
+          <div className="flex-center-y history-table__header">
+            <div className="history-table__action">
+              {intl.formatMessage(generalMessages.action)}
             </div>
-          ))}
+            <div className="history-table__amount">
+              {intl.formatMessage(generalMessages.amount)}
+            </div>
+            <div className="history-table__block-number">
+              {intl.formatMessage(generalMessages.block)}
+            </div>
+          </div>
+          <div className="history-table__body">
+            {rows.map(row => (
+              <div className="flex-center-y history-table__row" key={row.id}>
+                <div className="history-table__action">{row.action}</div>
+                <div className="history-table__amount">{row.amount}</div>
+                <div className="history-table__block-number">{getBlockNumber(row)}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

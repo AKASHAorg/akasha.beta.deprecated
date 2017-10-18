@@ -1,0 +1,60 @@
+.cycling-aeth {
+    height: 100%;
+    padding-right: 4px;
+
+    &__inner {
+        padding: 12px 24px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    &__title {
+        color: @heading-color;
+        font-weight: 500;
+        margin: 12px 0px;
+    }
+
+    &__collect-button {
+        color: @primary-color;
+        text-decoration: underline;
+        margin-left: 12px;
+        font-weight: 500;
+
+        &_disabled {
+            color: @text-color-secondary;
+            cursor: not-allowed;
+        }
+
+        .ant-spin {
+            margin-right: 6px;
+        }
+    }
+
+    &__table {
+        font-size: 13px;
+        margin-top: -6px;
+    }
+
+    &__header {
+        display: flex;
+        height: 32px;
+    }
+
+    &__row {
+        display: flex;
+        height: 36px;
+        color: @heading-color;
+        font-weight: 500;
+        border-top: 2px solid #eee;        
+    }
+
+    &__cell {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    &__placeholder {
+        color: @text-color-secondary;
+        height: 42px;
+        font-style: italic;
+    }
+}

@@ -7,6 +7,11 @@ export const AethBalance = Record({
     total: null
 });
 
+export const EssenceBalance = Record({
+    aethValue: null,
+    total: null
+});
+
 export const ManaBalance = Record({
     remaining: null,
     spent: null,
@@ -15,8 +20,19 @@ export const ManaBalance = Record({
 
 export const Balance = Record({
     aeth: new AethBalance(),
+    essence: new EssenceBalance(),
     eth: null,
     mana: new ManaBalance(),
+});
+
+const CyclingRecord = Record({
+    collection: [],
+    total: null
+});
+
+export const CyclingStates = Record({
+    available: new CyclingRecord(),
+    pending: new CyclingRecord()
 });
 
 export const ProfileRecord = Record({
@@ -71,6 +87,7 @@ export const ProfileState = Record({
     balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
+    cyclingStates: new CyclingStates(),
     errors: new List(), // to be removed
     fetchingFullLoggedProfile: false, // to be removed
     flags: new Flags(),

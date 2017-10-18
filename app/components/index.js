@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 export AddImage from './comment/add-image';
+export AethWallet from './wallets/aeth-wallet';
 export AppSettings from './app-settings';
 export Auth from './setup/auth';
 export AuthProfileList from './setup/auth-profile-list';
@@ -16,6 +17,7 @@ export CommentHighlight from './comment/comment-highlight';
 export CommentsList from './comment/comments-list';
 export CommentThread from './comment/comment-thread';
 export Configuration from './setup/configuration';
+export CyclingAeth from './wallets/cycling-aeth';
 export Dashboard from './dashboard';
 export DashboardSecondarySidebar from './secondary-sidebars/dashboard-secondary-sidebar';
 export DashboardTopBar from './top-bars/dashboard-top-bar';
@@ -77,6 +79,7 @@ export PanelContainerFooter from './panel-container/panel-container-footer';
 export PanelLink from './panels/panel-link';
 export Panels from './panels/panels';
 export PathInputField from './common/path-input-field';
+export PieChart from './charts/pie-chart';
 export ProfileActivity from './profile/profile-activity';
 export ProfileColumn from './columns/profile-column';
 export ProfileComplete from './setup/profile-complete'
@@ -123,7 +126,8 @@ export Terms from './terms';
 export TextEntryEditor from './text-entry-editor';
 export TopBar from './top-bars/top-bar';
 export TopBarRight from './top-bars/top-bar-right';
-export TransferEthForm from './forms/transfer-eth-form';
+export TransferForm from './forms/transfer-form';
+export TransformForm from './forms/transform-form';
 export UserSettingsPanel from './panels/user-settings-panel';
 export UserWalletPanel from './panels/user-wallet-panel';
 export VotePopover from './popovers/vote-popover';

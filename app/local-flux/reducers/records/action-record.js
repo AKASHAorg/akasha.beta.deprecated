@@ -12,17 +12,25 @@ export const ActionRecord = Record({
     type: null
 });
 
+const Flags = Record({
+    fetchingAethTransfers: false,
+    fetchingHistory: false,
+});
+
 export const ActionState = Record({
     allActions: new List(),
     byId: new Map(),
     byType: new Map(),
+    flags: new Flags(),
+    history: new List(),
+    historyTypes: new List(),
     needAuth: null,
     pending: new Map({
         bondAeth: false,
         claim: new Map(),
         comment: new Map(),
         commentVote: new Map(),
-        cycleAeth: false,
+        cycleAeth: null,
         createTag: new Map(),
         entryVote: new Map(),
         follow: new Map(),

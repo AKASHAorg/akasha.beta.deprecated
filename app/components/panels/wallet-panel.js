@@ -1,30 +1,24 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { EthWallet } from '../';
+import { AethWallet, EthWallet } from '../';
 import clickAway from '../../utils/clickAway';
 
 class WalletPanel extends Component {
     componentClickAway () {
-        const { showWallet, toggleAethWallet, toggleEthWallet } = this.props;
-        if (showWallet === 'AETH') {
-            toggleAethWallet();
-        } else if (showWallet === 'ETH') {
-            toggleEthWallet();
-        }
+        // const { showWallet, toggleAethWallet, toggleEthWallet } = this.props;
+        // if (showWallet === 'AETH') {
+        //     toggleAethWallet();
+        // } else if (showWallet === 'ETH') {
+        //     toggleEthWallet();
+        // }
     }
 
     render () {
         const { showWallet } = this.props;
         return (
           <div className="wallet-panel">
-            {showWallet === 'AETH' &&
-              <div>AETH wallet</div>
-            }
-            {showWallet === 'ETH' &&
-              <EthWallet
-
-              />
-            }
+            {showWallet === 'AETH' && <AethWallet />}
+            {showWallet === 'ETH' && <EthWallet />}
           </div>
         );
     }

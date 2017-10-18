@@ -31,6 +31,26 @@ export const profileMessages = defineMessages({
         description: 'Contacts card title',
         defaultMessage: 'Contacts'
     },
+    cycledAmountAvailable: {
+        id: 'app.profile.cycledAmountAvailable',
+        description: 'amount of cycled AETH available to be collected',
+        defaultMessage: 'Amount available {amount} AETH'
+    },
+    cyclingComplete: {
+        id: 'app.profile.cyclingComplete',
+        description: 'cycling process complete',
+        defaultMessage: 'Cycling complete'
+    },
+    cyclingPlaceholder: {
+        id: 'app.profile.cyclingPlaceholder',
+        description: 'placeholder for cycling AETH table',
+        defaultMessage: 'No Cycling AETH pending'
+    },
+    cyclingProcess: {
+        id: 'app.profile.cyclingProcess',
+        description: 'cycling process in progress',
+        defaultMessage: 'Cycling process'
+    },
     editProfileTitle: {
         id: 'app.profile.editProfileTitle',
         description: 'Edit profile page title',
