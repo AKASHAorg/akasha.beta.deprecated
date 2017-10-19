@@ -35,16 +35,19 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         entry = (data.full || data.version) ?
-            yield getFullContent(ipfsHash, data.version).timeout(SHORT_WAIT_TIME) :
+            yield getFullContent(ipfsHash, data.version).timeout(SHORT_WAIT_TIME).catch(() => null) :
             yield getShortContent(ipfsHash).timeout(SHORT_WAIT_TIME);
 
-        dbs.entry.searchIndex.concurrentAdd({}, [{
-            id: data.entryId,
-            ethAddress: ethAddress,
-            title: entry.title,
-            excerpt: entry.excerpt,
-            version: data.version
-        }], (err) => { if (err) { console.warn('error storing index', err); } });
+        if (entry) {
+            dbs.entry.searchIndex.concurrentAdd({}, [{
+                id: data.entryId,
+                ethAddress: ethAddress,
+                title: entry.title,
+                excerpt: entry.excerpt,
+                version: data.version
+            }], (err) => { if (err) { console.warn('error storing index', err); } });
+        }
+
     }
 
     const [_totalVotes, _score, _endPeriod, _totalKarma,] = yield contracts.instance.Votes.getRecord(data.entryId);
