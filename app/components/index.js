@@ -79,6 +79,8 @@ export Panels from './panels/panels';
 export PathInputField from './common/path-input-field';
 export ProfileActivity from './profile/profile-activity';
 export ProfileColumn from './columns/profile-column';
+export ProfileComplete from './setup/profile-complete'
+export ProfileCompleteForm from './forms/profile-complete-form';
 export ProfileDetailsPanel from './panels/user-profile-details';
 export ProfileEdit from './profile-edit';
 export ProfileEditForm from './forms/profile-edit-form';

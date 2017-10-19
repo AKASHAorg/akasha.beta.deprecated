@@ -7,7 +7,7 @@ import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
-    selectNeedAuthAction, selectToken } from '../selectors';
+    selectNeedAuthAction, selectProfileEditToggle, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -265,7 +265,10 @@ function* profileUnfollowSuccess ({ data }) {
 }
 
 function* profileUpdate ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) {
-    yield put(appActions.profileEditToggle());
+    const isProfileEdit = select(selectProfileEditToggle);
+    if (isProfileEdit) {
+        yield put(appActions.profileEditToggle());
+    }
     const channel = Channel.server.profile.updateProfileData;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
@@ -294,7 +297,10 @@ function* profileUpdateLogged (loggedProfile) {
 
 function* profileRegister ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled,
     firstName, lastName, links, ethAddress }) {
-    yield put(appActions.profileEditToggle());
+    const isProfileEdit = select(selectProfileEditToggle);
+    if (isProfileEdit) {
+        yield put(appActions.profileEditToggle());
+    }
     const channel = Channel.server.registry.registerProfile;
     yield call(enableChannel, channel, Channel.client.registry.manager);
     const token = yield select(selectToken);
