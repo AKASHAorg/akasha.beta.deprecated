@@ -46,4 +46,4 @@ const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
 
-export default { execute, name: 'editEntry' };
+export default { execute, name: 'editEntry', hasStream: true };
