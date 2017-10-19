@@ -6,6 +6,21 @@ const formMessages = defineMessages({
         description: 'receiver input required error message',
         defaultMessage: 'You must specify an username or an ethereum address'
     },
+    acceptTips: {
+        id: 'app.form.acceptTips',
+        description: 'description for accept tips switch',
+        defaultMessage: 'Accept Tips'
+    },
+    insufficientEth: {
+        id: 'app.form.insufficientEth',
+        description: 'title for insufficient funds card',
+        defaultMessage: 'Sorry, you don\'t have enough ether!'
+    },
+    depositEth: {
+        id: 'app.form.depositEth',
+        description: 'description for insufficient funds card',
+        defaultMessage: 'You need to deposit ether to publish your profile.'
+    },
     aethAmountLabel: {
         id: 'app.form.aethAmount',
         description: 'aeth amount input label',
@@ -130,6 +145,11 @@ const formMessages = defineMessages({
         id: 'app.form.shiftUpManaHelp',
         description: 'label for shift up mana slider',
         defaultMessage: '{value} AETH will generate {value} Mana daily'
+    },
+    tips: {
+        id: 'app.form.tips',
+        description: 'label for tips',
+        defaultMessage: 'TIPS'
     },
     title: {
         id: 'app.inputField.title',
