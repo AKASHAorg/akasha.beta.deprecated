@@ -22,6 +22,7 @@ const extractInfoFromHtml = (htmlContent, targetTags) => {
 };
 const makeAbsolute = (url, parsedUrl) => {
     if (url) {
+        console.log(new URL(url, parsedUrl.href).href, 'absoute url of image');
         return new URL(url, parsedUrl.href).href;
     }
     return null;

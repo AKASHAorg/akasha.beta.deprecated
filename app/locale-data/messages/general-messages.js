@@ -225,6 +225,11 @@ const generalMessages = defineMessages({
         description: 'Label for Next button',
         defaultMessage: 'Next'
     },
+    no: {
+        id: 'app.general.no',
+        description: 'no (for confirmations)',
+        defaultMessage: 'no'
+    },
     notes: {
         id: 'app.general.notes',
         description: 'notes',
@@ -382,6 +387,11 @@ const generalMessages = defineMessages({
         id: 'app.general.wallet',
         description: 'wallet',
         defaultMessage: 'Wallet'
+    },
+    yes: {
+        id: 'app.general.yes',
+        description: 'yes (as a confirmation)',
+        defaultMessage: 'yes',
     }
 });
 export { generalMessages };

@@ -157,7 +157,7 @@ function* draftPublishSuccess ({ data }) {
     yield put(entryActions.entryProfileIterator({
         column: null,
         ethAddress,
-        limit: -1,
+        limit: 1000000,
         asDrafts: true
     }));
 }
@@ -171,8 +171,14 @@ function* draftPublishUpdate ({ actionId, draft }) {
     draftToPublish.content.draft = JSON.parse(
         editorStateToJSON(draftFromState.getIn(['content', 'draft']))
     );
-    delete draftToPublish.content.featuredImage;
     yield call(enableChannel, channel, Channel.client.entry.manager);
+    console.log('sending to main:', {
+        actionId,
+        entryId: id,
+        token,
+        tags: draftToPublish.tags,
+        content: draftToPublish.content
+    });
     yield call([channel, channel.send], {
         actionId,
         entryId: id,
@@ -182,14 +188,14 @@ function* draftPublishUpdate ({ actionId, draft }) {
     });
 }
 
-function* draftPublishUpdateSuccess ({ data }) {
-    const { id } = data.draft;
-    yield put(entryActions.entryGetFull({
-        entryId: id,
-        asDraft: true
-    }));
-    yield call([draftService, draftService.draftDelete], { draftId: id });
-}
+// function* draftPublishUpdateSuccess ({ data }) {
+//     const { id } = data.draft;
+//     yield put(entryActions.entryGetFull({
+//         entryId: id,
+//         asDraft: true
+//     }));
+//     yield call([draftService, draftService.draftDelete], { draftId: id });
+// }
 
 function* draftRevert ({ data }) {
     const { id } = data;
@@ -204,7 +210,6 @@ function* draftRevert ({ data }) {
 function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
-        console.log(response, 'this is the response');
         if (response.error) {
             yield put(draftActions.draftPublishError(
                 response.error,
@@ -215,8 +220,6 @@ function* watchDraftPublishChannel () {
             if (!response.data.receipt.success) {
                 yield put(draftActions.draftPublishError({}, response.request.id));
             } else {
-                // const gethStatus = yield select(state => state.externalProcState.getIn(['geth', 'status']));
-                console.log('attempt to update blockNr', blockNumber);
                 yield put(eProcActions.gethGetStatusSuccess({
                     blockNr: blockNumber
                 }, {
@@ -244,12 +247,31 @@ function* watchDraftPublishChannel () {
 function* watchDraftPublishUpdateChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.editEntry);
+        console.log(response, 'update entry response');
         if (response.error) {
             yield put(draftActions.draftPublishUpdateError(
                 response.error,
-                response.request.id,
-                response.request.content.title
+                response.request.id
             ));
+        } else if (response.data.receipt) {
+            const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+            if (!response.data.receipt.success) {
+                yield put(draftActions.draftPublishUpdateError({}, response.request.id));
+            } else {
+                yield put(eProcActions.gethGetStatusSuccess({
+                    blockNr: blockNumber
+                }, {
+                    geth: {}
+                }));
+                yield put(actionActions.actionUpdate({
+                    id: response.request.actionId,
+                    status: actionStatus.published,
+                    tx: response.data.tx,
+                    blockNumber,
+                    cumulativeGasUsed,
+                    success,
+                }));
+            }
         } else {
             yield put(actionActions.actionUpdate({
                 id: response.request.actionId,
@@ -271,7 +293,7 @@ export function* watchDraftActions () {
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
     yield takeEvery(types.DRAFT_PUBLISH_SUCCESS, draftPublishSuccess);
     yield takeEvery(types.DRAFT_PUBLISH_UPDATE, draftPublishUpdate);
-    yield takeEvery(types.DRAFT_PUBLISH_UPDATE_SUCCESS, draftPublishUpdateSuccess);
+    yield takeEvery(types.DRAFT_PUBLISH_UPDATE_SUCCESS, draftPublishSuccess);
     yield takeEvery(types.DRAFT_REVERT_TO_VERSION, draftRevert);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
     yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);

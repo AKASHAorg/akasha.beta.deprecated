@@ -18,7 +18,7 @@ const WebsiteInfoCard = (props) => {
     const { cardInfo, url, baseUrl, hasCard } = props;
     return (
       <Card bodyStyle={{ padding: 0 }} className="website-info-card" noHovering>
-        {cardInfo.get('image') &&
+        {(cardInfo.get('image').size > 0) &&
           <a href={url} title={url}>
             <img
               alt="card-cover"
