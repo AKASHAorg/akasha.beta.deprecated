@@ -121,6 +121,7 @@ class NewLinkEntryPage extends Component {
             id: match.params.draftId,
         }));
     }
+
     _handleEditorChange = (editorState) => {
         const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
@@ -130,6 +131,7 @@ class NewLinkEntryPage extends Component {
             }),
         }));
     }
+
     _handleTagUpdate = (tagList) => {
         const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
@@ -241,6 +243,7 @@ class NewLinkEntryPage extends Component {
         }
         ev.preventDefault();
     }
+
     componentWillUnmount () {
         this.props.secondarySidebarToggle({ forceToggle: true });
     }

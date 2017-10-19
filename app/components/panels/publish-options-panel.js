@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Menu, Icon, Radio, Select, Input } from 'antd';
+import { Button, Radio, Select, Input } from 'antd';
 import { entryMessages, validationMessages } from '../../locale-data/messages';
 import { ImageUploader } from '../';
 
 const { Option } = Select;
 const { TextArea } = Input;
-const { SubMenu } = Menu;
 const RadioGroup = Radio.Group;
 
 class PublishOptionsPanel extends Component {
@@ -15,7 +14,7 @@ class PublishOptionsPanel extends Component {
         this.state = {};
     }
     shouldComponentUpdate (nextProps, nextState) {
-        return (nextProps.linkEntry && (nextProps.excerpt !== this.props.excerpt)) ||
+        return nextProps.excerpt !== this.props.excerpt ||
             (!nextProps.linkEntry && !nextProps.featuredImage.equals(this.props.featuredImage)) ||
             !nextProps.selectedLicence.equals(this.props.selectedLicence) ||
             nextProps.errors.excerpt !== this.props.errors.excerpt ||

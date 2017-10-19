@@ -62,9 +62,9 @@ function imageCreator (arrayBuffer, baseUrl) {
         const blobFile = new Blob([arrayBuffer]);
         return window.URL.createObjectURL(blobFile);
     }
-    // const arr = Object.keys(arrayBuffer).map(key => arrayBuffer[key]);
-    // const blobFile = new Blob([new Uint8Array(arr)]);
-    // return window.URL.createObjectURL(blobFile);
+    const arr = Object.keys(arrayBuffer).map(key => arrayBuffer[key]);
+    const blobFile = new Blob([new Uint8Array(arr)]);
+    return window.URL.createObjectURL(blobFile);
     // return null;
 }
 /**

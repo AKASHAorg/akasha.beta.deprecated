@@ -81,6 +81,11 @@ const entryMessages = defineMessages({
         description: 'subtitle showing last updated time and words number on draft card in new entry panel',
         defaultMessage: '{lastUpdate} - {wordCount} words so far'
     },
+    draftContentRequired: {
+        id: 'app.entry.draftContentRequired',
+        description: 'validation message for no entry content',
+        defaultMessage: 'Cannot create an article without content!'
+    },
     draftDelete: {
         id: 'app.entry.draftDelete',
         description: 'delete draft button label',
@@ -114,10 +119,20 @@ const entryMessages = defineMessages({
             other {entries}
         }`
     },
+    excerptTooLong: {
+        id: 'app.entry.excerptTooLong',
+        description: 'validation message when excerpt is too long',
+        defaultMessage: 'Excerpt must not be longer than 120 characters'
+    },
     featuredImage: {
         id: 'app.entry.featuredImage',
         description: 'featured image section title',
         defaultMessage: 'Featured Image'
+    },
+    findingDraft: {
+        id: 'app.entry.findingDraft',
+        description: 'status text when finding draft',
+        defaultMessage: 'Finding draft'
     },
     license: {
         id: 'app.entry.license',
@@ -149,6 +164,11 @@ const entryMessages = defineMessages({
         description: 'publish options panel title',
         defaultMessage: 'Publish Options'
     },
+    revertConfirmTitle: {
+        id: 'app.entry.revertConfirmTitle',
+        description: 'confirmation message when reverting a draft',
+        defaultMessage: 'Are you sure you want to revert this draft?'
+    },
     saveHighlight: {
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
@@ -173,6 +193,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.startComment',
         description: 'button label for starting a comment from a highlight',
         defaultMessage: 'Start comment'
+    },
+    tagsRequired: {
+        id: 'app.entry.tagsRequired',
+        description: 'validation message for no tags added',
+        defaultMessage: 'You must add at least 1 tag'
+    },
+    titleRequired: {
+        id: 'app.entry.titleRequired',
+        description: 'validation message in case of missing title field',
+        defaultMessage: 'Title must not be empty'
     },
     wordsCount: {
         id: 'app.entry.wordsCount',

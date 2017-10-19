@@ -146,6 +146,7 @@ class NewEntryPage extends Component {
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
+        console.log('changing excerpt to', excerpt);
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
@@ -176,24 +177,24 @@ class NewEntryPage extends Component {
 
     validateData = () =>
         new Promise((resolve, reject) => {
-            const { draftObj } = this.props;
+            const { draftObj, intl } = this.props;
             const excerpt = draftObj.getIn(['content', 'excerpt']);
             const draftState = draftObj.getIn(['content', 'draft']);
             if (draftObj.getIn(['content', 'title']).length === 0) {
-                return reject({ title: 'Title must not be empty' });
+                return reject({ title: intl.formatMessage(entryMessages.titleRequired) });
             }
 
             if (!draftState.getCurrentContent().hasText()) {
-                return reject({ draft: 'Cannot create an article without content!' });
+                return reject({ draft: intl.formatMessage(entryMessages.draftContentRequired) });
             }
 
             if (draftObj.get('tags').size === 0) {
-                return reject({ tags: 'You must add at least 1 tag' });
+                return reject({ tags: intl.formatMessage(entryMessages.tagsRequired) });
             }
             if (excerpt.length > 120) {
                 return this.setState({
                     showPublishPanel: true
-                }, () => reject({ excerpt: 'Excerpt must not be longer than 120 characters' }));
+                }, () => reject({ excerpt: intl.formatMessage(entryMessages.excerptTooLong) }));
             }
             return resolve();
         });
@@ -244,13 +245,13 @@ class NewEntryPage extends Component {
 
     _showRevertConfirm = (ev, version) => {
         const handleVersionRevert = this._handleVersionRevert.bind(null, version);
-        const { draftObj } = this.props;
+        const { draftObj, intl } = this.props;
         if (draftObj.localChanges) {
             confirm({
-                content: 'Are you sure you want to revert this draft?',
-                okText: 'Yes',
+                content: intl.formatMessage(entryMessages.revertConfirmTitle),
+                okText: intl.formatMessage(generalMessages.yes),
                 okType: 'danger',
-                cancelText: 'No',
+                cancelText: intl.formatMessage(generalMessages.no),
                 onOk: handleVersionRevert,
                 onCancel () {}
             });

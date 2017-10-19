@@ -19,7 +19,6 @@ const createEntryWithAuthor = entry =>
 const entryIteratorHandler = (state, { data }) => {
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
-        console.log(entry, 'the entry');
         if (!state.getIn(['byId', entry.entryId])) {
             const newEntry = createEntryWithAuthor(entry);
             byId = byId.set(entry.entryId, newEntry);
