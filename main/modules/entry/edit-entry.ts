@@ -38,7 +38,7 @@ const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
     let ipfsEntry = new IpfsEntry();
     const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(data.ethAddress, data.entryId);
 
-    if (!!unpad(hash)) {
+    if (!unpad(hash)) {
         throw new Error(`entryId: ${data.entryId} published by ${data.ethAddress} does not exits`);
     }
 
