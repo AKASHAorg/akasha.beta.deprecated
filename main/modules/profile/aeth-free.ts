@@ -8,13 +8,13 @@ export const freeAeth = {
     'properties': {
         'token': { 'type': 'string' }
     },
-    'required': ['amount', 'token']
+    'required': ['token']
 };
 /**
  *
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { amount: string, token: string }, cb) {
+const execute = Promise.coroutine(function* (data: { token: string }, cb) {
     const v = new schema.Validator();
     v.validate(data, freeAeth, { throwError: true });
 
