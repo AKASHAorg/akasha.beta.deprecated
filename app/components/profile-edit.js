@@ -77,7 +77,6 @@ ProfileEdit.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    actions: state.actionState.get('byId'),
     ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),

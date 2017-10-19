@@ -21,7 +21,7 @@ class NewIdentity extends Component {
     componentWillReceiveProps (nextProps) {
         const { loggedEthAddress, history } = this.props;
         if (!loggedEthAddress && nextProps.loggedEthAddress) {
-            history.push('/setup/new-identity-interests');
+            history.push('/setup/profile-complete');
         }
     }
 
