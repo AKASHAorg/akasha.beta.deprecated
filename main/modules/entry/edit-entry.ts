@@ -2,8 +2,8 @@ import IpfsEntry from './ipfs';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
-import { decodeHash } from '../ipfs/helpers';
-
+import { decodeHash, encodeHash } from '../ipfs/helpers';
+import { unpad } from 'ethereumjs-util';
 const update = {
     'id': '/publish',
     'type': 'object',
@@ -21,9 +21,10 @@ const update = {
             },
             'uniqueItems': true,
             'minItems': 1
-        }
+        },
+        'ethAddress': {'type': 'string', 'format': 'address'}
     },
-    'required': ['content', 'token', 'tags']
+    'required': ['content', 'token', 'tags', 'ethAddress']
 };
 
 /**
@@ -35,7 +36,14 @@ const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
     v.validate(data, update, { throwError: true });
 
     let ipfsEntry = new IpfsEntry();
-    const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
+    const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(data.ethAddress, data.entryId);
+
+    if (!!unpad(hash)) {
+        throw new Error(`entryId: ${data.entryId} published by ${data.ethAddress} does not exits`);
+    }
+
+    const ipfsHashPublished = encodeHash(fn, digestSize, hash);
+    const ipfsHash = yield ipfsEntry.edit(data.content, data.tags, ipfsHashPublished);
     const decodedHash = decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;

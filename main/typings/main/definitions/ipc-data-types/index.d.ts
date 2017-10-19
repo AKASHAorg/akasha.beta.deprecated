@@ -562,6 +562,7 @@ interface EntryCreateResponse extends MainResponse {
 interface EntryUpdateRequest extends AuthRequest {
     content: any;
     entryId: string;
+    ethAddress: string;
     tags: string[];
 }
 
