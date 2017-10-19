@@ -21,6 +21,7 @@ import transformEssence from './transform-essence';
 import manaBurned from './mana-burned';
 import cyclingStates from './cycling-states';
 import transfer from './transfer';
+import transfersIterator from './aeth-transfers-iterator';
 
 export default [
     transfer,
@@ -45,5 +46,6 @@ export default [
     getProfileList,
     sendTip,
     resolveProfileIpfsHash,
-    toggleDonations
+    toggleDonations,
+    transfersIterator
 ];
