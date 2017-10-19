@@ -40,7 +40,7 @@ const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
     delete data.content;
     delete data.tags;
     ipfsEntry = null;
-    const txData = yield contracts.instance.Entries.edit.request(data.entryId, ...decodedHash);
+    const txData = contracts.instance.Entries.edit.request(data.entryId, ...decodedHash);
     const transaction = yield contracts.send(txData, data.token, cb);
 
     return { tx: transaction.tx, receipt: transaction.receipt };
