@@ -2,7 +2,7 @@
 import ModuleEmitter from '../event/ModuleEmitter';
 import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
-import { IPFS_LOGGER, IPFS_PEER_ID } from '../config/settings';
+import { IPFS_LOGGER, IPFS_PEER_ID, IPFS_CIRCUIT_RELAYS } from '../config/settings';
 import { app } from 'electron';
 import { join } from 'path';
 import ipfsModule from './ipfs';
@@ -84,6 +84,22 @@ class IpfsIPC extends ModuleEmitter {
                             }
                         });
                 });
+                // must have a retry if fails
+                setTimeout(function () {
+                    IPFS_CIRCUIT_RELAYS.forEach(function (node) {
+                        IpfsConnector.getInstance()
+                            .api
+                            .apiClient
+                            .swarm
+                            .connect(node, (err, d) => {
+                                if (err) {
+                                    return console.log('connect ipfs swarm circuit relay err ', err);
+                                }
+                                console.log('Circuit', d);
+                            });
+                    });
+                }, 300000);
+
             }
         );
         return this;
