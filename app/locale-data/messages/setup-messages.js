@@ -1,10 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 const setupMessages = defineMessages({
+    authComplete: {
+        id: 'app.setup.authComplete',
+        description: 'title for complete profile setup page',
+        defaultMessage: 'The authentication process was completed!'
+    },
     backup: {
         id: 'app.setup.backup',
         description: 'backup button label',
         defaultMessage: 'Backup keys'
+    },
+    completeProfile: {
+        id: 'app.setup.completeProfile',
+        description: 'call to action for profile complete setup',
+        defaultMessage: 'To enjoy the full experience, complete your profile now!'
     },
     createIdentity: {
         id: 'app.setup.createIdentity',

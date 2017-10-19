@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Input, Button, Form, Select } from 'antd';
+import { Row, Card, Col, Input, Button, Form, Icon, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -14,12 +14,13 @@ import { uploadImage } from '../../local-flux/services/utils-service';
 
 const FormItem = Form.Item;
 
-class ProfileEditForm extends Component {
+class ProfileCompleteForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
             akashaIdIsValid: true,
-            akashaIdExists: false
+            akashaIdExists: false,
+            insufficientEth: false
         };
         this.validatorTypes = getProfileSchema(props.intl, { isUpdate: props.isUpdate });
         this.showErrorOnFields = [];
@@ -33,13 +34,6 @@ class ProfileEditForm extends Component {
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
         }
-    }
-
-    _showTerms = (ev) => {
-        ev.preventDefault();
-        const { onTermsShow } = this.props;
-        if (onTermsShow) return onTermsShow();
-        return null;
     }
 
     _handleAddLink = linkType => () => {
@@ -181,6 +175,7 @@ class ProfileEditForm extends Component {
         return null;
     }
 
+
     _handleAvatarClear = () => {
         const { tempProfile, onProfileUpdate } = this.props;
         onProfileUpdate(
@@ -212,20 +207,30 @@ class ProfileEditForm extends Component {
         });
     }
 
-    _handleSave = () => {
-        const { tempProfile } = this.props;
-        this.props.tempProfileCreate(tempProfile);
+    _handleSwitchChange = (checked) => {
+        const { tempProfile, onProfileUpdate } = this.props;
+        onProfileUpdate(tempProfile.set('donationsEnabled', checked));
     }
+
+    _handleSkipStep = () => {
+        const { history } = this.props;
+        history.push('/setup/new-identity-interests');
+    };
 
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { isUpdate, tempProfile, actionAdd } = this.props;
+        const { actionAdd, history, isUpdate, balance, tempProfile } = this.props;
 
         this.props.validate((err) => {
             if (err) {
                 this.showErrorOnFields = this.showErrorOnFields.concat(Object.keys(err));
                 this.forceUpdate();
                 console.error(err);
+                return;
+            }
+            if (balance.get('eth') < 0.1) {
+                this.setState({ insufficientEth: true });
+                // this.forceUpdate();
                 return;
             }
             this.isSubmitting = true;
@@ -236,6 +241,7 @@ class ProfileEditForm extends Component {
                 const ethAddress = tempProfile.get('ethAddress');
                 const data = tempProfile ? tempProfile.toJS() : null;
                 actionAdd(ethAddress, actionType, data);
+                history.push('/setup/new-identity-interests');
             }
         });
     }
@@ -248,12 +254,10 @@ class ProfileEditForm extends Component {
         const { formatMessage } = intl;
 
         return (
-          <div className="profile-edit-form__wrap">
-            <div className="profile-edit-form__form-wrapper">
+          <div className="profile-complete-form__wrap">
+            <div className="profile-complete-form__form-wrapper">
               <Row type="flex" className="">
                 <Form
-                  action=""
-                  style={{ width: '100%' }}
                   onSubmit={this._handleSubmit}
                 >
                   <Col type="flex" md={24}>
@@ -273,8 +277,8 @@ class ProfileEditForm extends Component {
                         </div>
                       </div>
                     </Col>
-                    <Col md={24}>
-                      <div className="row profile-edit-form__bg-image">
+                    <Col md={16}>
+                      <div className="row">
                         <p className="col-xs-12" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
                         </p>
@@ -292,7 +296,7 @@ class ProfileEditForm extends Component {
                       </div>
                     </Col>
                   </Col>
-                  <Col md={24}>
+                  <Col md={12}>
                     <FormItem
                       label={formatMessage(formMessages.akashaId)}
                       colon={false}
@@ -308,6 +312,25 @@ class ProfileEditForm extends Component {
                         disabled={isUpdate}
                       />
                     </FormItem>
+                  </Col>
+                  <Col md={12}>
+                    <div className="profile-complete-form__tips-switch">
+                      <FormItem
+                        label={formatMessage(formMessages.tips)}
+                        colon={false}
+                        hasFeedback
+                        style={{ marginRight: 8, marginLeft: 8 }}
+                      >
+                        <Switch
+                          checked={tempProfile.get('donationsEnabled')}
+                          onChange={this._handleSwitchChange}
+                          size="large"
+                        />
+                      </FormItem>
+                    </div>
+                    <div className="profile-complete-form__tips-description">
+                      {formatMessage(formMessages.acceptTips)}
+                    </div>
                   </Col>
                   <Col md={12}>
                     <FormItem
@@ -343,21 +366,21 @@ class ProfileEditForm extends Component {
                   </Col>
                   <Col md={24}>
                     <FormItem
-                      label={intl.formatMessage(profileMessages.aboutMeTitle)}
+                      label={formatMessage(profileMessages.aboutMeTitle)}
                       colon={false}
                     >
                       <Input.TextArea
-                        className="profile-edit-form__textarea"
+                        className="profile-complete-form__textarea"
                         rows={2}
-                        placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
+                        placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
                         value={about}
                         onChange={this._handleFieldChange('about')}
-                        autosize={{ minRows: 2 }}
+                        autosize={{ minRows: 2, maxRows: 5 }}
                       />
                     </FormItem>
                   </Col>
                   <Col md={24}>
-                    <h3 className="col-xs-10 profile-edit-form__links">
+                    <h3 className="col-xs-10 profile-complete-form__links">
                       {intl.formatMessage(profileMessages.linksTitle)}
                     </h3>
                     {links.map((link, index) => (
@@ -397,7 +420,7 @@ class ProfileEditForm extends Component {
                         >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                       </div>
                         ))}
-                    <div className="col-xs-2 end-xs profile-edit-form__add-links-btn">
+                    <div className="col-xs-2 end-xs profile-complete-form__add-links-btn">
                       <Button
                         icon="plus"
                         type="primary borderless"
@@ -408,73 +431,62 @@ class ProfileEditForm extends Component {
                       >Add more</Button>
                     </div>
                   </Col>
-                  {!isUpdate &&
-                  <Col md={24}>
-                    <small className="profile-edit-form__terms">
-                      <FormattedMessage
-                        {...generalMessages.terms}
-                        values={{
-                            termsLink: (
-                              <a
-                                href="/terms"
-                                onClick={this._showTerms}
-                              >
-                                {intl.formatMessage(generalMessages.termsOfService)}
-                              </a>
-                            )
-                        }}
-                      />
-                    </small>
-                  </Col>
-                }
+                  {this.state.insufficientEth &&
+                    <Col md={24}>
+                      <div className="profile-complete-form__insufficient-funds">
+                        <Card
+                          bordered={false}
+                          noHovering
+                        >
+                          <h3>{formatMessage(formMessages.insufficientEth)}</h3>
+                          <p>{formatMessage(formMessages.depositEth)}</p>
+                          <Button
+                            className="profile-complete-form__request-btn"
+                            size="large"
+                            type="primary"
+                          >
+                            Request ether from faucet
+                          </Button>
+                        </Card>
+                      </div>
+                    </Col>
+                  }
                 </Form>
               </Row>
             </div>
-            <div className="profile-edit-form__buttons-wrapper">
-              <div className="profile-edit-form__save-btn">
-                <Button
-                  size="large"
-                  onClick={this._handleSave}
-                >
-                  {intl.formatMessage(profileMessages.saveForLater)}
-                </Button>
+            <div className="setup-content__column-footer profile-complete-form__footer">
+              <div className="content-link" onClick={this._handleSkipStep}>
+                {intl.formatMessage(generalMessages.skipStep)} <Icon type="arrow-right" />
               </div>
-              <div className="profile-edit-form__update-btn">
-                <Button
-                  type="primary"
-                  onClick={this._handleSubmit}
-                  size="large"
-                >
-                  {isUpdate ?
-                        intl.formatMessage(profileMessages.updateProfile) :
-                        intl.formatMessage(profileMessages.registerProfile)
-                    }
-                </Button>
-              </div>
+              <Button
+                htmlType="submit"
+                className="new-identity__button"
+                onClick={this._handleSubmit}
+                size="large"
+                type="primary"
+              >
+                {intl.formatMessage(generalMessages.submit)}
+              </Button>
             </div>
           </div>
         );
     }
 }
 
-ProfileEditForm.propTypes = {
+ProfileCompleteForm.propTypes = {
     actionAdd: PropTypes.func,
-    form: PropTypes.shape(),
+    balance: PropTypes.shape(),
     getValidationMessages: PropTypes.func,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
-    onCancel: PropTypes.func,
-    onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
-    onTermsShow: PropTypes.func,
-    style: PropTypes.shape(),
     tempProfile: PropTypes.shape(),
-    tempProfileCreate: PropTypes.func,
     validate: PropTypes.func,
 };
 
 const validationHOC = validation(strategy());
 
 export default injectIntl(
-    Form.create()(validationHOC(ProfileEditForm))
+    Form.create()(validationHOC(ProfileCompleteForm))
 );
