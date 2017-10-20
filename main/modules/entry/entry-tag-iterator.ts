@@ -8,7 +8,8 @@ const entryTagIterator = {
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
-        'tagName': { 'type': 'string' }
+        'tagName': { 'type': 'string' },
+        'reversed': {'type': 'boolean'}
     },
     'required': ['toBlock', 'tagName']
 };
@@ -18,12 +19,12 @@ const entryTagIterator = {
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number,
-    tagName: string, lastIndex?: number }) {
+    tagName: string, lastIndex?: number, reversed?: boolean }) {
     const v = new schema.Validator();
     v.validate(data, entryTagIterator, { throwError: true });
 
     const maxResults = data.limit || 5;
-    return fetchFromTagIndex(Object.assign({}, data, { limit: maxResults, args: { tagName: data.tagName } }));
+    return fetchFromTagIndex(Object.assign({}, data, { limit: maxResults, args: { tagName: data.tagName }, reversed: data.reversed || false }));
 });
 
 export default { execute, name: 'entryTagIterator' };
