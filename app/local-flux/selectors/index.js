@@ -191,7 +191,7 @@ export const selectListNextEntries = (state, name, limit) => {
     return state.listState
         .getIn(['byName', name, 'entryIds'])
         .slice(startIndex, startIndex + limit)
-        .map(id => ({ entryId: id }))
+        .map(ele => ({ entryId: ele.entryId, ethAddress: ele.authorEthAddress }))
         .toJS();
 };
 

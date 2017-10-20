@@ -119,6 +119,7 @@ class EntryPageAction extends Component {
               <div className="entry-actions__right-actions">
                 {!isOwnEntry &&
                   <ListPopover
+                    authorEthAddress={entry.author.ethAddress}
                     containerRef={containerRef}
                     entryId={entry.entryId}
                     listAdd={this.props.listAdd}

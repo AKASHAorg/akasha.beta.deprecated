@@ -169,7 +169,7 @@ function* entryListIterator ({ name }) {
     const channel = Channel.server.entry.getEntryList;
     const entryIds = yield select(state => selectListNextEntries(state, name, ENTRY_LIST_ITERATOR_LIMIT));
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryIds, listName: name }]);
+    yield apply(channel, channel.send, [entryIds]);
 }
 
 function* entryMoreNewestIterator ({ columnId }) {
@@ -380,9 +380,10 @@ function* watchEntryListIteratorChannel () {
             yield put(actions.entryListIteratorError(resp.error));
         } else {
             yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
+            const { entryId, ethAddress } = resp;
+            yield fork(entryGetExtraOfEntry, entryId, ethAddress);
         }
-        const { listName } = resp.request;
-        yield fork(entryGetExtraOfList, resp.data.collection, listName);
+        console.log('response: ', resp);
     }
 }
 
