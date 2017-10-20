@@ -36,7 +36,8 @@ const execute = Promise.coroutine(function* (
 
         collection.push({
             from,
-            amount: (GethConnector.getInstance().web3.fromWei(event.args.value, 'ether')).toFormat(5)
+            amount: (GethConnector.getInstance().web3.fromWei(event.args.value, 'ether')).toFormat(5),
+            blockNumber: event.blockNumber
         });
 
         if (collection.length === data.limit) {
