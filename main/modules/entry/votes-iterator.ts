@@ -10,7 +10,8 @@ const votesIterator = {
         'toBlock': { 'type': 'number' },
         'entryId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
-        'akashaId': { 'type': 'string' }
+        'akashaId': { 'type': 'string' },
+        'reversed': {'type': 'boolean'}
     },
     'required': ['toBlock', 'entryId']
 };
@@ -19,7 +20,9 @@ const votesIterator = {
  * Get individual votes of entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number, entryId: string, lastIndex?: number }) {
+const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number,
+    entryId: string, lastIndex?: number, reversed?: boolean }) {
+
     const v = new schema.Validator();
     v.validate(data, votesIterator, { throwError: true });
 
@@ -27,7 +30,7 @@ const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: n
     const maxResults = data.limit || 5;
     const filter = { target: data.entryId, voteType: 0 };
     const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
-        { lastIndex: data.lastIndex });
+        { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (let event of fetched.results) {
         const weight = (event.args.weight).toString(10);
         collection.push({ ethAddress: event.args.voter, weight: event.args.negative ? '-' + weight : weight });
