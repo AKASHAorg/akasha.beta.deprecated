@@ -8,9 +8,9 @@ const votesIterator = {
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
-        'entryId': {'type': 'string'},
-        'ethAddress': {'type': 'string', 'format': 'address'},
-        'akashaId': {'type': 'string'}
+        'entryId': { 'type': 'string' },
+        'ethAddress': { 'type': 'string', 'format': 'address' },
+        'akashaId': { 'type': 'string' }
     },
     'required': ['toBlock', 'entryId']
 };
@@ -25,11 +25,12 @@ const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: n
 
     const collection = [];
     const maxResults = data.limit || 5;
-    const filter = {target: data.entryId, voteType: 0};
+    const filter = { target: data.entryId, voteType: 0 };
     const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
         { lastIndex: data.lastIndex });
     for (let event of fetched.results) {
-        collection.push({ ethAddress: event.args.voter, weight: (event.args.weight).toString(10), negative: event.args.negative });
+        const weight = (event.args.weight).toString(10);
+        collection.push({ ethAddress: event.args.voter, weight: event.args.negative ? '-' + weight : weight });
         if (collection.length === maxResults) {
             break;
         }
