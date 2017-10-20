@@ -26,6 +26,15 @@ const entryIteratorHandler = (state, { data }) => {
     });
     return state.set('byId', byId);
 };
+
+const entryHandler = (state, { data }) => {
+    let byId = state.get('byId');
+    if (!state.getIn(['byId', data.entryId])) {
+        const newEntry = createEntryWithAuthor(data);
+        byId = byId.set(data.entryId, newEntry);
+    }
+    return state.set('byId', byId);
+};
     // state.withMutations((mState) => {
     //     const moreEntries = data.limit === data.collection.length;
     //     data.collection.forEach((entry, index) => {
@@ -165,7 +174,7 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryHandler,
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
