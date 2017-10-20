@@ -24,6 +24,7 @@ class IpfsIPC extends ModuleEmitter {
             AppLogger.getInstance().registerLogger(IPFS_LOGGER)
         );
         IpfsConnector.getInstance().setBinPath(join(app.getPath('userData'), 'go-ipfs'));
+        IpfsConnector.getInstance().options.args.push('--enable-pubsub-experiment');
         this.webContents = webContents;
         this._initMethods(ipfsModule);
         this._manager();
