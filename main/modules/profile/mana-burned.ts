@@ -19,10 +19,11 @@ export const manaBurned = {
 const execute = Promise.coroutine(function* (data: { akashaId?: string, ethAddress?: string }) {
     const v = new schema.Validator();
     v.validate(data, manaBurned, { throwError: true });
+    const BN = GethConnector.getInstance().web3.BigNumber;
     const address = yield profileAddress(data);
     const totalEntries = yield contracts.instance.Entries.getEntryCount(address);
     const entryCost = yield contracts.instance.Entries.required_essence();
-    const totalEntriesMana = entryCost.times(totalEntries);
+    const totalEntriesMana = entryCost.times(new BN(totalEntries));
 
     const totalComments = yield contracts.instance.Comments.totalCommentsOf(address);
     const commentCost = yield contracts.instance.Comments.required_essence();
@@ -30,7 +31,7 @@ const execute = Promise.coroutine(function* (data: { akashaId?: string, ethAddre
 
     const totalVotes = yield contracts.instance.Votes.totalVotesOf(address);
     const voteCost = yield contracts.instance.Votes.required_essence();
-    const votesMana = voteCost.times(totalVotes);
+    const votesMana = voteCost.times(totalVotes[0].times(totalVotes[1]));
 
     return {
         entries: {
@@ -42,7 +43,7 @@ const execute = Promise.coroutine(function* (data: { akashaId?: string, ethAddre
             manaCost: (GethConnector.getInstance().web3.fromWei(totalCommentsMana, 'ether')).toFormat(5)
         },
         votes: {
-            totalVotes: totalVotes.toNumber(),
+            totalVotes: (totalVotes[0].times(totalVotes[1])).toNumber(),
             manaCost: (GethConnector.getInstance().web3.fromWei(votesMana, 'ether')).toFormat(5)
         }
     };
