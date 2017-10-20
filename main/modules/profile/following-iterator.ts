@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?:
     for (let event of fetched.results) {
         collection.push({ ethAddress: event.args.followed });
     }
-    return { collection: collection, lastBlock: fetched.fromBlock, akashaId: data.akashaId, limit: maxResults };
+    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'followingIterator' };

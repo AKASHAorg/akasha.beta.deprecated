@@ -22,8 +22,10 @@ import manaBurned from './mana-burned';
 import cyclingStates from './cycling-states';
 import transfer from './transfer';
 import transfersIterator from './aeth-transfers-iterator';
+import essenceIterator from './essence-iterator';
 
 export default [
+    essenceIterator,
     transfer,
     cyclingStates,
     bondAeth,
