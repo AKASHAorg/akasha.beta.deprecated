@@ -21,7 +21,9 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest[], cb) {
     v.validate(data, getEntryList, { throwError: true });
 
     for (let entryObj of data) {
-        getEntry.execute(entryObj).then((result) => cb('', { data: result, entryId: entryObj.entryId }));
+        getEntry.execute(entryObj).then((result) => cb('',
+            { data: result, entryId: entryObj.entryId, ethAddress: entryObj.ethAddress, akashaId:  entryObj.akashaId }
+            ));
     }
     return {};
 });
