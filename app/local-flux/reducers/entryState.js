@@ -9,7 +9,10 @@ const initialState = new EntryState();
 const createEntryRecord = entry =>
     new EntryRecord(entry).withMutations((mEntry) => {
         if (entry.content) {
-            const cardInfo = new CardInfo(entry.content.cardInfo);
+            let cardInfo = new CardInfo();
+            if (entry.content.cardInfo) {
+                cardInfo = cardInfo.merge(entry.content.cardInfo);
+            }
             mEntry.set('content', new EntryContent({
                 ...entry.content,
                 cardInfo

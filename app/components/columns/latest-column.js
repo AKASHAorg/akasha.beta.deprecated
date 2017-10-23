@@ -23,7 +23,7 @@ class LatestColumn extends Component {
     }
 
     render () {
-        const { column, entries, intl } = this.props;
+        const { column, entries, intl, baseWidth } = this.props;
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -34,6 +34,7 @@ class LatestColumn extends Component {
               title={intl.formatMessage(dashboardMessages.columnLatest)}
             />
             <EntryList
+              baseWidth={baseWidth}
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
@@ -49,6 +50,7 @@ class LatestColumn extends Component {
 }
 
 LatestColumn.propTypes = {
+    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreNewestIterator: PropTypes.func.isRequired,
