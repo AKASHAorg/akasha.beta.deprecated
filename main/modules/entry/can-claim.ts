@@ -4,12 +4,18 @@ import schema from '../utils/jsonschema';
 
 const canClaim = {
     'id': '/canClaim',
-    'type': 'array',
-    'items': {
-        'type': 'string'
+    'type': 'object',
+    'properties': {
+      'entryId': {
+          'type': 'array',
+          'items': {
+              'type': 'string'
+          },
+          'uniqueItems': true,
+          'minItems': 1
+      }
     },
-    'uniqueItems': true,
-    'minItems': 1
+    'required': ['entryId']
 };
 /**
  * Check if can claim deposit from entry
