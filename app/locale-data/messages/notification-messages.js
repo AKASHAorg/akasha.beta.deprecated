@@ -101,6 +101,16 @@ const notificationMessages = defineMessages({
         description: 'Notification for when draft successfully registered/published',
         defaultMessage: 'Entry published successfully'
     },
+    claimSuccess: {
+        id: 'app.notification.claimSuccess',
+        description: 'Notification to be displayed when claim transaction was mined',
+        defaultMessage: 'You successfully collected Essence for {entryTitle}'
+    },
+    claimVoteSuccess: {
+        id: 'app.notification.claimVoteSuccess',
+        description: 'Notification to be displayed when claim vote transaction was mined',
+        defaultMessage: 'You successfully collected Essence for {entryTitle}'
+    },
     downvotingEntry: {
         id: 'app.notification.downvotingEntry',
         description: 'Notification to be displayed when entry downvote transaction is sent',
@@ -145,11 +155,6 @@ const notificationMessages = defineMessages({
         id: 'app.notification.claiming',
         description: 'Notification to be displayed when claim transaction is sent',
         defaultMessage: 'Claiming {entryTitle} ...'
-    },
-    claimSuccess: {
-        id: 'app.notification.claimSuccess',
-        description: 'Notification to be displayed when claim transaction was mined',
-        defaultMessage: 'You successfully claimed {entryTitle}'
     },
     draftSavedSuccessfully: {
         id: 'app.notification.draftSavedSuccessfully',

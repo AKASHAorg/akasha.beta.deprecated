@@ -22,6 +22,7 @@ import * as actionTypes from '../../constants/action-types';
 const publishActions = {
     [actionTypes.bondAeth]: profileActions.profileBondAeth,
     [actionTypes.claim]: entryActions.entryClaim,
+    [actionTypes.claimVote]: entryActions.entryClaimVote,
     [actionTypes.comment]: commentsActions.commentsPublish,
     [actionTypes.commentDownvote]: commentsActions.commentsDownvote,
     [actionTypes.commentUpvote]: commentsActions.commentsUpvote,
@@ -51,6 +52,7 @@ const publishActions = {
 const publishSuccessActions = {
     [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
     [actionTypes.claim]: entryActions.entryClaimSuccess,
+    [actionTypes.claimVote]: entryActions.entryClaimVoteSuccess,
     [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     [actionTypes.commentDownvote]: commentsActions.commentsDownvoteSuccess,
     [actionTypes.commentUpvote]: commentsActions.commentsUpvoteSuccess,
@@ -76,6 +78,51 @@ function* actionDelete ({ id }) {
         yield apply(actionService, actionService.deleteAction, [id]);
     } catch (error) {
         yield put(actions.actionDeleteError(error));
+    }
+}
+
+function* actionGetClaimable () {
+    try {
+        const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const claimable = ['draftPublish', 'entryDownvote', 'entryUpvote'];
+        const request = claimable.map(type => [loggedEthAddress, type]);
+        const data = yield apply(actionService, actionService.getClaimable, [request]);
+        if (data.length) {
+            yield fork(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
+        }
+        yield put(actions.actionGetClaimableSuccess(data));
+    } catch (error) {
+        yield put(actions.actionGetClaimableError(error));
+    }
+}
+
+function* actionGetClaimableEntries (data) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const entries = [];
+    const otherEntries = [];
+    const ownEntries = [];
+    data.forEach((action) => {
+        const { entryId, ethAddress } = action.payload;
+        if (entryId && ethAddress) {
+            entries.push({ entryId, ethAddress });
+            if (ethAddress === loggedEthAddress) {
+                ownEntries.push(entryId);
+            } else {
+                otherEntries.push(entryId);
+            }
+        }
+    });
+    for (let i = 0; i < entries.length; i++) {
+        const { entryId, ethAddress } = entries[i];
+        yield put(entryActions.entryGetShort({ context: 'claimableEntries', entryId, ethAddress }));
+    }
+    if (ownEntries.length) {
+        yield put(entryActions.entryCanClaim(ownEntries));
+        yield put(entryActions.entryGetBalance(ownEntries));
+    }
+    if (otherEntries.length) {
+        yield put(entryActions.entryCanClaimVote(otherEntries));
+        yield put(entryActions.entryGetVoteOf(otherEntries));
     }
 }
 
@@ -197,6 +244,7 @@ function* actionUpdate ({ changes }) {
 
 export function* watchActionActions () {
     yield takeEvery(types.ACTION_DELETE, actionDelete);
+    yield takeEvery(types.ACTION_GET_CLAIMABLE, actionGetClaimable);
     yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);

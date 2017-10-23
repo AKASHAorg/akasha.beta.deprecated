@@ -26,6 +26,11 @@ export const profileMessages = defineMessages({
         description: 'About Me section title',
         defaultMessage: 'About Me'
     },
+    collectEssence: {
+        id: 'app.profile.collectEssence',
+        description: 'collect essence from entries and votes',
+        defaultMessage: 'Collect Essence'
+    },
     contacts: {
         id: 'app.profile.contacts',
         description: 'Contacts card title',

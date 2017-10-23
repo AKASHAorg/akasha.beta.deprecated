@@ -3,23 +3,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { RadarChart, ShiftForm } from '../';
+import { ClaimableList, RadarChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
-import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectLoggedEthAddress, selectManaBurned, selectPendingBondAeth,
-    selectPendingCycleAeth } from '../../local-flux/selectors';
+import { actionAdd, actionGetClaimable } from '../../local-flux/actions/action-actions';
+import { selectBalance, selectLoggedEthAddress,
+    selectPendingTransformEssence } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
-import { balanceToNumber } from '../../utils/number-formatter';
+import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
 
+const COLLECT = 'collect';
 const DEFAULT = 'default';
-const SHIFT_DOWN = 'shiftDown';
-const SHIFT_UP = 'shiftUp';
+const FORGE = 'forge';
 
-class ManaPopover extends Component {
+class EssencePopover extends Component {
     state = {
         page: DEFAULT,
         popoverVisible: false
     };
+
+    componentDidMount () {
+    }
 
     componentWillUnmount () {
         if (this.timeout) {
@@ -31,6 +34,9 @@ class ManaPopover extends Component {
         this.setState({
             popoverVisible
         });
+        if (popoverVisible) {
+            this.props.actionGetClaimable();
+        }
 
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
@@ -43,9 +49,9 @@ class ManaPopover extends Component {
         }
     };
 
-    onShiftDown = () => { this.setState({ page: SHIFT_DOWN }); };
+    onCollect = () => { this.setState({ page: COLLECT }); };
 
-    onShiftUp = () => { this.setState({ page: SHIFT_UP }); };
+    onForge = () => { this.setState({ page: FORGE }); };
 
     onCancel = () => { this.setState({ page: DEFAULT }); };
 
@@ -60,52 +66,42 @@ class ManaPopover extends Component {
     };
 
     renderContent = () => {
-        const { balance, intl, manaBurned, pendingBondAeth, pendingCycleAeth } = this.props;
+        const { balance, intl, pendingTransformEssence } = this.props;
         const { page } = this.state;
-        const manaColor = '#4aadf3';
-        if (page === SHIFT_DOWN) {
+        const essenceColor = '#02c79a';
+        if (page === COLLECT) {
             return (
-              <ShiftForm
-                balance={balance}
-                onCancel={this.onCancel}
-                onShift={this.onShiftDownSubmit}
-                pendingShift={!!pendingCycleAeth}
-                type="shiftDownMana"
-              />
+              <ClaimableList />
             );
         }
 
-        if (page === SHIFT_UP) {
+        if (page === FORGE) {
             return (
               <ShiftForm
                 balance={balance}
                 onCancel={this.onCancel}
                 onShift={this.onShiftUpSubmit}
-                pendingShift={pendingBondAeth}
-                type="shiftUpMana"
+                pendingShift={pendingTransformEssence}
+                type="transformEssence"
               />
             );
         }
 
         return (
-          <div className="mana-popover__content">
-            <div className="flex-center-x mana-popover__title">
-              {intl.formatMessage(generalMessages.mana)}
-              <span className="mana-popover__mana-score">
-                {balanceToNumber(balance.getIn(['mana', 'remaining']))}
+          <div className="essence-popover__content">
+            <div className="flex-center-x essence-popover__title">
+              {intl.formatMessage(generalMessages.essence)}
+              <span className="essence-popover__essence-score">
+                {formatBalance(balance.getIn(['essence', 'total']))}
               </span>
             </div>
-            <div className="mana-popover__chart-wrapper">
+            <div className="essence-popover__chart-wrapper">
               <RadarChart
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
                     datasets: [{
-                        data: [
-                            manaBurned.get('comments'),
-                            manaBurned.get('entries'),
-                            manaBurned.get('votes')
-                        ],
-                        backgroundColor: manaColor,
+                        data: [10, 20, 30],
+                        backgroundColor: essenceColor,
                     }]
                 }}
                 options={{
@@ -127,22 +123,20 @@ class ManaPopover extends Component {
                 height={240}
               />
             </div>
-            <div className="mana-popover__actions">
+            <div className="essence-popover__actions">
               <Button
-                className="mana-popover__button"
-                onClick={this.onShiftDown}
+                className="essence-popover__button"
+                onClick={this.onCollect}
                 size="large"
               >
-                <Icon type="arrow-down" />
-                {intl.formatMessage(formMessages.shiftDown)}
+                {intl.formatMessage(generalMessages.collect)}
               </Button>
               <Button
-                className="mana-popover__button"
-                onClick={this.onShiftUp}
+                className="essence-popover__button"
+                onClick={this.onForge}
                 size="large"
               >
-                <Icon type="arrow-up" />
-                {intl.formatMessage(formMessages.shiftUp)}
+                {intl.formatMessage(formMessages.forgeAeth)}
               </Button>
             </div>
           </div>
@@ -151,13 +145,14 @@ class ManaPopover extends Component {
 
     render () {
         const { balance, intl } = this.props;
-        const remaining = balanceToNumber(balance.getIn(['mana', 'remaining']));
-        const total = balanceToNumber(balance.getIn(['mana', 'total']));
-        const percent = (remaining / total) * 100;
+        const total = balanceToNumber(balance.getIn(['essence', 'total']));
+        // 1000 Essence should be considered the first step because it unlocks creating tags
+        const firstStep = 1000;
+        const percent = (total / firstStep) * 100;
         const tooltip = (
           <div>
-            <div>{intl.formatMessage(generalMessages.mana)}</div>
-            <div>{remaining} / {total}</div>
+            <div>{intl.formatMessage(generalMessages.essence)}</div>
+            <div>{total} / {firstStep}</div>
           </div>
         );
 
@@ -165,14 +160,14 @@ class ManaPopover extends Component {
           <Popover
             content={this.renderContent()}
             onVisibleChange={this.onVisibleChange}
-            overlayClassName="mana-popover"
+            overlayClassName="essence-popover"
             placement="leftBottom"
             trigger="click"
             visible={this.state.popoverVisible}
           >
             <Tooltip title={tooltip}>
               <Progress
-                className="mana-popover__progress"
+                className="essence-popover__progress"
                 format={() => <Icon type="question-circle-o" />}
                 percent={percent}
                 strokeWidth={10}
@@ -185,29 +180,27 @@ class ManaPopover extends Component {
     }
 }
 
-ManaPopover.propTypes = {
+EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
+    actionGetClaimable: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
-    manaBurned: PropTypes.shape().isRequired,
-    pendingBondAeth: PropTypes.bool,
-    pendingCycleAeth: PropTypes.string,
+    pendingTransformEssence: PropTypes.bool,
 };
 
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        manaBurned: selectManaBurned(state),
-        pendingBondAeth: selectPendingBondAeth(state),
-        pendingCycleAeth: selectPendingCycleAeth(state),
+        pendingTransformEssence: selectPendingTransformEssence(state),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        actionAdd
+        actionAdd,
+        actionGetClaimable
     }
-)(Form.create()(injectIntl(ManaPopover)));
+)(Form.create()(injectIntl(EssencePopover)));

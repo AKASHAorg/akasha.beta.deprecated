@@ -21,6 +21,7 @@ export const ActionState = Record({
     allActions: new List(),
     byId: new Map(),
     byType: new Map(),
+    claimable: new List(),
     flags: new Flags(),
     history: new List(),
     historyTypes: new List(),
@@ -28,6 +29,7 @@ export const ActionState = Record({
     pending: new Map({
         bondAeth: false,
         claim: new Map(),
+        claimVote: new Map(),
         comment: new Map(),
         commentVote: new Map(),
         cycleAeth: null,

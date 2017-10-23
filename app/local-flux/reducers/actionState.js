@@ -13,16 +13,19 @@ const createAction = (action) => {
     return new ActionRecord(action).set('payload', payload);
 };
 
-const sortByBlockNr = (byId, list) =>
+const sortByBlockNr = (byId, list, reverse) =>
     list.sort((a, b) => {
         const actionA = byId.get(a);
         const actionB = byId.get(b);
 
+        if (!actionB.blockNumber) {
+            return reverse ? -1 : 1;
+        }
         if (!actionA.blockNumber || actionA.blockNumber > actionB.blockNumber) {
-            return -1;
+            return reverse ? 1 : -1;
         }
         if (actionA.blockNumber < actionB.blockNumber) {
-            return 1;
+            return reverse ? -1 : 1;
         }
         return 0;
     });
@@ -42,7 +45,8 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
         case actionTypes.cycleAeth:
             return pending.set(action.type, action.payload.amount);
         case actionTypes.claim:
-            return pending.setIn([action.type, entryId], action.id);
+        case actionTypes.claimVote:
+            return pending.setIn([action.type, entryId], true);
         case actionTypes.entryDownvote:
         case actionTypes.entryUpvote:
             return pending.setIn(['entryVote', entryId], action.id);
@@ -84,6 +88,8 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
         case actionTypes.cycleAeth:
             return pending.set(action.type, null);
         case actionTypes.claim:
+        case actionTypes.claimVote:
+            return pending.setIn([action.type, entryId], false);
         case actionTypes.comment:
             pendingComments = pending.getIn([action.type, entryId]).filter((comm) => {
                 return comm.id !== action.id;
@@ -129,6 +135,20 @@ const actionState = createReducer(initialState, {
             needAuth: needAuth === id ? null : needAuth,
             pending,
         });
+    },
+
+    [types.ACTION_GET_CLAIMABLE_SUCCESS]: (state, { data }) => {
+        let list = new List();
+        let byId = state.get('byId');
+        data.forEach((action) => {
+            if (action.payload.entryId && action.payload.ethAddress) {
+                byId = byId.set(action.id, createAction(action));
+                list = list.push(action.id);
+            }
+        });
+        list = sortByBlockNr(byId, list, true);
+        const claimable = list.map(id => byId.getIn([id, 'payload', 'entryId']));
+        return state.merge({ byId, claimable });
     },
 
     [types.ACTION_GET_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),
@@ -181,7 +201,8 @@ const actionState = createReducer(initialState, {
         if (!changes || !changes.id) {
             return state;
         }
-        const newAction = state.getIn(['byId', changes.id]).merge(changes);
+        const newAction = state.getIn(['byId', changes.id]).mergeDeep(changes);
+        console.log('action update', newAction);
         let publishing = state.get('publishing');
         let pending = state.get('pending');
         const historyTypes = state.get('historyTypes');

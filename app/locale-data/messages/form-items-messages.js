@@ -61,6 +61,11 @@ const formMessages = defineMessages({
         description: 'tip message input label',
         defaultMessage: 'Message (Optional)'
     },
+    transformEssence: {
+        id: 'app.form.transformEssence',
+        description: 'title for transform essence form',
+        defaultMessage: 'Transform Essence'
+    },
     transformEssenceDisclaimer: {
         id: 'app.form.transformEssenceDisclaimer',
         description: 'disclaimer message for transforming essence to AETH',
@@ -131,6 +136,11 @@ const formMessages = defineMessages({
         description: 'Label for confirming passphrase',
         defaultMessage: 'You need to confirm your passphrase to continue'
     },
+    forgeAeth: {
+        id: 'app.form.forgeAeth',
+        description: 'transform Essence into new AETH',
+        defaultMessage: 'Forge AETH'
+    },
     freeAeth: {
         id: 'app.form.freeAeth',
         description: 'label for free AETH value',
@@ -166,25 +176,35 @@ const formMessages = defineMessages({
         description: 'error message for required fields',
         defaultMessage: 'This field is required'
     },
+    shiftDown: {
+        id: 'app.form.shiftDown',
+        description: 'shift down',
+        defaultMessage: 'Shift down'
+    },
     shiftDownMana: {
         id: 'app.form.shiftDownMana',
         description: 'title for shift down mana form',
-        defaultMessage: 'Shift down mana'
+        defaultMessage: 'Shift down Mana'
     },
     shiftDownManaHelp: {
         id: 'app.form.shiftDownManaHelp',
         description: 'label for shift down mana slider',
-        defaultMessage: '{value} AETH will be unlocked in 2 days'
+        defaultMessage: '{value} Mana will transform {value} Manafied AETH to Cycling AETH that can be collected in 7 days.'
+    },
+    shiftUp: {
+        id: 'app.form.shiftUp',
+        description: 'shift up',
+        defaultMessage: 'Shift up'
     },
     shiftUpMana: {
         id: 'app.form.shiftUpMana',
         description: 'title for shift up mana form',
-        defaultMessage: 'Shift up mana'
+        defaultMessage: 'Shift up Mana'
     },
     shiftUpManaHelp: {
         id: 'app.form.shiftUpManaHelp',
         description: 'label for shift up mana slider',
-        defaultMessage: '{value} AETH will generate {value} Mana daily'
+        defaultMessage: '{value} Mana will manafy {value} Transferable AETH'
     },
     tips: {
         id: 'app.form.tips',
@@ -195,6 +215,11 @@ const formMessages = defineMessages({
         id: 'app.inputField.title',
         description: 'Placeholder for title input field',
         defaultMessage: 'Title'
+    },
+    totalAethBalance: {
+        id: 'app.form.totalAethBalance',
+        description: 'label for total AETH balance',
+        defaultMessage: 'Total AETH balance'
     },
     url: {
         id: 'app.inputField.url',
