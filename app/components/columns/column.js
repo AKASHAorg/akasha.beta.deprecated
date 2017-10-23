@@ -3,20 +3,20 @@ import React from 'react';
 import * as columnTypes from '../../constants/columns';
 import { LatestColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
 
-const Column = ({ column }) => {
+const Column = ({ column, baseWidth }) => {
     let component;
     switch (column.get('type')) {
         case columnTypes.latest:
-            component = <LatestColumn column={column} />;
+            component = <LatestColumn column={column} baseWidth={baseWidth} />;
             break;
         case columnTypes.tag:
-            component = <TagColumn column={column} />;
+            component = <TagColumn column={column} baseWidth={baseWidth} />;
             break;
         case columnTypes.stream:
-            component = <StreamColumn column={column} />;
+            component = <StreamColumn column={column} baseWidth={baseWidth} />;
             break;
         case columnTypes.profile:
-            component = <ProfileColumn column={column} />;
+            component = <ProfileColumn column={column} baseWidth={baseWidth} />;
             break;
         default:
             break;

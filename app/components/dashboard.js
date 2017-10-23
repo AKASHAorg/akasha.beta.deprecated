@@ -28,7 +28,10 @@ const Dashboard = (props) => {
                 key={id}
                 style={{ width, paddingRight: isLast ? '20px' : 0 }}
               >
-                <Column column={column} />
+                <Column
+                  column={column}
+                  baseWidth={baseWidth}
+                />
               </div>
             );
         })}
