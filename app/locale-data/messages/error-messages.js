@@ -111,6 +111,11 @@ const errorMessages = defineMessages({
         description: 'get full entry error message',
         defaultMessage: 'An error occurred while getting entry data'
     },
+    entryListIterator: {
+        id: 'app.error.entryListIterator',
+        description: 'entry list iterator error message',
+        defaultMessage: 'An error occurred while getting entry list data'
+    },
     entryUpvote: {
         id: 'app.error.entryUpvote',
         description: 'upvote entry error message',

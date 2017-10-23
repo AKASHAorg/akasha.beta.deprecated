@@ -13,14 +13,15 @@ const followingStreamIterator = {
         'toBlock': { 'type': 'number' },
         'akashaId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
-        'lastIndex': { 'type': 'number' }
+        'lastIndex': { 'type': 'number' },
+        'reversed' : {'type': 'boolean'}
     },
     'required': ['toBlock']
 };
 
 const execute = Promise.coroutine(function* (data: {
     toBlock: number, limit?: number,
-    lastIndex?: number, ethAddress?: string, akashaId?: string
+    lastIndex?: number, ethAddress?: string, akashaId?: string, reversed?: boolean
 }) {
     const v = new schema.Validator();
     v.validate(data, followingStreamIterator, { throwError: true });
@@ -28,7 +29,7 @@ const execute = Promise.coroutine(function* (data: {
     const address = yield profileAddress(data);
 
     const fetchedFollow = yield contracts.fromEvent(contracts.instance.Feed.Follow,
-        { follower: address }, data.toBlock, 100, { lastIndex: data.lastIndex });
+        { follower: address }, data.toBlock, 100, { lastIndex: data.lastIndex, reversed: data.reversed || false });
 
     const followList = fetchedFollow.results.map((res) => {
         return res.args.followed;

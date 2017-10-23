@@ -14,12 +14,15 @@ const createListRecord = (list) => {
 
 const listState = createReducer(initialState, {
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        const startIndex = state.getIn(['byName', request.listName, 'startIndex']);
-        const newIndex = startIndex + data.collection.length; // eslint-disable-line no-mixed-operators
-        return state.mergeIn(['byName', request.listName], {
-            moreEntries: newIndex < state.getIn(['byName', request.listName, 'entryIds']).size,
-            startIndex: newIndex,
-        });
+        if (request.length) {
+            const startIndex = state.getIn(['byName', request[0].listName, 'startIndex']);
+            const newIndex = data.data ? startIndex + 1 : startIndex;
+            return state.mergeIn(['byName', request[0].listName], {
+                moreEntries: newIndex < state.getIn(['byName', request[0].listName, 'entryIds']).size,
+                startIndex: newIndex,
+            });
+        }
+        return state;
     },
 
     [types.LIST_ADD_SUCCESS]: (state, { data }) =>

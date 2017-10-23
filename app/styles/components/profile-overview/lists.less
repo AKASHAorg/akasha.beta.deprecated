@@ -1,0 +1,54 @@
+.lists {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+
+    &__wrap {
+        height: ~'calc(100% - 52px)';
+        width: 80%;
+        max-width: 730px;
+        margin-top: 30px;
+
+        .ant-tabs {
+            height: 100%;
+        }
+
+        .ant-tabs-bar {
+            margin: 0 15px 16px 7px;
+        }
+
+        .ant-tabs-content {
+            height: 100%;
+        }
+    }
+
+    &__content {
+        overflow-y: auto;
+        height: ~'calc(100% - 80px)';
+
+    }
+
+    &__search {
+        display: flex;
+        justify-content: center;
+        width: 200px;
+
+        .ant-input-prefix {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            width: 36px;
+            left: 0px;
+            align-items: center;
+            border-right: 1px inset lightgrey;
+        }
+
+        .ant-input-affix-wrapper .ant-input {
+            padding-left: 45px;
+        }
+    }
+
+    &__masonry {
+        transition: none;
+    }
+}

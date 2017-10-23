@@ -10,7 +10,8 @@ const entryProfileIterator = {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
         'akashaId': { 'type': 'string' },
-        'ethAddress': { 'type': 'string', 'format': 'address' }
+        'ethAddress': { 'type': 'string', 'format': 'address' },
+        'reversed': {'type': 'boolean'}
     },
     'required': ['toBlock']
 };
@@ -19,14 +20,14 @@ const entryProfileIterator = {
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number,
-    lastIndex?: number, ethAddress?: string, akashaId?: string }) {
+    lastIndex?: number, ethAddress?: string, akashaId?: string, reversed?: boolean }) {
 
     const v = new schema.Validator();
     v.validate(data, entryProfileIterator, { throwError: true });
 
     const address = yield profileAddress(data);
     const maxResults = data.limit || 5;
-    return fetchFromPublish(Object.assign({}, data, { limit: maxResults, args: { author: address } }));
+    return fetchFromPublish(Object.assign({}, data, { limit: maxResults, args: { author: address }, reversed: data.reversed || false }));
 });
 
 export default { execute, name: 'entryProfileIterator' };

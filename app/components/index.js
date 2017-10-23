@@ -50,6 +50,8 @@ export Input from './common/input.js';
 export InputNumber from './common/input-number.js';
 export IpfsDetailsModal from './modals/ipfs-details-modal';
 export LatestColumn from './columns/latest-column';
+export Lists from './profile-overview/lists';
+export ListEntries from './profile-overview/list-entries';
 export ListCard from './cards/list-card';
 export ListEntriesPanel from './panels/list-entries-panel';
 export ListPanel from './panels/list-panel';
