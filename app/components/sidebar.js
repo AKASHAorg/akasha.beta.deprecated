@@ -1,17 +1,35 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Icon, Progress, Tooltip } from 'antd';
+import { Button, Icon, Popover, Progress, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
-import { ManaPopover } from './';
+import { Avatar, ManaPopover } from './';
+import { generalMessages } from '../locale-data/messages';
+import { draftCreate } from '../local-flux/actions/draft-actions';
+import { profileEditToggle } from '../local-flux/actions/app-actions';
+import { profileLogout } from '../local-flux/actions/profile-actions';
+import { selectLoggedProfileData, selectLoggedProfile } from '../local-flux/selectors';
 
 class Sidebar extends Component {
     state = {
         overlayVisible: false,
         showEntryMenu: false,
+        visible: false
+    }
+
+    hide = () => {
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handleVisibleChange = (visible) => {
+        this.setState({ visible });
     }
 
     handleSearch = () => this.handlePanelShow(panels.search);
@@ -33,7 +51,7 @@ class Sidebar extends Component {
         return !blackList.every(route => location.pathname.includes(route));
     }
     _navigateTo = (path) => {
-        const { history, draftCreate, userSelectedLicense, loggedProfile } = this.props;
+        const { history, userSelectedLicense, loggedProfile } = this.props;
         return () => {
             this.setState({
                 overlayVisible: false,
@@ -41,7 +59,7 @@ class Sidebar extends Component {
             }, () => {
                 const draftId = genId();
                 if (path === '/draft/article/new') {
-                    draftCreate({
+                    this.props.draftCreate({
                         id: draftId,
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: {
@@ -54,7 +72,7 @@ class Sidebar extends Component {
                     return history.push(`/draft/article/${draftId}`);
                 }
                 if (path === '/draft/link/new') {
-                    draftCreate({
+                    this.props.draftCreate({
                         id: draftId,
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: {
@@ -83,7 +101,27 @@ class Sidebar extends Component {
     }
 
     render () {
-        const { activeDashboard, history, location } = this.props;
+        const { activeDashboard, history, intl, location, loggedProfileData } = this.props;
+
+        const menu = (
+          <div
+            onClick={this.hide}
+            className="sidebar__menu"
+          >
+            <div
+              onClick={this.props.profileEditToggle}
+              className="sidebar__button-text"
+            >
+              {intl.formatMessage(generalMessages.editProfile)}
+            </div>
+            <div
+              onClick={this.props.profileLogout}
+              className="sidebar__button-text"
+            >
+              {intl.formatMessage(generalMessages.logout)}
+            </div>
+          </div>
+        );
 
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
@@ -180,6 +218,24 @@ class Sidebar extends Component {
                 width={32}
               />
             </div>
+            <div className="flex-center-x sidebar__avatar">
+              <Popover
+                arrowPointAtCenter
+                placement="topRight"
+                content={menu}
+                trigger="click"
+                overlayClassName="sidebar__popover"
+                visible={this.state.visible}
+                onVisibleChange={this.handleVisibleChange}
+              >
+                <Avatar
+                  firstName={loggedProfileData.get('firstName')}
+                  image={loggedProfileData.get('avatar')}
+                  lastName={loggedProfileData.get('lastName')}
+                  size="small"
+                />
+              </Popover>
+            </div>
             <div
               className={
                   `sidebar__overlay
@@ -196,9 +252,34 @@ Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     draftCreate: PropTypes.func,
     history: PropTypes.shape(),
+    intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    profileEditToggle: PropTypes.func,
+    profileLogout: PropTypes.func,
     userSelectedLicense: PropTypes.shape(),
 };
 
-export default withRouter(Sidebar);
+function mapStateToProps (state) {
+    return {
+        activeDashboard: state.dashboardState.get('activeDashboard'),
+        balance: state.profileState.get('balance'),
+        draftsCount: state.draftState.get('draftsCount'),
+        hasFeed: state.notificationsState.get('hasFeed'),
+        loggedProfile: selectLoggedProfile(state),
+        loggedProfileData: selectLoggedProfileData(state),
+        notificationsCount: state.notificationsState.get('youNrFeed'),
+        searchQuery: state.searchState.get('query'),
+        userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        draftCreate,
+        profileEditToggle,
+        profileLogout
+    }
+)(withRouter(injectIntl(Sidebar)));
