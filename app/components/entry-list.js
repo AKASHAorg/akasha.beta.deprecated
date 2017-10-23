@@ -61,7 +61,7 @@ class EntryList extends Component {
     };
 
     render () {
-        const { blockNr, cardStyle, canClaimPending, defaultTimeout, entries, fetchingEntries,
+        const { baseUrl, blockNr, cardStyle, canClaimPending, defaultTimeout, entries, fetchingEntries,
             fetchingEntryBalance, fetchingMoreEntries, intl, loggedEthAddress, masonry, moreEntries,
             pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
             style } = this.props;
@@ -74,6 +74,7 @@ class EntryList extends Component {
             const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
 
             return (<EntryCard
+              baseUrl={baseUrl}
               blockNr={blockNr}
               canClaimPending={canClaimPending}
               claimPending={claimPending}
@@ -133,6 +134,7 @@ class EntryList extends Component {
 }
 
 EntryList.propTypes = {
+    baseUrl: PropTypes.string,
     blockNr: PropTypes.number,
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
@@ -162,7 +164,8 @@ EntryList.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
+        baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+        blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),

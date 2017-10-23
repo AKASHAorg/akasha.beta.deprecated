@@ -87,8 +87,8 @@ class ImageUploader extends Component {
         });
     }
     _handleDialogOpen = () => {
-        if (this.fileInput.files.length === 0) {
-            return this.props.onChange({});
+        if (typeof this.props.onImageClear === 'function') {
+            this.props.onImageClear();
         }
         return this.setState({
             processingFinished: false,
@@ -138,6 +138,7 @@ class ImageUploader extends Component {
     render () {
         const { multiFiles, intl, initialImage } = this.props;
         const { imageLoaded, processingFinished, progress, error, highlightDropZone } = this.state;
+        console.log(initialImage, imageLoaded, processingFinished, progress);
         return (
           <div
             ref={(container) => { this.container = container; }}
@@ -190,7 +191,7 @@ class ImageUploader extends Component {
                 </div>
               }
             </div>
-            {(!initialImage || (initialImage.size === 0)) && processingFinished &&
+            {(initialImage.size === 0) && processingFinished &&
               <div
                 className={
                     `image-uploader__empty-container

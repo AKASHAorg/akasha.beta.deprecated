@@ -114,6 +114,7 @@ class PublishOptionsPanel extends Component {
                     initialImage={featuredImage}
                     intl={intl}
                     onChange={this._handleFeaturedImageChange}
+                    onImageClear={() => this._handleFeaturedImageChange({})}
                     useIpfs
                   />
                   <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>

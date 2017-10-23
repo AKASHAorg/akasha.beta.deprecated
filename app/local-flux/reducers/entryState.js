@@ -1,7 +1,7 @@
 import { Map, mergeWith } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
-import { EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
+import { CardInfo, EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
     EntryState } from './records';
 
 const initialState = new EntryState();
@@ -9,7 +9,11 @@ const initialState = new EntryState();
 const createEntryRecord = entry =>
     new EntryRecord(entry).withMutations((mEntry) => {
         if (entry.content) {
-            mEntry.set('content', new EntryContent(entry.content));
+            const cardInfo = new CardInfo(entry.content.cardInfo);
+            mEntry.set('content', new EntryContent({
+                ...entry.content,
+                cardInfo
+            }));
         }
     });
 
