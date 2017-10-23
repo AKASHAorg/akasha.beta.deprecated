@@ -3,6 +3,7 @@ import { decodeHash } from '../ipfs/helpers';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
+import GethConnector from '@akashaproject/geth-connector/lib/GethConnector';
 
 const publish = {
     'id': '/publish',
@@ -59,7 +60,18 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
     delete data.content;
     delete data.tags;
     const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    // in the future extract this from receipt
+    const fetched = yield contracts
+        .fromEvent(
+            contracts.instance.Entries.Publish,
+            { author: GethConnector.getInstance().web3.eth.defaultAccount },
+            transaction.receipt.blockNumber,
+            1,
+            {}
+        );
+
+    const entryId = (fetched.results.length) ? fetched.results[0].args.entryId : null;
+    return { tx: transaction.tx, receipt: transaction.receipt, entryId };
 });
 
 export default { execute, name: 'publish', hasStream: true };

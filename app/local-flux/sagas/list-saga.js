@@ -65,13 +65,13 @@ function* listSearch ({ search }) {
     }
 }
 
-function* listToggleEntry ({ listName, entryId }) {
+function* listToggleEntry ({ listName, entryId, entryType, authorEthAddress }) {
     try {
-        const ethAddress = yield select(selectLoggedEthAddress);
+        const loggedEthAddress = yield select(selectLoggedEthAddress);
         const list = yield apply(
             listService,
             listService.toggleEntry,
-            [{ ethAddress, listName, entryId }]
+            [{ ethAddress: loggedEthAddress, listName, entryId, entryType, authorEthAddress }]
         );
         yield put(actions.listToggleEntrySuccess(list));
     } catch (error) {

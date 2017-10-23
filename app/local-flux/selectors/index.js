@@ -186,12 +186,20 @@ export const selectLastStreamBlock = state => state.entryState.get('lastStreamBl
 
 export const selectListByName = (state, name) => state.listState.getIn(['byName', name]);
 
+export const selectListEntryType = (state, listName, entryId) => {
+    const entryIds = state.listState.getIn(['byName', listName, 'entryIds']);
+    const entryIndex = entryIds.findIndex(ele => ele.entryId === entryId);
+    const entry = entryIds.get(entryIndex);
+    return entry.entryType;
+};
+
+
 export const selectListNextEntries = (state, name, limit) => {
     const startIndex = state.listState.getIn(['byName', name, 'startIndex']);
     return state.listState
         .getIn(['byName', name, 'entryIds'])
         .slice(startIndex, startIndex + limit)
-        .map(id => ({ entryId: id }))
+        .map(ele => ({ entryId: ele.entryId, ethAddress: ele.authorEthAddress }))
         .toJS();
 };
 

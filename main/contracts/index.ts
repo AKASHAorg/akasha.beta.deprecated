@@ -36,7 +36,8 @@ class Contracts {
                                 cumulativeGasUsed: receipt.cumulativeGasUsed,
                                 transactionHash: receipt.transactionHash,
                                 blockNumber: receipt.blockNumber,
-                                success: receipt.status === '0x1'
+                                success: receipt.status === '0x1',
+                                logs: receipt.logs
                             }
                         });
                     }

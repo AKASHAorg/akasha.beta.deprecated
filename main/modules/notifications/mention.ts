@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 import currentProfile from '../registry/current-profile';
-import { whisperIdentity } from '../chat/post';
+// import { whisperIdentity } from '../chat/post';
 import { MENTION_CHANNEL, MENTION_TTL, MENTION_TYPE } from '../../config/settings';
 import { uniq } from 'ramda';
 
@@ -11,9 +11,9 @@ const execute = Promise.coroutine(
             throw new Error('Can mention max 10 users');
         }
 
-        if (!whisperIdentity.from) {
-            whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
-        }
+        // if (!whisperIdentity.from) {
+        //     whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
+        // }
         const mention = uniq(data.mention);
         const mentionType = (data.commentId) ? MENTION_TYPE.COMMENT : MENTION_TYPE.ENTRY;
         const from = yield currentProfile.execute();
@@ -31,7 +31,7 @@ const execute = Promise.coroutine(
         const post = yield GethConnector.getInstance().web3
             .shh
             .postAsync({
-                from: whisperIdentity.from,
+                from: 1,//whisperIdentity.from,
                 topics: [MENTION_CHANNEL],
                 payload: payload,
                 ttl: MENTION_TTL

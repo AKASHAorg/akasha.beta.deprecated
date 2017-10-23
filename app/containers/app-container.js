@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { bootstrapHome, hideTerms, toggleAethWallet,
@@ -18,9 +17,10 @@ import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
     TagSearchPage, SidebarContainer } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
-    GethDetailsModal, Highlights, IpfsDetailsModal, MyBalance, MyEntries, NewEntrySecondarySidebar,
-    Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit,
-    SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar, WalletPanel } from '../components';
+    GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries, MyBalance, MyEntries,
+    NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
+    ProfilePage, ProfileEdit, SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar,
+    WalletPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -136,6 +136,8 @@ class AppContainer extends Component {
                         <Route path="/profileoverview/mybalance" component={MyBalance} />
                         <Route path="/profileoverview/myentries" component={MyEntries} />
                         <Route path="/profileoverview/highlights" component={Highlights} />
+                        <Route exact path="/profileoverview/lists" component={Lists} />
+                        <Route path="/profileoverview/lists/:listName" component={ListEntries} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
