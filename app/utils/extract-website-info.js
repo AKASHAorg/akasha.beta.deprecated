@@ -1,97 +1,81 @@
-import { htmlParser, youtubeParser } from './parsers';
+import htmlParser, * as parsers from './parsers';
+import ParserUtils from './parsers/parser-utils';
+import { redirectCodes } from './parsers/parser-config';
 // <meta
 //    property="meta.attributes.property.textContent"
 //    content="meta.attributes.content.textContent"
 // />
-const redirectCodes = [301, 302, 303, 307, 308];
 
-const targetTags = {
-    metaName: [
-        'application-name',
-        'description',
-        'msapplication-TileColor',
-        'msapplication-TileImage',
-    ],
-    metaProperty: [
-        'og:title',
-        'og:description',
-        'og:type',
-        'og:url',
-        'og:image',
-    ],
-    tags: [
-        'title',
-        'h1',
-        'h2',
-        'p'
-    ],
-    ids: [
-        'description',
-        ''
-    ]
-};
-
-const supportedProtocols = ['http:', 'https:'];
-
-const parseUrl = (url) => {
-    const link = document.createElement('a');
-    link.href = url;
-    return {
-        host: link.host,
-        hostname: link.hostname,
-        pathname: link.pathname,
-        origin: link.origin,
-        protocol: link.protocol,
-        search: link.search,
-        href: link.href,
-    };
-};
-
-const formatUrl = (url) => {
-    const urlPrefix = parseUrl(url).protocol;
-
-    if (urlPrefix && supportedProtocols.includes(urlPrefix)) {
-        return url;
+/**
+ * Url parser module, used to extract info from a website`s html content
+ * @param {*} url website`s url
+ * Usage:
+ *   const websiteParser = new WebsiteParser('www.akasha.world')
+ *   websiteParser.getInfo([options]).then(info:<Object>);
+ */
+class WebsiteParser extends ParserUtils {
+    constructor ({ url, uploadImageToIpfs }) {
+        super();
+        this.url = this.formatUrl(url);
+        this.parsedUrl = {};
+        this.uploadImageToIpfs = uploadImageToIpfs;
     }
-    return `${supportedProtocols[0]}//${url}`;
-};
 
-export const extractWebsiteInfo = (url) => {
-    const reqHeaders = new Headers();
-    reqHeaders.append('Content-Type', 'text/html');
-
-    url = formatUrl(url);
-
-    const requestParams = {
-        method: 'GET',
-        headers: reqHeaders,
-        mode: 'cors'
-    };
-
-    const req = new Request(url, requestParams);
-    // make a request to verify the url (aka. is not a redirect);
-    // if it`s a redirect, manually follow it;
-    // parse the final url (after any redirect);
-    return fetch(req)
-        .then((res) => {
-            if (!res.ok) {
-                return Promise.reject('request failed!');
+    requestHtmlString = url =>
+        this.makeRequest(url, 'text/html').then((response) => {
+            const { ok, status, redirected } = response;
+            if (!ok) {
+                return Promise.reject('Request failed! Cannot generate card!');
             }
-            if ((res.ok && res.redirected) || redirectCodes.includes(res.status)) {
-                console.log('request redirected... retrying to', res.url);
-                return fetch(new Request(res.url, requestParams)).then(resp => resp);
+            if ((ok && redirected) || redirectCodes.includes(status)) {
+                console.info('request redirected to:', response.url);
+                this.requestHtmlString(response.url);
             }
-            return res;
-        }).then((res) => {
-            const finalUrl = parseUrl(res.url);
-            const superParser = new DOMParser();
-            if (finalUrl.hostname.includes('youtube.com') || finalUrl.hostname.includes('youtu.be')) {
-                return youtubeParser(finalUrl);
-            }
-            return res.text().then((htmlString) => {
-                const htmlContent = superParser.parseFromString(htmlString, 'text/html');
-                return htmlParser(htmlContent, finalUrl, targetTags);
+            return response;
+        });
+
+    getInfo = () =>
+        this.requestHtmlString(this.url).then((resp) => {
+            this.parsedUrl = this.parseUrl(resp.url);
+            return resp.text();
+        }).then(htmlString =>
+            this.matchParser().then((MatchingParser) => {
+                const parser = new MatchingParser({
+                    htmlString,
+                    parsedUrl: this.parsedUrl
+                });
+                return parser.getInfo();
+            })
+        ).then(info =>
+            this.resizeImage(this.getAbsoluteUrl(info.image, this.parsedUrl), {
+                uploadImageToIpfs: this.uploadImageToIpfs
+            }).then((image) => {
+                let img = {};
+                if (image) {
+                    img = image;
+                }
+                return {
+                    url: this.parsedUrl.href,
+                    info: {
+                        ...info,
+                        image: img
+                    }
+                };
+            }));
+
+    matchParser = () =>
+        new Promise((resolve) => {
+            const { hostname } = this.parsedUrl;
+            Object.keys(parsers).forEach((parserKey) => {
+                const parser = parsers[parserKey];
+                if (parserKey !== 'default' && parser.match(hostname)) {
+                    resolve(parser);
+                }
             });
+            resolve(htmlParser);
         })
-        .catch(err => Promise.reject(err));
-};
+
+    getParsedUrl = () => this.parsedUrl;
+}
+
+export { WebsiteParser };

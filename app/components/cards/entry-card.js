@@ -7,6 +7,7 @@ import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover } from '../';
 import { ProfileRecord } from '../../local-flux/reducers/records';
+import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -99,7 +100,11 @@ class EntryCard extends Component {
             showVersions: false
         });
     };
-
+    getImageSrc = (imageObj) => {
+        const { baseUrl } = this.props;
+        const bestMatch = findClosestMatch(700, imageObj, Object.keys(imageObj)[0]);
+        return imageCreator(imageObj[bestMatch].src, baseUrl);
+    };
     renderResolvingPlaceholder = () => (
       <Card className="entry-card entry-card_transparent entry-card_fixed-height">
         <div style={{ maxWidth: '175px' }}>
@@ -111,16 +116,16 @@ class EntryCard extends Component {
     render () {
         const { author, containerRef, entry, existingDraft, isPending, style } = this.props;
         const content = entry.get('content');
+        const entryType = entry.get('entryType');
         // TODO use getLatestEntryVersion channel
         const latestVersion = content && content.get('version');
-        if (isPending) {
-            return this.renderResolvingPlaceholder();
-        }
-        const hasContent = !!content.get('title');
+        // if (isPending) {
+        //     return this.renderResolvingPlaceholder();
+        // }
+        const hasContent = (entryType === 1 && content.get('cardInfo')) || !!content.get('title');
         const cardClass = classNames('entry-card', {
             'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent
         });
-
         return (
           <Card
             className={cardClass}
@@ -226,7 +231,7 @@ class EntryCard extends Component {
             {!hasContent && !isPending &&
               <div style={{ height: '240px' }}>Cannot resolve content</div>
             }
-            {hasContent &&
+            {hasContent && entryType === 0 &&
               <Link
                 className="unstyled-link"
                 to={{
@@ -238,6 +243,25 @@ class EntryCard extends Component {
                   {content.get('title')}
                 </div>
               </Link>
+            }
+            {hasContent && entryType === 1 &&
+              <div>
+                {content.getIn(['cardInfo', 'image']) && content.getIn(['cardInfo', 'image']).xs &&
+                  <div>
+                    <img
+                      alt="card cover"
+                      src={this.getImageSrc(content.getIn(['cardInfo', 'image']))}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                }
+                <div>
+                  <div className="content-link entry-card__title">
+                    {content.getIn(['cardInfo', 'title'])}
+                  </div>
+                </div>
+                <div>{content.getIn(['cardInfo', 'description'])}</div>
+              </div>
             }
             {hasContent &&
               <Link
@@ -292,6 +316,7 @@ EntryCard.defaultProps = {
 
 EntryCard.propTypes = {
     blockNr: PropTypes.number,
+    baseUrl: PropTypes.string,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     entry: PropTypes.shape(),

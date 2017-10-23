@@ -1,41 +1,60 @@
-const extractInfoFromHtml = (htmlContent, targetTags) => {
-    const { metaName, metaProperty, tags } = targetTags;
-    const htmlMetaTags = Array.from(htmlContent.getElementsByTagName('meta'));
-    // extract meta tag info
-    const props = metaProperty.map((property) => {
-        const tag = htmlMetaTags.find(fTag =>
-            fTag.attributes.length &&
-            fTag.attributes.property &&
-            fTag.attributes.property.textContent === property
-        );
-        if (tag) {
-            return Promise.resolve({
-                [property]: tag.attributes.content.textContent,
-            });
-        }
-        return {};
-    });
-    return Promise.all(props).then(values =>
-        values.reduce((prev, current) =>
-            Object.assign({}, prev, current))
-    );
-};
-const makeAbsolute = (url, parsedUrl) => {
-    if (url) {
-        console.log(new URL(url, parsedUrl.href).href, 'absoute url of image');
-        return new URL(url, parsedUrl.href).href;
+import ParserUtils from './parser-utils';
+import { targetMetaTags } from './parser-config';
+
+class HtmlParser extends ParserUtils {
+    constructor ({ htmlString, parsedUrl, uploadImageToIpfs }) {
+        super({ uploadImageToIpfs });
+        this.parsedUrl = parsedUrl;
+        this.htmlString = htmlString;
+        this.uploadImageToIpfs = uploadImageToIpfs;
+        this.htmlContent = null;
     }
-    return null;
-};
 
-const htmlParser = (htmlContent, parsedUrl, targetTags) =>
-    extractInfoFromHtml(htmlContent, targetTags).then(info => ({
-        url: parsedUrl.href,
-        info: {
-            title: info['og:title'],
-            description: info['og:description'],
-            image: makeAbsolute(info['og:image'], parsedUrl)
-        }
-    }));
+    getInfo = () => {
+        this.htmlContent = this.parseHtmlFromString(this.htmlString);
+        return this.parseOGMetaTags();
+    }
+    /**
+     * parse Open graph meta tags
+     */
+    parseOGMetaTags = () => {
+        // extract meta tag info
+        const htmlMetaTags = Array.from(this.htmlContent.getElementsByTagName('meta'));
+        const props = targetMetaTags.metaProperties.map((property) => {
+            const tag = htmlMetaTags.find(fTag =>
+                fTag.attributes.length &&
+                fTag.attributes.property &&
+                fTag.attributes.property.textContent === property.name
+            );
+            if (tag) {
+                return Promise.resolve({
+                    [property.key]: tag.attributes.content.textContent,
+                });
+            }
+            return Promise.resolve({});
+        });
+        return Promise.all(props).then(values =>
+            values.reduce((prev, current) =>
+                Object.assign({}, prev, current))
+        );
+    }
 
-export default htmlParser;
+    parseTags = (targetTags) => {
+        const props = targetTags.map((tag) => {
+            const domTags = this.htmlContent.getElementsByTagName(tag.name);
+            if (domTags.length > 0) {
+                return Promise.resolve({
+                    [tag.propertyName]: domTags[0].innerText
+                });
+            }
+            return Promise.resolve({});
+        });
+        return Promise.all(props).then(values =>
+            values.reduce((prev, current) => Object.assign({}, prev, current))
+        );
+    }
+    parseClassNames = (targetClassNames) => {
+        console.log('not implemented yet!');
+    }
+}
+export default HtmlParser;
