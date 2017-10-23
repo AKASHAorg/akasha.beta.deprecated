@@ -31,7 +31,7 @@ const execute = Promise.coroutine(
 
         const timeStamp = new Date().getTime() / 1000;
         const requests = data.entryId.map((id) => {
-            return contracts.instance.Entries
+            return contracts.instance.Votes
                 .canClaimEntry(id, timeStamp)
                 .then((status) => {
                     return { entryId: id, status };
