@@ -4,12 +4,18 @@ import schema from '../utils/jsonschema';
 
 const canClaim = {
     'id': '/canClaim',
-    'type': 'array',
-    'items': {
-        'type': 'string'
+    'type': 'object',
+    'properties': {
+      'entryId': {
+          'type': 'array',
+          'items': {
+              'type': 'string'
+          },
+          'uniqueItems': true,
+          'minItems': 1
+      }
     },
-    'uniqueItems': true,
-    'minItems': 1
+    'required': ['entryId']
 };
 /**
  * Check if can claim deposit from entry
@@ -25,7 +31,7 @@ const execute = Promise.coroutine(
 
         const timeStamp = new Date().getTime() / 1000;
         const requests = data.entryId.map((id) => {
-            return contracts.instance.Entries
+            return contracts.instance.Votes
                 .canClaimEntry(id, timeStamp)
                 .then((status) => {
                     return { entryId: id, status };
