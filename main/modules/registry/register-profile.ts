@@ -1,5 +1,6 @@
 import { create } from '../profile/ipfs';
 import { decodeHash } from '../ipfs/helpers';
+import { normaliseId } from '../profile/helpers';
 import checkId from './check-id-format';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
@@ -47,8 +48,8 @@ export const registerProfile = {
 const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
     const v = new schema.Validator();
     v.validate(data, registerProfile, { throwError: true });
-
-    const check = yield checkId.execute({akashaId: data.akashaId});
+    const normalisedId = normaliseId(data.akashaId);
+    const check = yield checkId.execute({akashaId: normalisedId});
     if (!check.idValid) {
         throw new Error('Invalid akashaId');
     }
@@ -56,7 +57,7 @@ const execute = Promise.coroutine(function* (data: ProfileCreateRequest, cb) {
     const [hash, fn, digest] = decodeHash(ipfsHash);
     const txData = contracts.instance
         .ProfileRegistrar
-        .register.request(data.akashaId, data.donationsEnabled, hash, fn, digest, { gas: 400000, from: data.ethAddress});
+        .register.request(normalisedId, data.donationsEnabled, hash, fn, digest, { gas: 400000, from: data.ethAddress});
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
 });

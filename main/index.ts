@@ -5,7 +5,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './init-modules';
 import feed from './modules/notifications/feed';
-// import fetch from './modules/chat/fetch';
+import { roomFactory } from './modules/chat/join';
 import { initMenu } from './menu';
 import updater from './check-version';
 import * as Promise from 'bluebird';
@@ -17,10 +17,9 @@ let mainWindow = null;
 const shutDown = Promise.coroutine(function* () {
     yield feed.execute({ stop: true }, () => {
     });
-    // yield fetch.execute({ stop: true }, () => {
-    // });
     yield GethConnector.getInstance().stop();
     yield IpfsConnector.getInstance().stop();
+    roomFactory.closeAll();
     return true;
 });
 
