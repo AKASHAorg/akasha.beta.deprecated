@@ -3,12 +3,29 @@
     justify-content: center;
     height: 100%;
 
-    &__content {
-        height: 100%;
+    &__wrap {
+        height: ~'calc(100% - 52px)';
         width: 80%;
         max-width: 730px;
-        height: 100%;
         margin-top: 30px;
+
+        .ant-tabs {
+            height: 100%;
+        }
+
+        .ant-tabs-bar {
+            margin: 0 15px 16px 7px;
+        }
+
+        .ant-tabs-content {
+            height: 100%;
+        }
+    }
+
+    &__content {
+        overflow-y: auto;
+        height: ~'calc(100% - 80px)';
+
     }
 
     &__search {
@@ -33,11 +50,5 @@
 
     &__masonry {
         transition: none;
-    }
-
-    &__masonry-wrap {
-        overflow-y: auto;
-        // height: ~'calc(100% - 250px)';
-
     }
 }

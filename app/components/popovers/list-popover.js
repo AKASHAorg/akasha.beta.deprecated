@@ -103,7 +103,7 @@ class ListPopover extends Component {
     };
 
     renderContent = () => {
-        const { authorEthAddress, entryId, intl, listAdd, listDelete, lists,
+        const { authorEthAddress, entryId, entryType, intl, listAdd, listDelete, lists,
             listToggleEntry, search } = this.props;
 
         if (this.state.addNewList) {
@@ -134,7 +134,7 @@ class ListPopover extends Component {
             </div>
             <div className="list-popover__list-wrapper">
               {this.groupByState(lists).map((list) => {
-                  const toggleList = () => listToggleEntry(list.get('name'), entryId, authorEthAddress);
+                  const toggleList = () => listToggleEntry(list.get('name'), entryId, entryType, authorEthAddress);
                   const isSaved = this.isSaved(list);
                   const root = 'list-popover__left-item list-popover__row-icon';
                   const modifier = 'list-popover__row-icon_saved';
@@ -214,6 +214,7 @@ ListPopover.propTypes = {
     authorEthAddress: PropTypes.string,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
+    entryType: PropTypes.number,
     intl: PropTypes.shape().isRequired,
     listAdd: PropTypes.func.isRequired,
     listDelete: PropTypes.func.isRequired,

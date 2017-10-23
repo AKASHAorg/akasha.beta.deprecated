@@ -38,10 +38,10 @@ class Lists extends Component {
 
         return (
           <div className="lists">
-            <div className="lists__content">
+            <div className="lists__wrap">
               <Tabs tabBarExtraContent={searchInput}>
                 <TabPane tab="All" key="all">
-                  <div className="lists__masonry-wrap">
+                  <div className="lists__content">
                     <Masonry
                       className="lists__masonry"
                       options={{ transitionDuration: 0 }}
@@ -56,8 +56,8 @@ class Lists extends Component {
                     </Masonry>
                   </div>
                 </TabPane>
-                <TabPane tab="Public" key="public">Content of tab 2</TabPane>
-                <TabPane tab="Private" key="private">Content of tab 3</TabPane>
+                <TabPane tab="Public" key="public"></TabPane>
+                <TabPane tab="Private" key="private"></TabPane>
               </Tabs>
             </div>
           </div>

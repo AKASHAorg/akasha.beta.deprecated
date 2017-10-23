@@ -15,38 +15,45 @@ class ListEntries extends Component {
 
     render () {
         const { entries, intl, list } = this.props;
+
         const date = (
-          <FormattedDate
-            day="2-digit"
-            month="long"
-            value={new Date(list.get('timestamp'))}
-            year="numeric"
-          />
+          <div>
+            <span>
+              {intl.formatMessage(generalMessages.created)}
+            </span>
+            <FormattedDate
+              day="2-digit"
+              month="long"
+              value={new Date(list.get('timestamp'))}
+              year="numeric"
+            />
+          </div>
         );
 
+        const description = list.get('description') || date;
+
         return (
-          <div className="panel list-entries-panel">
-            <div className="panel__content">
-              <div className="list-entries-panel__header">
-                <div className="list-entries-panel__name">
-                  {list.get('name')}
+          <div className="list-entries">
+            <div className="list-entries__pad">
+              <div className="list-entries__wrap">
+                <div className="list-entries__header">
+                  <div className="list-entries__name">
+                    {list.get('name')}
+                  </div>
+                  <div className="list-entries__date">
+                    {description}
+                  </div>
                 </div>
-                <div className="list-entries-panel__date">
-                  <span>
-                    {intl.formatMessage(generalMessages.created)}
-                  </span>
-                  {date}
+                <div className="list-entries__content">
+                  <EntryList
+                    contextId={list.get('name')}
+                    entries={entries}
+                    fetchMoreEntries={() => this.props.entryListIterator(list.get('name'))}
+                    masonry
+                    moreEntries={list.get('moreEntries')}
+                    style={{ padding: '0px 50px' }}
+                  />
                 </div>
-              </div>
-              <div className="list-entries-panel__content">
-                <EntryList
-                  contextId={list.get('name')}
-                  entries={entries}
-                  fetchMoreEntries={() => this.props.entryListIterator(list.get('name'))}
-                  masonry
-                  moreEntries={list.get('moreEntries')}
-                  style={{ padding: '0px 50px' }}
-                />
               </div>
             </div>
           </div>
@@ -64,7 +71,7 @@ ListEntries.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { listName } = ownProps.match.params;
     const list = selectListByName(state, listName);
-    const entries = list && list.get('entryIds').map(id => selectEntry(state, id));
+    const entries = list && list.get('entryIds').map(ele => selectEntry(state, ele.entryId));
     return {
         entries,
         list,

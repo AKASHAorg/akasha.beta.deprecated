@@ -113,7 +113,7 @@ export const searchList = ({ ethAddress, search }) =>
 //             .catch(err => reject(err));
 //     });
 
-export const toggleEntry = ({ ethAddress, listName, entryId, authorEthAddress }) =>
+export const toggleEntry = ({ ethAddress, listName, entryId, entryType, authorEthAddress }) =>
     new Promise((resolve, reject) => {
         listDB.lists
             .where('[ethAddress+name]')
@@ -124,9 +124,8 @@ export const toggleEntry = ({ ethAddress, listName, entryId, authorEthAddress })
                 // Initialize entryIds with an empty array if it doesn't exist
                 list.entryIds = list.entryIds || [];
                 const entry = list.entryIds.find(ele => ele.entryId === entryId);
-
                 if (!entry) {
-                    list.entryIds.push({ entryId, authorEthAddress });
+                    list.entryIds.push({ entryId, entryType, authorEthAddress });
                 } else if (entry) {
                     // Otherwise if entryId is already added, it should be removed
                     list.entryIds = list.entryIds.filter(ele => ele.entryId !== entryId);

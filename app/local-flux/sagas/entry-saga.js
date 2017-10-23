@@ -7,7 +7,7 @@ import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectEntry, selectFullEntry,
+import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntryType,
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 
@@ -168,8 +168,12 @@ function* entryGetVoteOf ({ entryId }) {
 function* entryListIterator ({ name }) {
     const channel = Channel.server.entry.getEntryList;
     const entryIds = yield select(state => selectListNextEntries(state, name, ENTRY_LIST_ITERATOR_LIMIT));
-    yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [entryIds]);
+    // add list name field to first item of request to update list state
+    if (entryIds.length) {
+        entryIds[0].listName = name;
+        yield call(enableChannel, channel, Channel.client.entry.manager);
+        yield apply(channel, channel.send, [entryIds]);
+    }
 }
 
 function* entryMoreNewestIterator ({ columnId }) {
@@ -379,11 +383,13 @@ function* watchEntryListIteratorChannel () {
         if (resp.error) {
             yield put(actions.entryListIteratorError(resp.error));
         } else {
+            const { entryId, ethAddress } = resp.data;
+            const listName = resp.request[0].listName;
+            const entryType = yield select(selectListEntryType, listName, entryId);
+            resp.data.entryType = entryType;
             yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
-            const { entryId, ethAddress } = resp;
             yield fork(entryGetExtraOfEntry, entryId, ethAddress);
         }
-        console.log('response: ', resp);
     }
 }
 

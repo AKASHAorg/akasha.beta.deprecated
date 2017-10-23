@@ -1,12 +1,23 @@
-.list-entries-panel {
+.list-entries {
     height: 100%;
+
+    &__pad {
+        height: 100%;
+        padding-right: 4px;
+    }
+
+    &__wrap {
+        height: ~'calc(100% - 52px)';
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 
     &__header {
         height: 80px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 0 50px;
+        padding: 0 57px;
     }
 
     &__name {
@@ -26,6 +37,5 @@
 
     &__content {
         height: ~'calc(100% - 80px)';
-        margin-right: -20px;
     }
 }
