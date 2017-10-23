@@ -9,17 +9,16 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { bootstrapHome, hideTerms, toggleAethWallet,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
-import { draftCreate } from '../local-flux/actions/draft-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
-    TagSearchPage, SidebarContainer } from './';
+    TagSearchPage } from './';
 import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
     GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries, MyBalance, MyEntries,
     NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
-    ProfilePage, ProfileEdit, SearchSecondarySidebar, SecondarySidebar, SetupPages, Terms, TopBar,
+    ProfilePage, ProfileEdit, SearchSecondarySidebar, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar,
     WalletPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -174,7 +173,7 @@ class AppContainer extends Component {
                     </div>
                   </DataLoader>
                 }
-                <SidebarContainer {...this.props} />
+                <Sidebar />
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
                 <ErrorNotification />
@@ -234,7 +233,6 @@ export default connect(
     mapStateToProps,
     {
         bootstrapHome,
-        draftCreate,
         entryVoteCost,
         errorDeleteFatal,
         gethGetStatus,
