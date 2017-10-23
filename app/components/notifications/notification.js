@@ -27,6 +27,7 @@ class Notification extends Component {
                     notification.open({
                         message,
                         className: 'notif',
+                        duration: notif.get('duration'),
                         onClose: close
                     });
                     this.props.notificationDisplay(notif);

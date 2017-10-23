@@ -3,6 +3,7 @@ import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { AethBalance, Balance, ErrorRecord, EssenceBalance, LoggedProfile, ManaBalance, ProfileRecord,
     ProfileState } from './records';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
 
@@ -250,6 +251,13 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('loginPending', false),
             loggedProfile: state.get('loggedProfile').merge(data)
         }),
+
+    [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
+        const comments = balanceToNumber(data.comments.manaCost);
+        const entries = balanceToNumber(data.entries.manaCost);
+        const votes = balanceToNumber(data.votes.manaCost);        
+        return state.mergeIn(['manaBurned'], { comments, entries, votes });
+    },
 
     [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: (state, { akashaId }) =>
         state.setIn(['flags', 'fetchingMoreFollowers', akashaId], true),

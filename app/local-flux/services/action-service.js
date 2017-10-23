@@ -36,6 +36,16 @@ export const getActionsByType = request =>
             .catch(reject);
     });
 
+export const getClaimable = request =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('[ethAddress+type]')
+            .anyOf(request)
+            .toArray()
+            .then(resolve)
+            .catch(reject);
+    });
+
 export const getPendingActions = ethAddress =>
     new Promise((resolve, reject) => {
         actionDB.actions

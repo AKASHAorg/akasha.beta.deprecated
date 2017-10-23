@@ -6,6 +6,15 @@ export const EntryAuthor = Record({
     ethAddress: null,
 });
 
+export const EntryBalance = Record({
+    claimed: null,
+    endPeriod: null,
+    entryId: null,
+    score: null,
+    totalKarma: null,
+    totalVotes: null
+});
+
 export const EntryContent = Record({
     cardInfo: CardInfo(),
     draft: {},
@@ -47,6 +56,7 @@ export const EntryState = Record({
     balance: new Map(),
     byId: new Map(),
     canClaim: new Map(),
+    canClaimVote: new Map(),
     published: new List(),
     flags: new Flags(),
     fetchingEntriesCount: false,

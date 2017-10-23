@@ -58,7 +58,8 @@ export function* gethSaveSettings (payload, showNotification) {
         yield put(actions.gethSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
-                id: 'saveGethSettingsSuccess'
+                id: 'saveGethSettingsSuccess',
+                duration: 4,
             }));
         }
     } catch (error) {
@@ -73,7 +74,8 @@ export function* ipfsSaveSettings (payload, showNotification) {
         yield put(actions.ipfsSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
-                id: 'saveIpfsSettingsSuccess'
+                id: 'saveIpfsSettingsSuccess',
+                duration: 4,
             }));
         }
     } catch (error) {

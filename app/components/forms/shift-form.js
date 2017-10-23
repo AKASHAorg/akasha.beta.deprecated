@@ -3,13 +3,21 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Slider } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
+import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
 
 const FormItem = Form.Item;
 
 class ShiftForm extends Component {
     state = {
-        value: 0
+        amount: 0
     };
+
+    componentWillReceiveProps (nextProps) {
+        const { pendingShift } = nextProps;
+        if (pendingShift && !this.props.pendingShift) {
+            this.setState({ amount: 0 });
+        }
+    }
 
     getTitle = () => {
         const { intl, type } = this.props;
@@ -18,40 +26,22 @@ class ShiftForm extends Component {
                 return intl.formatMessage(formMessages.shiftDownMana);
             case 'shiftUpMana':
                 return intl.formatMessage(formMessages.shiftUpMana);
+            case 'transformEssence':
+                return intl.formatMessage(formMessages.transformEssence);
             default:
                 return '';
         }
     };
 
-    getBalances = () => {
-        const { balance, intl, type } = this.props;
-        const leftBalance = {};
-        const rightBalance = {};
-        switch (type) {
-            case 'shiftDownMana':
-            case 'shiftUpMana':
-                leftBalance.title = intl.formatMessage(formMessages.manaTotalScore);
-                leftBalance.value = balance.getIn(['mana', 'total']);
-                rightBalance.title = intl.formatMessage(formMessages.freeAeth);
-                rightBalance.value = balance.getIn(['aeth', 'free']);
-                break;
-            default:
-                break;
-        }
-
-        return { leftBalance, rightBalance };
-    };
-
     getMaxAmount = () => {
         const { balance, type } = this.props;
-        let value;
         switch (type) {
             case 'shiftDownMana':
-                value = balance.getIn(['mana', 'total']).replace(',', '');
-                return Number(value);
+                return balanceToNumber(balance.getIn(['mana', 'total']));
             case 'shiftUpMana':
-                value = balance.getIn(['aeth', 'free']).replace(',', '');
-                return Number(value);
+                return balanceToNumber(balance.getIn(['aeth', 'free']));
+            case 'transformEssence':
+                return balanceToNumber(balance.getIn(['essence', 'total']));
             default:
                 return 0;
         }
@@ -59,49 +49,76 @@ class ShiftForm extends Component {
 
     getHelpMessage = () => {
         const { intl, type } = this.props;
-        const { value } = this.state;
+        const { amount } = this.state;
+        if (!amount && type !== 'transformEssence') {
+            return '';
+        }
+        let value;
         switch (type) {
             case 'shiftDownMana':
-                return intl.formatMessage(formMessages.shiftDownManaHelp, { value });
+                return intl.formatMessage(formMessages.shiftDownManaHelp, { value: amount });
             case 'shiftUpMana':
-                return intl.formatMessage(formMessages.shiftUpManaHelp, { value });
+                return intl.formatMessage(formMessages.shiftUpManaHelp, { value: amount });
+            case 'transformEssence':
+                if (!amount || amount < 1000) {
+                    return intl.formatMessage(formMessages.transformEssenceMin);
+                }
+                value = amount / 1000;
+                return intl.formatMessage(formMessages.transformEssenceDisclaimer, { amount, value });
             default:
                 return '';
         }
     };
 
-    onChange = (value) => { this.setState({ value }); };
+    onChange = (amount) => { this.setState({ amount }); };
 
     onShift = () => {
         const { onShift } = this.props;
-        onShift(this.state.value.toString());
+        onShift(this.state.amount.toString());
     };
 
     render () {
-        const { intl, onCancel } = this.props;
-        const { value } = this.state;
-        const { leftBalance, rightBalance } = this.getBalances();
+        const { balance, intl, onCancel, pendingShift, type } = this.props;
+        const { amount } = this.state;
+        const max = this.getMaxAmount();
+        const amountNotEnough = !amount || (type === 'transformEssence' && amount < 1000);
 
         return (
           <Form className="shift-form">
             <div className="shift-form__title">
               {this.getTitle()}
             </div>
+            <div className="shift-form__total-balance">
+              <div className="shift-form__balance-label">
+                {intl.formatMessage(formMessages.totalAethBalance)}
+              </div>
+              <div className="shift-form__total-value">
+                {removeTrailingZeros(balance.getIn(['aeth', 'total']))}
+              </div>
+            </div>
             <div className="shift-form__balances">
               <div>
                 <div className="shift-form__balance-label">
-                  {leftBalance.title}
+                  {intl.formatMessage(generalMessages.transferable)}
                 </div>
                 <div className="shift-form__balance-value">
-                  {leftBalance.value}
+                  {removeTrailingZeros(balance.getIn(['aeth', 'free']))}
                 </div>
               </div>
               <div>
                 <div className="shift-form__balance-label">
-                  {rightBalance.title}
+                  {intl.formatMessage(generalMessages.manafied)}
                 </div>
                 <div className="shift-form__balance-value">
-                  {rightBalance.value}
+                  {formatBalance(balance.getIn(['aeth', 'bonded']))}
+                </div>
+              </div>
+              <div>
+                <div className="shift-form__balance-label">
+                  {intl.formatMessage(generalMessages.cycling)}
+                </div>
+                <div className="shift-form__balance-value">
+                  {formatBalance(balance.getIn(['aeth', 'cycling']))}
                 </div>
               </div>
             </div>
@@ -110,19 +127,20 @@ class ShiftForm extends Component {
             </div>
             <FormItem
               colon={false}
-              help={<span className="shift-form__helper">{this.getHelpMessage()}</span>}
+              help={this.getHelpMessage()}
             >
               <div className="flex-center">
                 <Slider
                   min={0}
-                  max={this.getMaxAmount()}
-                  onChange={this.onChange}
+                  // if both min and max are 0, the slider will not work properly
+                  max={max || 1}
+                  onChange={max ? this.onChange : () => {}}
                   tipFormatter={null}
-                  value={value}
+                  value={amount}
                   style={{ flex: '1 1 auto' }}
                 />
-                <div style={{ flex: '0 0 auto', width: '36px', textAlign: 'right' }}>
-                  {value}
+                <div className="shift-form__amount">
+                  {amount}
                 </div>
               </div>
             </FormItem>
@@ -136,6 +154,8 @@ class ShiftForm extends Component {
               </Button>
               <Button
                 className="shift-form__button"
+                disabled={pendingShift || amountNotEnough}
+                loading={pendingShift}
                 onClick={this.onShift}
                 size="large"
                 type="primary"
@@ -153,6 +173,7 @@ ShiftForm.propTypes = {
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func.isRequired,
     onShift: PropTypes.func.isRequired,
+    pendingShift: PropTypes.bool,
     type: PropTypes.string.isRequired,
 };
 

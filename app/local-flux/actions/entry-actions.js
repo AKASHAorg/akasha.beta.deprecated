@@ -1,13 +1,21 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
+export const entryCanClaim = entryIds => action(types.ENTRY_CAN_CLAIM, { entryIds });
 export const entryCanClaimError = (error) => {
     error.code = 'ECCE01';
     error.messageId = 'entryCanClaim';
     return action(types.ENTRY_CAN_CLAIM_ERROR, { error });
 };
 export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
+
+export const entryCanClaimVote = entryIds => action(types.ENTRY_CAN_CLAIM_VOTE, { entryIds });
+export const entryCanClaimVoteError = (error) => {
+    error.code = 'ECCVE01';
+    error.messageId = 'entryCanClaimVote';
+    return action(types.ENTRY_CAN_CLAIM_VOTE_ERROR, { error });
+};
+export const entryCanClaimVoteSuccess = data => action(types.ENTRY_CAN_CLAIM_VOTE_SUCCESS, { data });
 
 export const entryClaim = ({ actionId, entryId, entryTitle }) =>
     action(types.ENTRY_CLAIM, { actionId, entryId, entryTitle });
@@ -18,6 +26,15 @@ export const entryClaimError = (error, entryId, entryTitle) => {
     return action(types.ENTRY_CLAIM_ERROR, { error, entryId });
 };
 export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { data });
+
+export const entryClaimVote = ({ actionId, entryId, entryTitle }) =>
+    action(types.ENTRY_CLAIM_VOTE, { actionId, entryId, entryTitle });
+export const entryClaimVoteError = (error, request) => {
+    error.code = 'ECVE01';
+    error.messageId = 'entryClaimVote';
+    return action(types.ENTRY_CLAIM_ERROR, { error, request });
+};
+export const entryClaimVoteSuccess = data => action(types.ENTRY_CLAIM_VOTE_SUCCESS, { data });
 
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
 
@@ -33,7 +50,7 @@ export const entryDownvoteError = (error, entryId, entryTitle) => {
 export const entryDownvoteSuccess = data =>
     action(types.ENTRY_DOWNVOTE_SUCCESS, { data });
 
-export const entryGetBalance = entryId => action(types.ENTRY_GET_BALANCE, { entryId });
+export const entryGetBalance = entryIds => action(types.ENTRY_GET_BALANCE, { entryIds });
 export const entryGetBalanceError = (error) => {
     error.code = 'EGBE01';
     error.messageId = 'entryGetBalance';
@@ -81,7 +98,7 @@ export const entryGetShortError = (error, request) => {
 
 export const entryGetShortSuccess = (data, request) =>
     action(types.ENTRY_GET_SHORT_SUCCESS, { data, request });
-export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
+export const entryGetVoteOf = entryIds => action(types.ENTRY_GET_VOTE_OF, { entryIds });
 
 export const entryGetVoteOfError = (error) => {
     error.code = 'EGVOE01';

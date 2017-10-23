@@ -34,6 +34,7 @@ function* profileBondAeth ({ actionId, amount }) {
 function* profileBondAethSuccess ({ data }) {
     yield put(appActions.showNotification({
         id: 'bondAethSuccess',
+        duration: 4,
         values: { amount: data.amount },
     }));
 }
@@ -54,6 +55,7 @@ function* profileCycleAeth ({ actionId, amount }) {
 function* profileCycleAethSuccess ({ data }) {
     yield put(appActions.showNotification({
         id: 'cycleAethSuccess',
+        duration: 4,
         values: { amount: data.amount },
     }));
 }
@@ -85,6 +87,7 @@ function* profileFollowSuccess ({ data }) {
     const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'followProfileSuccess',
+        duration: 4,
         values: { displayName },
     }));
 }
@@ -109,7 +112,7 @@ function* profileFreeAeth ({ actionId, amount }) {
 }
 
 function* profileFreeAethSuccess () {
-    yield put(appActions.showNotification({ id: 'freeAethSuccess' }));
+    yield put(appActions.showNotification({ id: 'freeAethSuccess', duration: 4 }));
 }
 
 function* profileGetBalance ({ unit = 'ether' }) {
@@ -187,6 +190,13 @@ function* profileLogout () {
     yield apply(channel, channel.send, [{}]);
 }
 
+function* profileManaBurned () {
+    const channel = Channel.server.profile.manaBurned;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(channel, channel.send, [{ ethAddress }]);
+}
+
 function* profileMoreFollowersIterator ({ akashaId }) {
     const channel = Channel.server.profile.followersIterator;
     const start = yield select(state => selectLastFollower(state, akashaId));
@@ -241,6 +251,7 @@ function* profileSendTipSuccess ({ data }) {
     const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'sendTipSuccess',
+        duration: 4,
         values: { displayName },
     }));
 }
@@ -256,6 +267,7 @@ function* profileTransferAethSuccess ({ data }) {
     const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'transferAethSuccess',
+        duration: 4,
         values: { displayName, tokenAmount: data.tokenAmount },
     }));
 }
@@ -271,6 +283,7 @@ function* profileTransferEthSuccess ({ data }) {
     const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'transferEthSuccess',
+        duration: 4,
         values: { displayName, value: data.value },
     }));
 }
@@ -285,6 +298,7 @@ function* profileTransformEssence ({ actionId, amount }) {
 function* profileTransformEssenceSuccess ({ data }) {
     yield put(appActions.showNotification({
         id: 'transformEssenceSuccess',
+        duration: 4,
         values: { amount: data.amount },
     }));
 }
@@ -300,6 +314,7 @@ function* profileUnfollowSuccess ({ data }) {
     const displayName = getDisplayName(data);
     yield put(appActions.showNotification({
         id: 'unfollowProfileSuccess',
+        duration: 4,
         values: { displayName },
     }));
 }
@@ -323,7 +338,8 @@ function* profileUpdateSuccess (payload) {
     // get updated profile data
     yield call(profileGetData, { akashaId, full: true });
     yield put(appActions.showNotification({
-        id: 'updateProfileSuccess'
+        id: 'updateProfileSuccess',
+        duration: 4,
     }));
 }
 
@@ -355,7 +371,8 @@ function* profileRegisterSuccess (payload) {
     // get updated profile data
     yield call(profileGetData, { akashaId, full: true });
     yield put(appActions.showNotification({
-        id: 'registerProfileSuccess'
+        id: 'registerProfileSuccess',
+        duration: 4,
     }));
 }
 
@@ -624,6 +641,17 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileManaBurnedChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.manaBurned);
+        if (resp.error) {
+            yield put(actions.profileManaBurnedError(resp.error));
+        } else {
+            yield put(actions.profileManaBurnedSuccess(resp.data));
+        }
+    }
+}
+
 function* watchProfileRegisterChannel () {
     while (true) {
         const resp = yield take(actionChannels.registry.registerProfile);
@@ -770,6 +798,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileGetListChannel);
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
+    yield fork(watchProfileManaBurnedChannel);
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileTransferChannel);
@@ -803,6 +832,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
+    yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);
     yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
     yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);

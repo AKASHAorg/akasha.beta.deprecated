@@ -5,25 +5,42 @@
     padding: 8px 0px;
 
     &__title {
-        font-size: 18px;
         color: @heading-color;
+        font-weight: 500;
+    }
+
+    &__total-balance {
+        margin: 24px 0px;
     }
 
     &__balances {
         display: flex;
         justify-content: space-between;
-        padding: 36px 0px;
         line-height: 1;
+        margin-bottom: 24px;
     }
 
     &__balance-label {
         text-transform: uppercase;
-        font-size: 13px;
+        font-size: 11px;
+        color: @text-color-secondary;
+    }
+
+    &__total-value {
+        font-size: 22px;
+        color: @heading-color;
     }
 
     &__balance-value {
         margin-top: 6px;
-        font-size: 22px;
+        font-size: 16px;
+        color: @heading-color;
+    }
+
+    &__amount {
+        flex: 0 0 auto;
+        width: 42px;
+        text-align: right;
     }
 
     &__actions {
@@ -37,8 +54,9 @@
         margin-left: 12px;
     }
 
-    &__helper { 
-        font-size: 13px;
-        line-height: 1;
+    .ant-form-explain { 
+        font-size: 11px;
+        color: @text-color-secondary;
+        line-height: 1.1;
     }
 }
