@@ -1,4 +1,4 @@
-import { Map, mergeWith } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
@@ -16,6 +16,9 @@ const createEntryRecord = entry =>
 const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
+const createEntryWithAuthorFromImmutable = entry =>
+    new EntryRecord(entry).set('author', new EntryAuthor(entry.get('author')));
+
 const entryIteratorHandler = (state, { data }) => {
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
@@ -29,8 +32,12 @@ const entryIteratorHandler = (state, { data }) => {
 
 const entryHandler = (state, { data }) => {
     let byId = state.get('byId');
-    if (!state.getIn(['byId', data.entryId])) {
-        const newEntry = createEntryWithAuthor(data);
+    const entryData = data.data;
+    if (!state.getIn(['byId', data.entryId]) && !!data.data) {
+        entryData.author = { ethAddress: data.ethAddress };
+        entryData.entryId = data.entryId;
+        entryData.entryType = data.entryType;
+        const newEntry = createEntryWithAuthorFromImmutable(fromJS(entryData));
         byId = byId.set(data.entryId, newEntry);
     }
     return state.set('byId', byId);

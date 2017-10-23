@@ -57,8 +57,8 @@ export const listSearchError = (error) => {
 
 export const listSearchSuccess = data => action(types.LIST_SEARCH_SUCCESS, { data });
 
-export const listToggleEntry = (listName, entryId, authorEthAddress) =>
-    action(types.LIST_TOGGLE_ENTRY, { listName, entryId, authorEthAddress });
+export const listToggleEntry = (listName, entryId, entryType, authorEthAddress) =>
+    action(types.LIST_TOGGLE_ENTRY, { listName, entryId, entryType, authorEthAddress });
 
 export const listToggleEntryError = (error) => {
     error.code = 'LTEE01';
