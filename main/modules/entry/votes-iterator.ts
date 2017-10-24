@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
+import resolve from '../registry/resolve-ethaddress';
 
 const votesIterator = {
     'id': '/tagIterator',
@@ -11,29 +12,33 @@ const votesIterator = {
         'entryId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
         'akashaId': { 'type': 'string' },
-        'reversed': {'type': 'boolean'}
+        'reversed': { 'type': 'boolean' }
     },
-    'required': ['toBlock', 'entryId']
+    'required': ['toBlock']
 };
 
 /**
  * Get individual votes of entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock?: number, limit?: number,
-    entryId: string, lastIndex?: number, reversed?: boolean }) {
+const execute = Promise.coroutine(function* (data: {
+    toBlock?: number, limit?: number,
+    entryId?: string, commentId?: string, lastIndex?: number, reversed?: boolean
+}) {
 
     const v = new schema.Validator();
     v.validate(data, votesIterator, { throwError: true });
 
     const collection = [];
     const maxResults = data.limit || 5;
-    const filter = { target: data.entryId, voteType: 0 };
+    const filter = { target: data.entryId || data.commentId, voteType: data.entryId ? 0 : 1 };
     const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
         { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (let event of fetched.results) {
         const weight = (event.args.weight).toString(10);
-        collection.push({ ethAddress: event.args.voter, weight: event.args.negative ? '-' + weight : weight });
+        const author = yield resolve.execute({ ethAddress: event.args.voter });
+
+        collection.push(Object.assign({ weight: event.args.negative ? '-' + weight : weight }, author));
         if (collection.length === maxResults) {
             break;
         }
