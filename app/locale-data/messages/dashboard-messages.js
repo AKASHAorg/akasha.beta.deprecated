@@ -66,6 +66,11 @@ const dashboardMessages = defineMessages({
         description: 'unique name error message for dashboard',
         defaultMessage: 'This board already exists'
     },
+    deleteDashboardConfirmation: {
+        id: 'app.dashboard.deleteDashboardConfirmation',
+        description: 'confirmation message for deleting a dashboard',
+        defaultMessage: 'Are you sure you want to delete {name}?'
+    },
     latest: {
         id: 'app.dashboard.latest',
         description: 'label for latest entries column',
