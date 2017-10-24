@@ -26,7 +26,12 @@ const WebsiteInfoCard = (props) => {
     return (
       <Card bodyStyle={{ padding: 0 }} className="website-info-card" noHovering>
         {(cardInfo.get('image').size > 0) &&
-          <a onClick={navigateTo(url, onClick)} href="#" title={url}>
+          <a
+            onClick={navigateTo(url, onClick)}
+            href="#"
+            title={url}
+            className="website-info-card__image-link"
+          >
             <img
               alt="card-cover"
               style={{
@@ -36,9 +41,14 @@ const WebsiteInfoCard = (props) => {
             />
           </a>
         }
-        <div className="" style={{ padding: '0 12px' }}>
+        <div
+          className="website-info-card__title-wrapper"
+          style={{ padding: '0 12px' }}
+        >
           {cardInfo.get('title') &&
-            <h3 title={cardInfo.get('title')}>
+            <h3
+              className="website-info-card__title"
+            >
               <a
                 onClick={navigateTo(url, onClick)}
                 href="#"
@@ -50,8 +60,9 @@ const WebsiteInfoCard = (props) => {
           }
           {cardInfo.get('description') &&
             <a
-              onClick={navigateTo(url, onClick)}
               href="#"
+              onClick={navigateTo(url, onClick)}
+              className="website-info-card__description"
             >
               {cardInfo.get('description')}
             </a>
