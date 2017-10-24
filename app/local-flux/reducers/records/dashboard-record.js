@@ -39,7 +39,9 @@ export const NewColumnRecord = Record({
 export const DashboardState = Record({
     activeDashboard: null,
     allDashboards: new List(),
-    columnById: new Map(),
+    columnById: new Map({
+        newColumn: new ColumnRecord()
+    }),
     dashboardByName: new Map(),
     flags: new Flags(),
     newColumn: null,

@@ -27,10 +27,10 @@ class DashboardPage extends Component {
         }
     }
 
-    getDashboardRef = el => (this.dashboardRef = el);
+    getDashboardRef = (el) => { this.dashboardRef = el; };
 
     render () {
-        const { columns, dashboards, homeReady, newColumn, isHidden } = this.props;
+        const { columns, dashboards, homeReady, isHidden } = this.props;
 
         return (
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
@@ -41,7 +41,6 @@ class DashboardPage extends Component {
                   dashboards={dashboards}
                   getDashboardRef={this.getDashboardRef}
                   navigateRight={this.navigateRight}
-                  newColumn={newColumn}
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
                 />
               </div>
@@ -60,7 +59,7 @@ DashboardPage.propTypes = {
     homeReady: PropTypes.bool,
     isHidden: PropTypes.bool,
     match: PropTypes.shape(),
-    newColumn: PropTypes.shape(),
+    newColumn: PropTypes.shape()
 };
 
 function mapStateToProps (state) {

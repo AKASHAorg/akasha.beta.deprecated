@@ -67,7 +67,6 @@ export MyBalance from './profile-overview/my-balance';
 export MyEntries from './profile-overview/my-entries';
 export NavigateAwayModal from './modals/navigate-away-modal';
 export NewColumn from './columns/new-column';
-export NewColumnFooter from './columns/new-column-footer';
 export NewEntrySecondarySidebar from './secondary-sidebars/new-entry-secondary-sidebar';
 export NewEntryTopBar from './top-bars/new-entry-top-bar';
 export NewDashboardForm from './forms/new-dashboard-form';

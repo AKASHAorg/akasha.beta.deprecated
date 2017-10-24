@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { AutoComplete, SvgIcon } from 'material-ui';
+import { injectIntl } from 'react-intl';
+import { AutoComplete } from 'material-ui';
+import { Icon, Modal, Popover } from 'antd';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
-// import { UserMore } from '../svg';
+import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+
+const { confirm } = Modal;
 
 class ColumnHeader extends Component {
     constructor (props) {
@@ -12,6 +16,7 @@ class ColumnHeader extends Component {
         this.state = {
             isFocused: false,
             isHovered: false,
+            popoverVisible: false,
             value: props.column.get('value')
         };
     }
@@ -55,13 +60,29 @@ class ColumnHeader extends Component {
         }, () => this.updateColumnValue());
     };
 
+    onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
+
     deleteColumn = () => {
-        const { column } = this.props;
-        this.props.dashboardDeleteColumn(column.get('id'));
+        const { column, intl } = this.props;
+        this.setState({ popoverVisible: false });
+        const onOk = (cb) => {
+            this.props.dashboardDeleteColumn(column.get('id'));
+            cb();
+        };
+        const content = intl.formatMessage(dashboardMessages.deleteColumnConfirmation);
+        confirm({
+            content,
+            okText: intl.formatMessage(generalMessages.yes),
+            okType: 'danger',
+            cancelText: intl.formatMessage(generalMessages.no),
+            onOk,
+            onCancel: () => {}
+        });
     }
 
     switchColumnWidth = () => {
         const { column } = this.props;
+        this.setState({ popoverVisible: false });
         const large = !column.get('large');
         this.props.dashboardUpdateColumn(column.get('id'), { large });
     };
@@ -74,28 +95,49 @@ class ColumnHeader extends Component {
         }
     }
 
+    renderContent = () => {
+        const { column, intl } = this.props;
+        const message = column.get('large') ? dashboardMessages.small : dashboardMessages.large;
+
+        return (
+          <div className="dashboard-secondary-sidebar__popover-content">
+            <div
+              className="flex-center-y popover-menu__item"
+              onClick={this.switchColumnWidth}
+            >
+              {intl.formatMessage(message)}
+            </div>
+            <div
+              className="flex-center-y popover-menu__item"
+              onClick={this.deleteColumn}
+            >
+              {intl.formatMessage(generalMessages.delete)}
+            </div>
+          </div>
+        );
+    };
+
     render () {
-        const { column, icon, readOnly, suggestions, title } = this.props;
+        const { icon, readOnly, suggestions, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
           <div
-            className="flex-center-y"
+            className="flex-center-y column-header"
             onMouseEnter={this.onMouseEnter}
             onMouseLeave={this.onMouseLeave}
-            style={{ height: '50px', flex: '0 0 auto' }}
           >
             {icon &&
-              <SvgIcon
+              <svg
                 viewBox="0 0 18 18"
                 style={{ flex: '0 0 auto', width: '18px', height: '18px', marginRight: '5px' }}
               >
                 {icon}
-              </SvgIcon>
+              </svg>
             }
-            <div style={{ flex: '1 1 auto' }}>
+            <div className="column-header__title-wrapper">
               {readOnly &&
-                <div>{title}</div>
+                <div className="column-header__title">{title}</div>
               }
               {!readOnly &&
                 <AutoComplete
@@ -111,25 +153,15 @@ class ColumnHeader extends Component {
                 />
               }
             </div>
-            <button onClick={this.switchColumnWidth} style={{ marginRight: '10px', flex: '0 0 auto' }}>
-              {column.get('large') ? 'small' : 'large'}
-            </button>
-            <button onClick={this.deleteColumn} style={{ marginRight: '20px', flex: '0 0 auto' }}>x</button>
-            {/* <div style={{ flex: '0 0 auto' }}>
-              <SvgIcon
-                viewBox="0 0 18 18"
-                onClick={() => null}
-                style={{
-                    height: '100%',
-                    width: '42px',
-                    padding: '0 9px',
-                    margin: '0 2px',
-                    // color: muiTheme.palette.secondaryTextColor
-                }}
-              >
-                <UserMore />
-              </SvgIcon>
-            </div> */}
+            <Popover
+              content={this.renderContent()}
+              onVisibleChange={this.onVisibleChange}
+              overlayClassName="popover-menu"
+              trigger="click"
+              visible={this.state.popoverVisible}
+            >
+              <Icon className="content-link column-header__menu-icon" type="menu-fold" />
+            </Popover>
           </div>
         );
     }
@@ -140,6 +172,7 @@ ColumnHeader.propTypes = {
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     icon: PropTypes.element,
+    intl: PropTypes.shape().isRequired,
     onInputChange: PropTypes.func,
     readOnly: PropTypes.bool,
     suggestions: PropTypes.shape(),
@@ -152,4 +185,4 @@ export default connect(
         dashboardDeleteColumn,
         dashboardUpdateColumn
     }
-)(ColumnHeader);
+)(injectIntl(ColumnHeader));

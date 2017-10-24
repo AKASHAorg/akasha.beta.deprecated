@@ -3,7 +3,6 @@ import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import { profileManaBurned } from '../actions/profile-actions';
-import { searchHandshake } from '../actions/search-actions';
 import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
@@ -58,11 +57,9 @@ function* launchHomeActions () {
     yield fork(highlightSaga.highlightGetAll);
     yield fork(listSaga.listGetAll);
     yield fork(settingsSaga.userSettingsRequest);
-    yield fork(tagSaga.tagGetMargins);
     if (yield select(selectLoggedEthAddress)) {
         yield put(actionActions.actionGetPending());
     }
-    // yield put(searchHandshake());
     yield put(profileManaBurned());
 }
 

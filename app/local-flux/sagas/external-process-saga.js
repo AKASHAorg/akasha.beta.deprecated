@@ -3,6 +3,7 @@ import { apply, call, cancel, fork, put, select, take } from 'redux-saga/effects
 import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/external-process-actions';
 import * as appActions from '../actions/app-actions';
+import * as searchActions from '../actions/search-actions';
 import * as types from '../constants';
 import { selectLastGethLog, selectLastIpfsLog } from '../selectors';
 
@@ -286,6 +287,10 @@ function* watchGethSyncStatusChannel () {
             yield put(actions.gethGetSyncStatusError(resp.error));
         } else {
             yield put(actions.gethGetSyncStatusSuccess(resp.data, resp.services));
+            if (resp.data.synced) {
+                console.log('synced!!!!!');
+                yield put(searchActions.searchSyncTags());
+            }
         }
     }
 }

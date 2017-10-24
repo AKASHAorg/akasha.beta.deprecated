@@ -48,6 +48,7 @@ export const dashboardDeleteColumnError = (error) => {
 
 export const dashboardDeleteColumnSuccess = data =>
     action(types.DASHBOARD_DELETE_COLUMN_SUCCESS, { data });
+export const dashboardDeleteNewColumn = () => action(types.DASHBOARD_DELETE_NEW_COLUMN);
 
 export const dashboardGetActiveError = (error) => {
     error.code = 'DGAE01';
@@ -76,22 +77,8 @@ export const dashboardGetProfileSuggestionsError = (error, request) => {
 
 export const dashboardGetProfileSuggestionsSuccess = (data, request) =>
     action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS, { data, request });
-
-
-export const dashboardGetTagSuggestions = (tag, context, columnId) =>
-    action(types.DASHBOARD_GET_TAG_SUGGESTIONS, { tag, context, columnId });
-
-export const dashboardGetTagSuggestionsError = (error, request) => {
-    error.code = 'DGTSE01';
-    error.messageId = 'dashboardGetTagSuggestions';
-    return action(types.DASHBOARD_GET_TAG_SUGGESTIONS_ERROR, { error, request });
-};
-
-export const dashboardGetTagSuggestionsSuccess = (data, request) =>
-    action(types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS, { data, request });
-
+export const dashboardResetNewColumn = () => action(types.DASHBOARD_RESET_NEW_COLUMN);
 export const dashboardSearch = query => action(types.DASHBOARD_SEARCH, { query });
-
 export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
 
 export const dashboardSetActiveError = (error) => {
