@@ -11,6 +11,9 @@ export const targetMetaTags = {
     }, {
         name: 'msapplication-TileColor',
         key: 'bgColor'
+    }, {
+        name: 'theme-color',
+        key: 'bgColor'
     }],
     metaProperties: [{
         name: 'og:title',
