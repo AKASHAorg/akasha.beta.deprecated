@@ -68,6 +68,7 @@ class EntryList extends Component {
             style } = this.props;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
+                console.error('entry list - entry not found');
                 return null;
             }
             const claimPending = !!pendingClaims.get(entry.get('entryId'));

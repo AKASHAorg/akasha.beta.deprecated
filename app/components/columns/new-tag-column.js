@@ -1,73 +1,145 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { List, ListItem } from 'material-ui';
-import { entryMessages } from '../../locale-data/messages';
-import { dashboardAddColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { NewColumnFooter, SearchInput } from '../';
-import styles from './new-tag-column.scss';
+import { AutoComplete, Icon, Input } from 'antd';
+import { dashboardMessages, entryMessages } from '../../locale-data/messages';
+import { dashboardResetNewColumn,
+    dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
+import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { searchTags } from '../../local-flux/actions/search-actions';
+import { selectColumn, selectColumnEntries, selectNewColumn,
+    selectTagSearchResults } from '../../local-flux/selectors';
+import { EntryList } from '../';
 
-const NewTagColumn = (props) => {
-    const { column, entriesCount, intl } = props;
-    const onAdd = () => props.dashboardAddColumn(column.get('type'), column.get('value'));
-    const onBack = () => props.dashboardUpdateNewColumn();
-    const onChange = value => props.dashboardUpdateNewColumn({ value });
+class NewTagColumn extends Component {
+    componentDidMount () {
+        if (this.input) {
+            this.input.focus();
+        }
+    }
 
-    return (
-      <div className={styles.root}>
-        <div style={{ flex: '0 0 auto', padding: '10px 0' }}>
-          <SearchInput
-            onChange={onChange}
-            onSubmit={onAdd}
-            value={column.get('value')}
-          />
-        </div>
-        <List style={{ flex: '1 1 auto' }}>
-          {column.get('value') && column.get('suggestions').map((tag) => {
-              const count = entriesCount.get(tag);
-              const message = count && intl.formatMessage(entryMessages.entriesCount, { count });
-              return (
-                <ListItem
-                  key={tag}
-                  innerDivStyle={{ height: '64px', paddingTop: '15px', paddingBottom: '15px' }}
-                  onClick={() => onChange(tag)}
-                  primaryText={tag}
-                  secondaryText={message}
+    componentWillUnmount () {
+        this.props.dashboardResetNewColumn();
+    }
+
+    getInputRef = (el) => { this.input = el; };
+
+    onSearch = value => this.props.searchTags(value);
+
+    onChange = (value) => {
+        const { column } = this.props;
+        this.props.dashboardUpdateNewColumn({ value });
+        if (column.get('value') && value !== column.get('value')) {
+            this.props.dashboardResetNewColumn();
+        }
+    };
+
+    onKeyDown = (ev) => {
+        const { dataSource } = this.props;
+        if (ev.key === 'Enter') {
+            if (!dataSource.size || !this.selecting) {
+                this.onSearchEntries();
+            }
+            this.selecting = false;
+        }
+    }
+
+    onSelect = (value) => {
+        this.selecting = true;
+        this.props.entryTagIterator('newColumn', value);
+    };
+
+    onLoadMore = () => this.props.entryMoreTagIterator('newColumn', this.props.column.get('value'));
+
+    onSearchEntries = () => {
+        const { newColumn } = this.props;
+        this.props.entryTagIterator('newColumn', newColumn.get('value'));
+    };
+
+    render () {
+        const { column, dataSource, intl, newColumn, previewEntries } = this.props;
+        const placeholderMessage = intl.formatMessage(entryMessages.noEntries);
+
+        return (
+          <div className="new-tag-column">
+            <div className="new-tag-column__search-wrapper">
+              <AutoComplete
+                className="new-tag-column__auto-complete"
+                dataSource={dataSource}
+                onChange={this.onChange}
+                onSearch={this.onSearch}
+                onSelect={this.onSelect}
+                size="large"
+                value={newColumn.get('value')}
+              >
+                <Input
+                  onKeyDown={this.onKeyDown}
+                  ref={this.getInputRef}
+                  suffix={(
+                    <div
+                      className="flex-center content-link new-tag-column__search-icon-wrapper"
+                      onClick={this.onSearchEntries}
+                    >
+                      <Icon type="search" />
+                    </div>
+                  )}
                 />
-              );
-          })}
-        </List>
-        <NewColumnFooter
-          onBack={onBack}
-          onAdd={onAdd}
-        />
-      </div>
-    );
-};
-
-NewTagColumn.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
+              </AutoComplete>
+            </div>
+            {column.get('value') &&
+              <div className="flex-center-y new-tag-column__preview-title">
+                {intl.formatMessage(dashboardMessages.preview, { tagName: column.get('value') })}
+              </div>
+            }
+            {column.get('value') &&
+              <div className="new-tag-column__list-wrapper">
+                <EntryList
+                  cardStyle={{ width: '340px' }}
+                  contextId="newColumn"
+                  entries={previewEntries}
+                  fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
+                  fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
+                  fetchMoreEntries={this.onLoadMore}
+                  moreEntries={column.getIn(['flags', 'moreEntries'])}
+                  placeholderMessage={placeholderMessage}
+                />
+              </div>
+            }
+          </div>
+        );
+    }
+}
 
 NewTagColumn.propTypes = {
-    column: PropTypes.shape(),
-    dashboardAddColumn: PropTypes.func.isRequired,
+    column: PropTypes.shape().isRequired,
+    dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
-    entriesCount: PropTypes.shape(),
+    dataSource: PropTypes.shape().isRequired,
+    entryMoreTagIterator: PropTypes.func.isRequired,
+    entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
+    newColumn: PropTypes.shape().isRequired,
+    previewEntries: PropTypes.shape().isRequired,
+    searchTags: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
     return {
-        entriesCount: state.tagState.get('entriesCount')
+        column: selectColumn(state, 'newColumn'),
+        dataSource: selectTagSearchResults(state),
+        newColumn: selectNewColumn(state),
+        previewEntries: selectColumnEntries(state, 'newColumn')
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        dashboardAddColumn,
-        dashboardUpdateNewColumn
+        dashboardResetNewColumn,
+        dashboardUpdateNewColumn,
+        entryMoreTagIterator,
+        entryTagIterator,
+        searchTags
     }
 )(injectIntl(NewTagColumn));

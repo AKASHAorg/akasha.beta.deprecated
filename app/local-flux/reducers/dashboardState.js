@@ -6,9 +6,15 @@ import { COLUMN } from '../../constants/context-types';
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { columnId }) => {
+const entryIterator = (state, { columnId, tagName }) => {
     if (!columnId || !state.getIn(['columnById', columnId])) {
         return state;
+    }
+    if (columnId === 'newColumn') {
+        return state.mergeIn(['columnById', columnId], {
+            flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
+            value: tagName
+        });
     }
     return state.mergeIn(['columnById', columnId, 'flags'], { fetchingEntries: true });
 };
@@ -89,7 +95,10 @@ const createDashboardRecord = (data) => {
 const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN]: state =>
-        state.set('newColumn', null),
+        state.merge({
+            columnById: state.get('columnById').set('newColumn', new ColumnRecord()),
+            newColumn: null
+        }),
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -126,6 +135,8 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
+    [types.DASHBOARD_DELETE_NEW_COLUMN]: state => state.set('newColumn', null),
+
     [types.DASHBOARD_DELETE_SUCCESS]: (state, { data }) =>
         state.set('dashboardByName', state.get('dashboardByName').delete(data.name)),
 
@@ -149,7 +160,8 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
-    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: handleSuggestions,
+    [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
+        state.setIn(['columnById', 'newColumn'], new ColumnRecord()),
 
     [types.DASHBOARD_SEARCH]: (state, { query }) =>
         state.set('search', query),

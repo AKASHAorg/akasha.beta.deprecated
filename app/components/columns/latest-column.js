@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
 import { ColumnLatest } from '../svg';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
@@ -24,9 +25,10 @@ class LatestColumn extends Component {
 
     render () {
         const { column, entries, intl, baseWidth } = this.props;
+        const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div className={className}>
             <ColumnHeader
               column={column}
               icon={<ColumnLatest />}

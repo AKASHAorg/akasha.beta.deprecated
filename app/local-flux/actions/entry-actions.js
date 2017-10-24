@@ -32,6 +32,7 @@ export const entryClaimVote = ({ actionId, entryId, entryTitle }) =>
 export const entryClaimVoteError = (error, request) => {
     error.code = 'ECVE01';
     error.messageId = 'entryClaimVote';
+    error.values = { entryTitle: request.entryTitle };
     return action(types.ENTRY_CLAIM_ERROR, { error, request });
 };
 export const entryClaimVoteSuccess = data => action(types.ENTRY_CLAIM_VOTE_SUCCESS, { data });

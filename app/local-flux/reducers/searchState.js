@@ -1,8 +1,8 @@
+import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { searchLimit } from '../../constants/iterator-limits';
 import { SearchRecord } from './records/search-record';
-
 
 const initialState = new SearchRecord();
 
@@ -10,24 +10,7 @@ function getEntryIds (entries) {
     return entries.map(entry => entry.entryId);
 }
 
-
 const searchState = createReducer(initialState, {
-    [types.SEARCH_HANDSHAKE]: state =>
-        state.setIn(['flags', 'handshakePending'], true),
-
-    [types.SEARCH_HANDSHAKE_SUCCESS]: (state, { data }) =>
-        state.merge({
-            consecutiveQueryErrors: 0,
-            searchService: data.searchService,
-            flags: state.get('flags').merge({ handshakePending: false })
-        }),
-
-    [types.SEARCH_HANDSHAKE_ERROR]: state =>
-        state.merge({
-            searchService: null,
-            flags: state.get('flags').set('handshakePending', false)
-        }),
-
     [types.SEARCH_MORE_QUERY]: (state, { text }) =>
         state.merge({
             query: text,
@@ -49,7 +32,6 @@ const searchState = createReducer(initialState, {
             consecutiveQueryErrors: state.get('consecutiveQueryErrors') + 1,
             flags: state.get('flags').merge({ moreQueryPending: false })
         }),
-
 
     [types.SEARCH_QUERY]: (state, { text }) =>
         state.merge({
@@ -81,45 +63,10 @@ const searchState = createReducer(initialState, {
             tags: []
         }),
 
-    [types.TAG_SEARCH_LOCAL]: (state, { tag }) =>
-        state.merge({
-            query: tag,
-            flags: state.get('flags').merge({ queryPending: true })
-        }),
+    [types.SEARCH_TAGS]: (state, { query }) => state.set('query', query),
 
-    [types.TAG_SEARCH_LOCAL_SUCCESS]: (state, { tags, tagCount }) =>
-        state.merge({
-            consecutiveQueryErrors: 0,
-            currentPage: null,
-            totalPages: null,
-            resultsCount: tagCount,
-            flags: state.get('flags').merge({ queryPending: false }),
-            entryIds: [],
-            tags
-        }),
-
-    [types.TAG_SEARCH_LOCAL_ERROR]: state =>
-        state.setIn(['flags', 'queryPending'], false),
-
-    [types.TAG_SEARCH_LOCAL_MORE]: (state, { tag }) =>
-        state.merge({
-            query: tag,
-            flags: state.get('flags').merge({ moreQueryPending: true })
-        }),
-
-    [types.TAG_SEARCH_LOCAL_MORE_SUCCESS]: (state, { tags, tagCount }) =>
-        state.merge({
-            consecutiveQueryErrors: 0,
-            currentPage: null,
-            totalPages: null,
-            resultsCount: tagCount,
-            flags: state.get('flags').merge({ moreQueryPending: false }),
-            entryIds: [],
-            tags: state.get('tags').concat(tags)
-        }),
-
-    [types.TAG_SEARCH_LOCAL_MORE_ERROR]: state =>
-        state.setIn(['flags', 'moreQueryPending'], false),
+    [types.SEARCH_TAGS_SUCCESS]: (state, { data }) =>
+        state.set('tags', new List(data)),
 });
 
 export default searchState;

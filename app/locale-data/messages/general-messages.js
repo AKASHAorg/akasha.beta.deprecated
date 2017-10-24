@@ -12,6 +12,11 @@ const generalMessages = defineMessages({
         description: 'action',
         defaultMessage: 'Action'
     },
+    add: {
+        id: 'app.general.add',
+        description: 'add',
+        defaultMessage: 'Add'
+    },
     addImage: {
         id: 'app.general.addImage',
         description: 'placeholder for image uploader component',

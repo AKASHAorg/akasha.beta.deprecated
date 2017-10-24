@@ -36,6 +36,11 @@ class Sync extends Component {
                 }
             }, 2000);
         }
+
+        if (gethSynced && !this.props.gethSyncStatus.get('syned')) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
     }
 
     componentWillUnmount () {
