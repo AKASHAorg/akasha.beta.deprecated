@@ -14,7 +14,22 @@ const confirmationMessages = defineMessages({
     claim: {
         id: 'app.confirmations.claim',
         description: 'confirmation message for claim',
-        defaultMessage: 'Please confirm that you want to claim these funds.'
+        defaultMessage: 'Please confirm that you want to claim Essence.'
+    },
+    claimTitle: {
+        id: 'app.confirmations.claimTitle',
+        description: 'title for confirmation message for claim',
+        defaultMessage: 'Claim'
+    },
+    claimVote: {
+        id: 'app.confirmations.claimVote',
+        description: 'confirmation message for claim vote',
+        defaultMessage: 'Please confirm that you want to claim Essence.'
+    },
+    claimVoteTitle: {
+        id: 'app.confirmations.claimVoteTitle',
+        description: 'title for confirmation message for claim vote',
+        defaultMessage: 'Claim'
     },
     comment: {
         id: 'app.confirmations.comment',
@@ -145,11 +160,6 @@ const confirmationMessages = defineMessages({
         id: 'app.confirmations.unfollow',
         description: 'confirmation message for unfollow',
         defaultMessage: 'Please confirm that you want to unfollow {displayName}.'
-    },
-    claimTitle: {
-        id: 'app.confirmations.claimTitle',
-        description: 'title for confirmation message for claim',
-        defaultMessage: 'Claim'
     },
     commentTitle: {
         id: 'app.confirmations.commentTitle',

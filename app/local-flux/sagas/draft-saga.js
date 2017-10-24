@@ -226,13 +226,16 @@ function* watchDraftPublishChannel () {
                     blockNumber,
                     cumulativeGasUsed,
                     success,
+                    payload: { entryId: response.data.entryId }
                 }));
             }
         } else {
+            const loggedEthAddress = yield select(selectLoggedEthAddress);
             yield put(actionActions.actionUpdate({
                 id: response.request.actionId,
                 status: actionStatus.publishing,
                 tx: response.data.tx,
+                payload: { ethAddress: loggedEthAddress }
             }));
         }
     }

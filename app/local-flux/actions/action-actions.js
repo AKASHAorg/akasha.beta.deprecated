@@ -7,6 +7,15 @@ export const actionClearHistory = () => action(types.ACTION_CLEAR_HISTORY);
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
 
 export const actionDeleteError = error => action(types.ACTION_DELETE_ERROR, { error });
+export const actionGetClaimable = () => action(types.ACTION_GET_CLAIMABLE);
+
+export const actionGetClaimableError = (error) => {
+    error.code = 'AGCE01';
+    error.messageId = 'actionGetClaimable';
+    return action(types.ACTION_GET_CLAIMABLE_ERROR, { error });
+};
+
+export const actionGetClaimableSuccess = data => action(types.ACTION_GET_CLAIMABLE_SUCCESS, { data });
 export const actionGetHistory = request => action(types.ACTION_GET_HISTORY, { request });
 
 export const actionGetHistoryError = (error) => {

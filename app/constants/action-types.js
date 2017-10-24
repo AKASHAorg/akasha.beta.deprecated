@@ -1,5 +1,6 @@
 export const bondAeth = 'bondAeth';
 export const claim = 'claim';
+export const claimVote = 'claimVote';
 export const comment = 'comment';
 export const commentDownvote = 'commentDownvote';
 export const commentUpvote = 'commentUpvote';

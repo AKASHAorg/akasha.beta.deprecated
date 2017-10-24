@@ -35,6 +35,12 @@ export const CyclingStates = Record({
     pending: new CyclingRecord()
 });
 
+const ManaBurned = Record({
+    comments: 0,
+    entries: 0,
+    votes: 0
+});
+
 export const ProfileRecord = Record({
     about: '',
     akashaId: '',
@@ -102,6 +108,7 @@ export const ProfileState = Record({
     localProfiles: new List(),
     loggedProfile: new LoggedProfile(),
     loginErrors: new List(),
+    manaBurned: new ManaBurned(),
     moreFollowers: new Map(),
     moreFollowings: new Map(),
     profiles: new List(), // to be removed

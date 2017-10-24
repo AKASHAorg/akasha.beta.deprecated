@@ -21,7 +21,7 @@ export const balanceToNumber = (balance, precision = 0) => {
     return Number(result);
 };
 
-export const formatBalance = (balance, length) => {
+export const formatBalance = (balance, length = 0) => {
     if (!balance) {
         return '';
     }

@@ -46,6 +46,9 @@ export const selectBaseUrl = state =>
 
 export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
 
+export const selectClaimableEntries = state =>
+    state.actionState.get('claimable').map(entryId => selectEntry(state, entryId));
+
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entries'])
@@ -107,7 +110,7 @@ export const selectDraftById = (state, draftId) =>
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
-export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id]);
+export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id, 'totalKarma']);
 
 export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canClaim', id]);
 
@@ -233,6 +236,8 @@ export const selectLoggedProfileData = state =>
 
 export const selectManaBalance = state => state.profileState.getIn(['balance', 'mana', 'remaining']);
 
+export const selectManaBurned = state => state.profileState.get('manaBurned');
+
 export const selectMoreComments = (state, parent) => state.commentsState.getIn(['moreComments', parent]);
 
 export const selectMoreFollowers = (state, ethAddress) =>
@@ -258,6 +263,12 @@ export const selectPendingBondAeth = state => state.actionState.getIn(['pending'
 export const selectPendingClaim = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'claim', entryId]);
 
+export const selectPendingClaims = state =>
+    state.actionState.getIn(['pending', 'claim']);
+
+export const selectPendingClaimVotes = state =>
+    state.actionState.getIn(['pending', 'claimVote']);
+
 export const selectPendingComments = (state, entryId) =>
     state.actionState.getIn(['pending', 'comment', entryId]) || new List();
 
@@ -271,6 +282,9 @@ export const selectPendingFollow = (state, akashaId) =>
 
 export const selectPendingTip = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
+
+export const selectPendingTransformEssence = state =>
+    state.actionState.getIn(['pending', 'transformEssence']);
 
 export const selectPendingVote = (state, entryId) =>
     !!state.actionState.getIn(['pending', 'entryVote', entryId]);

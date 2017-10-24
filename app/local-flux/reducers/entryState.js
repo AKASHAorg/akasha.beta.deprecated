@@ -1,7 +1,7 @@
 import { Map, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
-import { CardInfo, EntryAuthor, EntryContent, EntryPageOverlay, EntryRecord,
+import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
     EntryState } from './records';
 
 const initialState = new EntryState();
@@ -84,9 +84,17 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) => {
         const canClaim = {};
         data.collection.forEach((res) => {
-            canClaim[res.entryId] = res.canClaim;
+            canClaim[res.entryId] = res.status;
         });
         return state.mergeIn(['canClaim'], new Map(canClaim));
+    },
+
+    [types.ENTRY_CAN_CLAIM_VOTE_SUCCESS]: (state, { data }) => {
+        const canClaimVote = {};
+        data.collection.forEach((res) => {
+            canClaimVote[res.entryId] = res.status;
+        });
+        return state.mergeIn(['canClaimVote'], new Map(canClaimVote));
     },
 
     [types.ENTRY_CLEAN_FULL]: state =>
@@ -98,7 +106,7 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
         const balance = {};
         data.collection.forEach((res) => {
-            balance[res.entryId] = res.balance;
+            balance[res.entryId] = new EntryBalance(res);
         });
         return state.mergeIn(['balance'], new Map(balance));
     },
@@ -148,10 +156,18 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_SHORT]: (state, { entryId, context }) => {
+    [types.ENTRY_GET_SHORT]: (state, { entryId, context, ethAddress }) => {
         let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
         pendingEntries = pendingEntries.set(entryId, true);
-        return state.setIn(['flags', 'pendingEntries', context], pendingEntries);
+        let byId = state.get('byId');
+        if (!byId.get(entryId)) {
+            const newEntry = createEntryWithAuthor({ author: { ethAddress }, entryId });
+            byId = byId.set(entryId, newEntry);
+        }
+        return state.merge({
+            byId,
+            flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
+        });
     },
 
     [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
