@@ -258,7 +258,7 @@ const generalMessages = defineMessages({
     no: {
         id: 'app.general.no',
         description: 'no (for confirmations)',
-        defaultMessage: 'no'
+        defaultMessage: 'No'
     },
     notes: {
         id: 'app.general.notes',
@@ -299,6 +299,11 @@ const generalMessages = defineMessages({
         id: 'app.general.publish',
         description: 'button label for publish action',
         defaultMessage: 'Publish'
+    },
+    rename: {
+        id: 'app.general.rename',
+        description: 'rename',
+        defaultMessage: 'Rename'
     },
     reply: {
         id: 'app.general.reply',
@@ -431,7 +436,7 @@ const generalMessages = defineMessages({
     yes: {
         id: 'app.general.yes',
         description: 'yes (as a confirmation)',
-        defaultMessage: 'yes',
+        defaultMessage: 'Yes',
     }
 });
 export { generalMessages };
