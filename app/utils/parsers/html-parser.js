@@ -12,7 +12,13 @@ class HtmlParser extends ParserUtils {
 
     getInfo = () => {
         this.htmlContent = this.parseHtmlFromString(this.htmlString);
-        return this.parseOGMetaTags();
+        return Promise.all([
+            this.parseOGMetaTags(),
+            this.parseTags(),
+        ]).then(infoArr => infoArr.reduce((prev, curr) => ({
+            ...curr,
+            ...prev,
+        })));
     }
     /**
      * parse Open graph meta tags
@@ -39,12 +45,12 @@ class HtmlParser extends ParserUtils {
         );
     }
 
-    parseTags = (targetTags) => {
-        const props = targetTags.map((tag) => {
-            const domTags = this.htmlContent.getElementsByTagName(tag.name);
-            if (domTags.length > 0) {
+    parseTags = () => {
+        const props = targetMetaTags.metaNames.map((tag) => {
+            const domTag = this.htmlContent.getElementsByTagName('meta')[tag.name];
+            if (domTag) {
                 return Promise.resolve({
-                    [tag.propertyName]: domTags[0].innerText
+                    [tag.key]: domTag.content
                 });
             }
             return Promise.resolve({});
