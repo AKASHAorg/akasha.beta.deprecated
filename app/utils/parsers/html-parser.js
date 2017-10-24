@@ -15,10 +15,13 @@ class HtmlParser extends ParserUtils {
         return Promise.all([
             this.parseOGMetaTags(),
             this.parseTags(),
-        ]).then(infoArr => infoArr.reduce((prev, curr) => ({
-            ...curr,
-            ...prev,
-        })));
+        ]).then(infoArr => infoArr.reduce((prev, curr) => {
+            console.log(curr, prev, 'curr, prev');
+            return {
+                ...curr,
+                ...prev,
+            };
+        }));
     }
     /**
      * parse Open graph meta tags
@@ -48,6 +51,7 @@ class HtmlParser extends ParserUtils {
     parseTags = () => {
         const props = targetMetaTags.metaNames.map((tag) => {
             const domTag = this.htmlContent.getElementsByTagName('meta')[tag.name];
+            console.log(domTag.content, 'parseTags');
             if (domTag) {
                 return Promise.resolve({
                     [tag.key]: domTag.content
