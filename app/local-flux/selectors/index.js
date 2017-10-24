@@ -279,7 +279,7 @@ export const selectProfile = (state, ethAddress) =>
     state.profileState.getIn(['byEthAddress', ethAddress]) || new ProfileRecord();
 
 export const selectProfileEditToggle = state =>
-    state.appState.get('profileEditToggle');
+    state.appState.get('showProfileEditor');
 
 export const selectProfileEntries = (state, akashaId) =>
     state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)

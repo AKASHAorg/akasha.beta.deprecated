@@ -90,10 +90,11 @@ class ProfileCompleteForm extends Component {
     }
 
     _handleResponse = (resp) => {
-        const { idValid, exists, } = resp.data;
-        if (resp.error) {
+        const { tempProfile, onProfileUpdate } = this.props;
+        const { idValid, exists, normalisedId } = resp.data;
+        if (resp.error && resp.error.message) {
             this.setState({
-                error: `Unknown error ${resp.error}`
+                error: `Unknown error ${resp.error.message}`
             });
             return;
         }
@@ -101,6 +102,9 @@ class ProfileCompleteForm extends Component {
             akashaIdIsValid: idValid,
             akashaIdExists: exists
         });
+        if (normalisedId) {
+            onProfileUpdate(tempProfile.set('akashaId', normalisedId));
+        }
     }
 
     _validateAkashaId = (akashaId) => {
@@ -162,7 +166,10 @@ class ProfileCompleteForm extends Component {
     // server validated akashaId errors must have higher priority
     _getAkashaIdErrors = () => {
         const { intl } = this.props;
-        const { akashaIdIsValid, akashaIdExists } = this.state;
+        const { akashaIdIsValid, akashaIdExists, error } = this.state;
+        if (error) {
+            return error;
+        }
         if (!akashaIdIsValid) {
             return intl.formatMessage(validationMessages.akashaIdNotValid);
         }
@@ -240,8 +247,8 @@ class ProfileCompleteForm extends Component {
                     actionTypes.profileRegister;
                 const ethAddress = tempProfile.get('ethAddress');
                 const data = tempProfile ? tempProfile.toJS() : null;
-                actionAdd(ethAddress, actionType, data);
                 history.push('/setup/new-identity-interests');
+                actionAdd(ethAddress, actionType, data);
             }
         });
     }

@@ -13,7 +13,8 @@ import { generalMessages } from '../locale-data/messages';
 import { draftCreate } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import { selectLoggedProfileData, selectLoggedProfile } from '../local-flux/selectors';
+import { selectLoggedProfileData, selectLoggedProfile,
+    selectProfileEditToggle } from '../local-flux/selectors';
 
 class Sidebar extends Component {
     state = {
@@ -100,6 +101,13 @@ class Sidebar extends Component {
         });
     }
 
+    _handleLogout = () => {
+        if (this.props.isProfileEditToggled) {
+            this.props.profileEditToggle();
+        }
+        this.props.profileLogout();
+    }
+
     render () {
         const { activeDashboard, history, intl, location, loggedProfileData } = this.props;
 
@@ -115,7 +123,7 @@ class Sidebar extends Component {
               {intl.formatMessage(generalMessages.editProfile)}
             </div>
             <div
-              onClick={this.props.profileLogout}
+              onClick={this._handleLogout}
               className="sidebar__button-text"
             >
               {intl.formatMessage(generalMessages.logout)}
@@ -253,6 +261,7 @@ Sidebar.propTypes = {
     draftCreate: PropTypes.func,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
+    isProfileEditToggled: PropTypes.bool,
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
@@ -267,6 +276,7 @@ function mapStateToProps (state) {
         balance: state.profileState.get('balance'),
         draftsCount: state.draftState.get('draftsCount'),
         hasFeed: state.notificationsState.get('hasFeed'),
+        isProfileEditToggled: selectProfileEditToggle(state),
         loggedProfile: selectLoggedProfile(state),
         loggedProfileData: selectLoggedProfileData(state),
         notificationsCount: state.notificationsState.get('youNrFeed'),
@@ -281,5 +291,9 @@ export default connect(
         draftCreate,
         profileEditToggle,
         profileLogout
+    },
+    null,
+    {
+        pure: false
     }
 )(withRouter(injectIntl(Sidebar)));

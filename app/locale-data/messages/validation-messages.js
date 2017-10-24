@@ -41,7 +41,7 @@ const validationMessages = defineMessages({
     akashaIdNotValid: {
         id: 'app.validator.akashaIdNotValid',
         description: 'When the akashaId is not valid',
-        defaultMessage: 'Only lowercase alphanumeric characters, dots and underscores allowed'
+        defaultMessage: 'Only lowercase alphanumeric characters allowed'
     },
     validAddress: {
         id: 'app.validator.validAddress',

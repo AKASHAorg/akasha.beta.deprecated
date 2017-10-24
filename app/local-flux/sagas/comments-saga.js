@@ -126,6 +126,7 @@ function* commentsPublishSuccess ({ data }) {
     }
     const toBlock = yield select(state => selectNewestCommentBlock(state, parent));
     yield fork(commentsIterator, { entryId, toBlock, parent, reversed: true });
+    yield put(appActions.showNotification({ id: 'publishCommentSuccess' }));
 }
 
 function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) {
