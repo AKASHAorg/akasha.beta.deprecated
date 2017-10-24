@@ -6,7 +6,7 @@ import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { bootstrapHome, hideTerms, toggleAethWallet,
+import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
@@ -15,11 +15,11 @@ import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
     TagSearchPage } from './';
-import { AppSettings, ConfirmationDialog, DashboardSecondarySidebar, DataLoader, ErrorNotification,
-    GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries, MyBalance, MyEntries,
-    NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview, ProfileOverviewSecondarySidebar,
-    ProfilePage, ProfileEdit, SearchSecondarySidebar, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar,
-    WalletPanel } from '../components';
+import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
+    ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
+    MyBalance, MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
+    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SearchSecondarySidebar,
+    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, WalletPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -186,6 +186,10 @@ class AppContainer extends Component {
                 {appState.get('showAppSettings') &&
                   <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
                 }
+                <NavigateAwayModal
+                  navigation={appState.get('outsideNavigation')}
+                  onClick={this.props.toggleOutsideNavigation}
+                />
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
                 {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
@@ -216,6 +220,7 @@ AppContainer.propTypes = {
     theme: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
+    toggleOutsideNavigation: PropTypes.func,
 };
 
 function mapStateToProps (state) {
@@ -240,6 +245,7 @@ export default connect(
         // hideReportModal,
         licenseGetAll,
         toggleAethWallet,
-        toggleEthWallet
+        toggleEthWallet,
+        toggleOutsideNavigation,
     }
 )(injectIntl(AppContainer));

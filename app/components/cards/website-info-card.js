@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Card } from 'antd';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
-const getImageSrc = (imageObj, baseUrl) => {
-    const bestMatch = findClosestMatch(700, imageObj.toJS(), imageObj.keys()[0]);
+const getImageSrc = (imageObj, baseUrl, targetWidth) => {
+    const bestMatch = findClosestMatch((targetWidth || 700), imageObj.toJS(), imageObj.keys()[0]);
     return imageCreator(imageObj.getIn([bestMatch, 'src']), baseUrl);
 };
 
@@ -14,18 +14,25 @@ const getHostName = (url) => {
     return link.hostname;
 };
 
+const navigateTo = (url, onClick) =>
+    (ev) => {
+        ev.preventDefault();
+        if (onClick) onClick(url);
+    };
+
 const WebsiteInfoCard = (props) => {
-    const { cardInfo, url, baseUrl, hasCard } = props;
+    const { cardInfo, baseUrl, hasCard, baseWidth, onClick } = props;
+    const { url } = cardInfo;
     return (
       <Card bodyStyle={{ padding: 0 }} className="website-info-card" noHovering>
         {(cardInfo.get('image').size > 0) &&
-          <a href={url} title={url}>
+          <a onClick={navigateTo(url, onClick)} href="#" title={url}>
             <img
               alt="card-cover"
               style={{
                 width: '100%'
               }}
-              src={getImageSrc(cardInfo.get('image'), baseUrl)}
+              src={getImageSrc(cardInfo.get('image'), baseUrl, baseWidth)}
             />
           </a>
         }
@@ -33,7 +40,8 @@ const WebsiteInfoCard = (props) => {
           {cardInfo.get('title') &&
             <h3 title={cardInfo.get('title')}>
               <a
-                href={url}
+                onClick={navigateTo(url, onClick)}
+                href="#"
                 title={url}
               >
                 {cardInfo.get('title')}
@@ -41,16 +49,19 @@ const WebsiteInfoCard = (props) => {
             </h3>
           }
           {cardInfo.get('description') &&
-            <div>
+            <a
+              onClick={navigateTo(url, onClick)}
+              href="#"
+            >
               {cardInfo.get('description')}
-            </div>
+            </a>
           }
           {url && hasCard &&
             <small
               title={url}
               className="website-info-card__source-url"
             >
-              <a href={url}>{getHostName(url)}</a>
+              <a onClick={navigateTo(url, onClick)} href="#" >{getHostName(url)}</a>
             </small>
           }
         </div>
@@ -60,9 +71,10 @@ const WebsiteInfoCard = (props) => {
 
 WebsiteInfoCard.propTypes = {
     baseUrl: PropTypes.string,
+    baseWidth: PropTypes.number,
     cardInfo: PropTypes.shape(),
     hasCard: PropTypes.bool,
-    url: PropTypes.string,
+    onClick: PropTypes.func,
 };
 
 export default WebsiteInfoCard;

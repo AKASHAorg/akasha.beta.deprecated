@@ -83,7 +83,11 @@ const appState = createReducer(initialState, {
 
     [types.TOGGLE_IPFS_DETAILS_MODAL]: state =>
         state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
-
+    [types.TOGGLE_OUTSIDE_NAVIGATION_MODAL]: (state, { url }) =>
+        state.mergeIn(['outsideNavigation'], {
+            isVisible: !!url,
+            url,
+        })
 });
 
 export default appState;

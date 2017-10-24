@@ -8,7 +8,7 @@ import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
     TagEditor, WebsiteInfoCard } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { extractWebsiteInfo } from '../utils/extract-website-info';
+import { WebsiteParser } from '../utils/extract-website-info';
 import { draftCreate, draftUpdate, draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { tagSearchLocal } from '../local-flux/actions/tag-actions';
@@ -48,47 +48,27 @@ class NewLinkEntryPage extends Component {
             });
         }
     }
-    // format an url based on the prefix of the source url
-    _formatUrl = (targetUrl, sourceUrl) => {
-        const prefix = sourceUrl.split('://')[0];
-        if (targetUrl.startsWith(prefix)) {
-            return targetUrl;
-        }
-        if (targetUrl.startsWith('//')) {
-            return `${prefix}://${targetUrl.substr(2)}`;
-        }
-        return `${prefix}://${targetUrl}`;
-    }
     _processUrl = () => {
         const { draftObj, loggedProfile, match } = this.props;
         const url = draftObj.getIn(['content', 'cardInfo', 'url']);
-        extractWebsiteInfo(url).then((data) => {
-            let filePromises = [];
-            if (data.info.image) {
-                filePromises = getResizedImages([this._formatUrl(data.info.image, data.url)], {
-                    ipfsFile: true
-                });
-            }
-            Promise.all(filePromises).then((results) => {
-                let promise = Promise.resolve();
-                if (results[0]) {
-                    promise = uploadImage(results[0]);
-                }
-                promise.then(uploadedImage =>
-                    this.props.draftUpdate(draftObj.merge({
-                        ethAddress: loggedProfile.get('ethAddress'),
-                        content: draftObj.get('content').merge({
-                            cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
-                                title: data.info.title,
-                                description: data.info.description,
-                                image: uploadedImage || {},
-                                bgColor: data.info.bgColor,
-                                url: data.url
-                            }),
-                        }),
-                        id: match.params.draftId,
-                    })));
-            });
+        const parser = new WebsiteParser({
+            url,
+            uploadImageToIpfs: true
+        });
+        parser.getInfo().then((data) => {
+            this.props.draftUpdate(draftObj.merge({
+                ethAddress: loggedProfile.get('ethAddress'),
+                content: draftObj.get('content').merge({
+                    cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
+                        title: data.info.title,
+                        description: data.info.description,
+                        image: data.info.image,
+                        bgColor: data.info.bgColor,
+                        url: data.url
+                    }),
+                }),
+                id: match.params.draftId,
+            }));
         });
     }
 
