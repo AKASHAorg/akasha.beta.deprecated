@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Icon, Popover, Progress, Tooltip } from 'antd';
+import { Button, Icon, Popover, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
-import { Avatar, ManaPopover } from './';
+import { Avatar, EssencePopover, ManaPopover } from './';
 import { generalMessages } from '../locale-data/messages';
 import { draftCreate } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
@@ -217,14 +217,7 @@ class Sidebar extends Component {
               <ManaPopover />
             </div>
             <div className="flex-center-x sidebar__progress-wrapper">
-              <Progress
-                className="sidebar__essence-progress"
-                format={() => <Icon type="question-circle-o" />}
-                percent={Math.random() * 100}
-                strokeWidth={10}
-                type="circle"
-                width={32}
-              />
+              <EssencePopover />
             </div>
             <div className="flex-center-x sidebar__avatar">
               <Popover

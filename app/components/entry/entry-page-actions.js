@@ -145,7 +145,7 @@ class EntryPageAction extends Component {
                     </Tooltip>
                     {entryBalance !== 'claimed' &&
                       <div className="entry-actions__balance">
-                        {entryBalance} AETH
+                        {entryBalance} Essence
                       </div>
                     }
                   </div>

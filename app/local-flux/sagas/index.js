@@ -2,6 +2,7 @@ import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
+import { profileManaBurned } from '../actions/profile-actions';
 import { searchHandshake } from '../actions/search-actions';
 import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
@@ -61,7 +62,8 @@ function* launchHomeActions () {
     if (yield select(selectLoggedEthAddress)) {
         yield put(actionActions.actionGetPending());
     }
-    yield put(searchHandshake());
+    // yield put(searchHandshake());
+    yield put(profileManaBurned());
 }
 
 function* bootstrapApp () {

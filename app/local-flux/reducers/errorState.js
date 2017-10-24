@@ -41,6 +41,7 @@ const errorState = createReducer(initialState, {
     [types.ENTRIES_GET_AS_DRAFTS_ERROR]: addNewError,
     [types.DRAFT_PUBLISH_ERROR]: addNewError,
     [types.ENTRY_CLAIM_ERROR]: addNewError,
+    [types.ENTRY_CLAIM_VOTE_ERROR]: addNewError,
     [types.ENTRY_DOWNVOTE_ERROR]: addNewError,
     [types.ENTRY_GET_FULL_ERROR]: addNewError,
     [types.ENTRY_LIST_ITERATOR_ERROR]: addNewError,

@@ -156,7 +156,7 @@ export const profileGetLocalSuccess = data => action(types.PROFILE_GET_LOCAL_SUC
 export const profileGetLogged = () => action(types.PROFILE_GET_LOGGED);
 
 export const profileGetLoggedError = (error) => {
-    error.code = 'PGLE02';
+    error.code = 'PGLE03';
     error.messageId = 'profileGetLogged';
     return action(types.PROFILE_GET_LOGGED_ERROR, { error });
 };
@@ -190,6 +190,15 @@ export const profileLogoutError = (error) => {
 };
 
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
+export const profileManaBurned = () => action(types.PROFILE_MANA_BURNED);
+
+export const profileManaBurnedError = (error) => {
+    error.code = 'PMBE01';
+    error.messageId = 'profileManaBurned';
+    return action(types.PROFILE_MANA_BURNED_ERROR, { error });
+};
+
+export const profileManaBurnedSuccess = data => action(types.PROFILE_MANA_BURNED_SUCCESS, { data });
 export const profileMoreFollowersIterator = akashaId =>
     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { akashaId });
 

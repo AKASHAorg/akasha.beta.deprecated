@@ -25,10 +25,17 @@ function* enableExtraChannels () {
     ]);
 }
 
-function* entryCanClaim ({ entryId }) {
+function* entryCanClaim ({ entryIds }) {
     const channel = Channel.server.entry.canClaim;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId: [entryId] }]);
+    yield apply(channel, channel.send, [{ entryId: entryIds }]);
+}
+
+function* entryCanClaimVote ({ entryIds }) {
+    const channel = Channel.server.entry.canClaimVote;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(channel, channel.send, [{ entries: entryIds, ethAddress }]);
 }
 
 function* entryClaim ({ actionId, entryId, entryTitle }) {
@@ -40,10 +47,28 @@ function* entryClaim ({ actionId, entryId, entryTitle }) {
 
 function* entryClaimSuccess ({ data }) {
     const { entryId } = data;
-    yield put(actions.entryCanClaim(entryId));
-    yield put(actions.entryGetBalance(entryId));
+    yield put(actions.entryCanClaim([entryId]));
+    yield put(actions.entryGetBalance([entryId]));
     yield put(appActions.showNotification({
         id: 'claimSuccess',
+        duration: 4,
+        values: { entryTitle: data.entryTitle }
+    }));
+}
+
+function* entryClaimVote ({ actionId, entryId, entryTitle }) {
+    const channel = Channel.server.entry.claimVote;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ actionId, token, entryId, entryTitle }]);
+}
+
+function* entryClaimVoteSuccess ({ data }) {
+    const { entryId } = data;
+    yield put(actions.entryCanClaimVote([entryId]));
+    yield put(appActions.showNotification({
+        id: 'claimVoteSuccess',
+        duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
 }
@@ -63,14 +88,15 @@ function* entryDownvoteSuccess ({ data }) {
     yield call(entryVoteSuccess, data.entryId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({
         id: 'downvoteEntrySuccess',
+        duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
 }
 
-function* entryGetBalance ({ entryId }) {
+function* entryGetBalance ({ entryIds }) {
     const channel = Channel.server.entry.getEntryBalance;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ entryId: [entryId] }]);
+    yield apply(channel, channel.send, [entryIds]);
 }
 
 function* entryGetExtraOfEntry (entryId, ethAddress) {
@@ -80,7 +106,7 @@ function* entryGetExtraOfEntry (entryId, ethAddress) {
     const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
     yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
     if (isOwnEntry) {
-        yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
+        yield apply(getEntryBalance, getEntryBalance.send, [[entryId]]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
     } else {
         const isFollower = yield select(state => selectIsFollower(state, ethAddress));
@@ -159,10 +185,11 @@ function* entryGetShort ({ context, entryId, ethAddress }) {
     yield apply(channel, channel.send, [{ context, entryId, ethAddress }]);
 }
 
-function* entryGetVoteOf ({ entryId }) {
+function* entryGetVoteOf ({ entryIds }) {
     const channel = Channel.server.entry.getVoteOf;
     const ethAddress = yield select(selectLoggedEthAddress);
-    yield apply(channel, channel.send, [[{ ethAddress, entryId }]]);
+    const request = entryIds.map(id => ({ entryId: id, ethAddress }));
+    yield apply(channel, channel.send, [request]);
 }
 
 function* entryListIterator ({ name }) {
@@ -244,7 +271,7 @@ function* entryTagIterator ({ columnId, tagName }) {
 
 function* entryVoteSuccess (entryId) {
     yield put(actions.entryGetScore(entryId));
-    yield put(actions.entryGetVoteOf(entryId));
+    yield put(actions.entryGetVoteOf([entryId]));
 }
 
 function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
@@ -262,6 +289,7 @@ function* entryUpvoteSuccess ({ data }) {
     yield call(entryVoteSuccess, data.entryId);
     yield put(appActions.showNotification({
         id: 'upvoteEntrySuccess',
+        duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
 }
@@ -286,6 +314,17 @@ function* watchEntryCanClaimChannel () {
     }
 }
 
+function* watchEntryCanClaimVoteChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.canClaimVote);
+        if (resp.error) {
+            yield put(actions.entryCanClaimVoteError(resp.error));
+        } else {
+            yield put(actions.entryCanClaimVoteSuccess(resp.data));
+        }
+    }
+}
+
 function* watchEntryClaimChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.claim);
@@ -293,6 +332,30 @@ function* watchEntryClaimChannel () {
         if (resp.error) {
             yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
             yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.entryClaimError({}, entryId, entryTitle));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
+function* watchEntryClaimVoteChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.claimVote);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.entryClaimVoteError(resp.error, resp.request));
+            yield put(actionActions.actionDelete(actionId));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.entryClaimVoteError({}, resp.request));
+            }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -309,6 +372,9 @@ function* watchEntryDownvoteChannel () {
             yield put(actionActions.actionDelete(actionId));
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.entryDownvoteError({}, entryId, entryTitle));
+            }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -497,6 +563,9 @@ function* watchEntryUpvoteChannel () {
             yield put(actionActions.actionDelete(actionId));
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.entryUpvoteError({}, entryId, entryTitle));
+            }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
             yield put(actionActions.actionUpdate(changes));
@@ -517,7 +586,9 @@ function* watchEntryVoteCostChannel () {
 
 export function* registerEntryListeners () {
     yield fork(watchEntryCanClaimChannel);
+    yield fork(watchEntryCanClaimVoteChannel);
     yield fork(watchEntryClaimChannel);
+    yield fork(watchEntryClaimVoteChannel);
     yield fork(watchEntryDownvoteChannel);
     yield fork(watchEntryGetBalanceChannel);
     yield fork(watchEntryGetChannel);
@@ -534,8 +605,11 @@ export function* registerEntryListeners () {
 
 export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_CAN_CLAIM, entryCanClaim);
+    yield takeEvery(types.ENTRY_CAN_CLAIM_VOTE, entryCanClaimVote);
     yield takeEvery(types.ENTRY_CLAIM, entryClaim);
     yield takeEvery(types.ENTRY_CLAIM_SUCCESS, entryClaimSuccess);
+    yield takeEvery(types.ENTRY_CLAIM_VOTE, entryClaimVote);
+    yield takeEvery(types.ENTRY_CLAIM_VOTE_SUCCESS, entryClaimVoteSuccess);
     yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
     yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
     yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);

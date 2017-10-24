@@ -31,7 +31,7 @@ function* commentsDownvote ({ actionId, commentId, entryId, weight }) {
 
 function* commentsDownvoteSuccess ({ data }) {
     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
-    yield put(appActions.showNotification({ id: 'downvoteCommentSuccess' }));
+    yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
 function* commentsGetCount ({ entryId }) {
@@ -121,12 +121,12 @@ function* commentsPublish ({ actionId, ...payload }) {
 function* commentsPublishSuccess ({ data }) {
     const { entryId, parent } = data;
     const entry = yield select(state => state.entryState.get('fullEntry'));
+    yield put(appActions.showNotification({ id: 'publishCommentSuccess', duration: 4 }));
     if (!entry || entry.get('entryId') !== entryId) {
         return;
     }
     const toBlock = yield select(state => selectNewestCommentBlock(state, parent));
     yield fork(commentsIterator, { entryId, toBlock, parent, reversed: true });
-    yield put(appActions.showNotification({ id: 'publishCommentSuccess' }));
 }
 
 function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) {
@@ -148,7 +148,7 @@ function* commentsUpvote ({ actionId, commentId, entryId, weight }) {
 
 function* commentsUpvoteSuccess ({ data }) {
     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
-    yield put(appActions.showNotification({ id: 'upvoteCommentSuccess' }));
+    yield put(appActions.showNotification({ id: 'upvoteCommentSuccess', duration: 4 }));
 }
 
 function* commentsVoteSuccess (commentId) {
