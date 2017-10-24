@@ -7,6 +7,7 @@ import Masonry from 'react-masonry-component';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../locale-data/messages';
 import { entryPageShow } from '../local-flux/actions/entry-actions';
+import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import { selectAllPendingClaims, selectAllPendingVotes,
     selectLoggedEthAddress } from '../local-flux/selectors';
 import { isInViewport } from '../utils/domUtils';
@@ -51,19 +52,19 @@ class EntryList extends Component {
     }
 
     handleEdit = (entryId) => {
-        const { history, loggedAkashaId } = this.props;
+        const { history, loggedEthAddress } = this.props;
         const existingDraft = this.getExistingDraft(entryId);
         if (existingDraft) {
-            history.push(`/${loggedAkashaId}/draft/${existingDraft.get('id')}`);
+            history.push(`/${loggedEthAddress}/draft/${existingDraft.get('id')}`);
         } else {
-            history.push(`/${loggedAkashaId}/draft/new?editEntry=${entryId}`);
+            history.push(`/${loggedEthAddress}/draft/new?editEntry=${entryId}`);
         }
     };
 
     render () {
-        const { blockNr, cardStyle, canClaimPending, defaultTimeout, entries, fetchingEntries,
-            fetchingEntryBalance, fetchingMoreEntries, intl, loggedEthAddress, masonry, moreEntries,
-            pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
+        const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, defaultTimeout, entries,
+            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, loggedEthAddress,
+            masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
             style } = this.props;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
@@ -74,6 +75,8 @@ class EntryList extends Component {
             const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
 
             return (<EntryCard
+              baseWidth={baseWidth}
+              baseUrl={baseUrl}
               blockNr={blockNr}
               canClaimPending={canClaimPending}
               claimPending={claimPending}
@@ -84,7 +87,7 @@ class EntryList extends Component {
               key={entry.get('entryId')}
               loggedEthAddress={loggedEthAddress}
               style={cardStyle}
-
+              toggleOutsideNavigation={this.props.toggleOutsideNavigation}
               author={author}
               containerRef={this.container}
               entryPageShow={this.props.entryPageShow}
@@ -133,6 +136,8 @@ class EntryList extends Component {
 }
 
 EntryList.propTypes = {
+    baseUrl: PropTypes.string,
+    baseWidth: PropTypes.number,
     blockNr: PropTypes.number,
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
@@ -146,7 +151,7 @@ EntryList.propTypes = {
     moreEntries: PropTypes.bool,
     placeholderMessage: PropTypes.string,
     style: PropTypes.shape(),
-
+    toggleOutsideNavigation: PropTypes.func,
     // used in mapStateToProps
     contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // eslint-disable-line
     entryPageShow: PropTypes.func.isRequired,
@@ -162,7 +167,8 @@ EntryList.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
+        baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+        blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
@@ -177,6 +183,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryPageShow
+        entryPageShow,
+        toggleOutsideNavigation,
     }
 )(withRouter(injectIntl(EntryList)));

@@ -13,6 +13,10 @@ export const AppRecord = Record({
     homeReady: false,
     notifications: new List(),
     displayedNotifications: new List(),
+    outsideNavigation: new Map({
+        url: null,
+        isVisible: false,
+    }),
     showAppSettings: false,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,

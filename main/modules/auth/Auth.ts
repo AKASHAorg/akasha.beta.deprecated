@@ -138,6 +138,13 @@ export class Auth {
             .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 
+    public signMessage(data: {}, token: string) {
+        return GethConnector.getInstance()
+            .web3
+            .personal
+            .signAsync(data, GethConnector.getInstance().web3.eth.defaultAccount, this._read(token).toString('utf8'));
+    }
+
     /**
      *
      * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}

@@ -167,12 +167,14 @@ function* draftPublishUpdate ({ actionId, draft }) {
     const { id } = draft;
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
+    const ethAddress = yield select(selectLoggedEthAddress);
     const draftToPublish = draftFromState.toJS();
     draftToPublish.content.draft = JSON.parse(
         editorStateToJSON(draftFromState.getIn(['content', 'draft']))
     );
     yield call(enableChannel, channel, Channel.client.entry.manager);
     console.log('sending to main:', {
+        ethAddress,
         actionId,
         entryId: id,
         token,
@@ -180,6 +182,7 @@ function* draftPublishUpdate ({ actionId, draft }) {
         content: draftToPublish.content
     });
     yield call([channel, channel.send], {
+        ethAddress,
         actionId,
         entryId: id,
         token,
@@ -187,15 +190,6 @@ function* draftPublishUpdate ({ actionId, draft }) {
         content: draftToPublish.content,
     });
 }
-
-// function* draftPublishUpdateSuccess ({ data }) {
-//     const { id } = data.draft;
-//     yield put(entryActions.entryGetFull({
-//         entryId: id,
-//         asDraft: true
-//     }));
-//     yield call([draftService, draftService.draftDelete], { draftId: id });
-// }
 
 function* draftRevert ({ data }) {
     const { id } = data;
