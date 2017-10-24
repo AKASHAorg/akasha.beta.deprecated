@@ -9,6 +9,7 @@ const votesIterator = {
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
+        'lastIndex': {'type': 'number'},
         'entryId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
         'akashaId': { 'type': 'string' },
