@@ -76,6 +76,11 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when a tag was registered',
         defaultMessage: 'Tag "{tagName}" successfully registered.'
     },
+    publishCommentSuccess: {
+        id: 'app.notification.publishCommentSuccess',
+        description: 'Notification to be displayed when publish comment transaction was mined',
+        defaultMessage: 'You successfully published a comment'
+    },
     publishingEntry: {
         id: 'app.notification.publishingEntry',
         description: 'Notification for when entry is publishing',

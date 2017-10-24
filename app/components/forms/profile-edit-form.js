@@ -96,10 +96,11 @@ class ProfileEditForm extends Component {
     }
 
     _handleResponse = (resp) => {
-        const { idValid, exists, } = resp.data;
-        if (resp.error) {
+        const { tempProfile, onProfileUpdate } = this.props;
+        const { idValid, exists, normalisedId } = resp.data;
+        if (resp.error && resp.error.message) {
             this.setState({
-                error: `Unknown error ${resp.error}`
+                error: `Unknown error ${resp.error.message}`
             });
             return;
         }
@@ -107,6 +108,9 @@ class ProfileEditForm extends Component {
             akashaIdIsValid: idValid,
             akashaIdExists: exists
         });
+        if (normalisedId) {
+            onProfileUpdate(tempProfile.set('akashaId', normalisedId));
+        }
     }
 
     _validateAkashaId = (akashaId) => {
@@ -168,7 +172,10 @@ class ProfileEditForm extends Component {
     // server validated akashaId errors must have higher priority
     _getAkashaIdErrors = () => {
         const { intl } = this.props;
-        const { akashaIdIsValid, akashaIdExists } = this.state;
+        const { akashaIdIsValid, akashaIdExists, error } = this.state;
+        if (error) {
+            return error;
+        }
         if (!akashaIdIsValid) {
             return intl.formatMessage(validationMessages.akashaIdNotValid);
         }
@@ -249,186 +256,188 @@ class ProfileEditForm extends Component {
 
         return (
           <div className="profile-edit-form__wrap">
-            <div className="profile-edit-form__form-wrapper">
-              <Row type="flex" className="">
-                <Form
-                  action=""
-                  style={{ width: '100%' }}
-                  onSubmit={this._handleSubmit}
-                >
-                  <Col type="flex" md={24}>
-                    <Col md={8}>
-                      <div className="row">
-                        <p className="col-xs-12">
-                          {intl.formatMessage(profileMessages.avatarTitle)}
-                        </p>
-                        <div className="col-xs-12 center-xs">
-                          <AvatarEditor
-                            editable
-                            ref={(avtr) => { this.avatar = avtr; }}
-                            image={avatar}
-                            onImageAdd={this._handleAvatarAdd}
-                            onImageClear={this._handleAvatarClear}
-                          />
+            <div className="profile-edit-form__pad">
+              <div className="profile-edit-form__form-wrapper">
+                <Row type="flex" className="">
+                  <Form
+                    action=""
+                    style={{ width: '100%' }}
+                    onSubmit={this._handleSubmit}
+                  >
+                    <Col type="flex" md={24}>
+                      <Col md={8}>
+                        <div className="row">
+                          <p className="col-xs-12">
+                            {intl.formatMessage(profileMessages.avatarTitle)}
+                          </p>
+                          <div className="col-xs-12 center-xs">
+                            <AvatarEditor
+                              editable
+                              ref={(avtr) => { this.avatar = avtr; }}
+                              image={avatar}
+                              onImageAdd={this._handleAvatarAdd}
+                              onImageClear={this._handleAvatarClear}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      </Col>
+                      <Col md={24}>
+                        <div className="row profile-edit-form__bg-image">
+                          <p className="col-xs-12" >
+                            {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                          </p>
+                          <div className="col-xs-12">
+                            <ImageUploader
+                              ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                              minWidth={360}
+                              intl={intl}
+                              initialImage={backgroundImage}
+                              baseUrl={baseUrl}
+                              onImageClear={this._handleBackgroundClear}
+                              onChange={this._handleBackgroundChange}
+                            />
+                          </div>
+                        </div>
+                      </Col>
                     </Col>
                     <Col md={24}>
-                      <div className="row profile-edit-form__bg-image">
-                        <p className="col-xs-12" >
-                          {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                        </p>
-                        <div className="col-xs-12">
-                          <ImageUploader
-                            ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                            minWidth={360}
-                            intl={intl}
-                            initialImage={backgroundImage}
-                            baseUrl={baseUrl}
-                            onImageClear={this._handleBackgroundClear}
-                            onChange={this._handleBackgroundChange}
-                          />
+                      <FormItem
+                        label={formatMessage(formMessages.akashaId)}
+                        colon={false}
+                        hasFeedback
+                        validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
+                        help={this._getAkashaIdErrors('akashaId')}
+                        style={{ marginRight: 8 }}
+                      >
+                        <Input
+                          value={akashaId}
+                          onChange={this._handleFieldChange('akashaId')}
+                          onBlur={this._validateField('akashaId')}
+                          disabled={isUpdate}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.firstName)}
+                        colon={false}
+                        hasFeedback
+                        validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('firstName')}
+                        style={{ marginRight: 8 }}
+                      >
+                        <Input
+                          value={firstName}
+                          onChange={this._handleFieldChange('firstName')}
+                          onBlur={this._validateField('firstName')}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.lastName)}
+                        colon={false}
+                        hasFeedback
+                        validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('lastName')}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Input
+                          value={lastName}
+                          onChange={this._handleFieldChange('lastName')}
+                          onBlur={this._validateField('lastName')}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={24}>
+                      <FormItem
+                        label={intl.formatMessage(profileMessages.aboutMeTitle)}
+                        colon={false}
+                      >
+                        <Input.TextArea
+                          className="profile-edit-form__textarea"
+                          rows={2}
+                          placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
+                          value={about}
+                          onChange={this._handleFieldChange('about')}
+                          autosize={{ minRows: 2 }}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={24}>
+                      <h3 className="col-xs-10 profile-edit-form__links">
+                        {intl.formatMessage(profileMessages.linksTitle)}
+                      </h3>
+                      {links.map((link, index) => (
+                        <div key={`${index + 1}`}>
+                          <FormItem
+                            label={intl.formatMessage(formMessages.title)}
+                            colon={false}
+                            hasFeedback
+                            validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
+                            help={this._getErrorMessages('links', index, 'title')}
+                          >
+                            <Input
+                              value={link.get('title')}
+                              onChange={this._handleLinkChange('links', 'title', link.get('id'))}
+                              onBlur={this._validateField('links', index, 'title')}
+                            />
+                          </FormItem>
+                          <FormItem
+                            label={intl.formatMessage(formMessages.url)}
+                            colon={false}
+                            hasFeedback
+                            validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
+                            help={this._getErrorMessages('links', index, 'url')}
+                          >
+                            <Input
+                              value={link.get('url')}
+                              style={{ width: '100%' }}
+                              onChange={this._handleLinkChange('links', 'url', link.get('id'))}
+                              onBlur={this._validateField('links', index, 'url')}
+                            />
+                          </FormItem>
+                          <Button
+                            type="primary"
+                            icon="close-circle"
+                            ghost
+                            onClick={this._handleRemoveLink(link.get('id'), 'links')}
+                          >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                         </div>
+                            ))}
+                      <div className="col-xs-2 end-xs profile-edit-form__add-links-btn">
+                        <Button
+                          icon="plus"
+                          type="primary borderless"
+                          onClick={this._handleAddLink('links')}
+                          title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
+                          ghost
+                          style={{ border: 'none' }}
+                        >Add more</Button>
                       </div>
                     </Col>
-                  </Col>
-                  <Col md={24}>
-                    <FormItem
-                      label={formatMessage(formMessages.akashaId)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
-                      help={this._getAkashaIdErrors('akashaId')}
-                      style={{ marginRight: 8 }}
-                    >
-                      <Input
-                        value={akashaId}
-                        onChange={this._handleFieldChange('akashaId')}
-                        onBlur={this._validateField('akashaId')}
-                        disabled={isUpdate}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.firstName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('firstName')}
-                      style={{ marginRight: 8 }}
-                    >
-                      <Input
-                        value={firstName}
-                        onChange={this._handleFieldChange('firstName')}
-                        onBlur={this._validateField('firstName')}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.lastName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('lastName')}
-                      style={{ marginLeft: 8 }}
-                    >
-                      <Input
-                        value={lastName}
-                        onChange={this._handleFieldChange('lastName')}
-                        onBlur={this._validateField('lastName')}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={24}>
-                    <FormItem
-                      label={intl.formatMessage(profileMessages.aboutMeTitle)}
-                      colon={false}
-                    >
-                      <Input.TextArea
-                        className="profile-edit-form__textarea"
-                        rows={2}
-                        placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
-                        value={about}
-                        onChange={this._handleFieldChange('about')}
-                        autosize={{ minRows: 2 }}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={24}>
-                    <h3 className="col-xs-10 profile-edit-form__links">
-                      {intl.formatMessage(profileMessages.linksTitle)}
-                    </h3>
-                    {links.map((link, index) => (
-                      <div key={`${index + 1}`}>
-                        <FormItem
-                          label={intl.formatMessage(formMessages.title)}
-                          colon={false}
-                          hasFeedback
-                          validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
-                          help={this._getErrorMessages('links', index, 'title')}
-                        >
-                          <Input
-                            value={link.get('title')}
-                            onChange={this._handleLinkChange('links', 'title', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'title')}
-                          />
-                        </FormItem>
-                        <FormItem
-                          label={intl.formatMessage(formMessages.url)}
-                          colon={false}
-                          hasFeedback
-                          validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
-                          help={this._getErrorMessages('links', index, 'url')}
-                        >
-                          <Input
-                            value={link.get('url')}
-                            style={{ width: '100%' }}
-                            onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'url')}
-                          />
-                        </FormItem>
-                        <Button
-                          type="primary"
-                          icon="close-circle"
-                          ghost
-                          onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                        >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
-                      </div>
-                        ))}
-                    <div className="col-xs-2 end-xs profile-edit-form__add-links-btn">
-                      <Button
-                        icon="plus"
-                        type="primary borderless"
-                        onClick={this._handleAddLink('links')}
-                        title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
-                        ghost
-                        style={{ border: 'none' }}
-                      >Add more</Button>
-                    </div>
-                  </Col>
-                  {!isUpdate &&
-                  <Col md={24}>
-                    <small className="profile-edit-form__terms">
-                      <FormattedMessage
-                        {...generalMessages.terms}
-                        values={{
-                            termsLink: (
-                              <a
-                                href="/terms"
-                                onClick={this._showTerms}
-                              >
-                                {intl.formatMessage(generalMessages.termsOfService)}
-                              </a>
-                            )
-                        }}
-                      />
-                    </small>
-                  </Col>
-                }
-                </Form>
-              </Row>
+                    {!isUpdate &&
+                    <Col md={24}>
+                      <small className="profile-edit-form__terms">
+                        <FormattedMessage
+                          {...generalMessages.terms}
+                          values={{
+                                termsLink: (
+                                  <a
+                                    href="/terms"
+                                    onClick={this._showTerms}
+                                  >
+                                    {intl.formatMessage(generalMessages.termsOfService)}
+                                  </a>
+                                )
+                            }}
+                        />
+                      </small>
+                    </Col>
+                    }
+                  </Form>
+                </Row>
+              </div>
             </div>
             <div className="profile-edit-form__buttons-wrapper">
               <div className="profile-edit-form__save-btn">
