@@ -20,7 +20,7 @@ const execute = Promise.coroutine(function* (data: { entryId: string, token: str
     const v = new schema.Validator();
     v.validate(data, claimVote, { throwError: true });
 
-    const txData = yield contracts.instance.Votes.claimKarmaVote.request(data.entryId, { gas: 200000 });
+    const txData = contracts.instance.Votes.claimKarmaVote.request(data.entryId, { gas: 200000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
 });
