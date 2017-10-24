@@ -14,7 +14,7 @@ export const syncTags = {
 };
 
 
-const execute = Promise.coroutine(function* (data: { fromBlock: number }) {
+const execute = Promise.coroutine(function* (data: { fromBlock: number }, cb) {
     const v = new schema.Validator();
     v.validate(data, syncTags, { throwError: true });
 
@@ -26,8 +26,8 @@ const execute = Promise.coroutine(function* (data: { fromBlock: number }) {
     });
     dbs.tags
         .searchIndex
-        .concurrentAdd({}, tagDocs, (err) => { if (err) { console.warn('tags: error storing index', err); }});
-    return {};
+        .concurrentAdd({}, tagDocs, (err) => { if (err) { return cb(err); } cb('', { lastBlock: fetched.fromBlock, done: true }); });
+    return { done: false };
 });
 
 export default { execute, name: 'syncTags', hasStream: true };
