@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Tooltip } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { EntryVotesModal, ListPopover, VotePopover } from '../';
@@ -106,6 +106,12 @@ class EntryPageAction extends Component {
                       </div>
                     }
                   </div>
+                  {noVotesBar &&
+                    <div className="flex-center-y">
+                      <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
+                      <Icon type="message" />
+                    </div>
+                  }
                 </div>
                 {!noVotesBar &&
                   <Tooltip placement="left" title={votePercentTooltip}>
