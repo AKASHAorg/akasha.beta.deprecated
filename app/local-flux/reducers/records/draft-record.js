@@ -9,7 +9,7 @@ export const CardInfo = Record({
     description: '',
     image: new Map(),
     bgColor: null,
-    url: ''
+    url: '',
 });
 /**
  * Draft/Entry types => article, link, image, video, book, etc..

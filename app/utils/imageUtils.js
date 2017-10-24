@@ -153,7 +153,7 @@ const canvasToArray = canvas =>
                 height: canvas.height
             });
         } catch (exception) {
-            console.log(exception);
+            // console.log(exception);
             return reject(exception);
         }
     });
@@ -188,7 +188,7 @@ const resizeImage = (image, options) => {
     imageWidths.forEach((widthObj, index) => {
         p = p.then(() => {
             const targetWidth = skipResize ? actualWidth : widthObj.res;
-            console.log('target width', targetWidth);
+            // console.log('target width', targetWidth);
             const targetHeight = (actualHeight * targetWidth) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
