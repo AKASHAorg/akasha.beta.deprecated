@@ -23,15 +23,18 @@ const getLuma = (color) => {
             0.114 * b
         ].reduce((p, c) => p + c) / 255;
     }
-    const hex = color.replace(/#/, '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    return [
-        0.299 * r,
-        0.587 * g,
-        0.114 * b
-    ].reduce((p, c) => p + c) / 255;
+    if (color.startsWith('#')) {
+        const hex = color.replace(/#/, '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        return [
+            0.299 * r,
+            0.587 * g,
+            0.114 * b
+        ].reduce((p, c) => p + c) / 255;
+    }
+    console.error('unknown color!!! please create a div and extract it with getComputedStyle');
 };
 
 const getTextColor = (color) => {
