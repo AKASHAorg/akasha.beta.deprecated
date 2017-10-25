@@ -123,7 +123,8 @@ class EntryCard extends Component {
         // if (isPending) {
         //     return this.renderResolvingPlaceholder();
         // }
-        const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title'])) || !!content.get('title');
+        const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title']).length > 0) ||
+            !!content.get('title');
         const cardClass = classNames('entry-card', {
             'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent
         });
