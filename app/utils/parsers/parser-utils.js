@@ -24,13 +24,13 @@ class ParserUtils {
         return null;
     }
     formatUrl = (url) => {
-        const urlPrefix = this.parseUrl(url).protocol;
+        const urlPrefix = ParserUtils.parseUrl(url).protocol;
         if (urlPrefix && supportedProtocols.includes(urlPrefix)) {
             return url;
         }
         return `${supportedProtocols[0]}//${url}`;
     }
-    parseUrl = (url) => {
+    static parseUrl = (url) => {
         const link = document.createElement('a');
         link.href = url;
         return {

@@ -36,7 +36,7 @@ class WebsiteParser extends ParserUtils {
 
     getInfo = () =>
         this.requestHtmlString(this.url).then((resp) => {
-            this.parsedUrl = this.parseUrl(resp.url);
+            this.parsedUrl = ParserUtils.parseUrl(resp.url);
             return resp.text();
         }).then(htmlString =>
             this.matchParser().then((MatchingParser) => {
