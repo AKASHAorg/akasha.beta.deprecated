@@ -14,6 +14,9 @@ import { uploadImage } from '../../local-flux/services/utils-service';
 
 const FormItem = Form.Item;
 
+const serverChannel = window.Channel.server.registry.profileExists;
+const clientChannel = window.Channel.client.registry.profileExists;
+
 class ProfileEditForm extends Component {
     constructor (props) {
         super(props);
@@ -33,6 +36,10 @@ class ProfileEditForm extends Component {
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
         }
+    }
+
+    componentWillUnmount () {
+        clientChannel.removeListener(this._handleResponse);
     }
 
     _showTerms = (ev) => {
@@ -95,12 +102,12 @@ class ProfileEditForm extends Component {
         };
     }
 
-    _handleResponse = (resp) => {
+    _handleResponse = (ev, resp) => {
         const { tempProfile, onProfileUpdate } = this.props;
         const { idValid, exists, normalisedId } = resp.data;
         if (resp.error && resp.error.message) {
             this.setState({
-                error: `Unknown error ${resp.error.message}`
+                error: `${resp.error.message}`
             });
             return;
         }
@@ -114,8 +121,6 @@ class ProfileEditForm extends Component {
     }
 
     _validateAkashaId = (akashaId) => {
-        const serverChannel = window.Channel.server.registry.profileExists;
-        const clientChannel = window.Channel.client.registry.profileExists;
         if (!this.idVerifyChannelEnabled) {
             serverChannel.enable();
             this.idVerifyChannelEnabled = true;
@@ -123,7 +128,7 @@ class ProfileEditForm extends Component {
         // one listener is auto attached on application start
         // we need to attach another one with the provided handler
         if (clientChannel.listenerCount <= 1) {
-            clientChannel.on((ev, data) => this._handleResponse(data));
+            clientChannel.on(this._handleResponse);
         }
         serverChannel.send({ akashaId });
     }

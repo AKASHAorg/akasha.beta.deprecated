@@ -9,12 +9,12 @@ import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import decorateComponentWithProps from 'decorate-component-with-props';
 import { Icon, Tooltip } from 'antd';
-import { ProfilePopover, VotePopover } from '../';
+import { VotesModal, ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectComment, selectCommentVote, selectLoggedEthAddress, selectPendingCommentVote,
-    selectProfile, selectResolvingComment } from '../../local-flux/selectors';
+import { selectBlockNumber, selectComment, selectCommentVote, selectLoggedEthAddress,
+    selectPendingCommentVote, selectProfile, selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
@@ -31,6 +31,7 @@ class Comment extends Component {
         this.state = {
             editorState,
             isExpanded: null,
+            showVotes: false
         };
 
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
@@ -99,6 +100,18 @@ class Comment extends Component {
         });
     };
 
+    openVotesPanel = () => {
+        this.setState({
+            showVotes: true
+        });
+    };
+
+    closeVotesPanel = () => {
+        this.setState({
+            showVotes: false
+        });
+    };
+
     handleVote = ({ type, weight }) => {
         const { comment, entryId, loggedEthAddress } = this.props;
         const payload = {
@@ -150,7 +163,7 @@ class Comment extends Component {
     );
 
     render () {
-        const { author, comment, containerRef, children, intl, onReply, resolvingComment,
+        const { author, blockNr, comment, containerRef, children, intl, onReply, resolvingComment,
             showReplyButton, vote, votePending } = this.props;
 
         if (resolvingComment) {
@@ -160,6 +173,10 @@ class Comment extends Component {
         const { editorState, isExpanded } = this.state;
         const publishDate = comment.publishDate;
         const content = comment.content;
+        const commentText = JSON.parse(content).blocks[0].text;
+        const commentTitle = (commentText.length > 25) ?
+            `${commentText.slice(0, 25)}...` :
+            commentText;
         const ethAddress = comment.author.ethAddress;
         const akashaId = author && author.get('akashaId');
         const authorClass = classNames('content-link comment__author-name', {
@@ -182,7 +199,7 @@ class Comment extends Component {
                   type={actionTypes.commentUpvote}
                   {...voteProps}
                 />
-                <span className="comment__score">
+                <span className="comment__score content-link" onClick={this.openVotesPanel}>
                   {comment.score}
                 </span>
                 <VotePopover
@@ -250,6 +267,14 @@ class Comment extends Component {
                 {children}
               </div>
             }
+            {this.state.showVotes &&
+              <VotesModal
+                closeVotesPanel={this.closeVotesPanel}
+                content={comment}
+                contentTitle={commentTitle}
+                blockNr={blockNr}
+              />
+            }
           </div>
         );
     }
@@ -258,6 +283,7 @@ class Comment extends Component {
 Comment.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     author: PropTypes.shape(),
+    blockNr: PropTypes.number,
     children: PropTypes.node,
     comment: PropTypes.shape(),
     containerRef: PropTypes.shape(),
@@ -278,6 +304,7 @@ function mapStateToProps (state, ownProps) {
     const comment = selectComment(state, commentId);
     return {
         author: selectProfile(state, comment.author.ethAddress),
+        blockNr: selectBlockNumber(state),
         comment,
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
         ethAddress,
