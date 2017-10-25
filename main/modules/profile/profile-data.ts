@@ -11,6 +11,7 @@ import entryCountProfile from '../entry/entry-count-profile';
 import resolveEthAddress from '../registry/resolve-ethaddress';
 import schema from '../utils/jsonschema';
 import { GethConnector } from '@akashaproject/geth-connector';
+import { dbs } from '../search/indexes';
 
 export const getProfileData = {
     'id': '/getProfileData',
@@ -61,6 +62,11 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
                     .timeout(SHORT_WAIT_TIME)
                     .then((d) => d).catch((e) => null);
         }
+
+        dbs.profiles.searchIndex.concurrentAdd({}, [{
+            akashaId: akashaId,
+            id: ethAddress
+        }], (err) => { if (err) { console.warn('error storing PROFILE index', err); } });
     }
 
     return Object.assign(
