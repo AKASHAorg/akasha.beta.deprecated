@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Icon, Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -107,10 +108,18 @@ class EntryPageAction extends Component {
                     }
                   </div>
                   {noVotesBar &&
-                    <div className="flex-center-y">
-                      <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
-                      <Icon type="message" />
-                    </div>
+                    <Link
+                      className="unstyled-link"
+                      to={{
+                          pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                          state: { overlay: true }
+                      }}
+                    >
+                      <div className="content-link flex-center-y">
+                        <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
+                        <Icon type="message" />
+                      </div>
+                    </Link>
                   }
                 </div>
                 {!noVotesBar &&
