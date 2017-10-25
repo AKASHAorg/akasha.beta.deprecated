@@ -119,6 +119,16 @@ const entryMessages = defineMessages({
             other {entries}
         }`
     },
+    errorOneTagRequired: {
+        id: 'app.entry.oneTagRequired',
+        description: 'Error message requiring at least one tag',
+        defaultMessage: 'You must add at least one tag'
+    },
+    errorExcerptTooLong: {
+        id: 'app.entry.errorExcerptTooLong',
+        description: 'Error message shown when excerpt is too long',
+        defaultMessage: 'Excerpt must not be longer than 120 characters'
+    },
     excerptTooLong: {
         id: 'app.entry.excerptTooLong',
         description: 'validation message when excerpt is too long',

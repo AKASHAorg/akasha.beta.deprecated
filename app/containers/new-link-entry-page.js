@@ -14,8 +14,6 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { tagSearchLocal } from '../local-flux/actions/tag-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults } from '../local-flux/actions/search-actions';
-import { getResizedImages } from '../utils/imageUtils';
-import { uploadImage } from '../local-flux/services/utils-service';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import * as actionTypes from '../constants/action-types';
 
@@ -28,8 +26,11 @@ class NewLinkEntryPage extends Component {
             showPublishPanel: false,
             errors: {},
             shouldResetCaret: false,
+            parsingInfo: false,
+            urlInputHidden: false,
         };
     }
+
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
             userDefaultLicense } = nextProps;
@@ -47,28 +48,46 @@ class NewLinkEntryPage extends Component {
                 entryType: 'link',
             });
         }
+        const hasCardContent = draftObj &&
+            (draftObj.getIn(['content', 'cardInfo', 'title']) ||
+            draftObj.getIn(['content', 'cardInfo', 'description']));
+
+        if (hasCardContent) {
+            this.setState({
+                urlInputHidden: true
+            });
+        }
     }
+
     _processUrl = () => {
         const { draftObj, loggedProfile, match } = this.props;
         const url = draftObj.getIn(['content', 'cardInfo', 'url']);
-        const parser = new WebsiteParser({
-            url,
-            uploadImageToIpfs: true
-        });
-        parser.getInfo().then((data) => {
-            this.props.draftUpdate(draftObj.merge({
-                ethAddress: loggedProfile.get('ethAddress'),
-                content: draftObj.get('content').merge({
-                    cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
-                        title: data.info.title,
-                        description: data.info.description,
-                        image: data.info.image,
-                        bgColor: data.info.bgColor,
-                        url: data.url
+        this.setState({
+            parsingInfo: true,
+            urlInputHidden: true
+        }, () => {
+            const parser = new WebsiteParser({
+                url,
+                uploadImageToIpfs: true
+            });
+            parser.getInfo().then((data) => {
+                this.props.draftUpdate(draftObj.merge({
+                    ethAddress: loggedProfile.get('ethAddress'),
+                    content: draftObj.get('content').merge({
+                        cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
+                            title: data.info.title,
+                            description: data.info.description,
+                            image: data.info.image,
+                            bgColor: data.info.bgColor,
+                            url: data.url
+                        }),
                     }),
-                }),
-                id: match.params.draftId,
-            }));
+                    id: match.params.draftId,
+                }));
+                this.setState({
+                    parsingInfo: false
+                });
+            });
         });
     }
 
@@ -76,15 +95,18 @@ class NewLinkEntryPage extends Component {
         const { draftObj } = this.props;
         const { content } = draftObj;
         if (content.getIn(['cardInfo', 'url']).length > 0) {
-            return this._processUrl();
+            this._processUrl();
         }
         return this.props.draftUpdate(draftObj);
     }
 
     _handleKeyPress = (ev) => {
+        const { draftObj } = this.props;
         // handle enter key press
         if (ev.which === 13) {
-            this._processUrl();
+            if (draftObj.getIn(['content', 'cardInfo', 'url']).length) {
+                this._processUrl();
+            }
             if (!ev.defaultPrevented) {
                 ev.preventDefault();
             }
@@ -152,15 +174,15 @@ class NewLinkEntryPage extends Component {
 
     validateData = () =>
         new Promise((resolve, reject) => {
-            const { draftObj } = this.props;
+            const { draftObj, intl } = this.props;
             const excerpt = draftObj.getIn(['content', 'excerpt']);
             if (draftObj.get('tags').size === 0) {
-                return reject({ tags: 'You must add at least 1 tag' });
+                return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
             if (excerpt.length > 120) {
                 return this.setState({
                     showPublishPanel: true
-                }, () => reject({ excerpt: 'Excerpt must not be longer than 120 characters' }));
+                }, () => reject({ excerpt: intl.formatMessage(entryMessages.errorExcerptTooLong) }));
             }
             return resolve();
         });
@@ -208,13 +230,13 @@ class NewLinkEntryPage extends Component {
 
     _showRevertConfirm = (ev, version) => {
         const handleVersionRevert = this._handleVersionRevert.bind(null, version);
-        const { draftObj } = this.props;
+        const { draftObj, intl } = this.props;
         if (draftObj.localChanges) {
             confirm({
-                content: 'Are you sure you want to revert this draft?',
-                okText: 'Yes',
+                content: intl.formatMessage(entryMessages.revertConfirmTitle),
+                okText: intl.formatMessage(generalMessages.yes),
                 okType: 'danger',
-                cancelText: 'No',
+                cancelText: intl.formatMessage(generalMessages.no),
                 onOk: handleVersionRevert,
                 onCancel () {}
             });
@@ -222,6 +244,28 @@ class NewLinkEntryPage extends Component {
             handleVersionRevert();
         }
         ev.preventDefault();
+    }
+
+    _handleInfoCardClose = () => {
+        const { draftObj, loggedProfile, match } = this.props;
+        this.setState({
+            parsingInfo: false,
+            urlInputHidden: false
+        }, () => {
+            this.props.draftUpdate(
+                draftObj.merge({
+                    ethAddress: loggedProfile.get('ethAddress'),
+                    content: draftObj.get('content').mergeIn(['cardInfo'], {
+                        url: '',
+                        image: {},
+                        title: '',
+                        description: '',
+                        bgColor: null,
+                    }),
+                    id: match.params.draftId,
+                })
+            );
+        });
     }
 
     componentWillUnmount () {
@@ -242,7 +286,7 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile, selectionState } = this.props;
-        const { showPublishPanel, errors, shouldResetCaret } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, parsingInfo, urlInputHidden } = this.state;
 
         if (!draftObj) {
             return (<div>Finding draft</div>);
@@ -258,6 +302,7 @@ class NewLinkEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
+
         return (
           <div className="edit-entry-page link-page">
             <div
@@ -279,52 +324,61 @@ class NewLinkEntryPage extends Component {
                 className="edit-entry-page__editor-wrapper"
               >
                 <div className="edit-entry-page__editor">
-                  <input
-                    ref={this._createRef('titleInput')}
-                    className="edit-entry-page__url-input-field"
-                    placeholder="Enter an address. eg. www.akasha.world"
-                    onChange={this._handleUrlChange}
-                    onBlur={this._handleUrlBlur}
-                    onKeyPress={this._handleKeyPress}
-                    value={url}
-                  />
-                  {(title || description) &&
-                  <div>
-                    <WebsiteInfoCard
-                      baseUrl={baseUrl}
-                      cardInfo={cardInfo}
-                      hasCard={!!(title || description)}
-                      url={url}
+                  {!urlInputHidden &&
+                    <input
+                      ref={this._createRef('titleInput')}
+                      className="edit-entry-page__url-input-field"
+                      placeholder="Enter an address. eg. www.akasha.world"
+                      onChange={this._handleUrlChange}
+                      onBlur={this._handleUrlBlur}
+                      onKeyPress={this._handleKeyPress}
+                      value={url}
                     />
-                    <div>
-                      <TextEntryEditor
-                        ref={this._createRef('editor')}
-                        onChange={this._handleEditorChange}
-                        editorState={draftWithSelection}
-                        selectionState={currentSelection}
+                  }
+                  {((title || description) || parsingInfo) &&
+                    <div className="edit-entry-page__info-card-wrapper">
+                      <WebsiteInfoCard
                         baseUrl={baseUrl}
-                        intl={intl}
+                        cardInfo={cardInfo}
+                        hasCard={!!(title || description)}
+                        url={url}
+                        onClose={this._handleInfoCardClose}
+                        isEdit
+                        loading={parsingInfo}
                       />
+                      {!parsingInfo &&
+                        <div>
+                          <TextEntryEditor
+                            ref={this._createRef('editor')}
+                            onChange={this._handleEditorChange}
+                            editorState={draftWithSelection}
+                            selectionState={currentSelection}
+                            baseUrl={baseUrl}
+                            intl={intl}
+                          />
+                        </div>
+                      }
                     </div>
-                  </div>
                   }
                 </div>
-                <div className="edit-entry-page__tag-editor">
-                  <TagEditor
-                    ref={this._createRef('tagEditor')}
-                    match={match}
-                    nodeRef={(node) => { this.tagsField = node; }}
-                    intl={intl}
-                    ethAddress={loggedProfile.get('ethAddress')}
-                    onTagUpdate={this._handleTagUpdate}
-                    tags={tags}
-                    actionAdd={this.props.actionAdd}
-                    tagSearchLocal={this.props.tagSearchLocal}
-                    tagSuggestions={tagSuggestions}
-                    tagSuggestionsCount={tagSuggestionsCount}
-                    searchResetResults={this.props.searchResetResults}
-                  />
-                </div>
+                {(title || description) && !parsingInfo &&
+                  <div className="edit-entry-page__tag-editor">
+                    <TagEditor
+                      ref={this._createRef('tagEditor')}
+                      match={match}
+                      nodeRef={(node) => { this.tagsField = node; }}
+                      intl={intl}
+                      ethAddress={loggedProfile.get('ethAddress')}
+                      onTagUpdate={this._handleTagUpdate}
+                      tags={tags}
+                      actionAdd={this.props.actionAdd}
+                      tagSearchLocal={this.props.tagSearchLocal}
+                      tagSuggestions={tagSuggestions}
+                      tagSuggestionsCount={tagSuggestionsCount}
+                      searchResetResults={this.props.searchResetResults}
+                    />
+                  </div>
+                }
               </Col>
               <Col
                 span={6}
