@@ -54,7 +54,7 @@ const execute = Promise.coroutine(function* (data: {
         const author = yield resolve.execute({ ethAddress: event.args.author });
 
         collection.push({
-            entryType: GethConnector.getInstance().web3.toDecimal(captureIndex.results[0].args.entryType),
+            entryType: captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1,
             entryId: event.args.entryId,
             tags,
             author
