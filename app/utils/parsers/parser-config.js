@@ -9,6 +9,9 @@ export const targetMetaTags = {
         name: 'description',
         key: 'description'
     }, {
+        name: 'theme-color',
+        key: 'bgColor'
+    }, {
         name: 'msapplication-TileColor',
         key: 'bgColor'
     }],
