@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Icon, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { EntryVotesModal, ListPopover, VotePopover } from '../';
+import { VotesModal, ListPopover, VotePopover } from '../';
 import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
-import { selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists, selectListSearch,
-    selectLoggedEthAddress, selectPendingClaim, selectPendingVote,
+import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists,
+    selectListSearch, selectLoggedEthAddress, selectPendingClaim, selectPendingVote,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -55,7 +56,7 @@ class EntryPageAction extends Component {
     };
 
     render () {
-        const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
+        const { blockNr, canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
             lists, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
         const showBalance = isOwnEntry && canClaim !== undefined && entryBalance !== undefined;
         const iconClassName = 'entry-actions__vote-icon';
@@ -107,10 +108,18 @@ class EntryPageAction extends Component {
                     }
                   </div>
                   {noVotesBar &&
-                    <div className="flex-center-y">
-                      <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
-                      <Icon type="message" />
-                    </div>
+                    <Link
+                      className="unstyled-link"
+                      to={{
+                          pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                          state: { overlay: true }
+                      }}
+                    >
+                      <div className="content-link flex-center-y">
+                        <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
+                        <Icon type="message" />
+                      </div>
+                    </Link>
                   }
                 </div>
                 {!noVotesBar &&
@@ -159,10 +168,11 @@ class EntryPageAction extends Component {
               </div>
             </div>
             {this.state.showVotes &&
-              <EntryVotesModal
+              <VotesModal
                 closeVotesPanel={this.closeVotesPanel}
-                entryId={entry.entryId}
-                entryTitle={entry.content.title}
+                content={entry}
+                contentTitle={entry.content.title}
+                blockNr={blockNr}
               />
             }
           </div>
@@ -173,6 +183,7 @@ class EntryPageAction extends Component {
 EntryPageAction.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     author: PropTypes.shape(),
+    blockNr: PropTypes.number,
     canClaim: PropTypes.bool,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
@@ -199,6 +210,7 @@ function mapStateToProps (state, ownProps) {
     const loggedEthAddress = selectLoggedEthAddress(state);
     return {
         author: selectProfile(state, entry.getIn(['author', 'ethAddress'])),
+        blockNr: selectBlockNumber(state),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: selectPendingClaim(state, entry.get('entryId')),

@@ -22,7 +22,7 @@ export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: nu
         const author = yield resolve.execute({ ethAddress: event.args.author });
 
         collection.push({
-            entryType: GethConnector.getInstance().web3.toDecimal(captureIndex.results.length ? captureIndex.results[0].args.entryType : 0),
+            entryType: captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1,
             entryId: event.args.entryId,
             tags,
             author
@@ -55,9 +55,8 @@ export const fetchFromTagIndex = Promise.coroutine(function* (data: { toBlock: n
         });
 
         const author = yield resolve.execute({ ethAddress: fetchedPublish.results[0].args.author });
-
         collection.push({
-            entryType: GethConnector.getInstance().web3.toDecimal(event.args.entryType),
+            entryType: event.args.entryType.toNumber(),
             entryId: event.args.entryId,
             tags,
             author

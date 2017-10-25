@@ -138,7 +138,7 @@ class ImageUploader extends Component {
     render () {
         const { multiFiles, intl, initialImage } = this.props;
         const { imageLoaded, processingFinished, progress, error, highlightDropZone } = this.state;
-        console.log(initialImage, imageLoaded, processingFinished, progress);
+
         return (
           <div
             ref={(container) => { this.container = container; }}

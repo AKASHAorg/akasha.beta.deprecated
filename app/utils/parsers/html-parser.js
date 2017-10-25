@@ -51,7 +51,6 @@ class HtmlParser extends ParserUtils {
     parseTags = () => {
         const props = targetMetaTags.metaNames.map((tag) => {
             const domTag = this.htmlContent.getElementsByTagName('meta')[tag.name];
-            console.log(domTag.content, 'parseTags');
             if (domTag) {
                 return Promise.resolve({
                     [tag.key]: domTag.content
