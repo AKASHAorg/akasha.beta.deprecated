@@ -9,12 +9,12 @@ const dashboardMessages = defineMessages({
     addNewColumn: {
         id: 'app.dashboard.addNewColumn',
         description: 'title for add new column',
-        defaultMessage: 'Add new column'
+        defaultMessage: 'Add column'
     },
     addNewColumnSubtitle: {
         id: 'app.dashboard.addNewColumnSubtitle',
         description: 'subtitle for add new column',
-        defaultMessage: 'Please select one column type'
+        defaultMessage: 'Please select a column type'
     },
     addNewTagColumn: {
         id: 'app.dashboard.addNewTagColumn',
@@ -24,7 +24,7 @@ const dashboardMessages = defineMessages({
     addNewTagColumnSubtitle: {
         id: 'app.dashboard.addNewTagColumnSubtitle',
         description: 'subtitle for add new tag column',
-        defaultMessage: 'Please select a tag'
+        defaultMessage: 'Please choose a tag'
     },
     addToNewDashboard: {
         id: 'app.list.addToNewDashboard',
@@ -39,7 +39,7 @@ const dashboardMessages = defineMessages({
     columnLatest: {
         id: 'app.dashboard.columnLatest',
         description: 'title for "latest entries" column',
-        defaultMessage: 'new on AKASHA'
+        defaultMessage: 'Latest entries'
     },
     columnStream: {
         id: 'app.dashboard.columnStream',
@@ -66,6 +66,21 @@ const dashboardMessages = defineMessages({
         description: 'unique name error message for dashboard',
         defaultMessage: 'This board already exists'
     },
+    deleteColumnConfirmation: {
+        id: 'app.dashboard.deleteColumnConfirmation',
+        description: 'confirmation message for deleting a column',
+        defaultMessage: 'Are you sure you want to delete this column?'
+    },
+    deleteDashboardConfirmation: {
+        id: 'app.dashboard.deleteDashboardConfirmation',
+        description: 'confirmation message for deleting a dashboard',
+        defaultMessage: 'Are you sure you want to delete {name}?'
+    },
+    large: {
+        id: 'app.dashboard.large',
+        description: 'large column width',
+        defaultMessage: 'Large'
+    },
     latest: {
         id: 'app.dashboard.latest',
         description: 'label for latest entries column',
@@ -81,6 +96,11 @@ const dashboardMessages = defineMessages({
         description: 'placeholder for dashboard name input',
         defaultMessage: 'Type board name'
     },
+    preview: {
+        id: 'app.dashboard.preview',
+        description: 'preview column entries',
+        defaultMessage: 'Preview for #{tagName}'
+    },
     profile: {
         id: 'app.dashboard.profile',
         description: 'label for profile column',
@@ -90,6 +110,11 @@ const dashboardMessages = defineMessages({
         id: 'app.dashboard.searchForBoard',
         description: 'placeholder for board search input',
         defaultMessage: 'Search for board...'
+    },
+    small: {
+        id: 'app.dashboard.small',
+        description: 'small column width',
+        defaultMessage: 'Small'
     },
     stream: {
         id: 'app.dashboard.stream',

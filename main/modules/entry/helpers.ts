@@ -3,8 +3,10 @@ import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
 
-export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: number, limit: number,
-    lastIndex?: number, args: any, reversed?: boolean }) {
+export const fetchFromPublish = Promise.coroutine(function* (data: {
+    toBlock: number, limit: number,
+    lastIndex?: number, args: any, reversed?: boolean
+}) {
     const collection = [];
     const fetched = yield contracts
         .fromEvent(contracts.instance.Entries.Publish, data.args, data.toBlock,
@@ -35,8 +37,10 @@ export const fetchFromPublish = Promise.coroutine(function* (data: { toBlock: nu
     return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
 });
 
-export const fetchFromTagIndex = Promise.coroutine(function* (data: { toBlock: number, limit: number,
-    lastIndex?: number, args: any, reversed?: boolean }) {
+export const fetchFromTagIndex = Promise.coroutine(function* (data: {
+    toBlock: number, limit: number,
+    lastIndex?: number, args: any, reversed?: boolean
+}) {
     const collection = [];
     const fetched = yield contracts.fromEvent(contracts.instance.Entries.TagIndex,
         data.args, data.toBlock, data.limit, { lastIndex: data.lastIndex, reversed: data.reversed || false });
@@ -54,7 +58,9 @@ export const fetchFromTagIndex = Promise.coroutine(function* (data: { toBlock: n
             return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
         });
 
-        const author = yield resolve.execute({ ethAddress: fetchedPublish.results[0].args.author });
+        const author = fetchedPublish.results.length ?
+            yield resolve.execute({ ethAddress: fetchedPublish.results[0].args.author }) :
+            { ethAddress: null };
         collection.push({
             entryType: event.args.entryType.toNumber(),
             entryId: event.args.entryId,

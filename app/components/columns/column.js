@@ -22,7 +22,7 @@ const Column = ({ column, baseWidth }) => {
             break;
     }
     return (
-      <div style={{ height: '100%', width: '100%' }}>
+      <div className="column__wrapper">
         {component}
       </div>
     );

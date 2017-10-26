@@ -45,7 +45,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
                 title: entry.title,
                 excerpt: entry.excerpt,
                 version: data.version
-            }], (err) => { if (err) { console.warn('error storing index', err); } });
+            }], (err) => { if (err) { console.warn('error storing entry index', err); } });
         }
 
     }

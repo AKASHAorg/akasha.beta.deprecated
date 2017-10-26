@@ -1,10 +1,8 @@
 import { delay } from 'redux-saga';
 import { apply, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
-import * as tagActions from '../actions/tag-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as profileService from '../services/profile-service';
-import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboardId,
@@ -102,21 +100,6 @@ export function* dashboardGetProfileSuggestions (request) {
     }
 }
 
-function* dashboardGetTagSuggestions (request) {
-    const { tag } = request;
-    const START = 0;
-    const LIMIT = 5;
-    try {
-        const tags = yield apply(tagService, tagService.tagSearch, [tag, START, LIMIT]);
-        const suggestions = tags.tags;
-        yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
-        return { suggestions };
-    } catch (error) {
-        yield put(actions.dashboardGetTagSuggestionsError(error, request));
-        return { error };
-    }
-}
-
 function* dashboardSetActive ({ name }) {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
@@ -155,17 +138,6 @@ function* dashboardUpdateColumn ({ id, changes }) {
     }
 }
 
-function* dashboardUpdateNewColumn ({ changes }) {
-    if (changes && changes.value) {
-        const { suggestions } =
-            yield call(dashboardGetTagSuggestions, { tag: changes.value, context: 'column' });
-        if (suggestions) {
-            yield call(delay, 200);
-            yield put(tagActions.tagGetEntriesCount(suggestions));
-        }
-    }
-}
-
 export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_ADD, dashboardAdd);
     yield takeEvery(types.DASHBOARD_ADD_COLUMN, dashboardAddColumn);
@@ -173,9 +145,7 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_DELETE, dashboardDelete);
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
     yield takeLatest(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, dashboardGetProfileSuggestions);
-    yield takeLatest(types.DASHBOARD_GET_TAG_SUGGESTIONS, dashboardGetTagSuggestions);
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
-    yield takeLatest(types.DASHBOARD_UPDATE_NEW_COLUMN, dashboardUpdateNewColumn);
 }

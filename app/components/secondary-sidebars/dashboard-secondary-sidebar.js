@@ -1,107 +1,131 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { List, ListItem, IconButton, Subheader } from 'material-ui';
-import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
-import { dashboardMessages } from '../../locale-data/messages';
-import { dashboardAdd, dashboardAddColumn, dashboardDelete,
-    dashboardSetActive } from '../../local-flux/actions/dashboard-actions';
-import { listAdd, listAddEntry, listDelete, listDeleteEntry } from '../../local-flux/actions/list-actions';
+import { Button, Icon, Input, Modal, Popover } from 'antd';
+import classNames from 'classnames';
+import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { dashboardAdd, dashboardDelete } from '../../local-flux/actions/dashboard-actions';
 import { selectDashboards } from '../../local-flux/selectors';
-import * as columnTypes from '../../constants/columns';
-import styles from './dashboard-secondary-sidebar.scss';
 
-let input;
-let listDescr;
-let listInput;
+const { confirm } = Modal;
 
-const buttonStyle = {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '22px',
-    height: '22px',
-    padding: '4px',
-    margin: '0px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
+class DashboardSecondarySidebar extends Component {
+    state = {
+        addDashboard: false
+    };
 
-const innerDivStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 15px',
-};
+    onDeleteDashboard = (dashboard) => {
+        const { intl } = this.props;
+        const onOk = (cb) => {
+            this.props.dashboardDelete(dashboard.get('name'));
+            cb();
+        };
+        const content = intl.formatMessage(dashboardMessages.deleteDashboardConfirmation, {
+            name: dashboard.get('name')
+        });
+        confirm({
+            content,
+            okText: intl.formatMessage(generalMessages.yes),
+            okType: 'danger',
+            cancelText: intl.formatMessage(generalMessages.no),
+            onOk,
+            onCancel: () => {}
+        });
+    };
 
-const DashboardSecondarySidebar = props => (
-  <div style={{ padding: '20px 10px' }}>
-    <Subheader className={styles.subheader}>
-      <small className={styles.subheaderText}>
-        {props.intl.formatMessage(dashboardMessages.myBoards)}
-        <IconButton
-          style={buttonStyle}
-          iconStyle={{ width: '14px', height: '14px' }}
-        >
-          <AddIcon />
-        </IconButton>
-      </small>
-    </Subheader>
-    <List>
-      {props.dashboards.toList().map(dashboard => (
-        <div key={dashboard.get('id')} style={{ position: 'relative' }}>
-          <Link className="unstyled-link" to={`/dashboard/${dashboard.get('name')}`}>
-            <ListItem
-              innerDivStyle={innerDivStyle}
-              primaryText={<div>{dashboard.get('name')}</div>}
-              style={{ display: 'flex', borderRadius: '5px' }}
-            />
-          </Link>
-          {props.activeDashboard !== dashboard.get('name') &&
-            <button
-              onClick={(ev) => {
-                  ev.stopPropagation();
-                  props.dashboardDelete(dashboard.get('name'));
-              }}
-              style={{ position: 'absolute', top: 0, right: 0, zIndex: 99 }}
+    onToggleNewDashboard = () => {
+        this.setState({ addDashboard: !this.state.addDashboard });
+    };
+
+    onAddNewDashboard = () => {
+        const input = document.getElementById('new-dashboard-input');
+        this.props.dashboardAdd(input.value);
+    };
+
+    renderRow = (dashboard) => {
+        const { activeDashboard, intl } = this.props;
+        const menu = (
+          <div className="dashboard-secondary-sidebar__popover-content">
+            <div
+              className="flex-center-y popover-menu__item"
+              onClick={() => {}}
             >
-              x
-            </button>
-          }
-        </div>
-      ))}
-    </List>
-    <input ref={el => (input = el)} />
-    <button onClick={() => props.dashboardAdd(input.value)} style={{ marginBottom: '15px' }}>Add dashboard</button>
-    <button onClick={() => props.dashboardAddColumn(columnTypes.latest)}>Add latest column</button>
-    <button onClick={() => props.dashboardAddColumn(columnTypes.tag)}>Add tag column</button>
-    <button onClick={() => props.dashboardAddColumn(columnTypes.profile)}>Add profile column</button>
-    <button onClick={() => props.dashboardAddColumn(columnTypes.stream)}>Add stream column</button>
-    <div style={{ marginTop: '20px' }}>List title</div>
-    <input ref={el => (listInput = el)} />
-    <div>List description</div>
-    <textarea ref={el => (listDescr = el)} />
-    <button onClick={() => props.listAdd({ name: listInput.value, description: listDescr.value })}>Add list</button>
-    <button onClick={() => props.listDelete(listInput.value)}>Delete list</button>
-  </div>
-);
+              {intl.formatMessage(generalMessages.rename)}
+            </div>
+            <div
+              className="flex-center-y popover-menu__item"
+              onClick={() => this.onDeleteDashboard(dashboard)}
+            >
+              {intl.formatMessage(generalMessages.delete)}
+            </div>
+          </div>
+        );
+        const className = classNames('has-hidden-action flex-center-y', {
+            'dashboard-secondary-sidebar__row': true,
+            'dashboard-secondary-sidebar__row_active': dashboard.get('name') === activeDashboard
+        });
 
-DashboardSecondarySidebar.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
+        return (
+          <div className={className} key={dashboard.get('id')}>
+            <Link
+              className="unstyled-link overflow-ellipsis dashboard-secondary-sidebar__link"
+              to={`/dashboard/${dashboard.get('name')}`}
+            >
+              {dashboard.get('name')}
+            </Link>
+            <Popover
+              content={menu}
+              overlayClassName="popover-menu"
+              placement="bottomLeft"
+              trigger="click"
+            >
+              <Icon
+                className="hidden-action dashboard-secondary-sidebar__menu-icon"
+                type="ellipsis"
+              />
+            </Popover>
+          </div>
+        );
+    };
+
+    render () {
+        const { dashboards, intl } = this.props;
+
+        return (
+          <div className="dashboard-secondary-sidebar">
+            <div className="flex-center-y dashboard-secondary-sidebar__title">
+              {intl.formatMessage(dashboardMessages.myBoards)}
+              <Icon
+                className="content-link dashboard-secondary-sidebar__add-icon"
+                onClick={this.onToggleNewDashboard}
+                type="plus-square"
+              />
+            </div>
+            {this.state.addDashboard &&
+              <div>
+                <Input id="new-dashboard-input" />
+                <div>
+                  <Button onClick={this.onToggleNewDashboard}>Cancel</Button>
+                  <Button onClick={this.onAddNewDashboard}>Add</Button>
+                </div>
+              </div>
+            }
+            <div>
+              {dashboards.toList().map(this.renderRow)}
+            </div>
+          </div>
+        );
+    }
+}
 
 DashboardSecondarySidebar.propTypes = {
     activeDashboard: PropTypes.string,
     dashboardAdd: PropTypes.func.isRequired,
-    dashboardAddColumn: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
     dashboards: PropTypes.shape(),
-    dashboardSetActive: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    listAdd: PropTypes.func.isRequired,
-    listDelete: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -116,12 +140,6 @@ export default connect(
     mapStateToProps,
     {
         dashboardAdd,
-        dashboardAddColumn,
         dashboardDelete,
-        dashboardSetActive,
-        listAdd,
-        listAddEntry,
-        listDelete,
-        listDeleteEntry
     }
 )(injectIntl(DashboardSecondarySidebar));
