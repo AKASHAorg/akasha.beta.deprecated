@@ -6,15 +6,15 @@ import * as actions from '../actions/profile-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
-import { selectBaseUrl, selectBlockNumber, selectLastFollower, selectLastFollowing, selectLoggedEthAddress,
+import { selectBaseUrl, selectBlockNumber, selectLastFollower, selectLoggedEthAddress,
     selectNeedAuthAction, selectProfileEditToggle, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
 const TRANSFERS_ITERATOR_LIMIT = 30;
-const FOLLOWERS_ITERATOR_LIMIT = 13;
-const FOLLOWINGS_ITERATOR_LIMIT = 13;
+const FOLLOWERS_ITERATOR_LIMIT = 12;
+const FOLLOWINGS_ITERATOR_LIMIT = 12;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
@@ -92,16 +92,16 @@ function* profileFollowSuccess ({ data }) {
     }));
 }
 
-function* profileFollowersIterator ({ akashaId }) {
+function* profileFollowersIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followersIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWERS_ITERATOR_LIMIT }]);
+    yield apply(channel, channel.send, [{ ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
 }
 
-function* profileFollowingsIterator ({ akashaId }) {
+function* profileFollowingsIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT }]);
+    yield apply(channel, channel.send, [{ ethAddress, limit: FOLLOWINGS_ITERATOR_LIMIT }]);
 }
 
 function* profileFreeAeth ({ actionId, amount }) {
@@ -134,6 +134,22 @@ function* profileGetData ({ akashaId, ethAddress, full = false }) {
     const channel = Channel.server.profile.getProfileData;
     yield apply(channel, channel.send, [{ akashaId, ethAddress, full }]);
     yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
+}
+
+export function* profileGetExtraOfList (collection) {
+    const ethAddresses = [];
+    collection.forEach((profile) => {
+        const { ethAddress } = profile;
+        if (ethAddress && !ethAddresses.includes(ethAddress)) {
+            ethAddresses.push(ethAddress);
+        }
+    });
+    if (ethAddresses.length) {
+        yield call(profileIsFollower, { followings: ethAddresses });// eslint-disable-line
+    }
+    for (let i = 0; i < ethAddresses.length; i++) {
+        yield call(profileGetData, { ethAddress: ethAddresses[i] });
+    }
 }
 
 function* profileGetList ({ akashaIds }) {
@@ -197,16 +213,28 @@ function* profileManaBurned () {
     yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
-function* profileMoreFollowersIterator ({ akashaId }) {
+function* profileMoreFollowersIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followersIterator;
-    const start = yield select(state => selectLastFollower(state, akashaId));
-    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWERS_ITERATOR_LIMIT, start }]);
+    const last = yield select(state => selectLastFollower(state, ethAddress));
+    const payload = {
+        ethAddress,
+        limit: FOLLOWERS_ITERATOR_LIMIT,
+        lastBlock: last.lastBlock,
+        lastIndex: last.lastIndex
+    };
+    yield apply(channel, channel.send, [payload]);
 }
 
-function* profileMoreFollowingsIterator ({ akashaId }) {
+function* profileMoreFollowingsIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followingIterator;
-    const start = yield select(state => selectLastFollowing(state, akashaId));
-    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT, start }]);
+    const last = yield select(state => selectLastFollower(state, ethAddress));
+    const payload = {
+        ethAddress,
+        limit: FOLLOWINGS_ITERATOR_LIMIT,
+        lastBlock: last.lastBlock,
+        lastIndex: last.lastIndex
+    };
+    yield apply(channel, channel.send, [payload]);
 }
 
 function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) {
@@ -473,15 +501,18 @@ function* watchProfileFollowersIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followersIterator);
         if (resp.error) {
-            if (resp.request.start) {
+            if (resp.request.lastBlock) {
                 yield put(actions.profileMoreFollowersIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.profileFollowersIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.start) {
-            yield put(actions.profileMoreFollowersIteratorSuccess(resp.data));
         } else {
-            yield put(actions.profileFollowersIteratorSuccess(resp.data));
+            yield fork(profileGetExtraOfList, resp.data.collection);
+            if (resp.request.lastBlock) {
+                yield put(actions.profileMoreFollowersIteratorSuccess(resp.data, resp.request));
+            } else {
+                yield put(actions.profileFollowersIteratorSuccess(resp.data, resp.request));
+            }
         }
     }
 }
@@ -490,15 +521,18 @@ function* watchProfileFollowingsIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followingIterator);
         if (resp.error) {
-            if (resp.request.start) {
+            if (resp.request.lastBlock) {
                 yield put(actions.profileMoreFollowingsIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.profileFollowingsIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.start) {
-            yield put(actions.profileMoreFollowingsIteratorSuccess(resp.data));
         } else {
-            yield put(actions.profileFollowingsIteratorSuccess(resp.data));
+            yield fork(profileGetExtraOfList, resp.data.collection);
+            if (resp.request.lastBlock) {
+                yield put(actions.profileMoreFollowingsIteratorSuccess(resp.data, resp.request));
+            } else {
+                yield put(actions.profileFollowingsIteratorSuccess(resp.data, resp.request));
+            }
         }
     }
 }
