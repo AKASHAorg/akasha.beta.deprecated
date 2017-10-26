@@ -1,12 +1,7 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { fromJS, List, Map, Record } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-
-const TagMarginsRecord = Record({
-    firstTag: null,
-    lastTag: null
-});
 
 const initialState = fromJS({
     entriesCount: new Map(),
@@ -14,9 +9,7 @@ const initialState = fromJS({
         registerPending: new List(),
         searchPending: false
     }),
-    margins: new TagMarginsRecord(),
     moreNewTags: false,
-    newestTags: new List(),
     searchQuery: null,
     searchResults: new List()
 });
@@ -56,12 +49,6 @@ const tagState = createReducer(initialState, {
         });
         return state.set('entriesCount', entriesCount);
     },
-
-    [types.TAG_GET_MARGINS_SUCCESS]: (state, { data }) =>
-        state.set('margins', new TagMarginsRecord(data)),
-
-    [types.TAG_SAVE_SUCCESS]: (state, { data }) =>
-        state.set('margins', new TagMarginsRecord(data)),
 
     [types.TAG_SEARCH]: (state, { tagName }) =>
         state.merge({

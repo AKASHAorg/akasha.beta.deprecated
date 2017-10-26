@@ -101,6 +101,11 @@ const errorMessages = defineMessages({
         description: 'claim entry balance error message',
         defaultMessage: 'An error occurred while claiming {entryTitle}'
     },
+    entryClaimVote: {
+        id: 'app.error.entryClaimVote',
+        description: 'claim vote Essence error message',
+        defaultMessage: 'An error occurred while claiming {entryTitle}'
+    },
     entryDownvote: {
         id: 'app.error.entryDownvote',
         description: 'downvote entry error message',

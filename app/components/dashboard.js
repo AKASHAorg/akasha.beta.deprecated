@@ -7,7 +7,7 @@ const smallColumn = 360;
 const largeColumn = 720;
 
 const Dashboard = (props) => {
-    const { columns, dashboards, getDashboardRef, match, newColumn, updateNewColumn } = props;
+    const { columns, dashboards, getDashboardRef, match, updateNewColumn } = props;
     const name = match.params.dashboardName;
     const activeDashboard = dashboards.get(name);
 
@@ -18,15 +18,14 @@ const Dashboard = (props) => {
             if (!column) {
                 return null;
             }
-            const isLast = !newColumn && index === activeDashboard.get('columns').size - 1;
             const baseWidth = column.get('large') ? largeColumn : smallColumn;
-            const width = isLast ? `${baseWidth + 20}px` : `${baseWidth}px`;
+            const width = `${baseWidth}px`;
 
             return (
               <div
                 className="dashboard__column"
                 key={id}
-                style={{ width, paddingRight: isLast ? '20px' : 0 }}
+                style={{ width }}
               >
                 <Column
                   column={column}
@@ -35,12 +34,7 @@ const Dashboard = (props) => {
               </div>
             );
         })}
-        {newColumn &&
-          <NewColumn
-            column={newColumn}
-            updateNewColumn={updateNewColumn}
-          />
-        }
+        <NewColumn />
       </div>
     );
 };
@@ -50,7 +44,6 @@ Dashboard.propTypes = {
     dashboards: PropTypes.shape(),
     getDashboardRef: PropTypes.func.isRequired,
     match: PropTypes.shape(),
-    newColumn: PropTypes.shape(),
     updateNewColumn: PropTypes.func.isRequired
 };
 

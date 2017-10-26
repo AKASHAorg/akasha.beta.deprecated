@@ -49,6 +49,8 @@ export const selectBlockNumber = state => state.externalProcState.getIn(['geth',
 export const selectClaimableEntries = state =>
     state.actionState.get('claimable').map(entryId => selectEntry(state, entryId));
 
+export const selectColumn = (state, columnId) => state.dashboardState.getIn(['columnById', columnId]);
+
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entries'])
@@ -249,6 +251,13 @@ export const selectMoreFollowings = (state, ethAddress) =>
 export const selectNeedAuthAction = state =>
     state.actionState.getIn(['byId', state.actionState.get('needAuth')]);
 
+export const selectNewColumn = state => state.dashboardState.get('newColumn');
+
+// export const selectNewColumnEntries = (state) => {
+//     const entryIds = state.dashboardState.getIn(['columnById', 'newColumn', 'entries']);
+//     return entryIds.map(id => selectEntry(state, id));
+// };
+
 export const selectNewCommentsBlock = state =>
     state.commentsState.getIn(['newComments', 'lastBlock']) || selectBlockNumber(state);
 
@@ -314,7 +323,7 @@ export const selectSelectionState = (state, draftId, ethAddress) =>
 
 export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
 
-export const selectTagMargins = state => state.tagState.get('margins');
+export const selectTagSearchResults = state => state.searchState.get('tags');
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 

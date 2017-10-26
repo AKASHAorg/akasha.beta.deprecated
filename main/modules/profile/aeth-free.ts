@@ -18,7 +18,7 @@ const execute = Promise.coroutine(function* (data: { token: string }, cb) {
     const v = new schema.Validator();
     v.validate(data, freeAeth, { throwError: true });
 
-    const txData = contracts.instance.AETH.freeAeth.request({ gas: 100000 });
+    const txData = contracts.instance.AETH.freeAeth.request({ gas: 1000000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
 });

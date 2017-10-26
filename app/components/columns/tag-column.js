@@ -5,10 +5,8 @@ import { injectIntl } from 'react-intl';
 import { ColumnHeader, EntryList } from '../';
 import { ColumnTag } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
-import { dashboardGetTagSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
-import { COLUMN } from '../../constants/context-types';
 
 class TagColumn extends Component {
     componentDidMount () {
@@ -41,7 +39,7 @@ class TagColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               column={column}
-              onInputChange={val => this.props.dashboardGetTagSuggestions(val, COLUMN, column.get('id'))}
+              onInputChange={() => {}}
               icon={<ColumnTag />}
               suggestions={suggestions}
             />
@@ -62,7 +60,6 @@ class TagColumn extends Component {
 
 TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    dashboardGetTagSuggestions: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
@@ -81,7 +78,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        dashboardGetTagSuggestions,
         entryMoreTagIterator,
         entryTagIterator,
     }
