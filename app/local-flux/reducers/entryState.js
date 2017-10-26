@@ -184,7 +184,15 @@ const entryState = createReducer(initialState, {
         pendingEntries = pendingEntries.set(entryId, false);
 
         const newEntry = state.getIn(['byId', entryId]).mergeWith((old, newVal, key) => {
-            if (key === 'author' || key === 'entryType') {
+            if (key === 'author') {
+                return old;
+            }
+            if (key === 'entryType' && old === -1) {
+                if (data.content.cardInfo.url) {
+                    return 1;
+                }
+                return 0;
+            } else if (key === 'entryType' && old > -1) {
                 return old;
             }
             return newVal;
