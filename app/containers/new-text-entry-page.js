@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
-import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline } from '../components';
+import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, DataLoader } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
@@ -146,7 +146,6 @@ class NewEntryPage extends Component {
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
-        console.log('changing excerpt to', excerpt);
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
@@ -288,16 +287,32 @@ class NewEntryPage extends Component {
             selectionState } = this.props;
         if (!draftObj || !draftObj.get('content')) {
             return (
-              <div>Finding Draft</div>
+              <DataLoader
+                flag
+                message={'Loading drafts...'}
+                size="large"
+                className="edit-entry-page__data-loader"
+              />
             );
         }
         const unresolved = draftObj && resolvingEntries.includes(draftObj.get('id'));
         if (unresolved) {
             return (
-              <div>
-                  Cannot resolve entry`s ipfs hash.
-                  Make sure to open AKASHA DApp on the computer you have published from.
-              </div>
+              <DataLoader
+                flag
+                message={
+                  <div>
+                    <div>
+                      Resolving ipfs hash...
+                    </div>
+                    <div>
+                      Make sure to open AKASHA DApp on the computer you have published from.
+                    </div>
+                  </div>
+                }
+                size="large"
+                className="edit-entry-page__data-loader"
+              />
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
