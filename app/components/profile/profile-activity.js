@@ -2,44 +2,45 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { List } from 'immutable';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowersIterator,
     profileMoreFollowingsIterator } from '../../local-flux/actions/profile-actions';
 import { ACTIVITY } from '../../constants/context-types';
-import { selectFetchingFollowers, selectFetchingFollowings, selectFetchingMoreFollowers,
+import { selectBlockNumber, selectFetchingFollowers, selectFetchingFollowings, selectFetchingMoreFollowers,
     selectFetchingMoreFollowings, selectFollowers, selectFollowings, selectMoreFollowers,
     selectMoreFollowings, selectProfileEntries } from '../../local-flux/selectors';
 import { EntryList, ProfileList } from '../';
 
 class ProfileActivity extends Component {
     componentDidMount () {
-        const { akashaId } = this.props;
-        this.props.entryProfileIterator(null, akashaId);
-        this.props.profileFollowersIterator(akashaId);
-        this.props.profileFollowingsIterator(akashaId);
+        const { ethAddress } = this.props;
+        // this.props.entryProfileIterator(null, ethAddress);
+        this.props.profileFollowersIterator(ethAddress);
+        this.props.profileFollowingsIterator(ethAddress);
     }
 
     componentWillReceiveProps (nextProps) {
-        const { akashaId } = this.props;
-        if (akashaId !== nextProps.akashaId) {
-            this.props.entryProfileIterator(null, nextProps.akashaId);
+        const { ethAddress } = this.props;
+        if (ethAddress !== nextProps.ethAddress) {
+            this.props.entryProfileIterator(null, nextProps.ethAddress);
         }
     }
 
     fetchMoreFollowers = () => {
-        const { akashaId } = this.props;
-        this.props.profileMoreFollowersIterator(akashaId);
+        const { ethAddress } = this.props;
+        this.props.profileMoreFollowersIterator(ethAddress);
     };
 
     fetchMoreFollowings = () => {
-        const { akashaId } = this.props;
-        this.props.profileMoreFollowingsIterator(akashaId);
+        const { ethAddress } = this.props;
+        this.props.profileMoreFollowingsIterator(ethAddress);
     };
 
     fetchMoreProfileEntries = () => {
-        const { akashaId } = this.props;
-        this.props.entryMoreProfileIterator(null, akashaId);
+        const { ethAddress } = this.props;
+        this.props.entryMoreProfileIterator(null, ethAddress);
     }
 
     render () {
@@ -102,7 +103,7 @@ class ProfileActivity extends Component {
 }
 
 ProfileActivity.propTypes = {
-    akashaId: PropTypes.string,
+    ethAddress: PropTypes.string,
     entryMoreProfileIterator: PropTypes.func,
     entryProfileIterator: PropTypes.func,
     fetchingFollowers: PropTypes.bool,
@@ -126,19 +127,20 @@ ProfileActivity.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const akashaId = ownProps.akashaId;
+    const ethAddress = ownProps.ethAddress;
     return {
-        fetchingFollowers: selectFetchingFollowers(state, akashaId),
-        fetchingFollowings: selectFetchingFollowings(state, akashaId),
-        fetchingMoreFollowers: selectFetchingMoreFollowers(state, akashaId),
-        fetchingMoreFollowings: selectFetchingMoreFollowings(state, akashaId),
+        blockNr: selectBlockNumber(state),
+        fetchingFollowers: selectFetchingFollowers(state, ethAddress),
+        fetchingFollowings: selectFetchingFollowings(state, ethAddress),
+        fetchingMoreFollowers: selectFetchingMoreFollowers(state, ethAddress),
+        fetchingMoreFollowings: selectFetchingMoreFollowings(state, ethAddress),
         fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
         fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
-        followers: selectFollowers(state, akashaId),
-        followings: selectFollowings(state, akashaId),
-        moreFollowers: selectMoreFollowers(state, akashaId),
-        moreFollowings: selectMoreFollowings(state, akashaId),
-        profileEntries: selectProfileEntries(state, akashaId),
+        followers: selectFollowers(state, ethAddress),
+        followings: selectFollowings(state, ethAddress),
+        moreFollowers: selectMoreFollowers(state, ethAddress),
+        moreFollowings: selectMoreFollowings(state, ethAddress),
+        profileEntries: selectProfileEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
     };
