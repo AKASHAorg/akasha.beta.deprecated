@@ -26,6 +26,7 @@ import getEntryIpfsHash from './get-entry-ipfs-hash';
 import resolveEntriesIpfsHash from './resolve-entries-ipfs-hash';
 import canClaimVote from './can-claim-vote';
 import claimVote from './claim-vote';
+import voteRatio from './vote-ratio';
 
 export default [
     canClaimVote,
@@ -55,5 +56,6 @@ export default [
     runner[0],
     getLatestEntryVersion,
     getEntryIpfsHash,
-    resolveEntriesIpfsHash
+    resolveEntriesIpfsHash,
+    voteRatio
 ];

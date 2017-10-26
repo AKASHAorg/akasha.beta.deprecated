@@ -7,7 +7,7 @@ class EntryIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'entry';
-        this.DEFAULT_MANAGED = ['getScore', 'getEntry', 'getVoteOf'];
+        this.DEFAULT_MANAGED = ['getScore', 'getEntry', 'getVoteOf', 'getVoteRatio'];
     }
 
     public initListeners(webContents: WebContents) {
