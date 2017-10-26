@@ -6,20 +6,20 @@ import { Icon, Input } from 'antd';
 import { searchMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { ACTIVITY } from '../../constants/context-types';
-import { selectLoggedAkashaId, selectProfileEntries } from '../../local-flux/selectors';
+import { selectLoggedEthAddress, selectProfileEntries } from '../../local-flux/selectors';
 import { EntryList } from '../';
 
 
 class Highlights extends Component {
     componentDidMount () {
-        const { akashaId } = this.props;
-        this.props.entryProfileIterator(null, akashaId);
+        const { ethAddress } = this.props;
+        this.props.entryProfileIterator({ columnId: null, value: ethAddress });
     }
 
     fetchMoreProfileEntries = () => {
-        const { akashaId } = this.props;
-        this.props.entryMoreProfileIterator(null, akashaId);
-    }
+        const { ethAddress } = this.props;
+        this.props.entryMoreProfileIterator({ columnId: null, value: ethAddress });
+    };
 
     // onSearchChange = (ev) => {
     // };
@@ -59,9 +59,9 @@ class Highlights extends Component {
 
 Highlights.propTypes = {
     search: PropTypes.string,
-    akashaId: PropTypes.string,
     entryMoreProfileIterator: PropTypes.func,
     entryProfileIterator: PropTypes.func,
+    ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     profileEntries: PropTypes.shape(),
     fetchingProfileEntries: PropTypes.bool,
@@ -70,12 +70,12 @@ Highlights.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const akashaId = selectLoggedAkashaId(state);
+    const ethAddress = selectLoggedEthAddress(state);
     return {
-        akashaId: selectLoggedAkashaId(state),
+        ethAddress,
         fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
         fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
-        profileEntries: selectProfileEntries(state, akashaId),
+        profileEntries: selectProfileEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
     };

@@ -5,6 +5,14 @@ export const searchMoreQuery = (text, offset) => action(types.SEARCH_MORE_QUERY,
 export const searchMoreQuerySuccess = data => action(types.SEARCH_MORE_QUERY_SUCCESS, { data });
 export const searchMoreQueryError = error => action(types.SEARCH_MORE_QUERY_ERROR, { error });
 
+export const searchProfiles = query => action(types.SEARCH_PROFILES, { query });
+export const searchProfilesError = (error) => {
+    error.code = 'SPE01';
+    error.messageId = 'searchProfiles';
+    return action(types.SEARCH_PROFILES_ERROR, { error });
+};
+export const searchProfilesSuccess = data => action(types.SEARCH_PROFILES_SUCCESS, { data });
+
 export const searchQuery = text => action(types.SEARCH_QUERY, { text });
 export const searchQuerySuccess = data => action(types.SEARCH_QUERY_SUCCESS, { data });
 export const searchQueryError = error => action(types.SEARCH_QUERY_ERROR, { error });

@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { profileGetData } from '../../local-flux/actions/profile-actions';
 import { selectProfile } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
@@ -71,8 +70,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryMoreProfileIterator,
-        entryProfileIterator,
         profileGetData,
     }
 )(ProfilePage);

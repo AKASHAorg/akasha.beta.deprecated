@@ -60,6 +60,11 @@ class ColumnHeader extends Component {
         }, () => this.updateColumnValue());
     };
 
+    onRefresh = () => {
+        this.props.onRefresh();
+        this.setState({ popoverVisible: false });
+    }
+
     onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
 
     deleteColumn = () => {
@@ -101,6 +106,12 @@ class ColumnHeader extends Component {
 
         return (
           <div className="dashboard-secondary-sidebar__popover-content">
+            <div
+              className="flex-center-y popover-menu__item"
+              onClick={this.onRefresh}
+            >
+              {intl.formatMessage(generalMessages.refresh)}
+            </div>
             <div
               className="flex-center-y popover-menu__item"
               onClick={this.switchColumnWidth}
@@ -174,6 +185,7 @@ ColumnHeader.propTypes = {
     icon: PropTypes.element,
     intl: PropTypes.shape().isRequired,
     onInputChange: PropTypes.func,
+    onRefresh: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     suggestions: PropTypes.shape(),
     title: PropTypes.string,

@@ -128,8 +128,8 @@ export const entryMoreNewestIteratorError = (error, req) => {
 export const entryMoreNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
 
-export const entryMoreProfileIterator = (columnId, ethAddress) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, ethAddress });
+export const entryMoreProfileIterator = ({ columnId, value }) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, value });
 export const entryMoreProfileIteratorError = (error, req) => {
     error.code = 'EMPIE01';
     error.messageId = 'entryMoreProfileIterator';
@@ -147,8 +147,8 @@ export const entryMoreStreamIteratorError = (error, req) => {
 export const entryMoreStreamIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, req });
 
-export const entryMoreTagIterator = (columnId, tagName) =>
-    action(types.ENTRY_MORE_TAG_ITERATOR, { columnId, tagName });
+export const entryMoreTagIterator = ({ columnId, value }) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { columnId, value });
 export const entryMoreTagIteratorError = (error, req) => {
     error.code = 'EMTIE01';
     error.messageId = 'entryMoreTagIterator';
@@ -170,8 +170,8 @@ export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
 
-export const entryProfileIterator = ({ columnId, ethAddress, limit, asDrafts }) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { columnId, ethAddress, limit, asDrafts });
+export const entryProfileIterator = ({ columnId, value, limit, asDrafts }) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { columnId, value, limit, asDrafts });
 export const entryProfileIteratorError = (error, req) => {
     error.code = 'EPIE01';
     error.messageId = 'entryProfileIterator';
@@ -199,8 +199,8 @@ export const entryStreamIteratorError = (error, req) => {
 export const entryStreamIteratorSuccess = (data, req) =>
     action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, req });
 
-export const entryTagIterator = (columnId, tagName) =>
-    action(types.ENTRY_TAG_ITERATOR, { columnId, tagName });
+export const entryTagIterator = ({ columnId, value }) =>
+    action(types.ENTRY_TAG_ITERATOR, { columnId, value });
 export const entryTagIteratorError = (error, req) => {
     error.code = 'ETIE01';
     error.messageId = 'entryTagIterator';

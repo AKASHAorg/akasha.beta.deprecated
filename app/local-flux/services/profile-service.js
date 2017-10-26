@@ -25,10 +25,6 @@ export const profileGetSuggestions = akashaId =>
             .catch(err => reject(err))
     );
 
-export const profileSaveAkashaIds = akashaIds =>
-    profileDB.knownAkashaIds
-        .bulkPut(akashaIds.map(akashaId => ({ akashaId })));
-
 export const profileSaveLogged = profile =>
     profileDB.loggedProfile.clear()
         .then(() => profileDB.loggedProfile.put(profile));

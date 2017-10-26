@@ -33,6 +33,11 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').merge({ moreQueryPending: false })
         }),
 
+    [types.SEARCH_PROFILES]: (state, { query }) => state.set('query', query),
+
+    [types.SEARCH_PROFILES_SUCCESS]: (state, { data }) =>
+        state.set('profiles', new List(data)),
+
     [types.SEARCH_QUERY]: (state, { text }) =>
         state.merge({
             query: text,
