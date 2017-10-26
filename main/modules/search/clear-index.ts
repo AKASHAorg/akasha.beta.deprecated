@@ -16,7 +16,7 @@ const execute = Promise.coroutine(function* (data: { target: string }, cb) {
     const v = new schema.Validator();
     v.validate(data, flush, { throwError: true });
 
-    const modules = ['entry', 'tags'];
+    const modules = ['entry', 'tags', 'profiles'];
     if (modules.indexOf(data.target) === -1) {
         throw new Error('target is not recognized');
     }
