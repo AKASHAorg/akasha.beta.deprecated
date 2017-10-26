@@ -120,17 +120,17 @@ export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', i
 
 export const selectEthBalance = state => state.profileState.getIn(['balance', 'eth']);
 
-export const selectFetchingFollowers = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
+export const selectFetchingFollowers = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingFollowers', ethAddress]);
 
-export const selectFetchingFollowings = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingFollowings', akashaId]);
+export const selectFetchingFollowings = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingFollowings', ethAddress]);
 
-export const selectFetchingMoreFollowers = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingMoreFollowers', akashaId]);
+export const selectFetchingMoreFollowers = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowers', ethAddress]);
 
-export const selectFetchingMoreFollowings = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingMoreFollowings', akashaId]);
+export const selectFetchingMoreFollowings = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowings', ethAddress]);
 
 export const selectFirstComment = state => state.commentsState.get('firstComm');
 
