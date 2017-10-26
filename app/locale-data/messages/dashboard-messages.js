@@ -16,6 +16,16 @@ const dashboardMessages = defineMessages({
         description: 'subtitle for add new column',
         defaultMessage: 'Please select a column type'
     },
+    addNewProfileColumn: {
+        id: 'app.dashboard.addNewProfileColumn',
+        description: 'title for add new profile column',
+        defaultMessage: 'User column'
+    },
+    addNewProfileColumnSubtitle: {
+        id: 'app.dashboard.addNewProfileColumnSubtitle',
+        description: 'subtitle for add new profile column',
+        defaultMessage: 'Please choose an user'
+    },
     addNewTagColumn: {
         id: 'app.dashboard.addNewTagColumn',
         description: 'title for add new tag column',
@@ -44,7 +54,7 @@ const dashboardMessages = defineMessages({
     columnStream: {
         id: 'app.dashboard.columnStream',
         description: 'title for "following stream" column',
-        defaultMessage: 'followed users'
+        defaultMessage: 'Activity feed'
     },
     createNew: {
         id: 'app.dashboard.createNew',
@@ -96,9 +106,14 @@ const dashboardMessages = defineMessages({
         description: 'placeholder for dashboard name input',
         defaultMessage: 'Type board name'
     },
-    preview: {
-        id: 'app.dashboard.preview',
-        description: 'preview column entries',
+    previewProfile: {
+        id: 'app.dashboard.previewProfile',
+        description: 'preview for profile column entries',
+        defaultMessage: 'Preview for {displayName}'
+    },
+    previewTag: {
+        id: 'app.dashboard.previewTag',
+        description: 'preview tag column entries',
         defaultMessage: 'Preview for #{tagName}'
     },
     profile: {

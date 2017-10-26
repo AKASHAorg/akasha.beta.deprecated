@@ -13,20 +13,28 @@ class TagColumn extends Component {
         const { column } = this.props;
         const value = column.get('value');
         if (!column.get('entries').size && value) {
-            this.props.entryTagIterator(column.get('id'), value);
+            this.props.entryTagIterator({ columnId: column.get('id'), value });
         }
     }
 
     componentWillReceiveProps ({ column }) {
-        const newValue = column.get('value');
-        if (newValue !== this.props.column.get('value')) {
-            this.props.entryTagIterator(column.get('id'), newValue);
+        const value = column.get('value');
+        if (value !== this.props.column.get('value')) {
+            this.props.entryTagIterator({ columnId: column.get('id'), value });
         }
     }
 
     entryMoreTagIterator = () => {
         const { column } = this.props;
         this.props.entryMoreTagIterator(column.get('id'), column.get('value'));
+    };
+
+    onRefresh = () => {
+        const { column } = this.props;
+        this.props.entryTagIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
     };
 
     render () {
@@ -41,6 +49,7 @@ class TagColumn extends Component {
               column={column}
               onInputChange={() => {}}
               icon={<ColumnTag />}
+              onRefresh={this.onRefresh}
               suggestions={suggestions}
             />
             <EntryList

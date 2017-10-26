@@ -133,7 +133,6 @@ function* profileGetByAddress ({ ethAddress }) {
 function* profileGetData ({ akashaId, ethAddress, full = false }) {
     const channel = Channel.server.profile.getProfileData;
     yield apply(channel, channel.send, [{ akashaId, ethAddress, full }]);
-    yield fork(profileSaveAkashaIds, [akashaId]); // eslint-disable-line    
 }
 
 export function* profileGetExtraOfList (collection) {
@@ -239,18 +238,8 @@ function* profileMoreFollowingsIterator ({ ethAddress }) {
 
 function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) {
     const channel = Channel.server.profile.resolveProfileIpfsHash;
-    // save the akashaIds in the local db for quick suggestions
-    yield fork(profileSaveAkashaIds, akashaIds); // eslint-disable-line no-use-before-define
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(channel, channel.send, [{ ipfsHash, columnId, akashaIds }]);
-}
-
-export function* profileSaveAkashaIds (akashaIds) {
-    try {
-        yield apply(profileService, profileService.profileSaveAkashaIds, [akashaIds]);
-    } catch (error) {
-        yield put(actions.profileSaveAkashaIdsError(error));
-    }
 }
 
 function* profileSaveLogged (loggedProfile) {
@@ -548,6 +537,8 @@ function* watchProfileFreeAethChannel () {
             yield put(actionActions.actionPublished(resp.data.receipt));
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFreeAethError({}));
+            } else {
+                yield put(actions.profileCyclingStates());
             }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };

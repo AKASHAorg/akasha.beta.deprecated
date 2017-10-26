@@ -8,12 +8,18 @@ import { selectSearchQuery } from '../selectors';
 import * as searchService from '../services/search-service';
 
 const Channel = global.Channel;
+const SEARCH_PROFILES_LIMIT = 5;
 const SEARCH_TAGS_LIMIT = 5;
 
 function* searchQuery ({ text, pageSize = entrySearchLimit, offset = 0 }) {
     const channel = Channel.server.search.query;
     yield call(enableChannel, channel, Channel.client.search.manager);
     yield apply(channel, channel.send, [{ text, pageSize, offset }]);
+}
+
+function* searchProfiles ({ query }) {
+    const channel = Channel.server.search.findProfiles;
+    yield apply(channel, channel.send, [{ text: query, limit: SEARCH_PROFILES_LIMIT }]);
 }
 
 function* searchSyncTags () {
@@ -68,6 +74,18 @@ function* watchSearchQueryChannel () {
     */
 }
 
+function* watchSearchProfilesChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.search.findProfiles);
+        const query = yield select(selectSearchQuery);
+        if (resp.error) {
+            yield put(actions.searchProfilesError(resp.error));
+        } else if (resp.data.collection && query === resp.request.text) {
+            yield put(actions.searchProfilesSuccess(resp.data.collection));
+        }
+    }
+}
+
 function* watchSearchSyncTagsChannel () {
     while (true) {
         const resp = yield take(actionChannels.search.syncTags);
@@ -94,6 +112,7 @@ function* watchSearchTagsChannel () {
 
 export function* registerSearchListeners () {
     yield fork(watchSearchQueryChannel);
+    yield fork(watchSearchProfilesChannel);
     yield fork(watchSearchSyncTagsChannel);
     yield fork(watchSearchTagsChannel);
 }
@@ -101,6 +120,7 @@ export function* registerSearchListeners () {
 export function* watchSearchActions () {
     yield takeLatest(types.SEARCH_MORE_QUERY, searchQuery);
     yield takeLatest(types.SEARCH_QUERY, searchQuery);
+    yield takeEvery(types.SEARCH_PROFILES, searchProfiles);
     yield takeLatest(types.SEARCH_SYNC_TAGS, searchSyncTags);
     yield takeEvery(types.SEARCH_TAGS, searchTags);
 }

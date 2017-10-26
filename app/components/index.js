@@ -73,7 +73,7 @@ export NewDashboardForm from './forms/new-dashboard-form';
 export NewIdentityInterests from './setup/new-identity-interests';
 export NewListForm from './forms/new-list-form';
 export NewProfileForm from './forms/new-profile-form';
-export NewTagColumn from './columns/new-tag-column';
+export NewSearchColumn from './columns/new-search-column';
 export Notification from './notifications/notification';
 export NotificationHighlightNote from './notifications/notification-highlight-note';
 export OptimisticComment from './comment/optimistic-comment';

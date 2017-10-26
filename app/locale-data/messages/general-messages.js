@@ -305,6 +305,11 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
+    refresh: {
+        id: 'app.general.refresh',
+        description: 'refresh/reload',
+        defaultMessage: 'Refresh'
+    },
     rename: {
         id: 'app.general.rename',
         description: 'rename',

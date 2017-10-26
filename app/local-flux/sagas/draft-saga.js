@@ -156,7 +156,7 @@ function* draftPublishSuccess ({ data }) {
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));
     yield put(entryActions.entryProfileIterator({
         column: null,
-        ethAddress,
+        value: ethAddress,
         limit: 1000000,
         asDrafts: true
     }));

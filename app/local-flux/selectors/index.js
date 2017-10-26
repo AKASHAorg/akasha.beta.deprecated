@@ -310,6 +310,8 @@ export const selectProfileEntries = (state, akashaId) =>
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
+export const selectProfileSearchResults = state => state.searchState.get('profiles');
+
 export const selectResolvingComment = (state, commentId) =>
     state.commentsState.getIn(['flags', 'resolvingComments', commentId]);
 

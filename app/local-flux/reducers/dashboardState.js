@@ -6,14 +6,14 @@ import { COLUMN } from '../../constants/context-types';
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { columnId, tagName }) => {
+const entryIterator = (state, { columnId, value }) => {
     if (!columnId || !state.getIn(['columnById', columnId])) {
         return state;
     }
     if (columnId === 'newColumn') {
         return state.mergeIn(['columnById', columnId], {
             flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
-            value: tagName
+            value
         });
     }
     return state.mergeIn(['columnById', columnId, 'flags'], { fetchingEntries: true });

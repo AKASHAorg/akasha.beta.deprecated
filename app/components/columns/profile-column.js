@@ -14,20 +14,29 @@ class ProfileColumn extends Component {
         const { column } = this.props;
         const value = column.get('value');
         if (!column.get('entries').size && value) {
-            this.props.entryProfileIterator(column.get('id'), value);
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
         }
     }
 
     componentWillReceiveProps ({ column }) {
-        const newValue = column.get('value');
-        if (newValue !== this.props.column.get('value')) {
-            this.props.entryProfileIterator(column.get('id'), newValue);
+        const value = column.get('value');
+        if (value !== this.props.column.get('value')) {
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
         }
     }
 
     entryMoreProfileIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreProfileIterator(column.get('id'), column.get('value'));
+        const value = column.get('value');
+        this.props.entryMoreProfileIterator({ columnId: column.get('id'), value });
+    };
+
+    onRefresh = () => {
+        const { column } = this.props;
+        this.props.entryProfileIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
     };
 
     render () {
@@ -42,6 +51,7 @@ class ProfileColumn extends Component {
               column={column}
               onInputChange={val => this.props.dashboardGetProfileSuggestions(val, column.get('id'))}
               icon={<ColumnProfile />}
+              onRefresh={this.onRefresh}
               suggestions={suggestions}
             />
             <EntryList
