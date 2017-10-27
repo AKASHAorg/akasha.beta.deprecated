@@ -7,7 +7,7 @@ import { ColumnProfile } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { dashboardGetProfileSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
+import { selectColumnEntries } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
     componentDidMount () {
@@ -40,7 +40,7 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, suggestions } = this.props;
+        const { column, entries, intl } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchProfile);
@@ -52,7 +52,6 @@ class ProfileColumn extends Component {
               onInputChange={val => this.props.dashboardGetProfileSuggestions(val, column.get('id'))}
               icon={<ColumnProfile />}
               onRefresh={this.onRefresh}
-              suggestions={suggestions}
             />
             <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
@@ -76,14 +75,11 @@ ProfileColumn.propTypes = {
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    suggestions: PropTypes.shape().isRequired
 };
 
 function mapStateToProps (state, ownProps) {
-    const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
-        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 

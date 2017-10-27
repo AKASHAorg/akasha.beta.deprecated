@@ -129,7 +129,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { icon, readOnly, suggestions, title } = this.props;
+        const { icon, readOnly, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -153,7 +153,7 @@ class ColumnHeader extends Component {
               {!readOnly &&
                 <AutoComplete
                   id="value"
-                  dataSource={suggestions ? suggestions.toJS() : []}
+                  dataSource={[]}
                   searchText={value}
                   onBlur={this.onBlur}
                   onUpdateInput={this.onChange}
@@ -187,7 +187,6 @@ ColumnHeader.propTypes = {
     onInputChange: PropTypes.func,
     onRefresh: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
-    suggestions: PropTypes.shape(),
     title: PropTypes.string,
 };
 

@@ -6,7 +6,7 @@ import { ColumnHeader, EntryList } from '../';
 import { ColumnTag } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
+import { selectColumnEntries } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
     componentDidMount () {
@@ -38,7 +38,7 @@ class TagColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, suggestions } = this.props;
+        const { column, entries, intl } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchTag);
@@ -50,7 +50,6 @@ class TagColumn extends Component {
               onInputChange={() => {}}
               icon={<ColumnTag />}
               onRefresh={this.onRefresh}
-              suggestions={suggestions}
             />
             <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
@@ -73,14 +72,12 @@ TagColumn.propTypes = {
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    suggestions: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, columnId),
-        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 

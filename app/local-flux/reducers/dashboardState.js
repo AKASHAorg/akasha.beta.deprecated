@@ -74,18 +74,6 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
     });
 };
 
-const handleSuggestions = (state, { data, request }) => {
-    const { context, columnId } = request;
-    if (context === COLUMN) {
-        const suggestions = new List(data);
-        if (columnId && state.hasIn(['columnById', columnId])) {
-            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
-        }
-        return state.setIn(['newColumn', 'suggestions'], suggestions);
-    }
-    return state;
-};
-
 const createDashboardRecord = (data) => {
     let dashboard = new DashboardRecord(data);
     dashboard = dashboard.set('columns', new List(dashboard.columns.map(col => col.id)));
@@ -157,8 +145,6 @@ const dashboardState = createReducer(initialState, {
             dashboardByName
         });
     },
-
-    [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
         state.setIn(['columnById', 'newColumn'], new ColumnRecord()),
