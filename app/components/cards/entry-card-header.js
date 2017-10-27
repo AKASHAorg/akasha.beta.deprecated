@@ -7,7 +7,10 @@ import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
     const { author, containerRef, entry, intl, openVersionsPanel } = props;
-    const ethAddress = entry.getIn(['author', 'ethAddress']);
+    const ethAddress = entry.getIn(['author', 'ethAddress']);    
+    if (!ethAddress) {
+        return <div>Cannot resolve author</div>;
+    }
     const content = entry.get('content');
     const publishDate = new Date(entry.get('publishDate') * 1000);
     const wordCount = (content && content.get('wordCount')) || 0;

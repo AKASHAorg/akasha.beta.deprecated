@@ -19,6 +19,13 @@ export const selectActiveDashboard = (state) => {
     ]);
 };
 
+export const selectActiveDashboardColumns = (state) => {
+    const name = state.dashboardState.get('activeDashboard');
+    return state.dashboardState
+        .getIn(['dashboardByName', name, 'columns'])
+        .map(columnId => selectColumn(state, columnId));
+};
+
 export const selectActiveDashboardId = (state) => {
     const activeDashboardName = state.dashboardState.get('activeDashboard');
     if (!activeDashboardName) {
@@ -66,9 +73,6 @@ export const selectColumnLastIndex = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);
 
 export const selectColumns = state => state.dashboardState.get('columnById');
-
-export const selectColumnSuggestions = (state, columnId) =>
-    state.dashboardState.getIn(['columnById', columnId, 'suggestions']);
 
 export const selectComment = (state, id) => state.commentsState.getIn(['byId', id]);
 

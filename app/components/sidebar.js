@@ -112,10 +112,7 @@ class Sidebar extends Component {
         const { activeDashboard, history, intl, location, loggedProfileData } = this.props;
 
         const menu = (
-          <div
-            onClick={this.hide}
-            className="sidebar__menu"
-          >
+          <div className="sidebar__menu" onClick={this.hide}>
             <div
               onClick={this.props.profileEditToggle}
               className="sidebar__button-text"
