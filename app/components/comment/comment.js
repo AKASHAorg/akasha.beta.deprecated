@@ -173,7 +173,12 @@ class Comment extends Component {
         const { editorState, isExpanded } = this.state;
         const publishDate = comment.publishDate;
         const content = comment.content;
-        const commentText = JSON.parse(content).blocks[0].text;
+        let commentText = '';
+        try {
+            commentText = JSON.parse(content).blocks[0].text;
+        } catch (error) {
+            console.error('comment content is wrong format', error);
+        }
         const commentTitle = (commentText.length > 25) ?
             `${commentText.slice(0, 25)}...` :
             commentText;
