@@ -45,7 +45,12 @@ class DashboardSecondarySidebar extends Component {
     };
 
     renderRow = (dashboard) => {
-        const { activeDashboard, intl } = this.props;
+        const { activeDashboard, dashboards, intl } = this.props;
+        const isLastDashboard = dashboards.size === 1;
+        const onDelete = () => this.onDeleteDashboard(dashboard);
+        const deleteClass = classNames('flex-center-y popover-menu__item', {
+            'popover-menu__item_disabled': isLastDashboard
+        });
         const menu = (
           <div className="dashboard-secondary-sidebar__popover-content">
             <div
@@ -55,8 +60,8 @@ class DashboardSecondarySidebar extends Component {
               {intl.formatMessage(generalMessages.rename)}
             </div>
             <div
-              className="flex-center-y popover-menu__item"
-              onClick={() => this.onDeleteDashboard(dashboard)}
+              className={deleteClass}
+              onClick={!isLastDashboard && onDelete}
             >
               {intl.formatMessage(generalMessages.delete)}
             </div>

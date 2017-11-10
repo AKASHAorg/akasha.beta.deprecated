@@ -32,6 +32,7 @@ const computeGethStatus = (status) => {
 const computeIpfsStatus = (newStatus) => {
     if (newStatus.started || newStatus.process) {
         newStatus.downloading = null;
+        newStatus.starting = false;
     }
     if (newStatus.downloading) {
         newStatus.upgrading = null;

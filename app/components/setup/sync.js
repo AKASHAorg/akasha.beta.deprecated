@@ -200,7 +200,7 @@ class Sync extends Component {
                     </Button>
                   </div>
                 }
-                {syncActionId === 4 &&
+                {syncActionId === 4 && !ipfsStatus.get('starting') &&
                   <Button
                     disabled={ipfsBusyState || ipfsPortsRequested}
                     onClick={this.handleNext}
@@ -212,7 +212,7 @@ class Sync extends Component {
               </div>
               <div className="sync__message">
                 <small>
-                  {syncActionId === 4 ?
+                  {syncActionId === 4 && !ipfsStatus.get('starting') ?
                       intl.formatMessage(setupMessages.afterSyncFinish) :
                       intl.formatMessage(setupMessages.onSyncStart)
                   }
