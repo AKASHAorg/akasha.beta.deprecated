@@ -60,11 +60,16 @@
         text-align: center;
         transition: width 0.218s @ease-in-out;
         height: 100%;
-        overflow-y: auto;
     }
     &__editor {
         // min-height: ~"calc(100% - 64px)";
-        height: ~"calc(100% - 64px)";
+        height: ~"calc(100% - 128px)";
+        position: fixed;
+        top: 64px;
+        bottom: 0;
+        right: 0;
+        left: 264px;
+        overflow-y: auto;
     }
     &__editor,
     &__tag-editor {

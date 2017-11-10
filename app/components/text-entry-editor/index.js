@@ -24,7 +24,21 @@ class EntryEditor extends Component {
             selectionState: null
         };
     }
-
+    componentDidMount () {
+        this.rootNode.addEventListener('scroll', this._handleEditorScroll);
+    }
+    _handleEditorScroll = (ev) => {
+        const scrollHeight = ev.target.scrollHeight;
+        const scrollTop = ev.target.scrollTop;
+        const rootNode = this.rootNode;
+        const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
+        const scroller = nodeHeight + scrollTop;
+        if (nodeHeight + scrollTop === scrollHeight) {
+            this.props.onScrollBottom();
+        } else if (nodeHeight === scroller) {
+            this.props.onScrollTop();
+        }
+    }
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
     };
@@ -109,7 +123,7 @@ class EntryEditor extends Component {
         const { editorPlaceholder, readOnly, editorState } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
-          <div className="text-entry-editor">
+          <div className="text-entry-editor" ref={(rootNode) => { this.rootNode = rootNode; }}>
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}

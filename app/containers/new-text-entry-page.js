@@ -5,13 +5,13 @@ import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
-import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, DataLoader } from '../components';
+import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
+    DataLoader } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
-import { tagSearchLocal } from '../local-flux/actions/tag-actions';
-import { searchResetResults } from '../local-flux/actions/search-actions';
+import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
@@ -21,29 +21,12 @@ const { EditorState } = DraftJS;
 
 const { confirm } = Modal;
 
-const EditorNotReadyPlaceholder = ({ message, loading }) => (
-  <div className="editor-not-ready">
-    {loading &&
-      <div className="editor-not-ready__loader">Loading</div>
-    }
-    <div className="editor-not-ready__message">
-      {message}
-    </div>
-  </div>
-);
-
-EditorNotReadyPlaceholder.propTypes = {
-    message: PropTypes.string,
-    loading: PropTypes.bool
-};
-
 class NewEntryPage extends Component {
     state = {
         showPublishPanel: false,
         errors: {},
         shouldResetCaret: false,
     }
-
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
             userDefaultLicense, selectionState } = nextProps;
@@ -379,7 +362,7 @@ class NewEntryPage extends Component {
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
-                    tagSearchLocal={this.props.tagSearchLocal}
+                    searchTags={this.props.searchTags}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
@@ -473,7 +456,7 @@ NewEntryPage.propTypes = {
     secondarySidebarToggle: PropTypes.func,
     selectionState: PropTypes.shape(),
     searchResetResults: PropTypes.func,
-    tagSearchLocal: PropTypes.func,
+    searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicense: PropTypes.shape(),
@@ -490,7 +473,7 @@ const mapStateToProps = (state, ownProps) => ({
     resolvingEntries: state.draftState.get('resolvingEntries'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
-    tagSuggestionsCount: state.searchState.get('resultsCount'),
+    tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
 });
 
@@ -505,7 +488,7 @@ export default connect(
         draftsGetCount,
         draftRevertToVersion,
         entryGetFull,
-        tagSearchLocal,
+        searchTags,
         searchResetResults,
     }
 )(injectIntl(NewEntryPage));

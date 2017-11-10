@@ -61,7 +61,8 @@ class TagEditor extends Component {
         const controllingSuggestions = suggestionsControlKeys.includes(ev.which);
         if (inputHasFocus && controllingSuggestions && tagSuggestionsCount > 0) {
             switch (ev.which) {
-                case (9 || 13): // tab or enter
+                case 9: // tab
+                case 13: // enter
                     this._addNewTag(
                         tagSuggestions.get(this.state.selectedSuggestionIndex),
                         tagSuggestions.get(this.state.selectedSuggestionIndex)
@@ -218,10 +219,8 @@ class TagEditor extends Component {
             partialTag: ev.target.value,
             tagInputWidth: this._getTextWidth(ev.target.value).width + 20,
         }, () => {
-            if (this.state.partialTag.length > 2) {
-                this.props.tagSearchLocal({
-                    tagName: this.state.partialTag,
-                });
+            if (this.state.partialTag.length >= 1) {
+                this.props.searchTags(this.state.partialTag);
             } else {
                 this.props.searchResetResults();
             }
@@ -242,10 +241,8 @@ class TagEditor extends Component {
             inputHasFocus: focusState
         }, () => {
             if (this.state.inputHasFocus) {
-                if (this.state.partialTag.length > 2) {
-                    this.props.tagSearchLocal({
-                        tagName: this.state.partialTag,
-                    });
+                if (this.state.partialTag.length >= 1) {
+                    this.props.searchTags(this.state.partialTag);
                 }
             }
             if (!this.state.inputHasFocus) {
@@ -370,7 +367,7 @@ TagEditor.propTypes = {
     match: PropTypes.shape(),
     nodeRef: PropTypes.func,
     onTagUpdate: PropTypes.func,
-    tagSearchLocal: PropTypes.func,
+    searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     tags: PropTypes.shape(),
