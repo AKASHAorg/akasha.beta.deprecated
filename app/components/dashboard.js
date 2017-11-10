@@ -7,13 +7,13 @@ const smallColumn = 360;
 const largeColumn = 720;
 
 const Dashboard = (props) => {
-    const { columns, dashboards, getDashboardRef, match, updateNewColumn } = props;
+    const { columns, dashboards, getDashboardRef, match } = props;
     const name = match.params.dashboardName;
     const activeDashboard = dashboards.get(name);
 
     return (
-      <div className="dashboard" ref={getDashboardRef}>
-        {activeDashboard && activeDashboard.get('columns').map((id, index) => {
+      <div className="dashboard" id="dashboard-container" ref={getDashboardRef}>
+        {activeDashboard && activeDashboard.get('columns').map((id) => {
             const column = columns.get(id);
             if (!column) {
                 return null;
@@ -24,6 +24,7 @@ const Dashboard = (props) => {
             return (
               <div
                 className="dashboard__column"
+                id={id}
                 key={id}
                 style={{ width }}
               >
@@ -44,7 +45,6 @@ Dashboard.propTypes = {
     dashboards: PropTypes.shape(),
     getDashboardRef: PropTypes.func.isRequired,
     match: PropTypes.shape(),
-    updateNewColumn: PropTypes.func.isRequired
 };
 
 export default withRouter(Dashboard);

@@ -1,18 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Icon, Input } from 'antd';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
-import { dashboardResetNewColumn,
-    dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumn, selectColumnEntries, selectNewColumn,
-    selectTagSearchResults } from '../../local-flux/selectors';
 import { EntryList } from '../';
 
-class NewTagColumn extends Component {
+class NewSearchColumn extends Component {
     componentDidMount () {
         if (this.input) {
             this.input.focus();
@@ -25,7 +18,7 @@ class NewTagColumn extends Component {
 
     getInputRef = (el) => { this.input = el; };
 
-    onSearch = value => this.props.searchTags(value);
+    onSearch = value => this.props.onSearch(value);
 
     onChange = (value) => {
         const { column } = this.props;
@@ -43,29 +36,32 @@ class NewTagColumn extends Component {
             }
             this.selecting = false;
         }
-    }
+    };
 
     onSelect = (value) => {
         this.selecting = true;
-        this.props.entryTagIterator('newColumn', value);
+        this.props.entryIterator({ columnId: 'newColumn', value });
     };
 
-    onLoadMore = () => this.props.entryMoreTagIterator('newColumn', this.props.column.get('value'));
+    onLoadMore = () => this.props.entryMoreIterator({
+        columnId: 'newColumn',
+        value: this.props.column.get('value')
+    });
 
     onSearchEntries = () => {
-        const { newColumn } = this.props;
-        this.props.entryTagIterator('newColumn', newColumn.get('value'));
+        const { entryIterator, newColumn } = this.props;
+        entryIterator({ columnId: 'newColumn', value: newColumn.get('value') });
     };
 
     render () {
-        const { column, dataSource, intl, newColumn, previewEntries } = this.props;
+        const { column, dataSource, intl, newColumn, previewEntries, previewMessage } = this.props;
         const placeholderMessage = intl.formatMessage(entryMessages.noEntries);
 
         return (
-          <div className="new-tag-column">
-            <div className="new-tag-column__search-wrapper">
+          <div className="new-search-column">
+            <div className="new-search-column__search-wrapper">
               <AutoComplete
-                className="new-tag-column__auto-complete"
+                className="new-search-column__auto-complete"
                 dataSource={dataSource}
                 onChange={this.onChange}
                 onSearch={this.onSearch}
@@ -78,7 +74,7 @@ class NewTagColumn extends Component {
                   ref={this.getInputRef}
                   suffix={(
                     <div
-                      className="flex-center content-link new-tag-column__search-icon-wrapper"
+                      className="flex-center content-link new-search-column__search-icon-wrapper"
                       onClick={this.onSearchEntries}
                     >
                       <Icon type="search" />
@@ -88,12 +84,12 @@ class NewTagColumn extends Component {
               </AutoComplete>
             </div>
             {column.get('value') &&
-              <div className="flex-center-y new-tag-column__preview-title">
-                {intl.formatMessage(dashboardMessages.preview, { tagName: column.get('value') })}
+              <div className="flex-center-y new-search-column__preview-title">
+                {previewMessage}
               </div>
             }
             {column.get('value') &&
-              <div className="new-tag-column__list-wrapper">
+              <div className="new-search-column__list-wrapper">
                 <EntryList
                   cardStyle={{ width: '340px' }}
                   contextId="newColumn"
@@ -111,35 +107,18 @@ class NewTagColumn extends Component {
     }
 }
 
-NewTagColumn.propTypes = {
+NewSearchColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
     dataSource: PropTypes.shape().isRequired,
-    entryMoreTagIterator: PropTypes.func.isRequired,
-    entryTagIterator: PropTypes.func.isRequired,
+    entryIterator: PropTypes.func.isRequired,
+    entryMoreIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     newColumn: PropTypes.shape().isRequired,
+    onSearch: PropTypes.func.isRequired,
     previewEntries: PropTypes.shape().isRequired,
-    searchTags: PropTypes.func.isRequired,
+    previewMessage: PropTypes.string.isRequired
 };
 
-function mapStateToProps (state) {
-    return {
-        column: selectColumn(state, 'newColumn'),
-        dataSource: selectTagSearchResults(state),
-        newColumn: selectNewColumn(state),
-        previewEntries: selectColumnEntries(state, 'newColumn')
-    };
-}
-
-export default connect(
-    mapStateToProps,
-    {
-        dashboardResetNewColumn,
-        dashboardUpdateNewColumn,
-        entryMoreTagIterator,
-        entryTagIterator,
-        searchTags
-    }
-)(injectIntl(NewTagColumn));
+export default injectIntl(NewSearchColumn);

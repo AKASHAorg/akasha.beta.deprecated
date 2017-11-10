@@ -1,4 +1,4 @@
-.new-tag-column {
+.new-search-column {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
@@ -13,12 +13,16 @@
 
     &__search-icon-wrapper {
         height: 36px;
-        width: 42px;
+        width: 36px;
         border-left: 1px solid #f3f3f3;
     }
 
     &__auto-complete {
         width: 100%;
+
+        .ant-input {
+            padding-right: 44px !important;
+        }
     }
 
     &__preview-title {

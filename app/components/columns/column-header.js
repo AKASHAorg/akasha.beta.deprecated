@@ -60,6 +60,11 @@ class ColumnHeader extends Component {
         }, () => this.updateColumnValue());
     };
 
+    onRefresh = () => {
+        this.props.onRefresh();
+        this.setState({ popoverVisible: false });
+    }
+
     onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
 
     deleteColumn = () => {
@@ -103,6 +108,12 @@ class ColumnHeader extends Component {
           <div className="dashboard-secondary-sidebar__popover-content">
             <div
               className="flex-center-y popover-menu__item"
+              onClick={this.onRefresh}
+            >
+              {intl.formatMessage(generalMessages.refresh)}
+            </div>
+            <div
+              className="flex-center-y popover-menu__item"
               onClick={this.switchColumnWidth}
             >
               {intl.formatMessage(message)}
@@ -118,7 +129,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { icon, readOnly, suggestions, title } = this.props;
+        const { icon, readOnly, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -142,7 +153,7 @@ class ColumnHeader extends Component {
               {!readOnly &&
                 <AutoComplete
                   id="value"
-                  dataSource={suggestions ? suggestions.toJS() : []}
+                  dataSource={[]}
                   searchText={value}
                   onBlur={this.onBlur}
                   onUpdateInput={this.onChange}
@@ -174,8 +185,8 @@ ColumnHeader.propTypes = {
     icon: PropTypes.element,
     intl: PropTypes.shape().isRequired,
     onInputChange: PropTypes.func,
+    onRefresh: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
-    suggestions: PropTypes.shape(),
     title: PropTypes.string,
 };
 

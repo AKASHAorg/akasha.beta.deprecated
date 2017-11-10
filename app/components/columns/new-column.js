@@ -6,10 +6,15 @@ import { Button } from 'antd';
 import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
-    dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectNewColumn } from '../../local-flux/selectors';
+    dashboardResetNewColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
+import { entryMoreProfileIterator, entryMoreTagIterator, entryProfileIterator,
+    entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { searchProfiles, searchTags } from '../../local-flux/actions/search-actions';
+import { selectColumn, selectColumnEntries, selectNewColumn, selectProfileSearchResults,
+    selectTagSearchResults } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
-import { NewTagColumn } from '../';
+import { getDisplayName } from '../../utils/dataModule';
+import { NewSearchColumn } from '../';
 
 const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile, columnTypes.tag];
 const oneStepColumns = [columnTypes.latest, columnTypes.stream];
@@ -98,18 +103,58 @@ class NewColumn extends Component {
     };
 
     render () {
-        const { intl, newColumn } = this.props;
+        const { column, intl, newColumn, previewEntries, profileResults, tagResults } = this.props;
 
         if (!newColumn) {
             return this.renderPlaceholder();
         }
 
-        let component;
-        let title;
-        let subtitle;
+        let component, displayName, previewMessage, title, subtitle; // eslint-disable-line
+        const value = column.get('value');
+        const props = {
+            column,
+            dashboardResetNewColumn: this.props.dashboardResetNewColumn,
+            dashboardUpdateNewColumn: this.props.dashboardUpdateNewColumn,
+            newColumn,
+            previewEntries
+        };
         switch (newColumn.get('type')) {
+            case columnTypes.profile:
+                if (!value) {
+                    displayName = '';
+                } else if (value.length === 42 && value.startsWith('0x')) {
+                    displayName = getDisplayName({ ethAddress: value });
+                } else {
+                    displayName = getDisplayName({ akashaId: value });
+                }
+                previewMessage = intl.formatMessage(dashboardMessages.previewProfile, {
+                    displayName
+                });
+                component = (
+                  <NewSearchColumn
+                    dataSource={profileResults}
+                    entryIterator={this.props.entryProfileIterator}
+                    entryMoreIterator={this.props.entryMoreProfileIterator}
+                    onSearch={this.props.searchProfiles}
+                    previewMessage={previewMessage}
+                    {...props}
+                  />
+                );
+                title = dashboardMessages.addNewProfileColumn;
+                subtitle = dashboardMessages.addNewProfileColumnSubtitle;
+                break;
             case columnTypes.tag:
-                component = <NewTagColumn column={newColumn} />;
+                previewMessage = intl.formatMessage(dashboardMessages.previewTag, { tagName: value });
+                component = (
+                  <NewSearchColumn
+                    dataSource={tagResults}
+                    entryIterator={this.props.entryTagIterator}
+                    entryMoreIterator={this.props.entryMoreTagIterator}
+                    onSearch={this.props.searchTags}
+                    previewMessage={previewMessage}
+                    {...props}
+                  />
+                );
                 title = dashboardMessages.addNewTagColumn;
                 subtitle = dashboardMessages.addNewTagColumnSubtitle;
                 break;
@@ -163,17 +208,32 @@ class NewColumn extends Component {
 }
 
 NewColumn.propTypes = {
+    column: PropTypes.shape().isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
     dashboardDeleteNewColumn: PropTypes.func.isRequired,
+    dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
+    entryMoreProfileIterator: PropTypes.func.isRequired,
+    entryMoreTagIterator: PropTypes.func.isRequired,
+    entryProfileIterator: PropTypes.func.isRequired,
+    entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     newColumn: PropTypes.shape(),
+    previewEntries: PropTypes.shape().isRequired,
+    profileResults: PropTypes.shape().isRequired,
+    searchProfiles: PropTypes.func.isRequired,
+    searchTags: PropTypes.func.isRequired,
+    tagResults: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state) {
     return {
-        newColumn: selectNewColumn(state)
+        column: selectColumn(state, 'newColumn'),
+        newColumn: selectNewColumn(state),
+        previewEntries: selectColumnEntries(state, 'newColumn'),
+        profileResults: selectProfileSearchResults(state),
+        tagResults: selectTagSearchResults(state)
     };
 }
 
@@ -183,6 +243,13 @@ export default connect(
         dashboardAddColumn,
         dashboardAddNewColumn,
         dashboardDeleteNewColumn,
+        dashboardResetNewColumn,
         dashboardUpdateNewColumn,
+        entryMoreProfileIterator,
+        entryMoreTagIterator,
+        entryProfileIterator,
+        entryTagIterator,
+        searchProfiles,
+        searchTags
     }
 )(injectIntl(NewColumn));

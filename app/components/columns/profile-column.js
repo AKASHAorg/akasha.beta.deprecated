@@ -7,31 +7,40 @@ import { ColumnProfile } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { dashboardGetProfileSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
+import { selectColumnEntries } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
         if (!column.get('entries').size && value) {
-            this.props.entryProfileIterator(column.get('id'), value);
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
         }
     }
 
     componentWillReceiveProps ({ column }) {
-        const newValue = column.get('value');
-        if (newValue !== this.props.column.get('value')) {
-            this.props.entryProfileIterator(column.get('id'), newValue);
+        const value = column.get('value');
+        if (value !== this.props.column.get('value')) {
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
         }
     }
 
     entryMoreProfileIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreProfileIterator(column.get('id'), column.get('value'));
+        const value = column.get('value');
+        this.props.entryMoreProfileIterator({ columnId: column.get('id'), value });
+    };
+
+    onRefresh = () => {
+        const { column } = this.props;
+        this.props.entryProfileIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
     };
 
     render () {
-        const { column, entries, intl, suggestions } = this.props;
+        const { column, entries, intl } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchProfile);
@@ -42,7 +51,7 @@ class ProfileColumn extends Component {
               column={column}
               onInputChange={val => this.props.dashboardGetProfileSuggestions(val, column.get('id'))}
               icon={<ColumnProfile />}
-              suggestions={suggestions}
+              onRefresh={this.onRefresh}
             />
             <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
@@ -66,14 +75,11 @@ ProfileColumn.propTypes = {
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    suggestions: PropTypes.shape().isRequired
 };
 
 function mapStateToProps (state, ownProps) {
-    const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
-        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 

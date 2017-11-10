@@ -126,6 +126,9 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
     collection.forEach((entry) => {
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
+        if (!ethAddress) {
+            console.error('entry with no author found', collection);
+        }
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
         }
@@ -214,30 +217,43 @@ function* entryMoreNewestIterator ({ columnId }) {
     );
 }
 
-function* entryMoreProfileIterator ({ columnId, ethAddress }) {
+function* entryMoreProfileIterator ({ columnId, value }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    let akashaId, ethAddress; // eslint-disable-line
+    if (value.length === 42 && value.toLowerCase().startsWith('0x')) {
+        ethAddress = value;
+    } else {
+        akashaId = value;
+    }
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, more: true }]
+        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
     );
 }
 
 function* entryMoreStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId)) - 1;
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, more: true }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
+    );
 }
 
-function* entryMoreTagIterator ({ columnId, tagName }) {
+function* entryMoreTagIterator ({ columnId, value }) {
     const channel = Channel.server.entry.entryTagIterator;
     const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
     const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName, more: true }]
+        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
     );
 }
 
@@ -248,25 +264,32 @@ function* entryNewestIterator ({ columnId }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, ethAddress, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
+function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit, ethAddress, asDrafts, toBlock }]);
+    let akashaId, ethAddress; // eslint-disable-line
+    if (value.length === 42 && value.toLowerCase().startsWith('0x')) {
+        ethAddress = value;
+    } else {
+        akashaId = value;
+    }
+    yield apply(channel, channel.send, [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock }]);
 }
 
 function* entryStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock }]);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    yield apply(channel, channel.send, [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock }]);
 }
 
-function* entryTagIterator ({ columnId, tagName }) {
+function* entryTagIterator ({ columnId, value }) {
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName, toBlock }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock }]);
 }
 
 function* entryVoteSuccess (entryId) {
@@ -524,7 +547,7 @@ function* watchEntryStreamIteratorChannel () {
         } else {
             const { columnId } = resp.request;
             yield fork(entryGetExtraOfList, resp.data.collection, columnId);
-            if (resp.data.more) {
+            if (resp.request.more) {
                 yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));

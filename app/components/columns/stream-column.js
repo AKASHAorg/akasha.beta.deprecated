@@ -22,6 +22,8 @@ class StreamColumn extends Component {
         this.props.entryMoreStreamIterator(column.get('id'));
     }
 
+    onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
+
     render () {
         const { column, entries, intl } = this.props;
 
@@ -30,6 +32,7 @@ class StreamColumn extends Component {
             <ColumnHeader
               column={column}
               icon={<ColumnStream />}
+              onRefresh={this.onRefresh}
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />

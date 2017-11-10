@@ -17,7 +17,6 @@ export const ColumnRecord = Record({
     large: false,
     lastBlock: null,
     lastIndex: null,
-    suggestions: new List(),
     type: null,
     value: '',
 });

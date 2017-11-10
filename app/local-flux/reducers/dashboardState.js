@@ -6,14 +6,14 @@ import { COLUMN } from '../../constants/context-types';
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { columnId, tagName }) => {
+const entryIterator = (state, { columnId, value }) => {
     if (!columnId || !state.getIn(['columnById', columnId])) {
         return state;
     }
     if (columnId === 'newColumn') {
         return state.mergeIn(['columnById', columnId], {
             flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
-            value: tagName
+            value
         });
     }
     return state.mergeIn(['columnById', columnId, 'flags'], { fetchingEntries: true });
@@ -72,18 +72,6 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
         lastBlock: data.lastBlock || null,
         lastIndex: data.lastIndex
     });
-};
-
-const handleSuggestions = (state, { data, request }) => {
-    const { context, columnId } = request;
-    if (context === COLUMN) {
-        const suggestions = new List(data);
-        if (columnId && state.hasIn(['columnById', columnId])) {
-            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
-        }
-        return state.setIn(['newColumn', 'suggestions'], suggestions);
-    }
-    return state;
 };
 
 const createDashboardRecord = (data) => {
@@ -157,8 +145,6 @@ const dashboardState = createReducer(initialState, {
             dashboardByName
         });
     },
-
-    [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
         state.setIn(['columnById', 'newColumn'], new ColumnRecord()),
