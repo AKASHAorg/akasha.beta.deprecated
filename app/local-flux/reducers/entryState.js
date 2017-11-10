@@ -2,7 +2,7 @@ import { Map, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
-    EntryState } from './records';
+    EntryState, EntryVote } from './records';
 
 const initialState = new EntryState();
 
@@ -199,7 +199,7 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
         const votes = {};
         data.collection.forEach((res) => {
-            votes[res.entryId] = res.vote;
+            votes[res.entryId] = new EntryVote(res);
         });
         return state.mergeIn(['votes'], new Map(votes));
     },

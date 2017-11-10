@@ -21,6 +21,9 @@ export const selectActiveDashboard = (state) => {
 
 export const selectActiveDashboardColumns = (state) => {
     const name = state.dashboardState.get('activeDashboard');
+    if (!name) {
+        return new List();
+    }
     return state.dashboardState
         .getIn(['dashboardByName', name, 'columns'])
         .map(columnId => selectColumn(state, columnId));
@@ -116,7 +119,7 @@ export const selectDraftById = (state, draftId) =>
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
-export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id, 'totalKarma']);
+export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id]);
 
 export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canClaim', id]);
 

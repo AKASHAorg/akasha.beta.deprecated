@@ -57,6 +57,9 @@ class ProfilePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        if (!this.props.ethAddress) {
+            return;
+        }
         this.setState({
             popoverVisible
         });
@@ -144,6 +147,9 @@ class ProfilePopover extends Component {
 
     renderContent () {
         const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
+        if (!ethAddress) {
+            return null;
+        }
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
@@ -294,7 +300,7 @@ ProfilePopover.propTypes = {
     balance: PropTypes.string,
     children: PropTypes.node.isRequired,
     containerRef: PropTypes.shape(),
-    ethAddress: PropTypes.string.isRequired,
+    ethAddress: PropTypes.string,
     followPending: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     isFollower: PropTypes.bool,

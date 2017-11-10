@@ -4,7 +4,7 @@ export { CommentAuthor, CommentData, CommentRecord, CommentsState } from './comm
 export { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
 export { DraftContent, Draft, CardInfo } from './draft-record';
 export { EntryAuthor, EntryBalance, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
-    EntryState } from './entry-record';
+    EntryState, EntryVote } from './entry-record';
 export { ErrorRecord, ErrorState } from './error-record';
 export { GethRecord, GethStatus, GethSyncStatus } from './geth-record';
 export { HighlightRecord, HighlightState } from './highlight-record';
