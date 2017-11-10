@@ -25,7 +25,7 @@ class NewEntrySecondarySidebar extends Component {
         this.props.draftsGetCount({ ethAddress });
         this.props.entryProfileIterator({
             column: null,
-            ethAddress,
+            value: ethAddress,
             limit: 1000000,
             asDrafts: true
         });

@@ -73,8 +73,8 @@ export const profileFollowError = (error, request) => {
     return action(types.PROFILE_FOLLOW_ERROR, { error, request });
 };
 
-export const profileFollowersIterator = akashaId =>
-    action(types.PROFILE_FOLLOWERS_ITERATOR, { akashaId });
+export const profileFollowersIterator = ethAddress =>
+    action(types.PROFILE_FOLLOWERS_ITERATOR, { ethAddress });
 
 export const profileFollowersIteratorError = (error, request) => {
     error.code = 'PFIE01';
@@ -82,10 +82,10 @@ export const profileFollowersIteratorError = (error, request) => {
     return action(types.PROFILE_FOLLOWERS_ITERATOR_ERROR, { error, request });
 };
 
-export const profileFollowersIteratorSuccess = data =>
-    action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data });
-export const profileFollowingsIterator = akashaId =>
-    action(types.PROFILE_FOLLOWINGS_ITERATOR, { akashaId });
+export const profileFollowersIteratorSuccess = (data, request) =>
+    action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
+export const profileFollowingsIterator = ethAddress =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR, { ethAddress });
 
 export const profileFollowingsIteratorError = (error, request) => {
     error.code = 'PFIE02';
@@ -93,8 +93,8 @@ export const profileFollowingsIteratorError = (error, request) => {
     return action(types.PROFILE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
 };
 
-export const profileFollowingsIteratorSuccess = data =>
-    action(types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+export const profileFollowingsIteratorSuccess = (data, request) =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request });
 export const profileFollowSuccess = data => action(types.PROFILE_FOLLOW_SUCCESS, { data });
 export const profileFreeAeth = ({ actionId, amount }) =>
     action(types.PROFILE_FREE_AETH, { actionId, amount });
@@ -199,8 +199,8 @@ export const profileManaBurnedError = (error) => {
 };
 
 export const profileManaBurnedSuccess = data => action(types.PROFILE_MANA_BURNED_SUCCESS, { data });
-export const profileMoreFollowersIterator = akashaId =>
-    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { akashaId });
+export const profileMoreFollowersIterator = ethAddress =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { ethAddress });
 
 export const profileMoreFollowersIteratorError = (error, request) => {
     error.code = 'PMFIE01';
@@ -208,10 +208,10 @@ export const profileMoreFollowersIteratorError = (error, request) => {
     return action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR, { error, request });
 };
 
-export const profileMoreFollowersIteratorSuccess = data =>
-    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data });
-export const profileMoreFollowingsIterator = akashaId =>
-    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { akashaId });
+export const profileMoreFollowersIteratorSuccess = (data, request) =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
+export const profileMoreFollowingsIterator = ethAddress =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { ethAddress });
 
 export const profileMoreFollowingsIteratorError = (error, request) => {
     error.code = 'PMFIE02';
@@ -219,8 +219,8 @@ export const profileMoreFollowingsIteratorError = (error, request) => {
     return action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
 };
 
-export const profileMoreFollowingsIteratorSuccess = data =>
-    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+export const profileMoreFollowingsIteratorSuccess = (data, request) =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request });
 
 export const profileRegister = ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress }) =>
     action(types.PROFILE_REGISTER, { actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress });
@@ -246,12 +246,6 @@ export const profileResolveIpfsHashError = (error, req) => {
 
 export const profileResolveIpfsHashSuccess = (data, req) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
-
-export const profileSaveAkashaIdsError = (error) => {
-    error.code = 'PSAIE01';
-    error.messageId = 'profileSaveAkashaIds';
-    return action(types.PROFILE_SAVE_AKASHA_IDS_ERROR, { error });
-};
 
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';

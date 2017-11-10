@@ -61,6 +61,8 @@ export const getWordCount = (content) => {
     return matchWords ? matchWords.length : 0;
 };
 
+export const isEthAddress = value => value && value.length === 42 && value.startsWith('0x');
+
 export const validateTag = (tagName) => {
     const tag = tagName ? tagName.trim().toLowerCase() : '';
     const ALPHANUMERIC_REGEX = /^(?:[a-zA-Z0-9]+(?:(-|_)(?!$))?)+$/;

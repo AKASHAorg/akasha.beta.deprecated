@@ -39,18 +39,19 @@ class ProfileList extends Component {
     renderProfileRow = profile => (
       <div
         className="flex-center"
-        key={profile.get('akashaId')}
+        key={profile.ethAddress}
         style={{ backgroundColor: 'white', height: '64px', margin: '12px', width: '300px' }}
       >
-        @{profile.get('akashaId')}
+        {profile.ethAddress}
       </div>
     );
 
     render () {
         const { fetchingProfiles, fetchingMoreProfiles, intl,
             moreProfiles, placeholderMessage, profiles, style } = this.props;
+
         const profileRows = profiles && profiles.map((profile) => {
-            if (!profile) {
+            if (!profile || !profile.ethAddress) {
                 return null;
             }
 

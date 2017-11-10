@@ -19,6 +19,13 @@ export const selectActiveDashboard = (state) => {
     ]);
 };
 
+export const selectActiveDashboardColumns = (state) => {
+    const name = state.dashboardState.get('activeDashboard');
+    return state.dashboardState
+        .getIn(['dashboardByName', name, 'columns'])
+        .map(columnId => selectColumn(state, columnId));
+};
+
 export const selectActiveDashboardId = (state) => {
     const activeDashboardName = state.dashboardState.get('activeDashboard');
     if (!activeDashboardName) {
@@ -66,9 +73,6 @@ export const selectColumnLastIndex = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);
 
 export const selectColumns = state => state.dashboardState.get('columnById');
-
-export const selectColumnSuggestions = (state, columnId) =>
-    state.dashboardState.getIn(['columnById', columnId, 'suggestions']);
 
 export const selectComment = (state, id) => state.commentsState.getIn(['byId', id]);
 
@@ -122,17 +126,17 @@ export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', i
 
 export const selectEthBalance = state => state.profileState.getIn(['balance', 'eth']);
 
-export const selectFetchingFollowers = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingFollowers', akashaId]);
+export const selectFetchingFollowers = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingFollowers', ethAddress]);
 
-export const selectFetchingFollowings = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingFollowings', akashaId]);
+export const selectFetchingFollowings = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingFollowings', ethAddress]);
 
-export const selectFetchingMoreFollowers = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingMoreFollowers', akashaId]);
+export const selectFetchingMoreFollowers = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowers', ethAddress]);
 
-export const selectFetchingMoreFollowings = (state, akashaId) =>
-    state.profileState.getIn(['flags', 'fetchingMoreFollowings', akashaId]);
+export const selectFetchingMoreFollowings = (state, ethAddress) =>
+    state.profileState.getIn(['flags', 'fetchingMoreFollowings', ethAddress]);
 
 export const selectFirstComment = state => state.commentsState.get('firstComm');
 
@@ -309,6 +313,8 @@ export const selectProfileEntries = (state, akashaId) =>
         .toList();
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectProfileSearchResults = state => state.searchState.get('profiles');
 
 export const selectResolvingComment = (state, commentId) =>
     state.commentsState.getIn(['flags', 'resolvingComments', commentId]);

@@ -6,21 +6,21 @@ import { ColumnHeader, EntryList } from '../';
 import { ColumnTag } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
+import { selectColumnEntries } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
         if (!column.get('entries').size && value) {
-            this.props.entryTagIterator(column.get('id'), value);
+            this.props.entryTagIterator({ columnId: column.get('id'), value });
         }
     }
 
     componentWillReceiveProps ({ column }) {
-        const newValue = column.get('value');
-        if (newValue !== this.props.column.get('value')) {
-            this.props.entryTagIterator(column.get('id'), newValue);
+        const value = column.get('value');
+        if (value !== this.props.column.get('value')) {
+            this.props.entryTagIterator({ columnId: column.get('id'), value });
         }
     }
 
@@ -29,8 +29,16 @@ class TagColumn extends Component {
         this.props.entryMoreTagIterator(column.get('id'), column.get('value'));
     };
 
+    onRefresh = () => {
+        const { column } = this.props;
+        this.props.entryTagIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
+    };
+
     render () {
-        const { column, entries, intl, suggestions } = this.props;
+        const { column, entries, intl } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchTag);
@@ -41,7 +49,7 @@ class TagColumn extends Component {
               column={column}
               onInputChange={() => {}}
               icon={<ColumnTag />}
-              suggestions={suggestions}
+              onRefresh={this.onRefresh}
             />
             <EntryList
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
@@ -64,14 +72,12 @@ TagColumn.propTypes = {
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    suggestions: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, columnId),
-        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 
