@@ -155,12 +155,7 @@ class ListPopover extends Component {
                         {list.get('name')}
                       </div>
                       <div className="hidden-action" onClick={ev => ev.stopPropagation()}>
-                        <PanelLink
-                          className="flex-center list-popover__icon"
-                          to={`lists/${list.get('name')}`}
-                        >
-                          <Icon type="edit" />
-                        </PanelLink>
+                        <Icon type="edit" />
                       </div>
                       <div className="hidden-action flex-center list-popover__icon">
                         <Icon
