@@ -122,6 +122,7 @@
   "app.dashboard.latest": "Latest entries",
   "app.dashboard.myBoards": "My boards",
   "app.dashboard.namePlaceholder": "Type board name",
+  "app.dashboard.preview": "Preview for #{tagName}",
   "app.dashboard.profile": "User",
   "app.dashboard.searchForBoard": "Search for board...",
   "app.dashboard.small": "Small",

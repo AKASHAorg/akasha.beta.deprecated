@@ -1,6 +1,12 @@
 .text-entry-editor {
     text-align: left;
-    min-height: ~"calc(100% - 128px)";
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 128px;
+    top: 85px;
+    // overflow-y: auto;
     &__editor-wrapper {
         position: relative;
     }
