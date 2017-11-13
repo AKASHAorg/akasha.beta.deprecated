@@ -58,14 +58,18 @@ class EntryPageAction extends Component {
     render () {
         const { blockNr, canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
             lists, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
-        const showBalance = isOwnEntry && canClaim !== undefined && entryBalance !== undefined;
+        const showBalance = isOwnEntry && entryBalance && canClaim !== undefined;
+        const alreadyClaimed = entryBalance && entryBalance.get('claimed');
         const iconClassName = 'entry-actions__vote-icon';
-        const claimIconClass = classNames('entry-actions__claim-icon', {
-            disabled: claimPending,
-            'entry-actions__claim-icon_claimed': !canClaim,
+        const claimIconClass = showBalance && classNames('entry-actions__claim-icon', {
+            disabled: claimPending || alreadyClaimed,
+            'entry-actions__claim-icon_claimed': entryBalance.get('claimed'),
             'content-link': canClaim
         });
-        const voteProps = { containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote };
+        const voteWeight = vote.get('vote');
+        const voteProps = {
+            containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
+        };
         const upvotePercent = 70;
         const downvotePercent = 30;
         const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {
@@ -84,9 +88,9 @@ class EntryPageAction extends Component {
                       type={actionTypes.entryUpvote}
                       {...voteProps}
                     />
-                    {vote > 0 &&
+                    {voteWeight > 0 &&
                       <div className="entry-actions__existing-vote entry-actions__existing-vote_upvote">
-                        +{vote}
+                        +{voteWeight}
                       </div>
                     }
                   </div>
@@ -101,9 +105,9 @@ class EntryPageAction extends Component {
                       type={actionTypes.entryDownvote}
                       {...voteProps}
                     />
-                    {vote < 0 &&
+                    {voteWeight < 0 &&
                       <div className="entry-actions__existing-vote entry-actions__existing-vote_downvote">
-                        {vote}
+                        {voteWeight}
                       </div>
                     }
                   </div>
@@ -116,7 +120,9 @@ class EntryPageAction extends Component {
                       }}
                     >
                       <div className="content-link flex-center-y">
-                        <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>{entry.get('commentsCount')}</span>
+                        <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>
+                          {entry.get('commentsCount')}
+                        </span>
                         <Icon type="message" />
                       </div>
                     </Link>
@@ -158,11 +164,11 @@ class EntryPageAction extends Component {
                         <ToolbarEthereum />
                       </svg>
                     </Tooltip>
-                    {entryBalance !== 'claimed' &&
+                    {!entryBalance.get('claimed') &&
                       <div className="entry-actions__balance">
-                        {entryBalance} Essence
+                        {entryBalance.get('totalKarma')} Essence
                       </div>
-                    }
+                  }
                   </div>
                 }
               </div>
@@ -185,12 +191,10 @@ EntryPageAction.propTypes = {
     author: PropTypes.shape(),
     blockNr: PropTypes.number,
     canClaim: PropTypes.bool,
-    canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape().isRequired,
-    entryBalance: PropTypes.string,
-    fetchingEntryBalance: PropTypes.bool,
+    entryBalance: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     isOwnEntry: PropTypes.bool,
     listAdd: PropTypes.func.isRequired,
@@ -202,7 +206,7 @@ EntryPageAction.propTypes = {
     loggedEthAddress: PropTypes.string,
     noVotesBar: PropTypes.bool,
     votePending: PropTypes.bool,
-    vote: PropTypes.string,
+    vote: PropTypes.shape(),
 };
 
 function mapStateToProps (state, ownProps) {
@@ -212,10 +216,8 @@ function mapStateToProps (state, ownProps) {
         author: selectProfile(state, entry.getIn(['author', 'ethAddress'])),
         blockNr: selectBlockNumber(state),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
-        canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: selectPendingClaim(state, entry.get('entryId')),
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
-        fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         isOwnEntry: loggedEthAddress === entry.getIn(['author', 'ethAddress']),
         lists: selectLists(state),
         listSearchKeyword: selectListSearch(state),

@@ -27,6 +27,12 @@ export const EntryContent = Record({
     wordCount: null
 });
 
+export const EntryVote = Record({
+    claimed: false,
+    essence: null,
+    vote: null,
+});
+
 export const EntryRecord = Record({
     author: new EntryAuthor(),
     baseUrl: '',

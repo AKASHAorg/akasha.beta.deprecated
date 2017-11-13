@@ -43,7 +43,7 @@ const ClaimableList = (props) => {
 
         const balance = isOwnEntry ?
             entryBalance.getIn([entryId, 'totalKarma']) :
-            entryVotes.get(entryId);
+            entryVotes.getIn([entryId, 'vote']);
         const endPeriod = entry.get('endPeriod');
         let timeDiff;
         const isActive = endPeriod > Date.now() / 1000;
@@ -103,7 +103,7 @@ const ClaimableList = (props) => {
         </div>
         <div className="claimable-list__list-wrapper">
           <div className="claimable-list__list">
-            {entries.map(renderRow)}
+            {entries.toList().map(renderRow)}
           </div>
         </div>
       </div>

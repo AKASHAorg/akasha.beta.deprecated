@@ -35,7 +35,7 @@ const Dashboard = (props) => {
               </div>
             );
         })}
-        <NewColumn />
+        {activeDashboard && <NewColumn />}
       </div>
     );
 };
