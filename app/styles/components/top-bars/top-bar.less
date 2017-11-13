@@ -8,13 +8,13 @@
     border-bottom: 1px solid #e5e5e5;
 
     &_default {
-        left: 264px;
+        left: @sidebar-width + @secondary-sidebar-width;
     }
     &_full {
-        left: 64px;
+        left: @sidebar-width;
     }
     &_collapsed {
-        left: 64px;
+        left: @sidebar-width;
     }
     &__left-side {
         flex: 1 1 auto;
@@ -27,7 +27,7 @@
     &__panel-wrapper {
         position: fixed;
         top: @top-bar-height;
-        right: -64px;
+        right: @sidebar-width * -1;
         bottom: 0;
         transition: right, width 150ms ease-in-out;
         overflow: hidden;

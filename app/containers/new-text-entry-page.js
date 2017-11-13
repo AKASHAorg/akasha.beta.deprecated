@@ -26,6 +26,7 @@ class NewEntryPage extends Component {
         showPublishPanel: false,
         errors: {},
         shouldResetCaret: false,
+        scrollPosition: 'top'
     }
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
@@ -262,9 +263,24 @@ class NewEntryPage extends Component {
           </Steps>
         );
     }
+    _handleScrollAtBottom = () => {
+        this.setState({
+            scrollPosition: 'bottom'
+        });
+    }
+    _handleScrollAtTop = () => {
+        this.setState({
+            scrollPosition: 'top'
+        });
+    }
+    _handleScrollInBetween = () => {
+        this.setState({
+            scrollPosition: 'between'
+        });
+    }
     /* eslint-disable complexity */
     render () {
-        const { showPublishPanel, errors, shouldResetCaret } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, scrollPosition } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
@@ -333,7 +349,11 @@ class NewEntryPage extends Component {
                 <div className="edit-entry-page__editor">
                   <textarea
                     ref={this._createRef('titleInput')}
-                    className="edit-entry-page__title-input-field"
+                    className={
+                        `edit-entry-page__title-input-field
+                        edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}
+                        edit-entry-page__title-input-field_${scrollPosition}`
+                    }
                     placeholder="Title"
                     onChange={this._handleTitleChange}
                     value={title}
@@ -343,10 +363,17 @@ class NewEntryPage extends Component {
                   }
                   <TextEntryEditor
                     ref={this._createRef('editor')}
+                    className={
+                        `text-entry-editor${showSecondarySidebar ? '' : '_full'}
+                        text-entry-editor_${scrollPosition}`
+                    }
                     onChange={this._handleEditorChange}
                     editorState={draftWithSelection}
                     selectionState={currentSelection}
                     baseUrl={baseUrl}
+                    onScrollBetween={this._handleScrollInBetween}
+                    onScrollBottom={this._handleScrollAtBottom}
+                    onScrollTop={this._handleScrollAtTop}
                     intl={intl}
                   />
                   {errors.draft &&
@@ -354,7 +381,10 @@ class NewEntryPage extends Component {
                   }
                   <TagEditor
                     ref={this._createRef('tagEditor')}
-                    className="edit-entry-page__tag-editor"
+                    className={
+                        `edit-entry-page__tag-editor
+                        edit-entry-page__tag-editor_${scrollPosition}`
+                    }
                     match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}

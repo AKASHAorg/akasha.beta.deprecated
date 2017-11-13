@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, editorStateFromRaw, DraftJS,
-    createTypeStrategy } from 'megadraft';
+import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from '../';
 import EditorSidebar from './sidebar/editor-sidebar';
@@ -9,8 +8,8 @@ import imagePlugin from './plugins/image/image-plugin';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
-const getUpdatedEditorState = (editorState, rawContent) =>
-    EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
+// const getUpdatedEditorState = (editorState, rawContent) =>
+//     EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
 
 class EntryEditor extends Component {
     constructor (props) {
@@ -34,9 +33,13 @@ class EntryEditor extends Component {
         const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
         const scroller = nodeHeight + scrollTop;
         if (nodeHeight + scrollTop === scrollHeight) {
+            this.intermediate = false;
             this.props.onScrollBottom();
         } else if (nodeHeight === scroller) {
             this.props.onScrollTop();
+            this.intermediate = false;
+        } else if (!this.intermediate) {
+            this.props.onScrollBetween();
         }
     }
     setSuggestionsRef = (el) => {
@@ -120,10 +123,13 @@ class EntryEditor extends Component {
         return null;
     };
     render () {
-        const { editorPlaceholder, readOnly, editorState } = this.props;
+        const { editorPlaceholder, readOnly, editorState, className } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
-          <div className="text-entry-editor" ref={(rootNode) => { this.rootNode = rootNode; }}>
+          <div
+            className={`text-entry-editor ${className}`}
+            ref={(rootNode) => { this.rootNode = rootNode; }}
+          >
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
@@ -164,6 +170,9 @@ class EntryEditor extends Component {
     }
 }
 EntryEditor.defaultProps = {
+    onScrollBetween: () => {},
+    onScrollBottom: () => {},
+    onScrollTop: () => {},
     showSidebar: true,
     showTitle: true,
     readOnly: false,
@@ -172,14 +181,17 @@ EntryEditor.defaultProps = {
 };
 
 EntryEditor.propTypes = {
+    className: PropTypes.string,
     showTerms: PropTypes.func,
     editorRef: PropTypes.func,
     editorState: PropTypes.shape(),
     readOnly: PropTypes.bool,
     onAutosave: PropTypes.func,
+    onScrollBottom: PropTypes.func,
+    onScrollTop: PropTypes.func,
+    onScrollBetween: PropTypes.func,
     editorPlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,
-    selectionState: PropTypes.shape(),
     onChange: PropTypes.func,
     onError: PropTypes.func,
     baseUrl: PropTypes.string,
