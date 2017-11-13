@@ -2,6 +2,7 @@ import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
 import { profileAddress } from '../profile/helpers';
+import { GethConnector } from '@akashaproject/geth-connector';
 
 export const getVoteOf = {
     'id': '/getVoteOf',
@@ -35,9 +36,16 @@ const execute = Promise.coroutine(
 
         const requests = data.map((req) => {
             return profileAddress(req).then((ethAddress) => {
-                return contracts.instance.Votes.voteOf(ethAddress, req.entryId);
-            }).then((vote) => {
-                return { ...req, vote: vote.toString(10) };
+                return Promise.all([
+                    contracts.instance.Votes.voteOf(ethAddress, req.entryId),
+                    contracts.instance.Votes.karmaOf(ethAddress, req.entryId)
+                ]);
+            }).spread((vote, karma) => {
+                return { ...req,
+                    vote: vote.toString(),
+                    essence: (GethConnector.getInstance().web3.fromWei(karma[0])).toFormat(10),
+                    claimed: karma[1]
+                };
             });
         });
 

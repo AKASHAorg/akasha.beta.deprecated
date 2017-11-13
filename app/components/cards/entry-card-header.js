@@ -1,22 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
+import { Tooltip } from 'antd';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
     const { author, containerRef, entry, intl, openVersionsPanel } = props;
-    const ethAddress = entry.getIn(['author', 'ethAddress']);    
-    if (!ethAddress) {
-        return <div>Cannot resolve author</div>;
-    }
+    const ethAddress = entry.getIn(['author', 'ethAddress']);
+    const akashaId = entry.getIn(['author', 'akashaId']);
     const content = entry.get('content');
     const publishDate = new Date(entry.get('publishDate') * 1000);
     const wordCount = (content && content.get('wordCount')) || 0;
     const readingTime = calculateReadingTime(wordCount);
     const latestVersion = content && content.get('version');
-    const displayName = getDisplayName({ akashaId: entry.getIn(['author', 'akashaId']), ethAddress });
+    const displayName = ethAddress && getDisplayName({ akashaId, ethAddress });
+    const authorPlaceholder = (
+      <Tooltip title="Cannot resolve entry author">
+        <div className="entry-card-header__author-placeholder" />
+      </Tooltip>
+    );
     const publishedMessage = latestVersion ?
         (<span>
           <span onClick={openVersionsPanel} className="link">
@@ -39,8 +43,8 @@ const EntryCardHeader = (props) => {
         </ProfilePopover>
         <div className="entry-card-header__text">
           <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-            <span className="content-link">
-              {displayName}
+            <span className={displayName && 'content-link'}>
+              {displayName || authorPlaceholder}
             </span>
           </ProfilePopover>
           {entry.get('publishDate') &&
