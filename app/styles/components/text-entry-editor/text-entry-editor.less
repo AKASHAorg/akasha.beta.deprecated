@@ -2,11 +2,22 @@
     text-align: left;
     overflow-y: auto;
     position: fixed;
-    left: 0;
+    left: @sidebar-width + @secondary-sidebar-width;
     right: 0;
     bottom: 128px;
-    top: 85px;
+    top: @editor-title-input-height + @top-bar-height + 12px;
     // overflow-y: auto;
+    &_full {
+        left: @sidebar-width;
+    }
+    &_bottom,
+    &_between {
+        top: @top-bar-height + 12;
+    }
+    &_top,
+    &_between {
+        bottom: 0;
+    }
     &__editor-wrapper {
         position: relative;
     }

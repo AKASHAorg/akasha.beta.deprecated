@@ -31,7 +31,7 @@ class DashboardPage extends Component {
 
     render () {
         const { columns, dashboards, homeReady, isHidden } = this.props;
-
+        console.log('rerendering');
         return (
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
             <DataLoader flag={!homeReady} size="large" style={{ paddingTop: '200px' }}>
