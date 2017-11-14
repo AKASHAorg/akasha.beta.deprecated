@@ -33,17 +33,18 @@ class EntryEditor extends Component {
         const rootNode = this.rootNode;
         const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
         const scroller = nodeHeight + scrollTop;
-        if (scrollTop > 0 && scroller + 64 < scrollHeight) {
-            console.log('in between');
-        }
-        if ((scroller + 64 > scrollHeight)) {
+        if ((scroller >= scrollHeight - 10) && this.lastPos === 'between') {
+            this.lastPos = 'bottom';
             this.props.onScrollBottom();
-        } else if ((nodeHeight === scroller)) {
+        } else if ((nodeHeight === scroller) && this.lastPos === 'between') {
+            this.lastPos = 'top';
             this.props.onScrollTop();
-        } else if (scrollTop > 0 && scroller + 64 < scrollHeight) {
+        } else if (scrollTop > 0 && scrollHeight - scroller > 132 && this.lastPos !== 'between') {
+            this.lastPos = 'between';
             this.props.onScrollBetween();
         }
     }
+
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
     };
@@ -66,6 +67,7 @@ class EntryEditor extends Component {
             }
         });
     };
+
     _handleImageError = (imageBlockKey, err) => {
         this.setState(prevState => ({
             errors: [prevState.errors, {
@@ -84,18 +86,21 @@ class EntryEditor extends Component {
          */
         this.props.onChange(editorState);
     };
+
     _handleKeyPress = (ev) => {
         ev.preventDefault();
         if (ev.key === 'Enter') {
             this._changeEditorFocus(true);
         }
     }
+
     _changeEditorFocus = (focusState) => {
         const { editorState } = this.props;
         const selectionState = editorState.getSelection();
         const focusedSelection = selectionState.set('hasFocus', focusState);
         return this._handleEditorChange(EditorState.acceptSelection(editorState, focusedSelection));
     }
+
     _checkEditorFocus = () => {
         const { editorState } = this.props;
         if (this.editor) {
@@ -103,11 +108,13 @@ class EntryEditor extends Component {
         }
         return false;
     }
+
     _handleSidebarToggle = (isOpen) => {
         this.setState({
             sidebarOpen: isOpen
         });
     }
+
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly, showTerms, onError } = this.props;
         if (showSidebar && !readOnly) {
@@ -124,6 +131,7 @@ class EntryEditor extends Component {
         }
         return null;
     };
+
     render () {
         const { editorPlaceholder, readOnly, editorState, className } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
