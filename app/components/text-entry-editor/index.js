@@ -26,19 +26,21 @@ class EntryEditor extends Component {
     componentDidMount () {
         this.rootNode.addEventListener('scroll', this._handleEditorScroll);
     }
+
     _handleEditorScroll = (ev) => {
         const scrollHeight = ev.target.scrollHeight;
         const scrollTop = ev.target.scrollTop;
         const rootNode = this.rootNode;
         const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
         const scroller = nodeHeight + scrollTop;
-        if (nodeHeight + scrollTop === scrollHeight) {
-            this.intermediate = false;
+        if (scrollTop > 0 && scroller + 64 < scrollHeight) {
+            console.log('in between');
+        }
+        if ((scroller + 64 > scrollHeight)) {
             this.props.onScrollBottom();
-        } else if (nodeHeight === scroller) {
+        } else if ((nodeHeight === scroller)) {
             this.props.onScrollTop();
-            this.intermediate = false;
-        } else if (!this.intermediate) {
+        } else if (scrollTop > 0 && scroller + 64 < scrollHeight) {
             this.props.onScrollBetween();
         }
     }
