@@ -202,7 +202,6 @@ const actionState = createReducer(initialState, {
             return state;
         }
         const newAction = state.getIn(['byId', changes.id]).mergeDeep(changes);
-        console.log('action update', newAction);
         let publishing = state.get('publishing');
         let pending = state.get('pending');
         const historyTypes = state.get('historyTypes');
@@ -236,8 +235,8 @@ const actionState = createReducer(initialState, {
         const fetchingHistory = state.getIn(['flags', 'fetchingHistory']);
         let byId = state.get('byId');
         let list = fetchingHistory ? new List() : state.get('history');
-        data.collection.forEach((event) => {
-            const id = `${event.blockNumber}-${event.from.ethAddress}-${type}`;
+        data.collection.forEach((event, index) => {
+            const id = `${event.blockNumber}-${event.from.ethAddress}-${type}-${index}`;
             const payload = fromJS({ amount: event.amount });
             const action = new ActionRecord({ blockNumber: event.blockNumber, id, success: true, type })
                 .set('payload', payload);
