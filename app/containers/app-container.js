@@ -125,7 +125,7 @@ class AppContainer extends Component {
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
                       <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
-                        <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
                         <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                         <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
@@ -142,7 +142,7 @@ class AppContainer extends Component {
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route exact path="/@:akashaId" component={ProfilePage} />
                           <Route exact path="/0x:ethAddress" component={ProfilePage} />
-                          <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                          <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId" component={EntryPageContainer} />

@@ -26,8 +26,8 @@ export const dashboardAddColumnError = (error) => {
 export const dashboardAddColumnSuccess = data =>
     action(types.DASHBOARD_ADD_COLUMN_SUCCESS, { data });
 export const dashboardAddNewColumn = () => action(types.DASHBOARD_ADD_NEW_COLUMN);
-export const dashboardDelete = name =>
-    action(types.DASHBOARD_DELETE, { name });
+export const dashboardDelete = id =>
+    action(types.DASHBOARD_DELETE, { id });
 
 export const dashboardDeleteError = (error) => {
     error.code = 'DDE01';
@@ -77,9 +77,19 @@ export const dashboardGetProfileSuggestionsError = (error, request) => {
 
 export const dashboardGetProfileSuggestionsSuccess = (data, request) =>
     action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS, { data, request });
+export const dashboardRename = (dashboardId, newName) =>
+    action(types.DASHBOARD_RENAME, { dashboardId, newName });
+
+export const dashboardRenameError = (error) => {
+    error.code = 'DRE01';
+    error.messageId = 'dashboardRename';
+    return action(types.DASHBOARD_RENAME_ERROR, { error });
+};
+
+export const dashboardRenameSuccess = data => action(types.DASHBOARD_RENAME_SUCCESS, { data });
 export const dashboardResetNewColumn = () => action(types.DASHBOARD_RESET_NEW_COLUMN);
 export const dashboardSearch = query => action(types.DASHBOARD_SEARCH, { query });
-export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
+export const dashboardSetActive = id => action(types.DASHBOARD_SET_ACTIVE, { id });
 
 export const dashboardSetActiveError = (error) => {
     error.code = 'DSAE01';

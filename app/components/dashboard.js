@@ -8,8 +8,8 @@ const largeColumn = 720;
 
 const Dashboard = (props) => {
     const { columns, dashboards, getDashboardRef, match } = props;
-    const name = match.params.dashboardName;
-    const activeDashboard = dashboards.get(name);
+    const dashboardId = match.params.dashboardId;
+    const activeDashboard = dashboards.get(dashboardId);
 
     return (
       <div className="dashboard" id="dashboard-container" ref={getDashboardRef}>
