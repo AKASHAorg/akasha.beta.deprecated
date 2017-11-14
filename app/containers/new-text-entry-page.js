@@ -26,7 +26,7 @@ class NewEntryPage extends Component {
         showPublishPanel: false,
         errors: {},
         shouldResetCaret: false,
-        scrollPosition: 'top'
+        scrollPosition: 'noScroll'
     }
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
@@ -59,6 +59,15 @@ class NewEntryPage extends Component {
                 this.editor.updateCaretPosition(selection);
             }
         } else {
+            if (this.editor) {
+                const editorContainer = this.editor.container;
+                const rootNode = this.editor.rootNode;
+                if (editorContainer > rootNode) {
+                    this.setState({
+                        scrollPosition: 'top'
+                    });
+                }
+            }
             this.setState({
                 shouldResetCaret: false
             });

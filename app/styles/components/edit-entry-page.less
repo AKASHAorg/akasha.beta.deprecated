@@ -81,7 +81,6 @@
         bottom: 0;
         right: 0;
         left: @sidebar-width + @secondary-sidebar-width;
-        overflow-y: auto;
     }
 
     &__editor,
@@ -101,6 +100,10 @@
         &_top,
         &_between {
             bottom: @editor-footer-height * -1;
+        }
+        &_bottom,
+        &_noScroll {
+            bottom: 0;
         }
     }
     &__footer-wrapper {
