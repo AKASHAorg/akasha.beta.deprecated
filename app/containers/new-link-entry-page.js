@@ -85,7 +85,16 @@ class NewLinkEntryPage extends Component {
                     id: match.params.draftId,
                 }));
                 this.setState({
-                    parsingInfo: false
+                    parsingInfo: false,
+                    infoExtracted: true
+                });
+            }).catch(() => {
+                this.setState({
+                    errors: {
+                        card: 'An error occured while trying to fetch website info',
+                    },
+                    parsingInfo: false,
+                    infoExtracted: true
                 });
             });
         });
@@ -248,9 +257,12 @@ class NewLinkEntryPage extends Component {
 
     _handleInfoCardClose = () => {
         const { draftObj, loggedProfile, match } = this.props;
+        const { card, ...otherErrors } = this.state.errors;
         this.setState({
             parsingInfo: false,
-            urlInputHidden: false
+            urlInputHidden: false,
+            errors: otherErrors,
+            infoExtracted: false,
         }, () => {
             this.props.draftUpdate(
                 draftObj.merge({
@@ -286,7 +298,7 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile, selectionState } = this.props;
-        const { showPublishPanel, errors, shouldResetCaret, parsingInfo, urlInputHidden } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, parsingInfo, infoExtracted, urlInputHidden } = this.state;
 
         if (!draftObj || !draftObj.get('content')) {
             return (
@@ -342,33 +354,32 @@ class NewLinkEntryPage extends Component {
                       value={url}
                     />
                   }
-                  {((title || description) || parsingInfo) &&
-                    <div className="edit-entry-page__info-card-wrapper">
-                      <WebsiteInfoCard
-                        baseUrl={baseUrl}
-                        cardInfo={cardInfo}
-                        hasCard={!!(title || description)}
-                        url={url}
-                        onClose={this._handleInfoCardClose}
-                        isEdit
-                        loading={parsingInfo}
-                      />
-                      {!parsingInfo &&
-                        <div>
-                          <TextEntryEditor
-                            ref={this._createRef('editor')}
-                            onChange={this._handleEditorChange}
-                            editorState={draftWithSelection}
-                            selectionState={currentSelection}
-                            baseUrl={baseUrl}
-                            intl={intl}
-                          />
-                        </div>
-                      }
-                    </div>
+                  <div className="edit-entry-page__info-card-wrapper">
+                    <WebsiteInfoCard
+                      baseUrl={baseUrl}
+                      cardInfo={cardInfo}
+                      hasCard={!!(title || description)}
+                      url={url}
+                      onClose={this._handleInfoCardClose}
+                      isEdit
+                      loading={parsingInfo}
+                      infoExtracted={infoExtracted}
+                      error={errors.card}
+                    />
+                  </div>
+                  {!parsingInfo &&
+                    <TextEntryEditor
+                      ref={this._createRef('editor')}
+                      className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
+                      onChange={this._handleEditorChange}
+                      editorState={draftWithSelection}
+                      selectionState={currentSelection}
+                      baseUrl={baseUrl}
+                      intl={intl}
+                    />
                   }
                 </div>
-                {(title || description) && !parsingInfo &&
+                {!parsingInfo &&
                   <div className="edit-entry-page__tag-editor">
                     <TagEditor
                       ref={this._createRef('tagEditor')}
