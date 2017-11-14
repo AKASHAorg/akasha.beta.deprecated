@@ -25,7 +25,9 @@ class WebsiteParser extends ParserUtils {
         this.makeRequest(url, 'text/html').then((response) => {
             const { ok, status, redirected } = response;
             if (!ok) {
-                return Promise.reject('Request failed! Cannot generate card!');
+                const error = new Error('Request failed! Cannot generate card!');
+                error.code = 500;
+                return Promise.reject(error);
             }
             if ((ok && redirected) || redirectCodes.includes(status)) {
                 console.info('request redirected to:', response.url);

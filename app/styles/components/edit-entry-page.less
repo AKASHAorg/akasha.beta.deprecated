@@ -1,6 +1,15 @@
 .edit-entry-page {
     position: relative;
     height: ~"calc(100% - @{editor-footer-height})";
+    &.link-page {
+        overflow-y: auto;
+        .tag-editor {
+            position: relative;
+        }
+        .edit-entry-page__tag-editor {
+            margin:0 auto;
+        }
+    }
     &__data-loader {
         height: 100%;
     }
@@ -73,7 +82,13 @@
         transition: width 0.218s @ease-in-out;
         height: 100%;
     }
-
+    &.link-page {
+        .edit-entry-page__editor {
+            position: relative;
+            left: 0;
+            height: ~"calc(100% - @{editor-footer-height} / 2)";
+        }
+    }
     &__editor {
         height: ~"calc(100% - @{editor-footer-height} - @{top-bar-height})";
         position: fixed;
