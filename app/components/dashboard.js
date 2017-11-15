@@ -4,7 +4,7 @@ import { withRouter } from 'react-router';
 import { Column, NewColumn } from './';
 
 const smallColumn = 360;
-const largeColumn = 720;
+const largeColumn = 540;
 
 const Dashboard = (props) => {
     const { columns, dashboards, getDashboardRef, match } = props;

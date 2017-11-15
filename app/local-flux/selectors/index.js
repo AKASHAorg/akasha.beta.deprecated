@@ -302,9 +302,11 @@ export const selectProfile = (state, ethAddress) =>
 export const selectProfileEditToggle = state =>
     state.appState.get('showProfileEditor');
 
-export const selectProfileEntries = (state, akashaId) =>
-    state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
+export const selectProfileEntries = (state, ethAddress) =>
+    state.entryState.get('byId').filter(entry => entry.getIn(['author', 'ethAddress']) === ethAddress)
         .toList();
+
+export const selectProfileExists = state => state.profileState.get('exists');
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
@@ -322,6 +324,8 @@ export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);
 
 export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
+
+export const selectTagExists = state => state.tagState.get('exists');
 
 export const selectTagSearchResults = state => state.searchState.get('tags');
 

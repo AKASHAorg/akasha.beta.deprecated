@@ -6,10 +6,12 @@ import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
+import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
 import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntryType,
     selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
+import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 10;
@@ -265,6 +267,9 @@ function* entryNewestIterator ({ columnId }) {
 }
 
 function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
+    if (value && !isEthAddress(value)) {
+        yield put(profileActions.profileExists(value));
+    }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
@@ -286,6 +291,7 @@ function* entryStreamIterator ({ columnId }) {
 }
 
 function* entryTagIterator ({ columnId, value }) {
+    yield put(tagActions.tagExists(value));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
