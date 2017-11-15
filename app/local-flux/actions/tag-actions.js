@@ -5,6 +5,14 @@ export const tagCreate = data => action(types.TAG_CREATE, { data });
 export const tagCreateError = error => action(types.TAG_CREATE_ERROR, { error });
 export const tagCreateSuccess = data => action(types.TAG_CREATE_SUCCESS, { data });
 
+export const tagExists = tagName => action(types.TAG_EXISTS, { tagName });
+export const tagExistsError = (error, request) => {
+    error.code = 'TEE01';
+    error.messageId = 'tagExists';
+    return action(types.TAG_EXISTS_ERROR, { error, request });
+};
+export const tagExistsSuccess = data => action(types.TAG_EXISTS_SUCCESS, { data });
+
 export const tagGetEntriesCount = tags => action(types.TAG_GET_ENTRIES_COUNT, { tags });
 
 export const tagGetEntriesCountError = (error) => {

@@ -89,12 +89,19 @@ const Interests = Record({
     profile: new List()
 });
 
+export const ProfileExistsRecord = Record({
+    exists: null,
+    idValid: null,
+    normalisedId: null
+});
+
 export const ProfileState = Record({
     balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
     cyclingStates: new CyclingStates(),
     errors: new List(), // to be removed
+    exists: new Map(),
     fetchingFullLoggedProfile: false, // to be removed
     flags: new Flags(),
     followers: new Map(),

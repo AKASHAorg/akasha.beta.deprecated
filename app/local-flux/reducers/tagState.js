@@ -1,43 +1,25 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { fromJS, List, Map } from 'immutable';
+import { List } from 'immutable';
 import * as types from '../constants';
+import { TagRecord } from './records';
 import { createReducer } from './create-reducer';
 
-const initialState = fromJS({
-    entriesCount: new Map(),
-    flags: new Map({
-        registerPending: new List(),
-        searchPending: false
-    }),
-    moreNewTags: false,
-    searchQuery: null,
-    searchResults: new List()
-});
-
-// const registerFlagHandler = (state, { error, flags }) => {
-//     const registerPending = state.getIn(['flags', 'registerPending']);
-//     const index = registerPending.findIndex(flag =>
-//         flag.tagName === flags.registerPending.tagName);
-//     if (error) {
-//         flags.registerPending.error = error;
-//     }
-//     if (index === -1) {
-//         return state.merge({
-//             flags: state.get('flags').merge({
-//                 registerPending: state.getIn(['flags', 'registerPending'])
-//                     .push(flags.registerPending)
-//             }),
-//         });
-//     }
-//     return state.merge({
-//         flags: state.get('flags').mergeIn(['registerPending', index], flags.registerPending),
-//     });
-// };
+const initialState = new TagRecord();
 
 const tagState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
-    // ************ NEW REDUCERS **********************
+    [types.TAG_EXISTS]: (state, { tagName }) =>
+        state.setIn(['flags', 'existsPending', tagName], true),
+
+    [types.TAG_EXISTS_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'existsPending', request.tagName], false),
+
+    [types.TAG_EXISTS_SUCCESS]: (state, { data }) =>
+        state.merge({
+            exists: state.get('exists').set(data.tagName, data.exists),
+            flags: state.get('flags').setIn(['existsPending', data.tagName], false),
+        }),
 
     [types.TAG_GET_ENTRIES_COUNT_SUCCESS]: (state, { data }) => {
         if (!data.collection) {
@@ -64,7 +46,6 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').set('searchPending', false),
             searchResults: new List(data)
         }),
-
 });
 
 export default tagState;

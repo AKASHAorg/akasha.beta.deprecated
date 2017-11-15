@@ -29,6 +29,7 @@ const Column = ({ column, baseWidth }) => {
 };
 
 Column.propTypes = {
+    baseWidth: PropTypes.number,
     column: PropTypes.shape()
 };
 

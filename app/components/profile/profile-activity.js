@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { List } from 'immutable';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowersIterator,
@@ -16,7 +15,7 @@ import { EntryList, ProfileList } from '../';
 class ProfileActivity extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
-        // this.props.entryProfileIterator(null, ethAddress);
+        this.props.entryProfileIterator({ columnId: 'profileEntries', value: ethAddress });
         this.props.profileFollowersIterator(ethAddress);
         this.props.profileFollowingsIterator(ethAddress);
     }
