@@ -9,7 +9,7 @@ import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowe
 import { ACTIVITY } from '../../constants/context-types';
 import { selectBlockNumber, selectFetchingFollowers, selectFetchingFollowings, selectFetchingMoreFollowers,
     selectFetchingMoreFollowings, selectFollowers, selectFollowings, selectMoreFollowers,
-    selectMoreFollowings, selectProfileEntries } from '../../local-flux/selectors';
+    selectMoreFollowings, selectProfileEntries, selectProfileEntriesFlags } from '../../local-flux/selectors';
 import { EntryList, ProfileList } from '../';
 
 class ProfileActivity extends Component {
@@ -39,13 +39,13 @@ class ProfileActivity extends Component {
 
     fetchMoreProfileEntries = () => {
         const { ethAddress } = this.props;
-        this.props.entryMoreProfileIterator(null, ethAddress);
+        this.props.entryMoreProfileIterator({ columnId: null, value: ethAddress });
     }
 
     render () {
         const { fetchingFollowers, fetchingFollowings, fetchingMoreFollowers, fetchingMoreFollowings,
-            fetchingProfileEntries, followers, followings, intl, moreProfileEntries,
-            fetchingMoreProfileEntries, moreFollowers, moreFollowings, profileEntries,
+            fetchingEntries, followers, followings, intl, moreEntries,
+            fetchingMoreEntries, moreFollowers, moreFollowings, profileEntries,
             profiles } = this.props;
 
         return (
@@ -61,10 +61,10 @@ class ProfileActivity extends Component {
                 cardStyle={{ width: '340px' }}
                 contextId={ACTIVITY}
                 entries={profileEntries}
-                fetchingEntries={fetchingProfileEntries}
-                fetchingMoreEntries={fetchingMoreProfileEntries}
+                fetchingEntries={fetchingEntries}
+                fetchingMoreEntries={fetchingMoreEntries}
                 fetchMoreEntries={this.fetchMoreProfileEntries}
-                moreEntries={moreProfileEntries}
+                moreEntries={moreEntries}
                 profiles={profiles}
               />
             </div>
@@ -105,18 +105,18 @@ ProfileActivity.propTypes = {
     ethAddress: PropTypes.string,
     entryMoreProfileIterator: PropTypes.func,
     entryProfileIterator: PropTypes.func,
+    fetchingEntries: PropTypes.bool,
     fetchingFollowers: PropTypes.bool,
     fetchingFollowings: PropTypes.bool,
+    fetchingMoreEntries: PropTypes.bool,
     fetchingMoreFollowers: PropTypes.bool,
     fetchingMoreFollowings: PropTypes.bool,
-    fetchingMoreProfileEntries: PropTypes.bool,
-    fetchingProfileEntries: PropTypes.bool,
     followers: PropTypes.shape(),
     followings: PropTypes.shape(),
     intl: PropTypes.shape(),
+    moreEntries: PropTypes.bool,
     moreFollowers: PropTypes.bool,
     moreFollowings: PropTypes.bool,
-    moreProfileEntries: PropTypes.bool,
     profileEntries: PropTypes.shape(),
     profileFollowersIterator: PropTypes.func.isRequired,
     profileFollowingsIterator: PropTypes.func.isRequired,
@@ -127,21 +127,23 @@ ProfileActivity.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const ethAddress = ownProps.ethAddress;
+    const { fetchingEntries, fetchingMoreEntries, moreEntries } =
+        selectProfileEntriesFlags(state, ethAddress);
     return {
         blockNr: selectBlockNumber(state),
+        fetchingEntries,
         fetchingFollowers: selectFetchingFollowers(state, ethAddress),
         fetchingFollowings: selectFetchingFollowings(state, ethAddress),
+        fetchingMoreEntries,
         fetchingMoreFollowers: selectFetchingMoreFollowers(state, ethAddress),
         fetchingMoreFollowings: selectFetchingMoreFollowings(state, ethAddress),
-        fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
-        fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
         followers: selectFollowers(state, ethAddress),
         followings: selectFollowings(state, ethAddress),
+        moreEntries,
         moreFollowers: selectMoreFollowers(state, ethAddress),
         moreFollowings: selectMoreFollowings(state, ethAddress),
         profileEntries: selectProfileEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
-        moreProfileEntries: state.entryState.get('moreProfileEntries'),
     };
 }
 
