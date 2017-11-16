@@ -111,6 +111,7 @@ class ListPopover extends Component {
               <NewListForm
                 authorEthAddress={authorEthAddress}
                 entryId={entryId}
+                entryType={entryType}
                 lists={lists}
                 onSave={listAdd}
                 onCancel={this.toggleNewList}
@@ -134,7 +135,10 @@ class ListPopover extends Component {
             </div>
             <div className="list-popover__list-wrapper">
               {this.groupByState(lists).map((list) => {
-                  const toggleList = () => listToggleEntry(list.get('name'), entryId, entryType, authorEthAddress);
+                  const toggleList = () => {
+                      this.onVisibleChange(false);
+                      listToggleEntry(list.get('name'), entryId, entryType, authorEthAddress);
+                  };
                   const isSaved = this.isSaved(list);
                   const root = 'list-popover__left-item list-popover__row-icon';
                   const modifier = 'list-popover__row-icon_saved';

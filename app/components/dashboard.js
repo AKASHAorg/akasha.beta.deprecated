@@ -4,12 +4,12 @@ import { withRouter } from 'react-router';
 import { Column, NewColumn } from './';
 
 const smallColumn = 360;
-const largeColumn = 720;
+const largeColumn = 540;
 
 const Dashboard = (props) => {
     const { columns, dashboards, getDashboardRef, match } = props;
-    const name = match.params.dashboardName;
-    const activeDashboard = dashboards.get(name);
+    const dashboardId = match.params.dashboardId;
+    const activeDashboard = dashboards.get(dashboardId);
 
     return (
       <div className="dashboard" id="dashboard-container" ref={getDashboardRef}>

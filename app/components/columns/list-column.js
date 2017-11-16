@@ -5,60 +5,53 @@ import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
 import { ColumnTag } from '../svg';
-import { entryMessages, tagMessages } from '../../locale-data/messages';
-import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
+import { entryMessages } from '../../locale-data/messages';
+import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
+import { selectColumnEntries, selectListsNames } from '../../local-flux/selectors';
 
-class TagColumn extends Component {
+class ListColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
         if (!column.get('entries').size && value) {
-            this.props.entryTagIterator({ columnId: column.get('id'), value });
+            this.props.entryListIterator({ columnId: column.get('id'), value });
         }
     }
 
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
-            this.props.entryTagIterator({ columnId: column.get('id'), value });
+            this.props.entryListIterator({ columnId: column.get('id'), value });
         }
     }
 
-    entryMoreTagIterator = () => {
+    entryMoreListIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreTagIterator(column.get('id'), column.get('value'));
+        this.props.entryMoreListIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
     };
 
     onRefresh = () => {
         const { column } = this.props;
-        this.props.entryTagIterator({
+        this.props.entryListIterator({
             columnId: column.get('id'),
             value: column.get('value')
         });
     };
 
     render () {
-        const { baseWidth, column, entries, intl, tagExists, tagResults } = this.props;
-        let placeholderMessage;
-        if (column.get('value')) {
-            placeholderMessage = tagExists.get(column.get('value')) ?
-                intl.formatMessage(entryMessages.noEntries) :
-                intl.formatMessage(tagMessages.tagDoesntExist);
-        } else {
-            intl.formatMessage(entryMessages.searchTag);
-        }
+        const { baseWidth, column, entries, intl, lists } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
           <div className={className}>
             <ColumnHeader
               column={column}
-              dataSource={tagResults}
+              dataSource={lists}
               icon={<ColumnTag />}
               onRefresh={this.onRefresh}
-              onSearch={this.props.searchTags}
             />
             <EntryList
               baseWidth={baseWidth}
@@ -67,41 +60,37 @@ class TagColumn extends Component {
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreTagIterator}
+              fetchMoreEntries={this.entryMoreListIterator}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={placeholderMessage}
+              placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
             />
           </div>
         );
     }
 }
 
-TagColumn.propTypes = {
+ListColumn.propTypes = {
     baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
-    entryMoreTagIterator: PropTypes.func.isRequired,
-    entryTagIterator: PropTypes.func.isRequired,
+    entryListIterator: PropTypes.func.isRequired,
+    entryMoreListIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    searchTags: PropTypes.func.isRequired,
-    tagExists: PropTypes.shape().isRequired,
-    tagResults: PropTypes.shape().isRequired,
+    lists: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, columnId),
-        tagExists: selectTagExists(state),
-        tagResults: selectTagSearchResults(state),
+        lists: selectListsNames(state)
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        entryMoreTagIterator,
-        entryTagIterator,
-        searchTags,
+        entryListIterator,
+        entryMoreListIterator,
     }
-)(injectIntl(TagColumn));
+)(injectIntl(ListColumn));

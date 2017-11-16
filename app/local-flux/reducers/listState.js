@@ -14,15 +14,20 @@ const createListRecord = (list) => {
 
 const listState = createReducer(initialState, {
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        if (request.length) {
-            const startIndex = state.getIn(['byName', request[0].listName, 'startIndex']);
-            const newIndex = data.data ? startIndex + 1 : startIndex;
-            return state.mergeIn(['byName', request[0].listName], {
-                moreEntries: newIndex < state.getIn(['byName', request[0].listName, 'entryIds']).size,
-                startIndex: newIndex,
-            });
-        }
-        return state;
+        const startIndex = data.collection.length;
+        return state.mergeIn(['byName', request.value], {
+            moreEntries: startIndex < state.getIn(['byName', request.value, 'entryIds']).size,
+            startIndex,
+        });
+    },
+
+    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        const startIndex = state.getIn(['byName', request.value, 'startIndex']);
+        const newIndex = startIndex + data.collection.length;
+        return state.mergeIn(['byName', request.value], {
+            moreEntries: newIndex < state.getIn(['byName', request.value, 'entryIds']).size,
+            startIndex: newIndex,
+        });
     },
 
     [types.LIST_ADD_SUCCESS]: (state, { data }) =>

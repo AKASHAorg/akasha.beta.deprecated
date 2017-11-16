@@ -13,11 +13,11 @@ class DashboardPage extends Component {
             return;
         }
         const { params } = nextProps.match;
-        if (!params.dashboardName && this.props.match.params.dashboardName) {
+        if (!params.dashboardId && this.props.match.params.dashboardId) {
             this.props.dashboardSetActive('');
         }
-        if (params.dashboardName !== this.props.match.params.dashboardName) {
-            this.props.dashboardSetActive(params.dashboardName);
+        if (params.dashboardId !== this.props.match.params.dashboardId) {
+            this.props.dashboardSetActive(params.dashboardId);
         }
     }
 
@@ -66,7 +66,7 @@ function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         columns: state.dashboardState.get('columnById'),
-        dashboards: state.dashboardState.get('dashboardByName'),
+        dashboards: state.dashboardState.get('byId'),
         entryPageOverlay: state.entryState.get('entryPageOverlay'),
         homeReady: state.appState.get('homeReady'),
         isHidden: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),

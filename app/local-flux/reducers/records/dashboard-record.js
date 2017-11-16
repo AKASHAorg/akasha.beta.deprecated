@@ -1,7 +1,8 @@
 import { List, Map, Record } from 'immutable';
 
 const Flags = Record({
-    firstDashboardReady: false
+    firstDashboardReady: false,
+    renamingDashboard: false
 });
 
 const ColumnFlags = Record({
@@ -22,8 +23,8 @@ export const ColumnRecord = Record({
 });
 
 export const DashboardRecord = Record({
-    account: null,
     columns: new List(),
+    ethAddress: null,
     id: null,
     name: null,
     timestamp: null
@@ -38,10 +39,10 @@ export const NewColumnRecord = Record({
 export const DashboardState = Record({
     activeDashboard: null,
     allDashboards: new List(),
+    byId: new Map(),
     columnById: new Map({
         newColumn: new ColumnRecord()
     }),
-    dashboardByName: new Map(),
     flags: new Flags(),
     newColumn: null,
     search: null,

@@ -108,63 +108,63 @@ export const entryGetVoteOfError = (error) => {
 };
 
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
-export const entryListIterator = name => action(types.ENTRY_LIST_ITERATOR, { name });
 
-export const entryListIteratorError = (error) => {
-    error.code = 'ELIE01';
-    error.messageId = 'entryListIterator';
-    return action(types.ENTRY_LIST_ITERATOR_ERROR, { error });
-};
-
+export const entryListIterator = ({ columnId, value, limit }) =>
+    action(types.ENTRY_LIST_ITERATOR, { columnId, value, limit });
 export const entryListIteratorSuccess = (data, request) =>
     action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 
+export const entryMoreListIterator = ({ columnId, value, limit }) =>
+    action(types.ENTRY_MORE_LIST_ITERATOR, { columnId, value, limit });
+export const entryMoreListIteratorSuccess = (data, request) =>
+    action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
+
 export const entryMoreNewestIterator = columnId => action(types.ENTRY_MORE_NEWEST_ITERATOR, { columnId });
-export const entryMoreNewestIteratorError = (error, req) => {
+export const entryMoreNewestIteratorError = (error, request) => {
     error.code = 'EMNIE01';
     error.messageId = 'entryMoreNewestIterator';
-    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, request });
 };
-export const entryMoreNewestIteratorSuccess = (data, req) =>
-    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryMoreNewestIteratorSuccess = (data, request) =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, request });
 
 export const entryMoreProfileIterator = ({ columnId, value }) =>
     action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, value });
-export const entryMoreProfileIteratorError = (error, req) => {
+export const entryMoreProfileIteratorError = (error, request) => {
     error.code = 'EMPIE01';
     error.messageId = 'entryMoreProfileIterator';
-    return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, request });
 };
-export const entryMoreProfileIteratorSuccess = (data, req) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, req });
+export const entryMoreProfileIteratorSuccess = (data, request) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
 export const entryMoreStreamIterator = columnId => action(types.ENTRY_MORE_STREAM_ITERATOR, { columnId });
-export const entryMoreStreamIteratorError = (error, req) => {
+export const entryMoreStreamIteratorError = (error, request) => {
     error.code = 'EMSIE01';
     error.messageId = 'entryMoreStreamIterator';
-    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, request });
 };
-export const entryMoreStreamIteratorSuccess = (data, req) =>
-    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, req });
+export const entryMoreStreamIteratorSuccess = (data, request) =>
+    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, request });
 
 export const entryMoreTagIterator = ({ columnId, value }) =>
     action(types.ENTRY_MORE_TAG_ITERATOR, { columnId, value });
-export const entryMoreTagIteratorError = (error, req) => {
+export const entryMoreTagIteratorError = (error, request) => {
     error.code = 'EMTIE01';
     error.messageId = 'entryMoreTagIterator';
-    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, request });
 };
-export const entryMoreTagIteratorSuccess = (data, req) =>
-    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, req });
+export const entryMoreTagIteratorSuccess = (data, request) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, request });
 
 export const entryNewestIterator = columnId => action(types.ENTRY_NEWEST_ITERATOR, { columnId });
-export const entryNewestIteratorError = (error, req) => {
+export const entryNewestIteratorError = (error, request) => {
     error.code = 'ENIE01';
     error.messageId = 'entryNewestIterator';
-    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error, request });
 };
-export const entryNewestIteratorSuccess = (data, req) =>
-    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryNewestIteratorSuccess = (data, request) =>
+    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, request });
 
 export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
@@ -172,42 +172,42 @@ export const entryPageShow = (entryId, version) =>
 
 export const entryProfileIterator = ({ columnId, value, limit, asDrafts }) =>
     action(types.ENTRY_PROFILE_ITERATOR, { columnId, value, limit, asDrafts });
-export const entryProfileIteratorError = (error, req) => {
+export const entryProfileIteratorError = (error, request) => {
     error.code = 'EPIE01';
     error.messageId = 'entryProfileIterator';
-    return action(types.ENTRY_PROFILE_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_PROFILE_ITERATOR_ERROR, { error, request });
 };
-export const entryProfileIteratorSuccess = (data, req) =>
-    action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
+export const entryProfileIteratorSuccess = (data, request) =>
+    action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, request });
 
 export const entryResolveIpfsHash = ({ ipfsHash, columnId, entryIds, asDrafts, full }) =>
     action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds, asDrafts, full });
-export const entryResolveIpfsHashError = (error, req) => {
+export const entryResolveIpfsHashError = (error, request) => {
     error.code = 'ERIHE01';
     error.messageId = 'entryResolveIpfsHash';
-    return action(types.ENTRY_RESOLVE_IPFS_HASH_ERROR, { error, req });
+    return action(types.ENTRY_RESOLVE_IPFS_HASH_ERROR, { error, request });
 };
-export const entryResolveIpfsHashSuccess = (data, req) =>
-    action(types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
+export const entryResolveIpfsHashSuccess = (data, request) =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS, { data, request });
 
 export const entryStreamIterator = columnId => action(types.ENTRY_STREAM_ITERATOR, { columnId });
-export const entryStreamIteratorError = (error, req) => {
+export const entryStreamIteratorError = (error, request) => {
     error.code = 'ESIE01';
     error.messageId = 'entryStreamIterator';
-    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error, request });
 };
-export const entryStreamIteratorSuccess = (data, req) =>
-    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, req });
+export const entryStreamIteratorSuccess = (data, request) =>
+    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, request });
 
 export const entryTagIterator = ({ columnId, value }) =>
     action(types.ENTRY_TAG_ITERATOR, { columnId, value });
-export const entryTagIteratorError = (error, req) => {
+export const entryTagIteratorError = (error, request) => {
     error.code = 'ETIE01';
     error.messageId = 'entryTagIterator';
-    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error, req });
+    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error, request });
 };
-export const entryTagIteratorSuccess = (data, req) =>
-    action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
+export const entryTagIteratorSuccess = (data, request) =>
+    action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, request });
 
 export const entryUpvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
     action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });

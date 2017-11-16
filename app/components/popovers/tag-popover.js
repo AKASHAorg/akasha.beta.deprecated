@@ -151,7 +151,7 @@ class TagPopover extends Component {
                                   onClick={(ev) => {
                                       ev.preventDefault();
                                       ev.stopPropagation();
-                                      this.props.dashboardDelete(dashboard.get('name'));
+                                      this.props.dashboardDelete(dashboard.get('id'));
                                   }}
                                 />
                               </div>
