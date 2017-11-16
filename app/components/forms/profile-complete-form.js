@@ -4,6 +4,7 @@ import { Map } from 'immutable';
 import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
+import QRCode from 'qrcode.react';
 import { Row, Card, Col, Input, Button, Form, Icon, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
@@ -23,7 +24,8 @@ class ProfileCompleteForm extends Component {
         this.state = {
             akashaIdIsValid: true,
             akashaIdExists: false,
-            insufficientEth: false
+            insufficientEth: false,
+            insufficientEthRenderFlag: false
         };
         this.validatorTypes = getProfileSchema(props.intl, { isUpdate: props.isUpdate });
         this.showErrorOnFields = [];
@@ -31,17 +33,39 @@ class ProfileCompleteForm extends Component {
     }
     getValidatorData = () => this.props.tempProfile.toJS();
     componentWillReceiveProps (nextProps) {
-        const { isUpdate, tempProfile } = nextProps;
+        const { isUpdate, balance, tempProfile } = nextProps;
         // we need to enable update temp profile button only if something has changed
         // so we need to keep a ref to old temp profile.
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
+        }
+        if (balance.get('eth') >= 0.1) {
+            this.setState({
+                insufficientEth: false,
+                insufficientEthRenderFlag: false
+            });
+        }
+    }
+
+    componentDidUpdate () {
+        const { insufficientEth, insufficientEthRenderFlag } = this.state;
+        if (insufficientEth && !insufficientEthRenderFlag) {
+            this.container.scrollTop = this.container.scrollHeight;
+            this.state.insufficientEthRenderFlag = true;
         }
     }
 
     componentWillUnmount () {
         clientChannel.removeListener(this._handleResponse);
     }
+
+    getContainerRef = (el) => {
+        const { getFormContainerRef } = this.props;
+        this.container = el;
+        if (getFormContainerRef) {
+            getFormContainerRef(el);
+        }
+    };
 
     _handleAddLink = linkType => () => {
         const { tempProfile } = this.props;
@@ -107,7 +131,8 @@ class ProfileCompleteForm extends Component {
         }
         this.setState({
             akashaIdIsValid: idValid,
-            akashaIdExists: exists
+            akashaIdExists: exists,
+            error: ''
         });
         if (normalisedId) {
             onProfileUpdate(tempProfile.set('akashaId', normalisedId));
@@ -143,13 +168,10 @@ class ProfileCompleteForm extends Component {
         }
     }
 
-    _validateField = (field, index, sub) =>
+    _validateField = field =>
         () => {
             if (!this.showErrorOnFields.includes(field)) {
                 this.showErrorOnFields.push(field);
-            }
-            if (field === 'links') {
-                return this.props.validate(this._onValidate(field[index][sub]));
             }
             return this.props.validate(this._onValidate(field));
         };
@@ -158,9 +180,10 @@ class ProfileCompleteForm extends Component {
         const { getValidationMessages } = this.props;
         if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
             if (field === 'links') {
-                const errors = getValidationMessages(field)[index];
-                if (errors && errors[sub]) {
-                    return errors[sub][0];
+                const joiPath = `${field},${index},${sub}`;
+                const errors = getValidationMessages(joiPath);
+                if (errors) {
+                    return errors[0];
                 }
                 return null;
             }
@@ -242,6 +265,7 @@ class ProfileCompleteForm extends Component {
             }
             if (balance.get('eth') < 0.1) {
                 this.setState({ insufficientEth: true });
+                // this.formWrap.scrollTop = this.formWrap.scrollHeight;
                 // this.forceUpdate();
                 return;
             }
@@ -258,28 +282,47 @@ class ProfileCompleteForm extends Component {
         });
     }
 
+    _handleSave = () => {
+        const { tempProfile } = this.props;
+        this.props.tempProfileCreate(tempProfile);
+    }
+
+    onCopy = () => {
+        const { loggedEthAddress } = this.props;
+        const textArea = document.createElement('textarea');
+        textArea.value = loggedEthAddress;
+        textArea.style.position = 'fixed';
+        textArea.style.top = -99999;
+        textArea.style.left = -99999;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+    };
+
 
     render () {
-        const { intl, isUpdate, tempProfile } = this.props;
+        const { intl, isUpdate, tempProfile, loggedEthAddress } = this.props;
         const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
             baseUrl } = tempProfile;
         const { formatMessage } = intl;
 
         return (
           <div className="profile-complete-form__wrap">
-            <div className="profile-complete-form__form-wrapper">
+            <div className="profile-complete-form__form-wrapper" ref={this.getContainerRef}>
               <Row type="flex" className="">
                 <Form
                   onSubmit={this._handleSubmit}
                 >
-                  <Col type="flex" md={24}>
+                  <Col type="flex" md={24} className="profile-complete-form__image-wrap">
                     <Col md={8}>
                       <div className="row">
-                        <p className="col-xs-12">
+                        <p className="profile-complete-form__avatar-title">
                           {intl.formatMessage(profileMessages.avatarTitle)}
                         </p>
                         <div className="col-xs-12 center-xs">
                           <AvatarEditor
+                            size={100}
                             editable
                             ref={(avtr) => { this.avatar = avtr; }}
                             image={avatar}
@@ -291,7 +334,7 @@ class ProfileCompleteForm extends Component {
                     </Col>
                     <Col md={16}>
                       <div className="row">
-                        <p className="col-xs-12" >
+                        <p className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
                         </p>
                         <div className="col-xs-12">
@@ -312,7 +355,6 @@ class ProfileCompleteForm extends Component {
                     <FormItem
                       label={formatMessage(formMessages.akashaId)}
                       colon={false}
-                      hasFeedback
                       validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                       help={this._getAkashaIdErrors('akashaId')}
                       style={{ marginRight: 8 }}
@@ -330,7 +372,6 @@ class ProfileCompleteForm extends Component {
                       <FormItem
                         label={formatMessage(formMessages.tips)}
                         colon={false}
-                        hasFeedback
                         style={{ marginRight: 8, marginLeft: 8 }}
                       >
                         <Switch
@@ -344,37 +385,37 @@ class ProfileCompleteForm extends Component {
                       {formatMessage(formMessages.acceptTips)}
                     </div>
                   </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.firstName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('firstName')}
-                      style={{ marginRight: 8 }}
-                    >
-                      <Input
-                        value={firstName}
-                        onChange={this._handleFieldChange('firstName')}
-                        onBlur={this._validateField('firstName')}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.lastName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('lastName')}
-                      style={{ marginLeft: 8 }}
-                    >
-                      <Input
-                        value={lastName}
-                        onChange={this._handleFieldChange('lastName')}
-                        onBlur={this._validateField('lastName')}
-                      />
-                    </FormItem>
+                  <Col md={24}>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.firstName)}
+                        colon={false}
+                        validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('firstName')}
+                        style={{ marginRight: 8 }}
+                      >
+                        <Input
+                          value={firstName}
+                          onChange={this._handleFieldChange('firstName')}
+                          onBlur={this._validateField('firstName')}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.lastName)}
+                        colon={false}
+                        validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('lastName')}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Input
+                          value={lastName}
+                          onChange={this._handleFieldChange('lastName')}
+                          onBlur={this._validateField('lastName')}
+                        />
+                      </FormItem>
+                    </Col>
                   </Col>
                   <Col md={24}>
                     <FormItem
@@ -392,28 +433,12 @@ class ProfileCompleteForm extends Component {
                     </FormItem>
                   </Col>
                   <Col md={24}>
-                    <h3 className="col-xs-10 profile-complete-form__links">
+                    <h3 className="profile-complete-form__link">
                       {intl.formatMessage(profileMessages.linksTitle)}
                     </h3>
                     {links.map((link, index) => (
-                      <div key={`${index + 1}`}>
+                      <div key={`${index + 1}`} className="profile-complete-form__link">
                         <FormItem
-                          label={intl.formatMessage(formMessages.title)}
-                          colon={false}
-                          hasFeedback
-                          validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
-                          help={this._getErrorMessages('links', index, 'title')}
-                        >
-                          <Input
-                            value={link.get('title')}
-                            onChange={this._handleLinkChange('links', 'title', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'title')}
-                          />
-                        </FormItem>
-                        <FormItem
-                          label={intl.formatMessage(formMessages.url)}
-                          colon={false}
-                          hasFeedback
                           validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
                           help={this._getErrorMessages('links', index, 'url')}
                         >
@@ -421,7 +446,7 @@ class ProfileCompleteForm extends Component {
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'url')}
+                            onBlur={this._validateField('links')}
                           />
                         </FormItem>
                         <Button
@@ -432,7 +457,7 @@ class ProfileCompleteForm extends Component {
                         >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                       </div>
                         ))}
-                    <div className="col-xs-2 end-xs profile-complete-form__add-links-btn">
+                    <div className="profile-complete-form__add-links-btn">
                       <Button
                         icon="plus"
                         type="primary borderless"
@@ -445,24 +470,47 @@ class ProfileCompleteForm extends Component {
                   </Col>
                   {this.state.insufficientEth &&
                     <Col md={24}>
-                      <div className="profile-complete-form__insufficient-funds">
+                      <div
+                        className="profile-complete-form__insufficient-funds"
+                      >
                         <Card
                           bordered={false}
                           noHovering
                         >
                           <h3>{formatMessage(formMessages.insufficientEth)}</h3>
                           <p>{formatMessage(formMessages.depositEth)}</p>
-                          <Button
-                            className="profile-complete-form__request-btn"
-                            size="large"
-                            type="primary"
-                          >
-                            Request ether from faucet
-                          </Button>
+                          <div className="profile-complete-form__address-info">
+                            <div className="profile-complete-form__qr-wrap">
+                              <span className="profile-complete-form__qr-title">QR Code</span>
+                              <div className="profile-complete-form__qr-code">
+                                <QRCode value={loggedEthAddress} />
+                              </div>
+                            </div>
+                            <div>
+                              <FormItem
+                                className="profile-complete-form__form-item"
+                                colon={false}
+                                label={intl.formatMessage(profileMessages.yourEthAddress)}
+                              >
+                                <Input
+                                  className="profile-complete-form__input profile-complete-form__my-address"
+                                  readOnly
+                                  value={loggedEthAddress}
+                                />
+                                <div
+                                  className="content-link profile-complete-form__copy-button"
+                                  onClick={this.onCopy}
+                                >
+                                  {intl.formatMessage(generalMessages.copy)}
+                                </div>
+                              </FormItem>
+                            </div>
+                          </div>
                         </Card>
                       </div>
                     </Col>
-                  }
+                }
+                  <Col md={24} className="profile-complete-form__filler" />
                 </Form>
               </Row>
             </div>
@@ -470,15 +518,25 @@ class ProfileCompleteForm extends Component {
               <div className="content-link" onClick={this._handleSkipStep}>
                 {intl.formatMessage(generalMessages.skipStep)} <Icon type="arrow-right" />
               </div>
-              <Button
-                htmlType="submit"
-                className="new-identity__button"
-                onClick={this._handleSubmit}
-                size="large"
-                type="primary"
-              >
-                {intl.formatMessage(generalMessages.submit)}
-              </Button>
+              <div className="profile-complete-form__buttons-wrapper">
+                <div className="profile-complete-form__save-btn">
+                  <Button
+                    size="large"
+                    onClick={this._handleSave}
+                  >
+                    {intl.formatMessage(profileMessages.saveForLater)}
+                  </Button>
+                </div>
+                <Button
+                  htmlType="submit"
+                  className="new-identity__button"
+                  onClick={this._handleSubmit}
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.submit)}
+                </Button>
+              </div>
             </div>
           </div>
         );
@@ -492,8 +550,11 @@ ProfileCompleteForm.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
+    getFormContainerRef: PropTypes.func,
+    loggedEthAddress: PropTypes.string,
     onProfileUpdate: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape(),
+    tempProfileCreate: PropTypes.func,
     validate: PropTypes.func,
 };
 

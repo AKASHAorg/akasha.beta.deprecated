@@ -45,7 +45,7 @@ const tagState = createReducer(initialState, {
         }
         let entriesCount = state.get('entriesCount');
         data.collection.forEach((tag) => {
-            entriesCount = entriesCount.set(tag.tagName, tag.count);
+            entriesCount = entriesCount.set(tag.tag, tag.count);
         });
         return state.set('entriesCount', entriesCount);
     },

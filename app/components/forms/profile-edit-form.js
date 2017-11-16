@@ -4,7 +4,7 @@ import { Map } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Input, Button, Form, Select } from 'antd';
+import { Row, Col, Input, Button, Form } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -42,6 +42,14 @@ class ProfileEditForm extends Component {
         clientChannel.removeListener(this._handleResponse);
     }
 
+    getContainerRef = (el) => {
+        const { getFormContainerRef } = this.props;
+        this.container = el;
+        if (getFormContainerRef) {
+            getFormContainerRef(el);
+        }
+    };
+
     _showTerms = (ev) => {
         ev.preventDefault();
         const { onTermsShow } = this.props;
@@ -56,7 +64,7 @@ class ProfileEditForm extends Component {
         const lastLink = links.last();
         if (lastLink) {
             if (linkType === 'links' &&
-                (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
+                (lastLink.get('url').length === 0)) {
                 return null;
             }
         }
@@ -113,7 +121,8 @@ class ProfileEditForm extends Component {
         }
         this.setState({
             akashaIdIsValid: idValid,
-            akashaIdExists: exists
+            akashaIdExists: exists,
+            error: ''
         });
         if (normalisedId) {
             onProfileUpdate(tempProfile.set('akashaId', normalisedId));
@@ -149,13 +158,10 @@ class ProfileEditForm extends Component {
         }
     }
 
-    _validateField = (field, index, sub) =>
+    _validateField = field =>
         () => {
             if (!this.showErrorOnFields.includes(field)) {
                 this.showErrorOnFields.push(field);
-            }
-            if (field === 'links') {
-                return this.props.validate(this._onValidate(field[index][sub]));
             }
             return this.props.validate(this._onValidate(field));
         };
@@ -164,9 +170,10 @@ class ProfileEditForm extends Component {
         const { getValidationMessages } = this.props;
         if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
             if (field === 'links') {
-                const errors = getValidationMessages(field)[index];
-                if (errors && errors[sub]) {
-                    return errors[sub][0];
+                const joiPath = `${field},${index},${sub}`;
+                const errors = getValidationMessages(joiPath);
+                if (errors) {
+                    return errors[0];
                 }
                 return null;
             }
@@ -262,7 +269,7 @@ class ProfileEditForm extends Component {
         return (
           <div className="profile-edit-form__wrap">
             <div className="profile-edit-form__pad">
-              <div className="profile-edit-form__form-wrapper">
+              <div className="profile-edit-form__form-wrapper" ref={this.getContainerRef}>
                 <Row type="flex" className="">
                   <Form
                     action=""
@@ -271,12 +278,13 @@ class ProfileEditForm extends Component {
                   >
                     <Col type="flex" md={24}>
                       <Col md={8}>
-                        <div className="row">
-                          <p className="col-xs-12">
+                        <div>
+                          <p className="profile-edit-form__avatar-title">
                             {intl.formatMessage(profileMessages.avatarTitle)}
                           </p>
-                          <div className="col-xs-12 center-xs">
+                          <div>
                             <AvatarEditor
+                              size={100}
                               editable
                               ref={(avtr) => { this.avatar = avtr; }}
                               image={avatar}
@@ -288,13 +296,13 @@ class ProfileEditForm extends Component {
                       </Col>
                       <Col md={24}>
                         <div className="row profile-edit-form__bg-image">
-                          <p className="col-xs-12" >
+                          <p className="profile-edit-form__bg-image-title" >
                             {intl.formatMessage(profileMessages.backgroundImageTitle)}
                           </p>
                           <div className="col-xs-12">
                             <ImageUploader
                               ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                              minWidth={360}
+                              minWidth={320}
                               intl={intl}
                               initialImage={backgroundImage}
                               baseUrl={baseUrl}
@@ -309,7 +317,6 @@ class ProfileEditForm extends Component {
                       <FormItem
                         label={formatMessage(formMessages.akashaId)}
                         colon={false}
-                        hasFeedback
                         validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                         help={this._getAkashaIdErrors('akashaId')}
                         style={{ marginRight: 8 }}
@@ -322,37 +329,37 @@ class ProfileEditForm extends Component {
                         />
                       </FormItem>
                     </Col>
-                    <Col md={12}>
-                      <FormItem
-                        label={formatMessage(formMessages.firstName)}
-                        colon={false}
-                        hasFeedback
-                        validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
-                        help={this._getErrorMessages('firstName')}
-                        style={{ marginRight: 8 }}
-                      >
-                        <Input
-                          value={firstName}
-                          onChange={this._handleFieldChange('firstName')}
-                          onBlur={this._validateField('firstName')}
-                        />
-                      </FormItem>
-                    </Col>
-                    <Col md={12}>
-                      <FormItem
-                        label={formatMessage(formMessages.lastName)}
-                        colon={false}
-                        hasFeedback
-                        validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
-                        help={this._getErrorMessages('lastName')}
-                        style={{ marginLeft: 8 }}
-                      >
-                        <Input
-                          value={lastName}
-                          onChange={this._handleFieldChange('lastName')}
-                          onBlur={this._validateField('lastName')}
-                        />
-                      </FormItem>
+                    <Col md={24}>
+                      <Col md={12}>
+                        <FormItem
+                          label={formatMessage(formMessages.firstName)}
+                          colon={false}
+                          validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
+                          help={this._getErrorMessages('firstName')}
+                          style={{ marginRight: 8 }}
+                        >
+                          <Input
+                            value={firstName}
+                            onChange={this._handleFieldChange('firstName')}
+                            onBlur={this._validateField('firstName')}
+                          />
+                        </FormItem>
+                      </Col>
+                      <Col md={12}>
+                        <FormItem
+                          label={formatMessage(formMessages.lastName)}
+                          colon={false}
+                          validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
+                          help={this._getErrorMessages('lastName')}
+                          style={{ marginLeft: 8 }}
+                        >
+                          <Input
+                            value={lastName}
+                            onChange={this._handleFieldChange('lastName')}
+                            onBlur={this._validateField('lastName')}
+                          />
+                        </FormItem>
+                      </Col>
                     </Col>
                     <Col md={24}>
                       <FormItem
@@ -370,28 +377,12 @@ class ProfileEditForm extends Component {
                       </FormItem>
                     </Col>
                     <Col md={24}>
-                      <h3 className="col-xs-10 profile-edit-form__links">
+                      <h3 className="profile-edit-form__link">
                         {intl.formatMessage(profileMessages.linksTitle)}
                       </h3>
                       {links.map((link, index) => (
-                        <div key={`${index + 1}`}>
+                        <div className="profile-edit-form__link" key={`${index + 1}`}>
                           <FormItem
-                            label={intl.formatMessage(formMessages.title)}
-                            colon={false}
-                            hasFeedback
-                            validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
-                            help={this._getErrorMessages('links', index, 'title')}
-                          >
-                            <Input
-                              value={link.get('title')}
-                              onChange={this._handleLinkChange('links', 'title', link.get('id'))}
-                              onBlur={this._validateField('links', index, 'title')}
-                            />
-                          </FormItem>
-                          <FormItem
-                            label={intl.formatMessage(formMessages.url)}
-                            colon={false}
-                            hasFeedback
                             validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
                             help={this._getErrorMessages('links', index, 'url')}
                           >
@@ -399,7 +390,7 @@ class ProfileEditForm extends Component {
                               value={link.get('url')}
                               style={{ width: '100%' }}
                               onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                              onBlur={this._validateField('links', index, 'url')}
+                              onBlur={this._validateField('links')}
                             />
                           </FormItem>
                           <Button
@@ -410,7 +401,7 @@ class ProfileEditForm extends Component {
                           >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                         </div>
                             ))}
-                      <div className="col-xs-2 end-xs profile-edit-form__add-links-btn">
+                      <div className="profile-edit-form__add-links-btn">
                         <Button
                           icon="plus"
                           type="primary borderless"
@@ -422,8 +413,8 @@ class ProfileEditForm extends Component {
                       </div>
                     </Col>
                     {!isUpdate &&
-                    <Col md={24}>
-                      <small className="profile-edit-form__terms">
+                    <Col md={24} className="profile-edit-form__terms">
+                      <small>
                         <FormattedMessage
                           {...generalMessages.terms}
                           values={{
@@ -474,6 +465,7 @@ class ProfileEditForm extends Component {
 ProfileEditForm.propTypes = {
     actionAdd: PropTypes.func,
     form: PropTypes.shape(),
+    getFormContainerRef: PropTypes.func,
     getValidationMessages: PropTypes.func,
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
