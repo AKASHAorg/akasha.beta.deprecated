@@ -95,6 +95,7 @@ class TransferForm extends Component {
               })(
                 <InputNumber
                   className="transfer-form__input"
+                  min={0}
                   max={balanceToNumber(balance, 5)}
                   placeholder={intl.formatMessage(profileMessages.amountPlaceholder)}
                   step={0.01}

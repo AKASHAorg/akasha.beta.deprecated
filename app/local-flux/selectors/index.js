@@ -14,32 +14,22 @@ export const selectActiveDashboard = (state) => {
         return null;
     }
     return state.dashboardState.getIn([
-        'dashboardByName',
+        'byId',
         activeDashboard
     ]);
 };
 
 export const selectActiveDashboardColumns = (state) => {
-    const name = state.dashboardState.get('activeDashboard');
-    if (!name) {
+    const id = state.dashboardState.get('activeDashboard');
+    if (!id || !state.dashboardState.getIn(['byId', id])) {
         return new List();
     }
     return state.dashboardState
-        .getIn(['dashboardByName', name, 'columns'])
+        .getIn(['byId', id, 'columns'])
         .map(columnId => selectColumn(state, columnId));
 };
 
-export const selectActiveDashboardId = (state) => {
-    const activeDashboardName = state.dashboardState.get('activeDashboard');
-    if (!activeDashboardName) {
-        return null;
-    }
-    return state.dashboardState.getIn([
-        'dashboardByName',
-        activeDashboardName,
-        'id'
-    ]);
-};
+export const selectActiveDashboardId = state => state.dashboardState.get('activeDashboard');
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
@@ -99,17 +89,18 @@ export const selectCommentsFlag = (state, flag, id) => {
 
 export const selectCyclingStates = state => state.profileState.get('cyclingStates');
 
-export const selectDashboardId = (state, name) =>
-    state.dashboardState.getIn(['dashboardByName', name, 'id']);
+export const selectDashboard = (state, id) =>
+    state.dashboardState.getIn(['byId', id]);
 
 export const selectDashboards = (state) => {
     const search = selectDashboardSearch(state);
     if (!search) {
-        return state.dashboardState.get('dashboardByName');
+        return state.dashboardState.get('allDashboards').map(id => selectDashboard(state, id));
     }
-    return state.dashboardState.get('dashboardByName').filter(dashboard =>
-        dashboard.get('name').toLowerCase().includes(search.toLowerCase())
-    );
+    return state.dashboardState.get('allDashboards')
+        .filter(id =>
+            selectDashboard(state, id).get('name').toLowerCase().includes(search.toLowerCase())
+        );
 };
 
 export const selectDashboardSearch = state => state.dashboardState.get('search');
@@ -311,9 +302,11 @@ export const selectProfile = (state, ethAddress) =>
 export const selectProfileEditToggle = state =>
     state.appState.get('showProfileEditor');
 
-export const selectProfileEntries = (state, akashaId) =>
-    state.entryState.get('byId').filter(entry => entry.getIn(['entryEth', 'publisher']) === akashaId)
+export const selectProfileEntries = (state, ethAddress) =>
+    state.entryState.get('byId').filter(entry => entry.getIn(['author', 'ethAddress']) === ethAddress)
         .toList();
+
+export const selectProfileExists = state => state.profileState.get('exists');
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
@@ -331,6 +324,8 @@ export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);
 
 export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
+
+export const selectTagExists = state => state.tagState.get('exists');
 
 export const selectTagSearchResults = state => state.searchState.get('tags');
 

@@ -40,7 +40,7 @@ class LatestColumn extends Component {
             />
             <EntryList
               baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
+              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}

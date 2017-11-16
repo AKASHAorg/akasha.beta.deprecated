@@ -192,6 +192,11 @@ export const profileMessages = defineMessages({
         description: 'Title for overview card',
         defaultMessage: 'Overview'
     },
+    profileDoesntExist: {
+        id: 'app.profile.profileDoesntExist',
+        description: 'placeholder message for entry list when akasha id does not exist',
+        defaultMessage: 'This akasha id doesn\'t exist'
+    },
     settings: {
         id: 'app.profile.settings',
         description: 'Title for profile settings',

@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
 import { ColumnProfile } from '../svg';
-import { entryMessages } from '../../locale-data/messages';
-import { dashboardGetProfileSuggestions } from '../../local-flux/actions/dashboard-actions';
+import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries } from '../../local-flux/selectors';
+import { searchProfiles } from '../../local-flux/actions/search-actions';
+import { selectColumnEntries, selectProfileExists,
+    selectProfileSearchResults } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
     componentDidMount () {
@@ -40,21 +42,29 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl } = this.props;
-        const placeholderMessage = column.get('value') ?
-            intl.formatMessage(entryMessages.noEntries) :
+        const { baseWidth, column, entries, intl, profileExists, profileResults } = this.props;
+        let placeholderMessage;
+        if (column.get('value')) {
+            placeholderMessage = profileExists.getIn([column.get('value'), 'exists']) ?
+                intl.formatMessage(entryMessages.noEntries) :
+                intl.formatMessage(profileMessages.profileDoesntExist);
+        } else {
             intl.formatMessage(entryMessages.searchProfile);
+        }
+        const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div className={className}>
             <ColumnHeader
               column={column}
-              onInputChange={val => this.props.dashboardGetProfileSuggestions(val, column.get('id'))}
+              dataSource={profileResults}
               icon={<ColumnProfile />}
               onRefresh={this.onRefresh}
+              onSearch={this.props.searchProfiles}
             />
             <EntryList
-              cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
+              baseWidth={baseWidth}
+              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
@@ -69,25 +79,30 @@ class ProfileColumn extends Component {
 }
 
 ProfileColumn.propTypes = {
+    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
-    dashboardGetProfileSuggestions: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    profileExists: PropTypes.shape().isRequired,
+    profileResults: PropTypes.shape().isRequired,
+    searchProfiles: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
+        profileExists: selectProfileExists(state),
+        profileResults: selectProfileSearchResults(state),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        dashboardGetProfileSuggestions,
         entryMoreProfileIterator,
         entryProfileIterator,
+        searchProfiles
     }
 )(injectIntl(ProfileColumn));

@@ -108,9 +108,9 @@ class EntryList extends Component {
               timeout={defaultTimeout}
               style={{ paddingTop: '80px' }}
             >
-              <div style={{ width: '100%' }}>
+              <div style={{ width: '100%', height: '100%' }}>
                 {entries.size === 0 &&
-                  <div className="flex-center-x entry-list__placeholder">
+                  <div className="flex-center entry-list__placeholder">
                     {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
                   </div>
                 }

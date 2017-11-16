@@ -21,7 +21,7 @@ export const profileAddress = Promise.coroutine(function* (data) {
     if (!!unpad(profileAddress)) {
         return Promise.resolve(profileAddress);
     }
-    throw new Error('Must provide a valid akasha ID or ethereum address');
+    return Promise.resolve(null);
 });
 
 export const resolveEthAddress = Promise.coroutine(function* (ethAddress: string) {
