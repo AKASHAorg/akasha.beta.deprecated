@@ -9,8 +9,8 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
 import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntries,
-    selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress, 
-    selectToken } from '../selectors';
+    selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
+    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
@@ -223,10 +223,14 @@ function* entryMoreNewestIterator ({ columnId }) {
 
 function* entryMoreProfileIterator ({ columnId, value }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const toBlock = columnId ?
+        yield select(state => selectColumnLastBlock(state, columnId)) :
+        yield select(state => selectProfileEntriesLastBlock(state, value));
+    const lastIndex = columnId ?
+        yield select(state => selectColumnLastIndex(state, columnId)) :
+        yield select(state => selectProfileEntriesLastIndex(state, value));
     let akashaId, ethAddress; // eslint-disable-line
-    if (value.length === 42 && value.toLowerCase().startsWith('0x')) {
+    if (isEthAddress(value)) {
         ethAddress = value;
     } else {
         akashaId = value;
@@ -276,7 +280,7 @@ function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT,
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
     let akashaId, ethAddress; // eslint-disable-line
-    if (value.length === 42 && value.toLowerCase().startsWith('0x')) {
+    if (isEthAddress(value)) {
         ethAddress = value;
     } else {
         akashaId = value;

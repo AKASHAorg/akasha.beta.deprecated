@@ -193,21 +193,13 @@ class ProfileDetails extends Component {
               }
             </div>
             <div className="profile-details__counters-wrapper">
-              <div>
+              <div style={{ marginRight: '12px' }}>
                 <div>{intl.formatMessage(profileMessages.followers)}</div>
                 <div className="profile-details__counter">{followersCount}</div>
               </div>
               <div>
                 <div>{intl.formatMessage(profileMessages.followings)}</div>
                 <div className="profile-details__counter">{followingCount}</div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supported)}</div>
-                <div className="profile-details__counter">{0}</div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supporting)}</div>
-                <div className="profile-details__counter">{0}</div>
               </div>
             </div>
             {about &&

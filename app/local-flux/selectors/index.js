@@ -314,8 +314,26 @@ export const selectProfileEditToggle = state =>
     state.appState.get('showProfileEditor');
 
 export const selectProfileEntries = (state, ethAddress) =>
-    state.entryState.get('byId').filter(entry => entry.getIn(['author', 'ethAddress']) === ethAddress)
-        .toList();
+    (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']) || new List())
+        .map(entryId => selectEntry(state, entryId));
+
+export const selectProfileEntriesFlags = (state, ethAddress) => {
+    const profileEntries = state.entryState.getIn(['profileEntries', ethAddress]);
+    if (!profileEntries) {
+        return {};
+    }
+    return {
+        fetchingEntries: profileEntries.get('fetchingEntries'),
+        fetchingMoreEntries: profileEntries.get('fetchingMoreEntries'),
+        moreEntries: profileEntries.get('moreEntries')
+    };
+};
+
+export const selectProfileEntriesLastBlock = (state, value) =>
+    state.entryState.getIn(['profileEntries', value, 'lastBlock']);
+
+export const selectProfileEntriesLastIndex = (state, value) =>
+    state.entryState.getIn(['profileEntries', value, 'lastIndex']);
 
 export const selectProfileExists = state => state.profileState.get('exists');
 
