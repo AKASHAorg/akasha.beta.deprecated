@@ -196,13 +196,22 @@ export const selectListEntryType = (state, listName, entryId) => {
     return entry.entryType;
 };
 
+export const selectListEntries = (state, value, limit) =>
+    state.listState
+        .getIn(['byName', value, 'entryIds'])
+        .slice(0, limit)
+        .map((ele) => {
+            const { entryId, entryType, authorEthAddress } = ele;
+            return { entryId, entryType, author: { ethAddress: authorEthAddress } };
+        })
+        .toJS();
 
-export const selectListNextEntries = (state, name, limit) => {
-    const startIndex = state.listState.getIn(['byName', name, 'startIndex']);
+export const selectListNextEntries = (state, value, limit) => {
+    const startIndex = state.listState.getIn(['byName', value, 'startIndex']);
     return state.listState
-        .getIn(['byName', name, 'entryIds'])
+        .getIn(['byName', value, 'entryIds'])
         .slice(startIndex, startIndex + limit)
-        .map(ele => ({ entryId: ele.entryId, ethAddress: ele.authorEthAddress }))
+        .map(ele => ({ entryId: ele.entryId, author: { ethAddress: ele.authorEthAddress } }))
         .toJS();
 };
 
@@ -213,6 +222,8 @@ export const selectLists = (state) => {
     }
     return state.listState.get('byName').toList();
 };
+
+export const selectListsNames = state => state.listState.get('byName').toList().map(list => list.get('name'));
 
 export const selectListsCount = state => state.listState.get('byName').size;
 
