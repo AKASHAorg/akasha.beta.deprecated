@@ -50,24 +50,19 @@ class NewEntryPage extends Component {
         if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId) {
             if (currentSelection) {
                 this.setState({
-                    shouldResetCaret: true
+                    shouldResetCaret: true,
+                    scrollPosition: 'noScroll'
                 });
             } else {
                 const selection = EditorState.moveSelectionToEnd(
                     draftObj.getIn(['content', 'draft'])
                 ).getSelection();
                 this.editor.updateCaretPosition(selection);
+                this.setState({
+                    scrollPosition: 'noScroll'
+                });
             }
         } else {
-            if (this.editor) {
-                const editorContainer = this.editor.container;
-                const rootNode = this.editor.rootNode;
-                if (editorContainer > rootNode) {
-                    this.setState({
-                        scrollPosition: 'top'
-                    });
-                }
-            }
             this.setState({
                 shouldResetCaret: false
             });
@@ -334,7 +329,6 @@ class NewEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
-
         return (
           <div className="edit-entry-page article-page">
             <div
@@ -355,7 +349,12 @@ class NewEntryPage extends Component {
                 span={showPublishPanel ? 17 : 24}
                 className="edit-entry-page__editor-wrapper"
               >
-                <div className="edit-entry-page__editor">
+                <div
+                  className={
+                    `edit-entry-page__editor
+                    edit-entry-page__editor${showSecondarySidebar ? '' : '_full'}`
+                  }
+                >
                   <textarea
                     ref={this._createRef('titleInput')}
                     className={

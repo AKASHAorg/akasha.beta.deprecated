@@ -54,7 +54,8 @@ class NewLinkEntryPage extends Component {
 
         if (hasCardContent) {
             this.setState({
-                urlInputHidden: true
+                urlInputHidden: true,
+                infoExtracted: true
             });
         }
     }
@@ -298,7 +299,8 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile, selectionState } = this.props;
-        const { showPublishPanel, errors, shouldResetCaret, parsingInfo, infoExtracted, urlInputHidden } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
+            infoExtracted, urlInputHidden } = this.state;
 
         if (!draftObj || !draftObj.get('content')) {
             return (
@@ -321,7 +323,6 @@ class NewLinkEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
-
         return (
           <div className="edit-entry-page link-page">
             <div
@@ -338,8 +339,7 @@ class NewLinkEntryPage extends Component {
               type="flex"
               className="edit-entry-page__content"
             >
-              <Col
-                span={showPublishPanel ? 17 : 24}
+              <div
                 className="edit-entry-page__editor-wrapper"
               >
                 <div className="edit-entry-page__editor">
@@ -367,8 +367,10 @@ class NewLinkEntryPage extends Component {
                       error={errors.card}
                     />
                   </div>
-                  {!parsingInfo &&
+                  {!parsingInfo && infoExtracted &&
+                  <div style={{ position: 'relative', height: '100%' }}>
                     <TextEntryEditor
+                      style={{ position: 'absolute', left: 0 }}
                       ref={this._createRef('editor')}
                       className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
                       onChange={this._handleEditorChange}
@@ -377,9 +379,10 @@ class NewLinkEntryPage extends Component {
                       baseUrl={baseUrl}
                       intl={intl}
                     />
+                  </div>
                   }
                 </div>
-                {!parsingInfo &&
+                {!parsingInfo && infoExtracted &&
                   <div className="edit-entry-page__tag-editor">
                     <TagEditor
                       ref={this._createRef('tagEditor')}
@@ -397,7 +400,7 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                 }
-              </Col>
+              </div>
               <Col
                 span={6}
                 className={

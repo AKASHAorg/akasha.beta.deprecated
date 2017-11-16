@@ -77,7 +77,7 @@ DataLoader.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     flag: PropTypes.bool,
-    message: PropTypes.string,
+    message: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
     timeout: PropTypes.number,
     size: PropTypes.string,
     style: PropTypes.shape()
