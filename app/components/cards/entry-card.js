@@ -58,9 +58,8 @@ class EntryCard extends Component {
     };
 
     handleComments = () => {
-        const { entry, hidePanel, history, loggedAkashaId } = this.props;
-        hidePanel();
-        history.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
+        const { entry, history, loggedEthAddress } = this.props;
+        history.push(`/${loggedEthAddress}/${entry.get('entryId')}#comments-section`);
     };
 
     handleEdit = () => {
@@ -311,6 +310,7 @@ EntryCard.defaultProps = {
 };
 
 EntryCard.propTypes = {
+    author: PropTypes.shape().isRequired,
     blockNr: PropTypes.number,
     baseUrl: PropTypes.string,
     baseWidth: PropTypes.number,
@@ -320,10 +320,8 @@ EntryCard.propTypes = {
     existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
-    hidePanel: PropTypes.func,
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
-    author: PropTypes.shape().isRequired,
     containerRef: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,

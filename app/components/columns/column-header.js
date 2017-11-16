@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { AutoComplete } from 'material-ui';
-import { Icon, Modal, Popover } from 'antd';
+import { AutoComplete, Icon, Modal, Popover } from 'antd';
+import classNames from 'classnames';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
@@ -14,56 +14,62 @@ class ColumnHeader extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            isFocused: false,
-            isHovered: false,
+            editMode: false,
             popoverVisible: false,
             value: props.column.get('value')
         };
     }
 
+    getInputRef = (el) => { this.input = el; };
+
     onBlur = () => {
-        this.setState({
-            isFocused: false
-        });
-    };
-
-    onChange = (value) => {
-        if (this.props.onInputChange) {
-            this.props.onInputChange(value);
+        if (!this.selecting) {
+            this.onCancel();
         }
-        this.setState({
-            value
-        });
+        this.selecting = false;
     };
 
-    onFocus = () => {
-        this.setState({
-            isFocused: true
-        });
+    onCancel = () => {
+        const { column } = this.props;
+        this.setState({ editMode: false, value: column.get('value') });
     };
 
-    onMouseEnter = () => {
-        this.setState({
-            isHovered: true
-        });
+    onChange = (value) => { this.setState({ value }); };
+
+    onKeyDown = (ev) => {
+        const { dataSource } = this.props;
+        if (ev.key === 'Enter') {
+            if (!dataSource.size || !this.selecting) {
+                this.onSelect(this.state.value);
+            }
+            this.selecting = false;
+        }
     };
 
-    onMouseLeave = () => {
-        this.setState({
-            isHovered: false
-        });
-    };
-
-    onNewRequest = (value) => {
-        this.setState({
-            value
-        }, () => this.updateColumnValue());
-    };
+    onMouseDown = (ev) => { ev.preventDefault(); };
 
     onRefresh = () => {
         this.props.onRefresh();
         this.setState({ popoverVisible: false });
-    }
+    };
+
+    onSearch = (value) => {
+        const { onSearch } = this.props;
+        if (onSearch) {
+            onSearch(value);
+        }
+    };
+
+    onSelect = (value) => {
+        const { column } = this.props;
+        this.selecting = true;
+        if (value !== column.get('value')) {
+            this.props.dashboardUpdateColumn(column.get('id'), { value });
+        }
+        this.setState({
+            editMode: false
+        });
+    };
 
     onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
 
@@ -83,7 +89,13 @@ class ColumnHeader extends Component {
             onOk,
             onCancel: () => {}
         });
-    }
+    };
+
+    editColumn = (ev) => {
+        ev.preventDefault();
+        this.setState({ editMode: true, popoverVisible: false });
+        setTimeout(() => { this.input.focus(); }, 0);
+    };
 
     switchColumnWidth = () => {
         const { column } = this.props;
@@ -92,16 +104,8 @@ class ColumnHeader extends Component {
         this.props.dashboardUpdateColumn(column.get('id'), { large });
     };
 
-    updateColumnValue = () => {
-        const { column } = this.props;
-        const { value } = this.state;
-        if (value !== column.get('value')) {
-            this.props.dashboardUpdateColumn(column.get('id'), { value });
-        }
-    }
-
     renderContent = () => {
-        const { column, intl } = this.props;
+        const { column, intl, readOnly } = this.props;
         const message = column.get('large') ? dashboardMessages.small : dashboardMessages.large;
 
         return (
@@ -118,6 +122,14 @@ class ColumnHeader extends Component {
             >
               {intl.formatMessage(message)}
             </div>
+            {!readOnly &&
+              <div
+                className="flex-center-y popover-menu__item"
+                onClick={this.editColumn}
+              >
+                {intl.formatMessage(generalMessages.edit)}
+              </div>
+            }
             <div
               className="flex-center-y popover-menu__item"
               onClick={this.deleteColumn}
@@ -129,50 +141,66 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { icon, readOnly, title } = this.props;
-        const { isFocused, isHovered, value } = this.state;
+        const { column, dataSource, icon, readOnly, title } = this.props;
+        const { editMode, value } = this.state;
+        const titleClass = classNames('overflow-ellipsis column-header__title', {
+            'column-header__title_large': column.get('large')
+        });
 
         return (
-          <div
-            className="flex-center-y column-header"
-            onMouseEnter={this.onMouseEnter}
-            onMouseLeave={this.onMouseLeave}
-          >
+          <div className="flex-center-y column-header">
             {icon &&
-              <svg
-                viewBox="0 0 18 18"
-                style={{ flex: '0 0 auto', width: '18px', height: '18px', marginRight: '5px' }}
-              >
+              <svg className="column-header__icon" viewBox="0 0 18 18">
                 {icon}
               </svg>
             }
             <div className="column-header__title-wrapper">
-              {readOnly &&
-                <div className="column-header__title">{title}</div>
+              {(readOnly || !editMode) &&
+                <div
+                  className={titleClass}
+                  onDoubleClick={!readOnly && this.editColumn}
+                  onMouseDown={this.onMouseDown}
+                >
+                  {title || value}
+                </div>
               }
-              {!readOnly &&
+              {!readOnly && editMode &&
                 <AutoComplete
-                  id="value"
-                  dataSource={[]}
-                  searchText={value}
-                  onBlur={this.onBlur}
-                  onUpdateInput={this.onChange}
-                  onFocus={this.onFocus}
-                  onNewRequest={this.onNewRequest}
-                  openOnFocus
-                  underlineShow={isHovered || isFocused}
-                />
+                  className="column-header__auto-complete"
+                  dataSource={dataSource}
+                  onChange={this.onChange}
+                  onSearch={this.onSearch}
+                  onSelect={this.onSelect}
+                  size="large"
+                  value={value}
+                >
+                  <input
+                    className="column-header__input"
+                    onBlur={this.onBlur}
+                    onKeyDown={this.onKeyDown}
+                    ref={this.getInputRef}
+                  />
+                </AutoComplete>
               }
             </div>
-            <Popover
-              content={this.renderContent()}
-              onVisibleChange={this.onVisibleChange}
-              overlayClassName="popover-menu"
-              trigger="click"
-              visible={this.state.popoverVisible}
-            >
-              <Icon className="content-link column-header__menu-icon" type="menu-fold" />
-            </Popover>
+            {!editMode &&
+              <Popover
+                content={this.renderContent()}
+                onVisibleChange={this.onVisibleChange}
+                overlayClassName="popover-menu"
+                trigger="click"
+                visible={this.state.popoverVisible}
+              >
+                <Icon className="content-link column-header__menu-icon" type="menu-fold" />
+              </Popover>
+            }
+            {editMode &&
+              <Icon
+                className="content-link column-header__reset-icon"
+                onClick={this.onCancel}
+                type="close"
+              />
+            }
           </div>
         );
     }
@@ -182,10 +210,11 @@ ColumnHeader.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
+    dataSource: PropTypes.shape(),
     icon: PropTypes.element,
     intl: PropTypes.shape().isRequired,
-    onInputChange: PropTypes.func,
     onRefresh: PropTypes.func.isRequired,
+    onSearch: PropTypes.func,
     readOnly: PropTypes.bool,
     title: PropTypes.string,
 };

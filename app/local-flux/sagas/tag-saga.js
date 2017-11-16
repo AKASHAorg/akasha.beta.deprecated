@@ -19,6 +19,11 @@ function* tagCreate ({ data }) {
     });
 }
 
+function* tagExists ({ tagName }) {
+    const channel = Channel.server.tags.exists;
+    yield apply(channel, channel.send, [{ tagName }]);
+}
+
 function* tagGetEntriesCount ({ tags }) {
     const channel = Channel.server.entry.getTagEntriesCount;
     yield call(enableChannel, channel, Channel.client.entry.manager);
@@ -46,6 +51,18 @@ function* watchTagCreateChannel () {
         }
     }
 }
+
+function* watchTagExistsChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.tags.exists);
+        if (resp.error) {
+            yield put(actions.tagExistsError(resp.error, resp.request));
+        } else {
+            yield put(actions.tagExistsSuccess(resp.data));
+        }
+    }
+}
+
 function* watchTagGetEntriesCountChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getTagEntriesCount);
@@ -74,12 +91,14 @@ function* watchTagSearchChannel () {
 
 export function* registerTagListeners () {
     yield fork(watchTagCreateChannel);
+    yield fork(watchTagExistsChannel);
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagSearchChannel);
 }
 
 export function* watchTagActions () {
     yield takeEvery(types.TAG_CREATE, tagCreate);
+    yield takeEvery(types.TAG_EXISTS, tagExists);
     yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
     yield takeLatest(types.TAG_SEARCH, tagSearch);
 }

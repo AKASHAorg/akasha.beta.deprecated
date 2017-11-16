@@ -64,6 +64,15 @@ export const profileDeleteLoggedError = (error) => {
 };
 
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
+export const profileExists = akashaId => action(types.PROFILE_EXISTS, { akashaId });
+
+export const profileExistsError = (error, request) => {
+    error.code = 'PEE01';
+    error.messageId = 'profileExists';
+    return action(types.PROFILE_EXISTS_ERROR, { error, request });
+};
+
+export const profileExistsSuccess = data => action(types.PROFILE_EXISTS_SUCCESS, { data });
 export const profileFollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_FOLLOW, { actionId, ethAddress });
 
@@ -233,7 +242,6 @@ export const profileRegisterError = (error, req) => {
 
 export const profileRegisterSuccess = (data, req) =>
     action(types.PROFILE_REGISTER_SUCCESS, { data, req });
-
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
