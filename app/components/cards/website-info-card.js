@@ -68,13 +68,12 @@ const WebsiteInfoCard = (props) => {
             title={url}
             className="website-info-card__image-link"
           >
-            <img
-              alt="card-cover"
-              style={{
-                width: '100%'
-              }}
-              src={getImageSrc(image, baseUrl, baseWidth)}
-            />
+            <div className="website-info-card__card-cover-wrapper">
+              <img
+                alt="card-cover"
+                src={getImageSrc(image, baseUrl, baseWidth)}
+              />
+            </div>
           </a>
         }
         <div
