@@ -24,14 +24,14 @@ export const getProfileSchema = (intl, options) => {
             .min(2)
             .max(32)
             .regex(nameRegExp)
-            .label(intl.formatMessage(formMessages.firstName))
+            // .label(intl.formatMessage(formMessages.firstName))
             .options({
                 language: {
                     string: {
-                        min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        min: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                        max: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
                         regex: {
-                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                            base: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                         }
                     }
                 }
@@ -45,9 +45,9 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        max: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
                         regex: {
-                            base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                            base: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                         }
                     }
                 }
@@ -58,23 +58,8 @@ export const getProfileSchema = (intl, options) => {
         links: Joi
             .array()
             .items(
-                Joi.object().keys({
+                Joi.object({}).keys({
                     id: Joi.number(),
-                    title: Joi
-                        .string()
-                        .max(32)
-                        .trim()
-                        .label('Title')
-                        .options({
-                            language: {
-                                any: {
-                                    empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
-                                },
-                                string: {
-                                    max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`
-                                }
-                            }
-                        }),
                     url: Joi
                         .string()
                         .label('URL')
@@ -82,15 +67,16 @@ export const getProfileSchema = (intl, options) => {
                         .options({
                             language: {
                                 any: {
-                                    empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                                    empty: `!!URL ${intl.formatMessage(validationMessages.required)}`,
                                 },
                                 string: {
-                                    uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
+                                    uri: `!!URL ${intl.formatMessage(validationMessages.validAddress)}`
                                 }
                             }
                         })
                 })
-            ).label('Link').options({
+            )
+            .label('Link').options({
                 language: {
                     array: {
                         includesOne: '{{reason}}'
@@ -107,20 +93,20 @@ export const getProfileSchema = (intl, options) => {
                 .lowercase()
                 .min(2)
                 .max(32)
-                .label(intl.formatMessage(formMessages.akashaId))
+                // .label(intl.formatMessage(formMessages.akashaId))
                 .options({
                     language: {
                         any: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                            empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
+                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`,
+                            empty: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`
                         },
                         string: {
-                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                            min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                            max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                            lowercase: `{{key}} ${intl.formatMessage(validationMessages.lowercase)}`,
+                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`,
+                            min: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                            max: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                            lowercase: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.lowercase)}`,
                             regex: {
-                                base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                                base: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                             }
                         }
                     }

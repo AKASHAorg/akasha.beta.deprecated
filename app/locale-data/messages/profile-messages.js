@@ -14,12 +14,12 @@ export const profileMessages = defineMessages({
     avatarTitle: {
         id: 'app.profile.avatarTitle',
         description: 'Avatar section title',
-        defaultMessage: 'Avatar'
+        defaultMessage: 'PROFILE PICTURE'
     },
     backgroundImageTitle: {
         id: 'app.profile.backgroundImageTitle',
         description: 'Background image section title',
-        defaultMessage: 'Background image'
+        defaultMessage: 'COVER PHOTO'
     },
     aboutMeTitle: {
         id: 'app.profile.aboutMeTitle',

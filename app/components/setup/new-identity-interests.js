@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, Icon, Input, Tag } from 'antd';
+import { AutoComplete, Button, Icon, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { selectTagEntriesCount } from '../../local-flux/selectors';
-import { tagSearch } from '../../local-flux/actions/tag-actions';
+import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
+import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
 import { generalMessages, searchMessages, setupMessages } from '../../locale-data/messages';
@@ -28,6 +28,12 @@ class NewIdentityInterests extends Component {
         }
     }
 
+    componentDidMount () {
+        this.input.focus();
+    }
+
+    getInputRef = (el) => { this.input = el; };
+
     handleInputChange = (ev) => {
         this.setState({
             query: ev.target.value
@@ -36,11 +42,26 @@ class NewIdentityInterests extends Component {
 
     handleKeyDown = (ev) => {
         if (ev.key === 'Enter') {
-            this.handleSearch();
+            if (!this.selecting) {
+                this.handleSearch();
+            }
+            this.selecting = false;
         }
     }
 
-    handleSearch = () => this.props.tagSearch(this.state.query);
+    handleSearch = () => this.props.searchTags(this.state.query);
+
+    onChange = (val) => {
+        this.setState({ query: val });
+        this.props.searchTags(val);
+    }
+
+    onSelect = (val) => {
+        this.setState({ query: val });
+        this.props.searchTags(val);
+        this.selecting = true;
+    }
+
 
     handleSkipStep = () => {
         this.props.dashboardAddFirst();
@@ -79,15 +100,22 @@ class NewIdentityInterests extends Component {
                 </div>
               </div>
               <div className="new-identity-interests__right">
-                <Input
-                  autoFocus
-                  onChange={this.handleInputChange}
-                  onKeyDown={this.handleKeyDown}
-                  value={this.state.query}
+                <AutoComplete
+                  dataSource={tags}
+                  onChange={this.onChange}
+                  onSearch={this.handleSearch}
+                  onSelect={this.onSelect}
                   size="large"
-                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                  prefix={<Icon onClick={this.handleSearch} type="search" />}
-                />
+                  value={this.state.query}
+                >
+                  <Input
+                    ref={this.getInputRef}
+                    onKeyDown={this.handleKeyDown}
+                    size="large"
+                    placeholder={intl.formatMessage(searchMessages.searchSomething)}
+                    prefix={<Icon onClick={this.handleSearch} type="search" />}
+                  />
+                </AutoComplete>
                 <TagListInterests
                   contextId={SEARCH}
                   entriesCount={entriesCount}
@@ -127,7 +155,7 @@ NewIdentityInterests.propTypes = {
     profileInterests: PropTypes.shape().isRequired,
     profileToggleInterest: PropTypes.func.isRequired,
     tags: PropTypes.shape().isRequired,
-    tagSearch: PropTypes.func.isRequired,
+    searchTags: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -136,7 +164,7 @@ function mapStateToProps (state) {
         fetchingTags: state.tagState.getIn(['flags', 'searchPending']),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         profileInterests: state.profileState.get('interests'),
-        tags: state.tagState.get('searchResults')
+        tags: selectTagSearchResults(state)
     };
 }
 
@@ -145,6 +173,6 @@ export default connect(
     {
         dashboardAddFirst,
         profileToggleInterest,
-        tagSearch,
+        searchTags,
     }
 )(injectIntl(NewIdentityInterests));

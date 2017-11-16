@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { Icon } from 'antd';
+import throttle from 'lodash.throttle';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { setTempProfile, tempProfileGet,
     tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
@@ -12,6 +13,10 @@ import { profileMessages } from '../locale-data/messages';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 
 class ProfileEdit extends Component {
+    state = {
+        isScrolled: false
+    }
+
     componentWillMount () {
         this._createTempProfile(this.props);
     }
@@ -29,14 +34,42 @@ class ProfileEdit extends Component {
         this.props.tempProfileUpdate(updatedProfile);
     }
 
+    getFormContainerRef = (el) => {
+        this.formContainer = el;
+        if (!this.listenerRegistered && this.formContainer) {
+            this.listenerRegistered = true;
+            this.formContainer.addEventListener('scroll', this.throttledHandler);
+        }
+        if (!this.formContainer) {
+            this.listenerRegistered = false;
+        }
+    };
+
+    handleFormScroll = (ev) => {
+        const { isScrolled } = this.state;
+        if (ev.srcElement.scrollTop === 0 && isScrolled) {
+            this.setState({
+                isScrolled: false
+            });
+        } else if (ev.srcElement.scrollTop > 0 && !isScrolled) {
+            this.setState({
+                isScrolled: true
+            });
+        }
+    };
+
+    throttledHandler = throttle(this.handleFormScroll, 300);
+
     render () {
         const { intl, tempProfile, loggedProfileData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
+        const { isScrolled } = this.state;
+        const withBorder = isScrolled && 'profile-edit__title_with-border';
 
         return (
           <div className="profile-edit">
             <div className="profile-edit__wrapper">
-              <div className="profile-edit__title">
+              <div className={`profile-edit__title ${withBorder}`}>
                 {intl.formatMessage(profileMessages.editProfileTitle)}
                 <Icon
                   type="close"
@@ -48,6 +81,7 @@ class ProfileEdit extends Component {
                 actionAdd={this.props.actionAdd}
                 intl={intl}
                 isUpdate={isUpdate}
+                getFormContainerRef={this.getFormContainerRef}
                 tempProfile={tempProfile}
                 tempProfileCreate={this.props.tempProfileCreate}
                 onProfileUpdate={this._updateTempProfile}
