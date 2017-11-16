@@ -133,12 +133,13 @@ class EntryEditor extends Component {
     };
 
     render () {
-        const { editorPlaceholder, readOnly, editorState, className } = this.props;
+        const { editorPlaceholder, readOnly, editorState, className, style } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
           <div
             className={`text-entry-editor ${className}`}
             ref={(rootNode) => { this.rootNode = rootNode; }}
+            style={style}
           >
             <div
               className="text-entry-editor__editor-wrapper"
@@ -170,7 +171,7 @@ class EntryEditor extends Component {
               />
               <MentionSuggestions
                 ref={this.setSuggestionsRef}
-                editorState={editorState}
+                editorState={editrState}
                 onChange={this._handleEditorChange}
                 parentRef={this.container}
               />
@@ -205,6 +206,7 @@ EntryEditor.propTypes = {
     onChange: PropTypes.func,
     onError: PropTypes.func,
     baseUrl: PropTypes.string,
+    style: PropTypes.shape(),
 };
 
 export default EntryEditor;

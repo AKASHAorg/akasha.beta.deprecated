@@ -6,8 +6,8 @@ import { selectBalance, selectLoggedProfileData } from '../../local-flux/selecto
 import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
 
 const NewEntryTopBar = props => (
-  <div style={{ display: 'flex', height: '32px', fontSize: '16px' }}>
-    <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>
+  <div className="new-entry-top-bar">
+    <div className="new-entry-top-bar__inner">
       <Button
         icon={props.showSecondarySidebar ? 'double-left' : 'double-right'}
         onClick={props.secondarySidebarToggle}

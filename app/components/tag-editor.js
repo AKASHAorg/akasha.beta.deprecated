@@ -351,7 +351,10 @@ class TagEditor extends Component {
                 value={this.state.partialTag}
                 onFocus={this._changeInputFocus(true)}
                 onBlur={this._changeInputFocus(false)}
-                disabled={!tags.every(tag => existentTags.includes(tag))}
+                disabled={
+                    !tags.every(tag => existentTags.includes(tag)) ||
+                    (tags.size >= 10)
+                }
               />
             </Popover>
           </div>

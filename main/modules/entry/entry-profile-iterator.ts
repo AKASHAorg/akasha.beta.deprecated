@@ -27,6 +27,9 @@ const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: nu
 
     const address = yield profileAddress(data);
     const maxResults = data.limit || 5;
+    if (!address) {
+        return { collection: [], lastBlock: 0 };
+    }
     return fetchFromPublish(Object.assign({}, data, { limit: maxResults, args: { author: address }, reversed: data.reversed || false }));
 });
 
