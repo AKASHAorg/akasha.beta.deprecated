@@ -18,24 +18,26 @@ const entryIterator = (state, { columnId, value }) => {
     return state.mergeIn(['columnById', columnId, 'flags'], { fetchingEntries: true });
 };
 
-const entryIteratorError = (state, { req }) => {
-    if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
+const entryIteratorError = (state, { request }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
-    return state.mergeIn(['columnById', req.columnId, 'flags'], { fetchingEntries: false });
+    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingEntries: false });
 };
 
-const entryIteratorSuccess = (state, { data, req }) => {
-    if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
+const entryIteratorSuccess = (state, { data, type, request }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
     const entryIds = data.collection.map(entry => entry.entryId);
-
-    return state.mergeIn(['columnById', req.columnId], {
+    const moreEntries = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
+        request.limit === data.collection.length :
+        !!data.lastBlock;
+    return state.mergeIn(['columnById', request.columnId], {
         entries: new List(entryIds),
-        flags: state.getIn(['columnById', req.columnId, 'flags']).merge({
+        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingEntries: false,
-            moreEntries: !!data.lastBlock
+            moreEntries
         }),
         lastBlock: data.lastBlock,
         lastIndex: data.lastIndex
@@ -49,24 +51,27 @@ const entryMoreIterator = (state, { columnId }) => {
     return state.mergeIn(['columnById', columnId, 'flags'], { fetchingMoreEntries: true });
 };
 
-const entryMoreIteratorError = (state, { req }) => {
-    if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
+const entryMoreIteratorError = (state, { request }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
-    return state.mergeIn(['columnById', req.columnId, 'flags'], { fetchingMoreEntries: false });
+    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingMoreEntries: false });
 };
 
-const entryMoreIteratorSuccess = (state, { data, req }) => {
-    if (!req.columnId || !state.getIn(['columnById', req.columnId])) {
+const entryMoreIteratorSuccess = (state, { data, request, type }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
     const newIds = data.collection.map(entry => entry.entryId);
+    const moreEntries = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
+        request.limit === data.collection.length :
+        !!data.lastBlock;
 
-    return state.mergeIn(['columnById', req.columnId], {
-        entries: state.getIn(['columnById', req.columnId, 'entries']).push(...newIds),
-        flags: state.getIn(['columnById', req.columnId, 'flags']).merge({
+    return state.mergeIn(['columnById', request.columnId], {
+        entries: state.getIn(['columnById', request.columnId, 'entries']).push(...newIds),
+        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingMoreEntries: false,
-            moreEntries: !!data.lastBlock
+            moreEntries
         }),
         lastBlock: data.lastBlock || null,
         lastIndex: data.lastIndex
@@ -192,6 +197,14 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_UPDATE_NEW_COLUMN]: (state, { changes }) =>
         state.mergeIn(['newColumn'], changes || NewColumnRecord()),
+
+    [types.ENTRY_LIST_ITERATOR]: entryIterator,
+
+    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorSuccess,
+
+    [types.ENTRY_MORE_LIST_ITERATOR]: entryMoreIterator,
+
+    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
     [types.ENTRY_MORE_NEWEST_ITERATOR]: entryMoreIterator,
 

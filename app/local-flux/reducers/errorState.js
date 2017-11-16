@@ -44,7 +44,6 @@ const errorState = createReducer(initialState, {
     [types.ENTRY_CLAIM_VOTE_ERROR]: addNewError,
     [types.ENTRY_DOWNVOTE_ERROR]: addNewError,
     [types.ENTRY_GET_FULL_ERROR]: addNewError,
-    [types.ENTRY_LIST_ITERATOR_ERROR]: addNewError,
     [types.ENTRY_UPVOTE_ERROR]: addNewError,
     [types.ERROR_DELETE_FATAL]: (state, { id }) => {
         const index = state.get('fatalErrors').findIndex(err => err.id === id);

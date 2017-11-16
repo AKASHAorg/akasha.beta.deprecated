@@ -2,13 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { AutoComplete, Icon, Modal, Popover } from 'antd';
+import { AutoComplete, Icon, Modal, Popover, Select } from 'antd';
 import classNames from 'classnames';
+import * as columnTypes from '../../constants/columns';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 
 const { confirm } = Modal;
+const { Option } = Select;
 
 class ColumnHeader extends Component {
     constructor (props) {
@@ -94,7 +96,11 @@ class ColumnHeader extends Component {
     editColumn = (ev) => {
         ev.preventDefault();
         this.setState({ editMode: true, popoverVisible: false });
-        setTimeout(() => { this.input.focus(); }, 0);
+        setTimeout(() => {
+            if (this.input) {
+                this.input.focus();
+            }
+        }, 0);
     };
 
     switchColumnWidth = () => {
@@ -102,6 +108,47 @@ class ColumnHeader extends Component {
         this.setState({ popoverVisible: false });
         const large = !column.get('large');
         this.props.dashboardUpdateColumn(column.get('id'), { large });
+    };
+
+    renderEditMode = () => {
+        const { column, dataSource, intl } = this.props;
+        const { value } = this.state;
+        if (column.get('type') === columnTypes.list) {
+            return (
+              <Select
+                className="column-header__select"
+                filterOption
+                notFoundContent={intl.formatMessage(generalMessages.notFound)}
+                onChange={this.onChange}
+                onSelect={this.onSelect}
+                showSearch
+                size="large"
+                value={value}
+              >
+                {dataSource.map(option => (
+                  <Option key={option} value={option}>{option}</Option>
+                ))}
+              </Select>
+            );
+        }
+        return (
+          <AutoComplete
+            className="column-header__auto-complete"
+            dataSource={dataSource}
+            onChange={this.onChange}
+            onSearch={this.onSearch}
+            onSelect={this.onSelect}
+            size="large"
+            value={value}
+          >
+            <input
+              className="column-header__input"
+              onBlur={this.onBlur}
+              onKeyDown={this.onKeyDown}
+              ref={this.getInputRef}
+            />
+          </AutoComplete>
+        );
     };
 
     renderContent = () => {
@@ -141,7 +188,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { column, dataSource, icon, readOnly, title } = this.props;
+        const { column, icon, readOnly, title } = this.props;
         const { editMode, value } = this.state;
         const titleClass = classNames('overflow-ellipsis column-header__title', {
             'column-header__title_large': column.get('large')
@@ -164,24 +211,7 @@ class ColumnHeader extends Component {
                   {title || value}
                 </div>
               }
-              {!readOnly && editMode &&
-                <AutoComplete
-                  className="column-header__auto-complete"
-                  dataSource={dataSource}
-                  onChange={this.onChange}
-                  onSearch={this.onSearch}
-                  onSelect={this.onSelect}
-                  size="large"
-                  value={value}
-                >
-                  <input
-                    className="column-header__input"
-                    onBlur={this.onBlur}
-                    onKeyDown={this.onKeyDown}
-                    ref={this.getInputRef}
-                  />
-                </AutoComplete>
-              }
+              {!readOnly && editMode && this.renderEditMode()}
             </div>
             {!editMode &&
               <Popover
