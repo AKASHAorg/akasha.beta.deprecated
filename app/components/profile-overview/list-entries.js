@@ -10,7 +10,7 @@ import { EntryList } from '../';
 class ListEntries extends Component {
     componentDidMount () {
         const { list } = this.props;
-        this.props.entryListIterator(list.get('name'));
+        this.props.entryListIterator({ value: list.get('name') });
     }
 
     render () {
@@ -48,7 +48,7 @@ class ListEntries extends Component {
                   <EntryList
                     contextId={list.get('name')}
                     entries={entries}
-                    fetchMoreEntries={() => this.props.entryListIterator(list.get('name'))}
+                    fetchMoreEntries={() => this.props.entryListIterator({ value: list.get('name') })}
                     masonry
                     moreEntries={list.get('moreEntries')}
                     style={{ padding: '0px 50px' }}

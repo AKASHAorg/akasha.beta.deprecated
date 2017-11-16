@@ -23,9 +23,6 @@ const createEntryRecord = entry =>
 const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
-const createEntryWithAuthorFromImmutable = entry =>
-    new EntryRecord(entry).set('author', new EntryAuthor(entry.get('author')));
-
 const entryIteratorHandler = (state, { data }) => {
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
@@ -37,18 +34,6 @@ const entryIteratorHandler = (state, { data }) => {
     return state.set('byId', byId);
 };
 
-const entryHandler = (state, { data }) => {
-    let byId = state.get('byId');
-    const entryData = data.data;
-    if (!state.getIn(['byId', data.entryId]) && !!data.data) {
-        entryData.author = { ethAddress: data.ethAddress };
-        entryData.entryId = data.entryId;
-        entryData.entryType = data.entryType;
-        const newEntry = createEntryWithAuthorFromImmutable(fromJS(entryData));
-        byId = byId.set(data.entryId, newEntry);
-    }
-    return state.set('byId', byId);
-};
     // state.withMutations((mState) => {
     //     const moreEntries = data.limit === data.collection.length;
     //     data.collection.forEach((entry, index) => {
@@ -212,7 +197,9 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryHandler,
+    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
@@ -237,14 +224,14 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
     },
 
-    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { error, req }) =>
-        state.setIn(['flags', 'resolvingIpfsHash', req.columnId, error.ipfsHash], false),
+    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { error, request }) =>
+        state.setIn(['flags', 'resolvingIpfsHash', request.columnId, error.ipfsHash], false),
 
-    [types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, req }) => {
-        const index = req.ipfsHash.indexOf(data.ipfsHash);
-        const entryId = req.entryIds[index];
+    [types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
+        const index = request.ipfsHash.indexOf(data.ipfsHash);
+        const entryId = request.entryIds[index];
         return state.merge({
-            flags: state.get('flags').setIn(['resolvingIpfsHash', req.columnId, data.ipfsHash], false),
+            flags: state.get('flags').setIn(['resolvingIpfsHash', request.columnId, data.ipfsHash], false),
             byId: state.get('byId').setIn([entryId, 'content'], new EntryContent(data.entry))
         });
     },

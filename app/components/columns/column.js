@@ -1,22 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as columnTypes from '../../constants/columns';
-import { LatestColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
+import { LatestColumn, ListColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
 
 const Column = ({ column, baseWidth }) => {
     let component;
+    const props = { column, baseWidth };
     switch (column.get('type')) {
         case columnTypes.latest:
-            component = <LatestColumn column={column} baseWidth={baseWidth} />;
+            component = <LatestColumn {...props} />;
+            break;
+        case columnTypes.list:
+            component = <ListColumn {...props} />;
             break;
         case columnTypes.tag:
-            component = <TagColumn column={column} baseWidth={baseWidth} />;
+            component = <TagColumn {...props} />;
             break;
         case columnTypes.stream:
-            component = <StreamColumn column={column} baseWidth={baseWidth} />;
+            component = <StreamColumn {...props} />;
             break;
         case columnTypes.profile:
-            component = <ProfileColumn column={column} baseWidth={baseWidth} />;
+            component = <ProfileColumn {...props} />;
             break;
         default:
             break;
@@ -29,6 +33,7 @@ const Column = ({ column, baseWidth }) => {
 };
 
 Column.propTypes = {
+    baseWidth: PropTypes.number,
     column: PropTypes.shape()
 };
 

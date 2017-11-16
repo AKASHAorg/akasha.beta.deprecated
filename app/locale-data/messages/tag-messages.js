@@ -29,12 +29,17 @@ const tagMessages = defineMessages({
     notEnoughKarma: {
         id: 'app.tag.notEnoughKarma',
         description: 'message to display when user does not have enough karma to do action',
-        defaultMessage: 'Sorry! You don`t have enough karma to create tags.'
+        defaultMessage: 'Sorry! You don\'t have enough karma to create tags.'
     },
     subscribe: {
         id: 'app.tag.subscribe',
         description: 'label for subscribe button',
         defaultMessage: 'Subscribe'
+    },
+    tagDoesntExist: {
+        id: 'app.tag.tagDoesntExist',
+        description: 'placeholder message for entry list when tag does not exist',
+        defaultMessage: 'This tag doesn\'t exist'
     },
     tagNotCreated: {
         id: 'app.tag.tagNotCreated',

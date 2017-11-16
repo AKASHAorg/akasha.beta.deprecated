@@ -19,7 +19,7 @@ export const addColumn = ({ dashboardId, type, value }) =>
                 dashboard.columns = dashboard.columns || [];
                 dashboard.columns.push(column);
                 dashboardDB.dashboards.put(dashboard)
-                    .then(() => resolve({ dashboardName: dashboard.name, column }));
+                    .then(() => resolve({ dashboardId, column }));
             })
             .catch(err => reject(err));
     });
@@ -29,19 +29,41 @@ export const addDashboard = payload =>
         const timestamp = new Date().getTime();
         payload.timestamp = timestamp;
         payload.id = `${timestamp}-${payload.ethAddress}`;
-        const { ethAddress, name } = payload;
+        const { ethAddress } = payload;
+        let { name } = payload;
         if (payload.columns && payload.columns.length) {
             payload.columns = payload.columns.map((col) => {
                 const id = genId();
                 return { id, timestamp, ...col };
             });
         }
-        dashboardDB.dashboards.put(payload)
-            .then(() =>
-                dashboardDB.activeDashboard.put({ ethAddress, name })
-                    .then(() => resolve(payload))
-            )
-            .catch(err => reject(err));
+        dashboardDB.dashboards
+            .where('name')
+            .startsWith(name)
+            .filter(dashboard => dashboard.ethAddress === ethAddress)
+            .toArray()
+            .then((data) => {
+                /*
+                  Check if there is already a dashboard with this name;
+                  If there is, append a suffix like "(x)", where x is the smallest
+                  integer bigger than 1 that wasn't already used;
+                */
+                const names = data.map(x => x.name);
+                if (names.length && names.includes(name)) {
+                    let i = 2;
+                    while (names.includes(`${name}(${i})`)) {
+                        i++;
+                    }
+                    name = `${name}(${i})`;
+                    payload.name = name;
+                }
+                dashboardDB.dashboards.put(payload)
+                    .then(() =>
+                        dashboardDB.activeDashboard.put({ ethAddress, id: payload.id })
+                            .then(() => resolve(payload))
+                    )
+                    .catch(err => reject(err));
+            });
     });
 
 export const deleteColumn = ({ dashboardId, columnId }) =>
@@ -87,6 +109,45 @@ export const getAll = ethAddress =>
             .equals(ethAddress)
             .toArray()
             .then(resolve)
+            .catch(reject);
+    });
+
+export const renameDashboard = ({ dashboardId, ethAddress, newName }) =>
+    new Promise((resolve, reject) => {
+        dashboardDB.dashboards
+            .where('name')
+            .startsWith(newName)
+            .filter(dashboard => dashboard.ethAddress === ethAddress)
+            .toArray()
+            .then((data) => {
+                /*
+                Check if there is already a dashboard with this name;
+                If there is, append a suffix like "(x)", where x is the smallest
+                integer bigger than 1 that wasn't already used;
+                */
+                const names = data.map(x => x.name);
+                if (names.length && names.includes(newName)) {
+                    let i = 2;
+                    while (names.includes(`${newName}(${i})`)) {
+                        i++;
+                    }
+                    newName = `${newName}(${i})`;
+                }
+                dashboardDB.dashboards
+                    .where('id')
+                    .equals(dashboardId)
+                    .first()
+                    .then((dashboard) => {
+                        if (!dashboard) {
+                            reject({ message: 'Cannot find dashboard' });
+                            return;
+                        }
+                        dashboard.name = newName;
+                        dashboardDB.dashboards
+                            .put(dashboard)
+                            .then(() => resolve({ dashboardId, newName }));
+                    });
+            })
             .catch(reject);
     });
 

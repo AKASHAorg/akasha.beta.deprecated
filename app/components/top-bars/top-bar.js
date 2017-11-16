@@ -34,7 +34,7 @@ class TopBar extends PureComponent {
             <div className="top-bar__left-side">
               <Route
                 component={DashboardTopBar}
-                path="/dashboard/:dashboardName?"
+                path="/dashboard/:dashboardId?"
               />
               <Route
                 path="/draft/:type/:draftId"

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
 import { ColumnStream } from '../svg';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
@@ -25,10 +26,11 @@ class StreamColumn extends Component {
     onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
 
     render () {
-        const { column, entries, intl } = this.props;
+        const { baseWidth, column, entries, intl } = this.props;
+        const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div className={className}>
             <ColumnHeader
               column={column}
               icon={<ColumnStream />}
@@ -37,7 +39,8 @@ class StreamColumn extends Component {
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />
             <EntryList
-              cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
+              baseWidth={baseWidth}
+              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
@@ -52,6 +55,7 @@ class StreamColumn extends Component {
 }
 
 StreamColumn.propTypes = {
+    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreStreamIterator: PropTypes.func.isRequired,

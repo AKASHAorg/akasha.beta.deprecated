@@ -1,8 +1,8 @@
 import { List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { AethBalance, Balance, ErrorRecord, EssenceBalance, LoggedProfile, ManaBalance, ProfileRecord,
-    ProfileState } from './records';
+import { AethBalance, Balance, ErrorRecord, EssenceBalance, LoggedProfile, ManaBalance, ProfileExistsRecord,
+    ProfileRecord, ProfileState } from './records';
 import { balanceToNumber } from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
@@ -63,6 +63,9 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
+
+    [types.PROFILE_EXISTS_SUCCESS]: (state, { data }) =>
+        state.setIn(['exists', data.akashaId], new ProfileExistsRecord(data)),
 
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const { ethAddress } = data;
@@ -304,14 +307,14 @@ const profileState = createReducer(initialState, {
         return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
     },
 
-    [types.PROFILE_RESOLVE_IPFS_HASH_ERROR]: (state, { error, req }) =>
-        state.setIn(['flags', 'resolvingIpfsHash', req.columnId, error.ipfsHash], false),
+    [types.PROFILE_RESOLVE_IPFS_HASH_ERROR]: (state, { error, request }) =>
+        state.setIn(['flags', 'resolvingIpfsHash', request.columnId, error.ipfsHash], false),
 
-    [types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, req }) => {
-        const index = req.ipfsHash.indexOf(data.ipfsHash);
-        const akashaId = req.akashaIds[index];
+    [types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
+        const index = request.ipfsHash.indexOf(data.ipfsHash);
+        const akashaId = request.akashaIds[index];
         return state.merge({
-            flags: state.get('flags').setIn(['resolvingIpfsHash', req.columnId, data.ipfsHash], false),
+            flags: state.get('flags').setIn(['resolvingIpfsHash', request.columnId, data.ipfsHash], false),
             byId: state.get('byId').mergeIn([akashaId], data.profile)
         });
     },

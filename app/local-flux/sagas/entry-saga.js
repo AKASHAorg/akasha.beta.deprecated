@@ -6,15 +6,18 @@ import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
+import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntryType,
-    selectIsFollower, selectListNextEntries, selectLoggedEthAddress, selectToken } from '../selectors';
+import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntries,
+    selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress, 
+    selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
+import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 10;
 const ENTRY_ITERATOR_LIMIT = 5;
-const ENTRY_LIST_ITERATOR_LIMIT = 10;
+const ENTRY_LIST_ITERATOR_LIMIT = 3;
 
 function* enableExtraChannels () {
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
@@ -195,15 +198,16 @@ function* entryGetVoteOf ({ entryIds }) {
     yield apply(channel, channel.send, [request]);
 }
 
-function* entryListIterator ({ name }) {
-    const channel = Channel.server.entry.getEntryList;
-    const entryIds = yield select(state => selectListNextEntries(state, name, ENTRY_LIST_ITERATOR_LIMIT));
-    // add list name field to first item of request to update list state
-    if (entryIds.length) {
-        entryIds[0].listName = name;
-        yield call(enableChannel, channel, Channel.client.entry.manager);
-        yield apply(channel, channel.send, [entryIds]);
-    }
+function* entryListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+    const collection = yield select(state => selectListEntries(state, value, limit));
+    yield put(actions.entryListIteratorSuccess({ collection }, { columnId, value, limit }));
+    yield fork(entryGetExtraOfList, collection, columnId);
+}
+
+function* entryMoreListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+    const collection = yield select(state => selectListNextEntries(state, value, limit));
+    yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId, value, limit }));
+    yield fork(entryGetExtraOfList, collection, columnId);
 }
 
 function* entryMoreNewestIterator ({ columnId }) {
@@ -265,6 +269,9 @@ function* entryNewestIterator ({ columnId }) {
 }
 
 function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
+    if (value && !isEthAddress(value)) {
+        yield put(profileActions.profileExists(value));
+    }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
@@ -286,6 +293,7 @@ function* entryStreamIterator ({ columnId }) {
 }
 
 function* entryTagIterator ({ columnId, value }) {
+    yield put(tagActions.tagExists(value));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = yield select(selectBlockNumber);
@@ -642,6 +650,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);
     yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
     yield takeEvery(types.ENTRY_LIST_ITERATOR, entryListIterator);
+    yield takeEvery(types.ENTRY_MORE_LIST_ITERATOR, entryMoreListIterator);
     yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
     yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
     yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);

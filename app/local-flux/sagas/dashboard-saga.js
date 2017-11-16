@@ -1,11 +1,10 @@
-import { delay } from 'redux-saga';
-import { apply, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as profileService from '../services/profile-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
-import { selectActiveDashboardId, selectDashboardId,
+import { selectActiveDashboardId, selectDashboards,
     selectLoggedEthAddress } from '../selectors';
 
 function* dashboardAdd ({ name, columns = [] }) {
@@ -44,11 +43,11 @@ function* dashboardAddFirst ({ interests }) {
     yield put(actions.dashboardAddFirstSuccess());
 }
 
-function* dashboardDelete ({ name }) {
+function* dashboardDelete ({ id }) {
     try {
-        const id = yield select(state => selectDashboardId(state, name));
         yield apply(dashboardService, dashboardService.deleteDashboard, [id]);
-        yield put(actions.dashboardDeleteSuccess({ name }));
+        yield fork(dashboardSetNextActive, id); // eslint-disable-line
+        yield put(actions.dashboardDeleteSuccess({ id }));
     } catch (error) {
         yield put(actions.dashboardDeleteError(error));
     }
@@ -72,7 +71,7 @@ export function* dashboardGetActive () {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
         const data = yield apply(dashboardService, dashboardService.getActive, [ethAddress]);
-        yield put(actions.dashboardGetActiveSuccess(data && data.name));
+        yield put(actions.dashboardGetActiveSuccess(data && data.id));
     } catch (error) {
         yield put(actions.dashboardGetActiveError(error));
     }
@@ -100,13 +99,42 @@ export function* dashboardGetProfileSuggestions (request) {
     }
 }
 
-function* dashboardSetActive ({ name }) {
+function* dashboardRename ({ dashboardId, newName }) {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
-        yield apply(dashboardService, dashboardService.setActive, [{ ethAddress, name }]);
-        yield put(actions.dashboardSetActiveSuccess(name));
+        const data = yield apply(
+            dashboardService,
+            dashboardService.renameDashboard,
+            [{ dashboardId, ethAddress, newName }]
+        );
+        yield put(actions.dashboardRenameSuccess(data));
+    } catch (error) {
+        yield put(actions.dashboardRenameError(error));
+    }
+}
+
+function* dashboardSetActive ({ id }) {
+    try {
+        const ethAddress = yield select(selectLoggedEthAddress);
+        yield apply(dashboardService, dashboardService.setActive, [{ ethAddress, id }]);
+        yield put(actions.dashboardSetActiveSuccess(id));
     } catch (error) {
         yield put(actions.dashboardSetActiveError(error));
+    }
+}
+
+function* dashboardSetNextActive (id) {
+    const activeDashboard = yield select(state => state.dashboardState.get('activeDashboard'));
+    if (activeDashboard === id) {
+        const dashboards = (yield select(selectDashboards)).toList();
+        const index = dashboards.findIndex(dashboard => dashboard.get('id') === id);
+        let newActiveDashboard;
+        if (index === dashboards.size - 1) {
+            newActiveDashboard = dashboards.getIn([index - 1, 'id']);
+        } else {
+            newActiveDashboard = dashboards.getIn([index + 1, 'id']);
+        }
+        yield put(actions.dashboardSetActive(newActiveDashboard));
     }
 }
 
@@ -145,6 +173,7 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_DELETE, dashboardDelete);
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
     yield takeLatest(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, dashboardGetProfileSuggestions);
+    yield takeEvery(types.DASHBOARD_RENAME, dashboardRename);
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);

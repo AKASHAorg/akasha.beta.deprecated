@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Icon, Input } from 'antd';
-import { dashboardMessages, entryMessages } from '../../locale-data/messages';
+import { entryMessages } from '../../locale-data/messages';
 import { EntryList } from '../';
 
 class NewSearchColumn extends Component {
