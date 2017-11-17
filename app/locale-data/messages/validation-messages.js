@@ -36,7 +36,7 @@ const validationMessages = defineMessages({
     akashaIdExists: {
         id: 'app.validator.akashaIdExists',
         description: 'When the akashaId chosen already registered',
-        defaultMessage: 'akashaId already registered!'
+        defaultMessage: 'Akasha Id already registered!'
     },
     akashaIdNotValid: {
         id: 'app.validator.akashaIdNotValid',

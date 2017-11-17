@@ -14,9 +14,6 @@ import { uploadImage } from '../../local-flux/services/utils-service';
 
 const FormItem = Form.Item;
 
-const serverChannel = window.Channel.server.registry.profileExists;
-const clientChannel = window.Channel.client.registry.profileExists;
-
 class ProfileEditForm extends Component {
     constructor (props) {
         super(props);
@@ -28,18 +25,26 @@ class ProfileEditForm extends Component {
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
+
     getValidatorData = () => this.props.tempProfile.toJS();
+
     componentWillReceiveProps (nextProps) {
-        const { isUpdate, tempProfile } = nextProps;
+        const { isUpdate, tempProfile, profileExistsData } = nextProps;
         // we need to enable update temp profile button only if something has changed
         // so we need to keep a ref to old temp profile.
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
         }
-    }
-
-    componentWillUnmount () {
-        clientChannel.removeListener(this._handleResponse);
+        if (profileExistsData !== this.props.profileExistsData) {
+            const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
+            this.setState({
+                akashaIdIsValid: idValid,
+                akashaIdExists: exists
+            });
+            if (tempProfile.get('akashaId') !== normalisedId) {
+                this.setState({ akashaIdIsValid: false });
+            }
+        }
     }
 
     getContainerRef = (el) => {
@@ -110,38 +115,6 @@ class ProfileEditForm extends Component {
         };
     }
 
-    _handleResponse = (ev, resp) => {
-        const { tempProfile, onProfileUpdate } = this.props;
-        const { idValid, exists, normalisedId } = resp.data;
-        if (resp.error && resp.error.message) {
-            this.setState({
-                error: `${resp.error.message}`
-            });
-            return;
-        }
-        this.setState({
-            akashaIdIsValid: idValid,
-            akashaIdExists: exists,
-            error: ''
-        });
-        if (normalisedId) {
-            onProfileUpdate(tempProfile.set('akashaId', normalisedId));
-        }
-    }
-
-    _validateAkashaId = (akashaId) => {
-        if (!this.idVerifyChannelEnabled) {
-            serverChannel.enable();
-            this.idVerifyChannelEnabled = true;
-        }
-        // one listener is auto attached on application start
-        // we need to attach another one with the provided handler
-        if (clientChannel.listenerCount <= 1) {
-            clientChannel.on(this._handleResponse);
-        }
-        serverChannel.send({ akashaId });
-    }
-
     _onValidate = field => (err) => {
         if (err) {
             this.setState({
@@ -154,7 +127,7 @@ class ProfileEditForm extends Component {
         }
         // validation passed
         if (field === 'akashaId') {
-            this._validateAkashaId(this.props.tempProfile.get('akashaId'));
+            this.props.profileExists(this.props.tempProfile.get('akashaId'));
         }
     }
 
@@ -183,19 +156,18 @@ class ProfileEditForm extends Component {
     }
     // server validated akashaId errors must have higher priority
     _getAkashaIdErrors = () => {
-        const { intl } = this.props;
-        const { akashaIdIsValid, akashaIdExists, error } = this.state;
-        if (error) {
-            return error;
-        }
-        if (!akashaIdIsValid) {
-            return intl.formatMessage(validationMessages.akashaIdNotValid);
-        }
-        if (akashaIdExists) {
-            return intl.formatMessage(validationMessages.akashaIdExists);
-        }
-        if (this._getErrorMessages('akashaId')) {
-            return this._getErrorMessages('akashaId');
+        const { intl, tempProfile, profileExistsData } = this.props;
+        const { akashaIdIsValid, akashaIdExists } = this.state;
+        if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
+            if (!akashaIdIsValid) {
+                return intl.formatMessage(validationMessages.akashaIdNotValid);
+            }
+            if (akashaIdExists) {
+                return intl.formatMessage(validationMessages.akashaIdExists);
+            }
+            if (this._getErrorMessages('akashaId')) {
+                return this._getErrorMessages('akashaId');
+            }
         }
         return null;
     }
@@ -473,6 +445,8 @@ ProfileEditForm.propTypes = {
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
+    profileExists: PropTypes.func,
+    profileExistsData: PropTypes.shape(),
     style: PropTypes.shape(),
     tempProfile: PropTypes.shape(),
     tempProfileCreate: PropTypes.func,

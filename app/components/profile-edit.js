@@ -5,6 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Icon } from 'antd';
 import throttle from 'lodash.throttle';
 import { actionAdd } from '../local-flux/actions/action-actions';
+import { profileExists } from '../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet,
     tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
@@ -61,7 +62,7 @@ class ProfileEdit extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { intl, tempProfile, loggedProfileData } = this.props;
+        const { intl, tempProfile, loggedProfileData, profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withBorder = isScrolled && 'profile-edit__title_with-border';
@@ -82,6 +83,8 @@ class ProfileEdit extends Component {
                 intl={intl}
                 isUpdate={isUpdate}
                 getFormContainerRef={this.getFormContainerRef}
+                profileExists={this.props.profileExists}
+                profileExistsData={profileExistsData}
                 tempProfile={tempProfile}
                 tempProfileCreate={this.props.tempProfileCreate}
                 onProfileUpdate={this._updateTempProfile}
@@ -102,6 +105,8 @@ ProfileEdit.propTypes = {
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     profileEditToggle: PropTypes.func,
+    profileExists: PropTypes.func,
+    profileExistsData: PropTypes.shape(),
     setTempProfile: PropTypes.func,
     showTerms: PropTypes.func,
     tempProfile: PropTypes.shape(),
@@ -114,6 +119,7 @@ const mapStateToProps = state => ({
     ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),
+    profileExistsData: state.profileState.get('exists'),
     tempProfile: state.tempProfileState.get('tempProfile')
 });
 
@@ -123,6 +129,7 @@ export default connect(
     {
         actionAdd,
         profileEditToggle,
+        profileExists,
         setTempProfile,
         showTerms,
         tempProfileUpdate,

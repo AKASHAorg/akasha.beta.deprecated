@@ -4,6 +4,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import { actionAdd } from '../../local-flux/actions/action-actions';
+import { profileExists } from '../../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet,
     tempProfileUpdate, tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/profile-complete-form';
@@ -39,7 +40,6 @@ class ProfileComplete extends Component {
             this.formContainer.addEventListener('scroll', this.throttledHandler);
         }
         if (!this.formContainer) {
-            console.log('no form container');
             this.listenerRegistered = false;
         }
     };
@@ -61,7 +61,8 @@ class ProfileComplete extends Component {
 
 
     render () {
-        const { intl, history, tempProfile, loggedProfileData, loggedEthAddress } = this.props;
+        const { intl, history, tempProfile, loggedProfileData,
+            loggedEthAddress, profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withShadow = isScrolled && 'profile-complete__header_with-shadow';
@@ -87,6 +88,8 @@ class ProfileComplete extends Component {
                   isUpdate={isUpdate}
                   getFormContainerRef={this.getFormContainerRef}
                   loggedEthAddress={loggedEthAddress}
+                  profileExists={this.props.profileExists}
+                  profileExistsData={profileExistsData}
                   tempProfile={tempProfile}
                   tempProfileCreate={this.props.tempProfileCreate}
                   onProfileUpdate={this._updateTempProfile}
@@ -107,6 +110,8 @@ ProfileComplete.propTypes = {
     history: PropTypes.shape().isRequired,
     loggedProfileData: PropTypes.shape(),
     loggedEthAddress: PropTypes.string,
+    profileExists: PropTypes.func,
+    profileExistsData: PropTypes.shape(),
     setTempProfile: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,
@@ -122,6 +127,7 @@ function mapStateToProps (state) {
         loggedEthAddress: selectLoggedEthAddress(state),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         loggedProfileData: selectLoggedProfileData(state),
+        profileExistsData: state.profileState.get('exists'),
         tempProfile: state.tempProfileState.get('tempProfile')
     };
 }
@@ -130,6 +136,7 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
+        profileExists,
         setTempProfile,
         tempProfileUpdate,
         tempProfileCreate,
