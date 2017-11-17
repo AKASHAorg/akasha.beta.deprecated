@@ -167,10 +167,10 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
         state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data)),
 
-    [types.PROFILE_GET_LIST]: (state, { akashaIds }) => {
+    [types.PROFILE_GET_LIST]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
-        akashaIds.forEach((item) => {
-            pendingListProfiles = pendingListProfiles.set(item.akashaId, true);
+        ethAddresses.forEach((item) => {
+            pendingListProfiles = pendingListProfiles.set(item.ethAddress, true);
         });
         return state.setIn(['flags', 'pendingListProfiles'], pendingListProfiles);
     },
@@ -181,7 +181,7 @@ const profileState = createReducer(initialState, {
         }
         return state.merge({
             byEthAddress: addProfileData(state.get('byEthAddress'), data),
-            flags: state.get('flags').setIn(['pendingListProfiles', data.akashaId], false)
+            flags: state.get('flags').setIn(['pendingListProfiles', data.ethAddress], false)
         });
     },
 

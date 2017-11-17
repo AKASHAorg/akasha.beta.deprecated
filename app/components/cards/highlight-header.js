@@ -75,7 +75,7 @@ class HighlightHeader extends Component {
             <div className="highlight-header__text">
               <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
                 <span className="content-link">
-                  {highlight.get('publisher')}
+                  {publisher.get('akashaId') || highlight.get('publisher')}
                 </span>
               </ProfilePopover>
               <div className="highlight-header__subtitle">

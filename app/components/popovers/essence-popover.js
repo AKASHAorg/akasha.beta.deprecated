@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { ClaimableList, RadarChart, ShiftForm } from '../';
+import { ClaimableList, PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd, actionGetClaimable } from '../../local-flux/actions/action-actions';
 import { selectBalance, selectLoggedEthAddress,
@@ -96,25 +96,16 @@ class EssencePopover extends Component {
               </span>
             </div>
             <div className="essence-popover__chart-wrapper">
-              <RadarChart
+              <PieChart
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
                     datasets: [{
                         data: [10, 20, 30],
-                        backgroundColor: essenceColor,
+                        backgroundColor: ['#05a686', '#41dbcc', '#a6f0f0']
                     }]
                 }}
                 options={{
                     legend: { display: false },
-                    scale: {
-                        gridLines: {
-                            circular: true
-                        },
-                        ticks: {
-                            display: false,
-                            maxTicksLimit: 5
-                        },
-                    },
                     tooltips: {
                         displayColors: false
                     }
