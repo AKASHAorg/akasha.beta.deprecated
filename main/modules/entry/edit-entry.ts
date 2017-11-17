@@ -22,9 +22,12 @@ const update = {
             'uniqueItems': true,
             'minItems': 1
         },
+        'entryType': {
+            'type': 'number'
+        },
         'ethAddress': {'type': 'string', 'format': 'address'}
     },
-    'required': ['content', 'token', 'tags', 'ethAddress']
+    'required': ['content', 'token', 'tags', 'ethAddress', 'entryType']
 };
 
 /**
@@ -43,7 +46,7 @@ const execute = Promise.coroutine(function* (data: EntryUpdateRequest, cb) {
     }
 
     const ipfsHashPublished = encodeHash(fn, digestSize, hash);
-    const ipfsHash = yield ipfsEntry.edit(data.content, data.tags, ipfsHashPublished);
+    const ipfsHash = yield ipfsEntry.edit(data.content, data.tags, data.entryType, ipfsHashPublished);
     const decodedHash = decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;

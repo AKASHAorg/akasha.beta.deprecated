@@ -39,7 +39,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
     v.validate(data, publish, { throwError: true });
 
     let ipfsEntry = new IpfsEntry();
-    const ipfsHash = yield ipfsEntry.create(data.content, data.tags);
+    const ipfsHash = yield ipfsEntry.create(data.content, data.tags, data.entryType);
     const decodedHash = decodeHash(ipfsHash);
     let publishMethod;
     switch (data.entryType) {

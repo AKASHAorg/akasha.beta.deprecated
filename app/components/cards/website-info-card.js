@@ -23,13 +23,12 @@ const navigateTo = (url, onClick, isEdit) =>
 
 const WebsiteInfoCard = (props) => {
     const { cardInfo, baseUrl, hasCard, baseWidth, onClick,
-        onClose, isEdit, loading, error, infoExtracted } = props;
+        onClose, isEdit, loading, error, infoExtracted, maxImageHeight } = props;
     const { url, image, description, title, bgColor } = cardInfo;
     const bodyStyle = {
         padding: 0
     };
     let textColor = '#444';
-
     if (bgColor) {
         bodyStyle.backgroundColor = bgColor;
         textColor = getTextColor(bgColor);
@@ -68,13 +67,15 @@ const WebsiteInfoCard = (props) => {
             title={url}
             className="website-info-card__image-link"
           >
-            <img
-              alt="card-cover"
-              style={{
-                width: '100%'
-              }}
-              src={getImageSrc(image, baseUrl, baseWidth)}
-            />
+            <div
+              className="website-info-card__card-cover-wrapper"
+              style={{ height: maxImageHeight }}
+            >
+              <img
+                alt="card-cover"
+                src={getImageSrc(image, baseUrl, baseWidth)}
+              />
+            </div>
           </a>
         }
         <div
@@ -123,6 +124,10 @@ const WebsiteInfoCard = (props) => {
       </Card>
     );
 };
+WebsiteInfoCard.defaultProps = {
+    infoExtracted: true,
+    maxImageHeight: 350,
+};
 
 WebsiteInfoCard.propTypes = {
     baseUrl: PropTypes.string,
@@ -130,6 +135,8 @@ WebsiteInfoCard.propTypes = {
     cardInfo: PropTypes.shape(),
     error: PropTypes.string,
     hasCard: PropTypes.bool,
+    infoExtracted: PropTypes.bool,
+    maxImageHeight: PropTypes.number,
     onClick: PropTypes.func,
     onClose: PropTypes.func,
     isEdit: PropTypes.bool,
