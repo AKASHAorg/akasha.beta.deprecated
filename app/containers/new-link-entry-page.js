@@ -11,9 +11,8 @@ import { entryMessages, generalMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
 import { draftCreate, draftUpdate, draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
-import { tagSearchLocal } from '../local-flux/actions/tag-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
-import { searchResetResults } from '../local-flux/actions/search-actions';
+import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import * as actionTypes from '../constants/action-types';
 
@@ -383,8 +382,9 @@ class NewLinkEntryPage extends Component {
                   }
                 </div>
                 {!parsingInfo && infoExtracted &&
-                  <div className="edit-entry-page__tag-editor">
+                  <div className="edit-entry-page__tag-editor_wrapper">
                     <TagEditor
+                      className="edit-entry-page__tag-editor"
                       ref={this._createRef('tagEditor')}
                       match={match}
                       nodeRef={(node) => { this.tagsField = node; }}
@@ -393,7 +393,7 @@ class NewLinkEntryPage extends Component {
                       onTagUpdate={this._handleTagUpdate}
                       tags={tags}
                       actionAdd={this.props.actionAdd}
-                      tagSearchLocal={this.props.tagSearchLocal}
+                      searchTags={this.props.searchTags}
                       tagSuggestions={tagSuggestions}
                       tagSuggestionsCount={tagSuggestionsCount}
                       searchResetResults={this.props.searchResetResults}
@@ -484,7 +484,7 @@ NewLinkEntryPage.propTypes = {
     showSecondarySidebar: PropTypes.bool,
     secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
-    tagSearchLocal: PropTypes.func,
+    searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicense: PropTypes.shape(),
@@ -501,7 +501,7 @@ const mapStateToProps = (state, ownProps) => ({
     selectionState: state.draftState.get('selection'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
-    tagSuggestionsCount: state.searchState.get('resultsCount'),
+    tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
 });
 
@@ -514,7 +514,7 @@ export default connect(
         draftUpdate,
         draftRevertToVersion,
         searchResetResults,
-        tagSearchLocal,
+        searchTags,
         secondarySidebarToggle,
     }
 )(injectIntl(NewLinkEntryPage));

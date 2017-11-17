@@ -287,6 +287,7 @@ class TagEditor extends Component {
     render () {
         const { tagInputWidth, inputHasFocus, existentTags } = this.state;
         const { tagSuggestionsCount, intl, tags } = this.props;
+
         return (
           <div
             className={`tag-editor ${this.props.className}`}
