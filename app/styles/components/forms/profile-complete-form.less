@@ -1,4 +1,16 @@
 .profile-complete-form {
+    &__avatar-title {
+        padding-bottom: 10px;
+        font-size: 11px;
+        color: @text-color-secondary;
+    }
+
+    &__bg-image-title {
+        padding-bottom: 10px;
+        font-size: 11px;
+        color: @text-color-secondary;
+    }
+
     &__textarea {
         resize: vertical;
     }
@@ -7,20 +19,33 @@
     }
 
     &__form-wrapper {
-        height:  ~"calc(100% - 70px)";
+        height:  ~"calc(100% - 100px)";
         padding-right: 20px;
         overflow-y: auto;
+
+        .ant-form-item-label {
+            padding-bottom: 3px;
+        }
+        .ant-form-item-label label {
+            font-size: 11px;
+        }
     }
 
     &__buttons-wrapper {
-        padding: 20px;
-        border-top: 1px outset lightgrey;
         display: flex;
         justify-content: flex-end;
     }
 
     &__insufficient-funds {
         padding: 20px 0;
+    }
+
+    &__image-wrap {
+        padding-bottom: 20px;
+    }
+
+    &__filler {
+        padding-bottom: 30px;
     }
 
     &__save-btn {
@@ -45,9 +70,10 @@
         margin: 16px 0 0 0;
     }
 
-    &__links {
-        margin: 20px 0 0 0;
+    &__link {
+        padding-top: 20px;
     }
+
     &__footer {
         justify-content: space-between !important;
         border-top: 0.5px outset lightgrey !important;
@@ -56,5 +82,66 @@
 
     &__request-btn {
         margin-top: 20px;
+    }
+
+    &__input {
+        color: @heading-color;
+        width: 100%;
+    }
+
+    &__my-address {
+        min-width: 370px;
+        border-radius: 2px 0 0 2px;
+        width: ~'calc(100% - 46px)';
+    }
+
+    &__copy-button {
+        position: relative;
+        bottom: 1px;
+        color: @primary-color;
+        border-top: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        border-bottom: 1px solid #d9d9d9;
+        width: 46px;
+        height: 36px;
+        font-size: 13px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__form-item {
+        height: 64px;
+
+        .ant-form-explain {
+            font-size: 12px;
+        }
+    }
+
+    &__address-info {
+        padding-top: 15px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    &__qr-code {
+        padding: 10px;
+        border: 1px solid #d9d9d9;
+        border-radius: 5px;
+    }
+
+    &__qr-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__qr-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        line-height: 24px;
+        padding-bottom: 3px;
+        color: @text-color-secondary;
     }
 }

@@ -65,7 +65,12 @@ const profileState = createReducer(initialState, {
         state.set('loggedProfile', new LoggedProfile()),
 
     [types.PROFILE_EXISTS_SUCCESS]: (state, { data }) =>
-        state.setIn(['exists', data.akashaId], new ProfileExistsRecord(data)),
+        state.merge({
+            exists: state.get('exists').merge({
+                akashaId: data.akashaId,
+                data: new ProfileExistsRecord(data)
+            })
+        }),
 
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const { ethAddress } = data;
