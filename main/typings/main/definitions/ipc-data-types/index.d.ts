@@ -564,6 +564,7 @@ interface EntryUpdateRequest extends AuthRequest {
     entryId: string;
     ethAddress: string;
     tags: string[];
+    entryType: number;
 }
 
 interface EntryUpdateResponse extends MainResponse {
