@@ -17,6 +17,7 @@
         cursor: pointer;
         color: lighten(@text-color, 15%);
         background-color: #FFF;
+        z-index: 1;
         &:hover {
             color: lighten(@text-color, 45%);
         }
@@ -39,6 +40,21 @@
             color: @error-color;
             margin-right: 12px;
             font-size: 17px;
+        }
+    }
+    &__card-cover-wrapper {
+        height: 300px;
+        overflow: hidden;
+        position: relative;
+        img {
+            position: absolute;
+            top: -9999px;
+            bottom: -9999px;
+            left: 0;
+            right: 0;
+            margin: auto 0;
+            width: 100%;
+            z-index: 0;
         }
     }
     &__image-link {}

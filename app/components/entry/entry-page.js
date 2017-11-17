@@ -28,9 +28,9 @@ class EntryPage extends Component {
         if (!entry || entry.get('entryId') !== params.entryId ||
                 (version !== undefined && entry.getIn(['content', 'version']) !== version)) {
             const versionNr = isNaN(Number(version)) ? null : Number(version);
-            const { akashaId, entryId, ethAddress } = params;
+            const { entryId, ethAddress } = params;
             const prefixed = `0x${ethAddress}`;
-            entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+            entryGetFull({ entryId, ethAddress: prefixed, version: versionNr });
             this.fetchComments(entryId);
         }
     }

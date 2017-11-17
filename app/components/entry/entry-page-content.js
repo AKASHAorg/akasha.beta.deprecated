@@ -7,7 +7,7 @@ import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommon
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from '../svg';
-import { SelectableEditor, TagPopover } from '../';
+import { SelectableEditor, TagPopover, WebsiteInfoCard } from '../';
 
 const { EditorState } = DraftJS;
 
@@ -92,12 +92,24 @@ class EntryPageContent extends Component {
         const licenseLabel = license.parent ?
             licenses.get(license.parent).label :
             license.label;
+        console.log(entry, 'the entry');
         return (
           <div className="entry-page-content">
             <div>
               <h1 className="entry-page-content__title">
                 {entry.getIn(['content', 'title'])}
               </h1>
+              {entry.entryType === 1 &&
+                <WebsiteInfoCard
+                  cardInfo={entry.content.cardInfo}
+                  baseUrl={entry.baseUrl}
+                  hasCard={
+                      entry.content.cardInfo.title ||
+                      entry.content.cardInfo.description
+                  }
+                  isEdit={false}
+                />
+              }
               <div className="entry-page-content__content">
                 <SelectableEditor
                   baseUrl={entry.get('baseUrl')}
