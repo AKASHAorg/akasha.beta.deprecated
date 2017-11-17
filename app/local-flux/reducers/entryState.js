@@ -119,7 +119,7 @@ const entryState = createReducer(initialState, {
 
         return state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: createEntryRecord(data).setIn(['author', 'ethAddress'], ethAddress),
+            fullEntry: createEntryRecord({ entryType: data.content.entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
     },

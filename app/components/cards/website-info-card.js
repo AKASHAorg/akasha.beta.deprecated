@@ -78,9 +78,22 @@ const WebsiteInfoCard = (props) => {
             </div>
           </a>
         }
+        {!error && url && hasCard &&
+          <small
+            title={url}
+            className="website-info-card__source-url"
+          >
+            <a
+              onClick={navigateTo(url, onClick, isEdit)}
+              href={url}
+              style={{ color: textColor, opacity: 0.75 }}
+            >
+              {ParserUtils.parseUrl(url).hostname}
+            </a>
+          </small>
+        }
         <div
           className="website-info-card__title-wrapper"
-          style={{ padding: '0 12px' }}
         >
           {!error && title &&
             <h3
@@ -105,20 +118,6 @@ const WebsiteInfoCard = (props) => {
             >
               {description}
             </a>
-          }
-          {!error && url && hasCard &&
-            <small
-              title={url}
-              className="website-info-card__source-url"
-            >
-              <a
-                onClick={navigateTo(url, onClick, isEdit)}
-                href={url}
-                style={{ color: textColor, opacity: 0.75 }}
-              >
-                {ParserUtils.parseUrl(url).hostname}
-              </a>
-            </small>
           }
         </div>
       </Card>

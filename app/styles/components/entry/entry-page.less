@@ -8,12 +8,16 @@
     background-color: #f7f7f7;
 
     &__inner {
-        margin: 0 auto;        
+        margin: 0 auto;
     }
 
     &__content {
         z-index: 10;
         position: relative;
+        .website-info-card {
+            max-width: @text-editor-width;
+            background: @card-bg-color;
+        }
     }
 
     &__unresolved-placeholder {
@@ -23,7 +27,7 @@
         justify-content: center;
         align-items: center;
         font-size: 16px;
-        color: @disabled-color;        
+        color: @disabled-color;
     }
 
     &__comments {
