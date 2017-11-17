@@ -159,7 +159,11 @@ class AethWallet extends Component {
             <span className="flex-center aeth-wallet__cycling-count">{cyclingCount}</span>
           </span>
         );
-        const data = [aethBalance.free, aethBalance.bonded, aethBalance.cycling];
+        const data = [
+            balanceToNumber(aethBalance.free),
+            balanceToNumber(aethBalance.bonded),
+            balanceToNumber(aethBalance.cycling)
+        ];
         return (
           <div className="aeth-wallet">
             <div className="aeth-wallet__header">
