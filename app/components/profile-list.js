@@ -4,17 +4,23 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
+import { selectPendingProfiles } from '../local-flux/selectors';
 import { profileMessages } from '../locale-data/messages';
 import { isInViewport } from '../utils/domUtils';
-import { DataLoader } from './';
+import { DataLoader, ProfileCard } from './';
 
 class ProfileList extends Component {
-
     componentDidMount () {
         if (this.container) {
             this.container.addEventListener('scroll', this.throttledHandler);
         }
         window.addEventListener('resize', this.throttledHandler);
+    }
+
+    componentDidUpdate (prevProps) {
+        if (prevProps.fetchingProfiles && !this.props.fetchingProfiles) {
+            this.checkTrigger();
+        }
     }
 
     componentWillUnmount () {
@@ -36,26 +42,23 @@ class ProfileList extends Component {
 
     throttledHandler = throttle(this.checkTrigger, 500);
 
-    renderProfileRow = profile => (
-      <div
-        className="flex-center"
-        key={profile.ethAddress}
-        style={{ backgroundColor: 'white', height: '64px', margin: '12px', width: '300px' }}
-      >
-        {profile.ethAddress}
-      </div>
-    );
-
     render () {
-        const { fetchingProfiles, fetchingMoreProfiles, intl,
-            moreProfiles, placeholderMessage, profiles, style } = this.props;
-
+        const { fetchingProfiles, fetchingMoreProfiles, intl, moreProfiles, pendingProfiles,
+            placeholderMessage, profiles, style } = this.props;
         const profileRows = profiles && profiles.map((profile) => {
-            if (!profile || !profile.ethAddress) {
+            if (!profile.ethAddress) {
+                console.error('invalid profile');
                 return null;
             }
+            const isPending = pendingProfiles && pendingProfiles.get(profile.ethAddress);
 
-            return this.renderProfileRow(profile);
+            return (
+              <ProfileCard
+                isPending={isPending}
+                key={profile.ethAddress}
+                profile={profile}
+              />
+            );
         });
 
         return (
@@ -92,20 +95,22 @@ class ProfileList extends Component {
 }
 
 ProfileList.propTypes = {
+    context: PropTypes.string,
     fetchingProfiles: PropTypes.bool,
     fetchingMoreProfiles: PropTypes.bool,
     fetchMoreProfiles: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    loggedAkashaId: PropTypes.string,
     moreProfiles: PropTypes.bool,
+    pendingProfiles: PropTypes.shape(),
     placeholderMessage: PropTypes.string,
     profiles: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
+    const { context } = ownProps;
     return {
-        loggedAkashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
+        pendingProfiles: selectPendingProfiles(state, context),
     };
 }
 

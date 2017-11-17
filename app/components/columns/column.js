@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as columnTypes from '../../constants/columns';
-import { LatestColumn, ListColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
+import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
+    ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
 
-const Column = ({ column, baseWidth }) => {
+const Column = ({ column, baseWidth, ethAddress, type }) => {
     let component;
     const props = { column, baseWidth };
-    switch (column.get('type')) {
+    switch (type) {
         case columnTypes.latest:
             component = <LatestColumn {...props} />;
             break;
@@ -22,9 +23,19 @@ const Column = ({ column, baseWidth }) => {
         case columnTypes.profile:
             component = <ProfileColumn {...props} />;
             break;
+        case columnTypes.profileEntries:
+            component = <ProfileEntriesColumn ethAddress={ethAddress} />;
+            break;
+        case columnTypes.profileFollowers:
+            component = <ProfileFollowersColumn ethAddress={ethAddress} />;
+            break;
+        case columnTypes.profileFollowings:
+            component = <ProfileFollowingsColumn ethAddress={ethAddress} />;
+            break;
         default:
             break;
     }
+
     return (
       <div className="column__wrapper">
         {component}
@@ -34,7 +45,9 @@ const Column = ({ column, baseWidth }) => {
 
 Column.propTypes = {
     baseWidth: PropTypes.number,
-    column: PropTypes.shape()
+    column: PropTypes.shape(),
+    ethAddress: PropTypes.string,
+    type: PropTypes.string,
 };
 
 export default Column;

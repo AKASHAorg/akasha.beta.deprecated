@@ -298,6 +298,9 @@ export const selectPendingCycleAeth = state => state.actionState.getIn(['pending
 export const selectPendingFollow = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'follow', akashaId]);
 
+export const selectPendingProfiles = (state, context) =>
+    state.profileState.getIn(['flags', 'pendingProfiles', context]);
+
 export const selectPendingTip = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
 
@@ -351,6 +354,8 @@ export const selectSearchQuery = state => state.searchState.get('query');
 
 export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);
+
+export const selectShowWallet = state => state.appState.get('showWallet');
 
 export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
 
