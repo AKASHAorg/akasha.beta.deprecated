@@ -161,10 +161,10 @@ export function* profileGetExtraOfList (collection) {
     }
 }
 
-function* profileGetList ({ akashaIds }) {
+function* profileGetList ({ ethAddresses }) {
     const channel = Channel.server.profile.getProfileList;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [akashaIds]);
+    yield apply(channel, channel.send, [ethAddresses]);
 }
 
 function* profileGetLocal () {

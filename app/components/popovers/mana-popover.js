@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { RadarChart, ShiftForm } from '../';
+import { PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectBalance, selectLoggedEthAddress, selectManaBurned, selectPendingBondAeth,
@@ -96,7 +96,7 @@ class ManaPopover extends Component {
               </span>
             </div>
             <div className="mana-popover__chart-wrapper">
-              <RadarChart
+              <PieChart
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
                     datasets: [{
@@ -105,20 +105,11 @@ class ManaPopover extends Component {
                             manaBurned.get('entries'),
                             manaBurned.get('votes')
                         ],
-                        backgroundColor: manaColor,
+                        backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']
                     }]
                 }}
                 options={{
                     legend: { display: false },
-                    scale: {
-                        gridLines: {
-                            circular: true
-                        },
-                        ticks: {
-                            display: false,
-                            maxTicksLimit: 5
-                        },
-                    },
                     tooltips: {
                         displayColors: false
                     }
