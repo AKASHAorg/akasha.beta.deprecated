@@ -44,7 +44,7 @@ const tagState = createReducer(initialState, {
     [types.TAG_SEARCH_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('searchPending', false),
-            searchResults: new List(data)
+            searchResults: new List(data),
         }),
 });
 

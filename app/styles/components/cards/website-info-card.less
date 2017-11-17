@@ -6,6 +6,9 @@
     &_edit {
         background: #FFF;
     }
+    &_empty {
+        display: none;
+    }
     &__close-button {
         position: absolute;
         right: 8px;
@@ -28,6 +31,14 @@
         a {
             color: lighten(@text-color, 70%);
             font-size: 12px;
+        }
+    }
+    &__error {
+        padding: 8px 12px;
+        .anticon {
+            color: @error-color;
+            margin-right: 12px;
+            font-size: 17px;
         }
     }
     &__image-link {}

@@ -9,20 +9,31 @@ class ParserUtils {
             mode: 'cors'
         };
     }
+
     makeRequest = (url, contentType = 'application/json') => {
         const reqHeaders = new Headers();
         reqHeaders.append('Content-Type', contentType);
         const reqParams = { ...this.fetchRequestParams, headers: reqHeaders };
         const req = new Request(url, reqParams);
-        return fetch(req);
+        return new Promise((resolve, reject) => {
+            fetch(req).then(resolve).catch(reject);
+            setTimeout(() => {
+                const error = new Error('Request timeout!');
+                error.code = 408;
+                reject(error);
+            }, 5000);
+        });
     }
+
     getUrlQueryParams = search => new URLSearchParams(search)
+
     getAbsoluteUrl = (url, parsedUrl) => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
         return null;
     }
+
     formatUrl = (url) => {
         const urlPrefix = ParserUtils.parseUrl(url).protocol;
         if (urlPrefix && supportedProtocols.includes(urlPrefix)) {
@@ -30,6 +41,7 @@ class ParserUtils {
         }
         return `${supportedProtocols[0]}//${url}`;
     }
+
     static parseUrl = (url) => {
         const link = document.createElement('a');
         link.href = url;
@@ -43,10 +55,12 @@ class ParserUtils {
             href: link.href,
         };
     }
+
     parseHtmlFromString = (htmlString) => {
         const superParser = new DOMParser();
         return superParser.parseFromString(htmlString, 'text/html');
     }
+
     resizeImage = (image, { uploadImageToIpfs }) => {
         let filePromises = [];
         if (image) {

@@ -16,6 +16,16 @@ const dashboardMessages = defineMessages({
         description: 'subtitle for add new column',
         defaultMessage: 'Please select a column type'
     },
+    addNewListColumn: {
+        id: 'app.dashboard.addNewListColumn',
+        description: 'title for add new list column',
+        defaultMessage: 'List column'
+    },
+    addNewListColumnSubtitle: {
+        id: 'app.dashboard.addNewListColumnSubtitle',
+        description: 'subtitle for add new list column',
+        defaultMessage: 'Please choose a list'
+    },
     addNewProfileColumn: {
         id: 'app.dashboard.addNewProfileColumn',
         description: 'title for add new profile column',
@@ -96,6 +106,11 @@ const dashboardMessages = defineMessages({
         description: 'label for latest entries column',
         defaultMessage: 'Latest entries'
     },
+    list: {
+        id: 'app.dashboard.list',
+        description: 'label for list column',
+        defaultMessage: 'List'
+    },
     myBoards: {
         id: 'app.dashboard.myBoards',
         description: 'header for dashboards secondary sidebar',
@@ -105,6 +120,11 @@ const dashboardMessages = defineMessages({
         id: 'app.dashboard.namePlaceholder',
         description: 'placeholder for dashboard name input',
         defaultMessage: 'Type board name'
+    },
+    previewList: {
+        id: 'app.dashboard.previewList',
+        description: 'preview for list column entries',
+        defaultMessage: 'Preview for {listName}'
     },
     previewProfile: {
         id: 'app.dashboard.previewProfile',

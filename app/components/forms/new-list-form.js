@@ -29,9 +29,9 @@ class NewListForm extends Component {
 
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { authorEthAddress, entryId, form, onSave } = this.props;
+        const { authorEthAddress, entryId, entryType, form, onSave } = this.props;
         const { name, description } = form.getFieldsValue();
-        onSave({ name, description, entryIds: [{ entryId, authorEthAddress }] });
+        onSave({ name, description, entryIds: [{ entryId, entryType, authorEthAddress }] });
     };
 
     validateName = (rule, value, callback) => {
@@ -122,6 +122,7 @@ class NewListForm extends Component {
 NewListForm.propTypes = {
     authorEthAddress: PropTypes.string,
     entryId: PropTypes.string.isRequired,
+    entryType: PropTypes.number.isRequired,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     lists: PropTypes.shape().isRequired,

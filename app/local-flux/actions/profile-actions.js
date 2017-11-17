@@ -234,26 +234,26 @@ export const profileMoreFollowingsIteratorSuccess = (data, request) =>
 export const profileRegister = ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress }) =>
     action(types.PROFILE_REGISTER, { actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress });
 
-export const profileRegisterError = (error, req) => {
+export const profileRegisterError = (error, request) => {
     error.code = 'PRE01';
     error.messageId = 'profileRegister';
-    return action(types.PROFILE_REGISTER_ERROR, { error, req });
+    return action(types.PROFILE_REGISTER_ERROR, { error, request });
 };
 
-export const profileRegisterSuccess = (data, req) =>
-    action(types.PROFILE_REGISTER_SUCCESS, { data, req });
+export const profileRegisterSuccess = (data, request) =>
+    action(types.PROFILE_REGISTER_SUCCESS, { data, request });
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
 
-export const profileResolveIpfsHashError = (error, req) => {
+export const profileResolveIpfsHashError = (error, request) => {
     error.code = 'PRIHE01';
     error.messageId = 'profileResolveIpfsHash';
-    return action(types.PROFILE_RESOLVE_IPFS_HASH_ERROR, { error, req });
+    return action(types.PROFILE_RESOLVE_IPFS_HASH_ERROR, { error, request });
 };
 
-export const profileResolveIpfsHashSuccess = (data, req) =>
-    action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
+export const profileResolveIpfsHashSuccess = (data, request) =>
+    action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, request });
 
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';
@@ -322,14 +322,14 @@ export const profileUnfollowSuccess = data => action(types.PROFILE_UNFOLLOW_SUCC
 export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) =>
     action(types.PROFILE_UPDATE, { actionId, about, avatar, backgroundImage, firstName, lastName, links });
 
-export const profileUpdateError = (error, req) => {
+export const profileUpdateError = (error, request) => {
     error.code = 'PUE01';
     error.messageId = 'profileUpdate';
-    return action(types.PROFILE_UPDATE_ERROR, { error, req });
+    return action(types.PROFILE_UPDATE_ERROR, { error, request });
 };
 
-export const profileUpdateSuccess = (data, req) =>
-    action(types.PROFILE_UPDATE_SUCCESS, { data, req });
+export const profileUpdateSuccess = (data, request) =>
+    action(types.PROFILE_UPDATE_SUCCESS, { data, request });
 
 
 export const profileUpdateLoggedError = (error) => {

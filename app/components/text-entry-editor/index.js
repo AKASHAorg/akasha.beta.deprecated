@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, editorStateFromRaw, DraftJS,
-    createTypeStrategy } from 'megadraft';
+import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from '../';
 import EditorSidebar from './sidebar/editor-sidebar';
@@ -9,8 +8,8 @@ import imagePlugin from './plugins/image/image-plugin';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
-const getUpdatedEditorState = (editorState, rawContent) =>
-    EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
+// const getUpdatedEditorState = (editorState, rawContent) =>
+//     EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
 
 class EntryEditor extends Component {
     constructor (props) {
@@ -23,6 +22,27 @@ class EntryEditor extends Component {
             sidebarOpen: false,
             selectionState: null
         };
+    }
+    componentDidMount () {
+        this.rootNode.addEventListener('scroll', this._handleEditorScroll);
+    }
+
+    _handleEditorScroll = (ev) => {
+        const scrollHeight = ev.target.scrollHeight;
+        const scrollTop = ev.target.scrollTop;
+        const rootNode = this.rootNode;
+        const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
+        const scroller = nodeHeight + scrollTop;
+        if ((scroller >= scrollHeight - 10) && this.lastPos === 'between') {
+            this.lastPos = 'bottom';
+            this.props.onScrollBottom();
+        } else if ((nodeHeight === scroller) && this.lastPos === 'between') {
+            this.lastPos = 'top';
+            this.props.onScrollTop();
+        } else if (scrollTop > 0 && scrollHeight - scroller > 132 && this.lastPos !== 'between') {
+            this.lastPos = 'between';
+            this.props.onScrollBetween();
+        }
     }
 
     setSuggestionsRef = (el) => {
@@ -47,6 +67,7 @@ class EntryEditor extends Component {
             }
         });
     };
+
     _handleImageError = (imageBlockKey, err) => {
         this.setState(prevState => ({
             errors: [prevState.errors, {
@@ -65,18 +86,21 @@ class EntryEditor extends Component {
          */
         this.props.onChange(editorState);
     };
+
     _handleKeyPress = (ev) => {
         ev.preventDefault();
         if (ev.key === 'Enter') {
             this._changeEditorFocus(true);
         }
     }
+
     _changeEditorFocus = (focusState) => {
         const { editorState } = this.props;
         const selectionState = editorState.getSelection();
         const focusedSelection = selectionState.set('hasFocus', focusState);
         return this._handleEditorChange(EditorState.acceptSelection(editorState, focusedSelection));
     }
+
     _checkEditorFocus = () => {
         const { editorState } = this.props;
         if (this.editor) {
@@ -84,11 +108,13 @@ class EntryEditor extends Component {
         }
         return false;
     }
+
     _handleSidebarToggle = (isOpen) => {
         this.setState({
             sidebarOpen: isOpen
         });
     }
+
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly, showTerms, onError } = this.props;
         if (showSidebar && !readOnly) {
@@ -105,11 +131,16 @@ class EntryEditor extends Component {
         }
         return null;
     };
+
     render () {
-        const { editorPlaceholder, readOnly, editorState } = this.props;
+        const { editorPlaceholder, readOnly, editorState, className, style } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
-          <div className="text-entry-editor">
+          <div
+            className={`text-entry-editor ${className}`}
+            ref={(rootNode) => { this.rootNode = rootNode; }}
+            style={style}
+          >
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
@@ -140,7 +171,7 @@ class EntryEditor extends Component {
               />
               <MentionSuggestions
                 ref={this.setSuggestionsRef}
-                editorState={editorState}
+                editorState={editrState}
                 onChange={this._handleEditorChange}
                 parentRef={this.container}
               />
@@ -150,6 +181,9 @@ class EntryEditor extends Component {
     }
 }
 EntryEditor.defaultProps = {
+    onScrollBetween: () => {},
+    onScrollBottom: () => {},
+    onScrollTop: () => {},
     showSidebar: true,
     showTitle: true,
     readOnly: false,
@@ -158,17 +192,21 @@ EntryEditor.defaultProps = {
 };
 
 EntryEditor.propTypes = {
+    className: PropTypes.string,
     showTerms: PropTypes.func,
     editorRef: PropTypes.func,
     editorState: PropTypes.shape(),
     readOnly: PropTypes.bool,
     onAutosave: PropTypes.func,
+    onScrollBottom: PropTypes.func,
+    onScrollTop: PropTypes.func,
+    onScrollBetween: PropTypes.func,
     editorPlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,
-    selectionState: PropTypes.shape(),
     onChange: PropTypes.func,
     onError: PropTypes.func,
     baseUrl: PropTypes.string,
+    style: PropTypes.shape(),
 };
 
 export default EntryEditor;

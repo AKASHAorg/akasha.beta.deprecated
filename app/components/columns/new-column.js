@@ -7,16 +7,17 @@ import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
     dashboardResetNewColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { entryMoreProfileIterator, entryMoreTagIterator, entryProfileIterator,
-    entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
+    entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumn, selectColumnEntries, selectNewColumn, selectProfileSearchResults,
+import { selectColumn, selectColumnEntries, selectListsNames, selectNewColumn, selectProfileSearchResults,
     selectTagSearchResults } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
-import { NewSearchColumn } from '../';
+import { NewSearchColumn, NewSelectColumn } from '../';
 
-const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile, columnTypes.tag];
+const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile, columnTypes.tag,
+    columnTypes.list];
 const oneStepColumns = [columnTypes.latest, columnTypes.stream];
 
 class NewColumn extends Component {
@@ -103,7 +104,7 @@ class NewColumn extends Component {
     };
 
     render () {
-        const { column, intl, newColumn, previewEntries, profileResults, tagResults } = this.props;
+        const { column, intl, lists, newColumn, previewEntries, profileResults, tagResults } = this.props;
 
         if (!newColumn) {
             return this.renderPlaceholder();
@@ -157,6 +158,20 @@ class NewColumn extends Component {
                 );
                 title = dashboardMessages.addNewTagColumn;
                 subtitle = dashboardMessages.addNewTagColumnSubtitle;
+                break;
+            case columnTypes.list:
+                previewMessage = intl.formatMessage(dashboardMessages.previewList, { listName: value });
+                component = (
+                  <NewSelectColumn
+                    entryIterator={this.props.entryListIterator}
+                    entryMoreIterator={this.props.entryMoreListIterator}
+                    options={lists}
+                    previewMessage={previewMessage}
+                    {...props}
+                  />
+                );
+                title = dashboardMessages.addNewListColumn;
+                subtitle = dashboardMessages.addNewListColumnSubtitle;
                 break;
             default:
                 title = dashboardMessages.addNewColumn;
@@ -214,11 +229,14 @@ NewColumn.propTypes = {
     dashboardDeleteNewColumn: PropTypes.func.isRequired,
     dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
+    entryListIterator: PropTypes.func.isRequired,
+    entryMoreListIterator: PropTypes.func.isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
+    lists: PropTypes.shape().isRequired,
     newColumn: PropTypes.shape(),
     previewEntries: PropTypes.shape().isRequired,
     profileResults: PropTypes.shape().isRequired,
@@ -230,6 +248,7 @@ NewColumn.propTypes = {
 function mapStateToProps (state) {
     return {
         column: selectColumn(state, 'newColumn'),
+        lists: selectListsNames(state),
         newColumn: selectNewColumn(state),
         previewEntries: selectColumnEntries(state, 'newColumn'),
         profileResults: selectProfileSearchResults(state),
@@ -245,6 +264,8 @@ export default connect(
         dashboardDeleteNewColumn,
         dashboardResetNewColumn,
         dashboardUpdateNewColumn,
+        entryListIterator,
+        entryMoreListIterator,
         entryMoreProfileIterator,
         entryMoreTagIterator,
         entryProfileIterator,

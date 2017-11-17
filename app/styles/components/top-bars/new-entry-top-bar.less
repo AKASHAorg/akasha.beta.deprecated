@@ -1,0 +1,28 @@
+.new-entry-top-bar {
+    display: flex;
+    height: @top-bar-height;
+    font-size: 16px;
+    padding: 0 8px;
+    &__inner {
+        flex: 1 1 auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        button {
+            border: none;
+        }
+        .ant-btn-clicked {
+            &::after {
+                border: none;
+            }
+        }
+        .ant-btn {
+            &:active {
+                color: inherit;
+            }
+            &:focus {
+                color: inherit;
+            }
+        }
+    }
+}

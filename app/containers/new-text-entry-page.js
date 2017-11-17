@@ -5,13 +5,13 @@ import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
-import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline } from '../components';
+import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
+    DataLoader } from '../components';
 import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
-import { tagSearchLocal } from '../local-flux/actions/tag-actions';
-import { searchResetResults } from '../local-flux/actions/search-actions';
+import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
@@ -21,29 +21,13 @@ const { EditorState } = DraftJS;
 
 const { confirm } = Modal;
 
-const EditorNotReadyPlaceholder = ({ message, loading }) => (
-  <div className="editor-not-ready">
-    {loading &&
-      <div className="editor-not-ready__loader">Loading</div>
-    }
-    <div className="editor-not-ready__message">
-      {message}
-    </div>
-  </div>
-);
-
-EditorNotReadyPlaceholder.propTypes = {
-    message: PropTypes.string,
-    loading: PropTypes.bool
-};
-
 class NewEntryPage extends Component {
     state = {
         showPublishPanel: false,
         errors: {},
         shouldResetCaret: false,
+        scrollPosition: 'noScroll'
     }
-
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
             userDefaultLicense, selectionState } = nextProps;
@@ -66,13 +50,17 @@ class NewEntryPage extends Component {
         if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId) {
             if (currentSelection) {
                 this.setState({
-                    shouldResetCaret: true
+                    shouldResetCaret: true,
+                    scrollPosition: 'noScroll'
                 });
             } else {
                 const selection = EditorState.moveSelectionToEnd(
                     draftObj.getIn(['content', 'draft'])
                 ).getSelection();
                 this.editor.updateCaretPosition(selection);
+                this.setState({
+                    scrollPosition: 'noScroll'
+                });
             }
         } else {
             this.setState({
@@ -146,7 +134,6 @@ class NewEntryPage extends Component {
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
-        console.log('changing excerpt to', excerpt);
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
             content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
@@ -280,24 +267,55 @@ class NewEntryPage extends Component {
           </Steps>
         );
     }
+    _handleScrollAtBottom = () => {
+        this.setState({
+            scrollPosition: 'bottom'
+        });
+    }
+    _handleScrollAtTop = () => {
+        this.setState({
+            scrollPosition: 'top'
+        });
+    }
+    _handleScrollInBetween = () => {
+        this.setState({
+            scrollPosition: 'between'
+        });
+    }
     /* eslint-disable complexity */
     render () {
-        const { showPublishPanel, errors, shouldResetCaret } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, scrollPosition } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
         if (!draftObj || !draftObj.get('content')) {
             return (
-              <div>Finding Draft</div>
+              <DataLoader
+                flag
+                message={'Loading drafts...'}
+                size="large"
+                className="edit-entry-page__data-loader"
+              />
             );
         }
         const unresolved = draftObj && resolvingEntries.includes(draftObj.get('id'));
         if (unresolved) {
             return (
-              <div>
-                  Cannot resolve entry`s ipfs hash.
-                  Make sure to open AKASHA DApp on the computer you have published from.
-              </div>
+              <DataLoader
+                flag
+                message={
+                  <div>
+                    <div>
+                      Resolving ipfs hash...
+                    </div>
+                    <div>
+                      Make sure to open AKASHA DApp on the computer you have published from.
+                    </div>
+                  </div>
+                }
+                size="large"
+                className="edit-entry-page__data-loader"
+              />
             );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
@@ -311,7 +329,6 @@ class NewEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
-
         return (
           <div className="edit-entry-page article-page">
             <div
@@ -332,10 +349,19 @@ class NewEntryPage extends Component {
                 span={showPublishPanel ? 17 : 24}
                 className="edit-entry-page__editor-wrapper"
               >
-                <div className="edit-entry-page__editor">
+                <div
+                  className={
+                    `edit-entry-page__editor
+                    edit-entry-page__editor${showSecondarySidebar ? '' : '_full'}`
+                  }
+                >
                   <textarea
                     ref={this._createRef('titleInput')}
-                    className="edit-entry-page__title-input-field"
+                    className={
+                        `edit-entry-page__title-input-field
+                        edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}
+                        edit-entry-page__title-input-field_${scrollPosition}`
+                    }
                     placeholder="Title"
                     onChange={this._handleTitleChange}
                     value={title}
@@ -345,10 +371,17 @@ class NewEntryPage extends Component {
                   }
                   <TextEntryEditor
                     ref={this._createRef('editor')}
+                    className={
+                        `text-entry-editor${showSecondarySidebar ? '' : '_full'}
+                        text-entry-editor_${scrollPosition}`
+                    }
                     onChange={this._handleEditorChange}
                     editorState={draftWithSelection}
                     selectionState={currentSelection}
                     baseUrl={baseUrl}
+                    onScrollBetween={this._handleScrollInBetween}
+                    onScrollBottom={this._handleScrollAtBottom}
+                    onScrollTop={this._handleScrollAtTop}
                     intl={intl}
                   />
                   {errors.draft &&
@@ -356,7 +389,10 @@ class NewEntryPage extends Component {
                   }
                   <TagEditor
                     ref={this._createRef('tagEditor')}
-                    className="edit-entry-page__tag-editor"
+                    className={
+                        `edit-entry-page__tag-editor
+                        edit-entry-page__tag-editor_${scrollPosition}`
+                    }
                     match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
@@ -364,7 +400,7 @@ class NewEntryPage extends Component {
                     onTagUpdate={this._handleTagUpdate}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
-                    tagSearchLocal={this.props.tagSearchLocal}
+                    searchTags={this.props.searchTags}
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
@@ -458,7 +494,7 @@ NewEntryPage.propTypes = {
     secondarySidebarToggle: PropTypes.func,
     selectionState: PropTypes.shape(),
     searchResetResults: PropTypes.func,
-    tagSearchLocal: PropTypes.func,
+    searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicense: PropTypes.shape(),
@@ -475,7 +511,7 @@ const mapStateToProps = (state, ownProps) => ({
     resolvingEntries: state.draftState.get('resolvingEntries'),
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
-    tagSuggestionsCount: state.searchState.get('resultsCount'),
+    tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
 });
 
@@ -490,7 +526,7 @@ export default connect(
         draftsGetCount,
         draftRevertToVersion,
         entryGetFull,
-        tagSearchLocal,
+        searchTags,
         searchResetResults,
     }
 )(injectIntl(NewEntryPage));
