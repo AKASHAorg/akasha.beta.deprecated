@@ -1,18 +1,18 @@
 .secondary-sidebar {
     position: fixed;
-    left: 64px;
+    left: @sidebar-width;
     top: 0;
     bottom: 0;
-    width: 200px;
+    width: @secondary-sidebar-width;
     overflow-y: auto;
     overflow-x: hidden;
     border-right: 1px #ddd solid;
     transition: left 0.218s @ease-in-out;
-
+    z-index: 100;
     // TODO remove this
     // background-color: #555;
 
     &_collapsed {
-        left: -264px;
+        left: (@sidebar-width + @secondary-sidebar-width) * -1;
     }
 }

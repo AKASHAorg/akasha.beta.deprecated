@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Col, Row, Icon, Button, Modal } from 'antd';
 import { DraftJS } from 'megadraft';
 import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
-    TagEditor, WebsiteInfoCard } from '../components';
+    TagEditor, WebsiteInfoCard, DataLoader } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
@@ -54,7 +54,8 @@ class NewLinkEntryPage extends Component {
 
         if (hasCardContent) {
             this.setState({
-                urlInputHidden: true
+                urlInputHidden: true,
+                infoExtracted: true
             });
         }
     }
@@ -85,7 +86,16 @@ class NewLinkEntryPage extends Component {
                     id: match.params.draftId,
                 }));
                 this.setState({
-                    parsingInfo: false
+                    parsingInfo: false,
+                    infoExtracted: true
+                });
+            }).catch(() => {
+                this.setState({
+                    errors: {
+                        card: 'An error occured while trying to fetch website info',
+                    },
+                    parsingInfo: false,
+                    infoExtracted: true
                 });
             });
         });
@@ -248,9 +258,12 @@ class NewLinkEntryPage extends Component {
 
     _handleInfoCardClose = () => {
         const { draftObj, loggedProfile, match } = this.props;
+        const { card, ...otherErrors } = this.state.errors;
         this.setState({
             parsingInfo: false,
-            urlInputHidden: false
+            urlInputHidden: false,
+            errors: otherErrors,
+            infoExtracted: false,
         }, () => {
             this.props.draftUpdate(
                 draftObj.merge({
@@ -286,10 +299,18 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile, selectionState } = this.props;
-        const { showPublishPanel, errors, shouldResetCaret, parsingInfo, urlInputHidden } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
+            infoExtracted, urlInputHidden } = this.state;
 
-        if (!draftObj) {
-            return (<div>Finding draft</div>);
+        if (!draftObj || !draftObj.get('content')) {
+            return (
+              <DataLoader
+                flag
+                message={'Loading drafts...'}
+                size="large"
+                className="edit-entry-page__data-loader"
+              />
+            );
         }
         const currentSelection = selectionState.getIn([draftObj.get('id'), loggedProfile.get('ethAddress')]);
         const { content, tags, localChanges, onChain } = draftObj;
@@ -302,7 +323,6 @@ class NewLinkEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
-
         return (
           <div className="edit-entry-page link-page">
             <div
@@ -319,8 +339,7 @@ class NewLinkEntryPage extends Component {
               type="flex"
               className="edit-entry-page__content"
             >
-              <Col
-                span={showPublishPanel ? 17 : 24}
+              <div
                 className="edit-entry-page__editor-wrapper"
               >
                 <div className="edit-entry-page__editor">
@@ -335,33 +354,35 @@ class NewLinkEntryPage extends Component {
                       value={url}
                     />
                   }
-                  {((title || description) || parsingInfo) &&
-                    <div className="edit-entry-page__info-card-wrapper">
-                      <WebsiteInfoCard
-                        baseUrl={baseUrl}
-                        cardInfo={cardInfo}
-                        hasCard={!!(title || description)}
-                        url={url}
-                        onClose={this._handleInfoCardClose}
-                        isEdit
-                        loading={parsingInfo}
-                      />
-                      {!parsingInfo &&
-                        <div>
-                          <TextEntryEditor
-                            ref={this._createRef('editor')}
-                            onChange={this._handleEditorChange}
-                            editorState={draftWithSelection}
-                            selectionState={currentSelection}
-                            baseUrl={baseUrl}
-                            intl={intl}
-                          />
-                        </div>
-                      }
-                    </div>
+                  <div className="edit-entry-page__info-card-wrapper">
+                    <WebsiteInfoCard
+                      baseUrl={baseUrl}
+                      cardInfo={cardInfo}
+                      hasCard={!!(title || description)}
+                      url={url}
+                      onClose={this._handleInfoCardClose}
+                      isEdit
+                      loading={parsingInfo}
+                      infoExtracted={infoExtracted}
+                      error={errors.card}
+                    />
+                  </div>
+                  {!parsingInfo && infoExtracted &&
+                  <div style={{ position: 'relative', height: '100%' }}>
+                    <TextEntryEditor
+                      style={{ position: 'absolute', left: 0 }}
+                      ref={this._createRef('editor')}
+                      className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
+                      onChange={this._handleEditorChange}
+                      editorState={draftWithSelection}
+                      selectionState={currentSelection}
+                      baseUrl={baseUrl}
+                      intl={intl}
+                    />
+                  </div>
                   }
                 </div>
-                {(title || description) && !parsingInfo &&
+                {!parsingInfo && infoExtracted &&
                   <div className="edit-entry-page__tag-editor">
                     <TagEditor
                       ref={this._createRef('tagEditor')}
@@ -379,7 +400,7 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                 }
-              </Col>
+              </div>
               <Col
                 span={6}
                 className={

@@ -65,13 +65,17 @@ const searchState = createReducer(initialState, {
             entryIds: [],
             totalPages: null,
             resultsCount: null,
+            tagResultsCount: 0,
             tags: []
         }),
 
     [types.SEARCH_TAGS]: (state, { query }) => state.set('query', query),
 
     [types.SEARCH_TAGS_SUCCESS]: (state, { data }) =>
-        state.set('tags', new List(data)),
+        state.merge({
+            tags: new List(data),
+            tagResultsCount: data.length,
+        }),
 });
 
 export default searchState;

@@ -215,7 +215,7 @@ const resizeImage = (image, options) => {
                     imageObject[widthObj.key] = result;
                     return imageObject;
                 })
-            ).catch(err => Promise.reject(err));
+            );
         });
     });
     return p;
@@ -250,7 +250,7 @@ const getRawDataUrl = file =>
         const reader = new FileReader();
 
         reader.onloadend = () => resolve(reader.result);
-
+        reader.onerror = () => reject(new Error('Error while reading raw data url!'));
         try {
             reader.readAsDataURL(file);
         } catch (exception) {
@@ -272,6 +272,10 @@ const getImageSize = (imagePath, options) => {
                 return reject(`Please provide an image with minimum height of ${options.minHeight} pixels`);
             }
             return resolve({ width: imageWidth, height: imageHeight, imageObj: image });
+        };
+        image.onerror = () => {
+            const error = new Error('Image could not be loaded');
+            reject(error);
         };
         image.src = imagePath;
     });

@@ -270,6 +270,11 @@ const generalMessages = defineMessages({
         description: 'notes',
         defaultMessage: 'Notes'
     },
+    notFound: {
+        id: 'app.general.notFound',
+        description: 'not found',
+        defaultMessage: 'Not found'
+    },
     ok: {
         id: 'app.general.ok',
         description: 'Ok',

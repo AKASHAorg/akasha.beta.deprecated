@@ -53,14 +53,19 @@ class DataLoader extends Component {
     };
 
     render () {
-        const { size, style } = this.props;
+        const { size, style, message, className } = this.props;
         if (this.state.loading) {
             const innerClassName = size ? `data-loader__inner_${size}` : 'data-loader__inner';
             return (
-              <div className="data-loader" style={style}>
+              <div className={`data-loader ${className || ''}`} style={style}>
                 <div className={innerClassName}>
                   <Spin size={size} />
                 </div>
+                {message &&
+                  <div className="data-loader__message">
+                    {message}
+                  </div>
+                }
               </div>
             );
         }
@@ -70,7 +75,9 @@ class DataLoader extends Component {
 
 DataLoader.propTypes = {
     children: PropTypes.node,
+    className: PropTypes.string,
     flag: PropTypes.bool,
+    message: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
     timeout: PropTypes.number,
     size: PropTypes.string,
     style: PropTypes.shape()

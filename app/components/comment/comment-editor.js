@@ -20,37 +20,6 @@ const { AtomicBlockUtils, convertToRaw, EditorState, RichUtils, SelectionState }
 const { handleKeyCommand, toggleInlineStyle, toggleBlockType } = RichUtils;
 
 const config = {
-    theme: {
-        emoji: 'draftJsEmojiPlugin__emoji__2oqBk',
-        emojiSuggestions: 'draftJsEmojiPlugin__emojiSuggestions__2ffcV',
-        emojiSuggestionsEntry: 'draftJsEmojiPlugin__emojiSuggestionsEntry__2-2p_',
-        emojiSuggestionsEntryFocused: 'draftJsEmojiPlugin__emojiSuggestionsEntryFocused__XDntY',
-        emojiSuggestionsEntryText: 'draftJsEmojiPlugin__emojiSuggestionsEntryText__2sPjk',
-        emojiSuggestionsEntryIcon: 'draftJsEmojiPlugin__emojiSuggestionsEntryIcon__1qC2V',
-        emojiSelect: 'comment-editor__emoji-select',
-        emojiSelectButton: 'comment-editor__emoji-select-button',
-        emojiSelectButtonPressed: 'comment-editor__emoji-select-button_pressed',
-        emojiSelectPopover: 'comment-editor__emoji-select-popover',
-        emojiSelectPopoverClosed: 'comment-editor__emoji-select-popover-closed',
-        emojiSelectPopoverTitle: 'comment-editor__emoji-select-popover-title',
-        emojiSelectPopoverGroups: 'comment-editor__emoji-select-popover-groups',
-        emojiSelectPopoverGroup: 'draftJsEmojiPlugin__emojiSelectPopoverGroup__2J_ye',
-        emojiSelectPopoverGroupTitle: 'draftJsEmojiPlugin__emojiSelectPopoverGroupTitle__2gFs6',
-        emojiSelectPopoverGroupList: 'draftJsEmojiPlugin__emojiSelectPopoverGroupList__IYtlu',
-        emojiSelectPopoverGroupItem: 'draftJsEmojiPlugin__emojiSelectPopoverGroupItem__2hlBb',
-        emojiSelectPopoverToneSelect: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelect__2GSYa',
-        emojiSelectPopoverToneSelectList: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectList__2iPME',
-        emojiSelectPopoverToneSelectItem: 'draftJsEmojiPlugin__emojiSelectPopoverToneSelectItem__3VVdN',
-        emojiSelectPopoverEntry: 'draftJsEmojiPlugin__emojiSelectPopoverEntry__3nQtJ',
-        emojiSelectPopoverEntryFocused: 'draftJsEmojiPlugin__emojiSelectPopoverEntryFocused__GHigP',
-        emojiSelectPopoverEntryIcon: 'draftJsEmojiPlugin__emojiSelectPopoverEntryIcon__3SzrH',
-        emojiSelectPopoverNav: 'comment-editor__emoji-select-popover-nav',
-        emojiSelectPopoverNavItem: 'draftJsEmojiPlugin__emojiSelectPopoverNavItem__14K42',
-        emojiSelectPopoverNavEntry: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntry__2bPuZ',
-        emojiSelectPopoverNavEntryActive: 'draftJsEmojiPlugin__emojiSelectPopoverNavEntryActive__2G0lt',
-        emojiSelectPopoverScrollbar: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbar__QWjCt',
-        emojiSelectPopoverScrollbarThumb: 'draftJsEmojiPlugin__emojiSelectPopoverScrollbarThumb__1J-ig'
-    },
     imagePath: 'images/emoji-svg/'
 };
 

@@ -23,7 +23,7 @@ const navigateTo = (url, onClick, isEdit) =>
 
 const WebsiteInfoCard = (props) => {
     const { cardInfo, baseUrl, hasCard, baseWidth, onClick,
-        onClose, isEdit, loading } = props;
+        onClose, isEdit, loading, error, infoExtracted } = props;
     const { url, image, description, title, bgColor } = cardInfo;
     const bodyStyle = {
         padding: 0
@@ -37,18 +37,31 @@ const WebsiteInfoCard = (props) => {
     return (
       <Card
         bodyStyle={bodyStyle}
-        className={`website-info-card website-info-card${isEdit ? '_edit' : ''}`}
+        className={
+            `website-info-card
+            website-info-card${!infoExtracted && !error ? '_empty' : ''}
+            website-info-card${isEdit ? '_edit' : ''}`
+        }
         loading={loading}
         noHovering
       >
-        {isEdit &&
+        {!title && !description && infoExtracted && !error &&
+          <div>Cannot extract information from website!</div>
+        }
+        {error &&
+          <div className="website-info-card__error">
+            <Icon type="exclamation-circle-o" />
+            {error}
+          </div>
+        }
+        {isEdit && infoExtracted &&
           <Icon
             type="close-square"
             className="website-info-card__close-button"
             onClick={onClose}
           />
         }
-        {(image.size > 0) &&
+        {!error && (image.size > 0) &&
           <a
             onClick={navigateTo(url, onClick, isEdit)}
             href={url}
@@ -68,7 +81,7 @@ const WebsiteInfoCard = (props) => {
           className="website-info-card__title-wrapper"
           style={{ padding: '0 12px' }}
         >
-          {title &&
+          {!error && title &&
             <h3
               className="website-info-card__title"
             >
@@ -82,7 +95,7 @@ const WebsiteInfoCard = (props) => {
               </a>
             </h3>
           }
-          {description &&
+          {!error && description &&
             <a
               href={url}
               onClick={navigateTo(url, onClick, isEdit)}
@@ -92,7 +105,7 @@ const WebsiteInfoCard = (props) => {
               {description}
             </a>
           }
-          {url && hasCard &&
+          {!error && url && hasCard &&
             <small
               title={url}
               className="website-info-card__source-url"
@@ -115,6 +128,7 @@ WebsiteInfoCard.propTypes = {
     baseUrl: PropTypes.string,
     baseWidth: PropTypes.number,
     cardInfo: PropTypes.shape(),
+    error: PropTypes.string,
     hasCard: PropTypes.bool,
     onClick: PropTypes.func,
     onClose: PropTypes.func,

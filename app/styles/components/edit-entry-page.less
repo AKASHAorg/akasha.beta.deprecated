@@ -1,11 +1,23 @@
 .edit-entry-page {
     position: relative;
-    height: ~"calc(100% - 64px)";
+    height: ~"calc(100% - @{editor-footer-height})";
+    &.link-page {
+        .edit-entry-page__tag-editor {
+            margin:0 auto;
+        }
+        .text-entry-editor {
+            overflow-y: visible;
+            overflow-x: hidden;
+        }
+    }
+    &__data-loader {
+        height: 100%;
+    }
     &__error-text {
         color: @error-color;
     }
     &__url-input-field {
-        width: 700px;
+        width: @text-editor-width;
         margin: 0 auto;
         display: block;
         border: none;
@@ -17,20 +29,28 @@
     &__title-input-field {
         font-size: 30px;
         line-height: 1.2;
-        width: 100%;
         border: none;
         outline: none;
         font-weight: 400;
         resize: none;
         background: transparent;
-        width: 700px;
-        margin: 0 auto;
+        width: @text-editor-width;
         display: inherit;
+        position: absolute;
+        left: 50%;
+        margin-left: (@text-editor-width / 2) * -1;
+        top: 24px;
+        &_bottom,
+        &_between {
+            top: @top-bar-height * -1;
+        }
     }
+
     &__content {
         height: 100%;
         overflow: hidden
     }
+
     &__publish-options {
         position: fixed;
         top: 72px;
@@ -39,11 +59,12 @@
         cursor: pointer;
         z-index: 5;
     }
+
     &__publish-options-panel-wrapper {
         position: fixed;
         right: -100%;
-        bottom: 64px;
-        top: 50px;
+        bottom: @editor-footer-height;
+        top: @top-bar-height;
         background-color: #FFF;
         z-index: 10;
         transition: right 0.218s @ease-in-out;
@@ -52,17 +73,35 @@
             transition: right 0.218s @ease-in-out;
         }
     }
+
     &__editor-wrapper {
-        padding-top: 48px;
         text-align: center;
         transition: width 0.218s @ease-in-out;
         height: 100%;
-        overflow-y: auto;
+        width: 100%;
+    }
+    &.link-page {
+        .edit-entry-page__editor {
+            position: relative;
+            left: 0;
+            height: ~"calc(100% - @{editor-footer-height} / 2)";
+        }
+        .edit-entry-page__content {
+            overflow: auto;
+        }
     }
     &__editor {
-        // min-height: ~"calc(100% - 64px)";
-        height: ~"calc(100% - 64px)";
+        height: ~"calc(100% - @{editor-footer-height} - @{top-bar-height})";
+        position: fixed;
+        top: @top-bar-height;
+        bottom: 0;
+        right: 0;
+        left: @sidebar-width + @secondary-sidebar-width;
+        &_full {
+            left: @sidebar-width;
+        }
     }
+
     &__editor,
     &__tag-editor {
         text-align: left;
@@ -70,24 +109,34 @@
         margin: 0 auto;
     }
     &__info-card-wrapper {
-        max-width: 700px;
+        max-width: @text-editor-width;
         margin: 0 auto;
     }
     &__tag-editor {
-        width: 700px;
+        width: @text-editor-width;
+        left: 50%;
+        margin-left: (@text-editor-width / 2) * -1;
+        &_top,
+        &_between {
+            bottom: @editor-footer-height * -1.5;
+        }
+        &_bottom,
+        &_noScroll {
+            bottom: 0;
+        }
     }
     &__footer-wrapper {
         position: fixed;
         bottom: 0;
-        left: calc(200px + 64px);
+        left: @sidebar-width + @secondary-sidebar-width;
         right: 0;
-        height: 64px;
+        height: @editor-footer-height;
         border-top: 1px solid #DDD;
         background: #FFF;
         transition: left 0.218s @ease-in-out;
         z-index: 10;
         &_full {
-            left: 64px;
+            left: @sidebar-width;
             transition: left 0.218s @ease-in-out;
         }
     }
