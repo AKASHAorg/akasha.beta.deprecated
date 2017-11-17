@@ -128,7 +128,6 @@ class EntryCard extends Component {
         const cardClass = classNames('entry-card', {
             'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent
         });
-
         return (
           <Card
             className={cardClass}
@@ -255,6 +254,7 @@ class EntryCard extends Component {
                   cardInfo={content.get('cardInfo')}
                   hasCard={!!hasContent}
                   onClick={toggleOutsideNavigation}
+                  maxImageHeight={150}
                 />
               </div>
             }
