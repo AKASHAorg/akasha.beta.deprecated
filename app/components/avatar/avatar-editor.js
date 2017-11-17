@@ -10,7 +10,7 @@ class AvatarEditr extends Component {
         super(props);
         this.state = {
             avatarImage: null,
-            avatarScale: props.avatarScale || 1.2,
+            avatarScale: props.avatarScale || 1,
             imageLoaded: false,
             rotation: 0,
             highlightDropZone: false
@@ -47,7 +47,7 @@ class AvatarEditr extends Component {
             avatarImage: null,
             isNewAvatarLoaded: false,
             rotation: 0,
-            avatarScale: 1.2,
+            avatarScale: 1,
             highlightDropZone: false
         });
     }
@@ -122,7 +122,7 @@ class AvatarEditr extends Component {
         return (
           <div
             className="avatar"
-            style={{ width: size, ...style }}
+            style={{ width: size, height: size, ...style }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onDragEnter={this._highlightDropZone}
@@ -189,7 +189,14 @@ class AvatarEditr extends Component {
                   onDropFile={this._handleImageAdd}
                   onLoadSuccess={this._handleImageLoad}
                 />
-                <div className="avatar__controls">
+                <div className="image-uploader__clear-image-button">
+                  <Button
+                    type="standard"
+                    icon="close-circle"
+                    onClick={this._handleAvatarClear}
+                  />
+                </div>
+                {/* <div className="avatar__controls">
                   <Row type="flex" align="middle" gutter={8}>
                     <Col span={16}>
                       <Slider
@@ -221,7 +228,7 @@ class AvatarEditr extends Component {
                       />
                     </Col>
                   </Row>
-                </div>
+                </div> */}
               </div>
             }
           </div>

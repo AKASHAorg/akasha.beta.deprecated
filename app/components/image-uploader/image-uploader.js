@@ -155,7 +155,7 @@ class ImageUploader extends Component {
                   alt=""
                 />
               }
-              {processingFinished && initialImage.size !== 0 && !imageLoaded &&
+              {processingFinished && initialImage && initialImage.size !== 0 && !imageLoaded &&
                 <div
                   className="image-uploader__generating-preview"
                 >
@@ -191,7 +191,7 @@ class ImageUploader extends Component {
                 </div>
               }
             </div>
-            {(initialImage.size === 0) && processingFinished &&
+            {(initialImage && initialImage.size === 0) && processingFinished &&
               <div
                 className={
                     `image-uploader__empty-container
