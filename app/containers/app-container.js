@@ -142,6 +142,8 @@ class AppContainer extends Component {
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
+                        <Route exact path="/@:akashaId" component={ProfilePage} />
+                        <Route exact path="/0x:ethAddress" component={ProfilePage} />
                         <Route path="/profileoverview/overview" component={ProfileOverview} />
                         <Route path="/profileoverview/mybalance" component={MyBalance} />
                         <Route path="/profileoverview/myentries" component={MyEntries} />
@@ -151,8 +153,6 @@ class AppContainer extends Component {
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
-                          <Route exact path="/@:akashaId" component={ProfilePage} />
-                          <Route exact path="/0x:ethAddress" component={ProfilePage} />
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
@@ -161,18 +161,16 @@ class AppContainer extends Component {
                         </Switch>
                         {isOverlay &&
                           <div>
-                            <Route exact path="/@:akashaId" component={ProfilePage} />
-                            <Route exact path="/0x:ethAddress" component={ProfilePage} />
                             <Route path="/@:akashaId/:entryId" component={EntryPageContainer} />
                             <Route path="/0x:ethAddress/:entryId" component={EntryPageContainer} />
                           </div>
                         }
                       </PageContent>
                       <TopBar
-                        showSecondarySidebar={appState.get('showSecondarySidebar')}
-                        location={location}
                         history={history}
                         intl={intl}
+                        location={location}
+                        showSecondarySidebar={appState.get('showSecondarySidebar')}
                       />
                       {!!showWallet &&
                         <WalletPanel

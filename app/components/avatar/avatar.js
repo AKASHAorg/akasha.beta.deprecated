@@ -39,7 +39,7 @@ const AvatarPresenter = (props) => { // eslint-disable-line
             console.error('Avatar with link should have ethAddress');
         }
         return (
-          <Link to={{ pathname: `/${ethAddress}`, state: { overlay: true } }}>
+          <Link to={`/${ethAddress}`}>
             {avatar}
           </Link>
         );

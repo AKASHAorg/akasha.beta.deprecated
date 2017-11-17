@@ -223,10 +223,11 @@ function* entryMoreNewestIterator ({ columnId }) {
 
 function* entryMoreProfileIterator ({ columnId, value }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const toBlock = columnId ?
+    const isProfileEntries = columnId === 'profileEntries';
+    const toBlock = !isProfileEntries ?
         yield select(state => selectColumnLastBlock(state, columnId)) :
         yield select(state => selectProfileEntriesLastBlock(state, value));
-    const lastIndex = columnId ?
+    const lastIndex = !isProfileEntries ?
         yield select(state => selectColumnLastIndex(state, columnId)) :
         yield select(state => selectProfileEntriesLastIndex(state, value));
     let akashaId, ethAddress; // eslint-disable-line
