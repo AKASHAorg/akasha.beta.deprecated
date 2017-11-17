@@ -28,6 +28,17 @@ notification.config({
     duration: 0
 });
 
+/*
+const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
+    <Route {...rest} render={props => (
+        <Layout>
+            <Component {...props} />
+        </Layout>
+    )} />
+)
+usage <AppRoute exact path="/foo" layout={MainLayout} component={Foo} />
+*/
+
 class AppContainer extends Component {
     bootstrappingHome = false;
     // pass previousLocation to Switch when we need to render Entry Page as an overlay

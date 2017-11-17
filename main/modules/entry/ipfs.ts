@@ -26,11 +26,12 @@ class IpfsEntry {
     /**
      *
      * @param content
-     * @param tags
-     * @param previous
-     * @returns {Bluebird<U>}
+     * @param {any[]} tags
+     * @param {number} entryType
+     * @param {{hash: string; version: number}} previous
+     * @returns {Bluebird<any>}
      */
-    create(content: any, tags: any[], previous?: { hash: string, version: number }) {
+    create(content: any, tags: any[], entryType: number, previous?: { hash: string, version: number }) {
         const ipfsApiRequests = [];
         this.entryLinks = [];
         this.draft = Object.assign({}, content.draft);
@@ -93,6 +94,7 @@ class IpfsEntry {
                         tags: this.tags,
                         title: this.title,
                         wordCount: this.wordCount,
+                        entryType: entryType,
                         version: (previous && previous.hasOwnProperty('version')) ? ++previous.version : 0
                     }, this.entryLinks).then((node) => node.hash);
             });
@@ -104,7 +106,7 @@ class IpfsEntry {
      * @param tags
      * @param previousHash
      */
-    edit(content: any, tags: any[], previousHash) {
+    edit(content: any, tags: any[], entryType: number, previousHash) {
         return IpfsConnector.getInstance().api
             .get(previousHash)
             .then((data) => {
@@ -115,6 +117,7 @@ class IpfsEntry {
                 return this.create(
                     content,
                     tags,
+                    entryType,
                     {
                         hash: previousHash,
                         version: (data.version) ? data.version : 0

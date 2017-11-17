@@ -1,6 +1,18 @@
 .profile-edit-form {
+    &__avatar-title {
+        padding-bottom: 5px;
+        font-size: 11px;
+        color: @text-color-secondary;
+    }
+
     &__bg-image {
         padding: 20px 0px;
+    }
+
+    &__bg-image-title {
+        padding-bottom: 5px;
+        font-size: 11px;
+        color: @text-color-secondary;
     }
 
     &__pad {
@@ -15,6 +27,13 @@
         height:  100%;
         padding: 20px;   
         overflow-y: auto;
+
+        .ant-form-item-label {
+            padding-bottom: 3px;
+        }
+        .ant-form-item-label label {
+            font-size: 11px;
+        }
     }
 
     &__buttons-wrapper {
@@ -29,7 +48,7 @@
     }
 
     &__terms {
-        padding: 20px 0;
+        margin: 5px 0;
     }
     
     &__textarea {
@@ -37,10 +56,10 @@
     }
 
     &__add-links-btn {
-        margin: 16px 0 0 0;
+        margin: 16px 0;
     }
 
-    &__links {
-        margin: 20px 0 0 0;
+    &__link {
+        padding-top: 20px;
     }
 }

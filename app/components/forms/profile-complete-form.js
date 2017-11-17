@@ -4,6 +4,7 @@ import { Map } from 'immutable';
 import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
+import QRCode from 'qrcode.react';
 import { Row, Card, Col, Input, Button, Form, Icon, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
@@ -14,34 +15,62 @@ import { uploadImage } from '../../local-flux/services/utils-service';
 
 const FormItem = Form.Item;
 
-const serverChannel = window.Channel.server.registry.profileExists;
-const clientChannel = window.Channel.client.registry.profileExists;
-
 class ProfileCompleteForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
             akashaIdIsValid: true,
             akashaIdExists: false,
-            insufficientEth: false
+            insufficientEth: false,
+            insufficientEthRenderFlag: false
         };
         this.validatorTypes = getProfileSchema(props.intl, { isUpdate: props.isUpdate });
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
+
     getValidatorData = () => this.props.tempProfile.toJS();
+
     componentWillReceiveProps (nextProps) {
-        const { isUpdate, tempProfile } = nextProps;
+        const { balance, isUpdate, tempProfile, profileExistsData } = nextProps;
         // we need to enable update temp profile button only if something has changed
         // so we need to keep a ref to old temp profile.
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
         }
+        if (balance.get('eth') >= 0.1) {
+            this.setState({
+                insufficientEth: false,
+                insufficientEthRenderFlag: false
+            });
+        }
+        if (profileExistsData !== this.props.profileExistsData) {
+            const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
+            this.setState({
+                akashaIdIsValid: idValid,
+                akashaIdExists: exists
+            });
+            if (tempProfile.get('akashaId') !== normalisedId) {
+                this.setState({ akashaIdIsValid: false });
+            }
+        }
     }
 
-    componentWillUnmount () {
-        clientChannel.removeListener(this._handleResponse);
+    componentDidUpdate () {
+        const { insufficientEth, insufficientEthRenderFlag } = this.state;
+        if (insufficientEth && !insufficientEthRenderFlag) {
+            this.container.scrollTop = this.container.scrollHeight;
+            this.state.insufficientEthRenderFlag = true;
+        }
     }
+
+    getContainerRef = (el) => {
+        const { getFormContainerRef } = this.props;
+        this.container = el;
+        if (getFormContainerRef) {
+            getFormContainerRef(el);
+        }
+    };
 
     _handleAddLink = linkType => () => {
         const { tempProfile } = this.props;
@@ -96,37 +125,6 @@ class ProfileCompleteForm extends Component {
         };
     }
 
-    _handleResponse = (ev, resp) => {
-        const { tempProfile, onProfileUpdate } = this.props;
-        const { idValid, exists, normalisedId } = resp.data;
-        if (resp.error && resp.error.message) {
-            this.setState({
-                error: `${resp.error.message}`
-            });
-            return;
-        }
-        this.setState({
-            akashaIdIsValid: idValid,
-            akashaIdExists: exists
-        });
-        if (normalisedId) {
-            onProfileUpdate(tempProfile.set('akashaId', normalisedId));
-        }
-    }
-
-    _validateAkashaId = (akashaId) => {
-        if (!this.idVerifyChannelEnabled) {
-            serverChannel.enable();
-            this.idVerifyChannelEnabled = true;
-        }
-        // one listener is auto attached on application start
-        // we need to attach another one with the provided handler
-        if (clientChannel.listenerCount <= 1) {
-            clientChannel.on(this._handleResponse);
-        }
-        serverChannel.send({ akashaId });
-    }
-
     _onValidate = field => (err) => {
         if (err) {
             this.setState({
@@ -139,17 +137,14 @@ class ProfileCompleteForm extends Component {
         }
         // validation passed
         if (field === 'akashaId') {
-            this._validateAkashaId(this.props.tempProfile.get('akashaId'));
+            this.props.profileExists(this.props.tempProfile.get('akashaId'));
         }
     }
 
-    _validateField = (field, index, sub) =>
+    _validateField = field =>
         () => {
             if (!this.showErrorOnFields.includes(field)) {
                 this.showErrorOnFields.push(field);
-            }
-            if (field === 'links') {
-                return this.props.validate(this._onValidate(field[index][sub]));
             }
             return this.props.validate(this._onValidate(field));
         };
@@ -158,9 +153,10 @@ class ProfileCompleteForm extends Component {
         const { getValidationMessages } = this.props;
         if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
             if (field === 'links') {
-                const errors = getValidationMessages(field)[index];
-                if (errors && errors[sub]) {
-                    return errors[sub][0];
+                const joiPath = `${field},${index},${sub}`;
+                const errors = getValidationMessages(joiPath);
+                if (errors) {
+                    return errors[0];
                 }
                 return null;
             }
@@ -170,19 +166,18 @@ class ProfileCompleteForm extends Component {
     }
     // server validated akashaId errors must have higher priority
     _getAkashaIdErrors = () => {
-        const { intl } = this.props;
-        const { akashaIdIsValid, akashaIdExists, error } = this.state;
-        if (error) {
-            return error;
-        }
-        if (!akashaIdIsValid) {
-            return intl.formatMessage(validationMessages.akashaIdNotValid);
-        }
-        if (akashaIdExists) {
-            return intl.formatMessage(validationMessages.akashaIdExists);
-        }
-        if (this._getErrorMessages('akashaId')) {
-            return this._getErrorMessages('akashaId');
+        const { intl, tempProfile, profileExistsData } = this.props;
+        const { akashaIdIsValid, akashaIdExists } = this.state;
+        if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
+            if (!akashaIdIsValid) {
+                return intl.formatMessage(validationMessages.akashaIdNotValid);
+            }
+            if (akashaIdExists) {
+                return intl.formatMessage(validationMessages.akashaIdExists);
+            }
+            if (this._getErrorMessages('akashaId')) {
+                return this._getErrorMessages('akashaId');
+            }
         }
         return null;
     }
@@ -242,7 +237,6 @@ class ProfileCompleteForm extends Component {
             }
             if (balance.get('eth') < 0.1) {
                 this.setState({ insufficientEth: true });
-                // this.forceUpdate();
                 return;
             }
             this.isSubmitting = true;
@@ -258,28 +252,47 @@ class ProfileCompleteForm extends Component {
         });
     }
 
+    _handleSave = () => {
+        const { tempProfile } = this.props;
+        this.props.tempProfileCreate(tempProfile);
+    }
+
+    onCopy = () => {
+        const { loggedEthAddress } = this.props;
+        const textArea = document.createElement('textarea');
+        textArea.value = loggedEthAddress;
+        textArea.style.position = 'fixed';
+        textArea.style.top = -99999;
+        textArea.style.left = -99999;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+    };
+
 
     render () {
-        const { intl, isUpdate, tempProfile } = this.props;
+        const { intl, isUpdate, tempProfile, loggedEthAddress } = this.props;
         const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
             baseUrl } = tempProfile;
         const { formatMessage } = intl;
 
         return (
           <div className="profile-complete-form__wrap">
-            <div className="profile-complete-form__form-wrapper">
+            <div className="profile-complete-form__form-wrapper" ref={this.getContainerRef}>
               <Row type="flex" className="">
                 <Form
                   onSubmit={this._handleSubmit}
                 >
-                  <Col type="flex" md={24}>
+                  <Col type="flex" md={24} className="profile-complete-form__image-wrap">
                     <Col md={8}>
                       <div className="row">
-                        <p className="col-xs-12">
+                        <p className="profile-complete-form__avatar-title">
                           {intl.formatMessage(profileMessages.avatarTitle)}
                         </p>
                         <div className="col-xs-12 center-xs">
                           <AvatarEditor
+                            size={100}
                             editable
                             ref={(avtr) => { this.avatar = avtr; }}
                             image={avatar}
@@ -291,7 +304,7 @@ class ProfileCompleteForm extends Component {
                     </Col>
                     <Col md={16}>
                       <div className="row">
-                        <p className="col-xs-12" >
+                        <p className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
                         </p>
                         <div className="col-xs-12">
@@ -312,7 +325,6 @@ class ProfileCompleteForm extends Component {
                     <FormItem
                       label={formatMessage(formMessages.akashaId)}
                       colon={false}
-                      hasFeedback
                       validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                       help={this._getAkashaIdErrors('akashaId')}
                       style={{ marginRight: 8 }}
@@ -330,7 +342,6 @@ class ProfileCompleteForm extends Component {
                       <FormItem
                         label={formatMessage(formMessages.tips)}
                         colon={false}
-                        hasFeedback
                         style={{ marginRight: 8, marginLeft: 8 }}
                       >
                         <Switch
@@ -344,37 +355,37 @@ class ProfileCompleteForm extends Component {
                       {formatMessage(formMessages.acceptTips)}
                     </div>
                   </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.firstName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('firstName')}
-                      style={{ marginRight: 8 }}
-                    >
-                      <Input
-                        value={firstName}
-                        onChange={this._handleFieldChange('firstName')}
-                        onBlur={this._validateField('firstName')}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col md={12}>
-                    <FormItem
-                      label={formatMessage(formMessages.lastName)}
-                      colon={false}
-                      hasFeedback
-                      validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
-                      help={this._getErrorMessages('lastName')}
-                      style={{ marginLeft: 8 }}
-                    >
-                      <Input
-                        value={lastName}
-                        onChange={this._handleFieldChange('lastName')}
-                        onBlur={this._validateField('lastName')}
-                      />
-                    </FormItem>
+                  <Col md={24}>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.firstName)}
+                        colon={false}
+                        validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('firstName')}
+                        style={{ marginRight: 8 }}
+                      >
+                        <Input
+                          value={firstName}
+                          onChange={this._handleFieldChange('firstName')}
+                          onBlur={this._validateField('firstName')}
+                        />
+                      </FormItem>
+                    </Col>
+                    <Col md={12}>
+                      <FormItem
+                        label={formatMessage(formMessages.lastName)}
+                        colon={false}
+                        validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
+                        help={this._getErrorMessages('lastName')}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Input
+                          value={lastName}
+                          onChange={this._handleFieldChange('lastName')}
+                          onBlur={this._validateField('lastName')}
+                        />
+                      </FormItem>
+                    </Col>
                   </Col>
                   <Col md={24}>
                     <FormItem
@@ -392,28 +403,12 @@ class ProfileCompleteForm extends Component {
                     </FormItem>
                   </Col>
                   <Col md={24}>
-                    <h3 className="col-xs-10 profile-complete-form__links">
+                    <h3 className="profile-complete-form__link">
                       {intl.formatMessage(profileMessages.linksTitle)}
                     </h3>
                     {links.map((link, index) => (
-                      <div key={`${index + 1}`}>
+                      <div key={`${index + 1}`} className="profile-complete-form__link">
                         <FormItem
-                          label={intl.formatMessage(formMessages.title)}
-                          colon={false}
-                          hasFeedback
-                          validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
-                          help={this._getErrorMessages('links', index, 'title')}
-                        >
-                          <Input
-                            value={link.get('title')}
-                            onChange={this._handleLinkChange('links', 'title', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'title')}
-                          />
-                        </FormItem>
-                        <FormItem
-                          label={intl.formatMessage(formMessages.url)}
-                          colon={false}
-                          hasFeedback
                           validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
                           help={this._getErrorMessages('links', index, 'url')}
                         >
@@ -421,7 +416,7 @@ class ProfileCompleteForm extends Component {
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'url')}
+                            onBlur={this._validateField('links')}
                           />
                         </FormItem>
                         <Button
@@ -432,7 +427,7 @@ class ProfileCompleteForm extends Component {
                         >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                       </div>
                         ))}
-                    <div className="col-xs-2 end-xs profile-complete-form__add-links-btn">
+                    <div className="profile-complete-form__add-links-btn">
                       <Button
                         icon="plus"
                         type="primary borderless"
@@ -445,24 +440,47 @@ class ProfileCompleteForm extends Component {
                   </Col>
                   {this.state.insufficientEth &&
                     <Col md={24}>
-                      <div className="profile-complete-form__insufficient-funds">
+                      <div
+                        className="profile-complete-form__insufficient-funds"
+                      >
                         <Card
                           bordered={false}
                           noHovering
                         >
                           <h3>{formatMessage(formMessages.insufficientEth)}</h3>
                           <p>{formatMessage(formMessages.depositEth)}</p>
-                          <Button
-                            className="profile-complete-form__request-btn"
-                            size="large"
-                            type="primary"
-                          >
-                            Request ether from faucet
-                          </Button>
+                          <div className="profile-complete-form__address-info">
+                            <div className="profile-complete-form__qr-wrap">
+                              <span className="profile-complete-form__qr-title">QR Code</span>
+                              <div className="profile-complete-form__qr-code">
+                                <QRCode value={loggedEthAddress} />
+                              </div>
+                            </div>
+                            <div>
+                              <FormItem
+                                className="profile-complete-form__form-item"
+                                colon={false}
+                                label={intl.formatMessage(profileMessages.yourEthAddress)}
+                              >
+                                <Input
+                                  className="profile-complete-form__input profile-complete-form__my-address"
+                                  readOnly
+                                  value={loggedEthAddress}
+                                />
+                                <div
+                                  className="content-link profile-complete-form__copy-button"
+                                  onClick={this.onCopy}
+                                >
+                                  {intl.formatMessage(generalMessages.copy)}
+                                </div>
+                              </FormItem>
+                            </div>
+                          </div>
                         </Card>
                       </div>
                     </Col>
-                  }
+                }
+                  <Col md={24} className="profile-complete-form__filler" />
                 </Form>
               </Row>
             </div>
@@ -470,15 +488,25 @@ class ProfileCompleteForm extends Component {
               <div className="content-link" onClick={this._handleSkipStep}>
                 {intl.formatMessage(generalMessages.skipStep)} <Icon type="arrow-right" />
               </div>
-              <Button
-                htmlType="submit"
-                className="new-identity__button"
-                onClick={this._handleSubmit}
-                size="large"
-                type="primary"
-              >
-                {intl.formatMessage(generalMessages.submit)}
-              </Button>
+              <div className="profile-complete-form__buttons-wrapper">
+                <div className="profile-complete-form__save-btn">
+                  <Button
+                    size="large"
+                    onClick={this._handleSave}
+                  >
+                    {intl.formatMessage(profileMessages.saveForLater)}
+                  </Button>
+                </div>
+                <Button
+                  htmlType="submit"
+                  className="new-identity__button"
+                  onClick={this._handleSubmit}
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.submit)}
+                </Button>
+              </div>
             </div>
           </div>
         );
@@ -492,8 +520,13 @@ ProfileCompleteForm.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
+    getFormContainerRef: PropTypes.func,
+    loggedEthAddress: PropTypes.string,
     onProfileUpdate: PropTypes.func.isRequired,
+    profileExists: PropTypes.func,
+    profileExistsData: PropTypes.shape(),
     tempProfile: PropTypes.shape(),
+    tempProfileCreate: PropTypes.func,
     validate: PropTypes.func,
 };
 

@@ -1,5 +1,6 @@
 import { take, put, call, apply, fork, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/search-actions';
+import * as tagActions from '../actions/tag-actions';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import { entrySearchLimit } from '../../constants/iterator-limits';
@@ -106,6 +107,7 @@ function* watchSearchTagsChannel () {
             yield put(actions.searchTagsError(resp.error));
         } else if (resp.data.collection && query === resp.request.text) {
             yield put(actions.searchTagsSuccess(resp.data.collection));
+            yield put(tagActions.tagGetEntriesCount(resp.data.collection));
         }
     }
 }
