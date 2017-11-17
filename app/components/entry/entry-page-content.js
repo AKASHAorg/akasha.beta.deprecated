@@ -35,7 +35,7 @@ class EntryPageContent extends Component {
             entryId: entry.get('entryId'),
             entryTitle: entry.getIn(['content', 'title']),
             entryVersion: latestVersion,
-            publisher: entry.getIn(['entryEth', 'publisher'])
+            publisher: entry.getIn(['author', 'ethAddress'])
         });
     };
 

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Icon, Input } from 'antd';
+import uniq from 'lodash/uniq';
 import { HighlightCard } from '../';
 import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
@@ -14,8 +15,9 @@ import { selectHighlights, selectHighlightSearch } from '../../local-flux/select
 class Highlights extends Component {
     componentDidMount () {
         const { highlights } = this.props;
-        const akashaIds = highlights.map(highlight => ({ akashaId: highlight.get('publisher') }));
-        this.props.profileGetList(akashaIds.toJS());
+        const ethAddresses = uniq(highlights.map(highlight =>
+            ({ ethAddress: highlight.get('publisher') })));
+        this.props.profileGetList(ethAddresses.toJS());
     }
 
     shouldComponentUpdate (nextProps) {
@@ -49,6 +51,8 @@ class Highlights extends Component {
                 />
               </div>
               {highlights.map((highlight) => {
+                //   console.log('profiles: ', profiles.toJS(), 'publisherEth: ', highlight.get('publisher'));
+                //   console.log('get profile info: ', profiles.get(highlight.get('publisher')));
                   const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
                   return (
                     <HighlightCard
