@@ -104,7 +104,7 @@ class ListPopover extends Component {
 
     renderContent = () => {
         const { authorEthAddress, entryId, entryType, intl, listAdd, listDelete, lists,
-            listToggleEntry, search } = this.props;
+            listsAll, listToggleEntry, search } = this.props;
 
         if (this.state.addNewList) {
             return (
@@ -112,7 +112,7 @@ class ListPopover extends Component {
                 authorEthAddress={authorEthAddress}
                 entryId={entryId}
                 entryType={entryType}
-                lists={lists}
+                lists={listsAll}
                 onSave={listAdd}
                 onCancel={this.toggleNewList}
               />
@@ -201,7 +201,7 @@ class ListPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <svg style={{ width: '24px', height: '24px' }} viewBox="0 0 20 20">
+            <svg style={{ width: '24px', height: '24px', cursor: 'pointer' }} viewBox="0 0 20 20">
               <EntryBookmarkOff />
             </svg>
           </Popover>
@@ -216,6 +216,7 @@ ListPopover.propTypes = {
     entryType: PropTypes.number,
     intl: PropTypes.shape().isRequired,
     listAdd: PropTypes.func.isRequired,
+    listsAll: PropTypes.shape().isRequired,
     listDelete: PropTypes.func.isRequired,
     lists: PropTypes.shape().isRequired,
     listSearch: PropTypes.func.isRequired,
