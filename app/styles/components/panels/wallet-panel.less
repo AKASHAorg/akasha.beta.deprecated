@@ -1,3 +1,4 @@
+
 .wallet-panel {
     position: fixed;
     top: 40px;
@@ -9,6 +10,10 @@
 
     .ant-tabs-nav {
         width: 100%;
+    }
+
+    .ant-tabs-nav-wrap {
+        border-top: 1px solid @border-tab;
     }
 
     .ant-tabs-content {
@@ -46,11 +51,16 @@
         background: #f8f8f8;
         border-color: transparent;
         height: 39px;
+        margin-right: 0;
+        border-right: 1px solid @border-tab;
+        border-bottom: 1px solid @border-tab;
+        color: #cfcfcf;
     }
 
     .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
-        border-color: #fff;
+        border-bottom: 1px solid #ffffff;
         background: #fff;
         height: 40px;
+        color: @text-color;
     }
 }

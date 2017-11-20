@@ -201,10 +201,10 @@ class ImageUploader extends Component {
                 <SvgIcon style={{ height: 48, width: 48 }} >
                   <AddImage />
                 </SvgIcon>
-                <text className="image-uploader__helper-text">
+                <p className="image-uploader__helper-text">
                   {!highlightDropZone && intl.formatMessage(generalMessages.addImage)}
                   {highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
-                </text>
+                </p>
               </div>
             }
             <input
