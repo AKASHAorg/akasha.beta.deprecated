@@ -3,20 +3,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
-import { Icon, Input, Tabs } from 'antd';
-import { ListCard } from '../';
+import { Icon, Input } from 'antd';
+import { ListCard, NewListBtn } from '../';
 import { listDelete, listSearch } from '../../local-flux/actions/list-actions';
 import { selectLists, selectListSearch } from '../../local-flux/selectors';
-import { generalMessages, searchMessages } from '../../locale-data/messages';
-
-const TabPane = Tabs.TabPane;
+import { searchMessages } from '../../locale-data/messages';
 
 class Lists extends Component {
-    shouldComponentUpdate (nextProps) {
-        const { lists, search } = this.props;
-        return !lists.equals(nextProps.lists) || search !== nextProps.search;
-    }
-
     onSearchChange = (ev) => {
         this.props.listSearch(ev.target.value);
     };
@@ -39,26 +32,24 @@ class Lists extends Component {
         return (
           <div className="lists">
             <div className="lists__wrap">
-              <Tabs tabBarExtraContent={searchInput}>
-                <TabPane tab="All" key="all">
-                  <div className="lists__content">
-                    <Masonry
-                      className="lists__masonry"
-                      options={{ transitionDuration: 0 }}
-                    >
-                      {lists.map(list => (
-                        <ListCard
-                          deleteList={this.props.listDelete}
-                          key={list.get('id')}
-                          list={list}
-                        />
-                    ))}
-                    </Masonry>
-                  </div>
-                </TabPane>
-                <TabPane tab="Public" key="public"></TabPane>
-                <TabPane tab="Private" key="private"></TabPane>
-              </Tabs>
+              <div className="lists__header">
+                {searchInput}
+                <NewListBtn />
+              </div>
+              <div className="lists__content">
+                <Masonry
+                  className="lists__masonry"
+                  options={{ transitionDuration: 0 }}
+                >
+                  {lists.map(list => (
+                    <ListCard
+                      deleteList={this.props.listDelete}
+                      key={list.get('id')}
+                      list={list}
+                    />
+                ))}
+                </Masonry>
+              </div>
             </div>
           </div>
         );

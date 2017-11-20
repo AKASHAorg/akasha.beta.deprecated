@@ -9,7 +9,6 @@ import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 
-const { confirm } = Modal;
 const { Option } = Select;
 
 class ColumnHeader extends Component {
@@ -17,6 +16,7 @@ class ColumnHeader extends Component {
         super(props);
         this.state = {
             editMode: false,
+            modalVisible: false,
             popoverVisible: false,
             value: props.column.get('value')
         };
@@ -76,22 +76,35 @@ class ColumnHeader extends Component {
     onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
 
     deleteColumn = () => {
-        const { column, intl } = this.props;
-        this.setState({ popoverVisible: false });
-        const onOk = (cb) => {
-            this.props.dashboardDeleteColumn(column.get('id'));
-            cb();
-        };
-        const content = intl.formatMessage(dashboardMessages.deleteColumnConfirmation);
-        confirm({
-            content,
-            okText: intl.formatMessage(generalMessages.yes),
-            okType: 'danger',
-            cancelText: intl.formatMessage(generalMessages.no),
-            onOk,
-            onCancel: () => {}
+        this.setState({
+            popoverVisible: false,
+            modalVisible: true
         });
     };
+
+    showModal = () => {
+        const { column, intl } = this.props;
+        const onOk = () => {
+            this.props.dashboardDeleteColumn(column.get('id'));
+        };
+        const content = intl.formatMessage(dashboardMessages.deleteColumnConfirmation);
+        return (
+          <Modal
+            visible={this.state.modalVisible}
+            className={'delete-modal'}
+            width={320}
+            okText={intl.formatMessage(generalMessages.delete)}
+            okType={'danger'}
+            cancelText={intl.formatMessage(generalMessages.cancel)}
+            onOk={onOk}
+            onCancel={() => { this.setState({ modalVisible: false }); }}
+            closable={false}
+          >
+            {content}
+          </Modal>
+        );
+    }
+
 
     editColumn = (ev) => {
         ev.preventDefault();
@@ -213,6 +226,7 @@ class ColumnHeader extends Component {
               }
               {!readOnly && editMode && this.renderEditMode()}
             </div>
+            {this.showModal()}
             {!editMode &&
               <Popover
                 content={this.renderContent()}
