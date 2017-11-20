@@ -18,7 +18,8 @@ class ImageUploader extends Component {
             progress: INITIAL_PROGRESS_VALUE,
             error: null,
             processingFinished: true,
-            imageLoaded: false
+            imageLoaded: false,
+            imageUploaderClose: false
         };
     }
 
@@ -28,6 +29,7 @@ class ImageUploader extends Component {
             !equals(nextProps.containerSize, this.props.containerSize) ||
             !equals(nextState.imageFile, this.state.imageFile) ||
             !equals(nextState.imageLoaded, this.state.imageLoaded) ||
+            !equals(nextState.imageUploaderClose, this.state.imageUploaderClose) ||
             !equals(nextState.processingFinished, this.state.processingFinished) ||
             !equals(nextState.progress, this.state.progress) ||
             !equals(nextState.error, this.state.error) ||
@@ -137,7 +139,8 @@ class ImageUploader extends Component {
     }
     render () {
         const { multiFiles, intl, initialImage } = this.props;
-        const { imageLoaded, processingFinished, progress, error, highlightDropZone } = this.state;
+        const { imageLoaded, imageUploaderClose, processingFinished,
+            progress, error, highlightDropZone } = this.state;
 
         return (
           <div
@@ -145,7 +148,18 @@ class ImageUploader extends Component {
             className="image-uploader"
             onDragEnter={this._highlightDropZone}
             onDragLeave={this._diminishDropZone}
+            onMouseEnter={() => { this.setState({ imageUploaderClose: true }); }}
+            onMouseLeave={() => { this.setState({ imageUploaderClose: false }); }}
           >
+            {imageLoaded && processingFinished && imageUploaderClose &&
+              <div className="image-uploader__clear-image-button">
+                <Button
+                  type="standard"
+                  icon="close-circle"
+                  onClick={this._handleClearImage}
+                />
+              </div>
+              }
             <div>
               {processingFinished && initialImage && initialImage.size !== 0 &&
                 <img
@@ -179,15 +193,6 @@ class ImageUploader extends Component {
                       status="active"
                     />
                   </div>
-                </div>
-              }
-              {processingFinished && initialImage && initialImage.size !== 0 &&
-                <div className="image-uploader__clear-image-button">
-                  <Button
-                    type="standard"
-                    icon="close-circle"
-                    onClick={this._handleClearImage}
-                  />
                 </div>
               }
             </div>

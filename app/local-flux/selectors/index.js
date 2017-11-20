@@ -223,6 +223,8 @@ export const selectLists = (state) => {
     return state.listState.get('byName').toList();
 };
 
+export const selectListsAll = state => state.listState.get('byName').toList();
+
 export const selectListsNames = state => state.listState.get('byName').toList().map(list => list.get('name'));
 
 export const selectListsCount = state => state.listState.get('byName').size;

@@ -21,7 +21,7 @@ class ProfileOverviewSecondarySidebar extends Component {
               {intl.formatMessage(profileMessages.myProfile)}
             </div>
             <div className="profile-overview-sidebar__menu">
-              <Link to="/profileoverview/overview" className="profile-overview-sidebar__link">
+              {/* <Link to="/profileoverview/overview" className="profile-overview-sidebar__link">
                 <div className={this.checkActiveRoute('profileoverview/overview')}>
                   {intl.formatMessage(profileMessages.overview)}
                 </div>
@@ -40,7 +40,7 @@ class ProfileOverviewSecondarySidebar extends Component {
                 <div className={this.checkActiveRoute('profileoverview/contacts')}>
                   {intl.formatMessage(profileMessages.contacts)}
                 </div>
-              </Link>
+              </Link> */}
               <Link to="/profileoverview/myentries" className="profile-overview-sidebar__link">
                 <div className={this.checkActiveRoute('profileoverview/myentries')}>
                   {intl.formatMessage(profileMessages.myEntries)}
