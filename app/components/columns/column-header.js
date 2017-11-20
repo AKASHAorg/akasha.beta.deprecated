@@ -205,7 +205,7 @@ class ColumnHeader extends Component {
               {(readOnly || !editMode) &&
                 <div
                   className={titleClass}
-                  onDoubleClick={!readOnly && this.editColumn}
+                  onDoubleClick={!readOnly ? this.editColumn : undefined }
                   onMouseDown={this.onMouseDown}
                 >
                   {title || value}
