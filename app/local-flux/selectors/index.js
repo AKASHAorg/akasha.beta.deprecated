@@ -197,8 +197,7 @@ export const selectListEntryType = (state, listName, entryId) => {
 };
 
 export const selectListEntries = (state, value, limit) =>
-    state.listState
-        .getIn(['byName', value, 'entryIds'])
+    (state.listState.getIn(['byName', value, 'entryIds']) || new List())
         .slice(0, limit)
         .map((ele) => {
             const { entryId, entryType, authorEthAddress } = ele;

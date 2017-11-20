@@ -3,8 +3,8 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { Column, NewColumn } from './';
 
-const smallColumn = 360;
-const largeColumn = 540;
+const smallColumn = 320;
+const largeColumn = 480;
 
 const Dashboard = (props) => {
     const { columns, dashboards, getDashboardRef, match } = props;
@@ -19,7 +19,7 @@ const Dashboard = (props) => {
                 return null;
             }
             const baseWidth = column.get('large') ? largeColumn : smallColumn;
-            const width = `${baseWidth}px`;
+            const width = column.get('large') ? '540px' : '360px';
 
             return (
               <div

@@ -43,7 +43,6 @@ class ProfileEntriesColumn extends Component {
               title={intl.formatMessage(profileMessages.entries)}
             />
             <EntryList
-              // cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId="profileEntries"
               entries={entries}
               fetchingEntries={fetchingEntries}

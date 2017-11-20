@@ -42,7 +42,7 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { baseWidth, column, entries, intl, profileExists, profileResults } = this.props;
+        const { column, entries, intl, profileExists, profileResults } = this.props;
         let placeholderMessage;
         if (column.get('value') && profileExists.get('akashaId') === column.get('value')) {
             placeholderMessage = profileExists.getIn(['data', 'exists']) ?
@@ -63,13 +63,12 @@ class ProfileColumn extends Component {
               onSearch={this.props.searchProfiles}
             />
             <EntryList
-              baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreProfileIterator}
+              large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={placeholderMessage}
             />
@@ -79,7 +78,6 @@ class ProfileColumn extends Component {
 }
 
 ProfileColumn.propTypes = {
-    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
