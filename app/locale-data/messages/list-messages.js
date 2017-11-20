@@ -16,6 +16,11 @@ const listMessages = defineMessages({
         description: 'placeholder for list description input',
         defaultMessage: 'Add a short description'
     },
+    deleteList: {
+        id: 'app.list.deleteList',
+        description: 'delete list confirmation text',
+        defaultMessage: 'Do you want to delete this list?'
+    },
     listName: {
         id: 'app.list.listName',
         description: 'label for list name input',

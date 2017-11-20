@@ -11,7 +11,7 @@ import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryVote, selectLists,
-    selectListSearch, selectLoggedEthAddress, selectPendingClaim, selectPendingVote,
+    selectListsAll, selectListSearch, selectLoggedEthAddress, selectPendingClaim, selectPendingVote,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 
@@ -57,7 +57,7 @@ class EntryPageAction extends Component {
 
     render () {
         const { blockNr, canClaim, claimPending, containerRef, entry, entryBalance, intl, isOwnEntry,
-            lists, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
+            lists, listsAll, listSearchKeyword, noVotesBar, votePending, vote } = this.props;
         const showBalance = isOwnEntry && entryBalance && canClaim !== undefined;
         const alreadyClaimed = entryBalance && entryBalance.get('claimed');
         const iconClassName = 'entry-actions__vote-icon';
@@ -150,6 +150,7 @@ class EntryPageAction extends Component {
                     listAdd={this.props.listAdd}
                     listDelete={this.props.listDelete}
                     lists={lists}
+                    listsAll={listsAll}
                     listSearch={this.props.listSearch}
                     listToggleEntry={this.props.listToggleEntry}
                     search={listSearchKeyword}
@@ -201,6 +202,7 @@ EntryPageAction.propTypes = {
     intl: PropTypes.shape().isRequired,
     isOwnEntry: PropTypes.bool,
     listAdd: PropTypes.func.isRequired,
+    listsAll: PropTypes.shape().isRequired,
     listDelete: PropTypes.func.isRequired,
     lists: PropTypes.shape().isRequired,
     listSearch: PropTypes.func.isRequired,
@@ -223,6 +225,7 @@ function mapStateToProps (state, ownProps) {
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
         isOwnEntry: loggedEthAddress === entry.getIn(['author', 'ethAddress']),
         lists: selectLists(state),
+        listsAll: selectListsAll(state),
         listSearchKeyword: selectListSearch(state),
         loggedEthAddress,
         votePending: selectPendingVote(state, entry.get('entryId')),
