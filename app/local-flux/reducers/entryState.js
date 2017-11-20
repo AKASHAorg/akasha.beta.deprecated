@@ -1,8 +1,9 @@
-import { Map, fromJS } from 'immutable';
+import { List, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
-    EntryState, EntryVote } from './records';
+    EntryState, EntryVote, ProfileEntries } from './records';
+import { isEthAddress } from '../../utils/dataModule';
 
 const initialState = new EntryState();
 
@@ -203,7 +204,28 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_MORE_PROFILE_ITERATOR]: (state, { value }) => {
+        if (isEthAddress(value)) {
+            return state.setIn(['profileEntries', value, 'fetchingMoreEntries'], true);
+        }
+        return state;
+    },
+
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        const newState = entryIteratorHandler(state, { data });
+        const { ethAddress } = request;
+        if (!ethAddress) {
+            return newState;
+        }
+        const entryIds = data.collection.map(result => result.entryId);
+        return newState.mergeIn(['profileEntries', ethAddress], {
+            entryIds: state.getIn(['profileEntries', ethAddress, 'entryIds']).concat(entryIds),
+            fetchingMoreEntries: false,
+            lastBlock: data.lastBlock,
+            lastIndex: data.lastIndex,
+            moreEntries: !!data.lastBlock
+        });
+    },
 
     [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
@@ -216,7 +238,28 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_PAGE_SHOW]: (state, { entryId, version = null }) =>
         state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
 
-    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_PROFILE_ITERATOR]: (state, { value }) => {
+        if (isEthAddress(value)) {
+            return state.setIn(['profileEntries', value], new ProfileEntries({ fetchingEntries: true }));
+        }
+        return state;
+    },
+
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        const newState = entryIteratorHandler(state, { data });
+        const { ethAddress } = request;
+        if (!ethAddress) {
+            return newState;
+        }
+        const entryIds = data.collection.map(result => result.entryId);
+        return newState.mergeIn(['profileEntries', ethAddress], {
+            entryIds: new List(entryIds),
+            fetchingEntries: false,
+            lastBlock: data.lastBlock,
+            lastIndex: data.lastIndex,
+            moreEntries: !!data.lastBlock
+        });
+    },
 
     [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
         let newHashes = new Map();

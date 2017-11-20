@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import { DashboardTopBar, NewEntryTopBar, TopBarRight } from '../';
+import { DashboardTopBar, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
 import { toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
@@ -36,6 +36,7 @@ class TopBar extends PureComponent {
                 component={DashboardTopBar}
                 path="/dashboard/:dashboardId?"
               />
+              <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
               <Route
                 path="/draft/:type/:draftId"
                 render={this._renderComponent(NewEntryTopBar, {
@@ -58,7 +59,6 @@ TopBar.propTypes = {
     balance: PropTypes.shape().isRequired,
     fullEntry: PropTypes.bool,
     history: PropTypes.shape(),
-    location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,

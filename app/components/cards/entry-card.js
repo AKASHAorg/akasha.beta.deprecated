@@ -106,7 +106,7 @@ class EntryCard extends Component {
     };
     renderResolvingPlaceholder = () => (
       <Card className="entry-card entry-card_transparent entry-card_fixed-height">
-        <div style={{ maxWidth: '175px' }}>
+        <div>
           Resolving ipfs hash
         </div>
       </Card>
@@ -131,8 +131,6 @@ class EntryCard extends Component {
         return (
           <Card
             className={cardClass}
-            // expanded={this.isPossiblyUnsafe() ? this.state.expanded : true}
-            // onExpandChange={this.onExpandChange}
             style={style}
             title={
               <EntryCardHeader
@@ -145,91 +143,6 @@ class EntryCard extends Component {
               />
             }
           >
-            {/* <CardHeader
-              textStyle={{ paddingRight: '0px' }}
-              titleStyle={{ fontSize: '16px', fontWeight: '600' }}
-              subtitleStyle={{ fontSize: '12px' }}
-              style={{ paddingBottom: '4px' }}
-              actAsExpander={this.isPossiblyUnsafe()}
-            >
-              {this.isPossiblyUnsafe() && content &&
-                <div
-                  data-tip="Possibly unsafe content"
-                  style={{
-                      display: 'inline-block',
-                      position: 'absolute',
-                      right: '16px',
-                      top: '10px'
-                  }}
-                >
-                  <IconButton>
-                    <WarningIcon color={palette.accent1Color} />
-                  </IconButton>
-                </div>
-              }
-              {this.isOwnEntry() &&
-                <div
-                  data-tip={entry.get('active') ?
-                      'Edit entry' :
-                      'This entry can no longer be edited'
-                  }
-                  style={{
-                      display: 'inline-block',
-                      position: 'absolute',
-                      right: '16px',
-                      top: '10px'
-                  }}
-                >
-                  <IconButton
-                    onTouchTap={this.handleEdit}
-                    iconStyle={{ width: '20px', height: '20px' }}
-                    disabled={!entry.get('active')}
-                  >
-                    <SvgIcon viewBox="0 0 20 20">
-                      <EditIcon />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
-              }
-              {!content && !entryResolvingIpfsHash &&
-                <div style={{ height: '240px' }}>
-                  <div
-                    data-tip="Bookmark"
-                    style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '10px',
-                        display: 'inline-block'
-                    }}
-                  >
-                    <IconButton
-                      onTouchTap={this.handleBookmark}
-                      iconStyle={{ width: '20px', height: '20px' }}
-                    >
-                      <SvgIcon viewBox="0 0 20 20">
-                        {isSaved ?
-                          <EntryBookmarkOn /> :
-                          <EntryBookmarkOff />
-                        }
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
-                  <div
-                    data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
-                    style={{
-                        position: 'absolute',
-                        right: '50px',
-                        top: '10px',
-                        display: 'inline-block'
-                    }}
-                  >
-                    <IconButton>
-                      <HubIcon color={palette.accent1Color} />
-                    </IconButton>
-                  </div>
-                </div>
-              }
-            </CardHeader> */}
             {!hasContent && !isPending &&
               <div style={{ height: '240px' }}>Cannot resolve content</div>
             }

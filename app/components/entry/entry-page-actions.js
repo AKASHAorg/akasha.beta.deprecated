@@ -66,7 +66,10 @@ class EntryPageAction extends Component {
             'entry-actions__claim-icon_claimed': entryBalance.get('claimed'),
             'content-link': canClaim
         });
-        const voteWeight = vote.get('vote');
+        if (!vote) {
+            console.log('vote not found for', entry.entryId);
+        }
+        const voteWeight = vote && vote.get('vote');
         const voteProps = {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
         };

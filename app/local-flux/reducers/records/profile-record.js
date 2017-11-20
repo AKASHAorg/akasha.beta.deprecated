@@ -81,6 +81,7 @@ const Flags = Record({
     localProfilesFetched: false,
     loginPending: false,
     pendingListProfiles: new Map(),
+    pendingProfiles: new Map(),
     resolvingIpfsHash: new Map(),
 });
 

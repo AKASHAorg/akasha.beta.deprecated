@@ -18,7 +18,7 @@ class ColumnHeader extends Component {
         this.state = {
             editMode: false,
             popoverVisible: false,
-            value: props.column.get('value')
+            value: props.column && props.column.get('value')
         };
     }
 
@@ -152,8 +152,8 @@ class ColumnHeader extends Component {
     };
 
     renderContent = () => {
-        const { column, intl, readOnly } = this.props;
-        const message = column.get('large') ? dashboardMessages.small : dashboardMessages.large;
+        const { column, intl, notEditable, readOnly } = this.props;
+        const message = column && column.get('large') ? dashboardMessages.small : dashboardMessages.large;
 
         return (
           <div className="dashboard-secondary-sidebar__popover-content">
@@ -163,13 +163,15 @@ class ColumnHeader extends Component {
             >
               {intl.formatMessage(generalMessages.refresh)}
             </div>
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={this.switchColumnWidth}
-            >
-              {intl.formatMessage(message)}
-            </div>
-            {!readOnly &&
+            {!notEditable &&
+              <div
+                className="flex-center-y popover-menu__item"
+                onClick={this.switchColumnWidth}
+              >
+                {intl.formatMessage(message)}
+              </div>
+            }
+            {(!notEditable && !readOnly) &&
               <div
                 className="flex-center-y popover-menu__item"
                 onClick={this.editColumn}
@@ -177,12 +179,14 @@ class ColumnHeader extends Component {
                 {intl.formatMessage(generalMessages.edit)}
               </div>
             }
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={this.deleteColumn}
-            >
-              {intl.formatMessage(generalMessages.delete)}
-            </div>
+            {!notEditable &&
+              <div
+                className="flex-center-y popover-menu__item"
+                onClick={this.deleteColumn}
+              >
+                {intl.formatMessage(generalMessages.delete)}
+              </div>
+            }
           </div>
         );
     };
@@ -191,7 +195,7 @@ class ColumnHeader extends Component {
         const { column, icon, readOnly, title } = this.props;
         const { editMode, value } = this.state;
         const titleClass = classNames('overflow-ellipsis column-header__title', {
-            'column-header__title_large': column.get('large')
+            'column-header__title_large': column && column.get('large')
         });
 
         return (
@@ -218,6 +222,7 @@ class ColumnHeader extends Component {
                 content={this.renderContent()}
                 onVisibleChange={this.onVisibleChange}
                 overlayClassName="popover-menu"
+                placement="bottom"
                 trigger="click"
                 visible={this.state.popoverVisible}
               >
@@ -237,12 +242,14 @@ class ColumnHeader extends Component {
 }
 
 ColumnHeader.propTypes = {
-    column: PropTypes.shape().isRequired,
+    column: PropTypes.shape(),
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     dataSource: PropTypes.shape(),
     icon: PropTypes.element,
     intl: PropTypes.shape().isRequired,
+    // when true, column cannot be modified or deleted
+    notEditable: PropTypes.bool,
     onRefresh: PropTypes.func.isRequired,
     onSearch: PropTypes.func,
     readOnly: PropTypes.bool,
