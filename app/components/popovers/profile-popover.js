@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Button, Icon, Popover, Spin } from 'antd';
+import { Button, Icon, Popover, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
@@ -11,6 +11,7 @@ import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendi
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
+import { formatBalance } from '../../utils/number-formatter';
 import { Avatar, SendTipForm } from '../';
 
 class ProfilePopover extends Component {
@@ -186,7 +187,7 @@ class ProfilePopover extends Component {
                 <Link
                   className="unstyled-link"
                   onClick={() => this.onVisibleChange(false)}
-                  to={{ pathname: `/${ethAddress}`, state: { overlay: true } }}
+                  to={`/${ethAddress}`}
                 >
                   <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
                     {name || getDisplayName({ akashaId, ethAddress })}
@@ -201,17 +202,23 @@ class ProfilePopover extends Component {
             </div>
             <div className="profile-popover__details">
               <div className="flex-center-y">
-                <Icon className="profile-popover__counter-icon" type="file" />
+                <Tooltip title={intl.formatMessage(generalMessages.entries)}>
+                  <Icon className="profile-popover__counter-icon" type="file" />
+                </Tooltip>
                 <div className="profile-popover__counter-text">
                   {profile.get('entriesCount')}
                 </div>
-                <Icon className="profile-popover__counter-icon" type="message" />
+                <Tooltip title={intl.formatMessage(generalMessages.comments)}>
+                  <Icon className="profile-popover__counter-icon" type="message" />
+                </Tooltip>
                 <div className="profile-popover__counter-text">
                   {profile.get('commentsCount')}
                 </div>
-                <Icon className="profile-popover__counter-icon" type="trophy" />
+                <Tooltip title={intl.formatMessage(generalMessages.karma)}>
+                  <Icon className="profile-popover__counter-icon" type="trophy" />
+                </Tooltip>
                 <div className="profile-popover__counter-text">
-                  {profile.get('karma')}
+                  {formatBalance(profile.get('karma'))}
                 </div>
               </div>
               {profile.get('about') &&
@@ -221,7 +228,7 @@ class ProfilePopover extends Component {
               }
             </div>
             <div className="profile-popover__counters-wrapper">
-              <div>
+              <div style={{ marginRight: '12px' }}>
                 <div>{intl.formatMessage(profileMessages.followers)}</div>
                 <div className="profile-popover__counter">
                   {profile.get('followersCount')}
@@ -232,14 +239,6 @@ class ProfilePopover extends Component {
                 <div className="profile-popover__counter">
                   {profile.get('followingCount')}
                 </div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supported)}</div>
-                <div className="profile-popover__counter">{0}</div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supporting)}</div>
-                <div className="profile-popover__counter">{0}</div>
               </div>
             </div>
             <div className="profile-popover__actions">

@@ -164,8 +164,38 @@ const profileState = createReducer(initialState, {
         return state.set('balance', balance);
     },
 
-    [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
-        state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data)),
+    [types.PROFILE_GET_DATA]: (state, { context, akashaId, ethAddress }) => {
+        const flags = context ?
+            state.get('flags').setIn(['pendingProfiles', context, ethAddress], true) :
+            state.get('flags');
+        const byEthAddress = state.get('byEthAddress');
+        if (byEthAddress.get(ethAddress)) {
+            return state.set('flags', flags);
+        }
+        return state.merge({
+            byEthAddress: byEthAddress.set(ethAddress, new ProfileRecord({ akashaId, ethAddress })),
+            flags
+        });
+    },
+
+    [types.PROFILE_GET_DATA_ERROR]: (state, { request }) => {
+        const { context, ethAddress } = request;
+        if (!context) {
+            return state;
+        }
+        return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
+    },
+
+    [types.PROFILE_GET_DATA_SUCCESS]: (state, { data, request }) => {
+        const { context, ethAddress } = request;
+        if (!context) {
+            return state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data));
+        }
+        return state.merge({
+            byEthAddress: addProfileData(state.get('byEthAddress'), data),
+            flags: state.get('flags').setIn(['pendingProfiles', context, ethAddress], false)
+        });
+    },
 
     [types.PROFILE_GET_LIST]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);

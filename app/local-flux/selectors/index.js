@@ -298,6 +298,9 @@ export const selectPendingCycleAeth = state => state.actionState.getIn(['pending
 export const selectPendingFollow = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'follow', akashaId]);
 
+export const selectPendingProfiles = (state, context) =>
+    state.profileState.getIn(['flags', 'pendingProfiles', context]);
+
 export const selectPendingTip = (state, akashaId) =>
     !!state.actionState.getIn(['pending', 'sendTip', akashaId]);
 
@@ -314,8 +317,26 @@ export const selectProfileEditToggle = state =>
     state.appState.get('showProfileEditor');
 
 export const selectProfileEntries = (state, ethAddress) =>
-    state.entryState.get('byId').filter(entry => entry.getIn(['author', 'ethAddress']) === ethAddress)
-        .toList();
+    (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']) || new List())
+        .map(entryId => selectEntry(state, entryId));
+
+export const selectProfileEntriesFlags = (state, ethAddress) => {
+    const profileEntries = state.entryState.getIn(['profileEntries', ethAddress]);
+    if (!profileEntries) {
+        return {};
+    }
+    return {
+        fetchingEntries: profileEntries.get('fetchingEntries'),
+        fetchingMoreEntries: profileEntries.get('fetchingMoreEntries'),
+        moreEntries: profileEntries.get('moreEntries')
+    };
+};
+
+export const selectProfileEntriesLastBlock = (state, value) =>
+    state.entryState.getIn(['profileEntries', value, 'lastBlock']);
+
+export const selectProfileEntriesLastIndex = (state, value) =>
+    state.entryState.getIn(['profileEntries', value, 'lastIndex']);
 
 export const selectProfileExists = state => state.profileState.get('exists');
 
@@ -333,6 +354,8 @@ export const selectSearchQuery = state => state.searchState.get('query');
 
 export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);
+
+export const selectShowWallet = state => state.appState.get('showWallet');
 
 export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
 

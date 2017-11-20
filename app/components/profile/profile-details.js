@@ -9,7 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { profileIsFollower } from '../../local-flux/actions/profile-actions';
+import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 
@@ -185,6 +185,7 @@ class ProfileDetails extends Component {
               {isOwnProfile &&
                 <Button
                   className="profile-details__button"
+                  onClick={this.props.profileEditToggle}
                   size="large"
                   type="primary"
                 >
@@ -193,21 +194,13 @@ class ProfileDetails extends Component {
               }
             </div>
             <div className="profile-details__counters-wrapper">
-              <div>
+              <div style={{ marginRight: '12px' }}>
                 <div>{intl.formatMessage(profileMessages.followers)}</div>
                 <div className="profile-details__counter">{followersCount}</div>
               </div>
               <div>
                 <div>{intl.formatMessage(profileMessages.followings)}</div>
                 <div className="profile-details__counter">{followingCount}</div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supported)}</div>
-                <div className="profile-details__counter">{0}</div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.supporting)}</div>
-                <div className="profile-details__counter">{0}</div>
               </div>
             </div>
             {about &&
@@ -247,6 +240,7 @@ ProfileDetails.propTypes = {
     isFollower: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
     profileData: PropTypes.shape(),
+    profileEditToggle: PropTypes.func.isRequired,
     tipPending: PropTypes.bool,
 };
 
@@ -265,6 +259,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        profileIsFollower
+        profileEditToggle,
     }
 )(injectIntl(ProfileDetails));

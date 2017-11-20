@@ -240,8 +240,10 @@ const actionState = createReducer(initialState, {
             const payload = fromJS({ amount: event.amount });
             const action = new ActionRecord({ blockNumber: event.blockNumber, id, success: true, type })
                 .set('payload', payload);
-            byId = byId.set(action.id, action);
-            list = list.push(action.id);
+            if (!byId.get(action.id)) {
+                byId = byId.set(action.id, action);
+                list = list.push(action.id);
+            }
         });
         return state.merge({
             byId,
