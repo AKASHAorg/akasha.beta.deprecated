@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Icon, Input } from 'antd';
-import uniq from 'lodash/uniq';
+import * as R from 'ramda';
 import { HighlightCard } from '../';
 import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
@@ -15,9 +15,9 @@ import { selectHighlights, selectHighlightSearch } from '../../local-flux/select
 class Highlights extends Component {
     componentDidMount () {
         const { highlights } = this.props;
-        const ethAddresses = uniq(highlights.map(highlight =>
-            ({ ethAddress: highlight.get('publisher') })));
-        this.props.profileGetList(ethAddresses.toJS());
+        const ethAddresses = highlights.map(highlight => ({ ethAddress: highlight.get('publisher') }));
+        const payload = R.uniq(ethAddresses.toJS());
+        this.props.profileGetList(payload);
     }
 
     shouldComponentUpdate (nextProps) {

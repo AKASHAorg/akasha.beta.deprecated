@@ -69,6 +69,7 @@ export NewEntryTopBar from './top-bars/new-entry-top-bar';
 export NewDashboardForm from './forms/new-dashboard-form';
 export NewIdentityInterests from './setup/new-identity-interests';
 export NewListForm from './forms/new-list-form';
+export NewListBtn from './profile-overview/new-list-btn';
 export NewProfileForm from './forms/new-profile-form';
 export NewSearchColumn from './columns/new-search-column';
 export NewSelectColumn from './columns/new-select-column';
