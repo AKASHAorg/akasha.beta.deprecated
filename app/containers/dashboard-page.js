@@ -3,14 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dashboard, DataLoader } from '../components';
 import { dashboardSetActive, dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
-import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 
 class DashboardPage extends Component {
     dashboardRef = null;
-    componentDidMount () {
-        this.props.secondarySidebarToggle({ forceToggle: true });
-    }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.activeDashboard) {
             return;
@@ -51,9 +47,6 @@ class DashboardPage extends Component {
           </div>
         );
     }
-    componentWillUnmount () {
-        this.props.secondarySidebarToggle({ forceToggle: false });
-    }
 }
 
 DashboardPage.propTypes = {
@@ -66,7 +59,6 @@ DashboardPage.propTypes = {
     isHidden: PropTypes.bool,
     match: PropTypes.shape(),
     newColumn: PropTypes.shape(),
-    secondarySidebarToggle: PropTypes.func,
 };
 
 function mapStateToProps (state) {
@@ -86,6 +78,5 @@ export default connect(
     {
         dashboardSetActive,
         dashboardUpdateNewColumn,
-        secondarySidebarToggle,
     }
 )(DashboardPage);

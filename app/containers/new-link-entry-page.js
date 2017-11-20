@@ -13,7 +13,6 @@ import { draftCreate, draftUpdate, draftRevertToVersion } from '../local-flux/ac
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
-import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -280,10 +279,6 @@ class NewLinkEntryPage extends Component {
         });
     }
 
-    componentWillUnmount () {
-        this.props.secondarySidebarToggle({ forceToggle: false });
-    }
-
     _togglePublishPanel = state =>
         () => {
             this.setState({
@@ -482,7 +477,6 @@ NewLinkEntryPage.propTypes = {
     resolvingEntries: PropTypes.shape(),
     selectionState: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
-    secondarySidebarToggle: PropTypes.func,
     searchResetResults: PropTypes.func,
     searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
@@ -515,6 +509,5 @@ export default connect(
         draftRevertToVersion,
         searchResetResults,
         searchTags,
-        secondarySidebarToggle,
     }
 )(injectIntl(NewLinkEntryPage));

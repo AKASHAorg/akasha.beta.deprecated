@@ -7,7 +7,6 @@ import { DraftJS } from 'megadraft';
 import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
     DataLoader } from '../components';
-import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
@@ -246,9 +245,6 @@ class NewEntryPage extends Component {
             handleVersionRevert();
         }
         ev.preventDefault();
-    }
-    componentWillUnmount () {
-        this.props.secondarySidebarToggle({ forceToggle: false });
     }
 
     _createTimeline = (draftObj) => {
@@ -491,7 +487,6 @@ NewEntryPage.propTypes = {
     match: PropTypes.shape(),
     resolvingEntries: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
-    secondarySidebarToggle: PropTypes.func,
     selectionState: PropTypes.shape(),
     searchResetResults: PropTypes.func,
     searchTags: PropTypes.func,
@@ -519,7 +514,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        secondarySidebarToggle,
         draftCreate,
         draftsGet,
         draftUpdate,

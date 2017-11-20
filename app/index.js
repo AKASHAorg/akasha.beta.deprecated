@@ -22,7 +22,6 @@ const history = createHashHistory();
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
 
-
 // @todo put this somewhere safe and remove from production
 self.findIPCChannelByHash = (hash) => {
     Object.keys(self.Channel).forEach((rootKey) => {
