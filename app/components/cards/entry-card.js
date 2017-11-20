@@ -255,6 +255,7 @@ class EntryCard extends Component {
                   hasCard={!!hasContent}
                   onClick={toggleOutsideNavigation}
                   maxImageHeight={150}
+                  infoExtracted
                 />
               </div>
             }

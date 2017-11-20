@@ -3,7 +3,7 @@ import React from 'react';
 
 const SecondarySidebar = props => (
   <div
-    className={`secondary-sidebar secondary-sidebar${props.shown ? '' : '_collapsed'}`}
+    className={`secondary-sidebar secondary-sidebar${props.shown ? '_open' : ''}`}
   >
     {props.children}
   </div>

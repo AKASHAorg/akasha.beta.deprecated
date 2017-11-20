@@ -92,7 +92,6 @@ class EntryPageContent extends Component {
         const licenseLabel = license.parent ?
             licenses.get(license.parent).label :
             license.label;
-        console.log(entry, 'the entry');
         return (
           <div className="entry-page-content">
             <div>
@@ -108,6 +107,7 @@ class EntryPageContent extends Component {
                       entry.content.cardInfo.description
                   }
                   isEdit={false}
+                  infoExtracted
                 />
               }
               <div className="entry-page-content__content">

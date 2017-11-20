@@ -22,7 +22,7 @@ export const AppRecord = Record({
     showIpfsDetailsModal: false,
     showProfileEditor: false,
     showReportModal: null,
-    showSecondarySidebar: true, // must default to true
+    showSecondarySidebar: false, // must default to false
     showTerms: false,
     showWallet: null,
 });

@@ -3,11 +3,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dashboard, DataLoader } from '../components';
 import { dashboardSetActive, dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
+import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 
 class DashboardPage extends Component {
     dashboardRef = null;
-
+    componentDidMount () {
+        this.props.secondarySidebarToggle(true);
+    }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.activeDashboard) {
             return;
@@ -31,7 +34,7 @@ class DashboardPage extends Component {
 
     render () {
         const { columns, dashboards, homeReady, isHidden } = this.props;
-        console.log('rerendering');
+
         return (
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
             <DataLoader flag={!homeReady} size="large" style={{ paddingTop: '200px' }}>
@@ -47,6 +50,9 @@ class DashboardPage extends Component {
             </DataLoader>
           </div>
         );
+    }
+    componentWillUnmount () {
+        this.props.secondarySidebarToggle(false);
     }
 }
 
@@ -78,6 +84,7 @@ export default connect(
     mapStateToProps,
     {
         dashboardSetActive,
-        dashboardUpdateNewColumn
+        dashboardUpdateNewColumn,
+        secondarySidebarToggle,
     }
 )(DashboardPage);
