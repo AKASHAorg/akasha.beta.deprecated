@@ -248,7 +248,7 @@ class NewEntryPage extends Component {
         ev.preventDefault();
     }
     componentWillUnmount () {
-        this.props.secondarySidebarToggle({ forceToggle: true });
+        this.props.secondarySidebarToggle({ forceToggle: false });
     }
 
     _createTimeline = (draftObj) => {

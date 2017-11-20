@@ -281,7 +281,7 @@ class NewLinkEntryPage extends Component {
     }
 
     componentWillUnmount () {
-        this.props.secondarySidebarToggle({ forceToggle: true });
+        this.props.secondarySidebarToggle({ forceToggle: false });
     }
 
     _togglePublishPanel = state =>

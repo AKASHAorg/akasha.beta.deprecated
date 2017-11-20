@@ -16,12 +16,10 @@ class EntryPage extends Component {
     state = {
         showInHeader: false
     };
-
     componentDidMount () {
         const { entry, entryGetFull, location, match } = this.props;
         const { params } = match;
         const { version } = parse(location.search);
-        this.props.secondarySidebarToggle(false);
         this.checkNewCommentsInterval = setInterval(
             this.checkNewComments,
             CHECK_NEW_COMMENTS_INTERVAL * 1000

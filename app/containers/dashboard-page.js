@@ -9,7 +9,7 @@ import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 class DashboardPage extends Component {
     dashboardRef = null;
     componentDidMount () {
-        this.props.secondarySidebarToggle(true);
+        this.props.secondarySidebarToggle({ forceToggle: true });
     }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.activeDashboard) {
@@ -52,7 +52,7 @@ class DashboardPage extends Component {
         );
     }
     componentWillUnmount () {
-        this.props.secondarySidebarToggle(false);
+        this.props.secondarySidebarToggle({ forceToggle: false });
     }
 }
 
@@ -65,7 +65,8 @@ DashboardPage.propTypes = {
     homeReady: PropTypes.bool,
     isHidden: PropTypes.bool,
     match: PropTypes.shape(),
-    newColumn: PropTypes.shape()
+    newColumn: PropTypes.shape(),
+    secondarySidebarToggle: PropTypes.func,
 };
 
 function mapStateToProps (state) {
