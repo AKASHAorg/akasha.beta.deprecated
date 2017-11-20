@@ -91,7 +91,6 @@ class NewSearchColumn extends Component {
             {column.get('value') &&
               <div className="new-search-column__list-wrapper">
                 <EntryList
-                  cardStyle={{ width: '340px' }}
                   contextId="newColumn"
                   entries={previewEntries}
                   fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}

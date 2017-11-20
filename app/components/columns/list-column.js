@@ -42,7 +42,7 @@ class ListColumn extends Component {
     };
 
     render () {
-        const { baseWidth, column, entries, intl, lists } = this.props;
+        const { column, entries, intl, lists } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -54,13 +54,12 @@ class ListColumn extends Component {
               onRefresh={this.onRefresh}
             />
             <EntryList
-              baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreListIterator}
+              large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
             />
@@ -70,7 +69,6 @@ class ListColumn extends Component {
 }
 
 ListColumn.propTypes = {
-    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryListIterator: PropTypes.func.isRequired,

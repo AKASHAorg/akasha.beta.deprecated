@@ -26,7 +26,7 @@ class LatestColumn extends Component {
     }
 
     render () {
-        const { column, entries, intl, baseWidth } = this.props;
+        const { column, entries, intl } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -39,13 +39,12 @@ class LatestColumn extends Component {
               title={intl.formatMessage(dashboardMessages.columnLatest)}
             />
             <EntryList
-              baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreNewestIterator}
+              large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
             />
@@ -55,7 +54,6 @@ class LatestColumn extends Component {
 }
 
 LatestColumn.propTypes = {
-    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreNewestIterator: PropTypes.func.isRequired,
