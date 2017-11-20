@@ -13,7 +13,8 @@ class AvatarEditr extends Component {
             avatarScale: props.avatarScale || 1,
             imageLoaded: false,
             rotation: 0,
-            highlightDropZone: false
+            highlightDropZone: false,
+            avatarClose: false
         };
     }
     onImageLoad = () => {
@@ -121,7 +122,7 @@ class AvatarEditr extends Component {
 
         return (
           <div
-            className="avatar"
+            className="avatar avatar_with-overflow"
             style={{ width: size, height: size, ...style }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
@@ -173,28 +174,35 @@ class AvatarEditr extends Component {
             }
             {avatarImage &&
               <div>
-                <AvatarEditor
-                  style={{
-                      border: offsetBorder || 0,
-                      backgroundColor,
-                      width: size,
-                      height: size
-                  }}
-                  className="avatar__avatar-editor"
-                  border={1}
-                  image={avatarImage}
-                  ref={(editor) => { this.editor = editor; }}
-                  scale={this.state.avatarScale}
-                  rotate={this.state.rotation}
-                  onDropFile={this._handleImageAdd}
-                  onLoadSuccess={this._handleImageLoad}
-                />
-                <div className="image-uploader__clear-image-button">
-                  <Button
-                    type="standard"
-                    icon="close-circle"
-                    onClick={this._handleAvatarClear}
+                <div
+                  onMouseEnter={() => { this.setState({ avatarClose: true }); }}
+                  onMouseLeave={() => { this.setState({ avatarClose: false }); }}
+                >
+                  <AvatarEditor
+                    style={{
+                        border: offsetBorder || 0,
+                        backgroundColor,
+                        width: size,
+                        height: size
+                    }}
+                    className="avatar__avatar-editor"
+                    border={1}
+                    image={avatarImage}
+                    ref={(editor) => { this.editor = editor; }}
+                    scale={this.state.avatarScale}
+                    rotate={this.state.rotation}
+                    onDropFile={this._handleImageAdd}
+                    onLoadSuccess={this._handleImageLoad}
                   />
+                  {this.state.avatarClose &&
+                    <div className="image-uploader__clear-image-button">
+                      <Button
+                        type="standard"
+                        icon="close-circle"
+                        onClick={this._handleAvatarClear}
+                      />
+                    </div>
+                  }
                 </div>
                 {/* <div className="avatar__controls">
                   <Row type="flex" align="middle" gutter={8}>
