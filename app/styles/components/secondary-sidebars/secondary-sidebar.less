@@ -1,6 +1,6 @@
 .secondary-sidebar {
     position: fixed;
-    left: @sidebar-width;
+    left: (@sidebar-width + @secondary-sidebar-width) * -1;
     top: 0;
     bottom: 0;
     width: @secondary-sidebar-width;
@@ -12,7 +12,7 @@
     // TODO remove this
     // background-color: #555;
 
-    &_collapsed {
-        left: (@sidebar-width + @secondary-sidebar-width) * -1;
+    &_open {
+        left: @sidebar-width;
     }
 }

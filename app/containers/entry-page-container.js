@@ -7,6 +7,7 @@ import { entryCleanFull, entryGetFull,
     entryGetLatestVersion } from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
 import { selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
+import { secondarySidebarToggle } from '../local-flux/actions/app-actions';
 
 function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');
@@ -33,6 +34,7 @@ export default connect(
         entryCleanFull,
         entryGetFull,
         entryGetLatestVersion,
-        highlightSave
+        highlightSave,
+        secondarySidebarToggle,
     }
 )(EntryPage);

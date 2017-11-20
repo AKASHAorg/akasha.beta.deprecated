@@ -124,7 +124,6 @@ const WebsiteInfoCard = (props) => {
     );
 };
 WebsiteInfoCard.defaultProps = {
-    infoExtracted: true,
     maxImageHeight: 350,
 };
 
@@ -134,7 +133,7 @@ WebsiteInfoCard.propTypes = {
     cardInfo: PropTypes.shape(),
     error: PropTypes.string,
     hasCard: PropTypes.bool,
-    infoExtracted: PropTypes.bool,
+    infoExtracted: PropTypes.bool.isRequired,
     maxImageHeight: PropTypes.number,
     onClick: PropTypes.func,
     onClose: PropTypes.func,
