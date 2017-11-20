@@ -16,6 +16,7 @@ class EntryPage extends Component {
     state = {
         showInHeader: false
     };
+
     componentDidMount () {
         const { entry, entryGetFull, location, match } = this.props;
         const { params } = match;
@@ -37,6 +38,7 @@ class EntryPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { commentsClean, entry, entryGetFull, entryGetLatestVersion,
             fetchingFullEntry, location, match, pendingComments } = this.props;
+
         const { params } = match;
         const nextParams = nextProps.match.params;
         const { akashaId, entryId, ethAddress } = nextParams;

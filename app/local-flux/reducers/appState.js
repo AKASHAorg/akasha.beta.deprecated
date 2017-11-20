@@ -87,7 +87,15 @@ const appState = createReducer(initialState, {
         state.mergeIn(['outsideNavigation'], {
             isVisible: !!url,
             url,
-        })
+        }),
+    '@@router/LOCATION_CHANGE': (state, { payload }) => {
+        const { pathname } = payload;
+        const whitelistRoutes = ['/dashboard', '/draft', '/profileoverview'];
+        if (pathname && whitelistRoutes.some(route => pathname.startsWith(route))) {
+            return state.set('showSecondarySidebar', true);
+        }
+        return state.set('showSecondarySidebar', false);
+    }
 });
 
 export default appState;
