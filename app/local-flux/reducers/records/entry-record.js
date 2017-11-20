@@ -58,15 +58,24 @@ export const EntryPageOverlay = Record({
     version: null
 });
 
+export const ProfileEntries = Record({
+    entryIds: new List(),
+    fetchingEntries: false,
+    fetchingMoreEntries: false,
+    lastBlock: null,
+    lastIndex: null,
+    moreEntries: false
+});
+
 export const EntryState = Record({
     balance: new Map(),
     byId: new Map(),
     canClaim: new Map(),
     canClaimVote: new Map(),
-    published: new List(),
+    entriesCount: 0, // entries published by a logged profile
+    entryPageOverlay: new EntryPageOverlay(),
     flags: new Flags(),
     fetchingEntriesCount: false,
-    entryPageOverlay: new EntryPageOverlay(),
     fullEntry: null,
     fullEntryLatestVersion: null,
     savedEntries: new List(),
@@ -76,8 +85,9 @@ export const EntryState = Record({
     moreSearchEntries: false,
     moreTagEntries: false,
     newestEntries: new List(),
+    profileEntries: new Map(),
+    published: new List(),
     tagEntriesCount: new Map(),
-    entriesCount: 0, // entries published by a logged profile
     voteCostByWeight: new Map(),
     votes: new Map(),
 });

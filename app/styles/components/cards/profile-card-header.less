@@ -1,0 +1,58 @@
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    height: 52px;
+
+    &__avatar {
+        flex: 0 0 auto;
+        margin-right: 10px;
+
+        &_placeholder {
+            background-color: #eee;
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    &__text {
+        flex: 1 1 auto;
+        font-size: 15px;
+        line-height: 1;
+        height: 32px;  
+    }
+
+    &__title {
+        display: inline-block;
+        max-width: 270px;
+
+        &_placeholder {
+            height: 13px;
+            width: 120px;
+            margin: 2px 0px;
+            background-color: #eee;
+        }
+    }
+
+    &__subtitle {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+        font-size: 12px;
+        font-weight: 400;
+        height: 14px;
+        color: @text-color-secondary;
+        
+        &_placeholder {
+            height: 13px;
+            width: 80px;
+            margin: 4px 0px;
+            background-color: #eee;
+        }
+    }
+
+    &__author-placeholder {
+        height: 15px;
+        background-color: #eee;
+        width: 70px;
+    }
+}

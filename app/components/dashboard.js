@@ -31,6 +31,7 @@ const Dashboard = (props) => {
                 <Column
                   column={column}
                   baseWidth={baseWidth}
+                  type={column.get('type')}
                 />
               </div>
             );
