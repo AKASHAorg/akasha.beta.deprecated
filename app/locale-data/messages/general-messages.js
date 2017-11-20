@@ -87,6 +87,11 @@ const generalMessages = defineMessages({
         description: 'collect',
         defaultMessage: 'Collect'
     },
+    comments: {
+        id: 'app.general.comments',
+        description: 'entry comments',
+        defaultMessage: 'Comments'
+    },
     completeProfileCrumb: {
         id: 'app.general.completeProfileCrumb',
         description: 'breadcrumb to display when a profile is created',
@@ -141,6 +146,11 @@ const generalMessages = defineMessages({
         id: 'app.general.editProfile',
         description: 'Edit profile button label',
         defaultMessage: 'Edit profile'
+    },
+    entries: {
+        id: 'app.general.entries',
+        description: 'entries',
+        defaultMessage: 'Entries'
     },
     essence: {
         id: 'app.general.essence',
