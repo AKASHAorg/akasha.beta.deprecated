@@ -104,8 +104,8 @@ class EntryPageContent extends Component {
                   cardInfo={entry.content.cardInfo}
                   baseUrl={entry.baseUrl}
                   hasCard={
-                      entry.content.cardInfo.title ||
-                      entry.content.cardInfo.description
+                      !!entry.content.cardInfo.title ||
+                      !!entry.content.cardInfo.description
                   }
                   isEdit={false}
                 />
