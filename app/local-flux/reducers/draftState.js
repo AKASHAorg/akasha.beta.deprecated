@@ -7,6 +7,13 @@ import * as types from '../constants';
 
 const initialState = new DraftModel();
 
+const determineEntryType = (content) => {
+    if (content.cardInfo && content.cardInfo.url) {
+        return 'link';
+    }
+    return 'article';
+};
+
 const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -62,7 +69,8 @@ const draftState = createReducer(initialState, {
     [types.DRAFT_DELETE_SUCCESS]: (state, { data }) =>
         state.merge({
             drafts: state.get('drafts').delete(data.draftId),
-            draftsCount: state.get('drafts').delete(data.draftId).size
+            draftsCount: state.get('drafts').delete(data.draftId).size,
+            selection: state.get('selection').delete(data.draftId)
         }),
 
     // draft = { id, title, type }
@@ -93,8 +101,10 @@ const draftState = createReducer(initialState, {
                  */
                 if (!mState.getIn(['drafts', entry.entryId])) {
                     mState.setIn(['drafts', entry.entryId], DraftModel.createDraft({
-                        ...entry,
-                        entryType: entryTypes[entry.entryType],
+                        content: {
+                            ...entry.content,
+                            entryType: entryTypes[entry.entryType],
+                        },
                         onChain: true
                     }));
                 } else {
@@ -112,46 +122,6 @@ const draftState = createReducer(initialState, {
             });
             mState.set('entriesFetched', true);
         }),
-    /**
-     * At this point we have entry`s data but without the actual draft content.
-     */
-    // [types.ENTRY_RESOLVE_IPFS_HASH_AS_DRAFTS_SUCCESS]: (state, { data }) =>
-    //     state.withMutations((mState) => {
-    //         const entryIpfsHash = data.ipfsHash;
-    //         const targetEntry = mState.get('drafts')
-    //             .valueSeq()
-    //             .filter(entry =>
-    //                 entry.onChain && entry.entryEth.ipfsHash === entryIpfsHash
-    //             )
-    //             .toList();
-    //         if (targetEntry.size > 0) {
-    //             targetEntry.forEach((entry) => {
-    //                 const targetEntryId = entry.id;
-    //                 const { content, ...otherDraftData } = mState.getIn(['drafts', targetEntryId]).toJS();
-    //                 const { tags, draftParts, ...entryContent } = data.entry;
-    //                 if (!otherDraftData.localChanges) {
-    //                     const drft = {
-    //                         content: {
-    //                             ...entryContent,
-    //                             draft: editorStateFromRaw(data.entry.draft),
-    //                             version: entryContent.version,
-    //                             latestVersion: entryContent.version
-    //                         },
-    //                         ...otherDraftData,
-    //                         tags
-    //                     };
-    //                     mState.setIn(['drafts', targetEntryId], DraftModel.createDraft(drft));
-    //                 }
-    //                 /**
-    //                  * entry content is already in store, so it`s a draft.
-    //                  * update the entry version with the one which is published,
-    //                  * in case of an edit from another computer.
-    //                  */
-    //                 mState.setIn(['drafts', targetEntryId, 'content', 'version'], data.entry.version)
-    //                     .deleteIn(['resolvingEntries'], data.entryId);
-    //             });
-    //         }
-    //     }),
     [types.ENTRY_GET_FULL_AS_DRAFT_SUCCESS]: (state, { data }) => {
         const { entryId, content } = data;
         const existingDraft = state.getIn(['drafts', entryId]);
@@ -174,13 +144,19 @@ const draftState = createReducer(initialState, {
                         ...newDraftContent,
                         draft: editorStateFromRaw(data.content.draft),
                         latestVersion: content.version,
+                        entryType: content.entryType > -1 ?
+                            entryTypes[content.entryType] :
+                            determineEntryType(content),
                     },
                     saved: false,
                     localChanges: false,
-                    tags
+                    tags,
+                    id: entryId
                 }));
             }
-            mState.deleteIn(['resolvingEntries'], entryId);
+            mState.set('resolvingEntries',
+                mState.get('resolvingEntries').delete(mState.get('resolvingEntries').indexOf(entryId))
+            );
         });
     }
 });

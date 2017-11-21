@@ -26,6 +26,7 @@ class NewLinkEntryPage extends Component {
             shouldResetCaret: false,
             parsingInfo: false,
             urlInputHidden: false,
+            infoExtracted: false,
         };
     }
 
@@ -392,6 +393,7 @@ class NewLinkEntryPage extends Component {
                       tagSuggestions={tagSuggestions}
                       tagSuggestionsCount={tagSuggestionsCount}
                       searchResetResults={this.props.searchResetResults}
+                      inputDisabled={onChain}
                     />
                   </div>
                 }

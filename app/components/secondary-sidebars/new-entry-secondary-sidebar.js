@@ -61,9 +61,9 @@ class NewEntrySecondarySidebar extends Component {
             content: {
                 featuredImage: {},
                 licence: userSelectedLicence,
+                entryType,
             },
             tags: [],
-            entryType,
         });
     }
 
@@ -116,7 +116,7 @@ class NewEntrySecondarySidebar extends Component {
     _handleTypeChange = type =>
         (ev) => {
             const { drafts, history } = this.props;
-            const draftToPush = drafts.filter(draft => draft.entryType === type).first();
+            const draftToPush = drafts.filter(draft => draft.content.entryType === type).first();
             let draftId;
             /**
              * Push to first draft of the selected type!
@@ -186,13 +186,13 @@ class NewEntrySecondarySidebar extends Component {
         if (ev) ev.preventDefault();
 
         // @TODO this feature is not planned for 0.6 release;
-        console.log('create a preview link for draft', draftId);
+        console.log('create an ipfs preview link for draft', draftId);
         // this.props.createDraftPreviewLink()
     }
 
     _getFilteredDrafts = (drafts, resolvingEntries, draftType) =>
         drafts.filter(draft =>
-            draft.entryType === draftType && draft.content && draft.content.title);
+            draft.content.entryType === draftType && draft.content && draft.content.title);
 
     _toggleSearchBarVisibility = (ev) => {
         ev.preventDefault();
@@ -251,12 +251,14 @@ class NewEntrySecondarySidebar extends Component {
         const { searchBarVisible, searching, searchString } = this.state;
         const currentDraftId = match.params.draftId;
         const { draftType } = match.params;
-        const draftsByType = drafts
+        const localDraftsByType = drafts
             .filter(drft =>
-                (!drft.get('onChain') && drft.get('entryType') === draftType))
+                (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType))
             .sort((a, b) =>
                 new Date(a.get('created_at')) > new Date(b.get('created_at'))
             );
+        const publishedDraftsByType = drafts.filter(drft =>
+            drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
         const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
         return (
           <div
@@ -327,7 +329,7 @@ class NewEntrySecondarySidebar extends Component {
                         .map(draft => (
                           <EntrySecondarySidebarItem
                             active={(draft.original.id === currentDraftId)}
-                            key={draft.original.id}
+                            key={`${draft.original.id}`}
                             draft={draft.original}
                             matchString={draft.string}
                             intl={intl}
@@ -342,10 +344,10 @@ class NewEntrySecondarySidebar extends Component {
                   <div>No drafts matching your search criteria were found.</div>
                 }
                 {!searching &&
-                    draftsByType.map(draft => (
+                    localDraftsByType.map(draft => (
                       <EntrySecondarySidebarItem
                         active={(draft.get('id') === currentDraftId)}
-                        key={draft.get('id')}
+                        key={`${draft.get('id')}`}
                         draft={draft.toJS()}
                         intl={intl}
                         onItemClick={this._onDraftItemClick}
@@ -356,32 +358,29 @@ class NewEntrySecondarySidebar extends Component {
                     )).toList()}
                 <div>
                   <div className="new-entry-secondary-sidebar__draft-list-title">Published</div>
-                  {!searching &&
-                    drafts.filter(drft =>
-                        drft.get('onChain') && drft.get('entryType') === draftType)
-                    .map(draft => (
-                      <div key={`${draft.get('id')}`}>
-                        <EntrySecondarySidebarItem
-                          active={(draft.get('id') === currentDraftId)}
-                          key={draft.get('id')}
-                          draft={draft.toJS()}
-                          intl={intl}
-                          onItemClick={this._onDraftItemClick}
-                          onDraftDelete={this._showDraftDeleteConfirm}
-                          showDraftMenuDropdown={this._showDraftMenuDropdown}
-                          onPreviewCreate={this._createDraftPreviewLink}
-                          published={draft.get('onChain')}
-                          localChanges={draft.get('localChanges')}
-                          unresolved={resolvingEntries.includes(draft.get('id'))}
-                        />
-                      </div>
+                  {!searching && publishedDraftsByType.map(draft => (
+                    <div key={`${draft.get('id')}`}>
+                      <EntrySecondarySidebarItem
+                        active={(draft.get('id') === currentDraftId)}
+                        key={`${draft.get('id')}`}
+                        draft={draft.toJS()}
+                        intl={intl}
+                        onItemClick={this._onDraftItemClick}
+                        onDraftDelete={this._showDraftDeleteConfirm}
+                        showDraftMenuDropdown={this._showDraftMenuDropdown}
+                        onPreviewCreate={this._createDraftPreviewLink}
+                        published={draft.get('onChain')}
+                        localChanges={draft.get('localChanges')}
+                        unresolved={resolvingEntries.includes(draft.get('id'))}
+                      />
+                    </div>
                   )).toList()}
                   {searching && searchResults.filter(drft =>
-                      drft.original.onChain && drft.original.entryType === draftType)
+                      drft.original.onChain && drft.original.content.entryType === draftType)
                       .map(draft => (
                         <EntrySecondarySidebarItem
                           active={(draft.original.id === currentDraftId)}
-                          key={draft.original.id}
+                          key={`${draft.original.id}`}
                           draft={draft.original}
                           intl={intl}
                           matchString={draft.string}

@@ -5,6 +5,7 @@ import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel } from './helpers';
 import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
+import { getWordCount } from '../../utils/dataModule';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
@@ -95,7 +96,7 @@ function* draftAutoSave ({ data }) {
 function* draftUpdate ({ data }) {
     const draftObj = data;
     const draft = data.content.get('draft');
-    if (draftObj.get('entryType') !== 'link') {
+    if (draftObj.getIn(['content', 'entryType']) !== 'link') {
         const selectionState = draft.getSelection();
         yield put(draftActions.draftUpdateSuccess({
             draft: draftObj,
@@ -134,21 +135,24 @@ function* draftPublish ({ actionId, draft }) {
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
-    draftToPublish.content.draft = JSON.parse(
-        editorStateToJSON(draftFromState.getIn(['content', 'draft']))
-    );
+    try {
+        draftToPublish.content.draft = JSON.parse(
+            editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+        );
+        draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
 
-    draftToPublish.entryType = entryTypes.findIndex(type => type === draftToPublish.entryType);
-
-    yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield call([channel, channel.send], {
-        actionId,
-        id,
-        token,
-        tags: draftToPublish.tags,
-        content: draftToPublish.content,
-        entryType: draftToPublish.entryType,
-    });
+        yield call(enableChannel, channel, Channel.client.entry.manager);
+        yield call([channel, channel.send], {
+            actionId,
+            id,
+            token,
+            tags: draftToPublish.tags,
+            content: draftToPublish.content,
+            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
+        });
+    } catch (ex) {
+        yield put(draftActions.draftPublishError(ex));
+    }
 }
 
 function* draftPublishSuccess ({ data }) {
@@ -169,26 +173,23 @@ function* draftPublishUpdate ({ actionId, draft }) {
     const token = yield select(selectToken);
     const ethAddress = yield select(selectLoggedEthAddress);
     const draftToPublish = draftFromState.toJS();
-    draftToPublish.content.draft = JSON.parse(
-        editorStateToJSON(draftFromState.getIn(['content', 'draft']))
-    );
-    yield call(enableChannel, channel, Channel.client.entry.manager);
-    console.log('sending to main:', {
-        ethAddress,
-        actionId,
-        entryId: id,
-        token,
-        tags: draftToPublish.tags,
-        content: draftToPublish.content
-    });
-    yield call([channel, channel.send], {
-        ethAddress,
-        actionId,
-        entryId: id,
-        token,
-        tags: draftToPublish.tags,
-        content: draftToPublish.content,
-    });
+    try {
+        draftToPublish.content.draft = JSON.parse(
+            editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+        );
+        yield call(enableChannel, channel, Channel.client.entry.manager);
+        yield call([channel, channel.send], {
+            ethAddress,
+            actionId,
+            entryId: id,
+            token,
+            tags: draftToPublish.tags,
+            content: draftToPublish.content,
+            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
+        });
+    } catch (ex) {
+        yield put(draftActions.draftPublishUpdateError(ex));
+    }
 }
 
 function* draftRevert ({ data }) {
@@ -244,7 +245,6 @@ function* watchDraftPublishChannel () {
 function* watchDraftPublishUpdateChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.editEntry);
-        console.log(response, 'update entry response');
         if (response.error) {
             yield put(draftActions.draftPublishUpdateError(
                 response.error,

@@ -400,6 +400,7 @@ class NewEntryPage extends Component {
                     tagSuggestions={tagSuggestions}
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
+                    inputDisabled={onChain}
                   />
                   {errors.tags &&
                     <small className="edit-entry-page__error-text">{errors.tags}</small>

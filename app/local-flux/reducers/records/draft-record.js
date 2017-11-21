@@ -20,6 +20,7 @@ export const DraftContent = Record({
     cardInfo: CardInfo(),
     draft: EditorState.createEmpty(),
     excerpt: '',
+    entryType: 'article',
     featuredImage: Map(),
     licence: License(),
     title: '',
@@ -51,6 +52,5 @@ export const Draft = Record({
     saving: false,
     localChanges: false,
     tags: new List(),
-    entryType: 'article',
     updated_at: null,
 });
