@@ -1,7 +1,8 @@
 .entry-card-header {
     display: flex;
     align-items: center;
-    height: 52px;
+    height: 60px;
+    padding: 16px 0px 12px;
 
     &__avatar {
         flex: 0 0 auto;
@@ -15,10 +16,14 @@
         height: 32px;  
     }
 
+    &__title {
+        display: inline-block;
+    }
+
     &__subtitle {
         display: flex;
         align-items: center;
-        margin-top: 5px;
+        margin-top: 2px;
         font-size: 12px;
         font-weight: 400;
         height: 14px;
@@ -29,5 +34,9 @@
         height: 15px;
         background-color: #eee;
         width: 70px;
+    }
+
+    &__edit-icon {
+        font-size: 18px;
     }
 }

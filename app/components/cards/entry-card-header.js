@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Tooltip } from 'antd';
+import { Icon, Tooltip } from 'antd';
+import classNames from 'classnames';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
-    const { author, containerRef, entry, intl, openVersionsPanel } = props;
+    const { author, containerRef, entry, intl, isOwnEntry, large, openVersionsPanel } = props;
     const ethAddress = entry.getIn(['author', 'ethAddress']);
     const akashaId = entry.getIn(['author', 'akashaId']);
     const content = entry.get('content');
@@ -16,6 +17,13 @@ const EntryCardHeader = (props) => {
     const readingTime = calculateReadingTime(wordCount);
     const latestVersion = content && content.get('version');
     const displayName = ethAddress && getDisplayName({ akashaId, ethAddress });
+    let titleMaxWidth = large ? 450 : 270;
+    if (isOwnEntry) {
+        titleMaxWidth -= 24;
+    }
+    const titleClass = classNames('overflow-ellipsis entry-card-header__title', {
+        'content-link': displayName,
+    });
     const authorPlaceholder = (
       <Tooltip title="Cannot resolve entry author">
         <div className="entry-card-header__author-placeholder" />
@@ -42,8 +50,11 @@ const EntryCardHeader = (props) => {
           />
         </ProfilePopover>
         <div className="entry-card-header__text">
-          <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-            <span className={displayName && 'content-link'}>
+          <ProfilePopover
+            ethAddress={ethAddress}
+            containerRef={containerRef}
+          >
+            <span className={titleClass} style={{ maxWidth: titleMaxWidth }}>
               {displayName || authorPlaceholder}
             </span>
           </ProfilePopover>
@@ -64,6 +75,9 @@ const EntryCardHeader = (props) => {
             </div>
           }
         </div>
+        {isOwnEntry &&
+          <Icon className="content-link entry-card-header__edit-icon" type="edit" />
+        }
       </div>
     );
 };
@@ -75,6 +89,7 @@ EntryCardHeader.propTypes = {
     intl: PropTypes.shape().isRequired,
     isNotSafe: PropTypes.bool,
     isOwnEntry: PropTypes.bool,
+    large: PropTypes.bool,
     openVersionsPanel: PropTypes.func.isRequired,
 };
 

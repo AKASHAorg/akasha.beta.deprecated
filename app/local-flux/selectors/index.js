@@ -114,6 +114,8 @@ export const selectEntryBalance = (state, id) => state.entryState.getIn(['balanc
 
 export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canClaim', id]);
 
+export const selectEntryCanClaimVote = (state, id) => state.entryState.getIn(['canClaimVote', id]);
+
 export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags', flag]);
 
 export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
@@ -284,6 +286,9 @@ export const selectPendingClaim = (state, entryId) =>
 
 export const selectPendingClaims = state =>
     state.actionState.getIn(['pending', 'claim']);
+
+export const selectPendingClaimVote = (state, entryId) =>
+    !!state.actionState.getIn(['pending', 'claimVote', entryId]);
 
 export const selectPendingClaimVotes = state =>
     state.actionState.getIn(['pending', 'claimVote']);

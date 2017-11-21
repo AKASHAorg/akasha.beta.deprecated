@@ -157,6 +157,7 @@ class EntryCard extends Component {
                 entry={entry}
                 isNotSafe={this.isPossiblyUnsafe()}
                 isOwnEntry={this.isOwnEntry()}
+                large={large}
                 openVersionsPanel={this.openVersionsPanel}
               />
             }
@@ -203,7 +204,7 @@ class EntryCard extends Component {
                 />
               </div>
             }
-            {hasContent &&
+            {hasContent && content.get('excerpt') &&
               <Link
                 className="unstyled-link"
                 to={{
