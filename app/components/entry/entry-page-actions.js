@@ -62,7 +62,7 @@ class EntryPageAction extends Component {
 
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
-            lists, listSearchKeyword } = this.props;
+            lists, listsAll, listSearchKeyword } = this.props;
         const balance = entryBalance && entryBalance.get('totalKarma');
         const isClaimed = entryBalance && entryBalance.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
@@ -134,6 +134,7 @@ class EntryPageAction extends Component {
                 listAdd={this.props.listAdd}
                 listDelete={this.props.listDelete}
                 lists={lists}
+                listsAll={listsAll}
                 listSearch={this.props.listSearch}
                 listToggleEntry={this.props.listToggleEntry}
                 search={listSearchKeyword}
