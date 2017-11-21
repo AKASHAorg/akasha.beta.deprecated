@@ -37,19 +37,22 @@ class VotePopover extends Component {
         return !disabled && !isOwnEntity && !votePending && vote === '0';
     };
 
+    isDownVote = () => this.props.type.includes('Downvote');
+
     getTooltip = () => {
         const { intl, isOwnEntity, type, votePending, vote } = this.props;
         if (votePending) {
             return intl.formatMessage(entryMessages.votePending);
         } else if (vote && vote !== '0') {
-            return type.includes('entry') ?
-                intl.formatMessage(entryMessages.alreadyVoted) :
-                intl.formatMessage(entryMessages.alreadyVotedComment);
+            const weight = Math.abs(Number(vote));
+            return vote > '0' ?
+                intl.formatMessage(entryMessages.alreadyUpvoted, { weight }) :
+                intl.formatMessage(entryMessages.alreadyDownvoted, { weight });
         } else if (isOwnEntity) {
             return type.includes('entry') ?
                 intl.formatMessage(entryMessages.votingOwnEntry) :
                 intl.formatMessage(entryMessages.votingOwnComment);
-        } else if (type.includes('Downvote')) {
+        } else if (this.isDownVote()) {
             return intl.formatMessage(entryMessages.downvote);
         } else if (type.includes('Upvote')) {
             return intl.formatMessage(entryMessages.upvote);
@@ -99,9 +102,9 @@ class VotePopover extends Component {
     };
 
     renderContent = () => {
-        const { form, intl, type, votePending } = this.props;
+        const { form, intl, votePending } = this.props;
         const { getFieldDecorator, getFieldError, getFieldValue } = form;
-        const title = type.includes('Downvote') ? entryMessages.downvote : entryMessages.upvote;
+        const title = this.isDownVote() ? entryMessages.downvote : entryMessages.upvote;
 
         if (!this.canVote()) {
             return null;
@@ -171,10 +174,13 @@ class VotePopover extends Component {
     };
 
     render () {
-        const { containerRef, iconClassName, type } = this.props;
+        const { containerRef, iconClassName, vote } = this.props;
+
         const iconClass = classNames(iconClassName, {
             'content-link': this.canVote(),
-            'vote-popover__icon_disabled': !this.canVote()
+            'vote-popover__icon_disabled': !this.canVote(),
+            'vote-popover__icon_downvoted': this.isDownVote() && vote < '0',
+            'vote-popover__icon_upvoted': !this.isDownVote() && vote > '0',
         });
 
         return (
@@ -190,7 +196,7 @@ class VotePopover extends Component {
             <Tooltip title={this.getTooltip()}>
               <Icon
                 className={iconClass}
-                type={type.includes('Downvote') ? 'arrow-down' : 'arrow-up'}
+                type={this.isDownVote() ? 'arrow-down' : 'arrow-up'}
               />
             </Tooltip>
           </Popover>

@@ -73,7 +73,7 @@ class ProfileList extends Component {
             >
               <div className="profile-list__inner">
                 {profiles.size === 0 &&
-                  <div className="flex-center-x profile-list__placeholder">
+                  <div className="flex-center profile-list__placeholder">
                     {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
                   </div>
                 }

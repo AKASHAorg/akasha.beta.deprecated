@@ -26,7 +26,7 @@ class StreamColumn extends Component {
     onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
 
     render () {
-        const { baseWidth, column, entries, intl } = this.props;
+        const { column, entries, intl } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -39,13 +39,12 @@ class StreamColumn extends Component {
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />
             <EntryList
-              baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreStreamIterator}
+              large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
             />
@@ -55,7 +54,6 @@ class StreamColumn extends Component {
 }
 
 StreamColumn.propTypes = {
-    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreStreamIterator: PropTypes.func.isRequired,

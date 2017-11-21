@@ -40,7 +40,7 @@ class TagColumn extends Component {
     };
 
     render () {
-        const { baseWidth, column, entries, intl, tagExists, tagResults } = this.props;
+        const { column, entries, intl, tagExists, tagResults } = this.props;
         let placeholderMessage;
         if (column.get('value')) {
             placeholderMessage = tagExists.get(column.get('value')) ?
@@ -61,13 +61,12 @@ class TagColumn extends Component {
               onSearch={this.props.searchTags}
             />
             <EntryList
-              baseWidth={baseWidth}
-              cardStyle={{ width: column.get('large') ? '520px' : '340px' }}
               contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreTagIterator}
+              large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={placeholderMessage}
             />
@@ -77,7 +76,6 @@ class TagColumn extends Component {
 }
 
 TagColumn.propTypes = {
-    baseWidth: PropTypes.number,
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,

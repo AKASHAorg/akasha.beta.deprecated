@@ -9,6 +9,9 @@ import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, Webs
 import { ProfileRecord } from '../../local-flux/reducers/records';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
+const smallCard = 320;
+const largeCard = 480;
+
 class EntryCard extends Component {
     constructor (props) {
         super(props);
@@ -22,12 +25,13 @@ class EntryCard extends Component {
 
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
         const { author, blockNr, canClaimPending, claimPending, entry,
-            fetchingEntryBalance, isPending, style, votePending } = nextProps;
+            fetchingEntryBalance, isPending, large, style, votePending } = nextProps;
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
             isPending !== this.props.isPending ||
+            large !== this.props.large ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             !author.equals(this.props.author) ||
             (style && style.width !== this.props.style.width) ||
@@ -63,14 +67,12 @@ class EntryCard extends Component {
     };
 
     handleEdit = () => {
-        const { entry, handleEdit, hidePanel } = this.props;
-        hidePanel();
+        const { entry, handleEdit } = this.props;
         handleEdit(entry.get('entryId'));
     };
 
     getVersion = (version) => {
-        const { entry, hidePanel, loggedAkashaId, entryPageShow } = this.props;
-        // hidePanel();
+        const { entry, loggedAkashaId, entryPageShow } = this.props;
         // const query = version !== undefined ? `?version=${version}` : '';
         // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
         // entryPageShow(entry.get('entryId'));
@@ -100,21 +102,31 @@ class EntryCard extends Component {
         });
     };
     getImageSrc = (imageObj) => {
-        const { baseUrl } = this.props;
-        const bestMatch = findClosestMatch(700, imageObj.toJS(), Object.keys(imageObj)[0]);
-        return imageCreator(imageObj.getIn([bestMatch, 'src']), baseUrl);
+        const { baseUrl, large } = this.props;
+        const baseWidth = large ? largeCard : smallCard;
+        const bestMatch = findClosestMatch(baseWidth || 700, imageObj, Object.keys(imageObj)[0]);
+        if (bestMatch) {
+            return imageCreator(imageObj[bestMatch].src, baseUrl);
+        }
+        return '';
     };
-    renderResolvingPlaceholder = () => (
-      <Card className="entry-card entry-card_transparent entry-card_fixed-height">
-        <div>
-          Resolving ipfs hash
-        </div>
-      </Card>
-    );
+    renderResolvingPlaceholder = () => {
+        const { large } = this.props;
+        const cardClass = classNames('entry-card entry-card_transparent entry-card_fixed-height', {
+            'entry-card_large': large
+        });
+        return (
+          <Card className={cardClass}>
+            <div>
+              Resolving ipfs hash
+            </div>
+          </Card>
+        );
+    };
 
     render () {
-        const { author, baseUrl, baseWidth, containerRef, entry, existingDraft, isPending, style,
-            toggleOutsideNavigation } = this.props;
+        const { author, baseUrl, containerRef, entry, existingDraft, isPending, large,
+            style, toggleOutsideNavigation } = this.props;
         const content = entry.get('content');
         const entryType = entry.getIn(['content', 'entryType']);
         // TODO use getLatestEntryVersion channel
@@ -125,8 +137,14 @@ class EntryCard extends Component {
         }
         const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title']).length > 0) ||
             !!content.get('title');
+        const featuredImage = content.get('featuredImage');
+        const hasFeaturedImage = featuredImage && !!Object.keys(featuredImage).length;
+        const featuredImageClass = classNames('flex-center entry-card__featured-image-wrapper', {
+            'entry-card__featured-image-wrapper_large': large
+        });
         const cardClass = classNames('entry-card', {
-            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent
+            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent,
+            'entry-card_large': large
         });
         return (
           <Card
@@ -139,12 +157,26 @@ class EntryCard extends Component {
                 entry={entry}
                 isNotSafe={this.isPossiblyUnsafe()}
                 isOwnEntry={this.isOwnEntry()}
+                large={large}
                 openVersionsPanel={this.openVersionsPanel}
               />
             }
           >
-            {!hasContent && !isPending &&
+            {!hasContent &&
               <div style={{ height: '240px' }}>Cannot resolve content</div>
+            }
+            {hasContent && entryType === 0 && hasFeaturedImage &&
+              <Link
+                className="unstyled-link"
+                to={{
+                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                    state: { overlay: true }
+                }}
+              >
+                <div className={featuredImageClass}>
+                  <img alt="" className="entry-card__featured-image" src={this.getImageSrc(featuredImage)} />
+                </div>
+              </Link>
             }
             {hasContent && entryType === 0 &&
               <Link
@@ -163,7 +195,7 @@ class EntryCard extends Component {
               <div>
                 <WebsiteInfoCard
                   baseUrl={baseUrl}
-                  baseWidth={baseWidth}
+                  baseWidth={large ? largeCard : smallCard}
                   cardInfo={content.get('cardInfo')}
                   hasCard={!!hasContent}
                   onClick={toggleOutsideNavigation}
@@ -172,7 +204,7 @@ class EntryCard extends Component {
                 />
               </div>
             }
-            {hasContent &&
+            {hasContent && content.get('excerpt') &&
               <Link
                 className="unstyled-link"
                 to={{
@@ -220,27 +252,28 @@ class EntryCard extends Component {
 }
 
 EntryCard.defaultProps = {
-    author: new ProfileRecord()
+    author: new ProfileRecord(),
+    style: {}
 };
 
 EntryCard.propTypes = {
     author: PropTypes.shape().isRequired,
     blockNr: PropTypes.number,
     baseUrl: PropTypes.string,
-    baseWidth: PropTypes.number,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
+    entryPageShow: PropTypes.func.isRequired,
     existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
-    style: PropTypes.shape(),
-    toggleOutsideNavigation: PropTypes.func,
-    containerRef: PropTypes.shape(),
-    entryPageShow: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     isPending: PropTypes.bool,
+    large: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
+    style: PropTypes.shape(),
+    toggleOutsideNavigation: PropTypes.func,
     votePending: PropTypes.bool,
 };
 

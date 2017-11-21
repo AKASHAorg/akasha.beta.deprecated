@@ -655,12 +655,10 @@ function* watchProfileLoginChannel () {
         yield put(actions.profileLoginError(resp.error));
     } else if (resp.request.account === resp.data.account) {
         const { akashaId, ethAddress, reauthenticate } = resp.request;
-        if (!reauthenticate) {
-            if (akashaId) {
-                resp.data.akashaId = akashaId;
-            }
-            yield call(profileGetData, { ethAddress, full: true });
+        if (!reauthenticate && akashaId) {
+            resp.data.akashaId = akashaId;
         }
+        yield put(actions.profileLoginSuccess(resp.data));
         if (reauthenticate) {
             const needAuthAction = yield select(selectNeedAuthAction);
             yield call(profileUpdateLogged, resp.data);
@@ -668,9 +666,9 @@ function* watchProfileLoginChannel () {
                 yield put(actionActions.actionPublish(needAuthAction.get('id')));
             }
         } else {
+            yield call(profileGetData, { ethAddress, full: true });
             yield call(profileSaveLogged, resp.data);
         }
-        yield put(actions.profileLoginSuccess(resp.data));
         yield put(actions.profileGetBalance());
     }
 }
