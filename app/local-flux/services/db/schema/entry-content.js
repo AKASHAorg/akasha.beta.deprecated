@@ -19,5 +19,6 @@ const entryContent = {
     excerpt: String,
     cardInfo: CardInfo,
     wordCount: Number,
+    entryType: Number,
 };
 export default entryContent;

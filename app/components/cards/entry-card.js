@@ -116,7 +116,7 @@ class EntryCard extends Component {
         const { author, baseUrl, baseWidth, containerRef, entry, existingDraft, isPending, style,
             toggleOutsideNavigation } = this.props;
         const content = entry.get('content');
-        const entryType = entry.get('entryType');
+        const entryType = entry.getIn(['content', 'entryType']);
         // TODO use getLatestEntryVersion channel
         const latestVersion = content && content.get('version');
 

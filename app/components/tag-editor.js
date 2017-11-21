@@ -286,7 +286,7 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth, inputHasFocus, existentTags } = this.state;
-        const { tagSuggestionsCount, intl, tags } = this.props;
+        const { tagSuggestionsCount, intl, tags, inputDisabled } = this.props;
 
         return (
           <div
@@ -354,7 +354,8 @@ class TagEditor extends Component {
                 onBlur={this._changeInputFocus(false)}
                 disabled={
                     !tags.every(tag => existentTags.includes(tag)) ||
-                    (tags.size >= 10)
+                    (tags.size >= 10) ||
+                    inputDisabled
                 }
               />
             </Popover>
@@ -368,6 +369,7 @@ TagEditor.propTypes = {
     className: PropTypes.string,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
+    inputDisabled: PropTypes.bool,
     match: PropTypes.shape(),
     nodeRef: PropTypes.func,
     onTagUpdate: PropTypes.func,

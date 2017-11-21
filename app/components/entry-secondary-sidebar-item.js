@@ -38,7 +38,7 @@ const EntrySecondarySidebarItem = ({
         href="/"
         dangerouslySetInnerHTML={{ __html: matchString }}
         className="draft-list-item__link"
-        onClick={ev => onItemClick(ev, `/draft/${draft.entryType}/${draft.id}`)}
+        onClick={ev => onItemClick(ev, `/draft/${draft.content.entryType}/${draft.id}`)}
       />
     </div>
     }
@@ -50,10 +50,10 @@ const EntrySecondarySidebarItem = ({
       <a
         href="/"
         className="draft-list-item__link"
-        onClick={ev => onItemClick(ev, `/draft/${draft.entryType}/${draft.id}`)}
+        onClick={ev => onItemClick(ev, `/draft/${draft.content.entryType}/${draft.id}`)}
       >
-        {draft.entryType === 'article' && ((draft.content && draft.content.title) || 'No title') }
-        {draft.entryType === 'link' && ((draft.content && draft.content.cardInfo.title) || 'No title')}
+        {draft.content.entryType === 'article' && ((draft.content && draft.content.title) || 'No title') }
+        {draft.content.entryType === 'link' && ((draft.content && draft.content.cardInfo.title) || 'No title')}
       </a>
     </div>
     }
@@ -69,7 +69,7 @@ const EntrySecondarySidebarItem = ({
             {!active &&
               <div
                 className="draft-list-item__popover-button"
-                onClick={ev => onItemClick(ev, `/draft/${draft.entryType}/${draft.id}`)}
+                onClick={ev => onItemClick(ev, `/draft/${draft.content.entryType}/${draft.id}`)}
               >
                 <b>{intl.formatMessage(entryMessages.draftEdit)}</b>
               </div>
