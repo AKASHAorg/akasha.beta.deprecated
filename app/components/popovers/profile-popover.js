@@ -278,6 +278,7 @@ class ProfilePopover extends Component {
 
         return (
           <Popover
+            arrowPointAtCenter
             content={this.renderContent()}
             getPopupContainer={getPopupContainer}
             onVisibleChange={this.onVisibleChange}

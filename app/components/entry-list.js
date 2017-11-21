@@ -96,7 +96,7 @@ class EntryList extends Component {
               votePending={!!pendingVotes.get(entry.get('entryId'))}
             />);
         });
-        console.log('entry list large', large);
+
         return (
           <div
             className={`entry-list ${!masonry && 'entry-list_flex'}`}

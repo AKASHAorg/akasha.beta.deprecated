@@ -159,7 +159,9 @@ class EntryPage extends Component {
                     {intl.formatMessage(entryMessages.unresolvedEntry)}
                   </div>
                 }
-                {entry.content && <EntryPageActions entry={entry} containerRef={this.container} />}
+                {entry.content &&
+                  <EntryPageActions containerRef={this.container} entry={entry} isFullEntry />
+                }
               </div>
               <div className="entry-page__comments">
                 <div className="entry-page__comments-header">

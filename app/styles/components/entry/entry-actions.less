@@ -1,7 +1,76 @@
 .entry-actions {
-    padding: 6px 0;
+    padding-top: 6px;
     max-width: 700px;
     margin: 0 auto;
+
+    &_own-entry {
+        display: flex;
+    }
+
+    &__info {
+        flex: 1 1 auto;
+        font-size: 13px;     
+        margin-top: 6px;
+
+        &_full {
+            font-size: 15px;
+        }
+    }
+
+    &__info-text {
+        margin-bottom: 2px;
+        color: @text-color-secondary;
+
+        &_can-claim {
+            color: @success-color;
+        }
+
+        &_cannot-claim {
+            color: @error-color;
+        }
+    }
+
+    &__separator {
+        margin: 0px 5px;
+    }
+
+    &__collect-button {
+        color: @primary-color;
+        text-decoration: underline;
+        font-weight: 400;
+        height: 19px;
+
+        &_disabled {
+            color: @text-color-secondary;
+            cursor: not-allowed;
+        }
+
+        .ant-spin {
+            margin-right: 6px;
+        }
+    }
+
+    &__collect-in {
+        color: @text-color-secondary;
+    }
+
+    &__collected {
+        color: @text-color-secondary;
+    }
+
+    &__actions {
+        flex: 0 0 auto;
+        display: flex;
+    }
+
+    &__comments {
+        margin: 0px 16px;
+    }
+
+    &__comments-counter {
+        font-size: 18px;
+        margin-right: 5px;
+    }
 
     &__vote-wrapper {
         position: relative;
@@ -9,24 +78,6 @@
 
     &__vote-icon {
         font-size: 20px;
-    }
-
-    &__existing-vote {
-        position: absolute;
-        top: -14px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 12px;
-        cursor: default;
-
-        &_downvote {
-            color: @error-color;
-        }
-
-        &_upvote {
-            color: @success-color;            
-        }
     }
 
     &__score {
@@ -74,5 +125,9 @@
         &_claimed {
             fill: @success-color;
         }
+    }
+
+    &__info-icon {
+        margin-left: 6px;
     }
 }

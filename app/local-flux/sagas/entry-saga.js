@@ -474,6 +474,15 @@ function* watchEntryGetVoteOfChannel () {
         if (resp.error) {
             yield put(actions.entryGetVoteOfError(resp.error));
         } else {
+            const voteEntries = [];
+            resp.data.collection.forEach((vote) => {
+                if (vote.vote !== '0') {
+                    voteEntries.push(vote.entryId);
+                }
+            });
+            if (voteEntries.length) {
+                yield put(actions.entryCanClaimVote(voteEntries));
+            }
             yield put(actions.entryGetVoteOfSuccess(resp.data));
         }
     }
