@@ -7,6 +7,7 @@ import { Button, Icon, Popover, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
+import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
@@ -259,6 +260,7 @@ class ProfilePopover extends Component {
               {isOwnProfile &&
                 <Button
                   className="profile-popover__button"
+                  onClick={this.props.profileEditToggle}
                   size="large"
                   type="primary"
                 >
@@ -276,6 +278,7 @@ class ProfilePopover extends Component {
 
         return (
           <Popover
+            arrowPointAtCenter
             content={this.renderContent()}
             getPopupContainer={getPopupContainer}
             onVisibleChange={this.onVisibleChange}
@@ -306,6 +309,7 @@ ProfilePopover.propTypes = {
     loggedEthAddress: PropTypes.string,
     placement: PropTypes.string,
     profile: PropTypes.shape().isRequired,
+    profileEditToggle: PropTypes.func.isRequired,
     tipPending: PropTypes.bool
 };
 
@@ -324,6 +328,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        actionAdd
+        actionAdd,
+        profileEditToggle
     }
 )(injectIntl(ProfilePopover));

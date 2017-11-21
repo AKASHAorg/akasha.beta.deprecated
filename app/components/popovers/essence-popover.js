@@ -21,9 +21,6 @@ class EssencePopover extends Component {
         popoverVisible: false
     };
 
-    componentDidMount () {
-    }
-
     componentWillUnmount () {
         if (this.timeout) {
             clearTimeout(this.timeout);

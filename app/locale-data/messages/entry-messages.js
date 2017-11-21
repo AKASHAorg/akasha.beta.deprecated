@@ -21,15 +21,15 @@ const entryMessages = defineMessages({
         description: 'entry of type link',
         defaultMessage: 'Link Entries'
     },
-    alreadyVoted: {
-        id: 'app.entry.alreadyVoted',
-        description: 'vote button tooltip when it was already voted',
-        defaultMessage: 'You have already voted this entry'
+    alreadyDownvoted: {
+        id: 'app.entry.alreadyDownvoted',
+        description: 'vote button tooltip when it was already downvoted',
+        defaultMessage: 'You downvoted with weight {weight}'
     },
-    alreadyVotedComment: {
-        id: 'app.entry.alreadyVotedComment',
-        description: 'vote button tooltip when it was already voted',
-        defaultMessage: 'You have already voted this comment'
+    alreadyUpvoted: {
+        id: 'app.entry.alreadyUpvoted',
+        description: 'vote button tooltip when it was already upvoted',
+        defaultMessage: 'You upvoted with weight {weight}'
     },
     blockNr: {
         id: 'app.entry.blockNr',
@@ -40,6 +40,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.claim',
         description: 'claim button tooltip',
         defaultMessage: 'Claim'
+    },
+    collected: {
+        id: 'app.entry.collected',
+        description: 'Essence was collected',
+        defaultMessage: 'Essence collected'
+    },
+    collectEssence: {
+        id: 'app.entry.collectEssence',
+        description: 'collect essence from published entry or vote',
+        defaultMessage: 'Collect Essence'
     },
     commentsCount: {
         id: 'app.entry.commentsCount',
@@ -183,6 +193,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.saveHighlight',
         description: 'save highlight button label',
         defaultMessage: 'Save highlight'
+    },
+    score: {
+        id: 'app.entry.score',
+        description: 'entry score',
+        defaultMessage: 'Score'
     },
     searchSomething: {
         id: 'app.entry.searchSomething',
@@ -368,6 +383,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.votingOwnEntry',
         description: 'tooltip for vote button for your own entry',
         defaultMessage: 'You cannot vote your own entry'
+    },
+    votingPeriod: {
+        id: 'app.entry.votingPeriod',
+        description: 'voting period for an entry has ended',
+        defaultMessage: 'The voting period has ended'
+    },
+    votingPeriodDisclaimer: {
+        id: 'app.entry.votingPeriodDisclaimer',
+        description: 'disclaimer message about voting period',
+        defaultMessage: 'Users can still vote on the entry but the mana burned for these votes can\'t be collected by the author or the voters.'
     },
 });
 export { entryMessages };

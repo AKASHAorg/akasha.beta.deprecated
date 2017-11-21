@@ -63,12 +63,11 @@ class EntryList extends Component {
 
     render () {
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, defaultTimeout, entries,
-            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, loggedEthAddress,
+            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, large, loggedEthAddress,
             masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
             style } = this.props;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
-                console.error('entry list - entry not found');
                 return null;
             }
             const claimPending = !!pendingClaims.get(entry.get('entryId'));
@@ -86,6 +85,7 @@ class EntryList extends Component {
               fetchingEntryBalance={fetchingEntryBalance}
               handleEdit={this.handleEdit}
               key={entry.get('entryId')}
+              large={large}
               loggedEthAddress={loggedEthAddress}
               style={cardStyle}
               toggleOutsideNavigation={this.props.toggleOutsideNavigation}
@@ -158,6 +158,7 @@ EntryList.propTypes = {
     entryPageShow: PropTypes.func.isRequired,
     fetchMoreEntries: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
+    large: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
     masonry: PropTypes.bool,
     pendingClaims: PropTypes.shape().isRequired,
