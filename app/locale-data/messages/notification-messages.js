@@ -222,7 +222,7 @@ const notificationMessages = defineMessages({
     toggleDonationsSuccess: {
         id: 'app.notification.toggleDonationsSuccess',
         description: 'toggle donations transaction was succesfully mined',
-        defaultMessage: 'You succesfully changed your donation status'
+        defaultMessage: 'You succesfully changed your tips status'
     },
     transferAethSuccess: {
         id: 'app.notification.transferAethSuccess',

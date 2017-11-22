@@ -8,6 +8,9 @@ export const selectAction = (state, id) => state.actionState.getIn(['byId', id])
 export const selectActionsHistory = state =>
     state.actionState.get('history').map(id => selectAction(state, id));
 
+export const selectActionPending = (state, actionType) =>
+    state.actionState.getIn(['pending', actionType]);
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {

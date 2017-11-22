@@ -276,8 +276,8 @@ export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCE
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
 
-export const profileToggleDonations = status =>
-    action(types.PROFILE_TOGGLE_DONATIONS, { status });
+export const profileToggleDonations = ({ actionId, status }) =>
+    action(types.PROFILE_TOGGLE_DONATIONS, { actionId, status });
 
 export const profileToggleDonationsError = (error, request) => {
     error.code = 'PTDE01';

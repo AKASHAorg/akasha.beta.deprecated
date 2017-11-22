@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Checkbox, Form, Select, Radio } from 'antd';
+import { Button, Checkbox, Form, Icon, Select, Tooltip, Radio } from 'antd';
+import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { profileToggleDonations } from '../../local-flux/actions/profile-actions';
-import { selectAllLicenses, selectLoggedEthAddress,
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { selectActionPending, selectAllLicenses, selectLoggedEthAddress,
     selectLoggedProfileData } from '../../local-flux/selectors';
 import { formMessages, settingsMessages } from '../../locale-data/messages';
 import { RememberPassphraseSelect } from '../';
@@ -80,12 +81,13 @@ class ProfileSettings extends Component {
 
     onSaveSettings = () => {
         const { loggedEthAddress, loggedProfileData } = this.props;
-        const { defaultLicenseId, defaultLicenseParent, donationsValue, unlockTime } = this.state;
-        const passwordPreference = { remember: true, time: unlockTime };
+        const { defaultLicenseId, defaultLicenseParent, donationsValue,
+            unlockTime, rememberTime } = this.state;
+        const passwordPreference = { remember: rememberTime, time: unlockTime };
         const defaultLicense = { id: defaultLicenseId, parent: defaultLicenseParent };
         const payload = { defaultLicense, passwordPreference };
         if (donationsValue !== loggedProfileData.get('donationsEnabled')) {
-            this.props.profileToggleDonations(donationsValue);
+            this.props.actionAdd(loggedEthAddress, toggleDonations, { status: donationsValue });
         }
         this.props.userSettingsSave(loggedEthAddress, payload);
         this.setState({
@@ -94,7 +96,7 @@ class ProfileSettings extends Component {
     }
 
     render () {
-        const { intl, licenses, savingUserSettings } = this.props;
+        const { intl, licenses, pendingToggleDonations, savingUserSettings } = this.props;
         const { defaultLicenseId, defaultLicenseParent, isDirty,
             unlockTime, rememberTime } = this.state;
 
@@ -177,9 +179,16 @@ class ProfileSettings extends Component {
                 <div className="profile-settings__item">
                   <div className="profile-settings__item-title">
                     {intl.formatMessage(settingsMessages.tipsOptions)}
+                    <Tooltip
+                      title={intl.formatMessage(settingsMessages.tipsInfo)}
+                      placement="topLeft"
+                      arrowPointAtCenter
+                    >
+                      <Icon type="info-circle" className="profile-settings__info-icon" />
+                    </Tooltip>
                   </div>
                   <div className="profile-settings__item-description">
-                    {intl.formatMessage(settingsMessages.tipsInfo)}
+                    {intl.formatMessage(settingsMessages.tipsDescription)}
                   </div>
                   <div className="profile-settings__tips">
                     <RadioGroup onChange={this.handleTipsChange} value={this.state.donationsValue}>
@@ -192,9 +201,8 @@ class ProfileSettings extends Component {
             </div>
             <div className="profile-settings__footer">
               <Button
-                disabled={savingUserSettings || !isDirty}
+                disabled={pendingToggleDonations || savingUserSettings || !isDirty}
                 onClick={this.onSaveSettings}
-                size="large"
                 type="primary"
               >
                 {intl.formatMessage(formMessages.updateSettings)}
@@ -206,14 +214,15 @@ class ProfileSettings extends Component {
 }
 
 ProfileSettings.propTypes = {
+    actionAdd: PropTypes.func,
     intl: PropTypes.shape(),
     licenses: PropTypes.shape(),
-    loggedEthAddress: PropTypes.string.isRequired,
-    loggedProfileData: PropTypes.shape().isRequired,
+    loggedEthAddress: PropTypes.string,
+    loggedProfileData: PropTypes.shape(),
+    pendingToggleDonations: PropTypes.bool,
     savingUserSettings: PropTypes.bool,
-    profileToggleDonations: PropTypes.func.isRequired,
     userSettings: PropTypes.shape(),
-    userSettingsSave: PropTypes.func.isRequired
+    userSettingsSave: PropTypes.func
 };
 
 function mapStateToProps (state) {
@@ -221,6 +230,7 @@ function mapStateToProps (state) {
         licenses: selectAllLicenses(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         loggedProfileData: selectLoggedProfileData(state),
+        pendingToggleDonations: selectActionPending(state, toggleDonations),
         savingUserSettings: state.settingsState.getIn(['flags', 'savingUserSettings']),
         userSettings: state.settingsState.get('userSettings')
     };
@@ -229,7 +239,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        profileToggleDonations,
+        actionAdd,
         userSettingsSave
     }
 )(injectIntl(ProfileSettings));
