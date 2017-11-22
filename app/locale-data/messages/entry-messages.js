@@ -329,6 +329,11 @@ const entryMessages = defineMessages({
         description: 'entry subtitle for reading older versions',
         defaultMessage: 'You are now viewing an older'
     },
+    noCommentsFound: {
+        id: 'app.entry.noCommentsFound',
+        description: 'placeholder for empty comments list',
+        defaultMessage: 'No comments found'
+    },
     noEntries: {
         id: 'app.entry.noEntries',
         description: 'placeholder for empty entry list',

@@ -9,6 +9,7 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { EntryComment } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
+import { generalMessages } from '../../locale-data/messages/general-messages';
 
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
@@ -156,7 +157,7 @@ class EntryPage extends Component {
                 }
                 {!entry.content &&
                   <div className="entry-page__unresolved-placeholder">
-                    {intl.formatMessage(entryMessages.unresolvedEntry)}
+                    {intl.formatMessage(generalMessages.noPeersAvailable)}
                   </div>
                 }
                 {entry.content &&
