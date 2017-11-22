@@ -157,6 +157,7 @@
   "app.entry.draftSaved": "Draft Saved",
   "app.entry.draftSaving": "Saving Draft",
   "app.entry.draftSharePreview": "Share preview link",
+  "app.entry.edited": "Edited",
   "app.entry.entriesCount": "{count, number} {count, plural, one {entry} other {entries}}",
   "app.entry.oneTagRequired": "You must add at least one tag",
   "app.entry.errorExcerptTooLong": "Excerpt must not be longer than 120 characters",

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
-import { Icon, Tooltip } from 'antd';
+import { Icon, Tooltip, Popover } from 'antd';
 import classNames from 'classnames';
 import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
@@ -17,18 +17,23 @@ class EntryPageHeader extends Component {
         showVersions: false,
     };
 
-    openVersionsPanel = () => {
-        this.setState({
-            showVersions: true
-        });
-    };
+    // _openVersionsPopover = () => {
+    //     this.setState({
+    //         showVersions: true
+    //     });
+    // };
 
-    closeVersionsPanel = () => {
+    // closeVersionsPopover = () => {
+    //     this.setState({
+    //         showVersions: false
+    //     });
+    // };
+    _handleVersionsPopoverVisibility = (visible, latestVersion) => {
+        if (!latestVersion) return;
         this.setState({
-            showVersions: false
+            showVersions: visible
         });
-    };
-
+    }
     getCurrentVersion = () => {
         const { entry, latestVersion, location } = this.props;
         const { version } = parse(location.search);
@@ -83,45 +88,27 @@ class EntryPageHeader extends Component {
 
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
+        const { showVersions } = this.state;
         const wordCount = entry.getIn(['content', 'wordCount']) || 0;
         const publishDate = new Date(entry.get('publishDate') * 1000);
         const readingTime = calculateReadingTime(wordCount);
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
-        let publishedMessage;
-        if (!latestVersion) {
-            publishedMessage = intl.formatMessage(entryMessages.published);
-        } else if (isOlderVersion) {
-            publishedMessage = (
-              <span>
-                <span>{intl.formatMessage(entryMessages.olderVersion)} </span>
-                <span onClick={this.openVersionsPanel} className="link">
-                  {intl.formatMessage(entryMessages.version)}
-                </span>
-                <span> *</span>
-              </span>
-            );
-        } else {
-            publishedMessage = (
-              <span>
-                <span onClick={this.openVersionsPanel} className="link">
-                  {intl.formatMessage(entryMessages.published)}
-                </span>
-                <span> *</span>
-              </span>
-            );
-        }
-
-        return (
-          <div>
-            <span style={{ paddingRight: '5px' }}>
-              {publishedMessage}
-            </span>
+        const publishedMessage = (
+          <span>
             {!isOlderVersion &&
-              <span style={{ display: 'inline-block' }}>
-                {intl.formatRelative(publishDate)}
+              <span>
+                V{latestVersion ? latestVersion + 1 : 1} &#183; {intl.formatMessage(entryMessages.edited)}
               </span>
             }
-            <span style={{ padding: '0 7px' }}>|</span>
+            {(isOlderVersion) &&
+              <span>
+                  V{this.getCurrentVersion() + 1} &#183; {intl.formatMessage(entryMessages.published)}
+              </span>
+            }
+          </span>
+        );
+        return (
+          <div>
             {readingTime.hours &&
               <span style={{ marginRight: 5 }}>
                 {intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })}
@@ -129,9 +116,30 @@ class EntryPageHeader extends Component {
             }
             {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
-            <span style={{ padding: '0 5px' }}>
+            <span style={{ padding: '0 0 0 5px' }}>
               ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
             </span>
+            <span style={{ padding: '0 7px' }}>|</span>
+            <Popover
+              content={
+                <div>{latestVersion}</div>
+              }
+              visible={showVersions}
+              trigger="click"
+              onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
+              placement="bottomRight"
+              arrowPointAtCenter
+            >
+              <span style={{ paddingRight: '5px' }}>
+                {publishedMessage}
+              </span>
+              {!isOlderVersion &&
+                <span style={{ display: 'inline-block' }}>
+                  {intl.formatRelative(publishDate)}
+                </span>
+              }
+              <Icon type="down" />
+            </Popover>
           </div>
         );
     };
@@ -186,7 +194,7 @@ class EntryPageHeader extends Component {
                 }
               </div>
             </div>
-            {!!latestVersion && this.state.showVersions &&
+            {/*!!latestVersion && this.state.showVersions &&
               <EntryVersionsPanel
                 closeVersionsPanel={this.closeVersionsPanel}
                 currentVersion={this.getCurrentVersion()}
@@ -196,7 +204,7 @@ class EntryPageHeader extends Component {
                 isOwnEntry={isOwnEntry}
                 latestVersion={latestVersion}
               />
-            }
+            */}
           </div>
         );
     }
