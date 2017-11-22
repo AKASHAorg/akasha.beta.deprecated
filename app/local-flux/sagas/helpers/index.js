@@ -1,5 +1,6 @@
 import { eventChannel } from 'redux-saga';
-import { put, take } from 'redux-saga/effects';
+import { put, select, take } from 'redux-saga/effects';
+import { selectAction, selectLoggedEthAddress } from '../../selectors';
 
 const Channel = global.Channel;
 export const actionChannels = {};
@@ -46,6 +47,12 @@ export function enableChannel (channel, mananger) {
         channel.enable();
     });
     return promise;
+}
+
+export function* isLoggedProfileRequest (actionId) {
+    const action = yield select(state => selectAction(state, actionId));
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    return action && action.get('ethAddress') === loggedEthAddress;
 }
 
 export function* registerListener ({ channel, successAction, errorAction }) {

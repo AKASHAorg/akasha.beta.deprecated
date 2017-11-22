@@ -42,7 +42,7 @@ const WebsiteInfoCard = (props) => {
             website-info-card${isEdit ? '_edit' : ''}`
         }
         loading={loading}
-        hoverable={false}
+        // hoverable={false}
       >
         {!title && !description && infoExtracted && !error &&
           <div>Cannot extract information from website!</div>

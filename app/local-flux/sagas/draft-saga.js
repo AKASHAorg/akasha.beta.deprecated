@@ -2,7 +2,7 @@ import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from '
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
-import { actionChannels, enableChannel } from './helpers';
+import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount } from '../../utils/dataModule';
@@ -205,39 +205,43 @@ function* draftRevert ({ data }) {
 function* watchDraftPublishChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.publish);
-        if (response.error) {
-            yield put(draftActions.draftPublishError(
-                response.error,
-                response.request.id
-            ));
-        } else if (response.data.receipt) {
-            const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-            if (!response.data.receipt.success) {
-                yield put(draftActions.draftPublishError({}, response.request.id));
+        const { actionId } = response.request;
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (response.error) {
+                yield put(draftActions.draftPublishError(
+                    response.error,
+                    response.request.id
+                ));
+            } else if (response.data.receipt) {
+                const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+                if (!response.data.receipt.success) {
+                    yield put(draftActions.draftPublishError({}, response.request.id));
+                } else {
+                    yield put(eProcActions.gethGetStatusSuccess({
+                        blockNr: blockNumber
+                    }, {
+                        geth: {}
+                    }));
+                    yield put(actionActions.actionUpdate({
+                        id: response.request.actionId,
+                        status: actionStatus.published,
+                        tx: response.data.tx,
+                        blockNumber,
+                        cumulativeGasUsed,
+                        success,
+                        payload: { entryId: response.data.entryId }
+                    }));
+                }
             } else {
-                yield put(eProcActions.gethGetStatusSuccess({
-                    blockNr: blockNumber
-                }, {
-                    geth: {}
-                }));
+                const loggedEthAddress = yield select(selectLoggedEthAddress);
                 yield put(actionActions.actionUpdate({
                     id: response.request.actionId,
-                    status: actionStatus.published,
+                    status: actionStatus.publishing,
                     tx: response.data.tx,
-                    blockNumber,
-                    cumulativeGasUsed,
-                    success,
-                    payload: { entryId: response.data.entryId }
+                    payload: { ethAddress: loggedEthAddress }
                 }));
             }
-        } else {
-            const loggedEthAddress = yield select(selectLoggedEthAddress);
-            yield put(actionActions.actionUpdate({
-                id: response.request.actionId,
-                status: actionStatus.publishing,
-                tx: response.data.tx,
-                payload: { ethAddress: loggedEthAddress }
-            }));
         }
     }
 }
@@ -245,36 +249,40 @@ function* watchDraftPublishChannel () {
 function* watchDraftPublishUpdateChannel () {
     while (true) {
         const response = yield take(actionChannels.entry.editEntry);
-        if (response.error) {
-            yield put(draftActions.draftPublishUpdateError(
-                response.error,
-                response.request.id
-            ));
-        } else if (response.data.receipt) {
-            const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-            if (!response.data.receipt.success) {
-                yield put(draftActions.draftPublishUpdateError({}, response.request.id));
+        const { actionId } = response.request;
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (response.error) {
+                yield put(draftActions.draftPublishUpdateError(
+                    response.error,
+                    response.request.id
+                ));
+            } else if (response.data.receipt) {
+                const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+                if (!response.data.receipt.success) {
+                    yield put(draftActions.draftPublishUpdateError({}, response.request.id));
+                } else {
+                    yield put(eProcActions.gethGetStatusSuccess({
+                        blockNr: blockNumber
+                    }, {
+                        geth: {}
+                    }));
+                    yield put(actionActions.actionUpdate({
+                        id: response.request.actionId,
+                        status: actionStatus.published,
+                        tx: response.data.tx,
+                        blockNumber,
+                        cumulativeGasUsed,
+                        success,
+                    }));
+                }
             } else {
-                yield put(eProcActions.gethGetStatusSuccess({
-                    blockNr: blockNumber
-                }, {
-                    geth: {}
-                }));
                 yield put(actionActions.actionUpdate({
                     id: response.request.actionId,
-                    status: actionStatus.published,
+                    status: actionStatus.publishing,
                     tx: response.data.tx,
-                    blockNumber,
-                    cumulativeGasUsed,
-                    success,
                 }));
             }
-        } else {
-            yield put(actionActions.actionUpdate({
-                id: response.request.actionId,
-                status: actionStatus.publishing,
-                tx: response.data.tx,
-            }));
         }
     }
 }
