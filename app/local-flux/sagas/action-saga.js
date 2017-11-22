@@ -228,7 +228,6 @@ function* actionPublished ({ receipt }) {
 function* actionUpdate ({ changes }) {
     const action = yield select(state => selectAction(state, changes.id));
     if (changes.status === actionStatus.publishing) {
-        yield put(transactionActions.transactionAddToQueue([changes]));
         yield fork(actionSave, changes.id);
     }
     if (changes.status === actionStatus.published) {

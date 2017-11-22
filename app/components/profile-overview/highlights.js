@@ -17,7 +17,9 @@ class Highlights extends Component {
         const { highlights } = this.props;
         const ethAddresses = highlights.map(highlight => ({ ethAddress: highlight.get('publisher') }));
         const payload = R.uniq(ethAddresses.toJS());
-        this.props.profileGetList(payload);
+        if (payload.length) {
+            this.props.profileGetList(payload);
+        }
     }
 
     shouldComponentUpdate (nextProps) {
