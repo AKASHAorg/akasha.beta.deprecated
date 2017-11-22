@@ -28,7 +28,7 @@ class TagColumn extends Component {
 
     entryMoreTagIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreTagIterator(column.get('id'), column.get('value'));
+        this.props.entryMoreTagIterator({ columnId: column.get('id'), value: column.get('value') });
     };
 
     onRefresh = () => {

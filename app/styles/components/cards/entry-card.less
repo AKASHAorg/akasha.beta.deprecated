@@ -2,10 +2,6 @@
     margin: 5px 5px;
     width: 340px;
 
-    &_transparent {
-        opacity: 0.5;
-    }
-
     &_fixed-height {
         height: 300px;
     }
@@ -38,6 +34,30 @@
         max-height: 72px;
         overflow: hidden;
         line-height: 1.2;
+
+        &_placeholder {
+            height: 15px;
+            margin: 8px 0px;
+        }
+    }
+
+    &__content-placeholder {
+        height: 11px;
+    }
+
+    &__unresolved {
+        position: absolute;
+        top: 24px;
+        left: 0;
+        right: 0;
+        font-size: 13px;
+    }
+
+    &__retry-button {
+        color: @primary-color;
+        font-weight: 500;
+        font-size: 11px;
+        padding: 2px;
     }
 
     &__excerpt {
