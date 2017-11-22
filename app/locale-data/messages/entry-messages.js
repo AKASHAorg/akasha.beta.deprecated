@@ -354,16 +354,6 @@ const entryMessages = defineMessages({
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
     },
-    unresolvedComment: {
-        id: 'app.entry.unresolvedComment',
-        description: 'Message to display when a comment could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
-    },
-    unresolvedEntry: {
-        id: 'app.entry.unresolvedEntry',
-        description: 'Message to display when an entry could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
-    },
     upvote: {
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',

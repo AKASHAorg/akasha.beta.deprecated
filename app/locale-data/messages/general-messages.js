@@ -280,6 +280,11 @@ const generalMessages = defineMessages({
         description: 'no (for confirmations)',
         defaultMessage: 'No'
     },
+    noPeersAvailable: {
+        id: 'app.general.noPeersAvailable',
+        description: 'couldn\'t find any IPFS peers for a specific content',
+        defaultMessage: 'No peers available'
+    },
     notes: {
         id: 'app.general.notes',
         description: 'notes',
@@ -349,6 +354,11 @@ const generalMessages = defineMessages({
         id: 'app.general.resume',
         description: 'resume button label',
         defaultMessage: 'Resume'
+    },
+    retry: {
+        id: 'app.general.retry',
+        description: 'Retry',
+        defaultMessage: 'Retry'
     },
     running: {
         id: 'app.general.running',
