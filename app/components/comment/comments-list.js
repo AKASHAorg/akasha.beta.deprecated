@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { Spin } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader, OptimisticComment } from '../';
 import { selectCommentsFlag, selectCommentsForParent, selectLoggedProfileData,
@@ -74,12 +75,17 @@ class CommentList extends Component {
               />
             ))}
             {fetchingComments &&
-              <div className="comment-list__loading">
-                {`${intl.formatMessage(entryMessages.loadingComments)}...`}
+              <div className="flex-center comment-list__loader-wrapper">
+                <Spin />
+              </div>
+            }
+            {!fetchingComments && !comments.size &&
+              <div className="comment-list__placeholder">
+                {intl.formatMessage(entryMessages.noCommentsFound)}
               </div>
             }
             {moreComments &&
-              <div className="comment-list__loader-wrapper">
+              <div className="comment-list__loader-wrapper_more">
                 <DataLoader flag={fetchingMoreComments} size="small">
                   <div className="flex-center">
                     <div className="comment-list__trigger" ref={getTriggerRef} />
