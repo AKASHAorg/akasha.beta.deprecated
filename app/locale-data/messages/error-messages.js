@@ -249,7 +249,7 @@ const errorMessages = defineMessages({
     profileToggleDonations: {
         id: 'app.error.profileToggleDonations',
         description: 'toggle donations error',
-        defaultMessage: 'An error occured while changing your donations status'
+        defaultMessage: 'An error occured while changing your tips status'
     },
     profileTransferAeth: {
         id: 'app.error.profileTransferAeth',

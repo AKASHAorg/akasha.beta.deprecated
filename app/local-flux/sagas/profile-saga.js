@@ -290,10 +290,11 @@ function* profileToggleDonations ({ actionId, status }) {
     yield apply(channel, channel.send, [{ token, actionId, status }]);
 }
 
-function* profileToggleDonationsSuccess ({ data }) {
-    console.log('data: ', data);
-    const akashaId = data.akashaId;
-    yield call(profileGetData, { akashaId, full: true });
+function* profileToggleDonationsSuccess () {
+    const profile = yield apply(profileService, profileService.profileGetLogged);
+    if (profile && profile.ethAddress) {
+        yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
+    }
     yield put(appActions.showNotification({
         id: 'toggleDonationsSuccess',
         duration: 4
