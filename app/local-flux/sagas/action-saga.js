@@ -218,6 +218,7 @@ function* actionPublished ({ receipt }) {
         const changes = { id: actionId, blockNumber, cumulativeGasUsed, status, success };
         yield put(actions.actionUpdate(changes));
         yield put(profileActions.profileGetBalance());
+        yield put(profileActions.profileManaBurned());
     }
 }
 
