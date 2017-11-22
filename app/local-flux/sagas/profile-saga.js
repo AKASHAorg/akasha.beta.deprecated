@@ -1,5 +1,5 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import { actionChannels, enableChannel } from './helpers';
+import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
@@ -421,17 +421,20 @@ function* watchProfileBondAethChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.bondAeth);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileBondAethError(resp.error, resp.request.amount));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
                 yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileBondAethError(resp.error, resp.request.amount));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -454,17 +457,20 @@ function* watchProfileCycleAethChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.cycleAeth);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileCycleAethError(resp.error, resp.request.amount));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.profileCycleAethError({}, resp.request.amount));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileCycleAethError(resp.error, resp.request.amount));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileCycleAethError({}, resp.request.amount));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -495,14 +501,17 @@ function* watchProfileFollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.followProfile);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileFollowError(resp.error, resp.request));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileFollowError(resp.error, resp.request));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
+            }
         }
     }
 }
@@ -551,19 +560,22 @@ function* watchProfileFreeAethChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.freeAeth);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileFreeAethError(resp.error));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.profileFreeAethError({}));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileFreeAethError(resp.error));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileFreeAethError({}));
+                } else {
+                    yield put(actions.profileCyclingStates());
+                }
             } else {
-                yield put(actions.profileCyclingStates());
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -700,16 +712,19 @@ function* watchProfileRegisterChannel () {
     while (true) {
         const resp = yield take(actionChannels.registry.registerProfile);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileRegisterError(resp.error, resp.request));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.profileRegisterError({}));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileRegisterError(resp.error, resp.request));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileRegisterError({}));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -733,14 +748,17 @@ function* watchProfileSendTipChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.tip);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileSendTipError(resp.error, resp.request));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileSendTipError(resp.error, resp.request));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
+            }
         }
     }
 }
@@ -749,24 +767,27 @@ function* watchProfileTransferChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.transfer);
         const { actionId, tokenAmount } = resp.request;
-        if (resp.error) {
-            if (tokenAmount) {
-                yield put(actions.profileTransferAethError(resp.error, resp.request));
-            } else {
-                yield put(actions.profileTransferEthError(resp.error, resp.request));
-            }
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
                 if (tokenAmount) {
-                    yield put(actions.profileTransferAethError({}, resp.request));
+                    yield put(actions.profileTransferAethError(resp.error, resp.request));
                 } else {
-                    yield put(actions.profileTransferEthError({}, resp.request));
+                    yield put(actions.profileTransferEthError(resp.error, resp.request));
                 }
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    if (tokenAmount) {
+                        yield put(actions.profileTransferAethError({}, resp.request));
+                    } else {
+                        yield put(actions.profileTransferEthError({}, resp.request));
+                    }
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -775,17 +796,20 @@ function* watchProfileTransformEssenceChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.transformEssence);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileTransformEssenceError(resp.error, resp.request.amount));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.profileTransformEssenceError({}, resp.request.amount));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileTransformEssenceError(resp.error, resp.request.amount));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileTransformEssenceError({}, resp.request.amount));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -794,14 +818,17 @@ function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileUnfollowError(resp.error, resp.request));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileUnfollowError(resp.error, resp.request));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
+            }
         }
     }
 }
@@ -810,20 +837,22 @@ function* watchProfileUpdateChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.updateProfileData);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.profileUpdateError(resp.error, resp.request));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.profileUpdateError({}));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.profileUpdateError(resp.error, resp.request));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileUpdateError({}));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
-
 
 export function* registerProfileListeners () { // eslint-disable-line max-statements
     yield fork(watchProfileAethTransfersIteratorChannel);

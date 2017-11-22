@@ -1,6 +1,6 @@
 import { all, apply, call, fork, put, select, take, takeEvery,
     takeLatest } from 'redux-saga/effects';
-import { actionChannels, enableChannel } from './helpers';
+import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
@@ -365,17 +365,20 @@ function* watchEntryClaimChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.claim);
         const { actionId, entryId, entryTitle } = resp.request;
-        if (resp.error) {
-            yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.entryClaimError({}, entryId, entryTitle));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.entryClaimError({}, entryId, entryTitle));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -384,17 +387,20 @@ function* watchEntryClaimVoteChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.claimVote);
         const { actionId } = resp.request;
-        if (resp.error) {
-            yield put(actions.entryClaimVoteError(resp.error, resp.request));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.entryClaimVoteError({}, resp.request));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.entryClaimVoteError(resp.error, resp.request));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.entryClaimVoteError({}, resp.request));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -403,17 +409,20 @@ function* watchEntryDownvoteChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.downvote);
         const { actionId, entryId, entryTitle } = resp.request;
-        if (resp.error) {
-            yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.entryDownvoteError({}, entryId, entryTitle));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.entryDownvoteError({}, entryId, entryTitle));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }
@@ -603,17 +612,20 @@ function* watchEntryUpvoteChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.upvote);
         const { actionId, entryId, entryTitle } = resp.request;
-        if (resp.error) {
-            yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
-            yield put(actionActions.actionDelete(actionId));
-        } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            if (!resp.data.receipt.success) {
-                yield put(actions.entryUpvoteError({}, entryId, entryTitle));
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (shouldApplyChanges) {
+            if (resp.error) {
+                yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
+                yield put(actionActions.actionDelete(actionId));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.entryUpvoteError({}, entryId, entryTitle));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
             }
-        } else {
-            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-            yield put(actionActions.actionUpdate(changes));
         }
     }
 }

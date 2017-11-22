@@ -19,6 +19,7 @@ function* transactionAddToQueue ({ txs }) {
 }
 
 function* transactionEmitMinedSuccess (data) {
+    console.error('transaction emit mined is depracated');
     const { blockNumber, cumulativeGasUsed } = data;
     const loggedAkashaId = yield select(selectLoggedAkashaId);
     const actionId = yield apply(actionService, actionService.getActionByTx, [data.mined]);
