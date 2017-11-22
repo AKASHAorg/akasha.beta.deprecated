@@ -3,6 +3,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import contracts from '../../contracts/index';
 import { profileAddress } from './helpers';
 import schema from '../utils/jsonschema';
+import { uniq } from 'ramda';
 
 export const followersIterator = {
     'id': '/followersIterator',
@@ -19,8 +20,10 @@ export const followersIterator = {
  * Get followers of profile
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?: number,
-    akashaId?: string, ethAddress?: string, lastIndex?: number }) {
+const execute = Promise.coroutine(function* (data: {
+    lastBlock?: number, limit?: number,
+    akashaId?: string, ethAddress?: string, lastIndex?: number
+}) {
     const v = new schema.Validator();
     v.validate(data, followersIterator, { throwError: true });
 
@@ -31,9 +34,19 @@ const execute = Promise.coroutine(function* (data: { lastBlock?: number, limit?:
     const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { followed: address },
         toBlock, maxResults, { lastIndex: data.lastIndex });
     for (let event of fetched.results) {
+        const follows = yield contracts.instance.Feed.follows(event.args.follower, address);
+        if (!follows) {
+            continue;
+        }
         collection.push({ ethAddress: event.args.follower });
     }
-    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex, akashaId: data.akashaId, limit: maxResults };
+    return {
+        collection: uniq(collection),
+        lastBlock: fetched.fromBlock,
+        lastIndex: fetched.lastIndex,
+        akashaId: data.akashaId,
+        limit: maxResults
+    };
 });
 
 export default { execute, name: 'followersIterator' };
