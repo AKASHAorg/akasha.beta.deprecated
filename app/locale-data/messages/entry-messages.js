@@ -121,6 +121,11 @@ const entryMessages = defineMessages({
         description: 'share preview link button title',
         defaultMessage: 'Share preview link',
     },
+    edited: {
+        id: 'app.entry.edited',
+        description: 'edited label for an entry',
+        defaultMessage: 'Edited'
+    },
     entriesCount: {
         id: 'app.entry.entriesCount',
         description: 'counting entries',
