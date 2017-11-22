@@ -22,6 +22,26 @@ const settingsMessages = defineMessages({
         description: 'app language',
         defaultMessage: 'English'
     },
+    passphraseOptions: {
+        id: 'app.settings.passphraseOptions',
+        description: 'title for profile pass options',
+        defaultMessage: 'Passphrase Options'
+    },
+    passphraseOptionsDescription: {
+        id: 'app.settings.passphraseOptionsDescription',
+        description: 'description for profile pass options',
+        defaultMessage: 'Choose when your password is requested'
+    },
+    publishOptions: {
+        id: 'app.settings.publishOptions',
+        description: 'title for profile license options',
+        defaultMessage: 'Publish Options'
+    },
+    publishOptionsDescription: {
+        id: 'app.settings.publishOptionsDescription',
+        description: 'description for profile license options',
+        defaultMessage: 'Choose the default license for articles you publish'
+    },
     russian: {
         id: 'app.settings.russian',
         description: 'app language',
@@ -36,6 +56,26 @@ const settingsMessages = defineMessages({
         id: 'app.settings.theme',
         description: 'theme switch title',
         defaultMessage: 'Theme'
+    },
+    tipsOptions: {
+        id: 'app.settings.tipsOptions',
+        description: 'title for profile tips options',
+        defaultMessage: 'Tips Options'
+    },
+    tipsInfo: {
+        id: 'app.settings.tipsInfo',
+        description: 'info for profile tips options',
+        defaultMessage: 'Changing this setting will cost ETH'
+    },
+    tipsAccept: {
+        id: 'app.settings.tipsAccept',
+        description: 'text for profile tips',
+        defaultMessage: 'Accept Tips'
+    },
+    tipsDoNotAccept: {
+        id: 'app.settings.tipsDoNotAccept',
+        description: 'text for profile tips',
+        defaultMessage: 'Do not Accept Tips'
     },
     title: {
         id: 'app.settings.title',

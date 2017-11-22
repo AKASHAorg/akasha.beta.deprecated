@@ -246,6 +246,11 @@ const errorMessages = defineMessages({
         description: 'get profiles list error',
         defaultMessage: 'An error occured while getting the list of profiles'
     },
+    profileToggleDonations: {
+        id: 'app.error.profileToggleDonations',
+        description: 'toggle donations error',
+        defaultMessage: 'An error occured while changing your donations status'
+    },
     profileTransferAeth: {
         id: 'app.error.profileTransferAeth',
         description: 'transfer AETH error',

@@ -65,7 +65,7 @@ class Sidebar extends Component {
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: {
                             featuredImage: {},
-                            licence: userSelectedLicense.toJS(),
+                            licence: userSelectedLicense,
                         },
                         tags: [],
                         entryType: 'article',
@@ -78,7 +78,7 @@ class Sidebar extends Component {
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: {
                             featuredImage: {},
-                            licence: userSelectedLicense.toJS()
+                            licence: userSelectedLicense
                         },
                         tags: [],
                         entryType: 'link'
@@ -205,7 +205,7 @@ class Sidebar extends Component {
                 </Link>
               </div>
               <div>
-                <Link to="/profileoverview/overview">
+                <Link to="/profileoverview/myentries">
                   <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
                 </Link>
               </div>
