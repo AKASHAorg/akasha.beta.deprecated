@@ -97,9 +97,21 @@ class ConfirmationDialog extends Component {
         return (
           <Modal
             visible
-            title={intl.formatMessage(confirmationMessages[actionTypeTitle])}
-            okText={intl.formatMessage(generalMessages.submit)}
-            cancelText={intl.formatMessage(generalMessages.cancel)}
+            title={
+              <span className="confirmation__title">
+                {intl.formatMessage(confirmationMessages[actionTypeTitle])}
+              </span>
+            }
+            okText={
+              <span className="confirmation__button">
+                {intl.formatMessage(generalMessages.submit)}
+              </span>
+            }
+            cancelText={
+              <span className="confirmation__button">
+                {intl.formatMessage(generalMessages.cancel)}
+              </span>
+            }
             onOk={this.handleSubmit}
             onCancel={this.handleCancel}
             maskClosable={false}
@@ -109,10 +121,12 @@ class ConfirmationDialog extends Component {
             zIndex={1040}
             width={450}
           >
-            <div>{intl.formatMessage(confirmationMessages[actionType], { ...payload })}</div>
+            <div className="confirmation__message">
+              {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
+            </div>
             {!this.state.userIsLoggedIn &&
               <div>
-                <div>
+                <div className="confirmation__message">
                   {intl.formatMessage(confirmationMessages.passphrase)}
                 </div>
                 <div className="confirmation__login-form">
@@ -126,6 +140,7 @@ class ConfirmationDialog extends Component {
                     >
                       <Input
                         autoFocus
+                        className="confirmation__input"
                         onChange={this.onPasswordChange}
                         placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
                         size="large"

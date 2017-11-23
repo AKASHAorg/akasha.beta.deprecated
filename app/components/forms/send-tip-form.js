@@ -23,7 +23,7 @@ class SendTipForm extends Component {
     };
 
     render () {
-        const { balance, form, intl, name, onCancel, tipPending } = this.props;
+        const { balance, form, intl, onCancel, tipPending } = this.props;
         const { getFieldDecorator, getFieldError } = form;
         const amountError = getFieldError('amount');
         const maxAmount = Number(formatBalance((balance - 0.1).toString(), 7));
@@ -38,7 +38,7 @@ class SendTipForm extends Component {
         return (
           <Form className="send-tip-form" hideRequiredMark onSubmit={this.onSubmit}>
             <div className="overflow-ellipsis send-tip-form__title">
-              {intl.formatMessage(profileMessages.sendTipTo, { name })}
+              {intl.formatMessage(profileMessages.sendTip)}
             </div>
             <FormItem
               className="send-tip-form__form-item"
@@ -69,7 +69,7 @@ class SendTipForm extends Component {
                 />
               )}
             </FormItem>
-            <FormItem
+            {/* <FormItem
               className="send-tip-form__form-item"
               colon={false}
               label={
@@ -85,13 +85,15 @@ class SendTipForm extends Component {
                   placeholder="Write something here"
                 />
               )}
-            </FormItem>
+            </FormItem> */}
             <div className="send-tip-form__actions">
-              <Button className="send-tip-form__button" onClick={onCancel}>
-                <span className="send-tip-form__button-label">
-                  {intl.formatMessage(generalMessages.cancel)}
-                </span>
-              </Button>
+              {onCancel &&
+                <Button className="send-tip-form__button" onClick={onCancel}>
+                  <span className="send-tip-form__button-label">
+                    {intl.formatMessage(generalMessages.cancel)}
+                  </span>
+                </Button>
+              }
               <Button
                 className="send-tip-form__button"
                 disabled={!!amountError || tipPending}
@@ -113,8 +115,7 @@ SendTipForm.propTypes = {
     balance: PropTypes.string,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
-    name: PropTypes.string.isRequired,
-    onCancel: PropTypes.func.isRequired,
+    onCancel: PropTypes.func,
     onSubmit: PropTypes.func.isRequired,
     tipPending: PropTypes.bool
 };
