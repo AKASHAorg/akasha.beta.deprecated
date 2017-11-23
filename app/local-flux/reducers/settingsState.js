@@ -5,8 +5,11 @@ import { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
 
 const initialState = new SettingsRecord();
 
-const getUserSettings = (data) => {
+const getUserSettings = (state, data) => {
     const preference = new PasswordPreference(data.passwordPreference);
+    if (!data.defaultLicense) {
+        data.defaultLicense = state.getIn(['userSettings', 'defaultLicense']);
+    }
     return new UserSettings(data).set('passwordPreference', preference);
 };
 
@@ -172,7 +175,7 @@ const settingsState = createReducer(initialState, {
         state.set('userSettings', new UserSettings()),
 
     [types.USER_SETTINGS_SUCCESS]: (state, { data }) =>
-        state.set('userSettings', getUserSettings(data)),
+        state.set('userSettings', getUserSettings(state, data)),
 
     [types.USER_SETTINGS_SAVE]: state =>
         state.setIn(['flags', 'savingUserSettings'], true),
@@ -183,7 +186,7 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('savingUserSettings', false),
-            userSettings: getUserSettings(data)
+            userSettings: getUserSettings(state, data)
         }),
 
     [types.CLEAN_STORE]: state =>

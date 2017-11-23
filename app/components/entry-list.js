@@ -115,7 +115,10 @@ class EntryList extends Component {
                   </div>
                 }
                 {masonry ?
-                  <Masonry options={{ transitionDuration: 0 }}>
+                  <Masonry
+                    options={{ transitionDuration: 0, fitWidth: true }}
+                    style={{ margin: '0 auto' }}
+                  >
                     {entryCards}
                   </Masonry> :
                   entryCards

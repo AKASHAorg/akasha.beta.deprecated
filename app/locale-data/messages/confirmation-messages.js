@@ -126,6 +126,16 @@ const confirmationMessages = defineMessages({
         description: 'confirmation message for createTag',
         defaultMessage: 'Please confirm that you want to create this tag: {value}.'
     },
+    toggleDonations: {
+        id: 'app.confirmation.toggleDonations',
+        description: 'confirmation message for toggle donations',
+        defaultMessage: 'Please confirm that you want to change your tips status.'
+    },
+    toggleDonationsTitle: {
+        id: 'app.confirmation.toggleDonationsTitle',
+        description: 'title for confirmation dialog for toggle donations',
+        defaultMessage: 'Change Tips Status'
+    },
     transferAeth: {
         id: 'app.confirmation.transferAeth',
         description: 'confirmation message for transfer AETH',
