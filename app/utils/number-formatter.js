@@ -41,6 +41,14 @@ export const formatBalance = (balance, length = 0) => {
     return appendZero(balance, length);
 };
 
+export const formatEssence = (essence) => {
+    if (!essence) {
+        return null;
+    }
+    const manaBurned = balanceToNumber(essence);
+    return manaBurned ? manaBurned / 10 : 0;
+};
+
 export const removeTrailingZeros = (balance) => {
     const parts = balance.split('.');
     if (!parts[1]) {

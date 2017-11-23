@@ -20,7 +20,6 @@
     &__votes-placeholder {
         width: 14px;
         height: 100%;
-        background-color: #eee;
     }
 
     &__votes-icon {
@@ -57,9 +56,8 @@
     }
 
     &__author-placeholder {
-        height: 14px;
+        height: 12px;
         width: 80px;
-        background-color: #eee;
         display: inline-block;
         margin-right: 12px;
     }
@@ -72,37 +70,15 @@
     }
 
     &__publish-date-placeholder {
-        height: 14px;
+        height: 12px;
         width: 50px;
-        background-color: #eee;
         display: inline-block;
     }
 
     &__content-placeholder {
-        height: 14px;
+        height: 12px;
         width: 100%;
-        background-color: #eee;
         margin: 12px 0px 6px;
-
-        &_short {
-            margin-top: 6px;
-            width: 70%;
-        }
-    }
-
-    &__placeholder {
-        font-style: italic;
-    }
-
-    &__placeholder-icon {
-        position: absolute;
-        right: 10px;
-        top: 7px;
-        opacity: 0.5;
-    }
-
-    &__placeholder-icon {
-        color: @error-color;
     }
 
     &__body {
@@ -160,12 +136,26 @@
     }
 
     &__reply-button-placeholder {
-        height: 14px;
+        height: 12px;
         width: 42px;
-        background-color: #eee;
     }
 
     &__replies {
         padding-left: 32px;
+    }
+
+    &__unresolved {
+        position: absolute;
+        top: 8px;
+        left: 0;
+        right: 0;
+        font-size: 13px;
+    }
+
+    &__retry-button {
+        color: @primary-color;
+        font-weight: 500;
+        font-size: 11px;
+        padding: 2px;
     }
 }

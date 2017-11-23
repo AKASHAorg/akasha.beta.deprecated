@@ -139,18 +139,30 @@ const actionState = createReducer(initialState, {
         });
     },
 
+    [types.ACTION_GET_CLAIMABLE]: state =>
+        state.setIn(['flags', 'fetchingClaimable'], true),
+
+    [types.ACTION_GET_CLAIMABLE_ERROR]: state =>
+        state.setIn(['flags', 'fetchingClaimable'], false),
+
     [types.ACTION_GET_CLAIMABLE_SUCCESS]: (state, { data }) => {
         let list = new List();
         let byId = state.get('byId');
         data.forEach((action) => {
-            if (action.payload.entryId && action.payload.ethAddress) {
+            const { success } = action;
+            const { entryId, ethAddress } = action.payload;
+            if (success && entryId && ethAddress) {
                 byId = byId.set(action.id, createAction(action));
                 list = list.push(action.id);
             }
         });
         list = sortByBlockNr(byId, list, true);
         const claimable = list.map(id => byId.getIn([id, 'payload', 'entryId']));
-        return state.merge({ byId, claimable });
+        return state.merge({
+            byId,
+            claimable,
+            flags: state.get('flags').set('fetchingClaimable', false)
+        });
     },
 
     [types.ACTION_GET_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),

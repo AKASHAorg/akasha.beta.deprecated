@@ -7,6 +7,7 @@ import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, WebsiteInfoCard } from '../';
 import { ProfileRecord } from '../../local-flux/reducers/records';
+import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
 const smallCard = 320;
@@ -101,6 +102,7 @@ class EntryCard extends Component {
             showVersions: false
         });
     };
+
     getImageSrc = (imageObj) => {
         const { baseUrl, large } = this.props;
         const baseWidth = large ? largeCard : smallCard;
@@ -110,16 +112,40 @@ class EntryCard extends Component {
         }
         return '';
     };
+
+    renderContentPlaceholder = () => (
+      <div>
+        <div className="content-placeholder entry-card__title_placeholder" style={{ width: '80%' }} />
+        <div className="content-placeholder entry-card__title_placeholder" style={{ width: '40%' }} />
+        <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '16px' }} />
+        <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '8px' }} />
+      </div>
+    );
+
+    renderUnresolvedPlaceholder = () => (
+      <div style={{ position: 'relative' }}>
+        {this.renderContentPlaceholder()}
+        <div className="entry-card__unresolved">
+          <div className="heading flex-center">
+            {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
+          </div>
+          <div className="flex-center">
+            <span className="content-link entry-card__retry-button" onClick={this.props.onRetry}>
+              {this.props.intl.formatMessage(generalMessages.retry)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+
     renderResolvingPlaceholder = () => {
         const { large } = this.props;
-        const cardClass = classNames('entry-card entry-card_transparent entry-card_fixed-height', {
+        const cardClass = classNames('entry-card entry-card_transparent', {
             'entry-card_large': large
         });
         return (
-          <Card className={cardClass}>
-            <div>
-              Resolving ipfs hash
-            </div>
+          <Card className={cardClass} title={<EntryCardHeader loading />}>
+            {this.renderContentPlaceholder()}
           </Card>
         );
     };
@@ -131,7 +157,6 @@ class EntryCard extends Component {
         const entryType = entry.getIn(['content', 'entryType']);
         // TODO use getLatestEntryVersion channel
         const latestVersion = content && content.get('version');
-
         if (isPending) {
             return this.renderResolvingPlaceholder();
         }
@@ -162,9 +187,7 @@ class EntryCard extends Component {
               />
             }
           >
-            {!hasContent &&
-              <div style={{ height: '240px' }}>Cannot resolve content</div>
-            }
+            {!hasContent && this.renderUnresolvedPlaceholder()}
             {hasContent && entryType === 0 && hasFeaturedImage &&
               <Link
                 className="unstyled-link"
@@ -269,9 +292,11 @@ EntryCard.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     isPending: PropTypes.bool,
     large: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
+    onRetry: PropTypes.func.isRequired,
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
     votePending: PropTypes.bool,

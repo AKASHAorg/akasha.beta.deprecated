@@ -1,4 +1,4 @@
-import { apply, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
 import * as commentsActions from '../actions/comments-actions';
 import * as draftActions from '../actions/draft-actions';
@@ -90,7 +90,7 @@ function* actionGetClaimable () {
         const request = claimable.map(type => [loggedEthAddress, type]);
         const data = yield apply(actionService, actionService.getClaimable, [request]);
         if (data.length) {
-            yield fork(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
+            yield call(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
         }
         yield put(actions.actionGetClaimableSuccess(data));
     } catch (error) {

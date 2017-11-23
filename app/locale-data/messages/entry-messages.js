@@ -36,6 +36,16 @@ const entryMessages = defineMessages({
         description: 'block number',
         defaultMessage: 'Block {blockNr}'
     },
+    cannotClaimEntry: {
+        id: 'app.entry.cannotClaimEntry',
+        description: 'disclaimer for the situation when you cannot claim an entry',
+        defaultMessage: 'You can only collect Essence if your entry\'s score is positive'
+    },
+    cannotClaimVote: {
+        id: 'app.entry.cannotClaimVote',
+        description: 'disclaimer for the situation when you cannot claim a vote',
+        defaultMessage: 'You can only collect Essence if your vote is aligned with the majority (e.g. you upvoted and entry score is positive)'
+    },
     claim: {
         id: 'app.entry.claim',
         description: 'claim button tooltip',
@@ -329,6 +339,11 @@ const entryMessages = defineMessages({
         description: 'entry subtitle for reading older versions',
         defaultMessage: 'You are now viewing an older'
     },
+    noCommentsFound: {
+        id: 'app.entry.noCommentsFound',
+        description: 'placeholder for empty comments list',
+        defaultMessage: 'No comments found'
+    },
     noEntries: {
         id: 'app.entry.noEntries',
         description: 'placeholder for empty entry list',
@@ -353,16 +368,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.searchTag',
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
-    },
-    unresolvedComment: {
-        id: 'app.entry.unresolvedComment',
-        description: 'Message to display when a comment could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
-    },
-    unresolvedEntry: {
-        id: 'app.entry.unresolvedEntry',
-        description: 'Message to display when an entry could not be resolved',
-        defaultMessage: 'There are no peers online right now.'
     },
     upvote: {
         id: 'app.entry.upvote',
