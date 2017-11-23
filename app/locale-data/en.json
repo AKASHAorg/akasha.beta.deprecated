@@ -369,7 +369,7 @@
   "app.general.logs": "Logs",
   "app.general.logout": "Logout",
   "app.general.mana": "Mana",
-  "app.general.manaBurned": "Mana burned",
+  "app.general.manaBurned": "Total Mana burned",
   "app.general.manafied": "Manafied",
   "app.general.minutesCount": "{minutes, number} min",
   "app.general.myEntries": "My entries",

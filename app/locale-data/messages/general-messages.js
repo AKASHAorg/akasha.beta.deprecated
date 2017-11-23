@@ -253,7 +253,7 @@ const generalMessages = defineMessages({
     manaBurned: {
         id: 'app.general.manaBurned',
         description: 'mana burned',
-        defaultMessage: 'Mana burned'
+        defaultMessage: 'Total Mana burned'
     },
     manafied: {
         id: 'app.general.manafied',
