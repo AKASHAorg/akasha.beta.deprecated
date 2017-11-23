@@ -17,6 +17,7 @@ export const profileUpdate = 'profileUpdate';
 export const receiveAeth = 'receiveAeth';
 export const sendTip = 'sendTip';
 export const tagCreate = 'tagCreate';
+export const toggleDonations = 'toggleDonations';
 export const transferAeth = 'transferAeth';
 export const transferEth = 'transferEth';
 export const transformEssence = 'transformEssence';

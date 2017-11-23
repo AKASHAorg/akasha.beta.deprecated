@@ -200,7 +200,7 @@ export const profileMessages = defineMessages({
     settings: {
         id: 'app.profile.settings',
         description: 'Title for profile settings',
-        defaultMessage: 'Profile Settings'
+        defaultMessage: 'Settings'
     },
     receive: {
         id: 'app.profile.receive',

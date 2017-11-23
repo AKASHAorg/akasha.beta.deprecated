@@ -219,6 +219,11 @@ const notificationMessages = defineMessages({
         defaultMessage: `You have successfully set the IPFS ports. You need to restart your IPFS
                         service for your changes to be applied.`
     },
+    toggleDonationsSuccess: {
+        id: 'app.notification.toggleDonationsSuccess',
+        description: 'toggle donations transaction was succesfully mined',
+        defaultMessage: 'You succesfully changed your tips status'
+    },
     transferAethSuccess: {
         id: 'app.notification.transferAethSuccess',
         description: 'transfer AETH transaction was successfully mined',
