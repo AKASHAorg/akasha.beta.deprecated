@@ -64,6 +64,7 @@ const EntryCardHeader = (props) => {
           <ProfilePopover
             ethAddress={ethAddress}
             containerRef={containerRef}
+            placement="bottomRight"
           >
             <span className={titleClass} style={{ maxWidth: titleMaxWidth }}>
               {displayName || authorPlaceholder}

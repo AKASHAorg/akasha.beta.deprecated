@@ -14,6 +14,7 @@ import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntry
     selectLists, selectListsAll, selectListSearch, selectLoggedEthAddress, selectPendingClaim,
     selectPendingClaimVote, selectPendingVote, selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 class EntryPageAction extends Component {
     state = {
@@ -60,6 +61,18 @@ class EntryPageAction extends Component {
         this.props.actionAdd(loggedEthAddress, actionTypes.claim, payload);
     };
 
+    handleClaimVote = () => {
+        const { canClaimVote, entry, loggedEthAddress } = this.props;
+        if (!canClaimVote) {
+            return;
+        }
+        const payload = {
+            entryTitle: entry.content.title,
+            entryId: entry.entryId
+        };
+        this.props.actionAdd(loggedEthAddress, actionTypes.claimVote, payload);
+    };
+
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
@@ -92,13 +105,23 @@ class EntryPageAction extends Component {
                   </span>
                 }
                 {!this.isActive() && !isClaimed &&
-                  <span
-                    className={collectClass}
-                    onClick={canClaim && !claimPending ? this.handleClaim : undefined}
-                  >
-                    {claimPending && <Spin size="small" />}
-                    <span>{intl.formatMessage(entryMessages.collectEssence)}</span>
-                  </span>
+                  <div>
+                    {claimPending && <Spin size="small" style={{ marginRight: '5px' }} />}
+                    <span
+                      className={collectClass}
+                      onClick={canClaim && !claimPending ? this.handleClaim : undefined}
+                    >
+                      {intl.formatMessage(entryMessages.collectEssence)}
+                    </span>
+                    {!canClaim &&
+                      <Tooltip
+                        getPopupContainer={() => containerRef || document.body}
+                        title={intl.formatMessage(entryMessages.cannotClaimEntry)}
+                      >
+                        <Icon className="entry-actions__info-icon" type="question-circle" />
+                      </Tooltip>
+                    }
+                  </div>
                 }
                 {this.isActive() &&
                   <span className="entry-actions__collect-in">
@@ -145,12 +168,10 @@ class EntryPageAction extends Component {
     };
 
     renderCollectEntryVote = () => {
-        const { canClaimVote, claimVotePending, entry, intl, isFullEntry, vote } = this.props;
-        const weight = vote && vote.get('vote');
-        // TODO implement
-        const balance = weight && Math.abs(Number(weight));
-        // TODO implement
-        const isVoteClaimed = false;
+        const { canClaimVote, claimVotePending, containerRef, entry, intl, isFullEntry, vote } = this.props;
+        const burnedMana = vote && vote.get('essence') && balanceToNumber(vote.get('essence'));
+        const balance = burnedMana && burnedMana / 10;
+        const isVoteClaimed = vote && vote.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
         const infoClass = classNames('entry-actions__info', {
             'entry-actions__info_full': isFullEntry
@@ -175,13 +196,23 @@ class EntryPageAction extends Component {
                 </span>
               }
               {!this.isActive() && !isVoteClaimed &&
-                <span
-                  className={collectClass}
-                  onClick={canClaimVote && !claimVotePending ? this.handleClaimVote : undefined}
-                >
-                  {claimVotePending && <Spin size="small" />}
-                  <span>{intl.formatMessage(entryMessages.collectEssence)}</span>
-                </span>
+                <div>
+                  {claimVotePending && <Spin size="small" style={{ marginRight: '5px' }} />}
+                  <span
+                    className={collectClass}
+                    onClick={canClaimVote && !claimVotePending ? this.handleClaimVote : undefined}
+                  >
+                    {intl.formatMessage(entryMessages.collectEssence)}
+                  </span>
+                  {!canClaimVote &&
+                    <Tooltip
+                      getPopupContainer={() => containerRef || document.body}
+                      title={intl.formatMessage(entryMessages.cannotClaimVote)}
+                    >
+                      <Icon className="entry-actions__info-icon" type="question-circle" />
+                    </Tooltip>
+                  }
+                </div>
               }
               {this.isActive() &&
                 <span className="entry-actions__collect-in">
