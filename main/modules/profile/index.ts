@@ -1,4 +1,6 @@
 import currentBalance from './current-balance';
+import commentsCount from './comments-count';
+import commentsIterator from './comments-iterator';
 import followProfile from './follow-profile';
 import followersCount from './followers-count';
 import followingCount from './following-count';
@@ -49,5 +51,7 @@ export default [
     sendTip,
     resolveProfileIpfsHash,
     toggleDonations,
-    transfersIterator
+    transfersIterator,
+    commentsCount,
+    commentsIterator
 ];
