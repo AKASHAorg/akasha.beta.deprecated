@@ -26,6 +26,7 @@ export const fetchFromPublish = Promise.coroutine(function* (data: {
         collection.push({
             entryType: captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1,
             entryId: event.args.entryId,
+            blockNumber: event.blockNumber,
             tags,
             author
         });
@@ -64,6 +65,7 @@ export const fetchFromTagIndex = Promise.coroutine(function* (data: {
         collection.push({
             entryType: event.args.entryType.toNumber(),
             entryId: event.args.entryId,
+            blockNumber: event.blockNumber,
             tags,
             author
         });

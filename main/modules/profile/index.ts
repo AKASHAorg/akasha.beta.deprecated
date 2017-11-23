@@ -25,6 +25,7 @@ import cyclingStates from './cycling-states';
 import transfer from './transfer';
 import transfersIterator from './aeth-transfers-iterator';
 import essenceIterator from './essence-iterator';
+import votesIterator from './votes-iterator';
 
 export default [
     essenceIterator,
@@ -53,5 +54,6 @@ export default [
     toggleDonations,
     transfersIterator,
     commentsCount,
-    commentsIterator
+    commentsIterator,
+    votesIterator
 ];
