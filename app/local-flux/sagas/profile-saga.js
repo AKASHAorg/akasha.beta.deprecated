@@ -283,6 +283,24 @@ function* profileSendTipSuccess ({ data }) {
     }));
 }
 
+function* profileToggleDonations ({ actionId, status }) {
+    const channel = Channel.server.profile.toggleDonations;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, actionId, status }]);
+}
+
+function* profileToggleDonationsSuccess () {
+    const profile = yield apply(profileService, profileService.profileGetLogged);
+    if (profile && profile.ethAddress) {
+        yield call(profileGetData, { ethAddress: profile.ethAddress, full: true });
+    }
+    yield put(appActions.showNotification({
+        id: 'toggleDonationsSuccess',
+        duration: 4
+    }));
+}
+
 function* profileTransferAeth ({ actionId, akashaId, ethAddress, tokenAmount }) {
     const channel = Channel.server.profile.transfer;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -763,6 +781,24 @@ function* watchProfileSendTipChannel () {
     }
 }
 
+function* watchProfileToggleDonationsChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.toggleDonations);
+        const { actionId } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileToggleDonationsError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileToggleDonationsError({}, resp.request));
+            }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
+        }
+    }
+}
+
 function* watchProfileTransferChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.transfer);
@@ -875,6 +911,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileManaBurnedChannel);
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
+    yield fork(watchProfileToggleDonationsChannel);
     yield fork(watchProfileTransferChannel);
     yield fork(watchProfileTransformEssenceChannel);
     yield fork(watchProfileUnfollowChannel);
@@ -913,6 +950,8 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS, profileToggleDonations);
+    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, profileToggleDonationsSuccess);
     yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
     yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
     yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
