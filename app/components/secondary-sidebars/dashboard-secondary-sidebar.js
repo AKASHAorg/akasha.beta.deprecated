@@ -195,7 +195,7 @@ class DashboardSecondarySidebar extends Component {
                 type="plus-square"
               />
             </div>
-            <div>
+            <div className="dashboard-secondary-sidebar__list">
               {dashboards.toList().map(this.renderRow)}
             </div>
             {this.state.newDashboard !== null && this.renderEditRow()}

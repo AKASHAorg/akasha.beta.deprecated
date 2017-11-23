@@ -22,12 +22,17 @@
 
     &__unresolved-placeholder {
         height: 300px;
-        margin-top: 80px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        font-size: 16px;
-        color: @disabled-color;
+    }
+
+    &__retry-button {
+        color: @primary-color;
+        font-weight: 500;
+        font-size: 13px;
+        padding: 2px;
     }
 
     &__comments {

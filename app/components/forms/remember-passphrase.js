@@ -1,25 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Checkbox, Select as AntdSelect } from 'antd';
+import { Checkbox } from 'antd';
 import { RememberPassphraseSelect } from '../';
-import { formMessages, generalMessages } from '../../locale-data/messages';
-
-const { Option } = AntdSelect;
+import { formMessages } from '../../locale-data/messages';
 
 const RememberPassphrase = (props) => {
     const { handleCheck, handleTimeChange, intl, isChecked, unlockTime } = props;
-
-    // const renderOption = (value) => {
-    //     const message = value < 60 ?
-    //         intl.formatMessage(generalMessages.minCount, { minutes: value }) :
-    //         intl.formatMessage(generalMessages.hoursCount, { hours: value / 60 });
-    //     return (
-    //       <Option key={value} value={value}>
-    //         {message}
-    //       </Option>
-    //     );
-    // };
 
     return (
       <div className="remember-passphrase">
@@ -31,7 +18,7 @@ const RememberPassphrase = (props) => {
             {intl.formatMessage(formMessages.rememberPassFor)}
           </Checkbox>
         </div>
-        <div style={{ margin: '0px 0px 0px 5px', width: '80px', position: 'relative' }}>
+        <div className="remember-passphrase__select-wrapper">
           <RememberPassphraseSelect
             getPopupContainer={() => document.getElementById('select-popup-container') || document.body}
             handleTimeChange={handleTimeChange}

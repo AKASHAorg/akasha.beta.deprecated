@@ -36,6 +36,16 @@ const entryMessages = defineMessages({
         description: 'block number',
         defaultMessage: 'Block {blockNr}'
     },
+    cannotClaimEntry: {
+        id: 'app.entry.cannotClaimEntry',
+        description: 'disclaimer for the situation when you cannot claim an entry',
+        defaultMessage: 'You can only collect Essence if your entry\'s score is positive'
+    },
+    cannotClaimVote: {
+        id: 'app.entry.cannotClaimVote',
+        description: 'disclaimer for the situation when you cannot claim a vote',
+        defaultMessage: 'You can only collect Essence if your vote is aligned with the majority (e.g. you upvoted and entry score is positive)'
+    },
     claim: {
         id: 'app.entry.claim',
         description: 'claim button tooltip',
