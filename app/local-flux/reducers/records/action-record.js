@@ -14,6 +14,7 @@ export const ActionRecord = Record({
 
 const Flags = Record({
     fetchingAethTransfers: false,
+    fetchingClaimable: false,
     fetchingHistory: false,
 });
 

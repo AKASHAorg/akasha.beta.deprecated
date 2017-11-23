@@ -7,7 +7,7 @@ import { balanceToNumber } from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
 
-const addProfileData = (byEthAddress, { ...profileData }) => {
+const addProfileData = (byEthAddress, { ...profileData }, full) => {
     if (!profileData) {
         return byEthAddress;
     }
@@ -16,6 +16,11 @@ const addProfileData = (byEthAddress, { ...profileData }) => {
     const { avatar, baseUrl } = profileData;
     if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;
+    }
+    const oldProfile = byEthAddress.get(profileData.ethAddress);
+    if (!full && oldProfile) {
+        profileData.backgroundImage = oldProfile.get('backgroundImage');
+        profileData.links = oldProfile.get('links');
     }
     return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
@@ -187,12 +192,12 @@ const profileState = createReducer(initialState, {
     },
 
     [types.PROFILE_GET_DATA_SUCCESS]: (state, { data, request }) => {
-        const { context, ethAddress } = request;
+        const { context, ethAddress, full } = request;
         if (!context) {
-            return state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data));
+            return state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data, full));
         }
         return state.merge({
-            byEthAddress: addProfileData(state.get('byEthAddress'), data),
+            byEthAddress: addProfileData(state.get('byEthAddress'), data, full),
             flags: state.get('flags').setIn(['pendingProfiles', context, ethAddress], false)
         });
     },

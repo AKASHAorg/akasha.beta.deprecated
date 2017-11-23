@@ -87,6 +87,11 @@ const generalMessages = defineMessages({
         description: 'collect',
         defaultMessage: 'Collect'
     },
+    collected: {
+        id: 'app.general.collected',
+        description: 'collected',
+        defaultMessage: 'Collected'
+    },
     comments: {
         id: 'app.general.comments',
         description: 'entry comments',
