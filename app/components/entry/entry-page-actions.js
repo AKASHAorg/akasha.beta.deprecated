@@ -14,7 +14,7 @@ import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntry
     selectLists, selectListsAll, selectListSearch, selectLoggedEthAddress, selectPendingClaim,
     selectPendingClaimVote, selectPendingVote, selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import { balanceToNumber } from '../../utils/number-formatter';
+import { formatEssence } from '../../utils/number-formatter';
 
 class EntryPageAction extends Component {
     state = {
@@ -76,7 +76,7 @@ class EntryPageAction extends Component {
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
-        const balance = entryBalance && entryBalance.get('totalKarma');
+        const balance = entryBalance && formatEssence(entryBalance.get('totalKarma'));
         const isClaimed = entryBalance && entryBalance.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
         const infoClass = classNames('entry-actions__info', {
@@ -96,7 +96,7 @@ class EntryPageAction extends Component {
               <div className={infoTextClass}>
                 {entry.score} {intl.formatMessage(entryMessages.score)}
                 <span className="entry-actions__separator">|</span>
-                {balance && balance.slice(0, 3)} {intl.formatMessage(generalMessages.essence)}
+                {balance} {intl.formatMessage(generalMessages.essence)}
               </div>
               <div>
                 {isClaimed &&
@@ -169,8 +169,7 @@ class EntryPageAction extends Component {
 
     renderCollectEntryVote = () => {
         const { canClaimVote, claimVotePending, containerRef, entry, intl, isFullEntry, vote } = this.props;
-        const burnedMana = vote && vote.get('essence') && balanceToNumber(vote.get('essence'));
-        const balance = burnedMana && burnedMana / 10;
+        const balance = vote && formatEssence(vote.get('essence'));
         const isVoteClaimed = vote && vote.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
         const infoClass = classNames('entry-actions__info', {

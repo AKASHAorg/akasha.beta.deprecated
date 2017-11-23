@@ -45,7 +45,7 @@ export const ProfileRecord = Record({
     about: '',
     akashaId: '',
     avatar: null,
-    backgroundImage: new Map(),
+    backgroundImage: {},
     baseUrl: '',
     commentsCount: '0',
     donationsEnabled: false,

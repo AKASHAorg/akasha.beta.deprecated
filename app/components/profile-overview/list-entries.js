@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormattedDate, injectIntl } from 'react-intl';
-import { entryListIterator } from '../../local-flux/actions/entry-actions';
+import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { selectEntry, selectListByName } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { EntryList } from '../';
@@ -10,8 +10,13 @@ import { EntryList } from '../';
 class ListEntries extends Component {
     componentDidMount () {
         const { list } = this.props;
-        this.props.entryListIterator({ value: list.get('name') });
+        this.props.entryListIterator({ columnId: list.get('name'), value: list.get('name') });
     }
+
+    fetchMoreEntries = () => {
+        const { list } = this.props;
+        this.props.entryMoreListIterator({ columnId: list.get('name'), value: list.get('name') });
+    };
 
     render () {
         const { entries, intl, list } = this.props;
@@ -48,7 +53,7 @@ class ListEntries extends Component {
                   <EntryList
                     contextId={list.get('name')}
                     entries={entries}
-                    fetchMoreEntries={() => this.props.entryListIterator({ value: list.get('name') })}
+                    fetchMoreEntries={this.fetchMoreEntries}
                     masonry
                     moreEntries={list.get('moreEntries')}
                     style={{ padding: '0px 50px' }}
@@ -64,6 +69,7 @@ class ListEntries extends Component {
 ListEntries.propTypes = {
     entries: PropTypes.shape(),
     entryListIterator: PropTypes.func.isRequired,
+    entryMoreListIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     list: PropTypes.shape(),
 };
@@ -82,5 +88,6 @@ export default connect(
     mapStateToProps,
     {
         entryListIterator,
+        entryMoreListIterator
     }
 )(injectIntl(ListEntries));
