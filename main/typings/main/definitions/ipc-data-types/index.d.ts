@@ -414,7 +414,7 @@ interface ProfileFollowRequest extends AuthRequest {
 interface ProfileFollowResponse extends MainResponse {
     data: {
         tx: string;
-    }
+    };
 }
 
 interface GetFollowerCountRequest {
