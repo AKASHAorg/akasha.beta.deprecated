@@ -104,7 +104,7 @@ class ProfileSettings extends Component {
           <div className="profile-settings">
             <div className="profile-settings__form">
               <Form>
-                <div className="profile-settings__item">
+                <div>
                   <div className="profile-settings__item-title">
                     {intl.formatMessage(settingsMessages.passphraseOptions)}
                   </div>
@@ -131,7 +131,7 @@ class ProfileSettings extends Component {
                     </div>
                   </FormItem>
                 </div>
-                <div className="profile-settings__item">
+                <div>
                   <div className="profile-settings__item-title">
                     {intl.formatMessage(settingsMessages.publishOptions)}
                   </div>
@@ -176,7 +176,7 @@ class ProfileSettings extends Component {
                     </div>
                   </FormItem>
                 </div>
-                <div className="profile-settings__item">
+                <div>
                   <div className="profile-settings__item-title">
                     {intl.formatMessage(settingsMessages.tipsOptions)}
                     <Tooltip

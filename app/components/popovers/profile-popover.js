@@ -65,7 +65,7 @@ class ProfilePopover extends Component {
         this.setState({
             popoverVisible
         });
-        if (!popoverVisible && this.state.sendTip) {
+        if (!popoverVisible) {
             // Delay state reset until popover animation is finished
             this.timeout = setTimeout(() => {
                 this.timeout = null;
@@ -162,7 +162,6 @@ class ProfilePopover extends Component {
             return (
               <SendTipForm
                 balance={balance}
-                name={name}
                 onCancel={this.toggleSendTip}
                 onSubmit={this.sendTip}
                 tipPending={tipPending}
