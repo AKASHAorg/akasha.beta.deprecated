@@ -49,6 +49,8 @@ export const selectBaseUrl = state =>
 
 export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
 
+export const selectClaimableEntryIds = state => state.actionState.get('claimable');
+
 export const selectClaimableEntries = state =>
     state.actionState.get('claimable').map(entryId => selectEntry(state, entryId));
 

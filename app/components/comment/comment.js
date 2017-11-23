@@ -8,11 +8,12 @@ import classNames from 'classnames';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import decorateComponentWithProps from 'decorate-component-with-props';
-import { Icon, Tooltip } from 'antd';
+import { Icon } from 'antd';
 import { VotesModal, ProfilePopover, VotePopover } from '../';
 import { EntryCommentReply } from '../svg';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
+import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
 import { selectBlockNumber, selectComment, selectCommentVote, selectLoggedEthAddress,
     selectPendingCommentVote, selectProfile, selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
@@ -122,6 +123,11 @@ class Comment extends Component {
         this.props.actionAdd(loggedEthAddress, type, payload);
     };
 
+    onRetry = () => {
+        const { comment } = this.props;
+        this.props.commentsResolveIpfsHash([comment.get('ipfsHash')], [comment.get('commentId')]);
+    };
+
     renderExpandButton = () => {
         const { intl } = this.props;
         const { isExpanded } = this.state;
@@ -145,18 +151,44 @@ class Comment extends Component {
       <div className="comment">
         <div className="comment__inner">
           <div className="comment__votes">
-            <div className="comment__votes-placeholder" />
+            <div className="content-placeholder comment__votes-placeholder" />
           </div>
           <div className="comment__main">
             <div className="flex-center-y comment__header">
-              <div className="comment__author-placeholder" />
-              <div className="comment__publish-date-placeholder" />
+              <div className="content-placeholder comment__author-placeholder" />
+              <div className="content-placeholder comment__publish-date-placeholder" />
             </div>
-            <div className="comment__content-placeholder" />
-            <div className="comment__content-placeholder comment__content-placeholder_short" />
+            <div className="content-placeholder comment__content-placeholder" />
+            <div
+              className="content-placeholder comment__content-placeholder"
+              style={{ width: '70%', marginTop: '6px' }}
+            />
             <div className="flex-center-y comment__actions">
-              <div className="comment__reply-button-placeholder" />
+              <div className="content-placeholder comment__reply-button-placeholder" />
             </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    renderUnresolvedPlaceholder = () => (
+      <div style={{ position: 'relative' }}>
+        <div className="content-placeholder comment__content-placeholder" />
+        <div
+          className="content-placeholder comment__content-placeholder"
+          style={{ width: '70%', marginTop: '6px' }}
+        />
+        <div className="flex-center-y comment__actions">
+          <div className="content-placeholder comment__reply-button-placeholder" />
+        </div>
+        <div className="comment__unresolved">
+          <div className="heading flex-center">
+            {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
+          </div>
+          <div className="flex-center">
+            <span className="content-link comment__retry-button" onClick={this.onRetry}>
+              {this.props.intl.formatMessage(generalMessages.retry)}
+            </span>
           </div>
         </div>
       </div>
@@ -175,7 +207,7 @@ class Comment extends Component {
         const content = comment.content;
         let commentText = '';
         try {
-            commentText = JSON.parse(content).blocks[0].text;
+            commentText = content ? JSON.parse(content).blocks[0].text : '';
         } catch (error) {
             console.error('comment content is wrong format', error);
         }
@@ -238,19 +270,7 @@ class Comment extends Component {
                     />
                   </div>
                 }
-                {!content &&
-                  <div className="comment__placeholder-icon">
-                    <Tooltip
-                      getPopupContainer={() => containerRef || document.body}
-                      title={intl.formatMessage(entryMessages.unresolvedComment)}
-                    >
-                      <Icon className="comment__placeholder-icon" type="share-alt" />
-                    </Tooltip>
-                  </div>
-                }
-                {!content &&
-                  <div className="comment__placeholder">Cannot resolve content</div>
-                }
+                {!content && this.renderUnresolvedPlaceholder()}
                 {showReplyButton && content &&
                   <div className="flex-center-y comment__actions">
                     <div
@@ -291,6 +311,7 @@ Comment.propTypes = {
     blockNr: PropTypes.number,
     children: PropTypes.node,
     comment: PropTypes.shape(),
+    commentsResolveIpfsHash: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
     ethAddress: PropTypes.string,
@@ -323,6 +344,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        actionAdd
+        actionAdd,
+        commentsResolveIpfsHash
     }
 )(injectIntl(Comment));

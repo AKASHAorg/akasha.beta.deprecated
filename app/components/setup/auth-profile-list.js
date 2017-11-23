@@ -131,7 +131,8 @@ class AuthProfileList extends Component {
             onMouseLeave={this.onMouseLeave}
             style={{
                 backgroundColor: isHovered ? '#fcfcfc' : '#fff',
-                opacity: selectedEthAddress && !isSelected ? 0.3 : 1
+                opacity: selectedEthAddress && !isSelected ? 0.3 : 1,
+                cursor: isSelected && 'default'
             }}
           >
             {header}

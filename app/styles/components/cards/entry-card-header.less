@@ -7,6 +7,13 @@
     &__avatar {
         flex: 0 0 auto;
         margin-right: 10px;
+
+        &_placeholder {
+            background-color: #eee;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+        }
     }
 
     &__text {
@@ -18,6 +25,13 @@
 
     &__title {
         display: inline-block;
+
+        &_placeholder {
+            height: 13px;
+            width: 80px;            
+            margin: 2px 0px;
+            background-color: #eee;
+        }
     }
 
     &__subtitle {
@@ -27,7 +41,14 @@
         font-size: 12px;
         font-weight: 400;
         height: 14px;
-        color: @text-color-secondary;        
+        color: @text-color-secondary;
+        
+        &_placeholder {
+            height: 11px;
+            width: 120px;            
+            margin: 4px 0px;
+            background-color: #eee;
+        }
     }
 
     &__author-placeholder {

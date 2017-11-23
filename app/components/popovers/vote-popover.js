@@ -193,7 +193,12 @@ class VotePopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip title={this.getTooltip()}>
+            <Tooltip
+              arrowPointAtCenter
+              getPopupContainer={() => containerRef || document.body}
+              placement={this.isDownVote() ? 'top' : 'topRight'}
+              title={this.getTooltip()}
+            >
               <Icon
                 className={iconClass}
                 type={this.isDownVote() ? 'arrow-down' : 'arrow-up'}

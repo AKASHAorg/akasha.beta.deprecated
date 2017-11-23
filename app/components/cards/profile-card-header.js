@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { getDisplayName } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
-import { loadavg } from 'os';
 
 const getSubtitle = (profile) => {
     const { akashaId, ethAddress, firstName, lastName } = profile.toJS();
