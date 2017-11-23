@@ -84,7 +84,7 @@ export ProfileActivity from './profile/profile-activity';
 export ProfileCard from './cards/profile-card';
 export ProfileCardHeader from './cards/profile-card-header';
 export ProfileColumn from './columns/profile-column';
-export ProfileComplete from './setup/profile-complete'
+export ProfileComplete from './setup/profile-complete';
 export ProfileCompleteForm from './forms/profile-complete-form';
 export ProfileDetails from './profile/profile-details';
 export ProfileEdit from './profile-edit';
@@ -99,6 +99,7 @@ export ProfileOverviewSecondarySidebar from './secondary-sidebars/profile-overvi
 export ProfilePage from './profile/profile-page';
 export ProfilePageTopBar from './top-bars/profile-page-top-bar';
 export ProfilePopover from './popovers/profile-popover';
+export ProfileSettings from './profile-overview/profile-settings';
 export PublishOptionsPanel from './panels/publish-options-panel';
 export RadarChart from './charts/radar-chart';
 export RememberPassphrase from './forms/remember-passphrase';

@@ -1,0 +1,82 @@
+.profile-settings {
+    height: 100%;
+    padding-right: 4px;
+
+    &__info-icon {
+        font-size: 14px;
+        margin-left: 10px;
+    }
+
+    &__item {
+        padding-bottom: 20px;
+    }
+
+    &__item-title {
+        font-weight: 500;
+        padding-bottom: 10px;
+    }
+
+    &__item-description {
+        font-size: 13px;
+        padding-bottom: 10px;
+    }
+
+    &__form {
+        padding: 40px 60px;
+        height: ~'calc(100% - 60px)';
+        overflow-x: auto;
+    }
+
+    &__footer {
+        position: absolute;
+        background-color: white;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        height: 60px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0px 30px;
+        border-top: 1px solid #f6f6f6;
+    }
+
+    &__pass-select {
+        padding-top: 10px;
+        width: 250px;
+    }
+
+    &__license-select {
+        width: 250px;
+    }
+
+    &__license-container {
+        padding-bottom: 16px;
+    }
+
+    &__license-radio-group {
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__license-radio {
+        width: 250px;
+        padding: 4px 0;
+        font-size: 12px;
+    }
+
+    &__license-select {
+        .ant-select-selection--single {
+            height: 38px;
+            padding: 5px;
+            &.ant-select-selection {
+                box-shadow: none;
+                &:focus,
+                &:active {
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+}

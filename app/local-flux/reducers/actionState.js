@@ -36,6 +36,7 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
     switch (action.type) {
         case actionTypes.bondAeth:
         case actionTypes.freeAeth:
+        case actionTypes.toggleDonations:
         case actionTypes.transferAeth:
         case actionTypes.transferEth:
         case actionTypes.transformEssence:
@@ -79,6 +80,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
     switch (action.type) {
         case actionTypes.bondAeth:
         case actionTypes.freeAeth:
+        case actionTypes.toggleDonations:
         case actionTypes.transferAeth:
         case actionTypes.transferEth:
         case actionTypes.transformEssence:
