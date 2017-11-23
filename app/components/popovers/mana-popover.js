@@ -94,7 +94,7 @@ class ManaPopover extends Component {
             <div className="flex-center-x mana-popover__title">
               {intl.formatMessage(generalMessages.manaBurned)}
               <span className="mana-popover__mana-score">
-                {`${burnedMana}/${totalMana}`}
+                { burnedMana }
               </span>
             </div>
             <div className="mana-popover__chart-wrapper">
