@@ -46,7 +46,7 @@ class SendTipForm extends Component {
               help={amountError || extra}
               label={
                 <span className="uppercase">
-                  {intl.formatMessage(formMessages.aethAmountLabel)}
+                  {intl.formatMessage(formMessages.ethAmountLabel)}
                 </span>
               }
               validateStatus={amountError ? 'error' : ''}

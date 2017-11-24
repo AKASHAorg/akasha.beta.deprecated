@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Icon, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { VotesModal, ListPopover, VotePopover } from '../';
+import { Icon as IconComp, ListPopover, VotesModal, VotePopover } from '../';
 import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
@@ -145,7 +145,7 @@ class EntryPageAction extends Component {
                     <span className="entry-actions__comments-counter">
                       {entry.get('commentsCount')}
                     </span>
-                    <Icon type="message" />
+                    <IconComp className="entry-actions__comment-icon" type="comment" />
                   </Link>
                 </div>
               }
