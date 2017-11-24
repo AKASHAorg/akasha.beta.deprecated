@@ -31,6 +31,11 @@ const formMessages = defineMessages({
         description: 'amount input required error message',
         defaultMessage: 'Amount is required'
     },
+    ethAmountLabel: {
+        id: 'app.form.ethAmount',
+        description: 'eth amount input label',
+        defaultMessage: 'ETH amount'
+    },
     maxAethAmount: {
         id: 'app.form.maxAethAmount',
         description: 'max AETH amount transferable',
