@@ -48,10 +48,8 @@ class VotePopover extends Component {
             return vote > '0' ?
                 intl.formatMessage(entryMessages.alreadyUpvoted, { weight }) :
                 intl.formatMessage(entryMessages.alreadyDownvoted, { weight });
-        } else if (isOwnEntity) {
-            return type.includes('entry') ?
-                intl.formatMessage(entryMessages.votingOwnEntry) :
-                intl.formatMessage(entryMessages.votingOwnComment);
+        } else if (isOwnEntity && !type.includes('entry')) {
+            return intl.formatMessage(entryMessages.votingOwnComment);
         } else if (this.isDownVote()) {
             return intl.formatMessage(entryMessages.downvote);
         } else if (type.includes('Upvote')) {

@@ -5,7 +5,7 @@ import { Icon, Popover, Modal } from 'antd';
 import fuzzy from 'fuzzy';
 import { injectIntl } from 'react-intl';
 import { EntrySecondarySidebarItem } from '../';
-import { entryMessages } from '../../locale-data/messages';
+import { entryMessages, searchMessages } from '../../locale-data/messages';
 import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
@@ -298,7 +298,7 @@ class NewEntrySecondarySidebar extends Component {
                   type="text"
                   ref={(node) => { this.searchInput = node; }}
                   className="new-entry-secondary-sidebar__search-field"
-                  placeholder={intl.formatMessage(entryMessages.searchSomething)}
+                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
                   onChange={this._handleDraftSearch}
                   onKeyDown={this._handleSearchBarShortcuts}
                   value={searchString}

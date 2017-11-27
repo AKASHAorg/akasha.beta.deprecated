@@ -142,10 +142,6 @@ class EntryPageHeader extends Component {
         const ethAddress = entry.getIn(['author', 'ethAddress']);
         const akashaId = author.get('akashaId');
         const isOwnEntry = loggedEthAddress === ethAddress;
-        const buttonClass = classNames('entry-page-header__button', {
-            'content-link': entry.get('active'),
-            'entry-page-header__button_disabled': !entry.get('active')
-        });
 
         return (
           <div className="entry-page-header">
@@ -172,14 +168,11 @@ class EntryPageHeader extends Component {
                 {isOwnEntry &&
                   <Tooltip
                     getPopupContainer={this.getPopupContainer}
-                    title={entry.get('active') ?
-                        intl.formatMessage(entryMessages.editEntry) :
-                        intl.formatMessage(entryMessages.cannotEdit)
-                    }
+                    title={intl.formatMessage(entryMessages.editEntry)}
                   >
                     <Icon
-                      className={buttonClass}
-                      onClick={entry.get('active') && this.handleEdit}
+                      className="content-link entry-page-header__button"
+                      onClick={this.handleEdit}
                       type="edit"
                     />
                   </Tooltip>
