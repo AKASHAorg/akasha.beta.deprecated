@@ -352,3 +352,12 @@ export const profileUpdateLoggedError = (error) => {
     error.messageId = 'profileUpdateLogged';
     return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
 };
+
+export const profileEssenceIterator = () =>
+    action(types.PROFILE_ESSENCE_ITERATOR);
+
+export const profileEssenceIteratorSuccess = data =>
+    action(types.PROFILE_ESSENCE_ITERATOR_SUCCESS, { data });
+
+export const profileEssenceIteratorError = error =>
+    action(types.PROFILE_ESSENCE_ITERATOR_ERROR, { error });

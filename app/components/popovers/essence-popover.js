@@ -6,6 +6,7 @@ import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
 import { ClaimableList, PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
+import { profileEssenceIterator } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectLoggedEthAddress,
     selectPendingTransformEssence } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
@@ -20,7 +21,7 @@ class EssencePopover extends Component {
         page: DEFAULT,
         popoverVisible: false
     };
-
+    firstTime = true;
     componentWillUnmount () {
         if (this.timeout) {
             clearTimeout(this.timeout);
@@ -28,6 +29,11 @@ class EssencePopover extends Component {
     }
 
     onVisibleChange = (popoverVisible) => {
+        if (popoverVisible && this.firstTime) {
+            this.props.profileEssenceIterator();
+            this.firstTime = false;
+        }
+
         this.setState({
             popoverVisible
         });
@@ -166,6 +172,7 @@ class EssencePopover extends Component {
 EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
+    profileEssenceIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     pendingTransformEssence: PropTypes.bool,
@@ -183,5 +190,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
+        profileEssenceIterator
     }
 )(Form.create()(injectIntl(EssencePopover)));
