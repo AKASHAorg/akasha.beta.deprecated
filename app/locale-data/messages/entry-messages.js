@@ -1,64 +1,44 @@
 import { defineMessages } from 'react-intl';
 
 const entryMessages = defineMessages({
-    alreadyClaimed: {
-        id: 'app.entry.alreadyClaimed',
-        description: 'claim button tooltip when it was already claimed',
-        defaultMessage: 'Already claimed'
-    },
     allowedImageTypes: {
         id: 'app.entry.allowedImageTypes',
-        description: 'types of images allowed',
+        description: 'types of images allowed for upload',
         defaultMessage: 'JPG, GIF or PNG images'
-    },
-    articleEntryType: {
-        id: 'app.entry.articleEntryType',
-        description: 'entry of type article',
-        defaultMessage: 'Article Entries'
-    },
-    linkEntryType: {
-        id: 'app.entry.linkEntryType',
-        description: 'entry of type link',
-        defaultMessage: 'Link Entries'
     },
     alreadyDownvoted: {
         id: 'app.entry.alreadyDownvoted',
-        description: 'vote button tooltip when it was already downvoted',
+        description: 'tooltip for vote buttons when the entry/comment was already downvoted',
         defaultMessage: 'You downvoted with weight {weight}'
     },
     alreadyUpvoted: {
         id: 'app.entry.alreadyUpvoted',
-        description: 'vote button tooltip when it was already upvoted',
+        description: 'tooltip for vote buttons when the entry/comment was already upvoted',
         defaultMessage: 'You upvoted with weight {weight}'
     },
-    blockNr: {
-        id: 'app.entry.blockNr',
-        description: 'block number',
-        defaultMessage: 'Block {blockNr}'
+    articleEntryType: {
+        id: 'app.entry.articleEntryType',
+        description: 'entry of type article',
+        defaultMessage: 'Article entries'
     },
     cannotClaimEntry: {
         id: 'app.entry.cannotClaimEntry',
-        description: 'disclaimer for the situation when you cannot claim an entry',
+        description: 'tooltip for collect button for the situation when a user cannot collect Essence for his entry',
         defaultMessage: 'You can only collect Essence if your entry\'s score is positive'
     },
     cannotClaimVote: {
         id: 'app.entry.cannotClaimVote',
-        description: 'disclaimer for the situation when you cannot claim a vote',
+        description: 'tooltip for collect button for the situation when a user cannot collect Essence for his vote',
         defaultMessage: 'You can only collect Essence if your vote is aligned with the majority (e.g. you upvoted and entry score is positive)'
-    },
-    claim: {
-        id: 'app.entry.claim',
-        description: 'claim button tooltip',
-        defaultMessage: 'Claim'
     },
     collected: {
         id: 'app.entry.collected',
-        description: 'Essence was collected',
+        description: 'Essence was collected for an entry/vote',
         defaultMessage: 'Essence collected'
     },
     collectEssence: {
         id: 'app.entry.collectEssence',
-        description: 'collect essence from published entry or vote',
+        description: 'collect essence from a published entry or vote',
         defaultMessage: 'Collect Essence'
     },
     commentsCount: {
@@ -71,6 +51,11 @@ const entryMessages = defineMessages({
             other {comments}
         }`
     },
+    continueEditing: {
+        id: 'app.entry.continueEditing',
+        description: 'label for continue editing button',
+        defaultMessage: 'Continue editing'
+    },
     downvote: {
         id: 'app.entry.downvote',
         description: 'downvote button tooltip',
@@ -78,7 +63,7 @@ const entryMessages = defineMessages({
     },
     draft: {
         id: 'app.entry.draft',
-        description: 'draft label indicator',
+        description: 'a draft is an entry that wasn\'t published yet (the data is only kept locally)',
         defaultMessage: 'Draft'
     },
     drafts: {
@@ -88,7 +73,7 @@ const entryMessages = defineMessages({
     },
     draftsCount: {
         id: 'app.entry.draftsCount',
-        description: 'drafts count',
+        description: 'number of drafts',
         defaultMessage: `{count, number} {count, plural,
             one {draft}
             few {drafts}
@@ -96,15 +81,10 @@ const entryMessages = defineMessages({
             other {drafts}
         }`
     },
-    draftCardSubtitle: {
-        id: 'app.entry.draftCardSubtitle',
-        description: 'subtitle showing last updated time and words number on draft card in new entry panel',
-        defaultMessage: '{lastUpdate} - {wordCount} words so far'
-    },
     draftContentRequired: {
         id: 'app.entry.draftContentRequired',
-        description: 'validation message for no entry content',
-        defaultMessage: 'Cannot create an article without content!'
+        description: 'validation message for entry with no content',
+        defaultMessage: 'You can\'t create an article without content!'
     },
     draftDelete: {
         id: 'app.entry.draftDelete',
@@ -119,21 +99,26 @@ const entryMessages = defineMessages({
     draftSaved: {
         id: 'app.entry.draftSaved',
         description: 'draft saved status message',
-        defaultMessage: 'Draft Saved'
+        defaultMessage: 'Draft saved'
     },
     draftSaving: {
         id: 'app.entry.draftSaving',
         description: 'saving draft status message',
-        defaultMessage: 'Saving Draft'
+        defaultMessage: 'Saving draft'
     },
     draftSharePreview: {
         id: 'app.entry.draftSharePreview',
-        description: 'share preview link button title',
+        description: 'share preview link button label',
         defaultMessage: 'Share preview link',
+    },
+    editEntry: {
+        id: 'app.entry.editEntry',
+        description: 'tooltip for Edit entry button',
+        defaultMessage: 'Edit entry'
     },
     entriesCount: {
         id: 'app.entry.entriesCount',
-        description: 'counting entries',
+        description: 'number of entries',
         defaultMessage: `{count, number} {count, plural,
             one {entry}
             other {entries}
@@ -149,130 +134,35 @@ const entryMessages = defineMessages({
         description: 'Error message shown when excerpt is too long',
         defaultMessage: 'Excerpt must not be longer than 120 characters'
     },
-    excerptTooLong: {
-        id: 'app.entry.excerptTooLong',
-        description: 'validation message when excerpt is too long',
-        defaultMessage: 'Excerpt must not be longer than 120 characters'
+    excerpt: {
+        id: 'app.entry.excerpt',
+        description: 'excerpts section title',
+        defaultMessage: 'excerpt'
     },
     featuredImage: {
         id: 'app.entry.featuredImage',
         description: 'featured image section title',
-        defaultMessage: 'Featured Image'
-    },
-    findingDraft: {
-        id: 'app.entry.findingDraft',
-        description: 'status text when finding draft',
-        defaultMessage: 'Finding draft'
+        defaultMessage: 'Featured image'
     },
     license: {
         id: 'app.entry.license',
         description: 'License label',
         defaultMessage: 'License'
     },
-    publishedBlockDiff: {
-        id: 'app.entry.publishedBlockDiff',
-        description: 'how many blocks ago was an entry published',
-        defaultMessage: `Published {blockDiff, number} {blockDiff, plural,
-                one {block}
-                few {blocks}
-                many {blocks}
-                other {blocks}
-            } ago`
-    },
-    publicDiscussion: {
-        id: 'app.entry.publicDiscussion',
-        description: 'entry comments section title',
-        defaultMessage: 'Public discussion'
-    },
-    published: {
-        id: 'app.entry.published',
-        description: 'published',
-        defaultMessage: 'Published'
-    },
-    publishOptions: {
-        id: 'app.entry.publishOptions',
-        description: 'publish options panel title',
-        defaultMessage: 'Publish Options'
-    },
-    revertConfirmTitle: {
-        id: 'app.entry.revertConfirmTitle',
-        description: 'confirmation message when reverting a draft',
-        defaultMessage: 'Are you sure you want to revert this draft?'
-    },
-    saveHighlight: {
-        id: 'app.entry.saveHighlight',
-        description: 'save highlight button label',
-        defaultMessage: 'Save highlight'
-    },
-    score: {
-        id: 'app.entry.score',
-        description: 'entry score',
-        defaultMessage: 'Score'
-    },
-    searchSomething: {
-        id: 'app.entry.searchSomething',
-        description: 'placeholder for draft search input',
-        defaultMessage: 'Search something...'
-    },
-    showLess: {
-        id: 'app.entry.showLess',
-        description: 'label for comment collapse button',
-        defaultMessage: 'Collapse comment'
-    },
-    showMore: {
-        id: 'app.entry.showMore',
-        description: 'label for comment expand button',
-        defaultMessage: 'Show full comment'
-    },
-    startComment: {
-        id: 'app.entry.startComment',
-        description: 'button label for starting a comment from a highlight',
-        defaultMessage: 'Start comment'
-    },
-    tagsRequired: {
-        id: 'app.entry.tagsRequired',
-        description: 'validation message for no tags added',
-        defaultMessage: 'You must add at least 1 tag'
-    },
-    titleRequired: {
-        id: 'app.entry.titleRequired',
-        description: 'validation message in case of missing title field',
-        defaultMessage: 'Title must not be empty'
-    },
-    wordsCount: {
-        id: 'app.entry.wordsCount',
-        description: 'number of words in an entry',
-        defaultMessage: `{words, number} {words, plural,
-                one {word}
-                few {words}
-                many {words}
-                other {words}
-            }`
-    },
-    readTime: {
-        id: 'app.entry.readTime',
-        description: 'estimated time to read an entry',
-        defaultMessage: 'read'
-    },
-    writeComment: {
-        id: 'app.entry.writeComment',
-        description: 'placeholder for writing a comment',
-        defaultMessage: 'Write a comment'
-    },
-    writeReplyTo: {
-        id: 'app.entry.writeReplyTo',
-        description: 'placeholder for writing a reply to someone {name}',
-        defaultMessage: 'Write a reply to {name}'
-    },
-    loadingComments: {
-        id: 'app.entry.loadingComments',
-        description: 'message when loading comments for the first time',
-        defaultMessage: 'Loading comments'
+    linkEntryType: {
+        id: 'app.entry.linkEntryType',
+        description: 'entry of type link',
+        defaultMessage: 'Link entries'
     },
     loadMoreReplies: {
         id: 'app.entry.loadMoreReplies',
         description: 'label for load more replies button',
         defaultMessage: 'Load more replies'
+    },
+    localVersion: {
+        id: 'app.entry.localVersion',
+        description: 'label for local version of an entry',
+        defaultMessage: 'Local version'
     },
     newComments: {
         id: 'app.entry.newComments',
@@ -283,61 +173,6 @@ const entryMessages = defineMessages({
             many {comments}
             other {comments}
         }`
-    },
-    versionHistory: {
-        id: 'app.entry.versionHistory',
-        description: 'version history dialog title',
-        defaultMessage: 'Version history'
-    },
-    versionNumber: {
-        id: 'app.entry.versionNumber',
-        description: 'label for version number',
-        defaultMessage: 'Version {index}'
-    },
-    votePercentage: {
-        id: 'app.entry.votePercentage',
-        description: '',
-        defaultMessage: 'Upvotes - {upvote}% · Downvotes - {downvote}%'
-    },
-    originalVersion: {
-        id: 'app.entry.originalVersion',
-        description: 'label for original version',
-        defaultMessage: 'Original'
-    },
-    localVersion: {
-        id: 'app.entry.localVersion',
-        description: 'label for local version',
-        defaultMessage: 'Local version'
-    },
-    continueEditing: {
-        id: 'app.entry.continueEditing',
-        description: 'label for continue editing button',
-        defaultMessage: 'Continue editing'
-    },
-    editEntry: {
-        id: 'app.entry.editEntry',
-        description: 'tooltip for Edit entry button',
-        defaultMessage: 'Edit entry'
-    },
-    excerpt: {
-        id: 'app.entry.excerpt',
-        description: 'excerpts section title',
-        defaultMessage: 'excerpt'
-    },
-    cannotEdit: {
-        id: 'app.entry.cannotEdit',
-        description: 'tooltip for disabled Edit entry button',
-        defaultMessage: 'This entry can no longer be edited'
-    },
-    version: {
-        id: 'app.entry.version',
-        description: 'entry version',
-        defaultMessage: 'version'
-    },
-    olderVersion: {
-        id: 'app.entry.olderVersion',
-        description: 'entry subtitle for reading older versions',
-        defaultMessage: 'You are now viewing an older'
     },
     noCommentsFound: {
         id: 'app.entry.noCommentsFound',
@@ -359,6 +194,51 @@ const entryMessages = defineMessages({
         description: 'Placeholder for empty votes list',
         defaultMessage: 'No votes'
     },
+    olderVersion: {
+        id: 'app.entry.olderVersion',
+        description: 'entry subtitle for reading older versions',
+        defaultMessage: 'You are now viewing an older'
+    },
+    originalVersion: {
+        id: 'app.entry.originalVersion',
+        description: 'label for original version',
+        defaultMessage: 'Original'
+    },
+    publicDiscussion: {
+        id: 'app.entry.publicDiscussion',
+        description: 'entry comments section title',
+        defaultMessage: 'Public discussion'
+    },
+    published: {
+        id: 'app.entry.published',
+        description: 'published entry',
+        defaultMessage: 'Published'
+    },
+    publishOptions: {
+        id: 'app.entry.publishOptions',
+        description: 'publish options panel title',
+        defaultMessage: 'Publish options'
+    },
+    readTime: {
+        id: 'app.entry.readTime',
+        description: 'estimated time to read an entry (e.g. 10 min read)',
+        defaultMessage: 'read'
+    },
+    revertConfirmTitle: {
+        id: 'app.entry.revertConfirmTitle',
+        description: 'confirmation message when reverting a draft',
+        defaultMessage: 'Are you sure you want to revert this draft?'
+    },
+    saveHighlight: {
+        id: 'app.entry.saveHighlight',
+        description: 'save highlight button label',
+        defaultMessage: 'Save highlight'
+    },
+    score: {
+        id: 'app.entry.score',
+        description: 'entry score',
+        defaultMessage: 'Score'
+    },
     searchProfile: {
         id: 'app.entry.searchProfile',
         description: 'placeholder for profile column',
@@ -369,25 +249,60 @@ const entryMessages = defineMessages({
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
     },
+    showLess: {
+        id: 'app.entry.showLess',
+        description: 'label for comment collapse button',
+        defaultMessage: 'Collapse comment'
+    },
+    showMore: {
+        id: 'app.entry.showMore',
+        description: 'label for comment expand button',
+        defaultMessage: 'Show full comment'
+    },
+    startComment: {
+        id: 'app.entry.startComment',
+        description: 'button label for starting a comment from a highlight',
+        defaultMessage: 'Start comment'
+    },
+    titleRequired: {
+        id: 'app.entry.titleRequired',
+        description: 'validation message in case of missing title field',
+        defaultMessage: 'Title must not be empty'
+    },
     upvote: {
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',
         defaultMessage: 'Upvote'
     },
+    version: {
+        id: 'app.entry.version',
+        description: 'entry version',
+        defaultMessage: 'version'
+    },
+    versionHistory: {
+        id: 'app.entry.versionHistory',
+        description: 'version history dialog title',
+        defaultMessage: 'Version history'
+    },
+    versionNumber: {
+        id: 'app.entry.versionNumber',
+        description: 'label for version number',
+        defaultMessage: 'Version {index}'
+    },
     votePending: {
         id: 'app.entry.votePending',
-        description: 'tooltip for vote button in pending state',
+        description: 'tooltip for vote button in pending state (waiting for vote transaction to be mined)',
         defaultMessage: 'Your vote is pending'
+    },
+    votePercentage: {
+        id: 'app.entry.votePercentage',
+        description: 'vote percentage distribution between downvotes and upvotes',
+        defaultMessage: 'Upvotes - {upvote}% · Downvotes - {downvote}%'
     },
     votingOwnComment: {
         id: 'app.entry.votingOwnComment',
         description: 'tooltip for vote button for your own comment',
         defaultMessage: 'You cannot vote your own comment'
-    },
-    votingOwnEntry: {
-        id: 'app.entry.votingOwnEntry',
-        description: 'tooltip for vote button for your own entry',
-        defaultMessage: 'You cannot vote your own entry'
     },
     votingPeriod: {
         id: 'app.entry.votingPeriod',
@@ -396,8 +311,28 @@ const entryMessages = defineMessages({
     },
     votingPeriodDisclaimer: {
         id: 'app.entry.votingPeriodDisclaimer',
-        description: 'disclaimer message about voting period',
+        description: 'disclaimer message for votes when voting period has ended',
         defaultMessage: 'Users can still vote on the entry but the mana burned for these votes can\'t be collected by the author or the voters.'
+    },
+    wordsCount: {
+        id: 'app.entry.wordsCount',
+        description: 'number of words in an entry',
+        defaultMessage: `{words, number} {words, plural,
+                one {word}
+                few {words}
+                many {words}
+                other {words}
+            }`
+    },
+    writeComment: {
+        id: 'app.entry.writeComment',
+        description: 'input placeholder for writing a comment',
+        defaultMessage: 'Write a comment'
+    },
+    writeReplyTo: {
+        id: 'app.entry.writeReplyTo',
+        description: 'placeholder for writing a reply to someone {name}',
+        defaultMessage: 'Write a reply to {name}'
     },
 });
 export { entryMessages };

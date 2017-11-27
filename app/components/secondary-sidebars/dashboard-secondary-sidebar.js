@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardDelete, dashboardRename } from '../../local-flux/actions/dashboard-actions';
 import { selectDashboards } from '../../local-flux/selectors';
@@ -103,11 +103,13 @@ class DashboardSecondarySidebar extends Component {
           <div className="dashboard-secondary-sidebar">
             <div className="flex-center-y dashboard-secondary-sidebar__title">
               {intl.formatMessage(dashboardMessages.myBoards)}
-              <Icon
-                className="content-link dashboard-secondary-sidebar__add-icon"
-                onClick={this.onToggleNewDashboard}
-                type="plus-square"
-              />
+              <Tooltip title={intl.formatMessage(dashboardMessages.createNew)}>
+                <Icon
+                  className="content-link dashboard-secondary-sidebar__add-icon"
+                  onClick={this.onToggleNewDashboard}
+                  type="plus-square"
+                />
+              </Tooltip>
             </div>
             <div className="dashboard-secondary-sidebar__list">
               {dashboards.toList().map((dashboard) => {

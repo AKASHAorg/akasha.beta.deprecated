@@ -11,30 +11,10 @@ const tagMessages = defineMessages({
         description: 'add tag to dashboard button',
         defaultMessage: 'Add to dashboard'
     },
-    recommendedTags: {
-        id: 'app.tag.recommendedTags',
-        description: 'tags recommended by Akasha',
-        defaultMessage: 'Recommended tags'
-    },
-    subscribedTags: {
-        id: 'app.tag.subscribedTags',
-        description: 'tags that the user has subscribed',
-        defaultMessage: 'Subscribed tags'
-    },
-    newestTags: {
-        id: 'app.tag.newestTags',
-        description: 'newest tags in the network',
-        defaultMessage: 'Newest tags'
-    },
     notEnoughKarma: {
         id: 'app.tag.notEnoughKarma',
-        description: 'message to display when user does not have enough karma to do action',
+        description: 'message to display when user does not have enough karma to create a tag',
         defaultMessage: 'Sorry! You don\'t have enough karma to create tags.'
-    },
-    subscribe: {
-        id: 'app.tag.subscribe',
-        description: 'label for subscribe button',
-        defaultMessage: 'Subscribe'
     },
     tagDoesntExist: {
         id: 'app.tag.tagDoesntExist',
@@ -46,11 +26,6 @@ const tagMessages = defineMessages({
         description: 'Message to display when the tag was not created before',
         defaultMessage: 'This is a new tag that wasn`t created by anyone before!'
     },
-    unsubscribe: {
-        id: 'app.tag.unsubscribe',
-        description: 'label for unsubscribe button',
-        defaultMessage: 'Unsubscribe'
-    }
 });
 
 export { tagMessages };

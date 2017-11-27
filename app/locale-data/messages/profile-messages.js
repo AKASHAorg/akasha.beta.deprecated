@@ -1,11 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const profileMessages = defineMessages({
-    activity: {
-        id: 'app.activity',
-        description: 'Activity section title',
-        defaultMessage: 'activity'
-    },
     amountPlaceholder: {
         id: 'app.profile.amountPlaceholder',
         description: 'placeholder for amount input',
@@ -24,11 +19,11 @@ export const profileMessages = defineMessages({
     aboutMeTitle: {
         id: 'app.profile.aboutMeTitle',
         description: 'About Me section title',
-        defaultMessage: 'About Me'
+        defaultMessage: 'About me'
     },
     collectEssence: {
         id: 'app.profile.collectEssence',
-        description: 'collect essence from entries and votes',
+        description: 'collect essence from entries and votes (button label)',
         defaultMessage: 'Collect Essence'
     },
     contacts: {
@@ -48,7 +43,7 @@ export const profileMessages = defineMessages({
     },
     cyclingPlaceholder: {
         id: 'app.profile.cyclingPlaceholder',
-        description: 'placeholder for cycling AETH table',
+        description: 'placeholder for empty cycling AETH table',
         defaultMessage: 'No Cycling AETH pending'
     },
     cyclingProcess: {
@@ -59,7 +54,7 @@ export const profileMessages = defineMessages({
     editProfileTitle: {
         id: 'app.profile.editProfileTitle',
         description: 'Edit profile page title',
-        defaultMessage: 'Edit Profile Information'
+        defaultMessage: 'Edit profile information'
     },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
@@ -73,12 +68,12 @@ export const profileMessages = defineMessages({
     },
     addLinkButtonTitle: {
         id: 'app.profile.addLinkButtontitle',
-        description: 'text shown when hovering Add Link button',
+        description: 'tooltip for Add Link button',
         defaultMessage: 'add link'
     },
     removeLinkButtonTitle: {
         id: 'app.profile.removeLinkButtonTitle',
-        description: 'text shown when hovering Remove Link button',
+        description: 'tooltip for Remove Link button',
         defaultMessage: 'remove link'
     },
     cryptoAddresses: {
@@ -94,17 +89,17 @@ export const profileMessages = defineMessages({
     cryptoName: {
         id: 'app.profile.cryptoName',
         description: 'crypto name label',
-        defaultMessage: 'Cryptocurrency Name'
+        defaultMessage: 'Cryptocurrency name'
     },
     cryptoAddress: {
         id: 'app.profile.cryptoAddress',
         description: 'crypto address label',
-        defaultMessage: 'Cryptocurrency Address'
+        defaultMessage: 'Cryptocurrency address'
     },
     registerProfile: {
         id: 'app.profile.registerProfile',
         description: 'register profile button label',
-        defaultMessage: 'Register Profile'
+        defaultMessage: 'Register profile'
     },
     removeCryptoButtonTitle: {
         id: 'app.profile.removeCryptoButtonTitle',
@@ -113,7 +108,7 @@ export const profileMessages = defineMessages({
     },
     entries: {
         id: 'app.profile.entries',
-        description: 'Title for entries card',
+        description: 'Title for entries column',
         defaultMessage: 'Entries'
     },
     follow: {
@@ -124,7 +119,7 @@ export const profileMessages = defineMessages({
     updateProfile: {
         id: 'app.profile.updateProfile',
         description: 'update a profile',
-        defaultMessage: 'Update Profile'
+        defaultMessage: 'Update profile'
     },
     followers: {
         id: 'app.profile.followers',
@@ -170,17 +165,17 @@ export const profileMessages = defineMessages({
     myBalance: {
         id: 'app.profile.myBalance',
         description: 'Title for my balance card',
-        defaultMessage: 'My Balance'
+        defaultMessage: 'My balance'
     },
     myEntries: {
         id: 'app.profile.myEntries',
         description: 'Title for my entries',
-        defaultMessage: 'My Entries'
+        defaultMessage: 'My entries'
     },
     myProfile: {
         id: 'app.profile.myProfile',
         description: 'Title for profile overview sidebar',
-        defaultMessage: 'MY PROFILE'
+        defaultMessage: 'My profile'
     },
     noProfiles: {
         id: 'app.entry.noProfiles',
@@ -194,8 +189,8 @@ export const profileMessages = defineMessages({
     },
     profileDoesntExist: {
         id: 'app.profile.profileDoesntExist',
-        description: 'placeholder message for entry list when akasha id does not exist',
-        defaultMessage: 'This akasha id doesn\'t exist'
+        description: 'placeholder message for entry list when username does not exist',
+        defaultMessage: 'This username doesn\'t exist'
     },
     settings: {
         id: 'app.profile.settings',
@@ -210,12 +205,12 @@ export const profileMessages = defineMessages({
     receiverPlaceholder: {
         id: 'app.profile.receiverPlaceholder',
         description: 'Placeholder for receiver input',
-        defaultMessage: 'Type an username or paste an ethereum address'
+        defaultMessage: 'Type a username or paste an ethereum address'
     },
     rewardsAndGoals: {
         id: 'app.profile.rewardsAndGoals',
         description: 'Title for rewards and goals card',
-        defaultMessage: 'Rewards and Goals'
+        defaultMessage: 'Rewards and goals'
     },
     saveForLater: {
         id: 'app.profile.saveForLater',
@@ -249,7 +244,7 @@ export const profileMessages = defineMessages({
     },
     support: {
         id: 'app.profile.support',
-        description: 'support an user financially',
+        description: 'support/tip a user',
         defaultMessage: 'Support'
     },
     supported: {

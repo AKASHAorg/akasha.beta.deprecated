@@ -3,87 +3,82 @@ import { defineMessages } from 'react-intl';
 const dashboardMessages = defineMessages({
     addColumn: {
         id: 'app.dashboard.addColumn',
-        description: 'label for add column button',
+        description: 'button label for adding a column to the board',
         defaultMessage: 'Add column'
     },
     addNewColumn: {
         id: 'app.dashboard.addNewColumn',
-        description: 'title for add new column',
+        description: 'panel title for adding a new column',
         defaultMessage: 'Add column'
     },
     addNewColumnSubtitle: {
         id: 'app.dashboard.addNewColumnSubtitle',
-        description: 'subtitle for add new column',
+        description: 'panel subtitle for adding a new column',
         defaultMessage: 'Please select a column type'
     },
     addNewListColumn: {
         id: 'app.dashboard.addNewListColumn',
-        description: 'title for add new list column',
+        description: 'panel title for adding a new list column',
         defaultMessage: 'List column'
     },
     addNewListColumnSubtitle: {
         id: 'app.dashboard.addNewListColumnSubtitle',
-        description: 'subtitle for add new list column',
+        description: 'panel subtitle for adding a new list column',
         defaultMessage: 'Please choose a list'
     },
     addNewProfileColumn: {
         id: 'app.dashboard.addNewProfileColumn',
-        description: 'title for add new profile column',
+        description: 'panel title for adding a new user column',
         defaultMessage: 'User column'
     },
     addNewProfileColumnSubtitle: {
         id: 'app.dashboard.addNewProfileColumnSubtitle',
-        description: 'subtitle for add new profile column',
-        defaultMessage: 'Please choose an user'
+        description: 'panel subtitle for adding a new user column',
+        defaultMessage: 'Please choose a user'
     },
     addNewTagColumn: {
         id: 'app.dashboard.addNewTagColumn',
-        description: 'title for add new tag column',
+        description: 'panel title for adding a new tag column',
         defaultMessage: 'Tag column'
     },
     addNewTagColumnSubtitle: {
         id: 'app.dashboard.addNewTagColumnSubtitle',
-        description: 'subtitle for add new tag column',
+        description: 'panel subtitle for adding a new tag column',
         defaultMessage: 'Please choose a tag'
     },
     addToNewDashboard: {
         id: 'app.list.addToNewDashboard',
-        description: 'title for new dashboard form',
-        defaultMessage: 'Add to a new board'
+        description: 'popover title for creating a new dashboard',
+        defaultMessage: 'Create a new board'
     },
     collection: {
         id: 'app.dashboard.collection',
         description: 'label for collection column',
         defaultMessage: 'Collection'
     },
-    columnLatest: {
-        id: 'app.dashboard.columnLatest',
-        description: 'title for "latest entries" column',
-        defaultMessage: 'Latest entries'
-    },
     columnStream: {
         id: 'app.dashboard.columnStream',
-        description: 'title for "following stream" column',
-        defaultMessage: 'Activity feed'
+        description: 'column title for "following feed" (entries published by the users that you are following)',
+        defaultMessage: 'Following feed'
     },
     createNew: {
         id: 'app.dashboard.createNew',
-        description: 'label for create new ',
+        description: 'button label/tooltip for creating a new board',
         defaultMessage: 'Create a new board'
     },
     dashboardName: {
         id: 'app.dashboard.dashboardName',
-        description: 'label for dashboard name input',
+        description: 'input label for board name field',
         defaultMessage: 'Board name'
     },
     dashboardNameRequired: {
         id: 'app.list.dashboardNameRequired',
-        description: 'required error message for dashboard name input',
+        description: 'required error message for board name input field',
         defaultMessage: 'Board name is required'
     },
     dashboardNameUnique: {
         id: 'app.dashboard.dashboardNameUnique',
-        description: 'unique name error message for dashboard',
+        description: 'unique name error message for board name input field',
         defaultMessage: 'This board already exists'
     },
     deleteColumnConfirmation: {
@@ -93,7 +88,7 @@ const dashboardMessages = defineMessages({
     },
     deleteDashboardConfirmation: {
         id: 'app.dashboard.deleteDashboardConfirmation',
-        description: 'confirmation message for deleting a dashboard',
+        description: 'confirmation message for deleting a board',
         defaultMessage: 'Are you sure you want to delete {name}?'
     },
     large: {
@@ -103,7 +98,7 @@ const dashboardMessages = defineMessages({
     },
     latest: {
         id: 'app.dashboard.latest',
-        description: 'label for latest entries column',
+        description: 'column title for "latest entries" (newest entries published on Akasha)',
         defaultMessage: 'Latest entries'
     },
     list: {
@@ -113,38 +108,38 @@ const dashboardMessages = defineMessages({
     },
     myBoards: {
         id: 'app.dashboard.myBoards',
-        description: 'header for dashboards secondary sidebar',
+        description: 'header for boards page secondary sidebar',
         defaultMessage: 'My boards'
     },
     namePlaceholder: {
         id: 'app.dashboard.namePlaceholder',
-        description: 'placeholder for dashboard name input',
+        description: 'placeholder for dashboard name input field',
         defaultMessage: 'Type board name'
     },
     previewList: {
         id: 'app.dashboard.previewList',
-        description: 'preview for list column entries',
+        description: 'label for list column preview',
         defaultMessage: 'Preview for {listName}'
     },
     previewProfile: {
         id: 'app.dashboard.previewProfile',
-        description: 'preview for profile column entries',
+        description: 'label for user column preview',
         defaultMessage: 'Preview for {displayName}'
     },
     previewTag: {
         id: 'app.dashboard.previewTag',
-        description: 'preview tag column entries',
+        description: 'label for tag column preview',
         defaultMessage: 'Preview for #{tagName}'
     },
     profile: {
         id: 'app.dashboard.profile',
-        description: 'label for profile column',
+        description: 'label for user column',
         defaultMessage: 'User'
     },
     searchForBoard: {
         id: 'app.dashboard.searchForBoard',
-        description: 'placeholder for board search input',
-        defaultMessage: 'Search for board...'
+        description: 'placeholder for board search input field',
+        defaultMessage: 'Search for a board...'
     },
     small: {
         id: 'app.dashboard.small',
@@ -153,8 +148,8 @@ const dashboardMessages = defineMessages({
     },
     stream: {
         id: 'app.dashboard.stream',
-        description: 'label for stream column',
-        defaultMessage: 'Activity feed'
+        description: 'label for following feed column',
+        defaultMessage: 'Following feed'
     },
     tag: {
         id: 'app.dashboard.tag',
