@@ -46,7 +46,7 @@ class StreamColumn extends Component {
               fetchMoreEntries={this.entryMoreStreamIterator}
               large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
+              placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
             />
           </div>
         );

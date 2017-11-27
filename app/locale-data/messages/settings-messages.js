@@ -10,7 +10,7 @@ const settingsMessages = defineMessages({
     darkTheme: {
         id: 'app.settings.darkTheme',
         description: 'theme switch',
-        defaultMessage: 'Dark Theme'
+        defaultMessage: 'Dark theme'
     },
     description: {
         id: 'app.settings.description',
@@ -24,22 +24,22 @@ const settingsMessages = defineMessages({
     },
     passphraseOptions: {
         id: 'app.settings.passphraseOptions',
-        description: 'title for profile pass options',
-        defaultMessage: 'Passphrase Options'
+        description: 'title for profile passphrase options',
+        defaultMessage: 'Passphrase options'
     },
     passphraseOptionsDescription: {
         id: 'app.settings.passphraseOptionsDescription',
-        description: 'description for profile pass options',
+        description: 'description for profile passphrase options',
         defaultMessage: 'Choose when your password is requested'
     },
-    publishOptions: {
-        id: 'app.settings.publishOptions',
-        description: 'title for profile license options',
-        defaultMessage: 'Publish Options'
+    licenseOptions: {
+        id: 'app.settings.licenseOptions',
+        description: 'title for profile default license options',
+        defaultMessage: 'Default license'
     },
-    publishOptionsDescription: {
-        id: 'app.settings.publishOptionsDescription',
-        description: 'description for profile license options',
+    licenseOptionsDescription: {
+        id: 'app.settings.licenseOptionsDescription',
+        description: 'description for default license options',
         defaultMessage: 'Choose the default license for articles you publish'
     },
     russian: {
@@ -52,40 +52,45 @@ const settingsMessages = defineMessages({
         description: 'title for language selector',
         defaultMessage: 'Select Language'
     },
+    spanish: {
+        id: 'app.settings.spanish',
+        description: 'app language',
+        defaultMessage: 'Spanish'
+    },
     theme: {
         id: 'app.settings.theme',
         description: 'theme switch title',
         defaultMessage: 'Theme'
-    },
-    tipsOptions: {
-        id: 'app.settings.tipsOptions',
-        description: 'title for profile tips options',
-        defaultMessage: 'Tips Options'
     },
     tipsDescription: {
         id: 'app.settings.tipsDescription',
         description: 'description for profile tips options',
         defaultMessage: 'Select your option for tips'
     },
+    tipsOptions: {
+        id: 'app.settings.tipsOptions',
+        description: 'title for profile tips options',
+        defaultMessage: 'Tips options'
+    },
     tipsInfo: {
         id: 'app.settings.tipsInfo',
         description: 'info for profile tips options',
-        defaultMessage: 'Changing this setting will cost ETH'
+        defaultMessage: 'Changing this option will involve sending a transaction'
     },
     tipsAccept: {
         id: 'app.settings.tipsAccept',
-        description: 'text for profile tips',
-        defaultMessage: 'Accept Tips'
+        description: 'label for profile tips option',
+        defaultMessage: 'Accept tips'
     },
     tipsDoNotAccept: {
         id: 'app.settings.tipsDoNotAccept',
-        description: 'text for profile tips',
-        defaultMessage: 'Do not Accept Tips'
+        description: 'label for profile tips option',
+        defaultMessage: 'Do not accept tips'
     },
     title: {
         id: 'app.settings.title',
         description: 'Title for app settings',
-        defaultMessage: 'App Settings'
+        defaultMessage: 'App settings'
     },
     update: {
         id: 'app.settings.update',
