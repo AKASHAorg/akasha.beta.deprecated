@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Icon, Popover, Slider, Tooltip } from 'antd';
+import { Button, Form, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { selectManaBalance, selectVoteCost } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
+import { Icon } from '../';
 
 const FormItem = Form.Item;
 const MIN = 1;
@@ -199,7 +200,7 @@ class VotePopover extends Component {
             >
               <Icon
                 className={iconClass}
-                type={this.isDownVote() ? 'arrow-down' : 'arrow-up'}
+                type={this.isDownVote() ? 'arrowDown' : 'arrowUp'}
               />
             </Tooltip>
           </Popover>

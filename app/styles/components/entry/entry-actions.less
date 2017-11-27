@@ -2,6 +2,7 @@
     padding-top: 6px;
     max-width: 700px;
     margin: 0 auto;
+    color: @text-color-secondary;
 
     &_own-entry {
         display: flex;
@@ -19,7 +20,6 @@
 
     &__info-text {
         margin-bottom: 2px;
-        color: @text-color-secondary;
 
         &_can-claim {
             color: @success-color;
@@ -50,14 +50,6 @@
         }
     }
 
-    &__collect-in {
-        color: @text-color-secondary;
-    }
-
-    &__collected {
-        color: @text-color-secondary;
-    }
-
     &__actions {
         flex: 0 0 auto;
         display: flex;
@@ -68,8 +60,9 @@
     }
 
     &__comments-counter {
-        font-size: 18px;
+        font-size: 15px;
         margin-right: 5px;
+        margin-left: 12px;
     }
 
     &__vote-wrapper {
@@ -81,10 +74,10 @@
     }
 
     &__score {
-        min-width: 40px;
-        font-size: 18px;
+        min-width: 36px;
+        font-size: 15px;
         padding: 0 5px;
-        letter-spacing: 2px;
+        letter-spacing: 1.8px;
     }
 
     &__vote-bar {
@@ -129,12 +122,15 @@
 
     &__info-icon {
         margin-left: 6px;
+        height: 12px;
+        width: 12px;        
         cursor: default;
-        color: @text-color-secondary;
+        stroke: initial !important;
     }
 
     &__comment-icon {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
+        stroke: @text-color-secondary !important;
     }
 }
