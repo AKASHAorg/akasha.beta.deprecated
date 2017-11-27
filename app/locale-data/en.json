@@ -271,6 +271,7 @@
   "app.form.depositEth": "You need to deposit ether to publish your profile.",
   "app.form.aethAmount": "AETH amount",
   "app.form.amountRequired": "Amount is required",
+  "app.form.ethAmount": "ETH amount",
   "app.form.maxAethAmount": "{aeth} Transferable AETH",
   "app.form.maxAethAmountLabel": "max. {balance}",
   "app.form.maxEssenceAmount": "{essence} Essence available",

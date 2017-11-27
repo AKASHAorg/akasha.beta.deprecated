@@ -13,7 +13,7 @@ const createAction = (action) => {
     return new ActionRecord(action).set('payload', payload);
 };
 
-const sortByBlockNr = (byId, list, reverse) =>
+export const sortByBlockNr = (byId, list, reverse) =>
     list.sort((a, b) => {
         const actionA = byId.get(a);
         const actionB = byId.get(b);

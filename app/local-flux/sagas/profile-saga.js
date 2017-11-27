@@ -24,6 +24,14 @@ function* profileAethTransfersIterator () {
     yield apply(channel, channel.send, [{ ethAddress, toBlock, limit: TRANSFERS_ITERATOR_LIMIT }]);
 }
 
+function* profileEssenceIterator () {
+    const channel = self.Channel.server.profile.essenceIterator;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const ethAddress = yield select(selectLoggedEthAddress);
+    const lastBlock = yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ ethAddress, lastBlock, limit: TRANSFERS_ITERATOR_LIMIT }]);
+}
+
 function* profileBondAeth ({ actionId, amount }) {
     const channel = Channel.server.profile.bondAeth;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -431,6 +439,17 @@ function* watchProfileAethTransfersIteratorChannel () {
             yield put(actions.profileAethTransfersIteratorError(resp.error));
         } else {
             yield put(actions.profileAethTransfersIteratorSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileEssenceIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.essenceIterator);
+        if (resp.error) {
+            yield put(actions.profileEssenceIteratorError(resp.error));
+        } else {
+            yield put(actions.profileEssenceIteratorSuccess(resp.data));
         }
     }
 }
@@ -891,6 +910,7 @@ function* watchProfileUpdateChannel () {
 }
 
 export function* registerProfileListeners () { // eslint-disable-line max-statements
+    yield fork(watchProfileEssenceIteratorChannel);
     yield fork(watchProfileAethTransfersIteratorChannel);
     yield fork(watchProfileBondAethChannel);
     yield fork(watchProfileCreateEthAddressChannel);
@@ -928,6 +948,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
     yield takeEvery(types.PROFILE_CYCLING_STATES, profileCyclingStates);
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
+    yield takeEvery(types.PROFILE_ESSENCE_ITERATOR, profileEssenceIterator);
     yield takeLatest(types.PROFILE_EXISTS, profileExists);
     yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
     yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);

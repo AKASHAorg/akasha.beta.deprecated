@@ -1,9 +1,18 @@
-import { List, Map } from 'immutable';
+import {List, Map} from 'immutable';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
-import { AethBalance, Balance, ErrorRecord, EssenceBalance, LoggedProfile, ManaBalance, ProfileExistsRecord,
-    ProfileRecord, ProfileState } from './records';
-import { balanceToNumber } from '../../utils/number-formatter';
+import {createReducer} from './create-reducer';
+import {
+    AethBalance,
+    Balance,
+    ErrorRecord,
+    EssenceBalance,
+    LoggedProfile,
+    ManaBalance,
+    ProfileExistsRecord,
+    ProfileRecord,
+    ProfileState
+} from './records';
+import {balanceToNumber} from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
 
@@ -68,6 +77,40 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
+
+    [types.PROFILE_ESSENCE_ITERATOR]: state =>
+        state.setIn(['flags', 'fetchingEssenceIterator'], true),
+
+    [types.PROFILE_ESSENCE_ITERATOR_ERROR]: state =>
+        state.setIn(['flags', 'fetchingEssenceIterator'], false),
+
+    [types.PROFILE_ESSENCE_ITERATOR_SUCCESS]: (state, { data }) => {
+        let latestIterable = new List();
+        data.collection.forEach((event) => {
+            latestIterable = latestIterable.push({
+                amount: event.amount,
+                action: event.action,
+                sourceId: event.sourceId
+            });
+            // const found = latestIterable.find(value =>
+            //     is(
+            //         value,
+            //         new Record(
+            //             { amount: event.amount, action: event.action, sourceId: event.sourceId }
+            //             )
+            //     )
+            // );
+            // console.log(found);
+        });
+
+        latestIterable = state.get('essenceEvents').merge(latestIterable);
+            // .push(difference(latestIterable, state.get('essenceEvents')));
+
+        return state.merge({
+            essenceEvents: latestIterable,
+            flags: state.get('flags').set('fetchingEssenceIterator', false)
+        });
+    },
 
     [types.PROFILE_EXISTS_SUCCESS]: (state, { data }) =>
         state.merge({
