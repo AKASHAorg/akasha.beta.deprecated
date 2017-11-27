@@ -133,10 +133,10 @@ class ProfileSettings extends Component {
                 </div>
                 <div>
                   <div className="profile-settings__item-title">
-                    {intl.formatMessage(settingsMessages.publishOptions)}
+                    {intl.formatMessage(settingsMessages.licenseOptions)}
                   </div>
                   <div className="profile-settings__item-description">
-                    {intl.formatMessage(settingsMessages.publishOptionsDescription)}
+                    {intl.formatMessage(settingsMessages.licenseOptionsDescription)}
                   </div>
                   <FormItem>
                     <div className="profile-settings__license-container">

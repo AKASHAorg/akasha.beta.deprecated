@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 const errorMessages = defineMessages({
     reportErrorTitle: {
         id: 'app.error.reportErrorTitle',
-        description: 'title for report modal',
+        description: 'title for report error modal',
         defaultMessage: 'Report error'
     },
     thankYouForYourFeedback: {
@@ -23,107 +23,107 @@ const errorMessages = defineMessages({
     },
     backupKeys: {
         id: 'app.error.backupKeys',
-        description: 'backup keys error message',
+        description: 'error message for backup keys action',
         defaultMessage: 'Generating backup has failed. Try again'
     },
     commentsDownvote: {
         id: 'app.error.commentsDownvote',
-        description: 'comment downvote error',
-        defaultMessage: 'An error occurred  while downvoting a comment'
+        description: 'error message for downvoting a comment',
+        defaultMessage: 'An error occurred while downvoting a comment'
     },
     commentsPublish: {
         id: 'app.error.commentsPublish',
-        description: 'comment publish error',
+        description: 'error message for publishing a comment',
         defaultMessage: 'An error occured while publishing a comment'
     },
     commentsUpvote: {
         id: 'app.error.commentsUpvote',
-        description: 'comment upvote error',
-        defaultMessage: 'An error occurred  while upvoting a comment'
+        description: 'error message for upvoting a comment',
+        defaultMessage: 'An error occurred while upvoting a comment'
     },
     dashboardAdd: {
         id: 'app.error.dashboardAdd',
-        description: 'add dashboard error message',
-        defaultMessage: 'An error occurred while saving the new dashboard'
+        description: 'error message for creating a new board',
+        defaultMessage: 'An error occurred while saving the new board'
     },
     dashboardAddColumn: {
         id: 'app.error.dashboardAddColumn',
-        description: 'add column error message',
+        description: 'error message for adding a column to a board',
         defaultMessage: 'An error occurred while saving the new column'
     },
     dashboardDelete: {
         id: 'app.error.dashboardDelete',
-        description: 'delete dashboard error message',
-        defaultMessage: 'An error occurred while deleting your dashboard'
+        description: 'error message for deleting a board',
+        defaultMessage: 'An error occurred while deleting your board'
     },
     dashboardDeleteColumn: {
         id: 'app.error.dashboardDeleteColumn',
-        description: 'delete column error message',
+        description: 'error message for removing a column from a board',
         defaultMessage: 'An error occurred while deleting your column'
     },
     dashboardGetActive: {
         id: 'app.error.dashboardGetActive',
-        description: 'get active dashboard error message',
-        defaultMessage: 'An error occurred while getting the active dashboard'
+        description: 'error message for fetching the active board',
+        defaultMessage: 'An error occurred while getting the active board'
     },
     dashboardGetAll: {
         id: 'app.error.dashboardGetAll',
-        description: 'get all dashboards error message',
-        defaultMessage: 'An error occurred while getting your dashboards'
+        description: 'error message for fetching all boards',
+        defaultMessage: 'An error occurred while getting your boards'
     },
     dashboardSetActive: {
         id: 'app.error.dashboardSetActive',
-        description: 'set active dashboard error message',
-        defaultMessage: 'An error occurred while saving your active dashboard'
+        description: 'error message for setting the active board',
+        defaultMessage: 'An error occurred while saving your active board'
     },
     dashboardUpdateColumn: {
         id: 'app.error.dashboardUpdateColumn',
-        description: 'update column error message',
+        description: 'error message for updating a column',
         defaultMessage: 'An error occurred while updating your column'
     },
     draftAutosave: {
         id: 'app.error.draftAutosave',
-        description: 'draft autosave error message',
-        defaultMessage: 'Cannot save latest changes of this draft!'
+        description: 'error message for autosaving a draft',
+        defaultMessage: 'Cannot save latest changes of this draft'
     },
     draftPublish: {
         id: 'app.error.draftPublish',
-        description: 'draft publish error message',
-        defaultMessage: 'An error occured while publishing draft'
+        description: 'error message for publishing a draft',
+        defaultMessage: 'An error occured while publishing your draft'
     },
     entriesGetAsDrafts: {
         id: 'app.error.entriesGetAsDrafts',
-        description: 'entries get as drafts error',
-        defaultMessage: 'There was an error when trying to fetch your entries! Showing local drafts only!',
+        description: 'error message for fetching your own entries',
+        defaultMessage: 'An error occured while trying to fetch your entries. Showing local drafts only',
     },
     entryClaim: {
         id: 'app.error.entryClaim',
-        description: 'claim entry balance error message',
-        defaultMessage: 'An error occurred while claiming {entryTitle}'
+        description: 'error message for collecting Essence for an entry',
+        defaultMessage: 'An error occurred while collecting Essence for {entryTitle}'
     },
     entryClaimVote: {
         id: 'app.error.entryClaimVote',
-        description: 'claim vote Essence error message',
-        defaultMessage: 'An error occurred while claiming {entryTitle}'
+        description: 'error message for collecting Essence for a vote',
+        defaultMessage: 'An error occurred while collecting Essence for {entryTitle}'
     },
     entryDownvote: {
         id: 'app.error.entryDownvote',
-        description: 'downvote entry error message',
+        description: 'error message for downvoting an entry',
         defaultMessage: 'An error occurred while downvoting {entryTitle}'
     },
     entryGetFull: {
         id: 'app.error.entryGetFull',
-        description: 'get full entry error message',
+        description: 'error message for fetching a full entry',
         defaultMessage: 'An error occurred while getting entry data'
     },
     entryListIterator: {
         id: 'app.error.entryListIterator',
-        description: 'entry list iterator error message',
-        defaultMessage: 'An error occurred while getting entry list data'
+        description: 'error message for fetching entries in a list',
+        defaultMessage: 'An error occurred while getting entries in a list'
     },
     entryUpvote: {
         id: 'app.error.entryUpvote',
-        description: 'upvote entry error message',
+        description: 'error message for upvoting an entry',
         defaultMessage: 'An error occurred while upvoting {entryTitle}'
     },
     errorNotificationTitle: {
@@ -138,58 +138,58 @@ const errorMessages = defineMessages({
     },
     generalSettings: {
         id: 'app.error.generalSettings',
-        description: 'get general settings error',
+        description: 'error message for fetching general settings',
         defaultMessage: 'An error occurred while getting your general settings'
     },
     gethGetOptions: {
         id: 'app.error.gethGetOptions',
-        description: 'geth options error message',
+        description: 'error message for fetching geth options',
         defaultMessage: 'An error occurred while getting geth service options'
     },
     gethGetStatus: {
         id: 'app.error.gethGetStatus',
-        description: 'geth get status error message',
+        description: 'error message for fetching geth status',
         defaultMessage: 'An error occurred while getting geth service status'
     },
     gethGetSyncStatus: {
         id: 'app.error.gethGetSyncStatus',
-        description: 'geth get sync status error message',
+        description: 'error message for fetching geth synchronization status',
         defaultMessage: 'An error occurred while getting synchronization status'
     },
     gethSaveSettings: {
         id: 'app.error.gethSaveSettings',
-        description: 'geth save settings error',
+        description: 'error message for saving geth settings',
         defaultMessage: 'An error occurred while saving your geth settings'
     },
     gethSettings: {
         id: 'app.error.gethSettings',
-        description: 'geth get settings error',
+        description: 'error message for fetching geth settings',
         defaultMessage: 'An error occurred while getting your geth settings'
     },
     gethStart: {
         id: 'app.error.gethStart',
-        description: 'start geth error message',
+        description: 'error message for starting geth service',
         defaultMessage: 'Geth service could not be started'
     },
     gethStop: {
         id: 'app.error.gethStop',
-        description: 'stop geth error message',
+        description: 'error message for stopping geth service',
         defaultMessage: 'Geth service could not be stopped'
     },
     ipfsGetConfig: {
         id: 'app.error.ipfsGetConfig',
-        description: 'ipfs config error message',
-        defaultMessage: 'An error occurred while getting ipfs service config'
+        description: 'error message for fetching IPFS service configuration',
+        defaultMessage: 'An error occurred while getting IPFS service config'
     },
     ipfsGetPorts: {
         id: 'app.error.ipfsGetPorts',
-        description: 'ipfs get ports error message',
-        defaultMessage: 'An error occurred while getting ipfs service ports'
+        description: 'error message for fetching IPFS ports',
+        defaultMessage: 'An error occurred while getting IPFS service ports'
     },
     ipfsSaveSettings: {
         id: 'app.error.ipfsSaveSettings',
-        description: 'ipfs save settings error',
-        defaultMessage: 'An error occurred while saving your ipfs settings'
+        description: 'error message for saving IPFS settings',
+        defaultMessage: 'An error occurred while saving your IPFS settings'
     },
     ipfsSetPorts: {
         id: 'app.error.ipfsSetPorts',
@@ -198,77 +198,77 @@ const errorMessages = defineMessages({
     },
     ipfsSettings: {
         id: 'app.error.ipfsSettings',
-        description: 'ipfs get settings error',
-        defaultMessage: 'An error occurred while getting your ipfs settings'
+        description: 'error message for fetching IPFS settings',
+        defaultMessage: 'An error occurred while getting your IPFS settings'
     },
     ipfsStart: {
         id: 'app.error.ipfsStart',
-        description: 'start ipfs error message',
+        description: 'error message for starting IPFS service',
         defaultMessage: 'IPFS service could not be started'
     },
     ipfsGetStatus: {
         id: 'app.error.ipfsGetStatus',
-        description: 'ipfs get status error message',
-        defaultMessage: 'An error occurred while getting ipfs service status'
+        description: 'error message for fetching IPFS service status',
+        defaultMessage: 'An error occurred while getting IPFS service status'
     },
     ipfsStop: {
         id: 'app.error.ipfsStop',
-        description: 'stop ipfs error message',
+        description: 'error message for stopping IPFS service',
         defaultMessage: 'IPFS service could not be stopped'
     },
     unexpectedError: {
         id: 'app.error.unexpectedError',
-        description: 'an error with no code',
-        defaultMessage: 'Unexpected Error'
+        description: 'a general error (with no error code)',
+        defaultMessage: 'Unexpected error'
     },
     profileBondAeth: {
         id: 'app.error.profileBondAeth',
-        description: 'bond/manafy aeth error',
+        description: 'error message for bonding (manafying) AETH',
         defaultMessage: 'An error occured while manafying {amount} AETH'
     },
     profileCycleAeth: {
         id: 'app.error.profileCycleAeth',
-        description: 'cycle aeth error',
+        description: 'error message for cycling AETH',
         defaultMessage: 'An error occured while cycling {amount} AETH'
     },
     profileFreeAeth: {
         id: 'app.error.profileFreeAeth',
-        description: 'free aeth error',
+        description: 'error message for freeing AETH that was cycled',
         defaultMessage: 'An error occured while collecting your cycled AETH'
     },
     profileGetLocal: {
         id: 'app.error.profileGetLocal',
-        description: 'get local profiles error',
+        description: 'error message for fetching local profiles',
         defaultMessage: 'An error occured while fetching local profiles'
     },
     profileGetList: {
         id: 'app.error.profileGetList',
-        description: 'get profiles list error',
+        description: 'error message for fetching a list of profiles',
         defaultMessage: 'An error occured while getting the list of profiles'
     },
     profileToggleDonations: {
         id: 'app.error.profileToggleDonations',
-        description: 'toggle donations error',
-        defaultMessage: 'An error occured while changing your tips status'
+        description: 'error message for changing the settings for accepting tips',
+        defaultMessage: 'An error occured while changing your tips settings'
     },
     profileTransferAeth: {
         id: 'app.error.profileTransferAeth',
-        description: 'transfer AETH error',
+        description: 'error message for transferring AETH',
         defaultMessage: 'An error occured while transferring {tokenAmount} AETH'
     },
     profileTransferEth: {
         id: 'app.error.profileTransferEth',
-        description: 'transfer ETH error',
+        description: 'error message for transferring ETH',
         defaultMessage: 'An error occured while transferring {value} ETH'
     },
     profileTransformEssence: {
         id: 'app.error.profileTransformEssence',
-        description: 'transform essence error',
+        description: 'error message for transforming Essence in AETH',
         defaultMessage: 'An error occured while transforming {amount} Essence'
     },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',
-        description: 'save general settings error message',
+        description: 'error message for saving general settings',
         defaultMessage: 'An error occurred while saving your settings'
     },
 });

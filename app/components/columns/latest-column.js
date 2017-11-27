@@ -36,7 +36,7 @@ class LatestColumn extends Component {
               icon={<ColumnLatest />}
               onRefresh={this.entryIterator}
               readOnly
-              title={intl.formatMessage(dashboardMessages.columnLatest)}
+              title={intl.formatMessage(dashboardMessages.latest)}
             />
             <EntryList
               contextId={column.get('id')}
