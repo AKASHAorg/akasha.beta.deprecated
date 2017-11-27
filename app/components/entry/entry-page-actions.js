@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Icon, Spin, Tooltip } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { Icon as IconComp, ListPopover, VotesModal, VotePopover } from '../';
-import { ToolbarEthereum } from '../svg';
+import { Icon, ListPopover, VotesModal, VotePopover } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryCanClaimVote, selectEntryVote,
@@ -73,6 +72,18 @@ class EntryPageAction extends Component {
         this.props.actionAdd(loggedEthAddress, actionTypes.claimVote, payload);
     };
 
+    renderVotesModal = () => {
+        const { blockNr, entry } = this.props;
+        return (
+          <VotesModal
+            closeVotesPanel={this.closeVotesPanel}
+            content={entry}
+            contentTitle={entry.content.title}
+            blockNr={blockNr}
+          />
+        );
+    };
+
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
@@ -94,7 +105,9 @@ class EntryPageAction extends Component {
           <div className="flex-center-y entry-actions entry-actions_own-entry">
             <div className={infoClass}>
               <div className={infoTextClass}>
-                {entry.score} {intl.formatMessage(entryMessages.score)}
+                <span className="content-link" onClick={this.openVotesPanel}>
+                  {entry.score} {intl.formatMessage(entryMessages.score)}
+                </span>
                 <span className="entry-actions__separator">|</span>
                 {balance} {intl.formatMessage(generalMessages.essence)}
               </div>
@@ -105,7 +118,7 @@ class EntryPageAction extends Component {
                   </span>
                 }
                 {!this.isActive() && !isClaimed &&
-                  <div>
+                  <div className="flex-center-y">
                     {claimPending && <Spin size="small" style={{ marginRight: '5px' }} />}
                     <span
                       className={collectClass}
@@ -118,7 +131,7 @@ class EntryPageAction extends Component {
                         getPopupContainer={() => containerRef || document.body}
                         title={intl.formatMessage(entryMessages.cannotClaimEntry)}
                       >
-                        <Icon className="entry-actions__info-icon" type="question-circle" />
+                        <Icon className="entry-actions__info-icon" type="questionCircle" />
                       </Tooltip>
                     }
                   </div>
@@ -145,7 +158,7 @@ class EntryPageAction extends Component {
                     <span className="entry-actions__comments-counter">
                       {entry.get('commentsCount')}
                     </span>
-                    <IconComp className="entry-actions__comment-icon" type="comment" />
+                    <Icon className="entry-actions__comment-icon" type="comment" />
                   </Link>
                 </div>
               }
@@ -163,6 +176,7 @@ class EntryPageAction extends Component {
                 search={listSearchKeyword}
               />
             </div>
+            {this.state.showVotes && this.renderVotesModal()}
           </div>
         );
     };
@@ -208,7 +222,7 @@ class EntryPageAction extends Component {
                       getPopupContainer={() => containerRef || document.body}
                       title={intl.formatMessage(entryMessages.cannotClaimVote)}
                     >
-                      <Icon className="entry-actions__info-icon" type="question-circle" />
+                      <Icon className="entry-actions__info-icon" type="questionCircle" />
                     </Tooltip>
                   }
                 </div>
@@ -226,7 +240,7 @@ class EntryPageAction extends Component {
     };
 
     render () {
-        const { blockNr, containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
+        const { containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
             listsAll, listSearchKeyword, votePending, vote } = this.props;
         if (isOwnEntry) {
             return this.renderOwnEntryActions();
@@ -283,10 +297,10 @@ class EntryPageAction extends Component {
                       }}
                     >
                       <div className="content-link flex-center-y">
-                        <span style={{ fontSize: '18px', marginLeft: '12px', marginRight: '6px' }}>
+                        <span className="entry-actions__comments-counter">
                           {entry.get('commentsCount')}
                         </span>
-                        <Icon type="message" />
+                        <Icon className="entry-actions__comment-icon" type="comment" />
                       </div>
                     </Link>
                   }
@@ -324,19 +338,12 @@ class EntryPageAction extends Component {
                 <span className="entry-actions__info-text">
                   {intl.formatMessage(entryMessages.votingPeriod)}
                   <Tooltip title={intl.formatMessage(entryMessages.votingPeriodDisclaimer)}>
-                    <Icon className="entry-actions__info-icon" type="question-circle" />
+                    <Icon className="entry-actions__info-icon" type="questionCircle" />
                   </Tooltip>
                 </span>
               </div>
             }
-            {this.state.showVotes &&
-              <VotesModal
-                closeVotesPanel={this.closeVotesPanel}
-                content={entry}
-                contentTitle={entry.content.title}
-                blockNr={blockNr}
-              />
-            }
+            {this.state.showVotes && this.renderVotesModal()}
           </div>
         );
     }

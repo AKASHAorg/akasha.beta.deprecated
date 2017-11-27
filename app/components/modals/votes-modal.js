@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Modal, Tooltip } from 'antd';
+import { Modal } from 'antd';
 import classNames from 'classnames';
 import { entryMessages } from '../../locale-data/messages';
 import { DataLoader } from '../';
@@ -74,16 +74,14 @@ class EntryVotesModal extends Component {
             footer={null}
             onCancel={closeVotesPanel}
             title={
-              <Tooltip title={contentTitle}>
-                <div className="flex-center-y votes-modal__header">
-                  <svg className="votes-modal__title-icon" viewBox="0 0 16 16">
-                    <ToolbarVotes />
-                  </svg>
-                  <span className="overflow-ellipsis votes-modal__title">
-                    {contentTitle}
-                  </span>
-                </div>
-              </Tooltip>
+              <div className="flex-center-y votes-modal__header">
+                <svg className="votes-modal__title-icon" viewBox="0 0 16 16">
+                  <ToolbarVotes />
+                </svg>
+                <span className="overflow-ellipsis votes-modal__title">
+                  {contentTitle}
+                </span>
+              </div>
             }
             visible
             width={320}

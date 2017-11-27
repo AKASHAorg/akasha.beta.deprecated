@@ -2,9 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { List } from 'immutable';
-import { Checkbox, Icon, Input, Popover } from 'antd';
-import { NewListForm, PanelLink } from '../';
-import { EntryBookmarkOff } from '../svg';
+import { Checkbox, Input, Popover } from 'antd';
+import { Icon, NewListForm } from '../';
 import { listMessages } from '../../locale-data/messages';
 
 class ListPopover extends Component {
@@ -158,12 +157,17 @@ class ListPopover extends Component {
                       <div className="overflow-ellipsis list-popover__name">
                         {list.get('name')}
                       </div>
-                      <div className="hidden-action" onClick={ev => ev.stopPropagation()}>
-                        <Icon type="edit" />
-                      </div>
-                      <div className="hidden-action flex-center list-popover__icon">
+                      <div className="hidden-action content-link flex-center list-popover__icon">
                         <Icon
-                          type="delete"
+                          className="list-popover__small-icon"
+                          onClick={ev => ev.stopPropagation()}
+                          type="edit"
+                        />
+                      </div>
+                      <div className="hidden-action content-link flex-center list-popover__icon">
+                        <Icon
+                          className="list-popover__small-icon"
+                          type="trash"
                           onClick={(ev) => {
                               ev.preventDefault();
                               ev.stopPropagation();
@@ -176,10 +180,12 @@ class ListPopover extends Component {
               })}
             </div>
             <div className="content-link list-popover__button" onClick={this.toggleNewList}>
-              <Icon
-                className="list-popover__left-item"
-                type="plus"
-              />
+              <div className="list-popover__left-item">
+                <Icon
+                  className="list-popover__small-icon"
+                  type="plus"
+                />
+              </div>
               <div style={{ flex: '1 1 auto' }}>
                 {intl.formatMessage(listMessages.createNew)}
               </div>
@@ -193,6 +199,7 @@ class ListPopover extends Component {
 
         return (
           <Popover
+            arrowPointAtCenter
             content={this.renderContent()}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
@@ -201,9 +208,7 @@ class ListPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <svg style={{ width: '24px', height: '24px', cursor: 'pointer' }} viewBox="0 0 20 20">
-              <EntryBookmarkOff />
-            </svg>
+            <Icon className="content-link list-popover__list-icon" type="bookmark" />
           </Popover>
         );
     }

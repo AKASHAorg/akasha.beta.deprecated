@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Icon, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
-import { Avatar, ProfilePopover } from '../';
+import { Avatar, Icon, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
     const { author, containerRef, entry, intl, isOwnEntry, large, loading, openVersionsPanel } = props;
@@ -36,7 +36,7 @@ const EntryCardHeader = (props) => {
         'content-link': displayName,
     });
     const authorPlaceholder = (
-      <Tooltip title="Cannot resolve entry author">
+      <Tooltip getPopupContainer={() => containerRef || document.body} title="Cannot resolve entry author">
         <div className="entry-card-header__author-placeholder" />
       </Tooltip>
     );
@@ -88,7 +88,12 @@ const EntryCardHeader = (props) => {
           }
         </div>
         {isOwnEntry &&
-          <Icon className="content-link entry-card-header__edit-icon" type="edit" />
+          <Tooltip
+            getPopupContainer={() => containerRef || document.body}
+            title={intl.formatMessage(entryMessages.editEntry)}
+          >
+            <Icon className="content-link entry-card-header__edit-icon" type="edit" />
+          </Tooltip>
         }
       </div>
     );

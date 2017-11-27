@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Button, Icon, Popover, Spin, Tooltip } from 'antd';
+import { Button, Popover, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
@@ -13,7 +13,7 @@ import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendi
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { formatBalance } from '../../utils/number-formatter';
-import { Avatar, SendTipForm } from '../';
+import { Avatar, Icon, SendTipForm } from '../';
 
 class ProfilePopover extends Component {
     state = {
@@ -102,7 +102,7 @@ class ProfilePopover extends Component {
         if (followPending) {
             label = (
               <div className="flex-center">
-                <Spin className="profile-popover__button-icon" size="small" />
+                <Spin className="profile-popover__icon" size="small" />
                 {intl.formatMessage(generalMessages.pending)}
               </div>
             );
@@ -110,8 +110,11 @@ class ProfilePopover extends Component {
             const message = followHovered ?
                 intl.formatMessage(profileMessages.unfollow) :
                 intl.formatMessage(profileMessages.following);
+            const className = classNames('flex-center', {
+                'profile-popover__contrast-color': followHovered
+            });
             label = (
-              <div className="flex-center">
+              <div className={className}>
                 <Icon className="profile-popover__button-icon" type={followHovered ? 'close' : 'check'} />
                 {message}
               </div>
@@ -203,19 +206,19 @@ class ProfilePopover extends Component {
             <div className="profile-popover__details">
               <div className="flex-center-y">
                 <Tooltip title={intl.formatMessage(generalMessages.entries)}>
-                  <Icon className="profile-popover__counter-icon" type="file" />
+                  <Icon className="profile-popover__icon" type="entry" />
                 </Tooltip>
                 <div className="profile-popover__counter-text">
                   {profile.get('entriesCount')}
                 </div>
                 <Tooltip title={intl.formatMessage(generalMessages.comments)}>
-                  <Icon className="profile-popover__counter-icon" type="message" />
+                  <Icon className="profile-popover__icon" type="comment" />
                 </Tooltip>
                 <div className="profile-popover__counter-text">
                   {profile.get('commentsCount')}
                 </div>
                 <Tooltip title={intl.formatMessage(generalMessages.karma)}>
-                  <Icon className="profile-popover__counter-icon" type="trophy" />
+                  <Icon className="profile-popover__icon" type="comment" />
                 </Tooltip>
                 <div className="profile-popover__counter-text">
                   {formatBalance(profile.get('karma'))}
@@ -251,7 +254,7 @@ class ProfilePopover extends Component {
                   size="large"
                 >
                   <div>
-                    <Icon className="profile-popover__button-icon" type="heart-o" />
+                    <Icon className="profile-popover__button-icon" type="heart" />
                     {intl.formatMessage(profileMessages.support)}
                   </div>
                 </Button>
