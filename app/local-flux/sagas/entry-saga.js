@@ -158,7 +158,10 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
     }
 }
 
-function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, revert }) {
+function* entryGetFull ({
+    akashaId, entryId, ethAddress, version, asDraft, revert,
+    publishedDateOnly, latestVersion
+}) {
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{
@@ -168,7 +171,9 @@ function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, rever
         full: true,
         version,
         asDraft,
-        revert
+        revert,
+        publishedDateOnly,
+        latestVersion
     }]);
     if (!asDraft) {
         yield put(profileActions.profileGetData({ ethAddress }));
@@ -437,7 +442,7 @@ function* watchEntryGetBalanceChannel () {
         }
     }
 }
-
+/* eslint-disable complexity */
 function* watchEntryGetChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntry);
@@ -457,14 +462,28 @@ function* watchEntryGetChannel () {
             // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
+        } else if (resp.request.publishedDateOnly) {
+            yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
         } else if (resp.request.full) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
+            const version = resp.data.content.version;
+            if (version && version > 0 && !resp.request.publishedDateOnly) {
+                for (let i = version; i >= 0; i -= 1) {
+                    yield put(actions.entryGetFull({
+                        version: i,
+                        entryId: resp.data.entryId,
+                        ethAddress: resp.request.ethAddress,
+                        publishedDateOnly: true
+                    }));
+                }
+            }
         } else {
             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }
     }
 }
+/* eslint-enable complexity */
 
 function* watchEntryGetScoreChannel () {
     while (true) {

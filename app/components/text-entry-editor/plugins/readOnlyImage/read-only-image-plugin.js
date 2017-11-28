@@ -1,6 +1,10 @@
+import React from 'react';
 import ImageBlock from './ImageBlock';
 
-export default {
+const readOnlyImagePlugin = otherProps => ({
     type: 'image',
-    blockComponent: ImageBlock
-};
+    title: 'image',
+    blockComponent: props => <ImageBlock {...otherProps} {...props} />
+});
+
+export default readOnlyImagePlugin;

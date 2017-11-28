@@ -97,8 +97,8 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
-    [types.ENTRY_GET_FULL]: (state, { asDraft }) => {
-        if (!asDraft) {
+    [types.ENTRY_GET_FULL]: (state, { asDraft, publishedDateOnly }) => {
+        if (!asDraft && !publishedDateOnly) {
             return state.setIn(['flags', 'fetchingFullEntry'], true);
         }
         return state;
@@ -125,6 +125,11 @@ const entryState = createReducer(initialState, {
             fullEntry: createEntryRecord({ entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
+    },
+
+    [types.ENTRY_GET_VERSION_PUBLISHED_DATE_SUCCESS]: (state, { data }) => {
+        const { version } = data.content;
+        return state.setIn(['fullEntry', 'versionsInfo', version], data.publishDate);
     },
 
     [types.ENTRY_GET_LATEST_VERSION_SUCCESS]: (state, { data = null }) =>
