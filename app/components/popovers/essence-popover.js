@@ -31,7 +31,7 @@ class EssencePopover extends Component {
     onVisibleChange = (popoverVisible) => {
         if (popoverVisible && this.firstTime) {
             this.props.profileEssenceIterator();
-            this.firstTime = false;
+            // this.firstTime = false;
         }
 
         this.setState({
@@ -65,7 +65,7 @@ class EssencePopover extends Component {
     };
 
     renderContent = () => {
-        const { balance, intl, pendingTransformEssence } = this.props;
+        const { balance, intl, pendingTransformEssence, essenceEvents } = this.props;
         const { page } = this.state;
         if (page === COLLECT) {
             return (
@@ -93,24 +93,10 @@ class EssencePopover extends Component {
                 {formatBalance(balance.getIn(['essence', 'total']))}
               </span>
             </div>
-            <div className="essence-popover__chart-wrapper">
-              <PieChart
-                data={{
-                    labels: ['Comments', 'Entries', 'Votes'],
-                    datasets: [{
-                        data: [10, 20, 30],
-                        backgroundColor: ['#05a686', '#41dbcc', '#a6f0f0']
-                    }]
-                }}
-                options={{
-                    legend: { display: false },
-                    tooltips: {
-                        displayColors: false
-                    }
-                }}
-                width={240}
-                height={240}
-              />
+            <div className="essence-popover__logs">
+                {
+                    essenceEvents.map(ev => (<p key={ev.hashCode()}>{ev.action} {ev.amount}</p>))
+                }
             </div>
             <div className="essence-popover__actions">
               <Button
@@ -176,6 +162,7 @@ EssencePopover.propTypes = {
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     pendingTransformEssence: PropTypes.bool,
+    essenceEvents: PropTypes.shape().isRequired
 };
 
 function mapStateToProps (state) {
@@ -183,6 +170,7 @@ function mapStateToProps (state) {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingTransformEssence: selectPendingTransformEssence(state),
+        essenceEvents: state.profileState.get('essenceEvents')
     };
 }
 
