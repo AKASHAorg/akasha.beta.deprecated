@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import withWidth from 'material-ui/utils/withWidth';
-import { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import PropTypes from 'prop-types';
+import { Icon } from 'antd';
+import { findClosestMatch } from '../../../../utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
-import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 
 class ImageBlock extends Component {
     constructor (props) {
@@ -56,11 +55,12 @@ class ImageBlock extends Component {
         const { files, media } = data;
         const { width } = this.props;
         const widths = [320, 700, 1920];
+        console.log(width, 'the width');
         let fileKey = findClosestMatch(widths[width], files, media);
         if ((media === 'xl' || media === 'xxl') && this.baseNodeRef) {
             fileKey = findClosestMatch(this.baseNodeRef.parentNode.clientWidth, files, media);
         }
-        // @todo: [code: 3ntry3] get rid of this too;
+        // @todo: get rid of this too;
         if (files.gif && this.state.isPlaying) {
             fileKey = 'gif';
         }
@@ -94,7 +94,8 @@ class ImageBlock extends Component {
                 onClick={this._handleImageClick}
               >
                 {files.gif &&
-                  <PlayIcon
+                  <Icon
+                    type="play-circle-o"
                     style={{
                         position: 'absolute',
                         top: '50%',
@@ -166,8 +167,4 @@ ImageBlock.propTypes = {
     width: PropTypes.number
 };
 
-export default withWidth({
-    largeWidth: 1920,
-    mediumWidth: 700,
-    smallWidth: 320
-})(ImageBlock);
+export default ImageBlock;

@@ -5,29 +5,17 @@ import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import { Icon, Tooltip, Popover } from 'antd';
-import classNames from 'classnames';
 import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import { entryPageHide } from '../../local-flux/actions/entry-actions';
+import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
+import { entryTypes } from '../../constants/entry-types';
 
 class EntryPageHeader extends Component {
     state = {
         showVersions: false,
     };
-
-    // _openVersionsPopover = () => {
-    //     this.setState({
-    //         showVersions: true
-    //     });
-    // };
-
-    // closeVersionsPopover = () => {
-    //     this.setState({
-    //         showVersions: false
-    //     });
-    // };
     _handleVersionsPopoverVisibility = (visible, latestVersion) => {
         if (!latestVersion) return;
         this.setState({
@@ -55,15 +43,27 @@ class EntryPageHeader extends Component {
 
     handleEdit = () => {
         const { entry, existingDraft, history } = this.props;
-        if (existingDraft) {
-            history.push(`/draft/${existingDraft.get('id')}`);
-        } else {
-            const version = entry.getIn(['content', 'version']);
-            const query = `editEntry=${entry.get('entryId')}&version=${version}`;
-            history.push(`/draft/new?${query}`);
-        }
+        const entryType = entryTypes[entry.getIn(['content', 'entryType'])];
+        history.push(`/draft/${entryType}/${entry.get('entryId')}`);
+        // if (existingDraft) {
+        //     history.push(`/draft/${existingDraft.get('id')}`);
+        // } else {
+        //     const version = entry.getIn(['content', 'version']);
+        //     const query = `editEntry=${entry.get('entryId')}&version=${version}`;
+        //     history.push(`/draft/new?${query}`);
+        // }
     };
-
+    _switchToVersion = version =>
+        (ev) => {
+            const { loggedEthAddress, entry, latestVersion } = this.props;
+            this.props.entryGetFull({
+                ethAddress: loggedEthAddress,
+                entryId: entry.get('entryId'),
+                version,
+                latestVersion
+            });
+            ev.preventDefault();
+        }
     renderAvatar = () => {
         const { author, containerRef } = this.props;
         if (!author.get('ethAddress')) {
@@ -85,7 +85,16 @@ class EntryPageHeader extends Component {
           </ProfilePopover>
         );
     };
-
+    _getVersionsPopoverContent = () => {
+        const { latestVersion, entry, intl } = this.props;
+        const { versionsInfo } = entry;
+        const versionsEnum = Array(latestVersion + 1).fill('');
+        return versionsEnum.map((version, index) =>
+            (<div key={`${index}`} onClick={this._switchToVersion(index)}>
+              V{index + 1} {intl.formatRelative(new Date(versionsInfo.get(index) * 1000))}
+            </div>
+            ));
+    }
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
         const { showVersions } = this.state;
@@ -93,6 +102,7 @@ class EntryPageHeader extends Component {
         const publishDate = new Date(entry.get('publishDate') * 1000);
         const readingTime = calculateReadingTime(wordCount);
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
+        const { versionsInfo } = entry;
         const publishedMessage = (
           <span>
             {!isOlderVersion &&
@@ -121,39 +131,33 @@ class EntryPageHeader extends Component {
             </span>
             <span style={{ padding: '0 7px' }}>|</span>
             <Popover
-              content={
-                <div>{latestVersion}</div>
-              }
+              content={this._getVersionsPopoverContent()}
               visible={showVersions}
               trigger="click"
               onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
               placement="bottomRight"
-              arrowPointAtCenter
             >
-              <span style={{ paddingRight: '5px' }}>
-                {publishedMessage}
-              </span>
-              {!isOlderVersion &&
-                <span style={{ display: 'inline-block' }}>
-                  {intl.formatRelative(publishDate)}
+              <span className="entry-page-header__versions-button">
+                <span style={{ paddingRight: '5px' }}>
+                  {publishedMessage}
                 </span>
-              }
-              <Icon type="down" />
+                {!isOlderVersion &&
+                  <span style={{ display: 'inline-block' }}>
+                    {intl.formatRelative(publishDate)}
+                  </span>
+                }
+                <Icon type="down" style={{ paddingLeft: 5 }} />
+              </span>
             </Popover>
           </div>
         );
     };
 
     render () {
-        const { author, containerRef, entry, existingDraft, intl, latestVersion,
-            loggedEthAddress } = this.props;
+        const { author, containerRef, entry, intl, loggedEthAddress } = this.props;
         const ethAddress = entry.getIn(['author', 'ethAddress']);
         const akashaId = author.get('akashaId');
         const isOwnEntry = loggedEthAddress === ethAddress;
-        const buttonClass = classNames('entry-page-header__button', {
-            'content-link': entry.get('active'),
-            'entry-page-header__button_disabled': !entry.get('active')
-        });
 
         return (
           <div className="entry-page-header">
@@ -180,31 +184,17 @@ class EntryPageHeader extends Component {
                 {isOwnEntry &&
                   <Tooltip
                     getPopupContainer={this.getPopupContainer}
-                    title={entry.get('active') ?
-                        intl.formatMessage(entryMessages.editEntry) :
-                        intl.formatMessage(entryMessages.cannotEdit)
-                    }
+                    title={intl.formatMessage(entryMessages.editEntry)}
                   >
                     <Icon
-                      className={buttonClass}
-                      onClick={entry.get('active') && this.handleEdit}
+                      className="entry-page-header__button content-link"
+                      onClick={this.handleEdit}
                       type="edit"
                     />
                   </Tooltip>
                 }
               </div>
             </div>
-            {/*!!latestVersion && this.state.showVersions &&
-              <EntryVersionsPanel
-                closeVersionsPanel={this.closeVersionsPanel}
-                currentVersion={this.getCurrentVersion()}
-                existingDraft={existingDraft}
-                getVersion={this.getVersion}
-                handleEdit={this.handleEdit}
-                isOwnEntry={isOwnEntry}
-                latestVersion={latestVersion}
-              />
-            */}
           </div>
         );
     }
@@ -214,6 +204,7 @@ EntryPageHeader.propTypes = {
     author: PropTypes.shape(),
     containerRef: PropTypes.shape().isRequired,
     entry: PropTypes.shape(),
+    entryGetFull: PropTypes.func,
     existingDraft: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
@@ -234,12 +225,15 @@ function mapStateToProps (state) {
         entry,
         existingDraft,
         loggedEthAddress: selectLoggedEthAddress(state),
+        latestVersion: state.entryState.get('fullEntryLatestVersion'),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        entryPageHide
+        entryPageHide,
+        entryGetFull,
+
     }
 )(withRouter(injectIntl(EntryPageHeader)));

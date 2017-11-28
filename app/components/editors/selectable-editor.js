@@ -7,7 +7,7 @@ import { Icon, Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import { MentionDecorators } from '../../shared-components';
-import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
+import readOnlyImagePlugin from '../text-entry-editor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
 
@@ -41,7 +41,16 @@ class SelectableEditor extends Component {
             showPopover: false
         });
     };
-
+    blockStyleFn = (contentBlock) => {
+        const type = contentBlock.getType();
+        const data = contentBlock.getData().toObject();
+        if (type === 'unstyled') {
+            return 'paragraph';
+        }
+        if (type === 'atomic' && data.type === 'image') {
+            return `image-block__${data.media}`;
+        }
+    }
     onSelectionChange = () => {
         const { anchorNode, focusNode } = window.getSelection();
         if (!anchorNode || !focusNode) {
@@ -231,6 +240,7 @@ class SelectableEditor extends Component {
                 onChange={this.handleChange}
                 plugins={[readOnlyImagePlugin({ baseUrl })]}
                 readOnly
+                blockStyleFn={this.blockStyleFn}
               />
             </div>
             {showPopover && this.renderPopover()}
