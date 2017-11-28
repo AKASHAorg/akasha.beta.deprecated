@@ -1,4 +1,4 @@
-import {List, Map} from 'immutable';
+import {List, Map, Record, Collection} from 'immutable';
 import * as types from '../constants';
 import {createReducer} from './create-reducer';
 import {
@@ -15,6 +15,8 @@ import {
 import {balanceToNumber} from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
+
+const EssenceEvent = Record({ amount: null, action: '', sourceId: '' });
 
 const addProfileData = (byEthAddress, { ...profileData }, full) => {
     if (!profileData) {
@@ -86,25 +88,21 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_ESSENCE_ITERATOR_SUCCESS]: (state, { data }) => {
         let latestIterable = new List();
+        const essenceEvents = state.get('essenceEvents');
         data.collection.forEach((event) => {
-            latestIterable = latestIterable.push({
-                amount: event.amount,
+            const newEssenceRecord = new EssenceEvent({
+                amount: balanceToNumber(event.amount) / 10,
                 action: event.action,
                 sourceId: event.sourceId
             });
-            // const found = latestIterable.find(value =>
-            //     is(
-            //         value,
-            //         new Record(
-            //             { amount: event.amount, action: event.action, sourceId: event.sourceId }
-            //             )
-            //     )
-            // );
-            // console.log(found);
+
+            if (!essenceEvents.includes(newEssenceRecord)) {
+                latestIterable = latestIterable.push(newEssenceRecord);
+            }
         });
 
-        latestIterable = state.get('essenceEvents').merge(latestIterable);
-            // .push(difference(latestIterable, state.get('essenceEvents')));
+        const latestSet = Collection.Set(latestIterable);
+        latestIterable = essenceEvents.concat(latestSet);
 
         return state.merge({
             essenceEvents: latestIterable,
