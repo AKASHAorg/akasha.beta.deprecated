@@ -45,7 +45,7 @@ export const ProfileRecord = Record({
     about: '',
     akashaId: '',
     avatar: null,
-    backgroundImage: new Map(),
+    backgroundImage: {},
     baseUrl: '',
     commentsCount: '0',
     donationsEnabled: false,
@@ -71,6 +71,7 @@ export const LoggedProfile = Record({
 
 const Flags = Record({
     ethAddressPending: false,
+    fetchingEssenceIterator: false,
     fetchingFollowers: new Map(),
     fetchingFollowings: new Map(),
     fetchingLocalProfiles: false,
@@ -101,6 +102,7 @@ export const ProfileState = Record({
     byEthAddress: new Map(),
     byId: new Map(),
     cyclingStates: new CyclingStates(),
+    essenceEvents: new List(),
     errors: new List(), // to be removed
     exists: new Map(),
     fetchingFullLoggedProfile: false, // to be removed

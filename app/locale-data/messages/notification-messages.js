@@ -66,16 +66,6 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when register profile transaction was mined',
         defaultMessage: 'Your profile was successfully updated'
     },
-    registeringTag: {
-        id: 'app.notification.registeringTag',
-        description: 'Notification snackbar to display when a tag is registering',
-        defaultMessage: 'Registering "{tagName}" tag.'
-    },
-    tagRegisteredSuccessfully: {
-        id: 'app.notification.tagRegisteredSuccessfully',
-        description: 'Notification to be displayed when a tag was registered',
-        defaultMessage: 'Tag "{tagName}" successfully registered.'
-    },
     publishCommentSuccess: {
         id: 'app.notification.publishCommentSuccess',
         description: 'Notification to be displayed when publish comment transaction was mined',
@@ -103,12 +93,12 @@ const notificationMessages = defineMessages({
     },
     claimSuccess: {
         id: 'app.notification.claimSuccess',
-        description: 'Notification to be displayed when claim transaction was mined',
+        description: 'Notification to be displayed when collect Essence transaction was mined',
         defaultMessage: 'You successfully collected Essence for {entryTitle}'
     },
     claimVoteSuccess: {
         id: 'app.notification.claimVoteSuccess',
-        description: 'Notification to be displayed when claim vote transaction was mined',
+        description: 'Notification to be displayed when collect Essence for vote transaction was mined',
         defaultMessage: 'You successfully collected Essence for {entryTitle}'
     },
     downvotingEntry: {
@@ -153,8 +143,8 @@ const notificationMessages = defineMessages({
     },
     claiming: {
         id: 'app.notification.claiming',
-        description: 'Notification to be displayed when claim transaction is sent',
-        defaultMessage: 'Claiming {entryTitle} ...'
+        description: 'Notification to be displayed when collect transaction is sent',
+        defaultMessage: 'Collecting Essence for {entryTitle} ...'
     },
     draftSavedSuccessfully: {
         id: 'app.notification.draftSavedSuccessfully',
@@ -191,11 +181,6 @@ const notificationMessages = defineMessages({
         description: 'message to be displayed when notifications were disabled for a specific user',
         defaultMessage: 'Notifications disabled for {displayName}'
     },
-    channelStarred: {
-        id: 'app.notification.channelStarred',
-        description: 'message to be displayed when a chat channel was starred',
-        defaultMessage: '#{channel} was starred'
-    },
     backupSuccess: {
         id: 'app.notification.backupSuccess',
         description: 'message to display when the keystore backup was generated successfully',
@@ -204,20 +189,25 @@ const notificationMessages = defineMessages({
     saveGethSettingsSuccess: {
         id: 'app.notification.saveGethSettingsSuccess',
         description: 'Geth settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your geth
+        defaultMessage: `You have successfully saved your settings. You need to restart the geth
                         service for your changes to be applied.`
     },
     saveIpfsSettingsSuccess: {
         id: 'app.notification.saveIpfsSettingsSuccess',
         description: 'IPFS settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
+        defaultMessage: `You have successfully saved your settings. You need to restart the IPFS
                         service for your changes to be applied.`
     },
     setIpfsPortsSuccess: {
         id: 'app.notification.setIpfsPortsSuccess',
         description: 'IPFS ports successfully set',
-        defaultMessage: `You have successfully set the IPFS ports. You need to restart your IPFS
+        defaultMessage: `You have successfully set the IPFS ports. You need to restart the IPFS
                         service for your changes to be applied.`
+    },
+    toggleDonationsSuccess: {
+        id: 'app.notification.toggleDonationsSuccess',
+        description: 'toggle accepting donations/tips transaction was succesfully mined',
+        defaultMessage: 'You succesfully changed your tips settings'
     },
     transferAethSuccess: {
         id: 'app.notification.transferAethSuccess',
@@ -234,6 +224,5 @@ const notificationMessages = defineMessages({
         description: 'User settings successfully saved',
         defaultMessage: 'You have successfully saved your personal settings'
     },
-
 });
 export { notificationMessages };

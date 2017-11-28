@@ -1,4 +1,6 @@
 import currentBalance from './current-balance';
+import commentsCount from './comments-count';
+import commentsIterator from './comments-iterator';
 import followProfile from './follow-profile';
 import followersCount from './followers-count';
 import followingCount from './following-count';
@@ -23,6 +25,7 @@ import cyclingStates from './cycling-states';
 import transfer from './transfer';
 import transfersIterator from './aeth-transfers-iterator';
 import essenceIterator from './essence-iterator';
+import votesIterator from './votes-iterator';
 
 export default [
     essenceIterator,
@@ -49,5 +52,8 @@ export default [
     sendTip,
     resolveProfileIpfsHash,
     toggleDonations,
-    transfersIterator
+    transfersIterator,
+    commentsCount,
+    commentsIterator,
+    votesIterator
 ];

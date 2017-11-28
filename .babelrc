@@ -1,6 +1,10 @@
 {
     "presets": [
-        "es2015",
+        ["env", {
+            "targets": {
+                "browsers": ["last 2 versions", "safari >= 7"]
+            }
+        }],
         "react",
         "stage-0"
     ],
@@ -17,7 +21,7 @@
                 [
                     "react-intl",
                     {
-                        "messagesDir": "./intl",
+                        "messagesDir": "./intl/en",
                         "enforceDescriptions": false
                     }
                 ]

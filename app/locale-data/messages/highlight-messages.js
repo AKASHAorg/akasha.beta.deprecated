@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 const highlightMessages = defineMessages({
     addYourNotes: {
         id: 'app.highlight.addYourNotes',
-        description: 'placeholder for notes textarea',
+        description: 'placeholder for highlight notes textarea',
         defaultMessage: 'Add your notes here'
     },
     addNote: {

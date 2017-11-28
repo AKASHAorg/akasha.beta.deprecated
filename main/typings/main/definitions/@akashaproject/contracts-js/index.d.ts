@@ -17,7 +17,7 @@ declare module 'ethereumjs-util' {
 
     export function pubToAddress(pubKey: string, sanitize?: boolean): Buffer;
 
-    export function unpad(data: Buffer | string): Buffer | string;
+    export function unpad(data: Buffer | string): any;
 
     export function hashPersonalMessage(data: Buffer): Buffer;
 

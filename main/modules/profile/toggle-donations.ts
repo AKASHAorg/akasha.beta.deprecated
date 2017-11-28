@@ -23,7 +23,7 @@ const execute = Promise.coroutine(
             throw new Error('Need to register an akashaId to access this setting.');
         }
 
-        const txData = yield contracts.instance
+        const txData = contracts.instance
             .ProfileResolver
             .toggleDonations
             .request(currentProfile.raw, data.status, { gas: 200000 });

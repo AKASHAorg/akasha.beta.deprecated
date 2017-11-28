@@ -8,7 +8,18 @@ import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { Avatar, ProfilePopover } from '../';
 
 const EntryCardHeader = (props) => {
-    const { author, containerRef, entry, intl, isOwnEntry, large, openVersionsPanel } = props;
+    const { author, containerRef, entry, intl, isOwnEntry, large, loading, openVersionsPanel } = props;
+    if (loading) {
+        return (
+          <div className="entry-card-header">
+            <div className="entry-card-header__avatar entry-card-header__avatar_placeholder" />
+            <div className="entry-card-header__text">
+              <div className="entry-card-header__title_placeholder" />
+              <div className="entry-card-header__subtitle_placeholder" />
+            </div>
+          </div>
+        );
+    }
     const ethAddress = entry.getIn(['author', 'ethAddress']);
     const akashaId = entry.getIn(['author', 'akashaId']);
     const content = entry.get('content');
@@ -53,6 +64,7 @@ const EntryCardHeader = (props) => {
           <ProfilePopover
             ethAddress={ethAddress}
             containerRef={containerRef}
+            placement="bottomRight"
           >
             <span className={titleClass} style={{ maxWidth: titleMaxWidth }}>
               {displayName || authorPlaceholder}
@@ -90,7 +102,8 @@ EntryCardHeader.propTypes = {
     isNotSafe: PropTypes.bool,
     isOwnEntry: PropTypes.bool,
     large: PropTypes.bool,
-    openVersionsPanel: PropTypes.func.isRequired,
+    loading: PropTypes.bool,
+    openVersionsPanel: PropTypes.func,
 };
 
 export default injectIntl(EntryCardHeader);

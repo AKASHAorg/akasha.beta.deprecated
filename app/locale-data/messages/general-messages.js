@@ -4,7 +4,7 @@ import { defineMessages } from 'react-intl';
 const generalMessages = defineMessages({
     abort: {
         id: 'app.general.abort',
-        description: 'abort button label',
+        description: 'abort/cancel button label',
         defaultMessage: 'Abort'
     },
     action: {
@@ -87,15 +87,15 @@ const generalMessages = defineMessages({
         description: 'collect',
         defaultMessage: 'Collect'
     },
+    collected: {
+        id: 'app.general.collected',
+        description: 'collected',
+        defaultMessage: 'Collected'
+    },
     comments: {
         id: 'app.general.comments',
         description: 'entry comments',
         defaultMessage: 'Comments'
-    },
-    completeProfileCrumb: {
-        id: 'app.general.completeProfileCrumb',
-        description: 'breadcrumb to display when a profile is created',
-        defaultMessage: 'Complete Profile'
     },
     confirm: {
         id: 'app.general.confirm',
@@ -134,12 +134,12 @@ const generalMessages = defineMessages({
     },
     downloading: {
         id: 'app.general.downloading',
-        description: 'service status',
+        description: 'downloading geth/IPFS service',
         defaultMessage: 'Downloading'
     },
     edit: {
         id: 'app.general.edit',
-        description: 'Edit something button label',
+        description: 'Edit button label',
         defaultMessage: 'Edit'
     },
     editProfile: {
@@ -169,8 +169,8 @@ const generalMessages = defineMessages({
     },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
-        description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
-        defaultMessage: 'Ethereum Address'
+        description: 'Placeholder for ethereum address field.',
+        defaultMessage: 'Ethereum address'
     },
     generatingPreview: {
         id: 'app.general.generatingPreview',
@@ -179,12 +179,12 @@ const generalMessages = defineMessages({
     },
     gethServiceOff: {
         id: 'app.general.gethServiceOff',
-        description: 'geth client service is stopped',
+        description: 'geth service is stopped',
         defaultMessage: 'Geth service OFF'
     },
     gethServiceOn: {
         id: 'app.general.gethServiceOn',
-        description: 'geth client service is started',
+        description: 'geth service is started',
         defaultMessage: 'Geth service ON'
     },
     help: {
@@ -207,12 +207,12 @@ const generalMessages = defineMessages({
     },
     ipfsServiceOff: {
         id: 'app.general.ipfsServiceOff',
-        description: 'ipfs client service is stopped',
+        description: 'IPFS service is stopped',
         defaultMessage: 'IPFS service OFF'
     },
     ipfsServiceOn: {
         id: 'app.general.ipfsServiceOn',
-        description: 'ipfs client service is started',
+        description: 'IPFS service is started',
         defaultMessage: 'IPFS service ON'
     },
     join: {
@@ -237,7 +237,7 @@ const generalMessages = defineMessages({
     },
     logs: {
         id: 'app.general.logs',
-        description: 'Services logs',
+        description: 'Services (geth/IPFS) logs',
         defaultMessage: 'Logs'
     },
     logout: {
@@ -250,6 +250,11 @@ const generalMessages = defineMessages({
         description: 'mana',
         defaultMessage: 'Mana'
     },
+    manaBurned: {
+        id: 'app.general.manaBurned',
+        description: 'mana burned',
+        defaultMessage: 'Total Mana burned'
+    },
     manafied: {
         id: 'app.general.manafied',
         description: 'AETH manafied/bonded state',
@@ -260,11 +265,6 @@ const generalMessages = defineMessages({
         description: 'short form of minutes count',
         defaultMessage: '{minutes, number} min'
     },
-    myEntries: {
-        id: 'app.general.myEntries',
-        description: 'tooltip for sidebar my entries button',
-        defaultMessage: 'My entries'
-    },
     next: {
         id: 'app.general.next',
         description: 'Label for Next button',
@@ -274,6 +274,11 @@ const generalMessages = defineMessages({
         id: 'app.general.no',
         description: 'no (for confirmations)',
         defaultMessage: 'No'
+    },
+    noPeersAvailable: {
+        id: 'app.general.noPeersAvailable',
+        description: 'couldn\'t find any IPFS peers for a specific content',
+        defaultMessage: 'No peers available'
     },
     notes: {
         id: 'app.general.notes',
@@ -300,11 +305,6 @@ const generalMessages = defineMessages({
         description: 'an action is pending',
         defaultMessage: 'Pending'
     },
-    people: {
-        id: 'app.general.people',
-        description: 'tooltip for sidebar people button',
-        defaultMessage: 'People'
-    },
     processingImage: {
         id: 'app.general.processingImage',
         description: 'Message to show while images are being precessed',
@@ -312,8 +312,8 @@ const generalMessages = defineMessages({
     },
     profileOverview: {
         id: 'app.general.profileOverview',
-        description: 'button label for profile overview',
-        defaultMessage: 'Profile Overview'
+        description: 'tooltip for profile overview button',
+        defaultMessage: 'Profile overview'
     },
     publish: {
         id: 'app.general.publish',
@@ -345,6 +345,11 @@ const generalMessages = defineMessages({
         description: 'resume button label',
         defaultMessage: 'Resume'
     },
+    retry: {
+        id: 'app.general.retry',
+        description: 'Retry',
+        defaultMessage: 'Retry'
+    },
     running: {
         id: 'app.general.running',
         description: 'service status',
@@ -357,7 +362,7 @@ const generalMessages = defineMessages({
     },
     saveForLater: {
         id: 'app.general.saveForLater',
-        description: 'Save for later',
+        description: 'Save for later (button label)',
         defaultMessage: 'save for later'
     },
     search: {

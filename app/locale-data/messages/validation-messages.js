@@ -8,14 +8,12 @@ const validationMessages = defineMessages({
     },
     min: {
         id: 'app.validator.min',
-        description: `When a field has less than minimum accepted number of characters.
-                      Do not translate {min} !`,
+        description: 'When a field has less than minimum accepted number of characters',
         defaultMessage: 'must be at least {min} characters long.'
     },
     max: {
         id: 'app.validator.max',
-        description: `When a field has more that maximum accepted number of characters.
-                        Do not translate {max}!`,
+        description: 'When a field has more that maximum accepted number of characters',
         defaultMessage: 'must not have more than {max} characters.'
     },
     invalidCharacters: {
@@ -25,7 +23,7 @@ const validationMessages = defineMessages({
     },
     passphraseNotMatching: {
         id: 'app.validator.passphraseNotMatching',
-        description: 'When the passphrase field is different than this one.',
+        description: 'When the passphrases fields are different (when confirming the passphrase)',
         defaultMessage: 'Oups! Passphrase verification is different than first one!'
     },
     lowercase: {
@@ -35,8 +33,8 @@ const validationMessages = defineMessages({
     },
     akashaIdExists: {
         id: 'app.validator.akashaIdExists',
-        description: 'When the akashaId chosen already registered',
-        defaultMessage: 'Akasha Id already registered!'
+        description: 'When the chosen username was already registered',
+        defaultMessage: 'Username already registered!'
     },
     akashaIdNotValid: {
         id: 'app.validator.akashaIdNotValid',
@@ -50,7 +48,7 @@ const validationMessages = defineMessages({
     },
     maxExcerptLength: {
         id: 'app.validator.maxExcerptLength',
-        description: 'Info message about max length of an excerpt',
+        description: 'Info message about maximum length of an excerpt',
         defaultMessage: 'The excerpts can have max. 120 characters'
     },
 });

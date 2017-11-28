@@ -48,10 +48,8 @@ class VotePopover extends Component {
             return vote > '0' ?
                 intl.formatMessage(entryMessages.alreadyUpvoted, { weight }) :
                 intl.formatMessage(entryMessages.alreadyDownvoted, { weight });
-        } else if (isOwnEntity) {
-            return type.includes('entry') ?
-                intl.formatMessage(entryMessages.votingOwnEntry) :
-                intl.formatMessage(entryMessages.votingOwnComment);
+        } else if (isOwnEntity && !type.includes('entry')) {
+            return intl.formatMessage(entryMessages.votingOwnComment);
         } else if (this.isDownVote()) {
             return intl.formatMessage(entryMessages.downvote);
         } else if (type.includes('Upvote')) {
@@ -193,7 +191,12 @@ class VotePopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip title={this.getTooltip()}>
+            <Tooltip
+              arrowPointAtCenter
+              getPopupContainer={() => containerRef || document.body}
+              placement={this.isDownVote() ? 'top' : 'topRight'}
+              title={this.getTooltip()}
+            >
               <Icon
                 className={iconClass}
                 type={this.isDownVote() ? 'arrow-down' : 'arrow-up'}

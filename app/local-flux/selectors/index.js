@@ -8,6 +8,9 @@ export const selectAction = (state, id) => state.actionState.getIn(['byId', id])
 export const selectActionsHistory = state =>
     state.actionState.get('history').map(id => selectAction(state, id));
 
+export const selectActionPending = (state, actionType) =>
+    state.actionState.getIn(['pending', actionType]);
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {
@@ -45,6 +48,8 @@ export const selectBaseUrl = state =>
     state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
 
 export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
+
+export const selectClaimableEntryIds = state => state.actionState.get('claimable');
 
 export const selectClaimableEntries = state =>
     state.actionState.get('claimable').map(entryId => selectEntry(state, entryId));

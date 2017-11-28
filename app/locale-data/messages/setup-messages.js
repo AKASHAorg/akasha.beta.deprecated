@@ -13,7 +13,7 @@ const setupMessages = defineMessages({
     },
     completeProfile: {
         id: 'app.setup.completeProfile',
-        description: 'call to action for profile complete setup',
+        description: 'description for profile complete setup page',
         defaultMessage: 'To enjoy the full experience, complete your profile now!'
     },
     createIdentity: {
@@ -28,8 +28,8 @@ const setupMessages = defineMessages({
     },
     gethIPCPath: {
         id: 'app.setup.gethIPCPath',
-        description: 'geth ipc path input placeholder',
-        defaultMessage: 'Geth IPC Path'
+        description: 'geth IPC path input placeholder',
+        defaultMessage: 'Geth IPC path'
     },
     gethCacheSize: {
         id: 'app.setup.gethCacheSize',
@@ -48,22 +48,22 @@ const setupMessages = defineMessages({
     },
     ipfsStoragePath: {
         id: 'app.setup.ipfsStoragePath',
-        description: 'ipfs input field label',
+        description: 'IPFS input field label',
         defaultMessage: 'IPFS storage path'
     },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
-        description: 'ipfs input field label',
+        description: 'IPFS API port input field label',
         defaultMessage: 'IPFS API port'
     },
     ipfsGatewayPort: {
         id: 'app.setup.ipfsGatewayPort',
-        description: 'ipfs input field label',
+        description: 'IPFS gateway port input field label',
         defaultMessage: 'IPFS gateway port'
     },
     ipfsSwarmPort: {
         id: 'app.setup.ipfsSwarmPort',
-        description: 'ipfs input field label',
+        description: 'IPFS swarm port input field label',
         defaultMessage: 'IPFS swarm port'
     },
     configuration: {
@@ -73,7 +73,7 @@ const setupMessages = defineMessages({
     },
     lightSync: {
         id: 'app.setup.lightSync',
-        description: 'light sync option',
+        description: 'geth light sync option',
         defaultMessage: 'Light sync'
     },
     newIdentitySubtitle: {
@@ -83,7 +83,7 @@ const setupMessages = defineMessages({
     },
     normalSync: {
         id: 'app.setup.normalSync',
-        description: 'normal sync option',
+        description: 'geth normal sync option',
         defaultMessage: 'Normal sync'
     },
     synchronization: {
@@ -123,12 +123,12 @@ const setupMessages = defineMessages({
     },
     interestedIn: {
         id: 'app.setup.interestedIn',
-        description: 'question for new identity interests',
+        description: 'title for new identity interests page',
         defaultMessage: 'What are you interested in?'
     },
     interestSuggestion: {
         id: 'app.setup.interestSuggestion',
-        description: 'suggestion text',
+        description: 'description for new identity interests page',
         defaultMessage: 'We\'ll suggest incredible stuff to read based on your interests.'
     },
     expressSetup: {
@@ -173,22 +173,22 @@ const setupMessages = defineMessages({
     },
     synchronizing: {
         id: 'app.setup.synchronizing',
-        description: 'state of block sync',
+        description: 'message shown when synchronizing with the blockchain',
         defaultMessage: 'Synchronizing'
     },
     syncStopped: {
         id: 'app.setup.syncStopped',
-        description: 'state of block sync',
+        description: 'message shown when synchronization was stopped',
         defaultMessage: 'Synchronization was stopped'
     },
     syncCompleted: {
         id: 'app.setup.syncCompleted',
-        description: 'state of block sync',
+        description: 'message shown when synchronization is completed',
         defaultMessage: 'Synchronization completed'
     },
     syncPaused: {
         id: 'app.setup.syncPaused',
-        description: 'state of block sync',
+        description: 'message shown when synchronization is completed',
         defaultMessage: 'Synchronization is paused'
     },
     onSyncStart: {
@@ -207,17 +207,17 @@ const setupMessages = defineMessages({
     },
     noProfilesFound: {
         id: 'app.setup.noProfilesFound',
-        description: 'message if no local profiles found.',
+        description: 'placeholder message shown if no local profiles were found',
         defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
     },
     findingPeers: {
         id: 'app.setup.findingPeers',
-        description: 'finding peers status',
+        description: 'finding peers',
         defaultMessage: 'Finding peers'
     },
     launchingServices: {
         id: 'app.setup.launchingServices',
-        description: 'message to display when both services are stopped',
+        description: 'message to display when geth and IPFS services are about to start',
         defaultMessage: 'Launching services'
     },
     waitingForServices: {
@@ -232,7 +232,7 @@ const setupMessages = defineMessages({
     },
     peerCount: {
         id: 'app.setup.peerCount',
-        description: 'counting connected peers',
+        description: 'number of peers connected',
         defaultMessage: `{peerCount, number} {peerCount, plural,
             one {peer}
             few {peers}

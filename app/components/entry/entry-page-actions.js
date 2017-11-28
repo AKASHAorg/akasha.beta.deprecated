@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Icon, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { VotesModal, ListPopover, VotePopover } from '../';
+import { Icon as IconComp, ListPopover, VotesModal, VotePopover } from '../';
 import { ToolbarEthereum } from '../svg';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
@@ -14,6 +14,7 @@ import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntry
     selectLists, selectListsAll, selectListSearch, selectLoggedEthAddress, selectPendingClaim,
     selectPendingClaimVote, selectPendingVote, selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
+import { formatEssence } from '../../utils/number-formatter';
 
 class EntryPageAction extends Component {
     state = {
@@ -60,10 +61,22 @@ class EntryPageAction extends Component {
         this.props.actionAdd(loggedEthAddress, actionTypes.claim, payload);
     };
 
+    handleClaimVote = () => {
+        const { canClaimVote, entry, loggedEthAddress } = this.props;
+        if (!canClaimVote) {
+            return;
+        }
+        const payload = {
+            entryTitle: entry.content.title,
+            entryId: entry.entryId
+        };
+        this.props.actionAdd(loggedEthAddress, actionTypes.claimVote, payload);
+    };
+
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
-        const balance = entryBalance && entryBalance.get('totalKarma');
+        const balance = entryBalance && formatEssence(entryBalance.get('totalKarma'));
         const isClaimed = entryBalance && entryBalance.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
         const infoClass = classNames('entry-actions__info', {
@@ -83,7 +96,7 @@ class EntryPageAction extends Component {
               <div className={infoTextClass}>
                 {entry.score} {intl.formatMessage(entryMessages.score)}
                 <span className="entry-actions__separator">|</span>
-                {balance && balance.slice(0, 3)} {intl.formatMessage(generalMessages.essence)}
+                {balance} {intl.formatMessage(generalMessages.essence)}
               </div>
               <div>
                 {isClaimed &&
@@ -92,13 +105,23 @@ class EntryPageAction extends Component {
                   </span>
                 }
                 {!this.isActive() && !isClaimed &&
-                  <span
-                    className={collectClass}
-                    onClick={canClaim && !claimPending ? this.handleClaim : undefined}
-                  >
-                    {claimPending && <Spin size="small" />}
-                    <span>{intl.formatMessage(entryMessages.collectEssence)}</span>
-                  </span>
+                  <div>
+                    {claimPending && <Spin size="small" style={{ marginRight: '5px' }} />}
+                    <span
+                      className={collectClass}
+                      onClick={canClaim && !claimPending ? this.handleClaim : undefined}
+                    >
+                      {intl.formatMessage(entryMessages.collectEssence)}
+                    </span>
+                    {!canClaim &&
+                      <Tooltip
+                        getPopupContainer={() => containerRef || document.body}
+                        title={intl.formatMessage(entryMessages.cannotClaimEntry)}
+                      >
+                        <Icon className="entry-actions__info-icon" type="question-circle" />
+                      </Tooltip>
+                    }
+                  </div>
                 }
                 {this.isActive() &&
                   <span className="entry-actions__collect-in">
@@ -122,7 +145,7 @@ class EntryPageAction extends Component {
                     <span className="entry-actions__comments-counter">
                       {entry.get('commentsCount')}
                     </span>
-                    <Icon type="message" />
+                    <IconComp className="entry-actions__comment-icon" type="comment" />
                   </Link>
                 </div>
               }
@@ -145,12 +168,9 @@ class EntryPageAction extends Component {
     };
 
     renderCollectEntryVote = () => {
-        const { canClaimVote, claimVotePending, entry, intl, isFullEntry, vote } = this.props;
-        const weight = vote && vote.get('vote');
-        // TODO implement
-        const balance = weight && Math.abs(Number(weight));
-        // TODO implement
-        const isVoteClaimed = false;
+        const { canClaimVote, claimVotePending, containerRef, entry, intl, isFullEntry, vote } = this.props;
+        const balance = vote && formatEssence(vote.get('essence'));
+        const isVoteClaimed = vote && vote.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
         const infoClass = classNames('entry-actions__info', {
             'entry-actions__info_full': isFullEntry
@@ -175,13 +195,23 @@ class EntryPageAction extends Component {
                 </span>
               }
               {!this.isActive() && !isVoteClaimed &&
-                <span
-                  className={collectClass}
-                  onClick={canClaimVote && !claimVotePending ? this.handleClaimVote : undefined}
-                >
-                  {claimVotePending && <Spin size="small" />}
-                  <span>{intl.formatMessage(entryMessages.collectEssence)}</span>
-                </span>
+                <div>
+                  {claimVotePending && <Spin size="small" style={{ marginRight: '5px' }} />}
+                  <span
+                    className={collectClass}
+                    onClick={canClaimVote && !claimVotePending ? this.handleClaimVote : undefined}
+                  >
+                    {intl.formatMessage(entryMessages.collectEssence)}
+                  </span>
+                  {!canClaimVote &&
+                    <Tooltip
+                      getPopupContainer={() => containerRef || document.body}
+                      title={intl.formatMessage(entryMessages.cannotClaimVote)}
+                    >
+                      <Icon className="entry-actions__info-icon" type="question-circle" />
+                    </Tooltip>
+                  }
+                </div>
               }
               {this.isActive() &&
                 <span className="entry-actions__collect-in">
@@ -196,22 +226,12 @@ class EntryPageAction extends Component {
     };
 
     render () {
-        const { blockNr, canClaim, claimPending, containerRef, entry, entryBalance, intl,
-            isFullEntry, isOwnEntry, lists, listsAll, listSearchKeyword, votePending, vote } = this.props;
+        const { blockNr, containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
+            listsAll, listSearchKeyword, votePending, vote } = this.props;
         if (isOwnEntry) {
             return this.renderOwnEntryActions();
         }
-        const showBalance = isOwnEntry && entryBalance && canClaim !== undefined;
-        const alreadyClaimed = entryBalance && entryBalance.get('claimed');
         const iconClassName = 'entry-actions__vote-icon';
-        const claimIconClass = showBalance && classNames('entry-actions__claim-icon', {
-            disabled: claimPending || alreadyClaimed,
-            'entry-actions__claim-icon_claimed': entryBalance.get('claimed'),
-            'content-link': canClaim
-        });
-        if (!vote) {
-            console.log('vote not found for', entry.entryId);
-        }
         const voteWeight = vote && vote.get('vote');
         const voteProps = {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
@@ -288,25 +308,6 @@ class EntryPageAction extends Component {
                     listToggleEntry={this.props.listToggleEntry}
                     search={listSearchKeyword}
                   />
-                }
-                {showBalance &&
-                  <div className="entry-actions__balance-container">
-                    <Tooltip
-                      title={!canClaim ?
-                          intl.formatMessage(entryMessages.alreadyClaimed) :
-                          intl.formatMessage(entryMessages.claim)
-                      }
-                    >
-                      <svg className={claimIconClass} onClick={this.handleClaim} viewBox="0 0 16 16">
-                        <ToolbarEthereum />
-                      </svg>
-                    </Tooltip>
-                    {!entryBalance.get('claimed') &&
-                      <div className="entry-actions__balance">
-                        {entryBalance.get('totalKarma')} Essence
-                      </div>
-                  }
-                  </div>
                 }
               </div>
             </div>

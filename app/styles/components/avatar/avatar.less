@@ -1,6 +1,12 @@
 .avatar {
     overflow: hidden;
     text-align: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     &_with-overflow {
         overflow: initial;
@@ -31,13 +37,13 @@
             height: @avatar-size-sm;
             font-size: 14px;
         }
-    
+
         &_base {
             width: @avatar-size-base;
             height: @avatar-size-base;
             font-size: 20px;
         }
-    
+
         &_lg {
             width: @avatar-size-lg;
             height: @avatar-size-lg;

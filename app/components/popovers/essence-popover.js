@@ -5,7 +5,8 @@ import { injectIntl } from 'react-intl';
 import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
 import { ClaimableList, PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
-import { actionAdd, actionGetClaimable } from '../../local-flux/actions/action-actions';
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { profileEssenceIterator } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectLoggedEthAddress,
     selectPendingTransformEssence } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
@@ -20,7 +21,7 @@ class EssencePopover extends Component {
         page: DEFAULT,
         popoverVisible: false
     };
-
+    firstTime = true;
     componentWillUnmount () {
         if (this.timeout) {
             clearTimeout(this.timeout);
@@ -28,13 +29,14 @@ class EssencePopover extends Component {
     }
 
     onVisibleChange = (popoverVisible) => {
+        if (popoverVisible && this.firstTime) {
+            this.props.profileEssenceIterator();
+            this.firstTime = false;
+        }
+
         this.setState({
             popoverVisible
         });
-        if (popoverVisible) {
-            this.props.actionGetClaimable();
-        }
-
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
             this.timeout = setTimeout(() => {
@@ -65,7 +67,6 @@ class EssencePopover extends Component {
     renderContent = () => {
         const { balance, intl, pendingTransformEssence } = this.props;
         const { page } = this.state;
-        const essenceColor = '#02c79a';
         if (page === COLLECT) {
             return (
               <ClaimableList />
@@ -170,8 +171,8 @@ class EssencePopover extends Component {
 
 EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    actionGetClaimable: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
+    profileEssenceIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     pendingTransformEssence: PropTypes.bool,
@@ -189,6 +190,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        actionGetClaimable
+        profileEssenceIterator
     }
 )(Form.create()(injectIntl(EssencePopover)));

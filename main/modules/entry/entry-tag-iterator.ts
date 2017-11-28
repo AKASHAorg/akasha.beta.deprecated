@@ -8,7 +8,7 @@ const entryTagIterator = {
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
-        'tagName': { 'type': 'string' },
+        'tagName': { 'type': 'string', 'minLength': 1, 'maxLength': 32 },
         'reversed': {'type': 'boolean'}
     },
     'required': ['toBlock', 'tagName']
