@@ -94,6 +94,7 @@ const errorState = createReducer(initialState, {
     [types.PROFILE_FREE_AETH_ERROR]: addNewError,
     [types.PROFILE_GET_LIST_ERROR]: addNewError,
     [types.PROFILE_GET_LOCAL_ERROR]: addNewError,
+    [types.PROFILE_TOGGLE_DONATIONS_ERROR]: addNewError,
     [types.PROFILE_TRANSFER_AETH_ERROR]: addNewError,
     [types.PROFILE_TRANSFER_ETH_ERROR]: addNewError,
     [types.PROFILE_TRANSFORM_ESSENCE_ERROR]: addNewError,

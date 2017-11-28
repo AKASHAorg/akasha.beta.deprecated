@@ -51,7 +51,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
 
     }
 
-    const [_totalVotes, _score, _endPeriod, _totalKarma,] = yield contracts.instance.Votes.getRecord(data.entryId);
+    const [_totalVotes, _score, _endPeriod, _totalKarma, _claimed] = yield contracts.instance.Votes.getRecord(data.entryId);
     const cCount = yield commentsCount.execute([data.entryId]);
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
@@ -61,6 +61,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         endPeriod: _endPeriod.toNumber(),
         totalKarma: (GethConnector.getInstance().web3.fromWei(_totalKarma, 'ether')).toString(10),
         content: entry,
+        claimed: _claimed,
         commentsCount: cCount.collection.length ? cCount.collection[0].count : 0
     };
 });

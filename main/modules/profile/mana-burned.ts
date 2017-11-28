@@ -31,7 +31,7 @@ const execute = Promise.coroutine(function* (data: { akashaId?: string, ethAddre
 
     const totalVotes = yield contracts.instance.Votes.totalVotesOf(address);
     const voteCost = yield contracts.instance.Votes.required_essence();
-    const votesMana = voteCost.times(totalVotes[0].times(totalVotes[1]));
+    const votesMana = voteCost.times(totalVotes[0]);
 
     return {
         entries: {

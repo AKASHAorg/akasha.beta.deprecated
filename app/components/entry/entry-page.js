@@ -9,6 +9,7 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { EntryComment } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
+import { generalMessages } from '../../locale-data/messages/general-messages';
 
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
@@ -18,7 +19,7 @@ class EntryPage extends Component {
     };
 
     componentDidMount () {
-        const { entry, entryGetFull, location, match } = this.props;
+        const { entry, location, match } = this.props;
         const { params } = match;
         const { version } = parse(location.search);
         this.checkNewCommentsInterval = setInterval(
@@ -27,31 +28,27 @@ class EntryPage extends Component {
         );
         if (!entry || entry.get('entryId') !== params.entryId ||
                 (version !== undefined && entry.getIn(['content', 'version']) !== version)) {
-            const versionNr = isNaN(Number(version)) ? null : Number(version);
-            const { entryId, ethAddress } = params;
-            const prefixed = `0x${ethAddress}`;
-            entryGetFull({ entryId, ethAddress: prefixed, version: versionNr });
+            const { entryId } = params;
+            this.getFullEntry();
             this.fetchComments(entryId);
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { commentsClean, entry, entryGetFull, entryGetLatestVersion,
-            fetchingFullEntry, location, match, pendingComments } = this.props;
+        const { commentsClean, entry, entryGetLatestVersion, fetchingFullEntry, location,
+            match, pendingComments } = this.props;
 
         const { params } = match;
         const nextParams = nextProps.match.params;
-        const { akashaId, entryId, ethAddress } = nextParams;
-        const prefixed = `0x${ethAddress}`;
+        const { entryId } = nextParams;
         const { version } = parse(nextProps.location.search);
         if (!nextProps.fetchingFullEntry && fetchingFullEntry) {
             // entryGetLatestVersion(entryId);
         }
         if ((params.entryId !== entryId && entry.get('entryId') !== entryId) ||
                 (version !== undefined && version !== location.query.version)) {
-            const versionNr = isNaN(Number(version)) ? null : Number(version);
             commentsClean();
-            entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+            this.getFullEntry({ props: nextProps });
             this.fetchComments(entryId);
         }
         if (!this.listenerRegistered && this.container) {
@@ -84,6 +81,15 @@ class EntryPage extends Component {
         entryCleanFull();
         commentsClean();
     }
+
+    getFullEntry = ({ props } = {}) => {
+        const { location, match } = props || this.props;
+        const { akashaId, entryId, ethAddress } = match.params;
+        const prefixed = `0x${ethAddress}`;
+        const { version } = parse(location.search);
+        const versionNr = isNaN(Number(version)) ? null : Number(version);
+        this.props.entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+    };
 
     getContainerRef = (el) => { this.container = el; };
 
@@ -156,7 +162,14 @@ class EntryPage extends Component {
                 }
                 {!entry.content &&
                   <div className="entry-page__unresolved-placeholder">
-                    {intl.formatMessage(entryMessages.unresolvedEntry)}
+                    <div className="heading flex-center">
+                      {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
+                    </div>
+                    <div className="flex-center">
+                      <span className="content-link entry-page__retry-button" onClick={this.getFullEntry}>
+                        {this.props.intl.formatMessage(generalMessages.retry)}
+                      </span>
+                    </div>
                   </div>
                 }
                 {entry.content &&

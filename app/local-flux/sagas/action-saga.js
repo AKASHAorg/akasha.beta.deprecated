@@ -1,4 +1,4 @@
-import { apply, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
 import * as commentsActions from '../actions/comments-actions';
 import * as draftActions from '../actions/draft-actions';
@@ -37,6 +37,7 @@ const publishActions = {
     [actionTypes.profileRegister]: profileActions.profileRegister,
     [actionTypes.profileUpdate]: profileActions.profileUpdate,
     [actionTypes.sendTip]: profileActions.profileSendTip,
+    [actionTypes.toggleDonations]: profileActions.profileToggleDonations,
     [actionTypes.transferAeth]: profileActions.profileTransferAeth,
     [actionTypes.transferEth]: profileActions.profileTransferEth,
     [actionTypes.transformEssence]: profileActions.profileTransformEssence,
@@ -67,6 +68,7 @@ const publishSuccessActions = {
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
+    [actionTypes.toggleDonations]: profileActions.profileToggleDonationsSuccess,
     [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
     [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
     [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
@@ -88,7 +90,7 @@ function* actionGetClaimable () {
         const request = claimable.map(type => [loggedEthAddress, type]);
         const data = yield apply(actionService, actionService.getClaimable, [request]);
         if (data.length) {
-            yield fork(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
+            yield call(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
         }
         yield put(actions.actionGetClaimableSuccess(data));
     } catch (error) {
@@ -218,6 +220,7 @@ function* actionPublished ({ receipt }) {
         const changes = { id: actionId, blockNumber, cumulativeGasUsed, status, success };
         yield put(actions.actionUpdate(changes));
         yield put(profileActions.profileGetBalance());
+        yield put(profileActions.profileManaBurned());
     }
 }
 

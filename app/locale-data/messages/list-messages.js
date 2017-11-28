@@ -19,7 +19,7 @@ const listMessages = defineMessages({
     deleteList: {
         id: 'app.list.deleteList',
         description: 'delete list confirmation text',
-        defaultMessage: 'Do you want to delete this list?'
+        defaultMessage: 'Are you sure you want to delete this list?'
     },
     listName: {
         id: 'app.list.listName',
@@ -28,7 +28,7 @@ const listMessages = defineMessages({
     },
     listNameRequired: {
         id: 'app.list.listNameRequired',
-        description: 'required error message for list name input',
+        description: 'error message for empty list name input',
         defaultMessage: 'List name is required'
     },
     listNameUnique: {
@@ -44,7 +44,7 @@ const listMessages = defineMessages({
     searchForList: {
         id: 'app.list.searchForList',
         description: 'placeholder for list search input',
-        defaultMessage: 'Search for list...'
+        defaultMessage: 'Search for a list...'
     },
     shortDescription: {
         id: 'app.list.shortDescription',

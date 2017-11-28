@@ -275,6 +275,20 @@ export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCE
 
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
+
+export const profileToggleDonations = ({ actionId, status }) =>
+    action(types.PROFILE_TOGGLE_DONATIONS, { actionId, status });
+
+export const profileToggleDonationsError = (error, request) => {
+    error.code = 'PTDE01';
+    error.messageId = 'profileToggleDonations';
+    error.values = { status: request.status };
+    return action(types.PROFILE_TOGGLE_DONATIONS_ERROR, { error });
+};
+
+export const profileToggleDonationsSuccess = data =>
+    action(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, { data });
+
 export const profileTransferAeth = ({ actionId, akashaId, ethAddress, tokenAmount }) =>
     action(types.PROFILE_TRANSFER_AETH, { actionId, akashaId, ethAddress, tokenAmount });
 
@@ -338,3 +352,12 @@ export const profileUpdateLoggedError = (error) => {
     error.messageId = 'profileUpdateLogged';
     return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
 };
+
+export const profileEssenceIterator = () =>
+    action(types.PROFILE_ESSENCE_ITERATOR);
+
+export const profileEssenceIteratorSuccess = data =>
+    action(types.PROFILE_ESSENCE_ITERATOR_SUCCESS, { data });
+
+export const profileEssenceIteratorError = error =>
+    action(types.PROFILE_ESSENCE_ITERATOR_ERROR, { error });

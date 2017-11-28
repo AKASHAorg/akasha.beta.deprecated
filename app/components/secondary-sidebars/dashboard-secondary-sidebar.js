@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Icon, Modal, Popover } from 'antd';
-import classNames from 'classnames';
-import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { Icon, Tooltip } from 'antd';
+import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardDelete, dashboardRename } from '../../local-flux/actions/dashboard-actions';
 import { selectDashboards } from '../../local-flux/selectors';
-
-const { confirm } = Modal;
+import { DashboardSidebarRow } from '../';
 
 class DashboardSecondarySidebar extends Component {
     state = {
@@ -39,25 +36,6 @@ class DashboardSecondarySidebar extends Component {
             { renameValue: value } :
             { newDashboard: value };
         this.setState(changes);
-    };
-
-    onDeleteDashboard = (dashboard) => {
-        const { intl } = this.props;
-        const onOk = (cb) => {
-            this.props.dashboardDelete(dashboard.get('id'));
-            cb();
-        };
-        const content = intl.formatMessage(dashboardMessages.deleteDashboardConfirmation, {
-            name: dashboard.get('name')
-        });
-        confirm({
-            content,
-            okText: intl.formatMessage(generalMessages.yes),
-            okType: 'danger',
-            cancelText: intl.formatMessage(generalMessages.no),
-            onOk,
-            onCancel: () => {}
-        });
     };
 
     onKeyDown = (ev) => {
@@ -119,86 +97,42 @@ class DashboardSecondarySidebar extends Component {
         );
     };
 
-    renderRow = (dashboard) => {
-        const { activeDashboard, dashboards, intl } = this.props;
-        const { newDashboard, renameDashboard } = this.state;
-        const isLastDashboard = dashboards.size === 1;
-        const isActive = dashboard.get('id') === activeDashboard;
-        const editMode = dashboard.get('id') === renameDashboard;
-        const onDelete = () => this.onDeleteDashboard(dashboard);
-        const deleteClass = classNames('flex-center-y popover-menu__item', {
-            'popover-menu__item_disabled': isLastDashboard
-        });
-        const menu = (
-          <div className="dashboard-secondary-sidebar__popover-content">
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={() => this.onRename(dashboard)}
-            >
-              {intl.formatMessage(generalMessages.rename)}
-            </div>
-            <div
-              className={deleteClass}
-              onClick={!isLastDashboard && onDelete}
-            >
-              {intl.formatMessage(generalMessages.delete)}
-            </div>
-          </div>
-        );
-        const className = classNames('has-hidden-action flex-center-y', {
-            'dashboard-secondary-sidebar__row': true,
-            'dashboard-secondary-sidebar__row_active': isActive && newDashboard === null
-        });
-
-        if (editMode) {
-            return this.renderEditRow();
-        }
-
-        return (
-          <Link
-            className="unstyled-link"
-            key={dashboard.get('id')}
-            to={`/dashboard/${dashboard.get('id')}`}
-          >
-            <div className={className}>
-              <div className="overflow-ellipsis dashboard-secondary-sidebar__name">
-                {dashboard.get('name')}
-              </div>
-              <Popover
-                arrowPointAtCenter
-                content={menu}
-                onClick={ev => ev.stopPropagation()}
-                overlayClassName="popover-menu"
-                placement="bottomLeft"
-                trigger="click"
-              >
-                <Icon
-                  className="hidden-action dashboard-secondary-sidebar__menu-icon"
-                  type="ellipsis"
-                />
-              </Popover>
-            </div>
-          </Link>
-        );
-    };
-
     render () {
-        const { dashboards, intl } = this.props;
-
+        const { activeDashboard, dashboards, intl } = this.props;
         return (
           <div className="dashboard-secondary-sidebar">
             <div className="flex-center-y dashboard-secondary-sidebar__title">
               {intl.formatMessage(dashboardMessages.myBoards)}
-              <Icon
-                className="content-link dashboard-secondary-sidebar__add-icon"
-                onClick={this.onToggleNewDashboard}
-                type="plus-square"
-              />
+              <Tooltip title={intl.formatMessage(dashboardMessages.createNew)}>
+                <Icon
+                  className="content-link dashboard-secondary-sidebar__add-icon"
+                  onClick={this.onToggleNewDashboard}
+                  type="plus-square"
+                />
+              </Tooltip>
             </div>
-            <div>
-              {dashboards.toList().map(this.renderRow)}
+            <div className="dashboard-secondary-sidebar__list">
+              {dashboards.toList().map((dashboard) => {
+                  const isRenamed = this.state.renameDashboard === dashboard.get('id');
+                  if (isRenamed) {
+                      return this.renderEditRow();
+                  }
+
+                  return (
+                    <DashboardSidebarRow
+                      activeDashboard={activeDashboard}
+                      dashboard={dashboard}
+                      dashboardDelete={this.props.dashboardDelete}
+                      isRenamed={isRenamed}
+                      isTheOnlyDashboard={dashboards.size === 1}
+                      key={dashboard.get('id')}
+                      newDashboard={this.state.newDashboard}
+                      onRename={this.onRename}
+                    />
+                  );
+              })}
+              {this.state.newDashboard !== null && this.renderEditRow()}
             </div>
-            {this.state.newDashboard !== null && this.renderEditRow()}
           </div>
         );
     }

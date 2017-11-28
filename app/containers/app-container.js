@@ -17,9 +17,9 @@ import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, N
     TagSearchPage } from './';
 import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
     ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
-    MyBalance, MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
+    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SearchSecondarySidebar,
-    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, WalletPanel } from '../components';
+    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -145,11 +145,11 @@ class AppContainer extends Component {
                         <Route exact path="/@:akashaId" component={ProfilePage} />
                         <Route exact path="/0x:ethAddress" component={ProfilePage} />
                         <Route path="/profileoverview/overview" component={ProfileOverview} />
-                        <Route path="/profileoverview/mybalance" component={MyBalance} />
                         <Route path="/profileoverview/myentries" component={MyEntries} />
                         <Route path="/profileoverview/highlights" component={Highlights} />
                         <Route exact path="/profileoverview/lists" component={Lists} />
                         <Route path="/profileoverview/lists/:listName" component={ListEntries} />
+                        <Route path="/profileoverview/settings" component={ProfileSettings} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>

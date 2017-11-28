@@ -69,6 +69,7 @@ function* entryClaimVote ({ actionId, entryId, entryTitle }) {
 function* entryClaimVoteSuccess ({ data }) {
     const { entryId } = data;
     yield put(actions.entryCanClaimVote([entryId]));
+    yield put(actions.entryGetVoteOf([entryId]));
     yield put(appActions.showNotification({
         id: 'claimVoteSuccess',
         duration: 4,

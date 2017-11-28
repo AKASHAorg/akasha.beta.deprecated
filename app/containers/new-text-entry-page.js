@@ -175,12 +175,12 @@ class NewEntryPage extends Component {
             }
 
             if (draftObj.get('tags').size === 0) {
-                return reject({ tags: intl.formatMessage(entryMessages.tagsRequired) });
+                return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
             if (excerpt.length > 120) {
                 return this.setState({
                     showPublishPanel: true
-                }, () => reject({ excerpt: intl.formatMessage(entryMessages.excerptTooLong) }));
+                }, () => reject({ excerpt: intl.formatMessage(entryMessages.errorExcerptTooLong) }));
             }
             return resolve();
         });

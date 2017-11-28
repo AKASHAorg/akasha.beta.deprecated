@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../locale-data/messages';
-import { entryPageShow } from '../local-flux/actions/entry-actions';
+import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import { selectAllPendingClaims, selectAllPendingVotes,
     selectLoggedEthAddress } from '../local-flux/selectors';
@@ -62,7 +62,7 @@ class EntryList extends Component {
     };
 
     render () {
-        const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, defaultTimeout, entries,
+        const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, large, loggedEthAddress,
             masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
             style } = this.props;
@@ -71,28 +71,32 @@ class EntryList extends Component {
                 return null;
             }
             const claimPending = !!pendingClaims.get(entry.get('entryId'));
-            const author = profiles.get(entry.getIn(['author', 'ethAddress']));
+            const ethAddress = entry.getIn(['author', 'ethAddress']);
+            const author = profiles.get(ethAddress);
             const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
+            const entryId = entry.get('entryId');
+            const onRetry = () => this.props.entryGetShort({ context: contextId, entryId, ethAddress });
 
             return (<EntryCard
+              author={author}
               baseWidth={baseWidth}
               baseUrl={baseUrl}
               blockNr={blockNr}
               canClaimPending={canClaimPending}
               claimPending={claimPending}
+              containerRef={this.container}
               entry={entry}
+              entryPageShow={this.props.entryPageShow}
               existingDraft={this.getExistingDraft(entry.get('entryId'))}
               fetchingEntryBalance={fetchingEntryBalance}
               handleEdit={this.handleEdit}
+              isPending={isPending}
               key={entry.get('entryId')}
               large={large}
               loggedEthAddress={loggedEthAddress}
+              onRetry={onRetry}
               style={cardStyle}
               toggleOutsideNavigation={this.props.toggleOutsideNavigation}
-              author={author}
-              containerRef={this.container}
-              entryPageShow={this.props.entryPageShow}
-              isPending={isPending}
               votePending={!!pendingVotes.get(entry.get('entryId'))}
             />);
         });
@@ -115,7 +119,10 @@ class EntryList extends Component {
                   </div>
                 }
                 {masonry ?
-                  <Masonry options={{ transitionDuration: 0 }}>
+                  <Masonry
+                    options={{ transitionDuration: 0, fitWidth: true }}
+                    style={{ margin: '0 auto' }}
+                  >
                     {entryCards}
                   </Masonry> :
                   entryCards
@@ -142,29 +149,29 @@ EntryList.propTypes = {
     blockNr: PropTypes.number,
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
+    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     defaultTimeout: PropTypes.number,
     drafts: PropTypes.shape(),
     entries: PropTypes.shape(),
+    entryGetShort: PropTypes.func.isRequired,
+    entryPageShow: PropTypes.func.isRequired,
     fetchingEntries: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
-    intl: PropTypes.shape(),
-    moreEntries: PropTypes.bool,
-    placeholderMessage: PropTypes.string,
-    style: PropTypes.shape(),
-    toggleOutsideNavigation: PropTypes.func,
-    // used in mapStateToProps
-    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // eslint-disable-line
-    entryPageShow: PropTypes.func.isRequired,
     fetchMoreEntries: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape(),
     large: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
     masonry: PropTypes.bool,
+    moreEntries: PropTypes.bool,
     pendingClaims: PropTypes.shape().isRequired,
     pendingEntries: PropTypes.shape(),
     pendingVotes: PropTypes.shape().isRequired,
+    placeholderMessage: PropTypes.string,
     profiles: PropTypes.shape().isRequired,
+    style: PropTypes.shape(),
+    toggleOutsideNavigation: PropTypes.func,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -185,6 +192,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        entryGetShort,
         entryPageShow,
         toggleOutsideNavigation,
     }

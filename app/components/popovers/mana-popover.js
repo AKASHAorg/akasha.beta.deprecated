@@ -62,6 +62,9 @@ class ManaPopover extends Component {
     renderContent = () => {
         const { balance, intl, manaBurned, pendingBondAeth, pendingCycleAeth } = this.props;
         const { page } = this.state;
+        const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
+        const totalMana = balanceToNumber(balance.getIn(['mana', 'total']));
+        const burnedMana = totalMana - remainingMana;
         const manaColor = '#4aadf3';
         if (page === SHIFT_DOWN) {
             return (
@@ -86,13 +89,12 @@ class ManaPopover extends Component {
               />
             );
         }
-
         return (
           <div className="mana-popover__content">
             <div className="flex-center-x mana-popover__title">
-              {intl.formatMessage(generalMessages.mana)}
+              {intl.formatMessage(generalMessages.manaBurned)}
               <span className="mana-popover__mana-score">
-                {balanceToNumber(balance.getIn(['mana', 'remaining']))}
+                { burnedMana }
               </span>
             </div>
             <div className="mana-popover__chart-wrapper">

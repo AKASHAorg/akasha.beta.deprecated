@@ -14,6 +14,7 @@ export const ActionRecord = Record({
 
 const Flags = Record({
     fetchingAethTransfers: false,
+    fetchingClaimable: false,
     fetchingHistory: false,
 });
 
@@ -39,6 +40,7 @@ export const ActionState = Record({
         profileRegister: false,
         profileUpdate: false,
         sendTip: new Map(),
+        toggleDonations: false
     }),
     published: new List(),
     publishing: new List()

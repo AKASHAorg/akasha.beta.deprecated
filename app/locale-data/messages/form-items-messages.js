@@ -3,23 +3,23 @@ import { defineMessages } from 'react-intl';
 const formMessages = defineMessages({
     addressRequired: {
         id: 'app.form.addressRequired',
-        description: 'receiver input required error message',
-        defaultMessage: 'You must specify an username or an ethereum address'
+        description: 'error message for empty receiver input field',
+        defaultMessage: 'You must specify a username or an ethereum address'
     },
     acceptTips: {
         id: 'app.form.acceptTips',
-        description: 'description for accept tips switch',
-        defaultMessage: 'Accept Tips'
+        description: 'label for accept tips switch (personal settings)',
+        defaultMessage: 'Accept tips'
     },
     insufficientEth: {
         id: 'app.form.insufficientEth',
         description: 'title for insufficient funds card',
-        defaultMessage: 'Sorry, you don\'t have enough ether!'
+        defaultMessage: 'Sorry, you don\'t have enough test ether!'
     },
     depositEth: {
         id: 'app.form.depositEth',
         description: 'description for insufficient funds card',
-        defaultMessage: 'You need to deposit ether to publish your profile.'
+        defaultMessage: 'You need to deposit test ether to publish your profile.'
     },
     aethAmountLabel: {
         id: 'app.form.aethAmount',
@@ -28,38 +28,38 @@ const formMessages = defineMessages({
     },
     amountRequired: {
         id: 'app.form.amountRequired',
-        description: 'amount input required error message',
+        description: 'error message for empty amount input field',
         defaultMessage: 'Amount is required'
+    },
+    ethAmountLabel: {
+        id: 'app.form.ethAmount',
+        description: 'eth amount input label',
+        defaultMessage: 'ETH amount'
     },
     maxAethAmount: {
         id: 'app.form.maxAethAmount',
-        description: 'max AETH amount transferable',
+        description: 'maximum amount of AETH transferable',
         defaultMessage: '{aeth} Transferable AETH'
     },
     maxAethAmountLabel: {
         id: 'app.form.maxAethAmountLabel',
-        description: 'max aeth amount label',
+        description: 'label for maximum AETH amount input field',
         defaultMessage: 'max. {balance}'
     },
     maxEssenceAmount: {
         id: 'app.form.maxEssenceAmount',
-        description: 'max essence amount transformable',
+        description: 'maximum amount of Essence transformable',
         defaultMessage: '{essence} Essence available'
     },
     maxEthAmount: {
         id: 'app.form.maxEthAmount',
-        description: 'max ETH amount transferable',
+        description: 'maximum amount of ETH transferable',
         defaultMessage: '{eth} ETH transferable'
     },
     maxManafiedAethAmount: {
         id: 'app.form.maxManafiedAethAmount',
-        description: 'max AETH amount that can be cycled',
+        description: 'maximum amount of Manafied AETH (AETH that can be cycled)',
         defaultMessage: '{manafied} Manafied AETH'
-    },
-    messageOptional: {
-        id: 'app.form.messageOptional',
-        description: 'tip message input label',
-        defaultMessage: 'Message (Optional)'
     },
     transformEssence: {
         id: 'app.form.transformEssence',
@@ -68,7 +68,7 @@ const formMessages = defineMessages({
     },
     transformEssenceDisclaimer: {
         id: 'app.form.transformEssenceDisclaimer',
-        description: 'disclaimer message for transforming essence to AETH',
+        description: 'disclaimer message for transforming Essence to AETH',
         defaultMessage: '{amount} Essence will forge {value} new AETH in your balance.'
     },
     transformEssenceMin: {
@@ -89,7 +89,7 @@ const formMessages = defineMessages({
     firstName: {
         id: 'app.firstName',
         description: 'Placeholder for first name input',
-        defaultMessage: 'First Name'
+        defaultMessage: 'First name'
     },
     lastName: {
         id: 'app.lastName',
@@ -98,8 +98,8 @@ const formMessages = defineMessages({
     },
     akashaId: {
         id: 'app.akashaId',
-        description: 'Placeholder for last name input',
-        defaultMessage: 'Akasha ID'
+        description: 'Placeholder for username (Akasha ID) input',
+        defaultMessage: 'Username'
     },
     ethereumAddress: {
         id: 'app.form.ethereumAddress',
@@ -128,13 +128,8 @@ const formMessages = defineMessages({
     },
     confirmPassphrase: {
         id: 'app.form.confirmPassphrase',
-        description: 'label for passphrase fghfgconfirmation input',
+        description: 'label for passphrase confirmation input',
         defaultMessage: 'Confirm passphrase'
-    },
-    confirmPassphraseToContinue: {
-        id: 'app.form.confirmPassphraseToContinue',
-        description: 'Label for confirming passphrase',
-        defaultMessage: 'You need to confirm your passphrase to continue'
     },
     forgeAeth: {
         id: 'app.form.forgeAeth',
@@ -145,11 +140,6 @@ const formMessages = defineMessages({
         id: 'app.form.freeAeth',
         description: 'label for free AETH value',
         defaultMessage: 'Free AETH'
-    },
-    gasAmountError: {
-        id: 'app.form.gasAmountError',
-        description: 'Error displayed when gas amount is not between limits',
-        defaultMessage: 'Gas amount must be between {min} and {max}'
     },
     manaTotalScore: {
         id: 'app.form.manaTotalScore',
@@ -164,7 +154,7 @@ const formMessages = defineMessages({
     passphraseConfirmError: {
         id: 'app.form.passphraseConfirmError',
         description: 'Error message displayed when the given passphrases don\'t match',
-        defaultMessage: 'Passphrases don\'t match. Please type the passphrase again'
+        defaultMessage: 'Passphrases don\'t match. Please type the passphrases again'
     },
     passphraseVerify: {
         id: 'app.passphraseVerify',
@@ -183,12 +173,12 @@ const formMessages = defineMessages({
     },
     shiftDownMana: {
         id: 'app.form.shiftDownMana',
-        description: 'title for shift down mana form',
+        description: 'title for shift down Mana form',
         defaultMessage: 'Shift down Mana'
     },
     shiftDownManaHelp: {
         id: 'app.form.shiftDownManaHelp',
-        description: 'label for shift down mana slider',
+        description: 'label for shift down Mana slider',
         defaultMessage: '{value} Mana will transform {value} Manafied AETH to Cycling AETH that can be collected in 7 days.'
     },
     shiftUp: {
@@ -198,7 +188,7 @@ const formMessages = defineMessages({
     },
     shiftUpMana: {
         id: 'app.form.shiftUpMana',
-        description: 'title for shift up mana form',
+        description: 'title for shift up Mana form',
         defaultMessage: 'Shift up Mana'
     },
     shiftUpManaHelp: {
@@ -261,11 +251,6 @@ const formMessages = defineMessages({
         description: 'Label for simple select field',
         defaultMessage: 'Select one option'
     },
-    tooShortError: {
-        id: 'app.form.tooShortError',
-        description: 'Error displayed when a tag contains less than 4 characters',
-        defaultMessage: 'Tags should have at least 4 characters.'
-    },
     tooLongError: {
         id: 'app.form.tooLongError',
         description: 'Error displayed when a tag contains more than 24 characters',
@@ -278,7 +263,7 @@ const formMessages = defineMessages({
     },
     rememberPassFor: {
         id: 'app.form.rememberPassFor',
-        description: 'Label for checkbox to remember password',
+        description: 'Label for checkbox to remember passphrase',
         defaultMessage: 'Remember my passphrase for'
     },
     tipAmountError: {

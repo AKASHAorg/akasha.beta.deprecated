@@ -187,7 +187,7 @@ class EntryPageHeader extends Component {
                     title={intl.formatMessage(entryMessages.editEntry)}
                   >
                     <Icon
-                      className="entry-page-header__button content-link"
+                      className="content-link entry-page-header__button"
                       onClick={this.handleEdit}
                       type="edit"
                     />
