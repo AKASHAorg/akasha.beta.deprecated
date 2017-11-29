@@ -33,7 +33,6 @@ function* profileEssenceIterator () {
     const ethAddress = yield select(selectLoggedEthAddress);
     const essenceStep = yield select(selectEssenceIterator);
     const lastBlock = (essenceStep.lastBlock === null) ? yield select(selectBlockNumber) : essenceStep.lastBlock;
-    console.log(lastBlock);
     yield apply(channel,
         channel.send,
         [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 8 })]);
