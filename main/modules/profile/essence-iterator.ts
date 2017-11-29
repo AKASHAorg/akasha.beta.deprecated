@@ -43,7 +43,8 @@ const execute = Promise.coroutine(function* (data: {
         collection.push({
             amount: (GethConnector.getInstance().web3.fromWei(event.args.amount, 'ether')).toFormat(5),
             action: GethConnector.getInstance().web3.toUtf8(addHexPrefix(unpad(event.args.action))),
-            sourceId: event.args.source
+            sourceId: event.args.source,
+            blockNumber: event.blockNumber
         });
     }
     return {
