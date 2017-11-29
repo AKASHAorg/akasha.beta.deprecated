@@ -205,6 +205,16 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
+    [types.ENTRY_GET_VOTE_RATIO_SUCCESS]: (state, { data }) => {
+        const { entryId, upvoteRatio } = data;
+        const currentFullEntryId = state.getIn(['fullEntry', 'entryId']);
+        /** just to be sure that we are setting things for the correct entryId */
+        if (entryId === currentFullEntryId) {
+            return state.setIn(['fullEntry', 'upvoteRatio'], upvoteRatio);
+        }
+        return state;
+    },
+
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,

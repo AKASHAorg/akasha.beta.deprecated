@@ -120,6 +120,11 @@ export const entryGetVoteOfError = (error) => {
 
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
 
+export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { data });
+export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });
+export const entryGetVoteRatioError = error => action(types.ENTRY_GET_VOTE_RATIO_ERROR, { error });
+
+
 export const entryListIterator = ({ columnId, value, limit }) =>
     action(types.ENTRY_LIST_ITERATOR, { columnId, value, limit });
 export const entryListIteratorSuccess = (data, request) =>
