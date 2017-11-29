@@ -1,4 +1,4 @@
-import { List, Map, Record } from 'immutable';
+import { List, Map, Record, Collection } from 'immutable';
 
 export const AethBalance = Record({
     bonded: null,
@@ -102,7 +102,7 @@ export const ProfileState = Record({
     byEthAddress: new Map(),
     byId: new Map(),
     cyclingStates: new CyclingStates(),
-    essenceEvents: new List(),
+    essenceEvents: new Collection.Set([]),
     errors: new List(), // to be removed
     exists: new Map(),
     fetchingFullLoggedProfile: false, // to be removed
