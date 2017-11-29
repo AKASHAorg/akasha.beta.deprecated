@@ -320,6 +320,11 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
+    receivedAmount: {
+        id: 'app.general.received',
+        description: 'incoming transactions',
+        defaultMessage: '+{amount} {symbol} from '
+    },
     refresh: {
         id: 'app.general.refresh',
         description: 'refresh/reload',

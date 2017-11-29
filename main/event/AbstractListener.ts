@@ -1,7 +1,53 @@
 import { ipcMain } from 'electron';
 import WebContents = Electron.WebContents;
 
-export abstract class AbstractListener {
+export interface AbstractListenerInterface {
+    listeners: Map<string, any>;
+
+    /**
+     * Start listening for a registered channel
+     * @param channel
+     * @returns {Electron.IpcMain}
+     */
+    listenEvents(channel: string): Electron.IpcMain;
+
+    /**
+     * Register a channel event handler
+     * @param channel
+     * @param cb
+     */
+    registerListener(channel: string, cb: any): void;
+
+    /**
+     *
+     * @param channel
+     * @returns {boolean}
+     */
+    purgeListener(channel: string): boolean;
+
+    /**
+     *
+     */
+    purgeAllListeners(): void;
+
+    /**
+     * stop listening on channel
+     * @param channel
+     * @returns {Electron.IpcMain}
+     */
+    stopListener(channel: string): Electron.IpcMain;
+
+    /**
+     *
+     * @param channel
+     * @returns {number}
+     */
+    getListenersCount(channel: string): number;
+
+    initListeners(webContents: WebContents): any;
+}
+
+export abstract class AbstractListener implements AbstractListenerInterface {
     public listeners: Map<string, any> = new Map();
 
     /**

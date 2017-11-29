@@ -344,6 +344,7 @@
   "app.general.processingImage": "Processing image",
   "app.general.profileOverview": "Profile overview",
   "app.general.publish": "Publish",
+  "app.general.received": "+{amount} {symbol} from",
   "app.general.refresh": "Refresh",
   "app.general.rename": "Rename",
   "app.general.reply": "Reply",

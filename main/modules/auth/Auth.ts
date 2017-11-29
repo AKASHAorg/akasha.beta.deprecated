@@ -13,7 +13,83 @@ import * as Promise from 'bluebird';
 
 export const randomBytesAsync = Promise.promisify(randomBytes);
 
-export class Auth {
+export interface AuthInterface {
+    /**
+     *
+     * @param pass
+     * @returns {Bluebird<string>|PromiseLike<string>|Thenable<string>|Promise<string>}
+     */
+    generateKey(pass: any): Promise<never>;
+
+    /**
+     *
+     * @param acc
+     * @param pass
+     * @param timer
+     * @param registering
+     * @returns {any}
+     */
+    login(acc: string, pass: any | Uint8Array, timer: number): void;
+
+    logout(): void;
+
+    /**
+     *
+     * @param token
+     * @returns {boolean}
+     */
+    isLogged(token: any): boolean;
+
+    /**
+     *
+     * @param data
+     * @param token
+     * @returns {any}
+     */
+    signData(data: {}, token: string): any;
+
+    signMessage(data: {}, token: string): any;
+
+    /**
+     *
+     * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}
+     * @private
+     */
+    _generateRandom(): Promise<boolean>;
+
+    /**
+     *
+     * @param key
+     * @returns {Auth}
+     * @private
+     */
+    _encrypt(key: any): Promise<boolean>;
+
+    /**
+     *
+     * @returns {Buffer}
+     * @private
+     */
+    _read(token: any): Buffer;
+
+    /**
+     *
+     * @private
+     */
+    _flushSession(): void;
+
+    /**
+     *
+     * @param hash
+     * @param account
+     * @param password
+     * @returns {any}
+     * @private
+     */
+    _signSession(hash: string, account: string, password: string): any;
+}
+
+export class Auth implements AuthInterface {
     private _encrypted: Buffer;
     private _decipher: Decipher;
     private _cipher: Cipher;
@@ -60,9 +136,6 @@ export class Auth {
                 if (!found) {
                     throw new Error(`local key for ${acc} not found`);
                 }
-                // temporary until personal_sign is shipped
-                // follow here https://github.com/ethereum/go-ethereum/pull/2940
-                // @TODO: migrate to personal_sign when available
                 return this._encrypt(pass);
             })
             .then(() => {
@@ -150,7 +223,7 @@ export class Auth {
      * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}
      * @private
      */
-    private _generateRandom() {
+    _generateRandom() {
         return randomBytesAsync(64).then((buff: Buffer) => {
             this._cipher = createCipher('aes-256-ctr', buff.toString('hex'));
             this._decipher = createDecipher('aes-256-ctr', buff.toString('hex'));
@@ -164,7 +237,7 @@ export class Auth {
      * @returns {Auth}
      * @private
      */
-    private _encrypt(key: any) {
+    _encrypt(key: any) {
         const keyTr = Buffer.from(key);
         return this._generateRandom().then(() => {
             this._encrypted = Buffer.concat([this._cipher.update(keyTr), this._cipher.final()]);
@@ -177,7 +250,7 @@ export class Auth {
      * @returns {Buffer}
      * @private
      */
-    private _read(token: any) {
+    _read(token: any) {
 
         if (!this.isLogged(token)) {
             throw new Error('Token is not valid');
@@ -191,7 +264,7 @@ export class Auth {
      *
      * @private
      */
-    private _flushSession() {
+    _flushSession() {
         this._session = null;
         this._encrypted = null;
         this._cipher = null;
@@ -208,7 +281,7 @@ export class Auth {
      * @returns {any}
      * @private
      */
-    private _signSession(hash: string, account: string, password: string) {
+    _signSession(hash: string, account: string, password: string) {
         return GethConnector.getInstance()
             .web3
             .personal

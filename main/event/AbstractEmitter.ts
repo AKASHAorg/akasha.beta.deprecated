@@ -1,7 +1,21 @@
 import WebContents = Electron.WebContents;
 import { AbstractListener } from './AbstractListener';
 
-export abstract class AbstractEmitter extends AbstractListener {
+interface AbstractEmitterInterface {
+    webContents: WebContents;
+
+    /**
+     * Generic method to dispatch a channel event
+     * @param channel
+     * @param data
+     * @param event
+     */
+    fireEvent(channel: string, data: MainResponse, event?: any): void;
+
+    attachEmitters(): any;
+}
+
+export abstract class AbstractEmitter extends AbstractListener implements AbstractEmitterInterface {
     public webContents: WebContents;
 
     /**
