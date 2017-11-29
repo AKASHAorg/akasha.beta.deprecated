@@ -91,7 +91,7 @@ class EntryPageHeader extends Component {
         const versionsEnum = Array(latestVersion + 1).fill('');
         return versionsEnum.map((version, index) =>
             (<div key={`${index}`} onClick={this._switchToVersion(index)}>
-              V{index + 1} {intl.formatRelative(new Date(versionsInfo.get(index) * 1000))}
+              V{index + 1} {/* intl.formatRelative(new Date(versionsInfo.get(index) * 1000)) */}
             </div>
             ));
     }
@@ -102,7 +102,7 @@ class EntryPageHeader extends Component {
         const publishDate = new Date(entry.get('publishDate') * 1000);
         const readingTime = calculateReadingTime(wordCount);
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
-        const { versionsInfo } = entry;
+        // const { versionsInfo } = entry;
         const publishedMessage = (
           <span>
             {!isOlderVersion &&

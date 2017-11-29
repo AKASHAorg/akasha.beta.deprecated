@@ -104,11 +104,12 @@ function* entryGetBalance ({ entryIds }) {
 }
 
 function* entryGetExtraOfEntry (entryId, ethAddress) {
-    const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
+    const { canClaim, getEntryBalance, getVoteOf, getVoteRatio } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
     yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId }]);
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [[entryId]]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
@@ -517,6 +518,17 @@ function* watchEntryGetVoteOfChannel () {
     }
 }
 
+function* watchEntryGetVoteRatioChannel () {
+    while (true) {
+        const response = yield take(actionChannels.entry.getVoteRatio);
+        if (response.error) {
+            yield put(actions.entryGetVoteRatioError(response.error));
+        } else {
+            yield put(actions.entryGetVoteRatioSuccess(response.data));
+        }
+    }
+}
+
 function* watchEntryListIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntryList);
@@ -671,6 +683,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryGetChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
+    yield fork(watchEntryGetVoteRatioChannel);
     yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);

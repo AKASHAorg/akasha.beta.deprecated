@@ -31,34 +31,6 @@ class ImageBlock extends Component {
             placeholderLoaded: false,
         };
     }
-    _getBaseNodeStyle = () => {
-        // const { media } = this.props.data;
-        // if (media === 'xs') {
-        //     const marginLeft = ((document.body.getBoundingClientRect().width - 700) / 2) - 32;
-        //     return {
-        //         width: 320,
-        //         float: 'left',
-        //         marginRight: 48,
-        //         // @TODO: DIRTYHACK!! GET RID OF THIS!!!
-        //         marginLeft
-        //     };
-        // }
-        // if (media === 'md') {
-        //     if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
-        //     return {
-        //         margin: '48px auto',
-        //         width: 700
-        //     };
-        // }
-        // if (media === 'lg' || media === 'xl' || media === 'xxl') {
-        //     if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
-        //     return {
-        //         margin: '48px auto',
-        //         width: '100%'
-        //     };
-        // }
-        // return {};
-    }
     _handleImageClick = (ev) => {
         const { files } = this.props.data;
         if (files.gif) {
@@ -111,7 +83,7 @@ class ImageBlock extends Component {
         const { data, baseUrl } = this.props;
         const { caption, files, media } = data;
         const { isPlaying, imageLoaded } = this.state;
-        const baseNodeStyle = this._getBaseNodeStyle();
+        const baseNodeStyle = {};
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
@@ -134,7 +106,12 @@ class ImageBlock extends Component {
               }
               ref={(node) => { this.placeholderNodeRef = node; }}
             >
-              <div className={`image-block__image-placeholder-wrapper_${media}`}>
+              <div
+                className={
+                    `image-block__image-placeholder-wrapper_overlay
+                    image-block__image-placeholder-wrapper_${media}`
+                }
+              >
                 <img
                   src={`${baseUrl}/${files.xs.src}`}
                   onLoad={this._handlePlaceholderLoad}
@@ -145,6 +122,7 @@ class ImageBlock extends Component {
               <img
                 src={this._getImageSrc().src}
                 alt=""
+                className="image-block__image"
                 onLoad={this._onLargeImageLoad}
                 style={{
                   opacity: imageLoaded ? 1 : 0,
