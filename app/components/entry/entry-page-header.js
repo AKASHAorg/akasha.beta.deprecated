@@ -4,31 +4,24 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
-import { Icon, Tooltip } from 'antd';
-import classNames from 'classnames';
+import { Icon, Tooltip, Popover } from 'antd';
 import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import { entryPageHide } from '../../local-flux/actions/entry-actions';
+import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
+import { entryTypes } from '../../constants/entry-types';
 
 class EntryPageHeader extends Component {
     state = {
         showVersions: false,
     };
-
-    openVersionsPanel = () => {
+    _handleVersionsPopoverVisibility = (visible, latestVersion) => {
+        if (!latestVersion) return;
         this.setState({
-            showVersions: true
+            showVersions: visible
         });
-    };
-
-    closeVersionsPanel = () => {
-        this.setState({
-            showVersions: false
-        });
-    };
-
+    }
     getCurrentVersion = () => {
         const { entry, latestVersion, location } = this.props;
         const { version } = parse(location.search);
@@ -50,15 +43,27 @@ class EntryPageHeader extends Component {
 
     handleEdit = () => {
         const { entry, existingDraft, history } = this.props;
-        if (existingDraft) {
-            history.push(`/draft/${existingDraft.get('id')}`);
-        } else {
-            const version = entry.getIn(['content', 'version']);
-            const query = `editEntry=${entry.get('entryId')}&version=${version}`;
-            history.push(`/draft/new?${query}`);
-        }
+        const entryType = entryTypes[entry.getIn(['content', 'entryType'])];
+        history.push(`/draft/${entryType}/${entry.get('entryId')}`);
+        // if (existingDraft) {
+        //     history.push(`/draft/${existingDraft.get('id')}`);
+        // } else {
+        //     const version = entry.getIn(['content', 'version']);
+        //     const query = `editEntry=${entry.get('entryId')}&version=${version}`;
+        //     history.push(`/draft/new?${query}`);
+        // }
     };
-
+    _switchToVersion = version =>
+        (ev) => {
+            const { loggedEthAddress, entry, latestVersion } = this.props;
+            this.props.entryGetFull({
+                ethAddress: loggedEthAddress,
+                entryId: entry.get('entryId'),
+                version,
+                latestVersion
+            });
+            ev.preventDefault();
+        }
     renderAvatar = () => {
         const { author, containerRef } = this.props;
         if (!author.get('ethAddress')) {
@@ -80,48 +85,40 @@ class EntryPageHeader extends Component {
           </ProfilePopover>
         );
     };
-
+    _getVersionsPopoverContent = () => {
+        const { latestVersion, entry, intl } = this.props;
+        const { versionsInfo } = entry;
+        const versionsEnum = Array(latestVersion + 1).fill('');
+        return versionsEnum.map((version, index) =>
+            (<div key={`${index}`} onClick={this._switchToVersion(index)}>
+              V{index + 1} {/* intl.formatRelative(new Date(versionsInfo.get(index) * 1000)) */}
+            </div>
+            ));
+    }
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
+        const { showVersions } = this.state;
         const wordCount = entry.getIn(['content', 'wordCount']) || 0;
         const publishDate = new Date(entry.get('publishDate') * 1000);
         const readingTime = calculateReadingTime(wordCount);
         const isOlderVersion = latestVersion && latestVersion !== this.getCurrentVersion();
-        let publishedMessage;
-        if (!latestVersion) {
-            publishedMessage = intl.formatMessage(entryMessages.published);
-        } else if (isOlderVersion) {
-            publishedMessage = (
-              <span>
-                <span>{intl.formatMessage(entryMessages.olderVersion)} </span>
-                <span onClick={this.openVersionsPanel} className="link">
-                  {intl.formatMessage(entryMessages.version)}
-                </span>
-                <span> *</span>
-              </span>
-            );
-        } else {
-            publishedMessage = (
-              <span>
-                <span onClick={this.openVersionsPanel} className="link">
-                  {intl.formatMessage(entryMessages.published)}
-                </span>
-                <span> *</span>
-              </span>
-            );
-        }
-
-        return (
-          <div>
-            <span style={{ paddingRight: '5px' }}>
-              {publishedMessage}
-            </span>
+        // const { versionsInfo } = entry;
+        const publishedMessage = (
+          <span>
             {!isOlderVersion &&
-              <span style={{ display: 'inline-block' }}>
-                {intl.formatRelative(publishDate)}
+              <span>
+                V{latestVersion ? latestVersion + 1 : 1} &#183; {intl.formatMessage(entryMessages.edited)}
               </span>
             }
-            <span style={{ padding: '0 7px' }}>|</span>
+            {(isOlderVersion) &&
+              <span>
+                  V{this.getCurrentVersion() + 1} &#183; {intl.formatMessage(entryMessages.published)}
+              </span>
+            }
+          </span>
+        );
+        return (
+          <div>
             {readingTime.hours &&
               <span style={{ marginRight: 5 }}>
                 {intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })}
@@ -129,16 +126,35 @@ class EntryPageHeader extends Component {
             }
             {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
-            <span style={{ padding: '0 5px' }}>
+            <span style={{ padding: '0 0 0 5px' }}>
               ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
             </span>
+            <span style={{ padding: '0 7px' }}>|</span>
+            <Popover
+              content={this._getVersionsPopoverContent()}
+              visible={showVersions}
+              trigger="click"
+              onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
+              placement="bottomRight"
+            >
+              <span className="entry-page-header__versions-button">
+                <span style={{ paddingRight: '5px' }}>
+                  {publishedMessage}
+                </span>
+                {!isOlderVersion &&
+                  <span style={{ display: 'inline-block' }}>
+                    {intl.formatRelative(publishDate)}
+                  </span>
+                }
+                <Icon type="down" style={{ paddingLeft: 5 }} />
+              </span>
+            </Popover>
           </div>
         );
     };
 
     render () {
-        const { author, containerRef, entry, existingDraft, intl, latestVersion,
-            loggedEthAddress } = this.props;
+        const { author, containerRef, entry, intl, loggedEthAddress } = this.props;
         const ethAddress = entry.getIn(['author', 'ethAddress']);
         const akashaId = author.get('akashaId');
         const isOwnEntry = loggedEthAddress === ethAddress;
@@ -179,17 +195,6 @@ class EntryPageHeader extends Component {
                 }
               </div>
             </div>
-            {!!latestVersion && this.state.showVersions &&
-              <EntryVersionsPanel
-                closeVersionsPanel={this.closeVersionsPanel}
-                currentVersion={this.getCurrentVersion()}
-                existingDraft={existingDraft}
-                getVersion={this.getVersion}
-                handleEdit={this.handleEdit}
-                isOwnEntry={isOwnEntry}
-                latestVersion={latestVersion}
-              />
-            }
           </div>
         );
     }
@@ -199,6 +204,7 @@ EntryPageHeader.propTypes = {
     author: PropTypes.shape(),
     containerRef: PropTypes.shape().isRequired,
     entry: PropTypes.shape(),
+    entryGetFull: PropTypes.func,
     existingDraft: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
@@ -219,12 +225,15 @@ function mapStateToProps (state) {
         entry,
         existingDraft,
         loggedEthAddress: selectLoggedEthAddress(state),
+        latestVersion: state.entryState.get('fullEntryLatestVersion'),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        entryPageHide
+        entryPageHide,
+        entryGetFull,
+
     }
 )(withRouter(injectIntl(EntryPageHeader)));

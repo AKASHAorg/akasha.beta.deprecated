@@ -104,11 +104,12 @@ function* entryGetBalance ({ entryIds }) {
 }
 
 function* entryGetExtraOfEntry (entryId, ethAddress) {
-    const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
+    const { canClaim, getEntryBalance, getVoteOf, getVoteRatio } = Channel.server.entry;
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
     yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId }]);
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [[entryId]]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
@@ -159,7 +160,10 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
     }
 }
 
-function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, revert }) {
+function* entryGetFull ({
+    akashaId, entryId, ethAddress, version, asDraft, revert,
+    publishedDateOnly, latestVersion
+}) {
     const channel = Channel.server.entry.getEntry;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{
@@ -169,7 +173,9 @@ function* entryGetFull ({ akashaId, entryId, ethAddress, version, asDraft, rever
         full: true,
         version,
         asDraft,
-        revert
+        revert,
+        publishedDateOnly,
+        latestVersion
     }]);
     if (!asDraft) {
         yield put(profileActions.profileGetData({ ethAddress }));
@@ -438,7 +444,7 @@ function* watchEntryGetBalanceChannel () {
         }
     }
 }
-
+/* eslint-disable complexity */
 function* watchEntryGetChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntry);
@@ -458,14 +464,28 @@ function* watchEntryGetChannel () {
             // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
+        } else if (resp.request.publishedDateOnly) {
+            yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
         } else if (resp.request.full) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
+            const version = resp.data.content.version;
+            if (version && version > 0 && !resp.request.publishedDateOnly) {
+                for (let i = version; i >= 0; i -= 1) {
+                    yield put(actions.entryGetFull({
+                        version: i,
+                        entryId: resp.data.entryId,
+                        ethAddress: resp.request.ethAddress,
+                        publishedDateOnly: true
+                    }));
+                }
+            }
         } else {
             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }
     }
 }
+/* eslint-enable complexity */
 
 function* watchEntryGetScoreChannel () {
     while (true) {
@@ -494,6 +514,17 @@ function* watchEntryGetVoteOfChannel () {
                 yield put(actions.entryCanClaimVote(voteEntries));
             }
             yield put(actions.entryGetVoteOfSuccess(resp.data));
+        }
+    }
+}
+
+function* watchEntryGetVoteRatioChannel () {
+    while (true) {
+        const response = yield take(actionChannels.entry.getVoteRatio);
+        if (response.error) {
+            yield put(actions.entryGetVoteRatioError(response.error));
+        } else {
+            yield put(actions.entryGetVoteRatioSuccess(response.data));
         }
     }
 }
@@ -652,6 +683,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryGetChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
+    yield fork(watchEntryGetVoteRatioChannel);
     yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);

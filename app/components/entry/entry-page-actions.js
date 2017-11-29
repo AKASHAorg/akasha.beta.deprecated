@@ -236,8 +236,15 @@ class EntryPageAction extends Component {
         const voteProps = {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
         };
-        const upvotePercent = 70;
-        const downvotePercent = 30;
+        const upvoteRatio = entry.get('upvoteRatio');
+        let upvotePercent = 50;
+        let downvotePercent = 50;
+
+        if (upvoteRatio) {
+            upvotePercent = 100 * upvoteRatio;
+            downvotePercent = 100 - upvotePercent;
+        }
+
         const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {
             downvote: downvotePercent,
             upvote: upvotePercent

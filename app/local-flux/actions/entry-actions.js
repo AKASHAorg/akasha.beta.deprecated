@@ -59,8 +59,13 @@ export const entryGetBalanceError = (error) => {
 };
 export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
 
-export const entryGetFull = ({ akashaId, entryId, ethAddress, version, asDraft, revert }) =>
-    action(types.ENTRY_GET_FULL, { akashaId, entryId, ethAddress, version, asDraft, revert });
+export const entryGetFull = ({
+    akashaId, entryId, ethAddress, version, asDraft,
+    revert, publishedDateOnly, latestVersion
+}) =>
+    action(types.ENTRY_GET_FULL, {
+        akashaId, entryId, ethAddress, version, asDraft, revert, publishedDateOnly, latestVersion
+    });
 export const entryGetFullError = (error) => {
     error.code = 'EGFE01';
     error.messageId = 'entryGetFull';
@@ -71,6 +76,12 @@ export const entryGetFullSuccess = (data, request) => action(types.ENTRY_GET_FUL
 export const entryGetFullAsDraft = data => action(types.ENTRY_GET_FULL_AS_DRAFT, { data });
 export const entryGetFullAsDraftError = error => action(types.ENTRY_GET_FULL_AS_DRAFT_ERROR, { error });
 export const entryGetFullAsDraftSuccess = data => action(types.ENTRY_GET_FULL_AS_DRAFT_SUCCESS, { data });
+
+export const entryGetVersionPublishedDateSuccess = (data, req) =>
+    action(types.ENTRY_GET_VERSION_PUBLISHED_DATE_SUCCESS, { data, req });
+
+export const entryGetVerionPublishedDateError = error =>
+    action(types.ENTRY_GET_VERSION_PUBLISHED_DATE_ERROR, { error });
 
 export const entryGetLatestVersion = entryId => action(types.ENTRY_GET_LATEST_VERSION, { entryId });
 export const entryGetLatestVersionError = (error) => {
@@ -108,6 +119,11 @@ export const entryGetVoteOfError = (error) => {
 };
 
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
+
+export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { data });
+export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });
+export const entryGetVoteRatioError = error => action(types.ENTRY_GET_VOTE_RATIO_ERROR, { error });
+
 
 export const entryListIterator = ({ columnId, value, limit }) =>
     action(types.ENTRY_LIST_ITERATOR, { columnId, value, limit });
