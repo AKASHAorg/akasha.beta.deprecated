@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
-import { ColumnTag } from '../svg';
 import { entryMessages } from '../../locale-data/messages';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries, selectListsNames } from '../../local-flux/selectors';
@@ -50,7 +49,7 @@ class ListColumn extends Component {
             <ColumnHeader
               column={column}
               dataSource={lists}
-              icon={<ColumnTag />}
+              iconType="entries"
               onRefresh={this.onRefresh}
             />
             <EntryList

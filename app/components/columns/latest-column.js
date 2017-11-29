@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
-import { ColumnLatest } from '../svg';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreNewestIterator,
     entryNewestIterator } from '../../local-flux/actions/entry-actions';
@@ -33,7 +32,7 @@ class LatestColumn extends Component {
           <div className={className}>
             <ColumnHeader
               column={column}
-              icon={<ColumnLatest />}
+              iconType="entries"
               onRefresh={this.entryIterator}
               readOnly
               title={intl.formatMessage(dashboardMessages.latest)}

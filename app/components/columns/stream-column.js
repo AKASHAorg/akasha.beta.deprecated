@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
-import { ColumnStream } from '../svg';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
@@ -33,7 +32,7 @@ class StreamColumn extends Component {
           <div className={className}>
             <ColumnHeader
               column={column}
-              icon={<ColumnStream />}
+              iconType="entries"
               onRefresh={this.onRefresh}
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}

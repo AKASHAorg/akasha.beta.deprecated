@@ -11,11 +11,15 @@
     transition: left 0.175s ease-in-out;
     will-change: left;
     max-width: @sidebar-width;
-    background-color: #f3f3f3;
-    padding-top: 24px;
+    background-color: @dark-background;
+
+    &__top-icons {
+        flex-grow: 4;
+        padding: 16px;
+    }
 
     &__avatar {
-        padding-bottom: 15px;
+        padding-bottom: 16px;
     }
 
     &__button-text {
@@ -34,9 +38,20 @@
         }
     }
 
-    &__entry-icon {
+    &__new-entry {
         position: relative;
         text-align: center;
+    }
+
+    &__new-entry-wrapper {
+        width: 32px;
+        height: 32px;
+        background-color: @blue;
+        border-radius: 4px;
+    }
+
+    &__new-entry-icon {
+        stroke: @background-light;
     }
 
     &__icon-button {
@@ -52,11 +67,6 @@
         left: 0;
         transition: left 0.175s ease-in-out;
         will-change: left;
-    }
-
-    &__stream-icon {
-        flex-grow: 4;
-        padding: 14px
     }
 
     &__logo {
@@ -97,12 +107,6 @@
             right: 0;
             transition: right 0.15s ease-in-out;
         }
-    }
-
-    &__nav-container {
-        display: flex;
-        justify-content: space-between;
-        padding: 20px 15px 0px;
     }
 
     &__progress-wrapper {

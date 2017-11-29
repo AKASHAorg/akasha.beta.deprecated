@@ -1,19 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Icon } from 'antd';
-import { Balance, ServiceStatusBar } from '../';
+import { Balance, Icon, ServiceStatusBar } from '../';
 
 const TopBarRight = ({ balance, toggleAethWallet, toggleEthWallet }) => (
   <div className="top-bar-right">
     <div className="flex-center-y top-bar-right__services">
       <ServiceStatusBar />
     </div>
-    <div className="top-bar-right__divider" />
     <div className="flex-center-y top-bar-right__notifications">
       <Icon
         className="content-link top-bar-right__notifications-icon"
         onClick={() => {}}
-        type="bell"
+        type="notifications"
       />
     </div>
     <div className="top-bar-right__balance" onClick={toggleEthWallet}>

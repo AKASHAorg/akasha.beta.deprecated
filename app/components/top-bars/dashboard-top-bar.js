@@ -2,22 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn } from '../../local-flux/actions/dashboard-actions';
 import { selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { ColumnLatest, ColumnProfile, ColumnStream, ColumnTag } from '../svg';
+import { Icon, Navigation, PlusSquareIcon } from '../';
+
+const iconsTypes = {
+    [columnTypes.latest]: 'entries',
+    [columnTypes.profile]: 'user',
+    [columnTypes.stream]: 'entries',
+    [columnTypes.tag]: 'tag',
+    [columnTypes.list]: 'entries'
+};
 
 const DashboardTopBar = (props) => {
-    const { columns, history, intl } = props;
-    const icons = {
-        [columnTypes.latest]: <ColumnLatest />,
-        [columnTypes.profile]: <ColumnProfile />,
-        [columnTypes.stream]: <ColumnStream />,
-        [columnTypes.tag]: <ColumnTag />
-    };
+    const { columns, intl } = props;
     const scrollColumnIntoView = (id) => {
         const dashboard = document.getElementById('dashboard-container');
         const column = document.getElementById(id);
@@ -44,26 +46,21 @@ const DashboardTopBar = (props) => {
 
     return (
       <div className="flex-center-y dashboard-top-bar">
-        <div className="flex-center-y dashboard-top-bar__navigation">
-          <Icon className="content-link" onClick={history.goBack} type="left" />
-          <Icon className="content-link" onClick={history.goForward} type="right" />
-        </div>
+        <Navigation />
         {columns.map(column => (
           <Tooltip key={column.get('id')} title={() => getTooltip(column)}>
-            <svg
-              className="content-link dashboard-top-bar__column-icon"
+            <Icon
+              className="content-link dark-icon dashboard-top-bar__column-icon"
               onClick={() => scrollColumnIntoView(column.get('id'))}
-              viewBox="0 0 18 18"
-            >
-              {icons[column.get('type')]}
-            </svg>
+              type={iconsTypes[column.get('type')]}
+            />
           </Tooltip>
         ))}
-        <Icon
-          className="content-link dashboard-top-bar__add-icon"
-          onClick={props.dashboardAddNewColumn}
-          type="plus-square"
-        />
+        <Tooltip title={intl.formatMessage(dashboardMessages.addColumn)}>
+          <div onClick={props.dashboardAddNewColumn}>
+            <PlusSquareIcon />
+          </div>
+        </Tooltip>
       </div>
     );
 };

@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardDelete, dashboardRename } from '../../local-flux/actions/dashboard-actions';
 import { selectDashboards } from '../../local-flux/selectors';
-import { DashboardSidebarRow } from '../';
+import { DashboardSidebarRow, PlusSquareIcon } from '../';
 
 class DashboardSecondarySidebar extends Component {
     state = {
@@ -80,7 +80,7 @@ class DashboardSecondarySidebar extends Component {
         const { newDashboard, renameDashboard, renameValue } = this.state;
         const value = this.state.newDashboard === null ? renameValue : newDashboard;
         const rowClass = 'dashboard-secondary-sidebar__row';
-        const inputRowClass = `flex-center-y ${rowClass} ${rowClass}_active ${rowClass}_input`;      
+        const inputRowClass = `flex-center-y ${rowClass} ${rowClass}_active ${rowClass}_input`;
 
         return (
           <div className={inputRowClass} key={renameDashboard}>
@@ -104,11 +104,9 @@ class DashboardSecondarySidebar extends Component {
             <div className="flex-center-y dashboard-secondary-sidebar__title">
               {intl.formatMessage(dashboardMessages.myBoards)}
               <Tooltip title={intl.formatMessage(dashboardMessages.createNew)}>
-                <Icon
-                  className="content-link dashboard-secondary-sidebar__add-icon"
-                  onClick={this.onToggleNewDashboard}
-                  type="plus-square"
-                />
+                <div onClick={this.onToggleNewDashboard}>
+                  <PlusSquareIcon />
+                </div>
               </Tooltip>
             </div>
             <div className="dashboard-secondary-sidebar__list">

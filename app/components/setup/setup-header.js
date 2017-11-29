@@ -10,7 +10,7 @@ const SetupHeader = ({ intl, split }) => (
       {intl.formatMessage(generalMessages.akasha)}
     </div>
     <div className={`setup-header__services ${split && 'setup-pages_right'}`}>
-      <ServiceStatusBar />
+      <ServiceStatusBar withCircles />
     </div>
   </div>
 );

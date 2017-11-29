@@ -6,13 +6,17 @@
 
     &__icon {
         flex: 0 0 auto;
-        width: 18px;
-        height: 18px;
-        margin-right: 5px;
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
     }
 
     &__menu-icon {
-        font-size: 18px;
+        height: 18px;
+        width: 22px;
+        padding: 4px;
+        fill: @heading-color;
+        stroke: initial !important;
     }
 
     &__title-wrapper {
@@ -24,10 +28,10 @@
         color: @heading-color;
         font-weight: 500;
         cursor: default;
-        max-width: 300px;
+        max-width: 290px;
 
         &_large {
-            max-width: 478px;
+            max-width: 470px;
         }
     }
 
@@ -57,11 +61,14 @@
         background-color: transparent;
         color: @heading-color;
         font-weight: 500;
+        position: relative;
+        top: 1px;
     }
 
     &__reset-icon {
-        font-size: 16px;
-        padding: 6px;
+        width: 22px;
+        height: 22px;
+        padding: 4px;
         color: @heading-color;
     }
 }
