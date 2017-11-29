@@ -97,8 +97,8 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
-    [types.ENTRY_GET_FULL]: (state, { asDraft }) => {
-        if (!asDraft) {
+    [types.ENTRY_GET_FULL]: (state, { asDraft, publishedDateOnly }) => {
+        if (!asDraft && !publishedDateOnly) {
             return state.setIn(['flags', 'fetchingFullEntry'], true);
         }
         return state;
@@ -125,6 +125,11 @@ const entryState = createReducer(initialState, {
             fullEntry: createEntryRecord({ entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
+    },
+
+    [types.ENTRY_GET_VERSION_PUBLISHED_DATE_SUCCESS]: (state, { data }) => {
+        const { version } = data.content;
+        return state.setIn(['fullEntry', 'versionsInfo', version], data.publishDate);
     },
 
     [types.ENTRY_GET_LATEST_VERSION_SUCCESS]: (state, { data = null }) =>
@@ -198,6 +203,16 @@ const entryState = createReducer(initialState, {
             votes[res.entryId] = new EntryVote(res);
         });
         return state.mergeIn(['votes'], new Map(votes));
+    },
+
+    [types.ENTRY_GET_VOTE_RATIO_SUCCESS]: (state, { data }) => {
+        const { entryId, upvoteRatio } = data;
+        const currentFullEntryId = state.getIn(['fullEntry', 'entryId']);
+        /** just to be sure that we are setting things for the correct entryId */
+        if (entryId === currentFullEntryId) {
+            return state.setIn(['fullEntry', 'upvoteRatio'], upvoteRatio);
+        }
+        return state;
     },
 
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,

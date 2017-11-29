@@ -44,7 +44,9 @@ export const EntryRecord = Record({
     publishDate: null,
     score: null,
     totalKarma: null,
-    totalVotes: null
+    totalVotes: null,
+    versionsInfo: new Map(),
+    upvoteRatio: null,
 });
 
 const Flags = Record({
