@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Icon, Modal, Popover } from 'antd';
+import { Modal, Popover } from 'antd';
 import classNames from 'classnames';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { Icon } from '../';
 
 const { confirm } = Modal;
 
@@ -42,9 +43,11 @@ class DashboardSidebarRow extends Component {
     render () {
         const { activeDashboard, dashboard, intl, isTheOnlyDashboard,
             newDashboard } = this.props;
+        const { popoverVisible } = this.state;
         const isActive = dashboard.get('id') === activeDashboard;
         const className = classNames('has-hidden-action flex-center-y', {
             'dashboard-secondary-sidebar__row': true,
+            'dashboard-secondary-sidebar__row_hovered': popoverVisible,
             'dashboard-secondary-sidebar__row_active': isActive && newDashboard === null
         });
         const deleteClass = classNames('flex-center-y popover-menu__item', {
@@ -84,11 +87,11 @@ class DashboardSidebarRow extends Component {
                 overlayClassName="popover-menu"
                 placement="bottomLeft"
                 trigger="click"
-                visible={this.state.popoverVisible}
+                visible={popoverVisible}
               >
                 <Icon
                   className="hidden-action dashboard-secondary-sidebar__menu-icon"
-                  type="ellipsis"
+                  type="more"
                 />
               </Popover>
             </div>

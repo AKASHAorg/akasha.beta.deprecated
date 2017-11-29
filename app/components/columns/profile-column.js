@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
-import { ColumnProfile } from '../svg';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles } from '../../local-flux/actions/search-actions';
@@ -58,7 +57,7 @@ class ProfileColumn extends Component {
             <ColumnHeader
               column={column}
               dataSource={profileResults}
-              icon={<ColumnProfile />}
+              iconType="user"
               onRefresh={this.onRefresh}
               onSearch={this.props.searchProfiles}
             />

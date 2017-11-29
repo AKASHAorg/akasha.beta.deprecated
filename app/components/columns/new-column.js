@@ -14,11 +14,18 @@ import { selectColumn, selectColumnEntries, selectListsNames, selectNewColumn, s
     selectTagSearchResults } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
-import { NewSearchColumn, NewSelectColumn } from '../';
+import { Icon, NewSearchColumn, NewSelectColumn } from '../';
 
 const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile, columnTypes.tag,
     columnTypes.list];
 const oneStepColumns = [columnTypes.latest, columnTypes.stream];
+const iconTypes = {
+    [columnTypes.latest]: 'entries',
+    [columnTypes.stream]: 'entries',
+    [columnTypes.profile]: 'user',
+    [columnTypes.tag]: 'tag',
+    [columnTypes.list]: 'entries',
+};
 
 class NewColumn extends Component {
     state = {
@@ -88,7 +95,7 @@ class NewColumn extends Component {
     renderListItem = (columnType) => {
         const { intl } = this.props;
         const { selectedColumn } = this.state;
-        const className = classNames('new-column__list-item', {
+        const className = classNames('flex-center-y new-column__list-item', {
             'new-column__list-item_active': columnType === selectedColumn
         });
 
@@ -98,7 +105,8 @@ class NewColumn extends Component {
             key={columnType}
             onClick={() => this.onSelectColumn(columnType)}
           >
-            {intl.formatMessage(dashboardMessages[columnType])}
+            <Icon className="dark-icon new-column__icon" type={iconTypes[columnType]} />
+            <span>{intl.formatMessage(dashboardMessages[columnType])}</span>
           </div>
         );
     };

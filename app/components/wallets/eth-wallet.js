@@ -59,7 +59,7 @@ class EthWallet extends Component {
               <div>{intl.formatMessage(profileMessages.totalBalance)}</div>
               <div>
                 <span className="eth-wallet__balance">{balance.get('eth')}</span>
-                <span>ETH</span>
+                <span>{intl.formatMessage(generalMessages.eth)}</span>
               </div>
             </div>
             <Tabs

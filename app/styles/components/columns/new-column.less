@@ -54,15 +54,21 @@
         height: 42px;
         border-radius: 4px;
         padding: 10px;
+        color: @heading-color;
         cursor: pointer;
-        &:hover {
-            background-color: #f5f5f5
+        &:hover:not(&_active) {
+            background-color: @background;
         }
         &_active {
-            color: @heading-color;
-            background-color: #efefef;
+            background-color: @dark-background;
             font-weight: 500;
         }
+    }
+
+    &__icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
     }
 
     &__actions {

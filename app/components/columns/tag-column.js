@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { ColumnHeader, EntryList } from '../';
-import { ColumnTag } from '../svg';
 import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchTags } from '../../local-flux/actions/search-actions';
@@ -56,7 +55,7 @@ class TagColumn extends Component {
             <ColumnHeader
               column={column}
               dataSource={tagResults}
-              icon={<ColumnTag />}
+              iconType="tag"
               onRefresh={this.onRefresh}
               onSearch={this.props.searchTags}
             />

@@ -2,10 +2,10 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import { DashboardTopBar, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
+import { DashboardTopBar, Navigation, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
 import { toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData } from '../../local-flux/selectors';
@@ -32,18 +32,21 @@ class TopBar extends PureComponent {
         return (
           <div className={className}>
             <div className="top-bar__left-side">
-              <Route
-                component={DashboardTopBar}
-                path="/dashboard/:dashboardId?"
-              />
-              <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
-              <Route
-                path="/draft/:type/:draftId"
-                render={this._renderComponent(NewEntryTopBar, {
-                    onPanelNavigate: this._navigateToPanel,
-                    onNotificationPanelOpen: this._handleNotificationOpen
-                })}
-              />
+              <Switch>
+                <Route
+                  component={DashboardTopBar}
+                  path="/dashboard/:dashboardId?"
+                />
+                <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
+                <Route
+                  path="/draft/:type/:draftId"
+                  render={this._renderComponent(NewEntryTopBar, {
+                      onPanelNavigate: this._navigateToPanel,
+                      onNotificationPanelOpen: this._handleNotificationOpen
+                  })}
+                />
+                <Route component={Navigation} />
+              </Switch>
             </div>
             <TopBarRight
               balance={balance}

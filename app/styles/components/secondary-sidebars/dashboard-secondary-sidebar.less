@@ -12,9 +12,11 @@
         margin-bottom: 24px;
     }
 
-    &__add-icon {
-        font-size: 18px;
-        color: @text-color-secondary;
+    &__icon-wrapper {
+        height: 18px;
+        width: 18px;
+        background-color: darken(@background, 5%);
+        border-radius: 2px;
     }
 
     &__list {
@@ -30,13 +32,16 @@
         padding: 8px;
         width: 179px;
         cursor: pointer;
-        &:hover {
-            background-color: #f5f5f5
+        &:hover:not(&_active) {
+            background-color: @background;
+        }
+        &_hovered:not(&_active) {
+            background-color: @background;            
         }
         &_active {
             color: @heading-color;
-            background-color: #efefef;
-            font-weight: 500;
+            font-weight: 500;            
+            background-color: @dark-background;
         }
         &_input {
             cursor: default;
@@ -57,8 +62,10 @@
 
     &__menu-icon {
         flex: 0 0 auto;
+        height: 16px;
         width: 22px;
-        transform: rotate(90deg);
+        padding-right: 6px;
+        stroke: initial !important;
     }
 
     &__popover-content {

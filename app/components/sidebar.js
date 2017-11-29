@@ -3,12 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
-import { Button, Icon, Popover, Tooltip } from 'antd';
+import { Button, Popover, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
-import { AddEntryIcon, ChatIcon, PeopleIcon, SearchIcon, StreamsIcon } from './svg';
-import { Avatar, EssencePopover, ManaPopover } from './';
+import { Avatar, EssencePopover, Icon, ManaPopover, SidebarIcon } from './';
 import { generalMessages } from '../locale-data/messages';
 import { draftCreate } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
@@ -109,7 +107,7 @@ class Sidebar extends Component {
     }
 
     render () {
-        const { activeDashboard, history, intl, location, loggedProfileData } = this.props;
+        const { activeDashboard, intl, location, loggedProfileData } = this.props;
 
         const menu = (
           <div className="sidebar__menu" onClick={this.hide}>
@@ -130,21 +128,20 @@ class Sidebar extends Component {
 
         return (
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
-            <div className="sidebar__nav-container">
-              <Icon className="content-link" onClick={history.goBack} type="left" />
-              <Icon className="content-link" onClick={history.goForward} type="right" />
-            </div>
-            <div className="sidebar__entry-icon" >
-              <div>
-                <AddEntryIcon
-                  isActive={this._checkActiveIcon('draft/new')}
-                  onClick={this._toggleEntryMenu}
-                />
+            <div className="sidebar__top-icons">
+              <div className="flex-center-x sidebar__new-entry">
+                <div className="content-link flex-center sidebar__new-entry-wrapper">
+                  <Icon
+                    className="sidebar__new-entry-icon"
+                    onClick={this._toggleEntryMenu}
+                    type="newEntry"
+                  />
+                </div>
                 <div
                   className={
                     `sidebar__entry-menu
                     sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
-                }
+                  }
                 >
                   <ul className="sidebar__entry-menu-buttons">
                     <li>
@@ -180,35 +177,31 @@ class Sidebar extends Component {
                   </ul>
                 </div>
               </div>
-              <div>
-                <Link to="/search/entries">
-                  <SearchIcon
-                    isActive={this._checkActiveIcon('search')}
-                  />
-                </Link>
-              </div>
-            </div>
-            <div className="sidebar__stream-icon" >
-              <div>
-                <Link to={`/dashboard/${activeDashboard || ''}`}>
-                  <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
-                </Link>
-              </div>
-              <div>
-                <Link to="/people">
-                  <PeopleIcon isActive={this._checkActiveIcon('people')} />
-                </Link>
-              </div>
-              <div>
-                <Link to="/chat">
-                  <ChatIcon isActive={this._checkActiveIcon('chat')} />
-                </Link>
-              </div>
-              <div>
-                <Link to="/profileoverview/myentries">
-                  <Icon type="info-circle-o" style={{ fontSize: '32px' }} />
-                </Link>
-              </div>
+              <SidebarIcon
+                activePath="/dashboard"
+                linkTo={`/dashboard/${activeDashboard || ''}`}
+                iconType="dashboard"
+              />
+              <SidebarIcon
+                activePath="/profileoverview"
+                linkTo="/profileoverview/myentries"
+                iconType="question"
+              />
+              <SidebarIcon
+                activePath="/community"
+                linkTo="/community"
+                iconType="community"
+              />
+              <SidebarIcon
+                activePath="/search"
+                linkTo="/search/entries"
+                iconType="search"
+              />
+              <SidebarIcon
+                activePath="/chat"
+                linkTo="/chat"
+                iconType="chat"
+              />
             </div>
             <div className="flex-center-x sidebar__progress-wrapper">
               <ManaPopover />

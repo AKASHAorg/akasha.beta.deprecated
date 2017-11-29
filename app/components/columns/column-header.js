@@ -2,12 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { AutoComplete, Icon, Modal, Popover, Select } from 'antd';
+import { AutoComplete, Modal, Popover, Select } from 'antd';
 import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { Icon } from '../';
 
 const { Option } = Select;
 
@@ -205,7 +206,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { column, icon, readOnly, title } = this.props;
+        const { column, iconType, readOnly, title } = this.props;
         const { editMode, value } = this.state;
         const titleClass = classNames('overflow-ellipsis column-header__title', {
             'column-header__title_large': column && column.get('large')
@@ -213,16 +214,14 @@ class ColumnHeader extends Component {
 
         return (
           <div className="flex-center-y column-header">
-            {icon &&
-              <svg className="column-header__icon" viewBox="0 0 18 18">
-                {icon}
-              </svg>
+            {iconType &&
+              <Icon className="dark-icon column-header__icon" type={iconType} />
             }
             <div className="column-header__title-wrapper">
               {(readOnly || !editMode) &&
                 <div
                   className={titleClass}
-                  onDoubleClick={!readOnly ? this.editColumn : undefined }
+                  onDoubleClick={!readOnly ? this.editColumn : undefined}
                   onMouseDown={this.onMouseDown}
                 >
                   {title || value}
@@ -240,7 +239,7 @@ class ColumnHeader extends Component {
                 trigger="click"
                 visible={this.state.popoverVisible}
               >
-                <Icon className="content-link column-header__menu-icon" type="menu-fold" />
+                <Icon className="content-link column-header__menu-icon" type="menu" />
               </Popover>
             }
             {editMode &&
@@ -260,7 +259,7 @@ ColumnHeader.propTypes = {
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     dataSource: PropTypes.shape(),
-    icon: PropTypes.element,
+    iconType: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     // when true, column cannot be modified or deleted
     notEditable: PropTypes.bool,

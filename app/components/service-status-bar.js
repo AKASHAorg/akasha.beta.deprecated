@@ -2,25 +2,24 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Tooltip } from 'antd';
-import { StatusBarEthereum, StatusBarIpfs } from './svg';
+import { Tooltip } from 'antd';
 import serviceState from '../constants/serviceState';
 import { generalMessages, settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
+import { Icon } from './';
 
 class ServiceStatusBar extends Component {
-    getContainerClass = (state) => {
-        const base = 'service-status-bar__container_';
+    getCircleColor = (state) => {
         switch (state) {
             case serviceState.stopped:
-                return `${base}red`;
+                return 'Red';
             case serviceState.downloading:
             case serviceState.starting:
             case serviceState.upgrading:
-                return `${base}orange`;
+                return 'Orange';
             case serviceState.started:
-                return `${base}green`;
+                return 'Green';
             default:
                 return '';
         }
@@ -77,35 +76,34 @@ class ServiceStatusBar extends Component {
     }
 
     render () {
-        const { intl, toggleGethDetails, toggleIpfsDetails } = this.props;
+        const { intl, toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
+        const gethIcon = withCircles ? `geth${this.getCircleColor(gethState)}` : 'geth';
+        const ipfsIcon = withCircles ? `ipfs${this.getCircleColor(ipfsState)}` : 'ipfs';
 
         return (
           <div className="service-status-bar">
-            <div className={`service-status-bar__container ${this.getContainerClass(gethState)}`}>
-              <Tooltip title={this.getTooltip(gethState)}>
-                <div className="service-status-bar__button" onClick={toggleGethDetails}>
-                  <svg className="service-status-bar__icon" viewBox="0 0 16 16">
-                    <StatusBarEthereum />
-                  </svg>
-                </div>
-              </Tooltip>
-            </div>
-            <div className={`service-status-bar__container ${this.getContainerClass(ipfsState)}`}>
-              <Tooltip title={this.getTooltip(ipfsState)}>
-                <div className="service-status-bar__button" onClick={toggleIpfsDetails}>
-                  <svg className="service-status-bar__icon" viewBox="0 0 16 16">
-                    <StatusBarIpfs />
-                  </svg>
-                </div>
-              </Tooltip>
-            </div>
-            <div className="service-status-bar__button">
+            <Tooltip title={this.getTooltip(gethState)}>
+              <div
+                className="content-link flex-center service-status-bar__button"
+                onClick={toggleGethDetails}
+              >
+                <Icon className="service-status-bar__geth-icon" type={gethIcon} />
+              </div>
+            </Tooltip>
+            <Tooltip title={this.getTooltip(ipfsState)}>
+              <div
+                className="content-link flex-center service-status-bar__button"
+                onClick={toggleIpfsDetails}
+              >
+                <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
+              </div>
+            </Tooltip>
+            <div className="content-link flex-center service-status-bar__button">
               <Tooltip title={intl.formatMessage(settingsMessages.title)}>
                 <Icon
-                  type="setting"
-                  style={{ fontSize: 28 }}
+                  type="settings"
                   onClick={this.props.appSettingsToggle}
                 />
               </Tooltip>
@@ -124,6 +122,7 @@ ServiceStatusBar.propTypes = {
     ipfsStatus: PropTypes.shape().isRequired,
     toggleGethDetails: PropTypes.func.isRequired,
     toggleIpfsDetails: PropTypes.func.isRequired,
+    withCircles: PropTypes.bool
 };
 
 function mapStateToProps (state) {

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { AutoComplete, Icon, Input } from 'antd';
+import { AutoComplete, Input } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
-import { EntryList } from '../';
+import { EntryList, Icon } from '../';
 
 class NewSearchColumn extends Component {
     componentDidMount () {
@@ -77,7 +77,7 @@ class NewSearchColumn extends Component {
                       className="flex-center content-link new-search-column__search-icon-wrapper"
                       onClick={this.onSearchEntries}
                     >
-                      <Icon type="search" />
+                      <Icon className="new-search-column__icon" type="search" />
                     </div>
                   )}
                 />
