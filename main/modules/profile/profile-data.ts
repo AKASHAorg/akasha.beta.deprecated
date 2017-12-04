@@ -47,7 +47,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     const fwCount = yield followersCount.execute({ ethAddress });
     const entriesCount = yield entryCountProfile.execute({ ethAddress });
     const commentsCount = yield contracts.instance.Comments.totalCommentsOf(ethAddress);
-    const [karma,] = yield contracts.instance.Essence.getCollected(ethAddress);
+    const [karma, essence] = yield contracts.instance.Essence.getCollected(ethAddress);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         if (data.short) {
@@ -80,7 +80,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
             commentsCount: commentsCount.toString(10),
             [BASE_URL]: generalSettings.get(BASE_URL),
             profile: profileAddress,
-            karma: (GethConnector.getInstance().web3.fromWei(karma, 'ether')).toFormat(5)
+            karma: (GethConnector.getInstance().web3.fromWei(karma, 'ether')).toFormat(5),
+            essence: (GethConnector.getInstance().web3.fromWei(essence, 'ether')).toFormat(5)
         },
         profile);
 
