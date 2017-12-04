@@ -2,9 +2,31 @@ import { AbstractEmitter } from './AbstractEmitter';
 import channels from '../channels';
 import { mainResponse } from './responses';
 
-abstract class ModuleEmitter extends AbstractEmitter {
-    protected MODULE_NAME: string;
-    protected DEFAULT_MANAGED: string[];
+interface ModuleEmitterInterface {
+    MODULE_NAME: string;
+    DEFAULT_MANAGED: string[];
+
+    /**
+     * @returns {boolean}
+     */
+    attachEmitters(): boolean;
+
+    generateStreamListener(method): (event: any, data: any) => void;
+
+    generateListener(method): (event: any, data: any) => void;
+
+    /**
+     *
+     * @private
+     */
+    _manager(): void;
+
+    _initMethods(methods): void;
+}
+
+abstract class ModuleEmitter extends AbstractEmitter implements ModuleEmitterInterface {
+    MODULE_NAME: string;
+    DEFAULT_MANAGED: string[];
 
     /**
      * @returns {boolean}
@@ -77,7 +99,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
      *
      * @private
      */
-    protected _manager() {
+    _manager() {
         this.registerListener(
             channels.server[this.MODULE_NAME].manager,
             (event: any, data: IPCmanager) => {
@@ -103,7 +125,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
         );
     }
 
-    protected _initMethods(methods) {
+    _initMethods(methods) {
         methods.forEach((method) => {
             // console.log([this.MODULE_NAME], [method.name]);
             if (method.hasStream) {

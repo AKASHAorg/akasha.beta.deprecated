@@ -11,7 +11,10 @@ export const EssenceBalance = Record({
     aethValue: null,
     total: null
 });
-
+export const EssenceIterator = Record({
+   lastBlock: null,
+   lastIndex: null
+});
 export const ManaBalance = Record({
     remaining: null,
     spent: null,
@@ -103,6 +106,7 @@ export const ProfileState = Record({
     byId: new Map(),
     cyclingStates: new CyclingStates(),
     essenceEvents: new Collection.Set([]),
+    essenceIterator: new EssenceIterator(),
     errors: new List(), // to be removed
     exists: new Map(),
     fetchingFullLoggedProfile: false, // to be removed

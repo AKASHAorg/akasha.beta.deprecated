@@ -125,6 +125,13 @@ export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags',
 
 export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
 
+export const selectEssenceIterator = (state) => {
+    return {
+        lastBlock: state.profileState.getIn(['essenceIterator', 'lastBlock']),
+        lastIndex: state.profileState.getIn(['essenceIterator', 'lastIndex'])
+    };
+};
+
 export const selectEthBalance = state => state.profileState.getIn(['balance', 'eth']);
 
 export const selectFetchingFollowers = (state, ethAddress) =>

@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { ClaimableList, PieChart, ShiftForm } from '../';
+import Waypoint from 'react-waypoint';
+import { Button, Form, Icon, Popover, Progress, Spin, Tooltip } from 'antd';
+import { ClaimableList, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEssenceIterator } from '../../local-flux/actions/profile-actions';
@@ -11,6 +12,7 @@ import { selectBalance, selectLoggedEthAddress,
     selectPendingTransformEssence } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
+
 
 const COLLECT = 'collect';
 const DEFAULT = 'default';
@@ -31,7 +33,7 @@ class EssencePopover extends Component {
     onVisibleChange = (popoverVisible) => {
         if (popoverVisible && this.firstTime) {
             this.props.profileEssenceIterator();
-            // this.firstTime = false;
+            this.firstTime = false;
         }
 
         this.setState({
@@ -49,6 +51,13 @@ class EssencePopover extends Component {
     };
 
     onCollect = () => { this.setState({ page: COLLECT }); };
+
+    onEnterIterator = () => {
+        const { essenceIterator } = this.props;
+        if (essenceIterator.lastBlock !== 0) {
+            this.props.profileEssenceIterator();
+        }
+    };
 
     onForge = () => { this.setState({ page: FORGE }); };
 
@@ -95,8 +104,19 @@ class EssencePopover extends Component {
             </div>
             <div className="essence-popover__logs">
                 {
-                    essenceEvents.map(ev => (<p key={ev.hashCode()}>{ev.action} {ev.amount}</p>))
+                    essenceEvents.map(ev => (
+                        <p key={ev.hashCode()}>
+                            {intl.formatMessage(generalMessages.receivedAmount, { amount: ev.amount, symbol: 'essence' })} {ev.action}
+                        </p>))
                 }
+
+                <div className="flex-center-x">
+                    <Spin spinning={this.props.loadingLogs} />
+                </div>
+
+                <Waypoint
+                    onEnter={this.onEnterIterator}
+                />
             </div>
             <div className="essence-popover__actions">
               <Button
@@ -158,11 +178,13 @@ class EssencePopover extends Component {
 EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
+    essenceEvents: PropTypes.shape().isRequired,
+    essenceIterator: PropTypes.shape().isRequired,
     profileEssenceIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
-    pendingTransformEssence: PropTypes.bool,
-    essenceEvents: PropTypes.shape().isRequired
+    loadingLogs: PropTypes.bool,
+    pendingTransformEssence: PropTypes.bool
 };
 
 function mapStateToProps (state) {
@@ -170,7 +192,9 @@ function mapStateToProps (state) {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingTransformEssence: selectPendingTransformEssence(state),
-        essenceEvents: state.profileState.get('essenceEvents')
+        essenceEvents: state.profileState.get('essenceEvents'),
+        essenceIterator: state.profileState.get('essenceIterator'),
+        loadingLogs: state.profileState.getIn(['flags', 'fetchingEssenceIterator'])
     };
 }
 

@@ -16,8 +16,13 @@ import {balanceToNumber} from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
 
-const EssenceEvent = Record({ amount: null, action: '', sourceId: '' });
-
+const EssenceEvent = Record({
+    amount: null,
+    action: '',
+    sourceId: '',
+    blockNumber: null
+});
+const EssenceIterator = Record({ lastBlock: null, lastIndex: null });
 const addProfileData = (byEthAddress, { ...profileData }, full) => {
     if (!profileData) {
         return byEthAddress;
@@ -93,7 +98,8 @@ const profileState = createReducer(initialState, {
             const newEssenceRecord = new EssenceEvent({
                 amount: balanceToNumber(event.amount) / 10,
                 action: event.action,
-                sourceId: event.sourceId
+                sourceId: event.sourceId,
+                blockNumber: event.blockNumber
             });
 
             if (!essenceEvents.includes(newEssenceRecord)) {
@@ -106,7 +112,8 @@ const profileState = createReducer(initialState, {
 
         return state.merge({
             essenceEvents: latestIterable,
-            flags: state.get('flags').set('fetchingEssenceIterator', false)
+            flags: state.get('flags').set('fetchingEssenceIterator', false),
+            essenceIterator: new EssenceIterator({ lastBlock: data.lastBlock, lastIndex: data.lastIndex })
         });
     },
 
@@ -324,7 +331,7 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('loginPending', false),
             loggedProfile: state.get('loggedProfile').merge(data)
         }),
-
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
     [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
         const comments = balanceToNumber(data.comments.manaCost);
         const entries = balanceToNumber(data.entries.manaCost);
