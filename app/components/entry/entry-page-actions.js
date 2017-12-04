@@ -158,7 +158,7 @@ class EntryPageAction extends Component {
                     <span className="entry-actions__comments-counter">
                       {entry.get('commentsCount')}
                     </span>
-                    <Icon className="entry-actions__comment-icon" type="comment" />
+                    <Icon className="entry-actions__comment-icon" type="commentLarge" />
                   </Link>
                 </div>
               }
@@ -300,7 +300,7 @@ class EntryPageAction extends Component {
                         <span className="entry-actions__comments-counter">
                           {entry.get('commentsCount')}
                         </span>
-                        <Icon className="entry-actions__comment-icon" type="comment" />
+                        <Icon className="entry-actions__comment-icon" type="commentLarge" />
                       </div>
                     </Link>
                   }

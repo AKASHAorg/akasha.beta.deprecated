@@ -11,7 +11,7 @@ import { Spin } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
-import { ProfilePopover, VotePopover } from '../';
+import { Icon, ProfilePopover, VotePopover } from '../';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
 
@@ -51,10 +51,10 @@ class OptimisticComment extends Component {
         });
     }
 
-    toggleExpanded = (ev, isExpanded) => {
+    toggleExpanded = (ev) => {
         ev.preventDefault();
         this.setState({
-            isExpanded
+            isExpanded: !this.state.isExpanded
         });
     };
 
@@ -62,12 +62,17 @@ class OptimisticComment extends Component {
 
     renderExpandButton = () => {
         const { intl } = this.props;
+        const { isExpanded } = this.state;
         const label = this.state.isExpanded ?
             intl.formatMessage(entryMessages.showLess) :
             intl.formatMessage(entryMessages.showMore);
+        const className = classNames('flex-center comment__expand-button', {
+            'comment__expand-button_active': !isExpanded
+        });
         return (
-          <div className="flex-center comment__expand-button">
-            <div className="content-link" onClick={this.toggleExpanded}>
+          <div className={className}>
+            <div className="flex-center-y content-link" onClick={this.toggleExpanded}>
+              <Icon className="comment__expand-button-icon" type={isExpanded ? 'arrowUp' : 'arrowDown'} />
               {label}
             </div>
           </div>
@@ -126,7 +131,9 @@ class OptimisticComment extends Component {
                     readOnly
                   />
                 </div>
-                {isExpanded !== null && this.renderExpandButton()}
+                <div className="comment__expand-button-wrapper">
+                  {isExpanded !== null && this.renderExpandButton()}
+                </div>
               </div>
             </div>
           </div>

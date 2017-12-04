@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { getMuiTheme } from 'material-ui/styles';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
@@ -20,8 +18,6 @@ import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondaryS
     MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SearchSecondarySidebar,
     SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
-import lightTheme from '../layouts/AkashaTheme/lightTheme';
-import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
 notification.config({
     top: 60,
@@ -115,16 +111,15 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, intl,
-            location, needAuth, theme } = this.props;
+            location, needAuth } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const showWallet = appState.get('showWallet');
-        const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
 
         return (
-          <MuiThemeProvider muiTheme={muiTheme}>
+          <div className="flex-center-x app-container__root">
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
@@ -206,7 +201,7 @@ class AppContainer extends Component {
                 {appState.get('showProfileEditor') && <ProfileEdit />}
               </div>
             </DataLoader>
-          </MuiThemeProvider>
+          </div>
         );
     }
 }
@@ -226,7 +221,6 @@ AppContainer.propTypes = {
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
     needAuth: PropTypes.string,
-    theme: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
@@ -238,7 +232,6 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         needAuth: state.actionState.get('needAuth'),
-        theme: state.settingsState.getIn(['general', 'theme']),
     };
 }
 

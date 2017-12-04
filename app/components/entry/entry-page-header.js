@@ -210,7 +210,7 @@ EntryPageHeader.propTypes = {
     intl: PropTypes.shape().isRequired,
     latestVersion: PropTypes.number,
     location: PropTypes.shape(),
-    loggedEthAddress: PropTypes.string.isRequired,
+    loggedEthAddress: PropTypes.string,
     match: PropTypes.shape().isRequired,
 };
 

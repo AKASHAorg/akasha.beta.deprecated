@@ -12,7 +12,7 @@ import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
-import { formatBalance } from '../../utils/number-formatter';
+import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
 
 class ProfileDetails extends Component {
     state = {
@@ -182,7 +182,9 @@ class ProfileDetails extends Component {
               </div>
               <div>
                 {intl.formatMessage(generalMessages.essenceTotalScore)}
-                <span className="profile-details__score">216</span>
+                <span className="profile-details__score">
+                  {balanceToNumber(profileData.essence, 1)}
+                </span>
               </div>
             </div>
             <div className="profile-details__actions">
