@@ -144,7 +144,6 @@ class EntryEditor extends Component {
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
-              onClick={() => this._changeEditorFocus(true)}
             >
               <MegadraftEditor
                 ref={(edtr) => {

@@ -460,7 +460,7 @@ function* watchEntryGetChannel () {
             }
         } else if (resp.request.asDraft) {
             yield put(actions.entryGetFullAsDraftSuccess({ ...resp.data, ...resp.request }));
-        } else if (resp.request.latestVersion) {
+        } else if (resp.request.latestVersion && !resp.request.full) {
             // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
