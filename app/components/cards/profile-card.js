@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Card, Icon, Tooltip } from 'antd';
-import { ProfileCardHeader } from '../';
+import { Card, Tooltip } from 'antd';
+import { Icon, ProfileCardHeader } from '../';
 import { generalMessages } from '../../locale-data/messages';
 import { formatBalance } from '../../utils/number-formatter';
 
@@ -31,19 +31,19 @@ const ProfileCard = (props) => {
         <div className="profile-card__details">
           <div className="flex-center-y">
             <Tooltip title={intl.formatMessage(generalMessages.entries)}>
-              <Icon className="profile-card__counter-icon" type="file" />
+              <Icon className="profile-card__counter-icon" type="entry" />
             </Tooltip>
             <div className="profile-card__counter-text">
               {profile.get('entriesCount')}
             </div>
             <Tooltip title={intl.formatMessage(generalMessages.comments)}>
-              <Icon className="profile-card__counter-icon" type="message" />
+              <Icon className="profile-card__counter-icon" type="comment" />
             </Tooltip>
             <div className="profile-card__counter-text">
               {profile.get('commentsCount')}
             </div>
             <Tooltip title={intl.formatMessage(generalMessages.karma)}>
-              <Icon className="profile-card__counter-icon" type="trophy" />
+              <Icon className="profile-card__counter-icon" type="comment" />
             </Tooltip>
             <div className="profile-card__counter-text">
               {formatBalance(profile.get('karma'))}

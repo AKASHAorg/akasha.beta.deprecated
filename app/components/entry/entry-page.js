@@ -5,8 +5,7 @@ import { parse } from 'querystring';
 import throttle from 'lodash.throttle';
 import classNames from 'classnames';
 import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageContent,
-    EntryPageHeader } from '../';
-import { EntryComment } from '../svg';
+    EntryPageHeader, Icon } from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
@@ -189,9 +188,7 @@ class EntryPage extends Component {
                       <span>
                         {intl.formatMessage(entryMessages.commentsCount, { count: commentsCount })}
                       </span>
-                      <svg className="entry-page__comment-icon" viewBox="0 0 20 20">
-                        <EntryComment />
-                      </svg>
+                      <Icon className="entry-page__comment-icon" type="comment" />
                     </div>
                   }
                 </div>

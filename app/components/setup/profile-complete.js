@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileExists } from '../../local-flux/actions/profile-actions';
-import { setTempProfile, tempProfileGet,
-    tempProfileUpdate, tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
+import { setTempProfile, tempProfileGet, tempProfileUpdate,
+    tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/profile-complete-form';
 import { selectBalance, selectLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { setupMessages } from '../../locale-data/messages';

@@ -1,7 +1,8 @@
 .highlight-header {
     display: flex;
     align-items: center;
-    height: 52px;
+    height: 50px;
+    padding-top: 16px;
 
     &__link {
         display: flex;
@@ -43,19 +44,14 @@
         align-items: center;
     }
 
-    &__popover {
-        .ant-popover-inner-content {
-            padding: 0;
-        }
-    }
-
     &__button-text {
         font-size: 13px;
         font-weight: 400;
         padding: 8px 16px;
+        color: @heading-color;
         cursor: pointer;
         &:hover {
-            background-color: #ecf6fd;
+            background-color: @background;
         }
     }
 
@@ -65,8 +61,10 @@
         height: 14px;
     }
 
-    &__menu-icon {
-        cursor: pointer;
-        transform: rotate(90deg);
+    &__more-icon {
+        height: 16px;
+        width: 22px;
+        padding-right: 6px;
+        stroke: initial !important;
     }
 }

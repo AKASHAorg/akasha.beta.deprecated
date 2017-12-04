@@ -5,9 +5,9 @@ import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import QRCode from 'qrcode.react';
-import { Row, Card, Col, Input, Button, Form, Icon, Switch } from 'antd';
+import { Row, Card, Col, Input, Button, Form, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
-import { AvatarEditor, ImageUploader } from '../';
+import { AvatarEditor, Icon, ImageUploader } from '../';
 import { profileMessages, formMessages,
     generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
@@ -485,8 +485,9 @@ class ProfileCompleteForm extends Component {
               </Row>
             </div>
             <div className="setup-content__column-footer profile-complete-form__footer">
-              <div className="content-link" onClick={this._handleSkipStep}>
-                {intl.formatMessage(generalMessages.skipStep)} <Icon type="arrow-right" />
+              <div className="content-link flex-center-y" onClick={this._handleSkipStep}>
+                {intl.formatMessage(generalMessages.skipStep)}
+                <Icon className="profile-complete-form__skip-icon" type="arrowRight" />
               </div>
               <div className="profile-complete-form__buttons-wrapper">
                 <div className="profile-complete-form__save-btn">

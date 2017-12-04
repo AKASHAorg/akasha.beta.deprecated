@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Checkbox, Form, Icon, Select, Tooltip, Radio } from 'antd';
+import { Button, Checkbox, Form, Select, Tooltip, Radio } from 'antd';
 import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectActionPending, selectAllLicenses, selectLoggedEthAddress,
     selectLoggedProfileData } from '../../local-flux/selectors';
 import { formMessages, settingsMessages } from '../../locale-data/messages';
-import { RememberPassphraseSelect } from '../';
+import { Icon, RememberPassphraseSelect } from '../';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -184,7 +184,7 @@ class ProfileSettings extends Component {
                       placement="topLeft"
                       arrowPointAtCenter
                     >
-                      <Icon type="info-circle" className="profile-settings__info-icon" />
+                      <Icon type="questionCircle" className="profile-settings__info-icon" />
                     </Tooltip>
                   </div>
                   <div className="profile-settings__item-description">

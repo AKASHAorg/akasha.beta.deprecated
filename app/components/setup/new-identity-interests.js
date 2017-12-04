@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AutoComplete, Button, Icon, Input, Tag } from 'antd';
+import { AutoComplete, Button, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
@@ -8,7 +8,7 @@ import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
 import { generalMessages, searchMessages, setupMessages } from '../../locale-data/messages';
-import { TagListInterests } from '../../components';
+import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
 
@@ -127,8 +127,9 @@ class NewIdentityInterests extends Component {
               </div>
             </div>
             <div className="setup-content__column-footer new-identity-interests__footer">
-              <div className="content-link" onClick={this.handleSkipStep}>
-                {intl.formatMessage(generalMessages.skipStep)} <Icon type="arrow-right" />
+              <div className="content-link flex-center-y" onClick={this.handleSkipStep}>
+                {intl.formatMessage(generalMessages.skipStep)}
+                <Icon className="new-identity-interests__skip-icon" type="arrowRight" />
               </div>
               <Button
                 className="new-identity__button"

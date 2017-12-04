@@ -43,10 +43,6 @@ export default function PathInputField ({ disabled, onChange, ...props }) {
     );
 }
 
-PathInputField.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 PathInputField.propTypes = {
     disabled: PropTypes.bool,
     onChange: PropTypes.func,

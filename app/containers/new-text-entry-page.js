@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
-import { Icon, Row, Col, Button, Steps, Modal } from 'antd';
+import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
-    DataLoader } from '../components';
+    DataLoader, Icon } from '../components';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
@@ -328,13 +328,10 @@ class NewEntryPage extends Component {
         return (
           <div className="edit-entry-page article-page">
             <div
-              className="edit-entry-page__publish-options"
+              className="flex-center-y edit-entry-page__publish-options"
               onClick={this._showPublishOptionsPanel}
             >
-              <Icon
-                type="ellipsis"
-                style={{ transform: 'rotate(90deg)' }}
-              />
+              <Icon className="edit-entry-page__more-icon" type="more" />
               {intl.formatMessage(entryMessages.publishOptions)}
             </div>
             <Row

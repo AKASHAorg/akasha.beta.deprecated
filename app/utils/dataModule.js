@@ -48,9 +48,12 @@ export const getDisplayAddress = (ethAddress) => {
     return `${ethAddress.slice(0, 6)}...${ethAddress.slice(38)}`;
 };
 
-export const getDisplayName = ({ akashaId, ethAddress }) => {
+export const getDisplayName = ({ akashaId, ethAddress, long }) => {
     if (akashaId) {
         return `@${akashaId}`;
+    }
+    if (long) {
+        return ethAddress;
     }
     return getDisplayAddress(ethAddress);
 };

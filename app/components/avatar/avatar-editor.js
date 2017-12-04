@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import AvatarEditor from 'react-avatar-editor/dist';
-import { Slider, Button, Row, Col } from 'antd';
-import SvgIcon from '../svg-icon/svg-icon';
-import { AddImage } from '../svg';
+import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
+import { Icon } from '../';
+import { generalMessages } from '../../locale-data/messages/general-messages';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -102,14 +103,8 @@ class AvatarEditr extends Component {
         }
     }
     render () {
-        const {
-            size,
-            image,
-            offsetBorder,
-            backgroundColor,
-            style,
-            onMouseEnter,
-            onMouseLeave } = this.props;
+        const { backgroundColor, image, intl, offsetBorder, onMouseEnter, onMouseLeave,
+            size, style } = this.props;
         let avatarImage;
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
@@ -153,13 +148,7 @@ class AvatarEditr extends Component {
                     avatar__add-image-icon-wrapper${this.state.highlightDropZone ? '_dragEnter' : ''}`
                 }
               >
-                <SvgIcon
-                  viewBox="0 0 36 36"
-                  height={36}
-                  width={36}
-                >
-                  <AddImage />
-                </SvgIcon>
+                <Icon className="avatar__add-image-icon" type="photoImage" />
               </div>
               <div
                 className={
@@ -167,8 +156,8 @@ class AvatarEditr extends Component {
                     avatar__add-image-help-text${this.state.highlightDropZone ? '_dragEnter' : ''}`
                 }
               >
-                {!this.state.highlightDropZone && 'Drag and drop to add image'}
-                {this.state.highlightDropZone && 'Cool! Drop It Here!'}
+                {!this.state.highlightDropZone && intl.formatMessage(generalMessages.addImage)}
+                {this.state.highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
               </div>
             </div>
             }
@@ -250,6 +239,7 @@ AvatarEditr.propTypes = {
         PropTypes.string,
         PropTypes.shape()
     ]),
+    intl: PropTypes.shape().isRequired,
     onClick: PropTypes.func,
     offsetBorder: PropTypes.string,
     onImageAdd: PropTypes.func,
@@ -264,4 +254,4 @@ AvatarEditr.defaultProps = {
     size: 200,
 };
 
-export default AvatarEditr;
+export default injectIntl(AvatarEditr);

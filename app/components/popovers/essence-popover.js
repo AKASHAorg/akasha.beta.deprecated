@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
-import { Button, Form, Icon, Popover, Progress, Spin, Tooltip } from 'antd';
-import { ClaimableList, ShiftForm } from '../';
+import { Button, Form, Popover, Progress, Spin, Tooltip } from 'antd';
+import { ClaimableList, Icon, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEssenceIterator } from '../../local-flux/actions/profile-actions';
@@ -163,7 +163,7 @@ class EssencePopover extends Component {
             <Tooltip title={tooltip}>
               <Progress
                 className="essence-popover__progress"
-                format={() => <Icon type="question-circle-o" />}
+                format={() => <Icon type="question" />}
                 percent={percent}
                 strokeWidth={10}
                 type="circle"

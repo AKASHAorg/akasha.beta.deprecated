@@ -23,34 +23,32 @@ class LogsList extends Component {
         stopLogger();
     }
 
-    renderListItem (log, key) {
-        return (
-          <li key={`${key}-${log.get('timestamp')}`} style={{ marginBottom: '16px' }} >
-            <div
-              style={{
-                  display: 'flex',
-                  color: '#aaa',
-                  textTransform: 'uppercase',
-                  fontSize: '13px'
-              }}
-            >
-              <span
-                style={{
-                    flex: '0 0 auto'
-                }}
-              >
-                {log.get('level')}
-              </span>
-              <span style={{ flex: '1 1 auto', textAlign: 'right' }}>
-                {hoursMinutesSeconds(new Date(log.get('timestamp')))}
-              </span>
-            </div>
-            <p style={{ marginTop: '6px' }}>
-              {log.get('message')}
-            </p>
-          </li>
-        );
-    }
+    renderListItem = (log, key) => (
+      <li key={`${key}-${log.get('timestamp')}`} style={{ marginBottom: '16px' }} >
+        <div
+          style={{
+              display: 'flex',
+              color: '#aaa',
+              textTransform: 'uppercase',
+              fontSize: '13px'
+          }}
+        >
+          <span
+            style={{
+                flex: '0 0 auto'
+            }}
+          >
+            {log.get('level')}
+          </span>
+          <span style={{ flex: '1 1 auto', textAlign: 'right' }}>
+            {hoursMinutesSeconds(new Date(log.get('timestamp')))}
+          </span>
+        </div>
+        <p style={{ marginTop: '6px' }}>
+          {log.get('message')}
+        </p>
+      </li>
+    );
 
     render () {
         const { logs } = this.props;

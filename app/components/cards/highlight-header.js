@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedDate, injectIntl } from 'react-intl';
-import { Popover, Icon } from 'antd';
+import { Popover } from 'antd';
 import { highlightMessages } from '../../locale-data/messages';
-import { Avatar, ProfilePopover } from '../';
+import { Avatar, Icon, ProfilePopover } from '../';
 
 class HighlightHeader extends Component {
     state = {
@@ -36,16 +36,13 @@ class HighlightHeader extends Component {
         const entryUrl = `${publisherUrl}/${highlight.get('entryId')}`;
 
         const menu = (
-          <div
-            onClick={this.hide}
-            className="highlight-header__menu"
-          >
-            <div className="highlight-header__button-text">
+          <div onClick={this.hide}>
+            <div className="popover-menu__item">
               {intl.formatMessage(highlightMessages.startEntry)}
             </div>
             <div
               onClick={() => toggleNoteEditable(highlight.get('id'))}
-              className="highlight-header__button-text"
+              className="popover-menu__item"
             >
               {highlight.get('notes') ?
                   intl.formatMessage(highlightMessages.editNote) :
@@ -54,7 +51,7 @@ class HighlightHeader extends Component {
             </div>
             <div
               onClick={() => deleteHighlight(highlight.get('id'))}
-              className="highlight-header__button-text"
+              className="popover-menu__item"
             >
               {intl.formatMessage(highlightMessages.deleteHighlight)}
             </div>
@@ -93,11 +90,11 @@ class HighlightHeader extends Component {
               placement="bottomLeft"
               content={menu}
               trigger="click"
-              overlayClassName="highlight-header__popover"
+              overlayClassName="popover-menu"
               visible={this.state.visible}
               onVisibleChange={this.handleVisibleChange}
             >
-              <Icon type="ellipsis" className="highlight-header__menu-icon" />
+              <Icon className="content-link highlight-header__more-icon" type="more" />
             </Popover>
           </div>
         );

@@ -4,6 +4,7 @@ import { AtomicBlockUtils } from 'draft-js';
 import { MegadraftIcons } from 'megadraft';
 import { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import { genId } from '../../utils/dataModule';
+import { Icon } from '../';
 
 class AddImage extends Component {
     openFileInput = (ev) => {
@@ -102,7 +103,7 @@ class AddImage extends Component {
     render () {
         return (
           <div className="content-link">
-            <MegadraftIcons.ImageIcon onMouseDown={this.openFileInput} />
+            <Icon className="add-image__icon" onMouseDown={this.openFileInput} type="photoImage" />
             <input
               ref={((input) => { this.fileInput = input; })}
               style={{ display: 'none' }}

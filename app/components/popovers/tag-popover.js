@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Checkbox, Icon, Input, Popover, Tag } from 'antd';
+import { Checkbox, Input, Popover, Tag } from 'antd';
 import { List } from 'immutable';
 import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAdd, dashboardDelete, dashboardSearch,
-  dashboardToggleTagColumn } from '../../local-flux/actions/dashboard-actions';
+    dashboardToggleTagColumn } from '../../local-flux/actions/dashboard-actions';
 import { selectColumns, selectDashboards, selectDashboardSearch } from '../../local-flux/selectors';
 import { dashboardMessages, tagMessages } from '../../locale-data/messages';
-import { NewDashboardForm } from '../';
+import { Icon, NewDashboardForm } from '../';
 
 const MENU = 'MENU';
 const DASHBOARDS = 'DASHBOARDS';
@@ -117,7 +117,7 @@ class TagPopover extends Component {
                         onChange={this.onSearchChange}
                         onKeyDown={this.onKeyDown}
                         placeholder={intl.formatMessage(dashboardMessages.searchForBoard)}
-                        prefix={<Icon className="tag-popover__search-icon" type="search" />}
+                        prefix={<Icon type="search" />}
                         size="large"
                         value={search}
                       />
@@ -147,7 +147,7 @@ class TagPopover extends Component {
                               </div>
                               <div className="hidden-action flex-center tag-popover__icon">
                                 <Icon
-                                  type="delete"
+                                  type="trash"
                                   onClick={(ev) => {
                                       ev.preventDefault();
                                       ev.stopPropagation();
@@ -160,10 +160,9 @@ class TagPopover extends Component {
                       })}
                     </div>
                     <div className="content-link tag-popover__button" onClick={this.onNewDashboard}>
-                      <Icon
-                        className="tag-popover__left-item"
-                        type="plus"
-                      />
+                      <div className="tag-popover__left-item">
+                        <Icon className="tag-popover__icon" type="plus" />
+                      </div>
                       <div style={{ flex: '1 1 auto' }}>
                         {intl.formatMessage(dashboardMessages.createNew)}
                       </div>

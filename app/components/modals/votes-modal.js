@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 import { Modal } from 'antd';
 import classNames from 'classnames';
 import { entryMessages } from '../../locale-data/messages';
-import { DataLoader } from '../';
+import { DataLoader, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
-import { EntryDownvote, EntryUpvote, ToolbarVotes } from '../svg';
+import { ToolbarVotes } from '../svg';
 
 const serverChannel = global.Channel.server.entry.votesIterator;
 const clientChannel = global.Channel.client.entry.votesIterator;
@@ -99,14 +99,12 @@ class EntryVotesModal extends Component {
                     return (
                       <Link className="unstyled-link" key={vote.ethAddress} to={url}>
                         <div className="flex-center-y votes-modal__row">
-                          <svg className={iconClass} viewBox="0 0 20 20">
-                            {weight < 0 ?
-                              <EntryDownvote /> :
-                              <EntryUpvote />
-                            }
-                          </svg>
+                          <Icon
+                            className={iconClass}
+                            type={weight < 0 ? 'arrowDown' : 'arrowUp'}
+                          />
                           <span className="overflow-ellipsis votes-modal__voter">
-                            {getDisplayName({ akashaId: vote.akashaId, ethAddress: vote.ethAddress })}
+                            {getDisplayName({ akashaId: vote.akashaId, ethAddress: vote.ethAddress, long: true })}
                           </span>
                           <span className="votes-modal__weight">
                             {vote.weight}

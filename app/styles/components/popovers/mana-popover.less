@@ -45,5 +45,14 @@
     &__button {
         width: ~'calc(50% - 6px)';
         padding: 0px 8px;
+
+        svg {
+            margin-right: 6px;
+        }
+
+        &:hover svg {
+            transition: all 150ms ease-in-out;
+            stroke: @primary-color !important;
+        }
     }
 }

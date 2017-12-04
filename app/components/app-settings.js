@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Icon, Select, Switch } from 'antd';
+import { Button, Select, Switch } from 'antd';
 import { connect } from 'react-redux';
 import { settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle } from '../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
+import { Icon } from './';
 
 class AppSettings extends Component {
     constructor (props) {
@@ -33,9 +34,9 @@ class AppSettings extends Component {
           <div className={`app-settings ${sidebar ? 'app-settings_sidebar' : ''}`}>
             <div className="app-settings__close-wrapper">
               <Icon
-                type="close"
+                className="content-link app-settings__close-icon"
                 onClick={this.props.appSettingsToggle}
-                style={{ fontSize: 30, cursor: 'pointer' }}
+                type="close"
               />
             </div>
             <div className="app-settings__main">

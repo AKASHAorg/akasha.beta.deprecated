@@ -187,18 +187,18 @@ html, body {
 
 .flex-center-x {
     display: flex !important;
-    justify-content: center;
+    justify-content: center !important;
 }
 
 .flex-center-y {
     display: flex !important;
-    align-items: center;
+    align-items: center !important;
 }
 
 .flex-center {
     display: flex !important;
-    justify-content: center;
-    align-items: center;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .lowercase {

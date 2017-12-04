@@ -17,8 +17,8 @@ const NavigateAway = (props) => {
         cancelText={'Cancel'}
         title={'Wait a second...'}
       >
-          You are about to navigate to an external url
-          <div>{navigation.get('url')}</div>
+        You are about to navigate to an external url
+        <div>{navigation.get('url')}</div>
       </Modal>
     );
 };

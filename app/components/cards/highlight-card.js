@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Card, Icon, Input } from 'antd';
+import { Button, Card, Input } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
-import { HighlightHeader } from '../';
+import { HighlightHeader, Icon } from '../';
 
 class HighlightCard extends Component {
     state = {
@@ -40,9 +40,9 @@ class HighlightCard extends Component {
               />
             }
           >
-            <div>
-              <div className="highlight-card__quote">
-                <Icon type="double-left" style={{ fontSize: '20px' }} />
+            <div className="highlight-card__quote">
+              <div className="flex-center-y highlight-card__quote-icon-wrapper">
+                <Icon className="highlight-card__quote-icon" type="quote" />
               </div>
               <div className="highlight-card__content">
                 {highlight.get('content')}

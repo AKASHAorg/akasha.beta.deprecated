@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
-import { Icon, Tooltip, Popover } from 'antd';
-import { Avatar, EntryVersionsPanel, ProfilePopover } from '../';
+import { Tooltip, Popover } from 'antd';
+import { Avatar, Icon, ProfilePopover } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
@@ -146,7 +146,7 @@ class EntryPageHeader extends Component {
                     {intl.formatRelative(publishDate)}
                   </span>
                 }
-                <Icon type="down" style={{ paddingLeft: 5 }} />
+                <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
               </span>
             </Popover>
           </div>

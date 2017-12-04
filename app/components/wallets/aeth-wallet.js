@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Tabs } from 'antd';
-import { CyclingAeth, HistoryTable, PieChart, TransferForm, TransformForm } from '../';
+import { Tabs } from 'antd';
+import { CyclingAeth, HistoryTable, Icon, PieChart, TransferForm, TransformForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
@@ -56,21 +56,21 @@ class AethWallet extends Component {
     };
 
     getActionCell = (action) => {
-        const sentIcon = <Icon className="aeth-wallet__sent-icon" type="arrow-up" />;
-        const receivedIcon = <Icon className="aeth-wallet__received-icon" type="arrow-down" />;
-        const transformedIcon = <Icon className="aeth-wallet__transformed-icon" type="swap" />;
+        const sentIcon = <Icon className="aeth-wallet__sent-icon" type="arrowUp" />;
+        const receivedIcon = <Icon className="aeth-wallet__received-icon" type="arrowDown" />;
+        const transformedIcon = <Icon className="aeth-wallet__transformed-icon" type="reload" />;
 
         switch (action.type) {
             case actionTypes.transferAeth:
-                return <span>{sentIcon}Sent</span>;
+                return <span className="flex-center-y">{sentIcon}Sent</span>;
             case actionTypes.bondAeth:
-                return <span>{transformedIcon}Manafied</span>;
+                return <span className="flex-center-y">{transformedIcon}Manafied</span>;
             case actionTypes.freeAeth:
-                return <span>{transformedIcon}Collected</span>;
+                return <span className="flex-center-y">{transformedIcon}Collected</span>;
             case actionTypes.transformEssence:
-                return <span>{receivedIcon}Forged</span>;
+                return <span className="flex-center-y">{receivedIcon}Forged</span>;
             case actionTypes.receiveAeth:
-                return <span>{receivedIcon}Received</span>;
+                return <span className="flex-center-y">{receivedIcon}Received</span>;
             default:
                 return null;
         }
@@ -95,10 +95,10 @@ class AethWallet extends Component {
     };
 
     renderHistory = () => {
-        const { sentTransactions } = this.props;
+        const { intl, sentTransactions } = this.props;
         const rows = sentTransactions.map(action => ({
             action: this.getActionCell(action),
-            amount: <span>{this.getAmount(action)} AETH</span>,
+            amount: <span>{this.getAmount(action)} {intl.formatMessage(generalMessages.aeth)}</span>,
             blockNumber: action.get('blockNumber'),
             id: action.get('id'),
             success: action.get('success')
@@ -121,7 +121,7 @@ class AethWallet extends Component {
                 <div className="aeth-wallet__legend-label">
                   {intl.formatMessage(generalMessages.transferable)}
                 </div>
-                <div>{aethBalance.free} AETH</div>
+                <div>{aethBalance.free} {intl.formatMessage(generalMessages.aeth)}</div>
               </div>
             </div>
             <div className="aeth-wallet__legend-row">
@@ -130,7 +130,7 @@ class AethWallet extends Component {
                 <div className="aeth-wallet__legend-label">
                   {intl.formatMessage(generalMessages.manafied)}
                 </div>
-                <div>{aethBalance.bonded} AETH</div>
+                <div>{aethBalance.bonded} {intl.formatMessage(generalMessages.aeth)}</div>
               </div>
             </div>
             <div className="aeth-wallet__legend-row">
@@ -139,7 +139,7 @@ class AethWallet extends Component {
                 <div className="aeth-wallet__legend-label">
                   {intl.formatMessage(generalMessages.cycling)}
                 </div>
-                <div>{aethBalance.cycling} AETH</div>
+                <div>{aethBalance.cycling} {intl.formatMessage(generalMessages.aeth)}</div>
               </div>
             </div>
           </div>
@@ -172,7 +172,7 @@ class AethWallet extends Component {
                 <span className="aeth-wallet__balance">
                   {formatBalance(balance.getIn(['aeth', 'total']), 7)}
                 </span>
-                <span>AETH</span>
+                <span>{intl.formatMessage(generalMessages.aeth)}</span>
               </div>
             </div>
             <div className="aeth-wallet__chart-area">

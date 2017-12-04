@@ -7,7 +7,7 @@ import { colors } from 'material-ui/styles';
 import { searchQuery, searchHandshake, searchResetResults } from '../../local-flux/actions/search-actions';
 import { tagSearch } from '../../local-flux/actions/tag-actions';
 import { MenuSearch } from '../svg';
-import { SelectableList } from '../selectable-list';
+import { SelectableList } from '../';
 
 const topics = ['entries', 'people', 'tags', 'lists'];
 

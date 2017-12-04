@@ -3,13 +3,14 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
-import { Icon, Popover } from 'antd';
+import { Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import { MentionDecorators } from '../../shared-components';
 import readOnlyImagePlugin from '../text-entry-editor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
+import { Icon } from '../';
 
 const { CompositeDecorator, ContentState, EditorState } = DraftJS;
 
@@ -197,14 +198,14 @@ class SelectableEditor extends Component {
               className="flex-center-y popover-menu__item"
               onClick={this.saveHighlight}
             >
-              <Icon className="popover-menu__icon" type="save" />
+              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="highlight" />
               <span>{intl.formatMessage(entryMessages.saveHighlight)}</span>
             </div>
             <div
               className="flex-center-y popover-menu__item"
               onClick={startComment && this.startComment}
             >
-              <Icon className="popover-menu__icon" style={{ fontSize: '16px' }} type="message" />
+              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="comment" />
               <span>{intl.formatMessage(entryMessages.startComment)}</span>
             </div>
           </div>
@@ -229,12 +230,12 @@ class SelectableEditor extends Component {
         const { editorState, showPopover } = this.state;
 
         return (
-          <div
-            className="selectable-editor"
-            onMouseDown={this.hidePopover}
-            onMouseUp={this.checkSelection}
-          >
-            <div ref={(el) => { this.editorWrapper = el; }}>
+          <div className="selectable-editor">
+            <div
+              onMouseDown={this.hidePopover}
+              onMouseUp={this.checkSelection}
+              ref={(el) => { this.editorWrapper = el; }}
+            >
               <MegadraftEditor
                 editorState={editorState}
                 onChange={this.handleChange}

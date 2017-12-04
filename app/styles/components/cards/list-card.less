@@ -19,7 +19,7 @@
 
     &__list-name {
         overflow-wrap: break-word;
-        height: 24px;
+        height: 20px;
         font-size: 15px;
     }
 
@@ -44,6 +44,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: @text-color-secondary;
+        svg {
+            stroke: @text-color-secondary !important;
+        }
     }
 
     &__left-actions {
@@ -53,7 +57,7 @@
     }
 
     &__left-actions &__icon {
-        margin-right: 10px;
+        margin-left: 6px;
     }
 
     &__right-actions {
@@ -70,5 +74,9 @@
         height: 18px;
         width: 18px;
         font-size: 18px;
+    }
+
+    .ant-card-head-title {
+        padding: 0px;
     }
 }
