@@ -21,6 +21,11 @@ const listMessages = defineMessages({
         description: 'delete list confirmation text',
         defaultMessage: 'Are you sure you want to delete this list?'
     },
+    editList: {
+        id: 'app.list.editList',
+        description: 'title for edit list popover',
+        defaultMessage: 'Edit this list'
+    },
     listName: {
         id: 'app.list.listName',
         description: 'label for list name input',

@@ -2,20 +2,56 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormattedDate, injectIntl } from 'react-intl';
+import { Icon, Modal } from 'antd';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
-import { selectEntry, selectListByName } from '../../local-flux/selectors';
-import { generalMessages } from '../../locale-data/messages';
-import { EntryList } from '../';
+import { listDelete } from '../../local-flux/actions/list-actions';
+import { selectEntry, selectListById } from '../../local-flux/selectors';
+import { generalMessages, listMessages } from '../../locale-data/messages';
+import { EditListBtn, EntryList } from '../';
 
 class ListEntries extends Component {
+    state = {
+        deleteModalVisible: false
+    }
+
     componentDidMount () {
         const { list } = this.props;
-        this.props.entryListIterator({ columnId: list.get('name'), value: list.get('name') });
+        this.props.entryListIterator({ value: list.get('id') });
+    }
+
+    deleteList = () => {
+        this.setState({
+            deleteModalVisible: true
+        });
+    };
+
+    showDeleteModal = () => {
+        const { intl, list, history } = this.props;
+        const onOk = () => {
+            history.push('/profileoverview/lists');
+            this.props.listDelete(list.get('id'));
+        };
+        const content = intl.formatMessage(listMessages.deleteList);
+        return (
+          <Modal
+            visible={this.state.deleteModalVisible}
+            className={'delete-modal'}
+            width={320}
+            okText={intl.formatMessage(generalMessages.delete)}
+            okType={'danger'}
+            cancelText={intl.formatMessage(generalMessages.cancel)}
+            onOk={onOk}
+            onCancel={() => { this.setState({ deleteModalVisible: false }); }}
+            closable={false}
+          >
+            {content}
+          </Modal>
+        );
     }
 
     fetchMoreEntries = () => {
         const { list } = this.props;
-        this.props.entryMoreListIterator({ columnId: list.get('name'), value: list.get('name') });
+        this.props.entryMoreListIterator({ columnId: list.get('name'), value: list.get('id') });
     };
 
     render () {
@@ -39,14 +75,27 @@ class ListEntries extends Component {
 
         return (
           <div className="list-entries">
+            {this.showDeleteModal()}
             <div className="list-entries__pad">
               <div className="list-entries__wrap">
                 <div className="list-entries__header">
                   <div className="list-entries__name">
                     {list.get('name')}
                   </div>
-                  <div className="list-entries__date">
-                    {description}
+                  <div className="list-entries__subheader">
+                    <div className="list-entries__date">
+                      {description}
+                    </div>
+                    <div className="list-entries__actions">
+                      <EditListBtn
+                        list={list}
+                      />
+                      <Icon
+                        className="content-link list-card__icon list-card__icon_delete"
+                        onClick={this.deleteList}
+                        type="delete"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="list-entries__content">
@@ -71,12 +120,14 @@ ListEntries.propTypes = {
     entryListIterator: PropTypes.func.isRequired,
     entryMoreListIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    history: PropTypes.shape(),
     list: PropTypes.shape(),
+    listDelete: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state, ownProps) {
-    const { listName } = ownProps.match.params;
-    const list = selectListByName(state, listName);
+    const { listId } = ownProps.match.params;
+    const list = selectListById(state, listId);
     const entries = list && list.get('entryIds').map(ele => selectEntry(state, ele.entryId));
     return {
         entries,
@@ -88,6 +139,11 @@ export default connect(
     mapStateToProps,
     {
         entryListIterator,
+<<<<<<< HEAD
         entryMoreListIterator
+=======
+        entryMoreListIterator,
+        listDelete
+>>>>>>> feat(list-edit): add edit functionality to lists
     }
 )(injectIntl(ListEntries));

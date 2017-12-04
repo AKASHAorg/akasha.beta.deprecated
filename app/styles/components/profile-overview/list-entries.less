@@ -7,7 +7,8 @@
     }
 
     &__wrap {
-        height: ~'calc(100% - 52px)';
+        // height: ~'calc(100% - 52px)';
+        height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -18,6 +19,15 @@
         flex-direction: column;
         justify-content: center;
         padding: 0 57px;
+    }
+
+    &__subheader {
+        display: inline-flex;
+    }
+
+    &__actions {
+        display: inline-flex;
+        margin-left: 30px;
     }
 
     &__name {
