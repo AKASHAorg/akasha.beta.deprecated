@@ -1,312 +1,313 @@
 {
-    "name": "AKASHA",
-    "productName": "AKASHA",
-    "private": true,
-    "description": "Akasha platform",
-    "main": "main.js",
-    "version": "0.5.2",
-    "scripts": {
-        "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --require test/test-setup.js --compilers js:babel-register test/app/setup.js --recursive test/**/*.spec.js",
-        "test-watch": "npm test -- --watch",
-        "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --require ./test/setup.js ./test/e2e.js",
-        "debug-ipc": "cross-env ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
-        "lint": "eslint --fix app *.js",
-        "browser": "node server.js",
-        "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2048 -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
-        "hot-server-dark": "cross-env NODE_ENV=development DARK_THEME=1 node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
-        "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
-        "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
-        "build-renderer-dark": "cross-env NODE_ENV=production DARK_THEME=1 node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
-        "build": "npm run build-renderer && npm run build-renderer-dark",
-        "build-lang": "babel ./app/utils/build-translations.js | node",
-        "lang-diff": "babel ./app/utils/create-lang-diff.js | node",
-        "start": "cross-env NODE_ENV=production electron ./main.js",
-        "prestart-hot": "npm run build-lang",
-        "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --inspect=5858 ./main.js",
-        "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
-        "package": "npm run build && build --publish never",
-        "package-win": "npm run build && build --win --x64",
-        "package-linux": "npm run build && build --linux",
-        "package-mac": "npm run build && build --mac",
-        "package-all": "npm run build && build -mwl",
-        "release": "standard-version",
-        "postinstall": "electron-builder install-app-deps"
+  "name": "AKASHA",
+  "productName": "AKASHA",
+  "private": true,
+  "description": "Akasha platform",
+  "main": "main.js",
+  "version": "0.5.2",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --require test/test-setup.js --compilers js:babel-register test/app/setup.js --recursive test/**/*.spec.js",
+    "test-watch": "npm test -- --watch",
+    "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --require ./test/setup.js ./test/e2e.js",
+    "debug-ipc": "cross-env ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
+    "lint": "eslint --fix app *.js",
+    "browser": "node server.js",
+    "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2048 -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
+    "hot-server-dark": "cross-env NODE_ENV=development DARK_THEME=1 node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
+    "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
+    "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "build-renderer-dark": "cross-env NODE_ENV=production DARK_THEME=1 node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "build": "npm run build-renderer && npm run build-renderer-dark",
+    "build-lang": "babel ./app/utils/build-translations.js | node",
+    "lang-diff": "babel ./app/utils/create-lang-diff.js | node",
+    "start": "cross-env NODE_ENV=production electron ./main.js",
+    "prestart-hot": "npm run build-lang",
+    "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --inspect=5858 ./main.js",
+    "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
+    "package": "npm run build && build --publish never",
+    "package-win": "npm run build && build --win --x64",
+    "package-linux": "npm run build && build --linux",
+    "package-mac": "npm run build && build --mac",
+    "package-all": "npm run build && build -mwl",
+    "release": "standard-version",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "betterScripts": {
+    "start": {
+      "command": "cross-env electron ./",
+      "env": {
+        "NODE_ENV": "production"
+      }
     },
-    "betterScripts": {
-        "start": {
-            "command": "cross-env electron ./",
-            "env": {
-                "NODE_ENV": "production"
-            }
-        },
-        "start-hot": {
-            "command": "cross-env HOT=1 electron -r babel-register -r babel-polyfill ./main",
-            "env": {
-                "HOT": 1,
-                "NODE_ENV": "development"
-            }
-        },
-        "package": {
-            "command": "node package.js",
-            "env": {
-                "NODE_ENV": "production"
-            }
-        },
-        "build": {
-            "command": "webpack --config webpack.config.production.js --progress --profile --colors",
-            "env": {
-                "NODE_ENV": "production"
-            }
-        },
-        "test": {
-            "command": "cross-env BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive test/**/*.spec.js",
-            "env": {
-                "NODE_ENV": "test"
-            }
-        }
+    "start-hot": {
+      "command": "cross-env HOT=1 electron -r babel-register -r babel-polyfill ./main",
+      "env": {
+        "HOT": 1,
+        "NODE_ENV": "development"
+      }
     },
-    "bin": {
-        "electron": "./node_modules/.bin/electron"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:AkashaProject/node-app.git"
-    },
-    "author": {
-        "name": "AKASHA International GmbH",
-        "email": "hello@akasha.world",
-        "url": "https://github.com/AkashaProject"
-    },
-    "license": "",
-    "bugs": {
-        "url": "https://github.com/AkashaProject/node-app/issues"
-    },
-    "homepage": "https://github.com/AkashaProject/node-app#readme",
-    "devDependencies": {
-        "@types/bluebird": "3.5.18",
-        "@types/chai": "4.0.5",
-        "@types/lru-cache": "4.1.0",
-        "@types/mocha": "2.2.44",
-        "@types/node": "8.0.53",
-        "@types/ramda": "0.25.6",
-        "@types/rimraf": "2.0.2",
-        "antd": "3.0.0-rc.1",
-        "asar": "0.14.0",
-        "babel-cli": "6.26.0",
-        "babel-core": "6.26.0",
-        "babel-eslint": "8.0.1",
-        "babel-loader": "7.1.2",
-        "babel-minify-webpack-plugin": "^0.2.0",
-        "babel-plugin-add-module-exports": "0.2.1",
-        "babel-plugin-dev-expression": "0.2.1",
-        "babel-plugin-import": "1.6.2",
-        "babel-plugin-react-intl": "2.3.1",
-        "babel-plugin-transform-runtime": "6.23.0",
-        "babel-polyfill": "6.26.0",
-        "babel-preset-env": "1.6.1",
-        "babel-preset-react": "6.24.1",
-        "babel-preset-react-hmre": "1.1.1",
-        "babel-preset-react-optimize": "1.0.1",
-        "babel-preset-stage-0": "6.24.1",
-        "babel-register": "6.26.0",
-        "babel-runtime": "6.26.0",
-        "chai": "4.1.2",
-        "chai-immutable": "1.6.0",
-        "chart.js": "2.7.1",
-        "co-mocha": "1.2.1",
-        "concurrently": "3.5.1",
-        "cross-env": "5.1.1",
-        "css-loader": "0.28.7",
-        "css-modules-require-hook": "4.2.2",
-        "cssnano": "3.10.0",
-        "del": "3.0.0",
-        "devtron": "1.4.0",
-        "dexie": "2.0.1",
-        "draft-js": "0.10.4",
-        "draft-js-emoji-plugin": "2.0.1",
-        "draft-js-export-html": "1.2.0",
-        "draft-js-image-plugin": "2.0.1",
-        "draft-js-plugins-editor": "2.0.3",
-        "electron": "1.7.9",
-        "electron-builder": "19.46.9",
-        "electron-mocha": "5.0.0",
-        "enzyme": "3.2.0",
-        "eslint": "4.8.0",
-        "eslint-config-airbnb": "15.1.0",
-        "eslint-plugin-babel": "4.1.2",
-        "eslint-plugin-import": "2.8.0",
-        "eslint-plugin-jsx-a11y": "6.0.2",
-        "eslint-plugin-react": "7.5.1",
-        "ethereumjs-testrpc": "6.0.3",
-        "express": "4.16.2",
-        "extract-text-webpack-plugin": "3.0.2",
-        "fbjs-scripts": "0.8.1",
-        "file-loader": "1.1.5",
-        "fuzzy": "^0.1.3",
-        "history": "4.7.2",
-        "html-webpack-plugin": "2.30.1",
-        "immutable": "4.0.0-rc.9",
-        "joi-browser": "13.0.1",
-        "joi-validation-strategy": "0.3.3",
-        "jsdom": "11.5.1",
-        "jsdom-global": "3.0.2",
-        "json-loader": "0.5.7",
-        "less": "2.7.3",
-        "less-loader": "4.0.5",
-        "lodash.debounce": "4.0.8",
-        "material-ui": "0.19.4",
-        "megadraft": "0.4.33",
-        "minimist": "1.2.0",
-        "mocha": "4.0.1",
-        "mock-css-modules": "1.0.0",
-        "node-libs-browser": "2.1.0",
-        "node-pre-gyp": "0.6.39",
-        "node-sass": "4.7.2",
-        "optimize-css-assets-webpack-plugin": "3.2.0",
-        "pica": "4.0.1",
-        "postcss": "6.0.14",
-        "postcss-modules-extract-imports": "1.1.0",
-        "postcss-modules-local-by-default": "1.2.0",
-        "postcss-modules-scope": "1.1.0",
-        "postcss-modules-values": "1.3.0",
-        "proxyquire": "1.8.0",
-        "qrcode.react": "0.7.2",
-        "querystring": "0.2.0",
-        "react": "16.1.1",
-        "react-addons-css-transition-group": "15.6.2",
-        "react-addons-perf": "15.4.2",
-        "react-addons-test-utils": "15.6.2",
-        "react-avatar-editor": "10.3.0",
-        "react-dom": "16.1.1",
-        "react-hot-loader": "3.1.3",
-        "react-intl": "2.4.0",
-        "react-masonry-component": "6.0.1",
-        "react-redux": "5.0.6",
-        "react-router-dom": "4.2.2",
-        "react-router-redux": "5.0.0-alpha.6",
-        "react-tap-event-plugin": "3.0.2",
-        "react-tooltip": "3.4.0",
-        "react-validation-mixin": "5.4.0",
-        "redux": "3.7.2",
-        "redux-devtools": "3.4.1",
-        "redux-devtools-dock-monitor": "1.1.2",
-        "redux-devtools-log-monitor": "1.4.0",
-        "redux-logger": "3.0.6",
-        "redux-saga": "0.16.0",
-        "redux-saga-tester": "1.0.374",
-        "redux-thunk": "2.2.0",
-        "rimraf": "2.6.2",
-        "sass-loader": "6.0.6",
-        "sinon": "4.1.2",
-        "source-map-support": "0.5.0",
-        "standard-version": "4.2.0",
-        "style-loader": "0.19.0",
-        "tslint": "5.8.0",
-        "typescript": "2.6.1",
-        "url-loader": "0.6.2",
-        "webpack": "3.8.1",
-        "webpack-dev-middleware": "1.12.1",
-        "webpack-dev-server": "2.9.4",
-        "webpack-hot-middleware": "2.21.0",
-        "webpack-merge": "4.1.1",
-        "webpack-node-externals": "1.6.0",
-        "webpack-sources": "1.1.0",
-        "xregexp": "3.2.0"
-    },
-    "dependencies": {
-        "@akashaproject/contracts.js": "1.3.7",
-        "@akashaproject/geth-connector": "1.7.26",
-        "@akashaproject/ipfs-connector": "1.10.13",
-        "archiver": "2.1.0",
-        "bluebird": "3.5.1",
-        "bs58": "^4.0.1",
-        "compare-versions": "3.1.0",
-        "electron-debug": "1.4.0",
-        "electron-devtools-installer": "2.2.1",
-        "electron-window-state": "4.1.1",
-        "ethereumjs-util": "5.1.2",
-        "idna-uts46": "^1.1.0",
-        "jsonschema": "1.2.0",
-        "lodash.throttle": "4.1.1",
-        "lru-cache": "4.1.1",
-        "prop-types": "15.6.0",
-        "ramda": "0.25.0",
-        "request": "2.83.0",
-        "search-index": "0.15.0",
-        "winston": "2.4.0"
-    },
-    "devEngines": {
-        "node": ">=6.x",
-        "npm": ">=3.x"
-    },
-    "engines": {
-        "electron": "1.7.9"
+    "package": {
+      "command": "node package.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
     },
     "build": {
-        "appId": "com.electron.akasha",
-        "dmg": {
-            "contents": [
-                {
-                    "x": 410,
-                    "y": 150,
-                    "type": "link",
-                    "path": "/Applications"
-                },
-                {
-                    "x": 130,
-                    "y": 150,
-                    "type": "file"
-                }
-            ]
-        },
-        "files": [
-            "dist/",
-            "main/",
-            "!main/*.ts",
-            "!main/**/*.ts",
-            "!main/test/*",
-            "!main/test/**/*",
-            "!main/typings/*",
-            "!main/typings/**/*",
-            "!test${/*}*",
-            "!app/**/*",
-            "!intl/*",
-            "!intl/**/*",
-            "node_modules/",
-            "main.js",
-            "main.js.map",
-            "LICENSE",
-            "package.json"
-        ],
-        "win": {
-            "certificateSubjectName": "AKASHA International GmbH",
-            "target": [
-                "nsis",
-                "zip"
-            ]
-        },
-        "linux": {
-            "category": "Network",
-            "target": [
-                "deb",
-                "zip"
-            ]
-        },
-        "mac": {
-            "category": "public.app-category.social-networking",
-            "target": [
-                "dmg",
-                "zip"
-            ]
-        },
-        "nsis": {
-            "oneClick": false,
-            "multiLanguageInstaller": true,
-            "allowToChangeInstallationDirectory": true
-        },
-        "directories": {
-            "buildResources": "resources",
-            "output": "release"
-        }
+      "command": "webpack --config webpack.config.production.js --progress --profile --colors",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "test": {
+      "command": "cross-env BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive test/**/*.spec.js",
+      "env": {
+        "NODE_ENV": "test"
+      }
     }
+  },
+  "bin": {
+    "electron": "./node_modules/.bin/electron"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:AkashaProject/node-app.git"
+  },
+  "author": {
+    "name": "AKASHA International GmbH",
+    "email": "hello@akasha.world",
+    "url": "https://github.com/AkashaProject"
+  },
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/AkashaProject/node-app/issues"
+  },
+  "homepage": "https://github.com/AkashaProject/node-app#readme",
+  "devDependencies": {
+    "@types/bluebird": "3.5.18",
+    "@types/chai": "4.0.5",
+    "@types/lru-cache": "4.1.0",
+    "@types/mocha": "2.2.44",
+    "@types/node": "8.0.53",
+    "@types/ramda": "0.25.6",
+    "@types/rimraf": "2.0.2",
+    "antd": "3.0.0-rc.1",
+    "asar": "0.14.0",
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.0",
+    "babel-eslint": "8.0.1",
+    "babel-loader": "7.1.2",
+    "babel-minify-webpack-plugin": "^0.2.0",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-dev-expression": "0.2.1",
+    "babel-plugin-import": "1.6.2",
+    "babel-plugin-react-intl": "2.3.1",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-polyfill": "6.26.0",
+    "babel-preset-env": "1.6.1",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-react-hmre": "1.1.1",
+    "babel-preset-react-optimize": "1.0.1",
+    "babel-preset-stage-0": "6.24.1",
+    "babel-register": "6.26.0",
+    "babel-runtime": "6.26.0",
+    "chai": "4.1.2",
+    "chai-immutable": "1.6.0",
+    "chart.js": "2.7.1",
+    "co-mocha": "1.2.1",
+    "concurrently": "3.5.1",
+    "cross-env": "5.1.1",
+    "css-loader": "0.28.7",
+    "css-modules-require-hook": "4.2.2",
+    "cssnano": "3.10.0",
+    "del": "3.0.0",
+    "devtron": "1.4.0",
+    "dexie": "2.0.1",
+    "draft-js": "0.10.4",
+    "draft-js-emoji-plugin": "2.0.1",
+    "draft-js-export-html": "1.2.0",
+    "draft-js-image-plugin": "2.0.1",
+    "draft-js-plugins-editor": "2.0.3",
+    "electron": "1.7.9",
+    "electron-builder": "19.46.9",
+    "electron-mocha": "5.0.0",
+    "enzyme": "3.2.0",
+    "eslint": "4.8.0",
+    "eslint-config-airbnb": "15.1.0",
+    "eslint-plugin-babel": "4.1.2",
+    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-jsx-a11y": "6.0.2",
+    "eslint-plugin-react": "7.5.1",
+    "ethereumjs-testrpc": "6.0.3",
+    "express": "4.16.2",
+    "extract-text-webpack-plugin": "3.0.2",
+    "fbjs-scripts": "0.8.1",
+    "file-loader": "1.1.5",
+    "fuzzy": "^0.1.3",
+    "history": "4.7.2",
+    "html-webpack-plugin": "2.30.1",
+    "immutable": "4.0.0-rc.9",
+    "joi-browser": "13.0.1",
+    "joi-validation-strategy": "0.3.3",
+    "jsdom": "11.5.1",
+    "jsdom-global": "3.0.2",
+    "json-loader": "0.5.7",
+    "less": "2.7.3",
+    "less-loader": "4.0.5",
+    "lodash.debounce": "4.0.8",
+    "material-ui": "0.19.4",
+    "megadraft": "0.4.33",
+    "minimist": "1.2.0",
+    "mocha": "4.0.1",
+    "mock-css-modules": "1.0.0",
+    "node-libs-browser": "2.1.0",
+    "node-pre-gyp": "0.6.39",
+    "node-sass": "4.7.2",
+    "optimize-css-assets-webpack-plugin": "3.2.0",
+    "pica": "4.0.1",
+    "postcss": "6.0.14",
+    "postcss-modules-extract-imports": "1.1.0",
+    "postcss-modules-local-by-default": "1.2.0",
+    "postcss-modules-scope": "1.1.0",
+    "postcss-modules-values": "1.3.0",
+    "proxyquire": "1.8.0",
+    "qrcode.react": "0.7.2",
+    "querystring": "0.2.0",
+    "react": "16.1.1",
+    "react-addons-css-transition-group": "15.6.2",
+    "react-addons-perf": "15.4.2",
+    "react-addons-test-utils": "15.6.2",
+    "react-avatar-editor": "10.3.0",
+    "react-dom": "16.1.1",
+    "react-hot-loader": "3.1.3",
+    "react-intl": "2.4.0",
+    "react-intl-translations-manager": "^5.0.1",
+    "react-masonry-component": "6.0.1",
+    "react-redux": "5.0.6",
+    "react-router-dom": "4.2.2",
+    "react-router-redux": "5.0.0-alpha.6",
+    "react-tap-event-plugin": "3.0.2",
+    "react-tooltip": "3.4.0",
+    "react-validation-mixin": "5.4.0",
+    "redux": "3.7.2",
+    "redux-devtools": "3.4.1",
+    "redux-devtools-dock-monitor": "1.1.2",
+    "redux-devtools-log-monitor": "1.4.0",
+    "redux-logger": "3.0.6",
+    "redux-saga": "0.16.0",
+    "redux-saga-tester": "1.0.374",
+    "redux-thunk": "2.2.0",
+    "rimraf": "2.6.2",
+    "sass-loader": "6.0.6",
+    "sinon": "4.1.2",
+    "source-map-support": "0.5.0",
+    "standard-version": "4.2.0",
+    "style-loader": "0.19.0",
+    "tslint": "5.8.0",
+    "typescript": "2.6.1",
+    "url-loader": "0.6.2",
+    "webpack": "3.8.1",
+    "webpack-dev-middleware": "1.12.1",
+    "webpack-dev-server": "2.9.4",
+    "webpack-hot-middleware": "2.21.0",
+    "webpack-merge": "4.1.1",
+    "webpack-node-externals": "1.6.0",
+    "webpack-sources": "1.1.0",
+    "xregexp": "3.2.0"
+  },
+  "dependencies": {
+    "@akashaproject/contracts.js": "1.3.7",
+    "@akashaproject/geth-connector": "1.7.26",
+    "@akashaproject/ipfs-connector": "1.10.13",
+    "archiver": "2.1.0",
+    "bluebird": "3.5.1",
+    "bs58": "^4.0.1",
+    "compare-versions": "3.1.0",
+    "electron-debug": "1.4.0",
+    "electron-devtools-installer": "2.2.1",
+    "electron-window-state": "4.1.1",
+    "ethereumjs-util": "5.1.2",
+    "idna-uts46": "^1.1.0",
+    "jsonschema": "1.2.0",
+    "lodash.throttle": "4.1.1",
+    "lru-cache": "4.1.1",
+    "prop-types": "15.6.0",
+    "ramda": "0.25.0",
+    "request": "2.83.0",
+    "search-index": "0.15.0",
+    "winston": "2.4.0"
+  },
+  "devEngines": {
+    "node": ">=6.x",
+    "npm": ">=3.x"
+  },
+  "engines": {
+    "electron": "1.7.9"
+  },
+  "build": {
+    "appId": "com.electron.akasha",
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "files": [
+      "dist/",
+      "main/",
+      "!main/*.ts",
+      "!main/**/*.ts",
+      "!main/test/*",
+      "!main/test/**/*",
+      "!main/typings/*",
+      "!main/typings/**/*",
+      "!test${/*}*",
+      "!app/**/*",
+      "!intl/*",
+      "!intl/**/*",
+      "node_modules/",
+      "main.js",
+      "main.js.map",
+      "LICENSE",
+      "package.json"
+    ],
+    "win": {
+      "certificateSubjectName": "AKASHA International GmbH",
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "linux": {
+      "category": "Network",
+      "target": [
+        "deb",
+        "zip"
+      ]
+    },
+    "mac": {
+      "category": "public.app-category.social-networking",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "multiLanguageInstaller": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    }
+  }
 }
