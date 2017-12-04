@@ -38,7 +38,12 @@
     }
 
     &__error-icon {
-        font-size: 16px;
-        color: @error-color;
+        width: 16px;
+        height: 16px;
+        stroke: @error-color !important;
+
+        g > g {
+            fill: @error-color !important;
+        }
     }
 }

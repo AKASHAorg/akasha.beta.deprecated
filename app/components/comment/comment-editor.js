@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftIcons } from 'megadraft';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import classNames from 'classnames';
 import decorateComponentWithProps from 'decorate-component-with-props';
-import { Avatar, ProfilePopover } from '../';
+import { Avatar, Icon, ProfilePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
@@ -23,29 +22,19 @@ const config = {
     imagePath: 'images/emoji-svg/'
 };
 
-// TODO Remove this temporary "hack"
-const Underline = () => (
-  <div
-    className="flex-center"
-    style={{ fontWeight: '800', textDecoration: 'underline', width: '20px', height: '20px', lineHeight: 1 }}
-  >
-    U
-  </div>
-);
-
 const inlineStyleActions = [{
-    icon: MegadraftIcons.BoldIcon,
+    icon: 'bold',
     style: 'BOLD'
 }, {
-    icon: MegadraftIcons.ItalicIcon,
+    icon: 'italic',
     style: 'ITALIC'
 }, {
-    icon: Underline,
+    icon: 'underline',
     style: 'UNDERLINE'
 }];
 
 const blockStyleActions = [{
-    icon: MegadraftIcons.BlockQuoteIcon,
+    icon: 'quote',
     style: 'blockquote'
 }];
 
@@ -258,7 +247,7 @@ class CommentEditor extends Component {
             // See: https://github.com/facebook/draft-js/issues/696
             onMouseDown={(ev) => { ev.preventDefault(); this.actionHandler(action.style); }}
           >
-            <action.icon />
+            <Icon type={action.icon} />
           </div>
         );
     };

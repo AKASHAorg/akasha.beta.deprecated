@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Input } from 'antd';
+import { Input } from 'antd';
 import * as R from 'ramda';
-import { HighlightCard } from '../';
+import { HighlightCard, Icon } from '../';
 import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
     highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';

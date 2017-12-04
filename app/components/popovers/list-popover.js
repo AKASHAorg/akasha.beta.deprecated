@@ -127,7 +127,7 @@ class ListPopover extends Component {
                 onChange={this.onSearchChange}
                 onKeyDown={this.onKeyDown}
                 placeholder={intl.formatMessage(listMessages.searchForList)}
-                prefix={<Icon className="list-popover__search-icon" type="search" />}
+                prefix={<Icon type="search" />}
                 size="large"
                 value={search}
               />
@@ -159,7 +159,7 @@ class ListPopover extends Component {
                       </div>
                       <div className="hidden-action content-link flex-center list-popover__icon">
                         <Icon
-                          className="list-popover__small-icon"
+                          className="list-popover__edit-icon"
                           onClick={ev => ev.stopPropagation()}
                           type="edit"
                         />

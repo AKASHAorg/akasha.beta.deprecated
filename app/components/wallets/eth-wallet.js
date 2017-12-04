@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Icon, Tabs } from 'antd';
-import { HistoryTable, TransferForm } from '../';
+import { Tabs } from 'antd';
+import { HistoryTable, Icon, TransferForm } from '../';
 import { transferEth } from '../../constants/action-types';
 import { toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
@@ -38,7 +38,12 @@ class EthWallet extends Component {
     renderHistory = () => {
         const { sentTransactions } = this.props;
         const rows = sentTransactions.map(action => ({
-            action: <span><Icon className="eth-wallet__sent-icon" type="arrow-up" />Sent</span>,
+            action: (
+              <span className="flex-center-y">
+                <Icon className="eth-wallet__sent-icon" type="arrowUp" />
+                Sent
+              </span>
+            ),
             amount: <span>{action.getIn(['payload', 'value'])} ETH</span>,
             blockNumber: action.get('blockNumber'),
             id: action.get('id'),

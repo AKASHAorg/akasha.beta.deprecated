@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Icon, Popover, Progress, Tooltip } from 'antd';
-import { PieChart, ShiftForm } from '../';
+import { Button, Form, Popover, Progress, Tooltip } from 'antd';
+import { Icon, PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectBalance, selectLoggedEthAddress, selectManaBurned, selectPendingBondAeth,
@@ -122,19 +122,19 @@ class ManaPopover extends Component {
             </div>
             <div className="mana-popover__actions">
               <Button
-                className="mana-popover__button"
+                className="flex-center mana-popover__button"
                 onClick={this.onShiftDown}
                 size="large"
               >
-                <Icon type="arrow-down" />
+                <Icon type="arrowDown" />
                 {intl.formatMessage(formMessages.shiftDown)}
               </Button>
               <Button
-                className="mana-popover__button"
+                className="flex-center mana-popover__button"
                 onClick={this.onShiftUp}
                 size="large"
               >
-                <Icon type="arrow-up" />
+                <Icon type="arrowUp" />
                 {intl.formatMessage(formMessages.shiftUp)}
               </Button>
             </div>
@@ -166,7 +166,7 @@ class ManaPopover extends Component {
             <Tooltip title={tooltip}>
               <Progress
                 className="mana-popover__progress"
-                format={() => <Icon type="question-circle-o" />}
+                format={() => <Icon type="question" />}
                 percent={percent}
                 strokeWidth={10}
                 type="circle"

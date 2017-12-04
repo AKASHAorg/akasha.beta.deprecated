@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Popover, Button } from 'antd';
+import { Popover, Button } from 'antd';
 import * as actionTypes from '../constants/action-types';
 import { tagMessages, generalMessages } from '../locale-data/messages';
+import { Icon } from './';
 
 const tagCreatorKeycodes = [
     13, // enter
@@ -304,7 +305,7 @@ class TagEditor extends Component {
               >
                 <div
                   className={
-                    `tag-editor__tag-item
+                    `flex-center-y tag-editor__tag-item
                     tag-editor__tag-item${existentTags.includes(tag) ? '' : '_should-register'}`
                     }
                 >
@@ -314,18 +315,12 @@ class TagEditor extends Component {
                       className="tag-item__delete-button"
                       onClick={this._deleteTag(tag)}
                     >
-                      <Icon
-                        type="close"
-                      />
+                      <Icon type="close" />
                     </span>
                   }
                   {!existentTags.includes(tag) &&
-                    <span
-                      className="tag-item__info-button"
-                    >
-                      <Icon
-                        type="question"
-                      />
+                    <span className="tag-item__info-button" >
+                      <Icon type="question" />
                     </span>
                   }
                 </div>

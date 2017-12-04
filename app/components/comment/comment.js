@@ -8,9 +8,7 @@ import classNames from 'classnames';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import decorateComponentWithProps from 'decorate-component-with-props';
-import { Icon } from 'antd';
-import { VotesModal, ProfilePopover, VotePopover } from '../';
-import { EntryCommentReply } from '../svg';
+import { Icon, ProfilePopover, VotesModal, VotePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
@@ -139,8 +137,8 @@ class Comment extends Component {
         });
         return (
           <div className={className}>
-            <div className="content-link" onClick={this.toggleExpanded}>
-              <Icon className="comment__expand-button-icon" type={isExpanded ? 'arrow-up' : 'arrow-down'} />
+            <div className="flex-center-y content-link" onClick={this.toggleExpanded}>
+              <Icon className="comment__expand-button-icon" type={isExpanded ? 'arrowUp' : 'arrowDown'} />
               {label}
             </div>
           </div>
@@ -277,9 +275,7 @@ class Comment extends Component {
                       className="content-link flex-center-y comment__reply-button"
                       onClick={() => onReply(comment.commentId)}
                     >
-                      <svg viewBox="0 0 20 20">
-                        <EntryCommentReply />
-                      </svg>
+                      <Icon type="reply" />
                       <span>{intl.formatMessage(generalMessages.reply)}</span>
                     </div>
                     {isExpanded !== null && this.renderExpandButton()}

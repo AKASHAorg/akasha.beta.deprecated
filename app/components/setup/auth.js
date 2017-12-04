@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Icon } from 'antd';
+import { Button } from 'antd';
 import throttle from 'lodash.throttle';
-import { AuthProfileList } from '../';
+import { AuthProfileList, Icon } from '../';
 import { setupMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
@@ -109,7 +109,7 @@ class Auth extends Component {
                     <div className="flex-center-y">
                       <Icon
                         className="auth__icon"
-                        type="download"
+                        type="importIcon"
                       />
                       {intl.formatMessage(setupMessages.importKeys)}
                     </div>
@@ -123,7 +123,7 @@ class Auth extends Component {
                     <div className="flex-center-y">
                       <Icon
                         className="auth__icon"
-                        type="copy"
+                        type="zipFile"
                       />
                       {intl.formatMessage(setupMessages.backup)}
                     </div>

@@ -67,6 +67,10 @@
         border-top: 1px solid #eee;
         margin-top: 8px;
         height: 32px;
+        background-color: @background;  
+        margin-left: -8px;
+        margin-right: -8px;     
+        padding: 0px 8px;        
     }
 
     &__toolbar-actions {
@@ -78,11 +82,10 @@
         width: 20px;
         height: 20px;
         margin-right: 5px;
-        color: @text-color-secondary;
-
-        svg {
-            width: 20px;
-            height: 20px;
+        padding: 2px;
+        
+        svg:not(.add-image__icon) {
+            stroke: @text-color-secondary !important;
         }
 
         &_active {
@@ -93,7 +96,7 @@
     &__separator {
         width: 1px;
         height: 18px;
-        margin-right: 5px;
+        margin: 0px 8px 0px 3px;
         background-color: @text-color-secondary;
     }
 

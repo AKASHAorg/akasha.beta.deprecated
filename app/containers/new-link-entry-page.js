@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Col, Row, Icon, Button, Modal } from 'antd';
+import { Col, Row, Button, Modal } from 'antd';
 import { DraftJS } from 'megadraft';
 import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
-    TagEditor, WebsiteInfoCard, DataLoader } from '../components';
+    TagEditor, WebsiteInfoCard, DataLoader, Icon } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
@@ -321,13 +321,10 @@ class NewLinkEntryPage extends Component {
         return (
           <div className="edit-entry-page link-page">
             <div
-              className="edit-entry-page__publish-options"
+              className="flex-center-y edit-entry-page__publish-options"
               onClick={this._togglePublishPanel(true)}
             >
-              <Icon
-                type="ellipsis"
-                style={{ transform: 'rotate(90deg)' }}
-              />
+              <Icon className="edit-entry-page__more-icon" type="more" />
               {intl.formatMessage(entryMessages.publishOptions)}
             </div>
             <Row

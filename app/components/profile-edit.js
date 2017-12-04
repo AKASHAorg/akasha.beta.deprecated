@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
-import { Icon } from 'antd';
 import throttle from 'lodash.throttle';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { profileExists } from '../local-flux/actions/profile-actions';
@@ -12,6 +11,7 @@ import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions'
 import ProfileForm from './forms/profile-edit-form';
 import { profileMessages } from '../locale-data/messages';
 import { selectLoggedProfileData } from '../local-flux/selectors';
+import { Icon } from './';
 
 class ProfileEdit extends Component {
     state = {
@@ -73,9 +73,9 @@ class ProfileEdit extends Component {
               <div className={`profile-edit__title ${withBorder}`}>
                 {intl.formatMessage(profileMessages.editProfileTitle)}
                 <Icon
+                  className="content-link profile-edit__close-icon"
                   type="close"
                   onClick={this.props.profileEditToggle}
-                  style={{ fontSize: 20, cursor: 'pointer' }}
                 />
               </div>
               <ProfileForm

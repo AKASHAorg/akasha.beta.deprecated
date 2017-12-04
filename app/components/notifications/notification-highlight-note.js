@@ -40,10 +40,8 @@ class NotificationHighlightNote extends Component {
         const hasText = !!this.state.value;
         return (
           <div className="notif-note">
-            <div className="notif-note__message">
-              <div className="notif-note__icon">
-                <Icon type="check-circle" style={{ color: '#108ee9' }} />
-              </div>
+            <div className="flex-center-y notif-note__message">
+              <Icon className="notif-note__icon" type="check-circle" />
               <div className="notif-note__text">
                 { intl.formatMessage(notificationMessages[notif.get('id')]) }
               </div>

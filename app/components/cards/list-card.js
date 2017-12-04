@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Card, Icon, Modal } from 'antd';
+import { Card, Modal } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 import { listMessages } from '../../locale-data/messages/list-messages';
+import { Icon } from '../';
 
 class ListCard extends Component {
     state = {
@@ -81,18 +82,18 @@ class ListCard extends Component {
             <div className="list-card__footer">
               <Link className="unstyled-link" to={listUrl}>
                 <div className="content-link list-card__left-actions">
-                  <Icon type="file-text list-card__icon" />
                   <div>{list.get('entryIds').size}</div>
+                  <Icon className="list-card__icon" type="entry" />
                 </div>
               </Link>
-              <div className="list-card__right-actions">
+              {/* <div className="list-card__right-actions">
                 <Icon className="content-link list-card__icon" type="edit" />
                 <Icon
                   className="content-link list-card__icon"
                   onClick={this.deleteList}
-                  type="delete"
+                  type="trash"
                 />
-              </div>
+              </div> */}
             </div>
           </Card>
         );

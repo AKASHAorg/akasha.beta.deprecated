@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Input, InputNumber } from 'antd';
+import { Button, Form, InputNumber } from 'antd';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { formatBalance } from '../../utils/number-formatter';
 

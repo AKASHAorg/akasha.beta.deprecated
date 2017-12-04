@@ -6,7 +6,6 @@ import { notification } from 'antd';
 import { errorMessages } from '../../locale-data/messages';
 import { errorDisplay, errorDeleteNonFatal } from '../../local-flux/actions/error-actions';
 
-
 class ErrorNotification extends Component {
     componentWillReceiveProps (nextProps) {
         const { intl } = this.props;

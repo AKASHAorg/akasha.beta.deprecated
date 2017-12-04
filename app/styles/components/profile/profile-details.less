@@ -103,12 +103,32 @@
 
     &__unfollow-button {
         background-color: @error-color !important;
-        color: @text-color-dark !important;
+        color: @heading-color !important;
+
+        svg {
+            stroke: @heading-color !important;
+        }
+    }
+
+    &__follow-button {
+        stroke: @text-color-dark !important;
+        margin-right: 5px;
+    }
+
+    &__support-button:hover {
+        svg {
+            transition: all 100ms ease-in-out;            
+            stroke: @primary-color !important;
+        }
     }
 
     &__following-button {
         color: @primary-color !important;
         border-color: @primary-color !important;
+
+        svg {
+            stroke: @primary-color !important;
+        }
     }
 
     &__counters-wrapper {

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Icon, Popover, Modal } from 'antd';
+import { Popover, Modal } from 'antd';
 import fuzzy from 'fuzzy';
 import { injectIntl } from 'react-intl';
-import { EntrySecondarySidebarItem } from '../';
+import { EntrySecondarySidebarItem, Icon } from '../';
 import { entryMessages, searchMessages } from '../../locale-data/messages';
 import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
@@ -150,9 +150,7 @@ class NewEntrySecondarySidebar extends Component {
         const currentType = match.params.draftType;
         return (
           <div>
-            <ul
-              className="new-entry-secondary-sidebar__entry-type-list"
-            >
+            <ul className="new-entry-secondary-sidebar__entry-type-list">
               {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
               {entryTypes.map(type => (
                 <li
@@ -284,8 +282,12 @@ class NewEntrySecondarySidebar extends Component {
                   onVisibleChange={this._forceDraftTypeVisibility}
                 >
                   <div
+                    className="flex-center-y content-link"
                     onClick={this._handleDraftTypeVisibility}
-                  >{intl.formatMessage(entryMessages[`${draftType}EntryType`])} <Icon type="down" /></div>
+                  >
+                    <span>{intl.formatMessage(entryMessages[`${draftType}EntryType`])}</span>
+                    <Icon className="new-entry-secondary-sidebar__dropdown-icon" type="arrowDropdownOpen" />
+                  </div>
                 </Popover>
               </div>
               <div
@@ -305,7 +307,7 @@ class NewEntrySecondarySidebar extends Component {
                 />
               </div>
               <div
-                className="new-entry-secondary-sidebar__sidebar-header_search-icon"
+                className="flex-center new-entry-secondary-sidebar__sidebar-header_search-icon"
                 onClick={this._toggleSearchBarVisibility}
               >
                 <Icon
@@ -321,7 +323,7 @@ class NewEntrySecondarySidebar extends Component {
               >
                 <div className="new-entry-secondary-sidebar__draft-list-title">
                   <div>{intl.formatMessage(entryMessages.drafts)}</div>
-                  <Icon type="plus" onClick={this._handleDraftCreate} />
+                  <Icon className="content-link" type="plus" onClick={this._handleDraftCreate} />
                 </div>
                 {searching && (searchResults.length > 0) &&
                     searchResults

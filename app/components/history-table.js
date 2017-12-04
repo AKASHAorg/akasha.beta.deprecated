@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Icon, Spin, Tooltip } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import { generalMessages } from '../locale-data/messages';
+import { Icon } from './';
 
 const HistoryTable = ({ intl, rows }) => {
     const getBlockNumber = (row) => {
@@ -15,7 +16,7 @@ const HistoryTable = ({ intl, rows }) => {
         return (
           <div className="flex-center-x">
             <Tooltip title={intl.formatMessage(generalMessages.transactionFailed)}>
-              <Icon className="history-table__error-icon" type="close-circle-o" />
+              <Icon className="history-table__error-icon" type="closeEntryOption" />
             </Tooltip>
           </div>
         );

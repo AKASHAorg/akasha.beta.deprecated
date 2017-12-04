@@ -2,16 +2,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { Button, Icon, Popover, Spin } from 'antd';
+import { Button, Popover, Spin } from 'antd';
 import classNames from 'classnames';
-import { Avatar, DisplayName, SendTipForm } from '../';
+import { Avatar, DisplayName, Icon, SendTipForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
+import imageCreator, { findBestMatch } from '../../utils/imageUtils';
+import { formatBalance } from '../../utils/number-formatter';
 
 class ProfileDetails extends Component {
     state = {
@@ -96,7 +97,7 @@ class ProfileDetails extends Component {
         } else {
             label = (
               <div className="flex-center">
-                <Icon className="profile-details__button-icon" type="plus" />
+                <Icon className="profile-details__follow-button" type="plus" />
                 {intl.formatMessage(profileMessages.follow)}
               </div>
             );
@@ -175,7 +176,9 @@ class ProfileDetails extends Component {
             <div className="profile-details__scores-wrapper">
               <div>
                 {intl.formatMessage(generalMessages.karmaTotalScore)}
-                <span className="profile-details__score">85</span>
+                <span className="profile-details__score">
+                  {formatBalance(profileData.karma)}
+                </span>
               </div>
               <div>
                 {intl.formatMessage(generalMessages.essenceTotalScore)}
@@ -201,12 +204,15 @@ class ProfileDetails extends Component {
                   visible={this.state.popoverVisible}
                 >
                   <Button
-                    className="profile-details__button"
+                    className="profile-details__button profile-details__support-button"
                     disabled={tipPending}
                     size="large"
                   >
                     <div>
-                      <Icon className="profile-details__button-icon" type="heart-o" />
+                      <Icon
+                        className="profile-details__button-icon"
+                        type="heart"
+                      />
                       {intl.formatMessage(profileMessages.support)}
                     </div>
                   </Button>

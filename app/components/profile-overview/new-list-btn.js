@@ -9,9 +9,9 @@ import { listMessages } from '../../locale-data/messages/list-messages';
 import { generalMessages } from '../../locale-data/messages/general-messages';
 
 class NewListBtn extends Component {
-      state = {
-          visible: false
-      }
+    state = {
+        visible: false
+    }
 
     hide = () => {
         this.setState({

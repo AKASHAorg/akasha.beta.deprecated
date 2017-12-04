@@ -31,15 +31,15 @@
         top: 50%;
         margin-top: -24px;
         left: 50%;
-        margin-left: -18px;
-        svg {
-            fill: #8c8c8c;
-        }
+        margin-left: -8px;
         &_dragEnter {
             svg {
-                fill: @primary-color;
+                stroke: @primary-color !important;
             }
         }
+    }
+    &__add-image-icon {
+        stroke: @text-color-secondary !important;
     }
     &__add-image-help-text {
         position: absolute;

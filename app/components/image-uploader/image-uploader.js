@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import { Button, Progress } from 'antd';
 import { fromJS } from 'immutable';
 import { equals } from 'ramda';
-import { SvgIcon } from '../';
-import AddImage from '../svg/add-image';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import { uploadImage } from '../../local-flux/services/utils-service';
+import { Icon } from '../';
 
 const INITIAL_PROGRESS_VALUE = 20;
 
@@ -203,9 +202,7 @@ class ImageUploader extends Component {
                     image-uploader__empty-container${highlightDropZone ? '_dragEnter' : ''}`
                 }
               >
-                <SvgIcon style={{ height: 48, width: 48 }} >
-                  <AddImage />
-                </SvgIcon>
+                <Icon className="image-uploader__add-image-icon" type="photoImage" />
                 <p className="image-uploader__helper-text">
                   {!highlightDropZone && intl.formatMessage(generalMessages.addImage)}
                   {highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
