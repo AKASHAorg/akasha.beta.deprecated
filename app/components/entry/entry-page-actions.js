@@ -251,8 +251,8 @@ class EntryPageAction extends Component {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
         };
         const upvoteRatio = entry.get('upvoteRatio');
-        let upvotePercent = 50;
-        let downvotePercent = 50;
+        let upvotePercent = null;
+        let downvotePercent = null;
 
         if (upvoteRatio) {
             upvotePercent = 100 * upvoteRatio;
@@ -307,7 +307,11 @@ class EntryPageAction extends Component {
                 </div>
                 {isFullEntry &&
                   <Tooltip placement="left" title={votePercentTooltip}>
-                    <div className="flex-center-y entry-actions__vote-bar">
+                    <div className={
+                        `flex-center-y
+                        entry-actions__vote-bar
+                        entry-actions__vote-bar${(upvotePercent || downvotePercent) ? '' : '_disabled'}`}
+                    >
                       <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
                       <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
                     </div>
