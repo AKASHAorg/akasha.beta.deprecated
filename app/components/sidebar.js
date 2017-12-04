@@ -203,10 +203,10 @@ class Sidebar extends Component {
                 iconType="chat"
               />
             </div>
-            <div className="flex-center-x sidebar__progress-wrapper">
+            <div className="flex-center-x content-link sidebar__progress-wrapper">
               <ManaPopover />
             </div>
-            <div className="flex-center-x sidebar__progress-wrapper">
+            <div className="flex-center-x content-link sidebar__progress-wrapper">
               <EssencePopover />
             </div>
             <div className="flex-center-x sidebar__avatar">

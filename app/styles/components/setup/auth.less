@@ -54,9 +54,14 @@
         outline: none;
         background-color: transparent !important;
 
-        &:hover svg {
+        &:hover:not(.auth__button_no-border_disabled) svg {
             transition: stroke 150ms ease-in-out;
             stroke: @primary-color !important;
+        }
+
+        &_disabled svg {
+            transition: stroke 150ms ease-in-out;
+            stroke: @disabled-color !important;
         }
     }
 

@@ -205,7 +205,7 @@ class SelectableEditor extends Component {
               className="flex-center-y popover-menu__item"
               onClick={startComment && this.startComment}
             >
-              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="comment" />
+              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="commentLarge" />
               <span>{intl.formatMessage(entryMessages.startComment)}</span>
             </div>
           </div>

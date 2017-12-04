@@ -152,7 +152,7 @@ class AethWallet extends Component {
         const { activeTab } = this.state;
         const aethBalance = balance.get('aeth').toJS();
         const cyclingPending = cyclingStates.getIn(['pending', 'collection']);
-        const cyclingCount = pendingCycleAeth ? (cyclingPending.size || 0) + 1 : cyclingPending.size;
+        const cyclingCount = pendingCycleAeth ? (cyclingPending.length || 0) + 1 : cyclingPending.length;
         const cyclingTab = (
           <span className="flex-center">
             {intl.formatMessage(generalMessages.cycling)}

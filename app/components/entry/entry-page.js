@@ -188,7 +188,7 @@ class EntryPage extends Component {
                       <span>
                         {intl.formatMessage(entryMessages.commentsCount, { count: commentsCount })}
                       </span>
-                      <Icon className="entry-page__comment-icon" type="comment" />
+                      <Icon className="entry-page__comment-icon" type="commentLarge" />
                     </div>
                   }
                 </div>

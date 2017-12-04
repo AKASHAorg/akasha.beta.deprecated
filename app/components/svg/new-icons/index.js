@@ -12,6 +12,7 @@ export check from './check';
 export closeEntryOption from './close-entry-option';
 export close from './close';
 export comment from './comment';
+export commentLarge from './comment-large';
 export community from './community';
 export dashboard from './dashboard';
 export draft from './draft';
