@@ -11,6 +11,11 @@ const formMessages = defineMessages({
         description: 'label for accept tips switch (personal settings)',
         defaultMessage: 'Accept tips'
     },
+    akashaIdPlaceholder: {
+        id: 'akashaIdPlaceholder',
+        description: 'placeholder for username input field',
+        defaultMessage: 'Type your username'
+    },
     insufficientEth: {
         id: 'app.form.insufficientEth',
         description: 'title for insufficient funds card',
@@ -35,6 +40,16 @@ const formMessages = defineMessages({
         id: 'app.form.ethAmount',
         description: 'eth amount input label',
         defaultMessage: 'ETH amount'
+    },
+    firstNamePlaceholder: {
+        id: 'firstNamePlaceholder',
+        description: 'placeholder for first name input field',
+        defaultMessage: 'Type your first name'
+    },
+    lastNamePlaceholder: {
+        id: 'lastNamePlaceholder',
+        description: 'placeholder for last name input field',
+        defaultMessage: 'Type your last name'
     },
     maxAethAmount: {
         id: 'app.form.maxAethAmount',

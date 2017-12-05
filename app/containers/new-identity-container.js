@@ -137,7 +137,7 @@ class NewIdentity extends Component {
                   {intl.formatMessage(setupMessages.newIdentitySubtitle)}
                 </div>
                 {this.renderForm()}
-                <div className="content-link new-identity__terms">
+                <div className="new-identity__terms">
                   <small>
                     <FormattedMessage
                       {...generalMessages.terms}
@@ -151,7 +151,6 @@ class NewIdentity extends Component {
                   className="new-identity__button"
                   disabled={buttonsDisabled}
                   onClick={history.goBack}
-                  size="large"
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>
@@ -160,7 +159,6 @@ class NewIdentity extends Component {
                   disabled={hasErrors(getFieldsError()) || buttonsDisabled}
                   htmlType="submit"
                   onClick={this.handleSubmit}
-                  size="large"
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.submit)}

@@ -106,10 +106,7 @@ class Auth extends Component {
               </div>
               <div className="setup-content__column-footer auth__footer">
                 <div className="flex-center-y auth__buttons-wrapper">
-                  {/* <Button
-                    className="auth__button auth__button_no-border"
-                    size="large"
-                  >
+                  {/* <Button className="auth__button auth__button_no-border">
                     <div className="flex-center-y">
                       <Icon
                         className="auth__icon"
@@ -122,7 +119,6 @@ class Auth extends Component {
                     className={backupButtonClass}
                     disabled={backupPending}
                     onClick={backupKeysRequest}
-                    size="large"
                   >
                     <div className="flex-center-y">
                       <Icon
@@ -135,10 +131,7 @@ class Auth extends Component {
                 </div>
                 <div id="button" className="auth__new-identity-button">
                   <Link to="/setup/new-identity">
-                    <Button
-                      className="auth__button"
-                      size="large"
-                    >
+                    <Button className="auth__button">
                       {intl.formatMessage(setupMessages.createIdentity)}
                     </Button>
                   </Link>

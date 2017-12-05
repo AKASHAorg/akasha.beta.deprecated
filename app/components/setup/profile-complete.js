@@ -59,7 +59,6 @@ class ProfileComplete extends Component {
 
     throttledHandler = throttle(this.handleFormScroll, 300);
 
-
     render () {
         const { intl, history, tempProfile, loggedProfileData,
             loggedEthAddress, profileExistsData } = this.props;
@@ -71,12 +70,10 @@ class ProfileComplete extends Component {
           <div className="setup-content setup-content__column_full">
             <div className="profile-complete">
               <div className="profile-complete__left">
-                <div>
-                  <div className="profile-complete__left-bold-text">
-                    {intl.formatMessage(setupMessages.authComplete)}
-                  </div>
-                  <span>{intl.formatMessage(setupMessages.completeProfile)}</span>
+                <div className="profile-complete__left-bold-text">
+                  {intl.formatMessage(setupMessages.authComplete)}
                 </div>
+                <span>{intl.formatMessage(setupMessages.completeProfile)}</span>
               </div>
               <div className="profile-complete__right">
                 <div className={`profile-complete__header ${withShadow}`} />

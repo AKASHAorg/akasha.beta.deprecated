@@ -5,21 +5,21 @@
     overflow-x: hidden;
     height: 100%;
     margin: 15px 0px;
-    background-color: #fff;
+    background-color: @background-light;
     border-radius: 4px;
     
     &__no-tags {
         display: flex;
         justify-content: center;
-        color: #999999;
-        padding-top: 10px;
+        color: @text-color-secondary;
+        padding-top: 24px;
     }
 
     &__tag-list-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px outset lightgrey;
+        border-bottom: 1px solid @border-color;
         padding: 15px 0px;
         margin: 0px 15px;
 
@@ -35,12 +35,15 @@
 
     &__tag-list-tag-name {
         font-size: 13px;
-        font-weight: bold;
+        font-weight: 500;
+        color: @heading-color;
+        text-transform: uppercase;
     }
 
     &__tag-list-entry-count {
         font-size: 12px;
         font-weight: 150;
+        color: @text-color-secondary;
     }
 
     &__tag-list-switch {

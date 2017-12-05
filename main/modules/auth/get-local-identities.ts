@@ -6,7 +6,7 @@ import { uniq } from 'ramda';
 const execute = Promise.coroutine(function* () {
     const accounts = yield GethConnector.getInstance().web3.eth.getAccountsAsync();
     if (!accounts || !accounts.length) {
-        return [];
+        return { collection: [] };
     }
     const profiles = uniq(accounts).map((address: string) => {
         return resolveEth.execute({ ethAddress: address });

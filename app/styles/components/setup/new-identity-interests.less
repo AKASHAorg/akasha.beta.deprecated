@@ -21,7 +21,7 @@
 
     &__left-bold-text {
         font-size: 16px;
-        font-weight: bold;
+        color: @heading-color;
         padding-bottom: 10px;
     }
 
@@ -56,6 +56,8 @@
         margin: 6px;
         display: inline-flex;
         align-items: center;
+        text-transform: uppercase;
+        color: @heading-color;
 
         .ant-tag-text {
             display: inline-block;
@@ -67,5 +69,9 @@
 
     &__skip-icon {
         margin-left: 5px;
+    }
+
+    .ant-input {
+        color: @heading-color;
     }
 }

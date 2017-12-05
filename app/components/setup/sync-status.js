@@ -35,7 +35,7 @@ class SyncStatus extends Component {
         const synchronizingMessage = intl.formatMessage(setupMessages.synchronizing);
         const processingMessage = intl.formatMessage(setupMessages.processing);
 
-        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
+        if (syncActionId === 1 && gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
                 gethSyncStatus.get('highestBlock') > 0) {
             const peerInfo = intl.formatMessage(
                 setupMessages.peerCount,

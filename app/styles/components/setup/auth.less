@@ -1,5 +1,5 @@
 .auth {
-    background-color: #fafafa;
+    background-color: @background;
 
     &__content {
         padding-bottom: 0px !important;
@@ -26,12 +26,13 @@
     }
 
     &__title {
-        font-size: 18px;
-        font-weight: 500;
+        font-size: 16px;
+        color: @heading-color;
     }
 
     &__subtitle {
-        color: #777;
+        color: @text-color;
+        font-size: 14px;
         margin: 5px 0px;
     }
 
@@ -53,14 +54,15 @@
         border: none;
         outline: none;
         background-color: transparent !important;
+        svg {
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);            
+        }
 
         &:hover:not(.auth__button_no-border_disabled) svg {
-            transition: stroke 150ms ease-in-out;
             stroke: @primary-color !important;
         }
 
         &_disabled svg {
-            transition: stroke 150ms ease-in-out;
             stroke: @disabled-color !important;
         }
     }

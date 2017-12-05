@@ -238,7 +238,7 @@ const setupMessages = defineMessages({
             few {peers}
             many {peers}
             other {peers}
-        }, {peerCount, plural,
+        } {peerCount, plural,
             one {connected}
             other {connected}
         }`

@@ -163,38 +163,34 @@ class Sync extends Component {
               <div className="flex-center sync__actions">
                 {syncActionId !== 4 &&
                   <div className="flex-center-y">
-                    <Button onClick={this.toggleDetails}>
+                    <Button
+                      className="sync__button"
+                      onClick={this.toggleDetails}
+                    >
                       <div className="flex-center-y">
-                        <Icon
-                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
-                          type="eye-o"
-                        />
+                        <Icon className="sync__logs-icon" type="eye-o" />
                         <span>{intl.formatMessage(setupMessages.details)}</span>
                       </div>
                     </Button>
                     <Button
+                      className="sync__button"
                       style={{ marginLeft: '12px' }}
                       onClick={this.handlePause}
                       disabled={gethBusyState}
                     >
                       <div className="flex-center-y lowercase">
-                        <Icon
-                          style={{ fontSize: '18px', marginRight: '5px', position: 'relative', top: '1px' }}
-                          type={buttonIcon}
-                        />
+                        <Icon className="sync__pause-icon" type={buttonIcon} />
                         <span>{action}</span>
                       </div>
                     </Button>
                     <Button
+                      className="sync__button"
                       style={{ marginLeft: '12px' }}
                       onClick={this.handleCancel}
                       disabled={gethBusyState}
                     >
                       <div className="flex-center-y lowercase">
-                        <Icon
-                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
-                          type="stop"
-                        />
+                        <div className="sync__stop-icon" />
                         <span>{intl.formatMessage(generalMessages.cancel)}</span>
                       </div>
                     </Button>
@@ -211,12 +207,10 @@ class Sync extends Component {
                 }
               </div>
               <div className="sync__message">
-                <small>
-                  {syncActionId === 4 && !ipfsStatus.get('starting') ?
-                      intl.formatMessage(setupMessages.afterSyncFinish) :
-                      intl.formatMessage(setupMessages.onSyncStart)
-                  }
-                </small>
+                {syncActionId === 4 && !ipfsStatus.get('starting') ?
+                    intl.formatMessage(setupMessages.afterSyncFinish) :
+                    intl.formatMessage(setupMessages.onSyncStart)
+                }
               </div>
             </div>
           </div>

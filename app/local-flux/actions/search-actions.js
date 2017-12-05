@@ -26,7 +26,7 @@ export const searchSyncTagsError = (error) => {
 };
 export const searchSyncTagsSuccess = data => action(types.SEARCH_SYNC_TAGS_SUCCESS, { data });
 
-export const searchTags = query => action(types.SEARCH_TAGS, { query });
+export const searchTags = (query, limit) => action(types.SEARCH_TAGS, { query, limit });
 export const searchTagsError = (error) => {
     error.code = 'STE01';
     error.messageId = 'searchTags';

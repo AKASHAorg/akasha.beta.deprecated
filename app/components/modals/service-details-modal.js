@@ -21,10 +21,7 @@ const Footer = (props) => {
           </div>
         </div>
         <div className="service-details-modal__footer-right">
-          <Button
-            onClick={onCancel}
-            size="large"
-          >
+          <Button onClick={onCancel}>
             <div className="service-details-modal__button-label">
               {intl.formatMessage(generalMessages.cancel)}
             </div>
@@ -32,7 +29,6 @@ const Footer = (props) => {
           <Button
             disabled={saveDisabled}
             onClick={onSave}
-            size="large"
             type="primary"
           >
             <div className="service-details-modal__button-label">

@@ -1,16 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import { hoursMinutesSeconds } from '../../utils/dateFormatter';
-
-const listStyle = {
-    paddingLeft: 4,
-    fontFamily: 'Consolas',
-    listStyle: 'none',
-    overflowY: 'auto',
-    wordWrap: 'break-word',
-    margin: 0,
-    padding: '16px 0'
-};
 
 class LogsList extends Component {
     componentDidMount () {
@@ -24,39 +15,30 @@ class LogsList extends Component {
     }
 
     renderListItem = (log, key) => (
-      <li key={`${key}-${log.get('timestamp')}`} style={{ marginBottom: '16px' }} >
-        <div
-          style={{
-              display: 'flex',
-              color: '#aaa',
-              textTransform: 'uppercase',
-              fontSize: '13px'
-          }}
-        >
-          <span
-            style={{
-                flex: '0 0 auto'
-            }}
-          >
+      <li key={`${key}-${log.get('timestamp')}`} className="logs-list__list-item" >
+        <div className="logs-list__list-item-header">
+          <span className="logs-list__log-level">
             {log.get('level')}
           </span>
-          <span style={{ flex: '1 1 auto', textAlign: 'right' }}>
+          <span className="logs-list__timestamp">
             {hoursMinutesSeconds(new Date(log.get('timestamp')))}
           </span>
         </div>
-        <p style={{ marginTop: '6px' }}>
+        <p className="logs-list__message">
           {log.get('message')}
         </p>
       </li>
     );
 
     render () {
-        const { logs } = this.props;
-        const style = Object.assign({}, listStyle, this.props.style);
+        const { logs, modal } = this.props;
         const listItems = [];
         logs.forEach((value, key) => listItems.unshift(this.renderListItem(value, key)));
+        const className = classNames('logs-list', {
+            'logs-list_modal': modal
+        });
         return (
-          <ul style={style}>
+          <ul className={className}>
             {listItems}
           </ul>
         );
@@ -65,13 +47,9 @@ class LogsList extends Component {
 
 LogsList.propTypes = {
     logs: PropTypes.shape().isRequired,
+    modal: PropTypes.bool,
     startLogger: PropTypes.func.isRequired,
     stopLogger: PropTypes.func.isRequired,
-    style: PropTypes.shape(),
-};
-
-LogsList.contextTypes = {
-    muiTheme: PropTypes.shape().isRequired
 };
 
 export default LogsList;

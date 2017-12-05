@@ -1,18 +1,18 @@
 .profile-complete-form {
     &__avatar-title {
-        padding-bottom: 10px;
         font-size: 11px;
-        color: @text-color-secondary;
+        color: @text-color;
+        margin-bottom: 10px;
     }
 
     &__bg-image-title {
-        padding-bottom: 10px;
         font-size: 11px;
-        color: @text-color-secondary;
+        color: @text-color;
+        margin-bottom: 10px;        
     }
 
     &__textarea {
-        resize: vertical;
+        resize: none;
     }
     &__wrap {
         height:100%;
@@ -28,6 +28,10 @@
         }
         .ant-form-item-label label {
             font-size: 11px;
+            color: @text-color;
+        }
+        .ant-input {
+            color: @heading-color;
         }
     }
 
@@ -60,6 +64,7 @@
         margin-top: 33px;
         margin-left: 8px;
         float: left;
+        color: @heading-color;
     }
 
     &__tips-switch {
@@ -67,11 +72,12 @@
     }
 
     &__add-links-btn {
-        margin: 16px 0 0 0;
+        margin: 8px 0 0 0;
     }
 
     &__link {
-        padding-top: 20px;
+        color: @heading-color;
+        text-transform: uppercase;        
     }
 
     &__footer {

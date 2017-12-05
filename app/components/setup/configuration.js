@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Radio, Select as AntdSelect } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../../locale-data/messages';
-import { GethCacheSelect, PathInputField, Select } from '../';
+import { GethCacheSelect, Icon, PathInputField, Select } from '../';
 
 const { Option } = AntdSelect;
 const RadioGroup = Radio.Group;
@@ -125,7 +125,8 @@ class Config extends Component {
               size="large"
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button onClick={this.handleReset}>
+              <Button className="flex-center-y configuration__reset-button" onClick={this.handleReset}>
+                <Icon type="reload" />
                 {intl.formatMessage(generalMessages.reset)}
               </Button>
             </div>
@@ -187,7 +188,6 @@ class Config extends Component {
               <div className="setup-content__column-footer">
                 <Button
                   onClick={this.handleSubmit}
-                  size="large"
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.next)}

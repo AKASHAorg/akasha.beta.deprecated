@@ -1,22 +1,20 @@
 .profile-complete {
     display: flex;
-    flex-direction: row;
-    width: 90%;
-    max-width: 1000px;
-    margin: 0 auto;
+    justify-content: space-between;
+    width: 840px;
+    margin: 0px auto;
     padding-bottom: 0px !important;
 
     &__left {
         margin-top: 40px;
-        width: 290px;
-        padding-right: 70px;
+        width: 220px;
         display: flex;
         flex-direction: column;
     }
 
     &__left-bold-text {
         font-size: 16px;
-        font-weight: bold;
+        color: @heading-color;
         padding-bottom: 10px;
     }
 
@@ -24,7 +22,9 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        width: 670px;
+        width: 560px;
+        font-size: 14px;
+        line-height: 21px;
     }
 
     &__header {

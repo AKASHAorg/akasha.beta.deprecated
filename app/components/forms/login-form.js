@@ -99,7 +99,8 @@ class LoginForm extends Component {
     };
 
     render () {
-        const { ethAddress, gethStatus, getInputRef, intl, ipfsStatus, loginErrors, loginPending } = this.props;
+        const { ethAddress, gethStatus, getInputRef, intl, ipfsStatus, loginErrors,
+            loginPending } = this.props;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
 
@@ -140,7 +141,6 @@ class LoginForm extends Component {
                 <Button
                   className="login-form__button"
                   onClick={this.handleCancel}
-                  size="large"
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>
@@ -149,7 +149,6 @@ class LoginForm extends Component {
                   disabled={isServiceStopped || loginPending}
                   htmlType="submit"
                   onClick={this.handleLogin}
-                  size="large"
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.submit)}
