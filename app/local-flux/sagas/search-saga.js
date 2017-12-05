@@ -35,9 +35,9 @@ function* searchSyncTags () {
     yield apply(channel, channel.send, [{ fromBlock }]);
 }
 
-function* searchTags ({ query }) {
+function* searchTags ({ query, limit = SEARCH_TAGS_LIMIT }) {
     const channel = Channel.server.search.findTags;
-    yield apply(channel, channel.send, [{ text: query, limit: SEARCH_TAGS_LIMIT }]);
+    yield apply(channel, channel.send, [{ text: query, limit }]);
 }
 
 function* searchUpdateLastBlock ({ type, blockNr }) {

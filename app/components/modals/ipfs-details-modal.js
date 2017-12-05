@@ -176,9 +176,9 @@ class IpfsDetailsModal extends Component {
                   {activeTab === LOGS &&
                     <LogsList
                       logs={ipfsLogs}
+                      modal
                       startLogger={this.props.ipfsStartLogger}
                       stopLogger={this.props.ipfsStopLogger}
-                      style={{ height: '100%', overflowY: 'auto', margin: '0px', padding: '0 16px' }}
                     />
                   }
                 </div>
@@ -213,10 +213,6 @@ class IpfsDetailsModal extends Component {
         );
     }
 }
-
-IpfsDetailsModal.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 IpfsDetailsModal.propTypes = {
     intl: PropTypes.shape().isRequired,

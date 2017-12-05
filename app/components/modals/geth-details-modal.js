@@ -122,9 +122,9 @@ class GethDetailsModal extends Component {
                   {activeTab === LOGS &&
                     <LogsList
                       logs={gethLogs}
+                      modal
                       startLogger={this.props.gethStartLogger}
                       stopLogger={this.props.gethStopLogger}
-                      style={{ height: '100%', overflowY: 'auto', margin: '0px', padding: '0 16px' }}
                     />
                   }
                 </div>
@@ -158,10 +158,6 @@ class GethDetailsModal extends Component {
         );
     }
 }
-
-GethDetailsModal.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 GethDetailsModal.propTypes = {
     gethBusyState: PropTypes.bool,

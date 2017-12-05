@@ -209,7 +209,6 @@ class NewColumn extends Component {
                   <Button
                     className="new-column__button"
                     onClick={this.onCancel}
-                    size="large"
                   >
                     {intl.formatMessage(generalMessages.cancel)}
                   </Button>
@@ -217,7 +216,6 @@ class NewColumn extends Component {
                     className="new-column__button"
                     disabled={this.isDisabled()}
                     onClick={this.onAddColumn}
-                    size="large"
                     type="primary"
                   >
                     {intl.formatMessage(generalMessages.add)}

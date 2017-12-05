@@ -161,7 +161,7 @@ class ProfileDetails extends Component {
                   firstName={firstName}
                   image={avatar}
                   lastName={lastName}
-                  size={'large'}
+                  size="large"
                 />
               </div>
               <div className="profile-details__heading">

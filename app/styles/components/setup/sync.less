@@ -7,14 +7,13 @@
         right: 4px;
         overflow-y: auto;
         padding: 20px 60px;
-        background-color: #fafafa;
+        background-color: @background;
     }
 
     &__content {
         display: flex;
         flex-direction: column;
-        padding: 20px 80px;
-
+        padding: 20px 90px;
     }
 
     &__status-container {
@@ -28,8 +27,45 @@
         padding: 40px 0px;
     }
 
+    &__button {
+        color: @text-color-secondary;
+
+        &:hover {
+            color: @heading-color;
+
+            .sync__stop-icon {
+                background-color: @heading-color;
+            }
+        }
+    }
+
+    &__logs-icon {
+        font-size: 20px;
+        margin-right: 5px;
+        position: relative;
+        top: 1px;
+    }
+
+    &__pause-icon {
+        font-size: 16px;
+        margin-right: 5px;
+        position: relative;
+        top: 1px;
+    }
+
+    &__stop-icon {
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);        
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        margin-right: 5px;
+        background-color: @text-color-secondary;
+    }
+
     &__message {
         flex: 0 0 auto;
         text-align: center;
+        font-size: 12px;
+        line-height: 17px;
     }
 }
