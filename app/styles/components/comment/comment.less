@@ -22,10 +22,6 @@
         height: 100%;
     }
 
-    &__votes-icon {
-        font-size: 16px;
-    }
-
     &__score {
         font-size: 14px;
         line-height: 1;
@@ -51,7 +47,7 @@
         }
 
         &_author {
-            color: #4ab558;
+            color: @green;
         }
     }
 
@@ -83,6 +79,7 @@
 
     &__body {
         padding-top: 8px;
+        color: @heading-color;
 
         &_collapsed {
             max-height: 155px;
@@ -95,8 +92,8 @@
         }
 
         blockquote {
-            border-left: 3px solid #eee;
-            color: #666;
+            border-left: 3px solid @light-border;
+            color: @text-color;
             font-style: italic;
             margin: 8px 0;
             padding: 4px 8px;

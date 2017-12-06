@@ -58,7 +58,7 @@ const listState = createReducer(initialState, {
     [types.LIST_SEARCH_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('searching', false),
-            searchResults: data
+            searchResults: new List(data)
         }),
 
     [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data }) =>

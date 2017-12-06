@@ -1,5 +1,5 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import {reject, isNil} from 'ramda';
+import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
@@ -32,10 +32,12 @@ function* profileEssenceIterator () {
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const ethAddress = yield select(selectLoggedEthAddress);
     const essenceStep = yield select(selectEssenceIterator);
-    const lastBlock = (essenceStep.lastBlock === null) ? yield select(selectBlockNumber) : essenceStep.lastBlock;
+    const lastBlock = (essenceStep.lastBlock === null) ?
+        yield select(selectBlockNumber) :
+        essenceStep.lastBlock;
     yield apply(channel,
         channel.send,
-        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 8 })]);
+        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 16 })]);
 }
 
 function* profileBondAeth ({ actionId, amount }) {

@@ -110,16 +110,16 @@ class Sidebar extends Component {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
 
         const menu = (
-          <div className="sidebar__menu" onClick={this.hide}>
+          <div onClick={this.hide}>
             <div
               onClick={this.props.profileEditToggle}
-              className="sidebar__button-text"
+              className="popover-menu__item"
             >
               {intl.formatMessage(generalMessages.editProfile)}
             </div>
             <div
               onClick={this._handleLogout}
-              className="sidebar__button-text"
+              className="popover-menu__item"
             >
               {intl.formatMessage(generalMessages.logout)}
             </div>
@@ -215,7 +215,7 @@ class Sidebar extends Component {
                 placement="topRight"
                 content={menu}
                 trigger="click"
-                overlayClassName="sidebar__popover"
+                overlayClassName="popover-menu"
                 visible={this.state.visible}
                 onVisibleChange={this.handleVisibleChange}
               >

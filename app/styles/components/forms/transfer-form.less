@@ -8,7 +8,14 @@
         margin: 10px 0px;
 
         .ant-form-explain {
-            font-size: 12px;
+            font-size: 11px;
+            color: @text-color;
+        }
+
+        .ant-form-item-control.has-error {
+            .ant-form-explain {
+                color: @error-color !important;
+            }
         }
     }
 
@@ -24,9 +31,9 @@
 
     &__copy-button {
         color: @primary-color;
-        border-top: 1px solid #d9d9d9;
-        border-right: 1px solid #d9d9d9;
-        border-bottom: 1px solid #d9d9d9;
+        border-top: 1px solid @dark-border;
+        border-right: 1px solid @dark-border;
+        border-bottom: 1px solid @dark-border;
         width: 46px;
         height: 32px;
         font-size: 13px;
@@ -53,7 +60,9 @@
         font-weight: normal;
     }
 
-    .ant-form-item-label {
+    .ant-form-item-label label {
+        font-size: 11px;
         text-transform: uppercase;
+        color: @text-color;
     }
 }

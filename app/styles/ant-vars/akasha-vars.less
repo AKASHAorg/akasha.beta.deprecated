@@ -10,7 +10,7 @@
 @grey: #B4BCC8;
 @light-grey: #D8DCDF;
 @background: #F8F8F8;
-@background-light: #fff;
+@light-background: #fff;
 @dark-background: #EFEFF1;
 @blue: #0598FF;
 @red: #F96A6A;
@@ -19,6 +19,7 @@
 @dark-blue: #0588E6;
 @dark-red: #E66363;
 @light-border: #eee;
+@dark-border: #d9d9d9;
 
 // This color is also used in JS code. keep them in sync. search for manaColor
 @mana-color: #4aadf3;
@@ -32,7 +33,7 @@
 @editor-title-input-height: 72px;
 
 @border-tab: #f1f1f1;
-@card-bg-color: white;
+@card-bg-color: @light-background;
 
 .heading {
     color: @heading-color;
@@ -44,7 +45,7 @@
 }
 
 .content-placeholder {
-    background-color: #2E3747;
+    background-color: @dark;
     opacity: 0.08;
 }
 

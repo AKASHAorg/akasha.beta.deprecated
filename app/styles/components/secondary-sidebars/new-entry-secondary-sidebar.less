@@ -65,7 +65,7 @@
         padding: 0 8px;
         text-transform: uppercase;
         font-weight: 500;
-        color: #000;
+        color: @heading-color;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -121,7 +121,7 @@
             }
         }
         &_active {
-            background-color: #efefef;
+            background-color: @dark-background;
             .draft-list-item {
                 &__link {
                     color: darken(@text-color, 10%);
@@ -134,8 +134,8 @@
                 }
             }
         }
-        &:hover {
-            background-color: #F5F5F5;
+        &:hover:not(&_active) {
+            background-color: @background;
             .draft-list-item__menu-container {
                 opacity: 1
             }
@@ -169,7 +169,7 @@
     font-weight: 500;
     padding: 0 8px;
     &:hover {
-        background-color: #F5F5F5;
+        background-color: @background;
         border-radius: 3px;
     }
 }

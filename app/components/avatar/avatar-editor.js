@@ -254,4 +254,4 @@ AvatarEditr.defaultProps = {
     size: 200,
 };
 
-export default injectIntl(AvatarEditr);
+export default injectIntl(AvatarEditr, { withRef: true });

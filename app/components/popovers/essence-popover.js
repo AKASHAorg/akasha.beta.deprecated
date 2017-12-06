@@ -103,20 +103,17 @@ class EssencePopover extends Component {
               </span>
             </div>
             <div className="essence-popover__logs">
-                {
-                    essenceEvents.map(ev => (
-                        <p key={ev.hashCode()}>
-                            {intl.formatMessage(generalMessages.receivedAmount, { amount: ev.amount, symbol: 'essence' })} {ev.action}
-                        </p>))
-                }
-
-                <div className="flex-center-x">
-                    <Spin spinning={this.props.loadingLogs} />
-                </div>
-
-                <Waypoint
-                    onEnter={this.onEnterIterator}
-                />
+              {essenceEvents.map(ev => (
+                <p key={ev.hashCode()}>
+                  {intl.formatMessage(generalMessages.receivedAmount, { amount: ev.amount, symbol: 'essence' })} {ev.action}
+                </p>
+              ))}
+              <div className="flex-center-x">
+                <Spin spinning={this.props.loadingLogs} />
+              </div>
+              <Waypoint
+                onEnter={this.onEnterIterator}
+              />
             </div>
             <div className="essence-popover__actions">
               <Button

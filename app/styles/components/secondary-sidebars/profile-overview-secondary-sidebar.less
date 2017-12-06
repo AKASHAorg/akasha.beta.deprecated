@@ -1,26 +1,26 @@
 .profile-overview-sidebar {
     height: 100%;
-    background-color: white;
-
+    padding: 10px 10px 0px;
+    
     &__title {
-        padding: 15px 0 30px 20px;
+        padding: 0px 8px;
+        height: 24px;
+        line-height: 24px;
         font-size: 13px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
     }
 
     &__menu {
-        padding: 10px;
+        padding-bottom: 0px 8px 10px 8px;
     }
 
     &__line {
-        border-top: 1px outset lightgray;
+        border-top: 1px outset @light-border;
     }
 
     &__line-wrapper {
-        padding-left: 20px;
-    }
-
-    &__logout-wrapper {
-        padding: 10px;
+        margin: 10px 0px;
     }
 
     &__logout {       
@@ -28,29 +28,29 @@
         padding: 10px;
         cursor: pointer;
         &:hover {
-            background-color: #f7f7f7
+            background-color: @background;
         }
     }
 
     &__link {
         text-decoration: none;
+        color: @text-color;
+
+        &:hover {
+            color: @text-color;
+        }
     }
 
     &__link-title {
         border-radius: 5px;
         padding: 10px;
         cursor: pointer;
-        &:hover {
-            background-color: #f5f5f5
+        &:hover:not(&_active) {
+            background-color: @background;
         }
         &_active {
             color: @heading-color;
-            background-color: #efefef;
+            background-color: @dark-background;
         }
     }
-}
-
-a.profile-overview-sidebar__link {
-    text-decoration: none;
-    color: #919191;
 }
