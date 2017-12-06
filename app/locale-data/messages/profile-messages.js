@@ -64,7 +64,7 @@ export const profileMessages = defineMessages({
     linksTitle: {
         id: 'app.profile.linksTitle',
         description: 'Links section title',
-        defaultMessage: 'Links'
+        defaultMessage: 'LINKS'
     },
     addLinkButtonTitle: {
         id: 'app.profile.addLinkButtontitle',
@@ -99,7 +99,7 @@ export const profileMessages = defineMessages({
     registerProfile: {
         id: 'app.profile.registerProfile',
         description: 'register profile button label',
-        defaultMessage: 'Register profile'
+        defaultMessage: 'Register Profile'
     },
     removeCryptoButtonTitle: {
         id: 'app.profile.removeCryptoButtonTitle',
@@ -119,7 +119,7 @@ export const profileMessages = defineMessages({
     updateProfile: {
         id: 'app.profile.updateProfile',
         description: 'update a profile',
-        defaultMessage: 'Update profile'
+        defaultMessage: 'Update Profile'
     },
     followers: {
         id: 'app.profile.followers',
