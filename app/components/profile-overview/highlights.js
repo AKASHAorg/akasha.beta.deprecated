@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Input } from 'antd';
 import * as R from 'ramda';
+import Masonry from 'react-masonry-component';
 import { HighlightCard, Icon } from '../';
 import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
-    highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
+    highlightToggleEditing, highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
 import { profileGetList } from '../../local-flux/actions/profile-actions';
 import { ProfileRecord } from '../../local-flux/reducers/records';
 import { selectHighlights, selectHighlightSearch } from '../../local-flux/selectors';
@@ -38,36 +39,51 @@ class Highlights extends Component {
     };
 
     render () {
-        const { intl, highlights, profiles, search } = this.props;
+        const { editing, intl, highlights, profiles, search } = this.props;
+        const searchClassName = `highlights__search ${!!editing && 'highlights__search_editing'}`;
 
         return (
-          <div className="highlights">
-            <div className="highlights__content" ref={this.getContainerRef}>
-              <div className="highlights__search">
-                <Input
-                  onChange={this.onSearchChange}
-                  value={search}
-                  size="large"
-                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                  prefix={<Icon type="search" />}
-                />
+          <div className="highlights__wrap">
+            <div className="highlights">
+              <div className="highlights__content" ref={this.getContainerRef}>
+                <div className={searchClassName}>
+                  <Input
+                    onChange={this.onSearchChange}
+                    value={search}
+                    size="large"
+                    placeholder={intl.formatMessage(searchMessages.searchSomething)}
+                    prefix={<Icon type="search" />}
+                  />
+                </div>
+                <div className="highlights__cards-wrap">
+                  <Masonry
+                    options={{
+                        transitionDuration: 0,
+                        columnWidth: '.highlights__grid-sizer',
+                        // percentPosition: true,
+                        itemSelector: '.highlight-card'
+                    }}
+                  >
+                    <div className="highlights__grid-sizer" />
+                    {highlights.map((highlight) => {
+                        const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
+                        return (
+                          <HighlightCard
+                            containerRef={this.container}
+                            deleteHighlight={this.props.highlightDelete}
+                            editNotes={this.props.highlightEditNotes}
+                            editing={editing}
+                            toggleEditing={this.props.highlightToggleEditing}
+                            toggleNoteEditable={this.props.highlightToggleNoteEditable}
+                            highlight={highlight}
+                            key={highlight.get('id')}
+                            publisher={publisher}
+                          />
+                        );
+                    })}
+                  </Masonry>
+                </div>
               </div>
-              {highlights.map((highlight) => {
-                //   console.log('profiles: ', profiles.toJS(), 'publisherEth: ', highlight.get('publisher'));
-                //   console.log('get profile info: ', profiles.get(highlight.get('publisher')));
-                  const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
-                  return (
-                    <HighlightCard
-                      containerRef={this.container}
-                      deleteHighlight={this.props.highlightDelete}
-                      editNotes={this.props.highlightEditNotes}
-                      toggleNoteEditable={this.props.highlightToggleNoteEditable}
-                      highlight={highlight}
-                      key={highlight.get('id')}
-                      publisher={publisher}
-                    />
-                  );
-              })}
             </div>
           </div>
         );
@@ -75,10 +91,12 @@ class Highlights extends Component {
 }
 
 Highlights.propTypes = {
+    editing: PropTypes.string,
     highlightDelete: PropTypes.func.isRequired,
     highlightEditNotes: PropTypes.func.isRequired,
     highlights: PropTypes.shape(),
     highlightSearch: PropTypes.func,
+    highlightToggleEditing: PropTypes.func,
     highlightToggleNoteEditable: PropTypes.func,
     intl: PropTypes.shape(),
     profileGetList: PropTypes.func.isRequired,
@@ -88,6 +106,7 @@ Highlights.propTypes = {
 
 function mapStateToProps (state) {
     return {
+        editing: state.highlightState.get('editing'),
         highlights: selectHighlights(state),
         profiles: state.profileState.get('byEthAddress'),
         search: selectHighlightSearch(state),
@@ -101,6 +120,7 @@ export default connect(
         highlightEditNotes,
         highlightSearch,
         profileGetList,
+        highlightToggleEditing,
         highlightToggleNoteEditable
     }
 )(injectIntl(Highlights));

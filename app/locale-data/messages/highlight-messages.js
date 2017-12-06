@@ -11,6 +11,11 @@ const highlightMessages = defineMessages({
         description: 'label for add note button',
         defaultMessage: 'Add note'
     },
+    delete: {
+        id: 'app.highlight.delete',
+        description: 'content for delete highlight modal',
+        defaultMessage: 'Do you want to delete this highlight?'
+    },
     deleteHighlight: {
         id: 'app.highlight.deleteHighlight',
         description: 'label for delete highlight button',

@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Card, Icon, Modal } from 'antd';
-import { EditListBtn } from '../';
+import { Card, Modal } from 'antd';
+import { EditListBtn, Icon } from '../';
 import { generalMessages } from '../../locale-data/messages';
 import { listMessages } from '../../locale-data/messages/list-messages';
-import { Icon } from '../';
 
 class ListCard extends Component {
     state = {
@@ -96,7 +95,7 @@ class ListCard extends Component {
                   onClick={this.deleteList}
                   type="trash"
                 />
-              </div> */}
+              </div>
             </div>
           </Card>
         );

@@ -192,7 +192,7 @@ class ProfileCompleteForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.getImage().then(avatar =>
+        this.avatar.refs.wrappedInstance.getImage().then(avatar =>
             onProfileUpdate(
                 tempProfile.set('avatar', avatar)
             )
