@@ -65,7 +65,6 @@ class ManaPopover extends Component {
         const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const totalMana = balanceToNumber(balance.getIn(['mana', 'total']));
         const burnedMana = totalMana - remainingMana;
-        const manaColor = '#4aadf3';
         if (page === SHIFT_DOWN) {
             return (
               <ShiftForm

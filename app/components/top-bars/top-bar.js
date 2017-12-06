@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { DashboardTopBar, Navigation, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
 import { toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
-    selectLoggedProfileData } from '../../local-flux/selectors';
+    selectLoggedProfileData, selectShowWallet } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -24,7 +24,7 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, fullEntry, showSecondarySidebar } = this.props;
+        const { balance, fullEntry, showSecondarySidebar, showWallet } = this.props;
         const className = classNames('flex-center-y top-bar', {
             'top-bar_full': !showSecondarySidebar || fullEntry,
             'top-bar_default': !fullEntry
@@ -50,6 +50,7 @@ class TopBar extends PureComponent {
             </div>
             <TopBarRight
               balance={balance}
+              showWallet={showWallet}
               toggleAethWallet={this.props.toggleAethWallet}
               toggleEthWallet={this.props.toggleEthWallet}
             />
@@ -65,6 +66,7 @@ TopBar.propTypes = {
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
+    showWallet: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
 };
@@ -74,6 +76,7 @@ const mapStateToProps = state => ({
     fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
     loggedProfile: selectLoggedProfile(state),
     loggedProfileData: selectLoggedProfileData(state),
+    showWallet: selectShowWallet(state)
 });
 
 export default connect(

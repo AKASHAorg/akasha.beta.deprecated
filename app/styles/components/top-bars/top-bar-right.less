@@ -13,7 +13,7 @@
     &__divider {
         margin: 0 10px;
         width: 2px;
-        background-color: #fff;
+        background-color: @light-background;
     }
 
     &__notifications {
@@ -30,5 +30,9 @@
         flex: 0 0 auto;
         margin-right: 12px;
         min-width: 60px;
+
+        &_selected {
+            color: @heading-color;
+        }
     }
 }

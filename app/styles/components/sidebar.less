@@ -22,16 +22,6 @@
         padding-bottom: 16px;
     }
 
-    &__button-text {
-        font-size: 13px;
-        font-weight: 400;
-        padding: 8px 16px;
-        cursor: pointer;
-        &:hover {
-            background-color: #ecf6fd;
-        }
-    }
-
     &__popover {
         .ant-popover-inner-content {
             padding: 0;
@@ -51,7 +41,7 @@
     }
 
     &__new-entry-icon {
-        stroke: @background-light;
+        stroke: @light-background;
     }
 
     &__icon-button {
@@ -100,7 +90,7 @@
         left: @sidebar-width;
         bottom: 0;
         right: 100%;
-        background: fadeout(@sidebar-overlay-bg, 20%);
+        background: fadeout(@dark, 50%);
         transition: right 0.15s ease-in-out;
         cursor: pointer;
         &_visible {

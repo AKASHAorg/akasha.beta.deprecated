@@ -65,7 +65,7 @@
         right: -100%;
         bottom: @editor-footer-height;
         top: @top-bar-height;
-        background-color: #FFF;
+        background-color: @light-background;
         z-index: 10;
         transition: right 0.218s @ease-in-out;
         &_open {
@@ -131,8 +131,8 @@
         left: @sidebar-width + @secondary-sidebar-width;
         right: 0;
         height: @editor-footer-height;
-        border-top: 1px solid #DDD;
-        background: #FFF;
+        border-top: 1px solid @light-border;
+        background: @light-background;
         transition: left 0.218s @ease-in-out;
         z-index: 10;
         &_full {
@@ -172,7 +172,7 @@
     .ant-steps-status-none {
         .ant-steps-tail {
             > i {
-                border-top: 3px dashed #D8DCDF;
+                border-top: 3px dashed @light-border;
                 background: transparent;
             }
         }
@@ -201,13 +201,13 @@
     }
     .draft-dot {
         .ant-steps-icon-dot {
-            background-color: #FEC141;
+            background-color: @yellow;
         }
     }
     .published-dot {
         .ant-steps-icon-dot {
-            background-color: #FFF;
-            border: 2px solid #DDD;
+            background-color: @light-background;
+            border: 2px solid @light-border;
         }
         &-selected {
             .ant-steps-icon-dot {

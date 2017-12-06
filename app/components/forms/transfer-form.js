@@ -103,7 +103,7 @@ class TransferForm extends Component {
               )}
             </FormItem>
             <div className="transfer-form__actions">
-              <Button className="transfer-form__button" onClick={onCancel} size="large">
+              <Button className="transfer-form__button" onClick={onCancel}>
                 {intl.formatMessage(generalMessages.cancel)}
               </Button>
               <Button
@@ -112,7 +112,6 @@ class TransferForm extends Component {
                 htmlType="submit"
                 loading={pendingTransfer}
                 onClick={this.onSubmit}
-                size="large"
                 type="primary"
               >
                 {intl.formatMessage(generalMessages.send)}

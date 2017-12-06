@@ -124,8 +124,10 @@ class TagPopover extends Component {
                     </div>
                     <div className="tag-popover__list-wrapper">
                       {this.groupByState(dashboards).map((dashboard) => {
-                          const toggleDashboard = () =>
-                              this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                          const toggleDashboard = () => {
+                                this.onVisibleChange(false);
+                                this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                          };
                           const isSaved = this.isSaved(dashboard);
                           const root = 'tag-popover__left-item tag-popover__row-icon';
                           const modifier = 'tag-popover__row-icon_saved';
