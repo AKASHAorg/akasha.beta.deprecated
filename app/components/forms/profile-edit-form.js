@@ -251,9 +251,9 @@ class ProfileEditForm extends Component {
                     <Col type="flex" md={24}>
                       <Col md={8}>
                         <div>
-                          <p className="profile-edit-form__avatar-title">
+                          <div className="profile-edit-form__avatar-title">
                             {intl.formatMessage(profileMessages.avatarTitle)}
-                          </p>
+                          </div>
                           <div>
                             <AvatarEditor
                               size={100}
@@ -268,9 +268,9 @@ class ProfileEditForm extends Component {
                       </Col>
                       <Col md={24}>
                         <div className="row profile-edit-form__bg-image">
-                          <p className="profile-edit-form__bg-image-title" >
+                          <div className="profile-edit-form__bg-image-title" >
                             {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                          </p>
+                          </div>
                           <div className="col-xs-12">
                             <ImageUploader
                               ref={(imageUploader) => { this.imageUploader = imageUploader; }}
@@ -349,9 +349,9 @@ class ProfileEditForm extends Component {
                       </FormItem>
                     </Col>
                     <Col md={24}>
-                      <h3 className="profile-edit-form__link">
+                      <div className="profile-edit-form__link">
                         {intl.formatMessage(profileMessages.linksTitle)}
-                      </h3>
+                      </div>
                       {links.map((link, index) => (
                         <div className="profile-edit-form__link" key={`${index + 1}`}>
                           <FormItem
