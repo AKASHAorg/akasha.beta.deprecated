@@ -6,13 +6,31 @@
     overflow-y: auto;
     overflow-x: hidden;
 
+    &__wrap {
+        height: 100%;
+        padding-right: 4px;
+    }
+
+    &__grid-sizer {
+        width: 50%;
+    }
+    
     &__content {
-        width: 60%;
+        width: 85%;
+    }
+
+    &__cards-wrap {
+        // flex-direction: row;
+        // flex-wrap: wrap;
+        // justify-content: space-between;
     }
 
     &__search {
-        padding-top: 40px;
-        padding-bottom: 20px;
+        padding: 40px 10px 20px 10px;
+
+        &_editing {
+            opacity: 0.7;
+        }    
 
         .ant-input-prefix {
             display: flex;

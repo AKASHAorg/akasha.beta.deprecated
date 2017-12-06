@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Icon, Input, Popover } from 'antd';
+import { Button, Form, Input, Popover } from 'antd';
 import { listEdit } from '../../local-flux/actions/list-actions';
 import { listMessages } from '../../locale-data/messages/list-messages';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import { Icon } from '../';
 
 class EditListBtn extends Component {
     state = {
@@ -105,7 +106,7 @@ class EditListBtn extends Component {
               onVisibleChange={this.handleVisibleChange}
             >
               <Icon
-                className="content-link list-card__icon"
+                className="content-link edit-list-btn__icon"
                 type="edit"
               />
             </Popover>

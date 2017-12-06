@@ -46,6 +46,8 @@ class ProfileSettings extends Component {
                 });
                 if (value === '3') {
                     this.setState({ defaultLicenseId: '11' });
+                } else if (value === '2') {
+                    this.setState({ defaultLicenseId: '4' });
                 } else if (value === '1') {
                     this.setState({ defaultLicenseId: null });
                 }

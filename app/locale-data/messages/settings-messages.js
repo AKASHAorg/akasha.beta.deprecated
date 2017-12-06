@@ -25,7 +25,7 @@ const settingsMessages = defineMessages({
     passphraseOptions: {
         id: 'app.settings.passphraseOptions',
         description: 'title for profile passphrase options',
-        defaultMessage: 'Passphrase options'
+        defaultMessage: 'Passphrase Options'
     },
     passphraseOptionsDescription: {
         id: 'app.settings.passphraseOptionsDescription',
@@ -35,7 +35,7 @@ const settingsMessages = defineMessages({
     licenseOptions: {
         id: 'app.settings.licenseOptions',
         description: 'title for profile default license options',
-        defaultMessage: 'Default license'
+        defaultMessage: 'Publish Options'
     },
     licenseOptionsDescription: {
         id: 'app.settings.licenseOptionsDescription',
@@ -70,7 +70,7 @@ const settingsMessages = defineMessages({
     tipsOptions: {
         id: 'app.settings.tipsOptions',
         description: 'title for profile tips options',
-        defaultMessage: 'Tips options'
+        defaultMessage: 'Tips Options'
     },
     tipsInfo: {
         id: 'app.settings.tipsInfo',

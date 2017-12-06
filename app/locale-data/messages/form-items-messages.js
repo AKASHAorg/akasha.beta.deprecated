@@ -294,7 +294,7 @@ const formMessages = defineMessages({
     updateSettings: {
         id: 'app.form.updateSettings',
         description: 'label for update settings button',
-        defaultMessage: 'Update settings'
+        defaultMessage: 'Update Settings'
     }
 });
 export { formMessages };

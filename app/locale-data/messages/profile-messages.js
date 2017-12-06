@@ -54,7 +54,7 @@ export const profileMessages = defineMessages({
     editProfileTitle: {
         id: 'app.profile.editProfileTitle',
         description: 'Edit profile page title',
-        defaultMessage: 'Edit profile information'
+        defaultMessage: 'Edit Profile Information'
     },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',

@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormattedDate, injectIntl } from 'react-intl';
-import { Icon, Modal } from 'antd';
+import { Modal } from 'antd';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { listDelete } from '../../local-flux/actions/list-actions';
 import { selectEntry, selectListById } from '../../local-flux/selectors';
 import { generalMessages, listMessages } from '../../locale-data/messages';
-import { EditListBtn, EntryList } from '../';
+import { EditListBtn, EntryList, Icon } from '../';
 
 class ListEntries extends Component {
     state = {
@@ -93,7 +93,7 @@ class ListEntries extends Component {
                       <Icon
                         className="content-link list-card__icon list-card__icon_delete"
                         onClick={this.deleteList}
-                        type="delete"
+                        type="trash"
                       />
                     </div>
                   </div>
@@ -139,11 +139,7 @@ export default connect(
     mapStateToProps,
     {
         entryListIterator,
-<<<<<<< HEAD
-        entryMoreListIterator
-=======
         entryMoreListIterator,
         listDelete
->>>>>>> feat(list-edit): add edit functionality to lists
     }
 )(injectIntl(ListEntries));

@@ -48,3 +48,5 @@ export const highlightSearchError = (error) => {
 export const highlightSearchSuccess = data => action(types.HIGHLIGHT_SEARCH_SUCCESS, { data });
 
 export const highlightToggleNoteEditable = id => action(types.HIGHLIGHT_TOGGLE_NOTE_EDITABLE, { id });
+
+export const highlightToggleEditing = id => action(types.HIGHLIGHT_TOGGLE_EDITING, { id });
