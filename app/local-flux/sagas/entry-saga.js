@@ -89,12 +89,14 @@ function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, va
 }
 
 function* entryDownvoteSuccess ({ data }) {
+    const { getVoteRatio } = Channel.server.entry;
     yield call(entryVoteSuccess, data.entryId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({
         id: 'downvoteEntrySuccess',
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
 function* entryGetBalance ({ entryIds }) {
@@ -329,12 +331,14 @@ function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, valu
 }
 
 function* entryUpvoteSuccess ({ data }) {
+    const { getVoteRatio } = Channel.server.entry;
     yield call(entryVoteSuccess, data.entryId);
     yield put(appActions.showNotification({
         id: 'upvoteEntrySuccess',
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
 function* entryVoteCost () {
