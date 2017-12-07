@@ -389,6 +389,11 @@ const profileState = createReducer(initialState, {
         });
     },
 
+    [types.PROFILE_RESET_ESSENCE_EVENTS]: state => state.merge({
+        essenceEvents: new Collection.Set([]),
+        essenceIterator: new EssenceIterator()
+    }),
+
     [types.PROFILE_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
         let newHashes = new Map();
         ipfsHash.forEach((hash) => { newHashes = newHashes.set(hash, true); });

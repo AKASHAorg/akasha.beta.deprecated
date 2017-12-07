@@ -46,6 +46,7 @@ export notifications from './notifications';
 export openEntryOptions from './open-entry-options';
 export photoImage from './photo-image';
 export plus from './plus';
+export profileOverview from './profile-overview';
 export question from './question';
 export questionCircle from './question-circle';
 export quote from './quote';

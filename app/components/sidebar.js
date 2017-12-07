@@ -184,8 +184,9 @@ class Sidebar extends Component {
               />
               <SidebarIcon
                 activePath="/profileoverview"
+                className="sidebar__profile-icon"
                 linkTo="/profileoverview/myentries"
-                iconType="question"
+                iconType="profileOverview"
               />
               <SidebarIcon
                 activePath="/community"

@@ -98,6 +98,7 @@ const errorState = createReducer(initialState, {
     [types.PROFILE_TRANSFER_AETH_ERROR]: addNewError,
     [types.PROFILE_TRANSFER_ETH_ERROR]: addNewError,
     [types.PROFILE_TRANSFORM_ESSENCE_ERROR]: addNewError,
+    [types.PROFILE_UPDATE_ERROR]: addNewError,
     [types.PUBLISH_PROFILE_ERROR]: addNewError,
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
     [types.SEARCH_QUERY_ERROR]: addNewError,
