@@ -30,6 +30,21 @@ class DashboardSecondarySidebar extends Component {
         }
     }
 
+    shouldComponentUpdate (nextProps, nextState) {
+        const { activeDashboard, dashboards, renamingDashboard } = this.props;
+        const { newDashboard, renameDashboard, renameValue } = this.state;
+        if (activeDashboard !== nextProps.activeDashboard ||
+            !dashboards.equals(nextProps.dashboards) ||
+            renamingDashboard !== nextProps.renamingDashboard ||
+            newDashboard !== nextState.newDashboard ||
+            renameDashboard !== nextState.renameDashboard ||
+            renameValue !== nextState.renameValue
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     onChange = (ev) => {
         const value = ev.target.value;
         const changes = this.state.renameDashboard !== null ?

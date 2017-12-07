@@ -12,6 +12,11 @@ const generalMessages = defineMessages({
         description: 'action',
         defaultMessage: 'Action'
     },
+    aComment: {
+        id: 'app.general.aComment',
+        description: 'a random comment',
+        defaultMessage: 'a comment'
+    },
     add: {
         id: 'app.general.add',
         description: 'add',
@@ -41,6 +46,11 @@ const generalMessages = defineMessages({
         id: 'app.general.amount',
         description: 'currency amount',
         defaultMessage: 'Amount'
+    },
+    anEntry: {
+        id: 'app.general.anEntry',
+        description: 'a random entry',
+        defaultMessage: 'an entry'
     },
     akasha: {
         id: 'app.general.akasha',

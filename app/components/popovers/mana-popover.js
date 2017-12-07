@@ -90,13 +90,13 @@ class ManaPopover extends Component {
         }
         return (
           <div className="mana-popover__content">
-            <div className="flex-center-x mana-popover__title">
+            <div className="flex-center mana-popover__title">
               {intl.formatMessage(generalMessages.manaBurned)}
               <span className="mana-popover__mana-score">
                 { burnedMana }
               </span>
             </div>
-            <div className="mana-popover__chart-wrapper">
+            <div className="flex-center mana-popover__chart-wrapper">
               <PieChart
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
@@ -123,7 +123,6 @@ class ManaPopover extends Component {
               <Button
                 className="flex-center mana-popover__button"
                 onClick={this.onShiftDown}
-                size="large"
               >
                 <Icon type="arrowDown" />
                 {intl.formatMessage(formMessages.shiftDown)}
@@ -131,7 +130,6 @@ class ManaPopover extends Component {
               <Button
                 className="flex-center mana-popover__button"
                 onClick={this.onShiftUp}
-                size="large"
               >
                 <Icon type="arrowUp" />
                 {intl.formatMessage(formMessages.shiftUp)}

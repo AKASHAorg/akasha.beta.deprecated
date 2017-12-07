@@ -45,6 +45,7 @@ class DashboardSidebarRow extends Component {
             newDashboard } = this.props;
         const { popoverVisible } = this.state;
         const isActive = dashboard.get('id') === activeDashboard;
+        const closePopover = () => this.onVisibleChange(false);
         const className = classNames('has-hidden-action flex-center-y', {
             'dashboard-secondary-sidebar__row': true,
             'dashboard-secondary-sidebar__row_hovered': popoverVisible,
@@ -63,7 +64,7 @@ class DashboardSidebarRow extends Component {
             </div>
             <div
               className={deleteClass}
-              onClick={!isTheOnlyDashboard ? this.onDelete : undefined}
+              onClick={!isTheOnlyDashboard ? this.onDelete : closePopover}
             >
               {intl.formatMessage(generalMessages.delete)}
             </div>

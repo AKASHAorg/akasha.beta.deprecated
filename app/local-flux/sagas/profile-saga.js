@@ -3,6 +3,7 @@ import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
+import * as entryActions from '../actions/entry-actions';
 import * as actions from '../actions/profile-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
@@ -457,6 +458,14 @@ function* watchProfileEssenceIteratorChannel () {
         if (resp.error) {
             yield put(actions.profileEssenceIteratorError(resp.error));
         } else {
+            const entryEvents = ['entry:claim', 'entry:vote:claim'];
+            const { collection } = resp.data;
+            for (let i = 0; i < collection.length; i++) {
+                const { action, entryId } = collection[i];
+                if (entryEvents.indexOf(action) !== -1) {
+                    // yield put(entryActions.entryGetShort({ context: 'essenceEvents', entryId }));
+                }
+            }
             yield put(actions.profileEssenceIteratorSuccess(resp.data));
         }
     }
