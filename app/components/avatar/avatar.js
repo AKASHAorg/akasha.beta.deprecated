@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Avatar } from 'antd';
 import { getInitials } from '../../utils/dataModule';
+import { selectBaseUrl } from '../../local-flux/selectors/index';
 
 const AvatarPresenter = (props) => { // eslint-disable-line
-    const { className, ethAddress, firstName, image, lastName, link, onClick, size } = props;
+    const { baseUrl, className, ethAddress, firstName, lastName, link, onClick, size } = props;
+    let { image } = props;
+    if (image && baseUrl && !image.includes(baseUrl)) {
+        image = `${baseUrl}/${image}`;
+    }
     const initials = !image && (firstName || lastName) && getInitials(firstName, lastName).toUpperCase();
     const sizes = { small: 'sm', standard: 'base', large: 'lg' };
     const base = 'avatar_with-initials';
@@ -49,6 +55,7 @@ const AvatarPresenter = (props) => { // eslint-disable-line
 };
 
 AvatarPresenter.propTypes = {
+    baseUrl: PropTypes.string,
     className: PropTypes.string,
     ethAddress: PropTypes.string,
     firstName: PropTypes.string,
@@ -63,4 +70,10 @@ AvatarPresenter.defaultProps = {
     size: 'standard' // 32X32px
 };
 
-export default AvatarPresenter;
+function mapStateToProps (state) {
+  return {
+      baseUrl: selectBaseUrl(state)
+  };
+}
+
+export default connect(mapStateToProps)(AvatarPresenter);

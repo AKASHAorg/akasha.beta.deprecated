@@ -192,7 +192,7 @@ class ProfileCompleteForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.refs.wrappedInstance.getImage().then(avatar =>
+        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then(avatar =>
             onProfileUpdate(
                 tempProfile.set('avatar', avatar)
             )
@@ -301,14 +301,14 @@ class ProfileCompleteForm extends Component {
                       </div>
                     </Col>
                     <Col md={16}>
-                      <div className="row">
+                      <div className="profile-complete-form__bg-image-float">
                         <div className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
                         </div>
-                        <div className="col-xs-12">
+                        <div className="col-xs-12 profile-complete-form__bg-image-wrap">
                           <ImageUploader
                             ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                            minWidth={360}
+                            minWidth={320}
                             intl={intl}
                             initialImage={backgroundImage}
                             baseUrl={baseUrl}

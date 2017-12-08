@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import AvatarEditor from 'react-avatar-editor/dist';
 import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { Icon } from '../';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import { selectBaseUrl } from '../../local-flux/selectors/index';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -103,13 +105,13 @@ class AvatarEditr extends Component {
         }
     }
     render () {
-        const { backgroundColor, image, intl, offsetBorder, onMouseEnter, onMouseLeave,
-            size, style } = this.props;
+        const { baseUrl, backgroundColor, image, intl, offsetBorder,
+            onMouseEnter, onMouseLeave, size, style } = this.props;
         let avatarImage;
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
-            avatarImage = image;
+            avatarImage = `${baseUrl}/${image}`;;
         }
         if (!avatarImage) {
             this.editor = null;
@@ -254,4 +256,10 @@ AvatarEditr.defaultProps = {
     size: 200,
 };
 
-export default injectIntl(AvatarEditr, { withRef: true });
+function mapStateToProps (state) {
+    return {
+        baseUrl: selectBaseUrl(state)
+    };
+  }
+
+export default connect(mapStateToProps, null, null, { withRef: true })(injectIntl(AvatarEditr, { withRef: true }));
