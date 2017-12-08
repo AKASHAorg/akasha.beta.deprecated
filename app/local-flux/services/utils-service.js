@@ -26,6 +26,9 @@ export const uploadImage = (files, imgId) => {
     return new Promise((resolve, reject) => {
         clientChannel.once((ev, { data }) => {
             if (data.error) return reject(data.error);
+            if (files instanceof Uint8Array) {
+                return resolve(data.collection[0].hash);
+            }
             const filesArr = data.collection;
             filesArr.forEach((file) => {
                 files[file.size].src = file.hash;
@@ -34,13 +37,17 @@ export const uploadImage = (files, imgId) => {
             return resolve(files);
         });
         managerChannel.once(() => {
-            serverChannel.send(
-                Object.keys(files)
-                    .map(fileKey => ({
-                        size: fileKey,
-                        id: imgId,
-                        source: files[fileKey].src
-                    })));
+            if (files instanceof Uint8Array) {
+                serverChannel.send([{ source: files }]);
+            } else {
+                serverChannel.send(
+                    Object.keys(files)
+                        .map(fileKey => ({
+                            size: fileKey,
+                            id: imgId,
+                            source: files[fileKey].src
+                        })));
+            }
         });
         serverChannel.enable();
     });

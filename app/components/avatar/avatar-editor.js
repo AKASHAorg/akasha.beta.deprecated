@@ -236,6 +236,7 @@ class AvatarEditr extends Component {
 }
 AvatarEditr.propTypes = {
     avatarScale: PropTypes.number,
+    baseUrl: PropTypes.string,
     backgroundColor: PropTypes.string,
     image: PropTypes.oneOfType([
         PropTypes.string,

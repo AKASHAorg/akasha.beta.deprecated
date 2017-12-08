@@ -192,11 +192,21 @@ class ProfileCompleteForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then(avatar =>
-            onProfileUpdate(
-                tempProfile.set('avatar', avatar)
-            )
-        );
+        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then((avatar) => {
+            if (!avatar) {
+                return null;
+            }
+            if (typeof avatar === 'string') {
+                return onProfileUpdate(
+                    tempProfile.set('avatar', avatar)
+                );
+            }
+            return uploadImage(avatar).then(avatarIpfs =>
+                onProfileUpdate(
+                    tempProfile.set('avatar', avatarIpfs)
+                )
+            );
+        });
     }
 
     _handleBackgroundClear = () => {
