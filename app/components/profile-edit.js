@@ -83,6 +83,7 @@ class ProfileEdit extends Component {
                 intl={intl}
                 isUpdate={isUpdate}
                 getFormContainerRef={this.getFormContainerRef}
+                loggedProfileData={loggedProfileData}
                 profileExists={this.props.profileExists}
                 profileExistsData={profileExistsData}
                 tempProfile={tempProfile}

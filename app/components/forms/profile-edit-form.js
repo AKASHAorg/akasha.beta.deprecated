@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
@@ -29,12 +29,15 @@ class ProfileEditForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { isUpdate, tempProfile, profileExistsData } = nextProps;
-        // we need to enable update temp profile button only if something has changed
-        // so we need to keep a ref to old temp profile.
-        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
-            this.refTempProfile = tempProfile;
-        }
+        const { loggedProfileData, tempProfile, profileExistsData } = nextProps;
+        this.formChanged = (
+            tempProfile.get('firstName') !== loggedProfileData.get('firstName') ||
+            tempProfile.get('lastName') !== loggedProfileData.get('lastName') ||
+            tempProfile.get('about') !== loggedProfileData.get('about') ||
+            tempProfile.get('avatar') !== loggedProfileData.get('avatar') ||
+            !tempProfile.get('backgroundImage').equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
+            !tempProfile.get('links').equals(fromJS(loggedProfileData.get('links')))
+        );
         if (profileExistsData !== this.props.profileExistsData) {
             const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
             this.setState({
@@ -159,7 +162,7 @@ class ProfileEditForm extends Component {
         const { intl, tempProfile, profileExistsData } = this.props;
         const { akashaIdIsValid, akashaIdExists } = this.state;
         if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
-            if (!akashaIdIsValid) {
+            if (!akashaIdIsValid && tempProfile.get('akashaId').length > 1) {
                 return intl.formatMessage(validationMessages.akashaIdNotValid);
             }
             if (akashaIdExists) {
@@ -181,11 +184,21 @@ class ProfileEditForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then(avatar =>
-            onProfileUpdate(
-                tempProfile.set('avatar', avatar)
-            )
-        );
+        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then((avatar) => {
+            if (!avatar) {
+                return null;
+            }
+            if (typeof avatar === 'string') {
+                return onProfileUpdate(
+                    tempProfile.set('avatar', avatar)
+                );
+            }
+            return uploadImage(avatar).then(avatarIpfs =>
+                onProfileUpdate(
+                    tempProfile.set('avatar', avatarIpfs)
+                )
+            );
+        });
     }
 
     _handleBackgroundClear = () => {
@@ -420,6 +433,7 @@ class ProfileEditForm extends Component {
               <div className="profile-edit-form__update-btn">
                 <Button
                   type="primary"
+                  disabled={!tempProfile.get('akashaId') || !this.formChanged}
                   onClick={this._handleSubmit}
                   size="large"
                 >
@@ -442,6 +456,7 @@ ProfileEditForm.propTypes = {
     getValidationMessages: PropTypes.func,
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
+    loggedProfileData: PropTypes.shape(),
     onCancel: PropTypes.func,
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
