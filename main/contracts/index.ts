@@ -15,6 +15,10 @@ class Contracts {
         return this.instance;
     }
 
+    public reset() {
+        this.instance = null;
+    }
+
     public async send(data: any, token: string, cb) {
         const tx = await auth.signData(data.params[0], token);
         cb(null, { tx });
