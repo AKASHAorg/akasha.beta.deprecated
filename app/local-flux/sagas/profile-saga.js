@@ -16,9 +16,9 @@ import * as actionStatus from '../../constants/action-status';
 import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
-const TRANSFERS_ITERATOR_LIMIT = 30;
-const FOLLOWERS_ITERATOR_LIMIT = 10;
-const FOLLOWINGS_ITERATOR_LIMIT = 10;
+const TRANSFERS_ITERATOR_LIMIT = 20;
+const FOLLOWERS_ITERATOR_LIMIT = 2;
+const FOLLOWINGS_ITERATOR_LIMIT = 2;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
