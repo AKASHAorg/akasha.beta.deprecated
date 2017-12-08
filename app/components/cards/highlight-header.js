@@ -2,13 +2,14 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedDate, injectIntl } from 'react-intl';
-import { Popover } from 'antd';
-import { highlightMessages } from '../../locale-data/messages';
+import { Modal, Popover } from 'antd';
+import { generalMessages, highlightMessages } from '../../locale-data/messages';
 import { Avatar, Icon, ProfilePopover } from '../';
 
 class HighlightHeader extends Component {
     state = {
         visible: false,
+        deleteModalVisible: false
     }
 
     hide = () => {
@@ -17,12 +18,47 @@ class HighlightHeader extends Component {
         });
     }
 
+    edit = () => {
+        const { highlight, toggleEditing, toggleNoteEditable } = this.props;
+        toggleNoteEditable(highlight.get('id'));
+        toggleEditing(highlight.get('id'));
+    }
+
     handleVisibleChange = (visible) => {
         this.setState({ visible });
     }
 
+    deleteHighlight = () => {
+        this.setState({
+            deleteModalVisible: true
+        });
+    };
+
+    showDeleteModal = () => {
+        const { intl, deleteHighlight, highlight } = this.props;
+        const onOk = () => {
+            deleteHighlight(highlight.get('id'));
+        };
+        const content = intl.formatMessage(highlightMessages.delete);
+        return (
+          <Modal
+            visible={this.state.deleteModalVisible}
+            className={'delete-modal'}
+            width={347}
+            okText={intl.formatMessage(generalMessages.delete)}
+            okType={'danger'}
+            cancelText={intl.formatMessage(generalMessages.cancel)}
+            onOk={onOk}
+            onCancel={() => { this.setState({ deleteModalVisible: false }); }}
+            closable={false}
+          >
+            {content}
+          </Modal>
+        );
+    }
+
     render () {
-        const { containerRef, deleteHighlight, highlight, toggleNoteEditable, intl, publisher } = this.props;
+        const { containerRef, highlight, intl, publisher } = this.props;
 
         const date = (
           <FormattedDate
@@ -32,8 +68,7 @@ class HighlightHeader extends Component {
             year="numeric"
           />
         );
-        const publisherUrl = `/@${highlight.get('publisher')}`;
-        const entryUrl = `${publisherUrl}/${highlight.get('entryId')}`;
+        const entryUrl = `/${publisher.get('ethAddress')}/${highlight.get('entryId')}`;
 
         const menu = (
           <div onClick={this.hide}>
@@ -41,7 +76,7 @@ class HighlightHeader extends Component {
               {intl.formatMessage(highlightMessages.startEntry)}
             </div>
             <div
-              onClick={() => toggleNoteEditable(highlight.get('id'))}
+              onClick={this.edit}
               className="popover-menu__item"
             >
               {highlight.get('notes') ?
@@ -50,7 +85,7 @@ class HighlightHeader extends Component {
                 }
             </div>
             <div
-              onClick={() => deleteHighlight(highlight.get('id'))}
+              onClick={this.deleteHighlight}
               className="popover-menu__item"
             >
               {intl.formatMessage(highlightMessages.deleteHighlight)}
@@ -60,7 +95,8 @@ class HighlightHeader extends Component {
 
         return (
           <div className="highlight-header">
-            <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
+            {this.showDeleteModal()}
+            <ProfilePopover ethAddress={publisher.get('ethAddress')} containerRef={containerRef}>
               <Avatar
                 className="highlight-header__avatar"
                 firstName={publisher.get('firstName')}
@@ -70,7 +106,7 @@ class HighlightHeader extends Component {
               />
             </ProfilePopover>
             <div className="highlight-header__text">
-              <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
+              <ProfilePopover ethAddress={publisher.get('ethAddress')} containerRef={containerRef}>
                 <span className="content-link">
                   {publisher.get('akashaId') || highlight.get('publisher')}
                 </span>
@@ -105,9 +141,10 @@ HighlightHeader.propTypes = {
     containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func.isRequired,
     highlight: PropTypes.shape().isRequired,
+    toggleEditing: PropTypes.func.isRequired,
     toggleNoteEditable: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    publisher: PropTypes.shape()
+    publisher: PropTypes.shape().isRequired
 };
 
 export default injectIntl(HighlightHeader);

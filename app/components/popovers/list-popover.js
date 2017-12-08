@@ -136,7 +136,7 @@ class ListPopover extends Component {
               {this.groupByState(lists).map((list) => {
                   const toggleList = () => {
                       this.onVisibleChange(false);
-                      listToggleEntry(list.get('name'), entryId, entryType, authorEthAddress);
+                      listToggleEntry(list.get('id'), entryId, entryType, authorEthAddress);
                   };
                   const isSaved = this.isSaved(list);
                   const root = 'list-popover__left-item list-popover__row-icon';

@@ -1,18 +1,24 @@
 .highlights {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     overflow-y: auto;
     overflow-x: hidden;
 
+    &__wrap {
+        height: 100%;
+        padding-right: 4px;
+    }
+    
     &__content {
-        width: 60%;
+        width: 80%;
+        margin: 0 auto;
     }
 
     &__search {
-        padding-top: 40px;
-        padding-bottom: 20px;
+        padding: 40px 5px 20px 5px;
+
+        &_editing {
+            opacity: 0.7;
+        }    
 
         .ant-input-prefix {
             display: flex;

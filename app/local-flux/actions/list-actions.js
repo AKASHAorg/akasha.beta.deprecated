@@ -11,8 +11,8 @@ export const listAddError = (error) => {
 };
 
 export const listAddSuccess = data => action(types.LIST_ADD_SUCCESS, { data });
-export const listDelete = (listId, name) => action(types.LIST_DELETE, { listId, name });
-export const listDeleteEntry = (name, entryId) => action(types.LIST_DELETE_ENTRY, { name, entryId });
+export const listDelete = id => action(types.LIST_DELETE, { id });
+export const listDeleteEntry = (id, entryId) => action(types.LIST_DELETE_ENTRY, { id, entryId });
 
 export const listDeleteEntryError = (error) => {
     error.code = 'LDEE01';
@@ -28,7 +28,18 @@ export const listDeleteError = (error) => {
     return action(types.LIST_DELETE_ERROR, { error });
 };
 
-export const listDeleteSuccess = name => action(types.LIST_DELETE_SUCCESS, { name });
+export const listDeleteSuccess = id => action(types.LIST_DELETE_SUCCESS, { id });
+
+export const listEdit = ({ id, name, description }) =>
+    action(types.LIST_EDIT, { id, name, description });
+
+export const listEditError = (error) => {
+    error.code = 'LEE01';
+    error.messageId = 'listEdit';
+    return action(types.LIST_EDIT_ERROR, { error });
+};
+
+export const listEditSuccess = data => action(types.LIST_EDIT_SUCCESS, { data });
 
 export const listGetAllError = (error) => {
     error.code = 'LGAE01';
@@ -38,7 +49,7 @@ export const listGetAllError = (error) => {
 
 export const listGetAllSuccess = data => action(types.LIST_GET_ALL_SUCCESS, { data });
 
-export const listGetFull = name => action(types.LIST_GET_FULL, { name });
+export const listGetFull = id => action(types.LIST_GET_FULL, { id });
 
 export const listGetFullError = (error) => {
     error.code = 'LGFE01';
@@ -57,8 +68,8 @@ export const listSearchError = (error) => {
 
 export const listSearchSuccess = data => action(types.LIST_SEARCH_SUCCESS, { data });
 
-export const listToggleEntry = (listName, entryId, entryType, authorEthAddress) =>
-    action(types.LIST_TOGGLE_ENTRY, { listName, entryId, entryType, authorEthAddress });
+export const listToggleEntry = (id, entryId, entryType, authorEthAddress) =>
+    action(types.LIST_TOGGLE_ENTRY, { id, entryId, entryType, authorEthAddress });
 
 export const listToggleEntryError = (error) => {
     error.code = 'LTEE01';

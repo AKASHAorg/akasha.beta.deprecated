@@ -15,36 +15,43 @@ const createListRecord = (list) => {
 const listState = createReducer(initialState, {
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
         const startIndex = data.collection.length;
-        return state.mergeIn(['byName', request.value], {
-            moreEntries: startIndex < state.getIn(['byName', request.value, 'entryIds']).size,
+        return state.mergeIn(['byId', request.value], {
+            moreEntries: startIndex < state.getIn(['byId', request.value, 'entryIds']).size,
             startIndex,
         });
     },
 
     [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        const startIndex = state.getIn(['byName', request.value, 'startIndex']);
+        const startIndex = state.getIn(['byId', request.value, 'startIndex']);
         const newIndex = startIndex + data.collection.length;
-        return state.mergeIn(['byName', request.value], {
-            moreEntries: newIndex < state.getIn(['byName', request.value, 'entryIds']).size,
+        return state.mergeIn(['byId', request.value], {
+            moreEntries: newIndex < state.getIn(['byId', request.value, 'entryIds']).size,
             startIndex: newIndex,
         });
     },
 
     [types.LIST_ADD_SUCCESS]: (state, { data }) =>
-        state.setIn(['byName', data.name], createListRecord(data)),
+        state.setIn(['byId', data.id], createListRecord(data)),
 
-    [types.LIST_DELETE_SUCCESS]: (state, { name }) =>
-        state.deleteIn(['byName', name]),
+    [types.LIST_DELETE_SUCCESS]: (state, { id }) =>
+        state.deleteIn(['byId', id]),
 
     [types.LIST_DELETE_ENTRY_SUCCESS]: (state, { data }) =>
-        state.setIn(['byName', data.name], createListRecord(data)),
+        state.setIn(['byId', data.id], createListRecord(data)),
+
+    [types.LIST_EDIT_SUCCESS]: (state, { data }) => {
+        const byId = state.get('byId');
+        const oldList = byId.filter(list => list.id === data.id).first();
+        const newState = state.deleteIn(['byId', oldList.get('id')]);
+        return newState.setIn(['byId', data.id], createListRecord(data));
+    },
 
     [types.LIST_GET_ALL_SUCCESS]: (state, { data }) => {
-        let byName = state.get('byName');
+        let byId = state.get('byId');
         data.forEach((list) => {
-            byName = byName.set(list.name, createListRecord(list));
+            byId = byId.set(list.id, createListRecord(list));
         });
-        return state.set('byName', byName);
+        return state.set('byId', byId);
     },
 
     [types.LIST_SEARCH]: (state, { search }) =>
@@ -62,7 +69,7 @@ const listState = createReducer(initialState, {
         }),
 
     [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data }) =>
-        state.setIn(['byName', data.name], createListRecord(data)),
+        state.setIn(['byId', data.id], createListRecord(data)),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });

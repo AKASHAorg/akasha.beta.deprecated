@@ -109,7 +109,7 @@ class ImageUploader extends Component {
             if (this.container) {
                 containerSize = this.container.clientWidth;
             }
-            const bestKey = findClosestMatch(containerSize, image.toJS(), 'sm');
+            const bestKey = findClosestMatch(containerSize, image.toJS(), 'xs');
             if (bestKey) {
                 return imageCreator(image.getIn([bestKey, 'src']), baseUrl);
             }

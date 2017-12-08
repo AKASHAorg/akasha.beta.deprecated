@@ -43,6 +43,21 @@ export const deleteList = listId =>
             .catch(reject);
     });
 
+export const editList = ({ id, name, description }) =>
+    new Promise((resolve, reject) => {
+        listDB.lists
+            .where('id')
+            .equals(id)
+            .first()
+            .then((data) => {
+                data.name = name;
+                data.description = description;
+                listDB.lists.put(data)
+                    .then(() => resolve(data))
+                    .catch(err => reject(err));
+            });
+    });
+
 export const getAllLists = ethAddress =>
     new Promise((resolve, reject) => {
         listDB.lists
@@ -53,11 +68,11 @@ export const getAllLists = ethAddress =>
             .catch(reject);
     });
 
-export const getList = ({ ethAddress, name }) =>
+export const getList = ({ ethAddress, id }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('[ethAddress+name]')
-            .equals([ethAddress, name])
+            .where('[ethAddress+id]')
+            .equals([ethAddress, id])
             .first()
             .then(resolve)
             .catch(reject);
@@ -75,7 +90,7 @@ export const searchList = ({ ethAddress, search }) =>
                 return name.includes(search) || description.includes(search);
             })
             .toArray()
-            .then(data => resolve(data.map(list => list.name)))
+            .then(data => resolve(data.map(list => list.id)))
             .catch(reject);
     });
 
@@ -113,11 +128,11 @@ export const searchList = ({ ethAddress, search }) =>
 //             .catch(err => reject(err));
 //     });
 
-export const toggleEntry = ({ ethAddress, listName, entryId, entryType, authorEthAddress }) =>
+export const toggleEntry = ({ ethAddress, id, entryId, entryType, authorEthAddress }) =>
     new Promise((resolve, reject) => {
         listDB.lists
-            .where('[ethAddress+name]')
-            .equals([ethAddress, listName])
+            .where('[ethAddress+id]')
+            .equals([ethAddress, id])
             .toArray()
             .then((data) => {
                 const list = data[0];

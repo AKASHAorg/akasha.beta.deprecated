@@ -18,7 +18,7 @@ export const ListRecord = Record({
 });
 
 export const ListState = Record({
-    byName: new Map(),
+    byId: new Map(),
     entryLists: new Map(),
     flags: new Flags(),
     search: '',

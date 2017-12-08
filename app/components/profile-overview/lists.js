@@ -30,25 +30,28 @@ class Lists extends Component {
         );
 
         return (
-          <div className="lists">
-            <div className="lists__wrap">
-              <div className="lists__header">
-                {searchInput}
-                <NewListBtn />
-              </div>
-              <div className="lists__content">
-                <Masonry
-                  className="lists__masonry"
-                  options={{ transitionDuration: 0 }}
-                >
-                  {lists.map(list => (
-                    <ListCard
-                      deleteList={this.props.listDelete}
-                      key={list.get('id')}
-                      list={list}
-                    />
-                ))}
-                </Masonry>
+          <div className="lists__wrapper">
+            <div className="lists">
+              <div className="lists__content-wrap">
+                <div className="lists__header">
+                  {searchInput}
+                  <NewListBtn />
+                </div>
+                <div className="lists__content">
+                  <Masonry
+                    className="lists__masonry"
+                    options={{ transitionDuration: 0, fitWidth: true }}
+                    style={{ margin: '0 auto' }}
+                  >
+                    {lists.map(list => (
+                      <ListCard
+                        deleteList={this.props.listDelete}
+                        key={list.get('id')}
+                        list={list}
+                      />
+                  ))}
+                  </Masonry>
+                </div>
               </div>
             </div>
           </div>

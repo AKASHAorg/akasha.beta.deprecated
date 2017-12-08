@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const formMessages = defineMessages({
+    about: {
+        id: 'app.form.about',
+        description: 'label for about me validation',
+        defaultMessage: 'About Me'
+    },
     addressRequired: {
         id: 'app.form.addressRequired',
         description: 'error message for empty receiver input field',
@@ -294,7 +299,7 @@ const formMessages = defineMessages({
     updateSettings: {
         id: 'app.form.updateSettings',
         description: 'label for update settings button',
-        defaultMessage: 'Update settings'
+        defaultMessage: 'Update Settings'
     }
 });
 export { formMessages };
