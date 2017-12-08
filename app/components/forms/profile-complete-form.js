@@ -32,12 +32,7 @@ class ProfileCompleteForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { balance, isUpdate, tempProfile, profileExistsData } = nextProps;
-        // we need to enable update temp profile button only if something has changed
-        // so we need to keep a ref to old temp profile.
-        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
-            this.refTempProfile = tempProfile;
-        }
+        const { balance, tempProfile, profileExistsData } = nextProps;
         if (balance.get('eth') >= 0.1) {
             this.setState({
                 insufficientEth: false,
