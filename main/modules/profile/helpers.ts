@@ -18,7 +18,7 @@ export const profileAddress = Promise.coroutine(function* (data) {
         profileAddress = data.ethAddress;
     }
 
-    if (!!unpad(profileAddress)) {
+    if (profileAddress && !!unpad(profileAddress)) {
         return Promise.resolve(profileAddress);
     }
     return Promise.resolve(null);
