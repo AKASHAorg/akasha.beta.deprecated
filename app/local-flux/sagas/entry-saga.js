@@ -15,9 +15,9 @@ import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 10;
-const ENTRY_ITERATOR_LIMIT = 5;
-const ENTRY_LIST_ITERATOR_LIMIT = 5;
+const ALL_STREAM_LIMIT = 2;
+const ENTRY_ITERATOR_LIMIT = 2;
+const ENTRY_LIST_ITERATOR_LIMIT = 2;
 
 function* enableExtraChannels () {
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
