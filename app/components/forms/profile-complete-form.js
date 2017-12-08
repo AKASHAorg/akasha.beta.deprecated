@@ -392,6 +392,8 @@ class ProfileCompleteForm extends Component {
                     <FormItem
                       label={formatMessage(profileMessages.aboutMeTitle)}
                       colon={false}
+                      validateStatus={this._getErrorMessages('about') ? 'error' : 'success'}
+                      help={this._getErrorMessages('about')}
                     >
                       <Input.TextArea
                         className="profile-complete-form__textarea"
@@ -399,6 +401,7 @@ class ProfileCompleteForm extends Component {
                         placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
                         value={about}
                         onChange={this._handleFieldChange('about')}
+                        onBlur={this._validateField('about')}
                       />
                     </FormItem>
                   </Col>

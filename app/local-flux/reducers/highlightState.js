@@ -1,3 +1,4 @@
+import { List } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { HighlightRecord, HighlightState } from './records';
@@ -26,9 +27,7 @@ const highlightState = createReducer(initialState, {
         state.set('search', search),
 
     [types.HIGHLIGHT_SEARCH_SUCCESS]: (state, { data }) =>
-        state.merge({
-            searchResults: data
-        }),
+        state.set('searchResults', new List(data)),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 

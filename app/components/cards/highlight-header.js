@@ -68,8 +68,7 @@ class HighlightHeader extends Component {
             year="numeric"
           />
         );
-        const publisherUrl = `/@${highlight.get('publisher')}`;
-        const entryUrl = `${publisherUrl}/${highlight.get('entryId')}`;
+        const entryUrl = `/${publisher.get('ethAddress')}/${highlight.get('entryId')}`;
 
         const menu = (
           <div onClick={this.hide}>
@@ -97,7 +96,7 @@ class HighlightHeader extends Component {
         return (
           <div className="highlight-header">
             {this.showDeleteModal()}
-            <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
+            <ProfilePopover ethAddress={publisher.get('ethAddress')} containerRef={containerRef}>
               <Avatar
                 className="highlight-header__avatar"
                 firstName={publisher.get('firstName')}
@@ -107,7 +106,7 @@ class HighlightHeader extends Component {
               />
             </ProfilePopover>
             <div className="highlight-header__text">
-              <ProfilePopover akashaId={highlight.get('publisher')} containerRef={containerRef}>
+              <ProfilePopover ethAddress={publisher.get('ethAddress')} containerRef={containerRef}>
                 <span className="content-link">
                   {publisher.get('akashaId') || highlight.get('publisher')}
                 </span>
@@ -142,10 +141,10 @@ HighlightHeader.propTypes = {
     containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func.isRequired,
     highlight: PropTypes.shape().isRequired,
-    toggleEditing: PropTypes.func,
+    toggleEditing: PropTypes.func.isRequired,
     toggleNoteEditable: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    publisher: PropTypes.shape()
+    publisher: PropTypes.shape().isRequired
 };
 
 export default injectIntl(HighlightHeader);
