@@ -143,7 +143,7 @@ class AppContainer extends Component {
                         <Route path="/profileoverview/myentries" component={MyEntries} />
                         <Route path="/profileoverview/highlights" component={Highlights} />
                         <Route exact path="/profileoverview/lists" component={Lists} />
-                        <Route path="/profileoverview/lists/:listName" component={ListEntries} />
+                        <Route path="/profileoverview/lists/:listId" component={ListEntries} />
                         <Route path="/profileoverview/settings" component={ProfileSettings} />
                         <Route path="/search/entries/:query?" component={EntrySearchPage} />
                         <Route path="/search/tags/:query?" component={TagSearchPage} />

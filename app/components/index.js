@@ -24,6 +24,7 @@ export DashboardSidebarRow from './secondary-sidebars/dashboard-sidebar-row';
 export DashboardTopBar from './top-bars/dashboard-top-bar';
 export DataLoader from './data-loader';
 export DisplayName from './display-name';
+export EditListBtn from './profile-overview/edit-list-btn';
 export EntryCard from './cards/entry-card';
 export EntryCardHeader from './cards/entry-card-header';
 export EntryList from './entry-list';

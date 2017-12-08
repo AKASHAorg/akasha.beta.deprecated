@@ -54,7 +54,18 @@ export const getProfileSchema = (intl, options) => {
             }),
         about: Joi
             .string()
-            .allow(''),
+            .max(195)
+            .allow('')
+            .options({
+                language: {
+                    string: {
+                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        regex: {
+                            base: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                        }
+                    }
+                }
+            }),
         links: Joi
             .array()
             .items(

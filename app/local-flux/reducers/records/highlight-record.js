@@ -15,6 +15,7 @@ export const HighlightRecord = Record({
 
 export const HighlightState = Record({
     byId: new Map(),
+    editing: null,
     search: null,
     searchResults: new List()
 });

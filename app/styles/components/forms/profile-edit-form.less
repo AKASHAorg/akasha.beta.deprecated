@@ -1,8 +1,8 @@
 .profile-edit-form {
     &__avatar-title {
-        padding-bottom: 5px;
         font-size: 11px;
-        color: @text-color-secondary;
+        color: @text-color;
+        margin-bottom: 5px;
     }
 
     &__bg-image {
@@ -10,9 +10,15 @@
     }
 
     &__bg-image-title {
-        padding-bottom: 5px;
         font-size: 11px;
-        color: @text-color-secondary;
+        color: @text-color;
+        margin-bottom: 5px;
+    }
+
+    &__img-uploader-wrap {
+        height: 160px;
+        width: 320px;
+        overflow: hidden;
     }
 
     &__pad {
@@ -25,13 +31,14 @@
 
     &__form-wrapper {
         height:  100%;
-        padding: 20px;   
+        padding: 20px 24px;   
         overflow-y: auto;
 
         .ant-form-item-label {
             padding-bottom: 3px;
         }
         .ant-form-item-label label {
+            color: @text-color;
             font-size: 11px;
         }
     }
@@ -52,7 +59,7 @@
     }
     
     &__textarea {
-        resize: vertical;
+        resize: none;
     }
 
     &__add-links-btn {
@@ -61,5 +68,7 @@
 
     &__link {
         padding-top: 20px;
+        color: @text-color;
+        font-size: 13px;
     }
 }

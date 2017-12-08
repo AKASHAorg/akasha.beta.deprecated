@@ -1,19 +1,24 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Select, Switch } from 'antd';
+import { Button, Select, Radio } from 'antd';
 import { connect } from 'react-redux';
 import { settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle } from '../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Icon } from './';
 
+const RadioGroup = Radio.Group;
+
 class AppSettings extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            initLocale: this.props.generalSettings.get('locale'),
+            initTheme: this.props.generalSettings.get('darkTheme'),
             locale: this.props.generalSettings.get('locale'),
-            darkTheme: this.props.generalSettings.get('darkTheme')
+            darkTheme: this.props.generalSettings.get('darkTheme'),
+            isDirty: false
         };
     }
 
@@ -23,12 +28,31 @@ class AppSettings extends Component {
             darkTheme: this.state.darkTheme
         });
 
-    handleSelector = value => this.setState({ locale: value });
+    handleSelector = (value) => {
+        const { darkTheme, initLocale, initTheme } = this.state;
+        this.setState({
+            locale: value,
+            isDirty: true
+        });
+        if (initLocale === value && initTheme === darkTheme) {
+            this.setState({ isDirty: false });
+        }
+    }
 
-    handleSwitch = checked => this.setState({ darkTheme: checked });
+    handleThemeChange = (e) => {
+        const { initLocale, initTheme, locale } = this.state;
+        this.setState({
+            isDirty: true,
+            darkTheme: e.target.value,
+        });
+        if (initTheme === e.target.value && initLocale === locale) {
+            this.setState({ isDirty: false });
+        }
+    }
 
     render () {
         const { generalSettings, intl, sidebar } = this.props;
+        const { isDirty } = this.state;
         const Option = Select.Option;
         return (
           <div className={`app-settings ${sidebar ? 'app-settings_sidebar' : ''}`}>
@@ -48,12 +72,16 @@ class AppSettings extends Component {
               </div>
               <div className="app-settings__lang">
                 <div className="app-settings__lang-title">
+                  {intl.formatMessage(settingsMessages.language)}
+                </div>
+                <div className="app-settings__lang-label">
                   {intl.formatMessage(settingsMessages.selectLanguage)}
                 </div>
                 <Select
                   defaultValue={generalSettings.get('locale')}
                   size="large"
-                  style={{ width: '100%', fontWeight: '500' }}
+                  style={{ width: '420px', fontWeight: '400' }}
+                  dropdownClassName="app-settings__select-dropdown"
                   onChange={this.handleSelector}
                 >
                   <Option value="en">{intl.formatMessage(settingsMessages.english)}</Option>
@@ -66,22 +94,25 @@ class AppSettings extends Component {
                 <div className="app-settings__theme-title">
                   {intl.formatMessage(settingsMessages.theme)}
                 </div>
-                <div className="app-settings__theme-switch-wrapper">
-                  {intl.formatMessage(settingsMessages.darkTheme)}
-                  <Switch
-                    defaultChecked={generalSettings.get('darkTheme')}
-                    onChange={this.handleSwitch}
-                  />
+                <div className="app-settings__theme-label">
+                  {intl.formatMessage(settingsMessages.themeLabel)}
+                </div>
+                <div className="app-settings__theme-radio-wrap">
+                  <RadioGroup onChange={this.handleThemeChange} value={this.state.darkTheme}>
+                    <Radio value={false}>{intl.formatMessage(settingsMessages.lightTheme)}</Radio>
+                    <Radio value>{intl.formatMessage(settingsMessages.darkTheme)}</Radio>
+                  </RadioGroup>
                 </div>
               </div>
-              <div className="app-settings__update">
+            </div>
+            <div className="app-settings__update">
+              <div className="app-settings__update-btn">
                 <Button
-                  size="large"
+                  disabled={!isDirty}
+                  type="primary"
                   onClick={this.handleUpdate}
                 >
-                  <div className="app-settings__update-title">
-                    {intl.formatMessage(settingsMessages.update)}
-                  </div>
+                  {intl.formatMessage(settingsMessages.update)}
                 </Button>
               </div>
             </div>
