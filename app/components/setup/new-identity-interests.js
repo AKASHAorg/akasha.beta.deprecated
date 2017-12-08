@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { Button, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
+import { selectTagEntriesCount, selectTagSearchResults,
+    selectDashboardIdByName } from '../../local-flux/selectors';
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
@@ -11,6 +12,8 @@ import { generalMessages, searchMessages, setupMessages } from '../../locale-dat
 import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
+
+const firstDashboardName = 'General';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -23,8 +26,8 @@ class NewIdentityInterests extends Component {
 
     componentWillReceiveProps (nextProps) {
         if (nextProps.firstDashboardReady === true) {
-            const { history } = this.props;
-            history.push('/dashboard/first');
+            const { history, firstDashboardId } = this.props;
+            history.push(`/dashboard/${firstDashboardId}`);
         }
     }
 
@@ -117,6 +120,7 @@ class NewIdentityInterests extends Component {
 NewIdentityInterests.propTypes = {
     dashboardAddFirst: PropTypes.func.isRequired,
     entriesCount: PropTypes.shape().isRequired,
+    firstDashboardId: PropTypes.string,
     firstDashboardReady: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     fetchingTags: PropTypes.bool,
@@ -131,6 +135,7 @@ function mapStateToProps (state) {
     return {
         entriesCount: selectTagEntriesCount(state),
         fetchingTags: state.tagState.getIn(['flags', 'searchPending']),
+        firstDashboardId: selectDashboardIdByName(state, firstDashboardName).first(),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         profileInterests: state.profileState.get('interests'),
         tags: selectTagSearchResults(state)

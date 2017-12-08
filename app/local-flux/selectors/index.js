@@ -97,6 +97,11 @@ export const selectCyclingStates = state => state.profileState.get('cyclingState
 export const selectDashboard = (state, id) =>
     state.dashboardState.getIn(['byId', id]);
 
+export const selectDashboardIdByName = (state, name) =>
+    state.dashboardState.get('byId')
+        .filter(dashboard => dashboard.get('name') === name)
+        .map(dashboard => dashboard.get('id'));
+
 export const selectDashboards = (state) => {
     const search = selectDashboardSearch(state);
     if (!search) {

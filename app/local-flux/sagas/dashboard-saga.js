@@ -39,7 +39,7 @@ function* dashboardAddFirst ({ interests }) {
     const columns = interests ?
         interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) :
         [];
-    yield call(dashboardAdd, { name: 'first', columns });
+    yield call(dashboardAdd, { name: 'General', columns });
     yield put(actions.dashboardAddFirstSuccess());
 }
 
