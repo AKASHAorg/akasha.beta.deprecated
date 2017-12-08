@@ -181,7 +181,7 @@ class ProfileEditForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.refs.wrappedInstance.getImage().then(avatar =>
+        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then(avatar =>
             onProfileUpdate(
                 tempProfile.set('avatar', avatar)
             )
@@ -271,7 +271,7 @@ class ProfileEditForm extends Component {
                           <div className="profile-edit-form__bg-image-title" >
                             {intl.formatMessage(profileMessages.backgroundImageTitle)}
                           </div>
-                          <div className="col-xs-12 profile-edit-form__img-uploader-wrap">
+                          <div className="col-xs-12 profile-edit-form__bg-image-wrap">
                             <ImageUploader
                               ref={(imageUploader) => { this.imageUploader = imageUploader; }}
                               minWidth={320}
