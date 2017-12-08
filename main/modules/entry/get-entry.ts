@@ -21,6 +21,17 @@ export const getEntry = {
     },
     'required': ['entryId']
 };
+
+export const findAuthor = Promise.coroutine(function* (entryId: string) {
+    const ev = yield contracts
+        .fromEvent(contracts.instance.Entries.Publish, { entryId: entryId },
+            0, 1, { reversed: true, lastIndex: 0 });
+    if (!ev.results.length) {
+        throw new Error('EntryId ' + entryId + ' could not be found.');
+    }
+
+    return ev.results[0].args.author;
+});
 /**
  * Fetch entry from entryId
  * @type {Function}
@@ -30,8 +41,12 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
     v.validate(data, getEntry, { throwError: true });
 
     let entry;
-    const ethAddress = yield profileAddress(data);
+    let ethAddress = yield profileAddress(data);
     const votingPeriod = yield contracts.instance.Entries.voting_period();
+    if (!ethAddress) {
+        ethAddress = yield findAuthor(data.entryId);
+    }
+
     const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(ethAddress, data.entryId);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
@@ -46,7 +61,11 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
                 title: entry.title,
                 excerpt: entry.excerpt,
                 version: data.version
-            }], (err) => { if (err) { console.warn('error storing entry index', err); } });
+            }], (err) => {
+                if (err) {
+                    console.warn('error storing entry index', err);
+                }
+            });
         }
 
     }
