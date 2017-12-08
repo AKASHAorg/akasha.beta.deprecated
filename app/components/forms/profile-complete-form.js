@@ -32,7 +32,12 @@ class ProfileCompleteForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { balance, tempProfile, profileExistsData } = nextProps;
+        const { balance, tempProfile, profileExistsData, loggedEthAddress, onProfileUpdate } = nextProps;
+        if (loggedEthAddress && !tempProfile.get('ethAddress')) {
+            onProfileUpdate(
+                tempProfile.set('ethAddress', loggedEthAddress)
+            );
+        }
         if (balance.get('eth') >= 0.1) {
             this.setState({
                 insufficientEth: false,
@@ -164,7 +169,7 @@ class ProfileCompleteForm extends Component {
         const { intl, tempProfile, profileExistsData } = this.props;
         const { akashaIdIsValid, akashaIdExists } = this.state;
         if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
-            if (!akashaIdIsValid) {
+            if (!akashaIdIsValid && tempProfile.get('akashaId').length > 1) {
                 return intl.formatMessage(validationMessages.akashaIdNotValid);
             }
             if (akashaIdExists) {
