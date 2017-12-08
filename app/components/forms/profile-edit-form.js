@@ -271,7 +271,7 @@ class ProfileEditForm extends Component {
                           <div className="profile-edit-form__bg-image-title" >
                             {intl.formatMessage(profileMessages.backgroundImageTitle)}
                           </div>
-                          <div className="col-xs-12">
+                          <div className="col-xs-12 profile-edit-form__img-uploader-wrap">
                             <ImageUploader
                               ref={(imageUploader) => { this.imageUploader = imageUploader; }}
                               minWidth={320}
@@ -291,7 +291,6 @@ class ProfileEditForm extends Component {
                         colon={false}
                         validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                         help={this._getAkashaIdErrors('akashaId')}
-                        style={{ marginRight: 8 }}
                       >
                         <Input
                           value={akashaId}
@@ -337,14 +336,16 @@ class ProfileEditForm extends Component {
                       <FormItem
                         label={intl.formatMessage(profileMessages.aboutMeTitle)}
                         colon={false}
+                        validateStatus={this._getErrorMessages('about') ? 'error' : 'success'}
+                        help={this._getErrorMessages('about')}
                       >
                         <Input.TextArea
                           className="profile-edit-form__textarea"
-                          rows={2}
+                          rows={5}
                           placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
                           value={about}
                           onChange={this._handleFieldChange('about')}
-                          autosize={{ minRows: 2 }}
+                          onBlur={this._validateField('about')}
                         />
                       </FormItem>
                     </Col>

@@ -10,12 +10,12 @@ const settingsMessages = defineMessages({
     darkTheme: {
         id: 'app.settings.darkTheme',
         description: 'theme switch',
-        defaultMessage: 'Dark theme'
+        defaultMessage: 'Dark Theme'
     },
     description: {
         id: 'app.settings.description',
         description: 'Description for app settings',
-        defaultMessage: 'Customize your app preferences'
+        defaultMessage: 'Customize your app settings'
     },
     english: {
         id: 'app.settings.english',
@@ -42,6 +42,16 @@ const settingsMessages = defineMessages({
         description: 'description for default license options',
         defaultMessage: 'Choose the default license for articles you publish'
     },
+    language: {
+        id: 'app.settings.language',
+        description: 'title for language form item',
+        defaultMessage: 'Language'
+    },
+    lightTheme: {
+        id: 'app.settings.lightTheme',
+        description: 'theme switch',
+        defaultMessage: 'Light Theme'
+    },
     russian: {
         id: 'app.settings.russian',
         description: 'app language',
@@ -50,7 +60,7 @@ const settingsMessages = defineMessages({
     selectLanguage: {
         id: 'app.settings.selectLanguage',
         description: 'title for language selector',
-        defaultMessage: 'Select Language'
+        defaultMessage: 'SELECT LANGUAGE'
     },
     spanish: {
         id: 'app.settings.spanish',
@@ -60,7 +70,12 @@ const settingsMessages = defineMessages({
     theme: {
         id: 'app.settings.theme',
         description: 'theme switch title',
-        defaultMessage: 'Theme'
+        defaultMessage: 'App Theme'
+    },
+    themeLabel: {
+        id: 'app.settings.themeLabel',
+        description: 'theme switch label',
+        defaultMessage: 'Customize the look of the Akasha workspace'
     },
     tipsDescription: {
         id: 'app.settings.tipsDescription',
@@ -95,7 +110,7 @@ const settingsMessages = defineMessages({
     update: {
         id: 'app.settings.update',
         description: 'description for update buton',
-        defaultMessage: 'update settings'
+        defaultMessage: 'Update Settings'
     }
 });
 export { settingsMessages };

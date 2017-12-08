@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const formMessages = defineMessages({
+    about: {
+        id: 'app.form.about',
+        description: 'label for about me validation',
+        defaultMessage: 'About Me'
+    },
     addressRequired: {
         id: 'app.form.addressRequired',
         description: 'error message for empty receiver input field',

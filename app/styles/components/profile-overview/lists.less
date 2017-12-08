@@ -1,13 +1,17 @@
 .lists {
-    display: flex;
-    justify-content: center;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 
-    &__wrap {
-        height: ~'calc(100% - 52px)';
+    &__wrapper {
+        height: 100%;
+        padding-right: 4px;
+    }
+
+    &__content-wrap {
+        height: 100%;
         width: 80%;
-        max-width: 730px;
-        margin-top: 30px;
+        margin: 40px auto 0;
 
         .ant-tabs {
             height: 100%;
@@ -23,13 +27,11 @@
     }
 
     &__content {
-        overflow-y: auto;
-        height: ~'calc(100% - 80px)';
-
+        height: 100%;
     }
 
     &__header {
-        width: 710px;
+        width: 100%;
         margin: 0 5px 25px 5px;
         display: inline-flex;
         justify-content: space-between;

@@ -90,7 +90,7 @@ export const searchList = ({ ethAddress, search }) =>
                 return name.includes(search) || description.includes(search);
             })
             .toArray()
-            .then(data => resolve(data.map(list => list.name)))
+            .then(data => resolve(data.map(list => list.id)))
             .catch(reject);
     });
 

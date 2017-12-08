@@ -59,12 +59,10 @@ class Highlights extends Component {
                   <Masonry
                     options={{
                         transitionDuration: 0,
-                        columnWidth: '.highlights__grid-sizer',
-                        // percentPosition: true,
-                        itemSelector: '.highlight-card'
+                        fitWidth: true
                     }}
+                    style={{ margin: '0 auto' }}
                   >
-                    <div className="highlights__grid-sizer" />
                     {highlights.map((highlight) => {
                         const publisher = profiles.get(highlight.get('publisher')) || new ProfileRecord();
                         return (
