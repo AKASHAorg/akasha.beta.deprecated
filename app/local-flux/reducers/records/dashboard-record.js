@@ -13,7 +13,7 @@ const ColumnFlags = Record({
 
 export const ColumnRecord = Record({
     id: null,
-    entries: new List(),
+    entriesList: new List(),
     flags: new ColumnFlags(),
     large: false,
     lastBlock: null,

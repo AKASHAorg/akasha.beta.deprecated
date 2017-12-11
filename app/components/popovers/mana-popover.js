@@ -105,7 +105,7 @@ class ManaPopover extends Component {
                     datasets: [{
                         data: [
                             manaBurned.get('comments'),
-                            manaBurned.get('entries'),
+                            manaBurned.get('entriesTotal'),
                             manaBurned.get('votes')
                         ],
                         backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']

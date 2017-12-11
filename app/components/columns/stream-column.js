@@ -12,7 +12,7 @@ import { selectColumnEntries } from '../../local-flux/selectors';
 class StreamColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
-        if (!column.get('entries').size) {
+        if (!column.get('entriesList').size) {
             this.props.entryStreamIterator(column.get('id'));
         }
     }
@@ -25,7 +25,7 @@ class StreamColumn extends Component {
     onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
 
     render () {
-        const { column, entries, intl } = this.props;
+        const { column, entriesList, intl } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -39,7 +39,7 @@ class StreamColumn extends Component {
             />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreStreamIterator}
@@ -54,7 +54,7 @@ class StreamColumn extends Component {
 
 StreamColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreStreamIterator: PropTypes.func.isRequired,
     entryStreamIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -62,7 +62,7 @@ StreamColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id')),
+        entriesList: selectColumnEntries(state, ownProps.column.get('id')),
     };
 }
 
