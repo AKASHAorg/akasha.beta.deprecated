@@ -13,7 +13,7 @@ class TagColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
-        if (!column.get('entries').size && value) {
+        if (!column.get('entriesList').size && value) {
             this.props.entryTagIterator({ columnId: column.get('id'), value });
         }
     }
@@ -39,7 +39,7 @@ class TagColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, tagExists, tagResults } = this.props;
+        const { column, entriesList, intl, tagExists, tagResults } = this.props;
         let placeholderMessage;
         if (column.get('value')) {
             placeholderMessage = tagExists.get(column.get('value')) ?
@@ -61,7 +61,7 @@ class TagColumn extends Component {
             />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreTagIterator}
@@ -76,7 +76,7 @@ class TagColumn extends Component {
 
 TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -88,7 +88,7 @@ TagColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
-        entries: selectColumnEntries(state, columnId),
+        entriesList: selectColumnEntries(state, columnId),
         tagExists: selectTagExists(state),
         tagResults: selectTagSearchResults(state),
     };

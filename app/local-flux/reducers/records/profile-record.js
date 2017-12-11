@@ -40,7 +40,7 @@ export const CyclingStates = Record({
 
 const ManaBurned = Record({
     comments: 0,
-    entries: 0,
+    entriesTotal: 0,
     votes: 0
 });
 

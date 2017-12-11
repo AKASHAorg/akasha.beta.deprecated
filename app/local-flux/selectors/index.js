@@ -58,14 +58,14 @@ export const selectColumn = (state, columnId) => state.dashboardState.getIn(['co
 
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
-        .getIn(['columnById', columnId, 'entries'])
+        .getIn(['columnById', columnId, 'entriesList'])
         .map(id => selectEntry(state, id));
 
 export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
 
 export const selectColumnLastEntry = (state, columnId) =>
-    state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
+    state.dashboardState.getIn(['columnById', columnId, 'entriesList']).last();
 
 export const selectColumnLastIndex = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);

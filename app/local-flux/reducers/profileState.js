@@ -334,9 +334,9 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
     [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
         const comments = balanceToNumber(data.comments.manaCost);
-        const entries = balanceToNumber(data.entries.manaCost);
+        const entriesTotal = balanceToNumber(data.entries.manaCost);
         const votes = balanceToNumber(data.votes.manaCost);
-        return state.mergeIn(['manaBurned'], { comments, entries, votes });
+        return state.mergeIn(['manaBurned'], { comments, entriesTotal, votes });
     },
 
     [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: (state, { ethAddress }) =>

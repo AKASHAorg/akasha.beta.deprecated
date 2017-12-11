@@ -32,7 +32,7 @@ class ProfileEntriesColumn extends Component {
     }
 
     render () {
-        const { entries, fetchingEntries, fetchingMoreEntries, intl, moreEntries } = this.props;
+        const { entriesList, fetchingEntries, fetchingMoreEntries, intl, moreEntries } = this.props;
 
         return (
           <div className="column">
@@ -44,7 +44,7 @@ class ProfileEntriesColumn extends Component {
             />
             <EntryList
               contextId="profileEntries"
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={fetchingEntries}
               fetchingMoreEntries={fetchingMoreEntries}
               fetchMoreEntries={this.entryMoreIterator}
@@ -56,7 +56,7 @@ class ProfileEntriesColumn extends Component {
 }
 
 ProfileEntriesColumn.propTypes = {
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     ethAddress: PropTypes.string.isRequired,
@@ -71,7 +71,7 @@ function mapStateToProps (state, ownProps) {
     const { fetchingEntries, fetchingMoreEntries, moreEntries } =
         selectProfileEntriesFlags(state, ethAddress);
     return {
-        entries: selectProfileEntries(state, ethAddress),
+        entriesList: selectProfileEntries(state, ethAddress),
         fetchingEntries,
         fetchingMoreEntries,
         moreEntries
