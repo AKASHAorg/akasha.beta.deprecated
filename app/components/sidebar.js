@@ -19,7 +19,8 @@ class Sidebar extends Component {
         overlayVisible: false,
         showEntryMenu: false,
         visible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -28,6 +29,7 @@ class Sidebar extends Component {
     }
 
     handleVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({ visible });
     }
 
@@ -214,7 +216,7 @@ class Sidebar extends Component {
               <Popover
                 arrowPointAtCenter
                 placement="topRight"
-                content={menu}
+                content={this.wasVisible ? menu : null}
                 trigger="click"
                 overlayClassName="popover-menu"
                 visible={this.state.visible}

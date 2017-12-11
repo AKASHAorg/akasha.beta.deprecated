@@ -19,6 +19,7 @@ class NewEntrySecondarySidebar extends Component {
         searchBarVisible: false,
         searching: false,
     };
+    wasVisible = false;
 
     componentDidMount () {
         const { ethAddress } = this.props;
@@ -239,6 +240,7 @@ class NewEntrySecondarySidebar extends Component {
      * for events like clicking outside of the popover component
      */
     _forceDraftTypeVisibility = (visible) => {
+        this.wasVisible = true;
         this.setState({
             draftTypeVisible: visible
         });
@@ -274,7 +276,7 @@ class NewEntrySecondarySidebar extends Component {
                 }
               >
                 <Popover
-                  content={this._getEntryTypePopover()}
+                  content={this.wasVisible ? this._getEntryTypePopover() : null}
                   trigger="click"
                   placement="bottomLeft"
                   overlayClassName="new-entry-secondary-sidebar__draft-type-popover"

@@ -16,7 +16,10 @@ class EntryPageHeader extends Component {
     state = {
         showVersions: false,
     };
+    wasVisible = false;
+
     _handleVersionsPopoverVisibility = (visible, latestVersion) => {
+        this.wasVisible = true;
         if (!latestVersion) return;
         this.setState({
             showVersions: visible
@@ -131,7 +134,7 @@ class EntryPageHeader extends Component {
             </span>
             <span style={{ padding: '0 7px' }}>|</span>
             <Popover
-              content={this._getVersionsPopoverContent()}
+              content={this.wasVisible ? this._getVersionsPopoverContent() : null}
               visible={showVersions}
               trigger="click"
               onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}

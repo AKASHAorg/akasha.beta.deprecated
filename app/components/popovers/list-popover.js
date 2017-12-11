@@ -11,6 +11,7 @@ class ListPopover extends Component {
         addNewList: false,
         popoverVisible: false,
     };
+    wasVisible = false;
 
     shouldComponentUpdate = (nextProps, nextState) => {
         const { lists, search } = nextProps;
@@ -63,6 +64,7 @@ class ListPopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         if (popoverVisible) {
             this.setInputFocusAsync();
         }
@@ -200,7 +202,7 @@ class ListPopover extends Component {
         return (
           <Popover
             arrowPointAtCenter
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="popover-menu list-popover"

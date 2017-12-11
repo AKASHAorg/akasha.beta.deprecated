@@ -21,6 +21,7 @@ class TagPopover extends Component {
         content: null,
         visible: false
     };
+    wasVisible = false;
 
     componentWillUnmount () {
         if (this.resetTimeout) {
@@ -76,6 +77,7 @@ class TagPopover extends Component {
     };
 
     onVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({
             content: visible ? MENU : this.state.content,
             visible
@@ -204,7 +206,7 @@ class TagPopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName={overlayClassName}
