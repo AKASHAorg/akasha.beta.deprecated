@@ -24,6 +24,7 @@ class EssencePopover extends Component {
         page: DEFAULT,
         popoverVisible: false
     };
+    wasVisible = false;
 
     componentWillUnmount () {
         if (this.timeout) {
@@ -32,6 +33,7 @@ class EssencePopover extends Component {
     }
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         if (popoverVisible) {
             this.props.profileEssenceIterator();
         } else {
@@ -180,7 +182,7 @@ class EssencePopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="essence-popover"
             placement="leftBottom"

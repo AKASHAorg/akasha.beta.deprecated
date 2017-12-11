@@ -20,6 +20,7 @@ class ManaPopover extends Component {
         page: DEFAULT,
         popoverVisible: false
     };
+    wasVisible = false;
 
     componentWillUnmount () {
         if (this.timeout) {
@@ -28,6 +29,7 @@ class ManaPopover extends Component {
     }
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -153,7 +155,7 @@ class ManaPopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="mana-popover"
             placement="leftBottom"

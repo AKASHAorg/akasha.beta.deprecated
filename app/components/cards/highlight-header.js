@@ -10,7 +10,8 @@ class HighlightHeader extends Component {
     state = {
         visible: false,
         deleteModalVisible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -25,6 +26,7 @@ class HighlightHeader extends Component {
     }
 
     handleVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({ visible });
     }
 
@@ -124,7 +126,7 @@ class HighlightHeader extends Component {
             <Popover
               arrowPointAtCenter
               placement="bottomLeft"
-              content={menu}
+              content={this.wasVisible ? menu : null}
               trigger="click"
               overlayClassName="popover-menu"
               visible={this.state.visible}

@@ -17,6 +17,7 @@ class VotePopover extends Component {
     state = {
         popoverVisible: false
     };
+    wasVisible = false;
 
     componentWillReceiveProps (nextProps) {
         const { votePending } = nextProps;
@@ -71,6 +72,7 @@ class VotePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible: popoverVisible && this.canVote()
         });
@@ -184,7 +186,7 @@ class VotePopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="vote-popover"

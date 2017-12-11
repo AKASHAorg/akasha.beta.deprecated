@@ -11,7 +11,8 @@ import { Icon } from '../';
 class EditListBtn extends Component {
     state = {
         visible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -22,6 +23,7 @@ class EditListBtn extends Component {
 
     handleVisibleChange = (visible) => {
         const { form, list } = this.props;
+        this.wasVisible = true;
         if (visible) {
             form.setFieldsValue({ name: list.get('name'), description: list.get('description') });
         }
@@ -100,7 +102,7 @@ class EditListBtn extends Component {
             <Popover
               arrowPointAtCenter
               placement="bottomRight"
-              content={newListForm}
+              content={this.wasVisible ? newListForm : null}
               trigger="click"
               visible={this.state.visible}
               onVisibleChange={this.handleVisibleChange}

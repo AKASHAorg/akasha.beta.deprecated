@@ -11,7 +11,8 @@ import { generalMessages } from '../../locale-data/messages/general-messages';
 class NewListBtn extends Component {
     state = {
         visible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -21,6 +22,7 @@ class NewListBtn extends Component {
     }
 
     handleVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({ visible });
         this.props.form.validateFields();
     }
@@ -119,7 +121,7 @@ class NewListBtn extends Component {
           <div className="new-list-btn__create">
             <Popover
               placement="bottomRight"
-              content={newListForm}
+              content={this.wasVisible ? newListForm : null}
               trigger="click"
               visible={this.state.visible}
               onVisibleChange={this.handleVisibleChange}

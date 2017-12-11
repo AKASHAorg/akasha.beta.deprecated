@@ -19,6 +19,7 @@ class ProfileDetails extends Component {
         followHovered: false,
         popoverVisible: false,
     };
+    wasVisible = false;
 
     getBackgroundImageClass = (backgroundImage) => {
         if (!backgroundImage) {
@@ -55,6 +56,7 @@ class ProfileDetails extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -192,12 +194,13 @@ class ProfileDetails extends Component {
               {!isOwnProfile &&
                 <Popover
                   arrowPointAtCenter
-                  content={
+                  content={this.wasVisible ?
                     <SendTipForm
                       balance={balance}
                       onSubmit={this.sendTip}
                       tipPending={tipPending}
-                    />
+                    /> :
+                    null
                   }
                   onVisibleChange={this.onVisibleChange}
                   overlayClassName="profile-details__popover"

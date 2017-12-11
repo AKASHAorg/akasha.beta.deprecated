@@ -13,6 +13,7 @@ class DashboardSidebarRow extends Component {
     state = {
         popoverVisible: false
     };
+    wasVisible = false;
 
     onDelete = () => {
         const { dashboard, dashboardDelete, intl } = this.props;
@@ -35,6 +36,7 @@ class DashboardSidebarRow extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -82,7 +84,7 @@ class DashboardSidebarRow extends Component {
               </div>
               <Popover
                 arrowPointAtCenter
-                content={menu}
+                content={this.wasVisible ? menu : null}
                 onClick={ev => ev.stopPropagation()}
                 onVisibleChange={this.onVisibleChange}
                 overlayClassName="popover-menu"
