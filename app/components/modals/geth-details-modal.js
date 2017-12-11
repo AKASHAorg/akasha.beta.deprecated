@@ -95,7 +95,7 @@ class GethDetailsModal extends Component {
                     />
                     <Input
                       label={intl.formatMessage(setupMessages.gethNetworkId)}
-                      readOnly
+                      disabled
                       size="large"
                       value={gethSettings.get('networkid') || ''}
                       wrapperStyle={{ width: '48%' }}

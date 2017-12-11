@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const listMessages = defineMessages({
+    addToList: {
+        id: 'app.list.addToList',
+        description: 'tooltip for add to list button',
+        defaultMessage: 'Add to list'
+    },
     addToNewList: {
         id: 'app.list.addToNewList',
         description: 'title for new list form',

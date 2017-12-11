@@ -59,7 +59,7 @@ class TransferForm extends Component {
                 readOnly
                 value={ethAddress}
               />
-              <div className="content-link transfer-form__copy-button" onClick={this.onCopy}>
+              <div className="transfer-form__copy-button" onClick={this.onCopy}>
                 {intl.formatMessage(generalMessages.copy)}
               </div>
             </FormItem>

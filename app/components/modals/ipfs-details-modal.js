@@ -135,39 +135,33 @@ class IpfsDetailsModal extends Component {
                     value={storagePath}
                   />
                   <div className="ipfs-details-modal__ports">
-                    {apiPort &&
-                      <InputNumber
-                        label={intl.formatMessage(setupMessages.ipfsApiPort)}
-                        value={apiPort}
-                        onChange={this.onApiPortChange}
-                        disabled={!ipfsApi || ipfsPortsRequested}
-                        size="large"
-                        style={{ width: '100%' }}
-                        wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                      />
-                    }
-                    {gatewayPort &&
-                      <InputNumber
-                        label={intl.formatMessage(setupMessages.ipfsGatewayPort)}
-                        value={gatewayPort}
-                        onChange={this.onGatewayPortChange}
-                        disabled={!ipfsApi || ipfsPortsRequested}
-                        size="large"
-                        style={{ width: '100%' }}
-                        wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                      />
-                    }
-                    {swarmPort &&
-                      <InputNumber
-                        label={intl.formatMessage(setupMessages.ipfsSwarmPort)}
-                        value={swarmPort}
-                        onChange={this.onSwarmPortChange}
-                        disabled={!ipfsApi || ipfsPortsRequested}
-                        size="large"
-                        style={{ width: '100%' }}
-                        wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                      />
-                    }
+                    <InputNumber
+                      label={intl.formatMessage(setupMessages.ipfsApiPort)}
+                      value={apiPort}
+                      onChange={this.onApiPortChange}
+                      disabled={!ipfsApi || ipfsPortsRequested}
+                      size="large"
+                      style={{ width: '100%' }}
+                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
+                    />
+                    <InputNumber
+                      label={intl.formatMessage(setupMessages.ipfsGatewayPort)}
+                      value={gatewayPort}
+                      onChange={this.onGatewayPortChange}
+                      disabled={!ipfsApi || ipfsPortsRequested}
+                      size="large"
+                      style={{ width: '100%' }}
+                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
+                    />
+                    <InputNumber
+                      label={intl.formatMessage(setupMessages.ipfsSwarmPort)}
+                      value={swarmPort}
+                      onChange={this.onSwarmPortChange}
+                      disabled={!ipfsApi || ipfsPortsRequested}
+                      size="large"
+                      style={{ width: '100%' }}
+                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
+                    />
                   </div>
                 </div>
               </TabPane>

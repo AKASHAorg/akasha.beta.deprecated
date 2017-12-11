@@ -2,6 +2,7 @@
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    background-color: @background;
 
     &__wrap {
         height: 100%;
@@ -23,11 +24,11 @@
         .ant-input-prefix {
             display: flex;
             justify-content: center;
-            height: 100%;
+            height: 34px;
             width: 36px;
             left: 0;
             align-items: center;
-            border-right: 1px inset lightgrey;
+            border-right: 1px inset @border-color;
         }
 
         .ant-input-affix-wrapper .ant-input {

@@ -45,10 +45,50 @@
 }
 
 .content-placeholder {
-    background-color: @dark;
+    background-color: @text-color-secondary;
     opacity: 0.08;
 }
 
 .input-error {
     font-size: 13px;
+}
+
+.content-link {
+    cursor: pointer;
+    &:hover {
+        filter: brightness(@content-link-brightness);
+    }
+}
+
+.question-circle-icon {
+    stroke: initial !important;
+    circle {
+        fill: @question-circle-bg !important;
+    }
+    path {
+        fill: @question-circle
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: transparent;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: 0px 3px 0px 0px @light-background, 0 -3px 0 0 @light-background;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 2px;
+    border-radius: 3px;
+    background: @scrollbar-active;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: @scrollbar-inactive;
 }

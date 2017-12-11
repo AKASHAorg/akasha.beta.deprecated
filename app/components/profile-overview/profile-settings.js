@@ -186,7 +186,7 @@ class ProfileSettings extends Component {
                       placement="topLeft"
                       arrowPointAtCenter
                     >
-                      <Icon type="questionCircle" className="profile-settings__info-icon" />
+                      <Icon type="questionCircle" className="question-circle-icon profile-settings__info-icon" />
                     </Tooltip>
                   </div>
                   <div className="profile-settings__item-description">
