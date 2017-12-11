@@ -7,11 +7,10 @@
     z-index: 100;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #cccccc;
     transition: left 0.175s ease-in-out;
     will-change: left;
     max-width: @sidebar-width;
-    background-color: @dark-background;
+    background-color: @sidebar-background;
 
     &__top-icons {
         flex-grow: 4;
@@ -86,7 +85,7 @@
         left: @sidebar-width;
         bottom: 0;
         right: 100%;
-        background: fadeout(@dark, 50%);
+        background: @overlay-color;
         transition: right 0.15s ease-in-out;
         cursor: pointer;
         &_visible {
@@ -96,7 +95,7 @@
     }
 
     &__progress-wrapper {
-        margin: 12px 0px;
+        margin-bottom: 12px;
     }
 
     &__essence-progress {

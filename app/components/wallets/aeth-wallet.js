@@ -167,7 +167,9 @@ class AethWallet extends Component {
         return (
           <div className="aeth-wallet">
             <div className="aeth-wallet__header">
-              <div>{intl.formatMessage(profileMessages.totalBalance)}</div>
+              <div className="aeth-wallet__balance-label">
+                {intl.formatMessage(profileMessages.totalBalance)}
+              </div>
               <div>
                 <span className="aeth-wallet__balance">
                   {formatBalance(balance.getIn(['aeth', 'total']), 7)}

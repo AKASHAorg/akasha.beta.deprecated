@@ -69,10 +69,6 @@
         position: relative;
     }
 
-    &__vote-icon {
-        font-size: 20px;
-    }
-
     &__score {
         min-width: 36px;
         font-size: 15px;
@@ -97,7 +93,9 @@
 
     &__right-actions {
         flex: 1 1 auto;
-        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
     &__balance-container {
@@ -125,7 +123,6 @@
         height: 12px;
         width: 12px;        
         cursor: default;
-        stroke: initial !important;
     }
 
     &__comment-icon {

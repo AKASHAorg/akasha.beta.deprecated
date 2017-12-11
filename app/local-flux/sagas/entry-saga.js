@@ -469,7 +469,7 @@ function* watchEntryGetChannel () {
         } else if (resp.request.full) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
-            const version = resp.data.content.version;
+            const version = resp.data.content && resp.data.content.version;
             if (version && version > 0 && !resp.request.publishedDateOnly) {
                 for (let i = version; i >= 0; i -= 1) {
                     yield put(actions.entryGetFull({

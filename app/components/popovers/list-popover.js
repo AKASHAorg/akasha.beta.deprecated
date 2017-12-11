@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { List } from 'immutable';
-import { Checkbox, Input, Popover } from 'antd';
+import { Checkbox, Input, Popover, Tooltip } from 'antd';
 import { Icon, NewListForm } from '../';
 import { listMessages } from '../../locale-data/messages';
 
@@ -195,7 +195,7 @@ class ListPopover extends Component {
     };
 
     render () {
-        const { containerRef } = this.props;
+        const { containerRef, intl } = this.props;
 
         return (
           <Popover
@@ -208,7 +208,14 @@ class ListPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Icon className="content-link list-popover__list-icon" type="bookmark" />
+            <Tooltip
+              arrowPointAtCenter
+              getPopupContainer={() => containerRef || document.body}
+              placement="topRight"
+              title={intl.formatMessage(listMessages.addToList)}
+            >
+              <Icon className="content-link list-popover__list-icon" type="bookmark" />
+            </Tooltip>
           </Popover>
         );
     }

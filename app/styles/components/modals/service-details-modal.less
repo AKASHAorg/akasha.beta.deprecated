@@ -34,7 +34,7 @@
 
     &__toggle-label {
         font-size: 14px;
-        color: @heading-color;
+        color: @input-color;
     }
 
     .ant-modal-body {
@@ -62,27 +62,28 @@
     }
 
     & > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
-        background: @light-background;
+        background: @page-bg;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar {
-        border-color: @light-background;
+        border-color: @page-bg;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
-        background: @background;
+        background: @tabs-inactive-bg;
         border-color: transparent;
         height: 59px;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
-        border-color: @light-background;
-        background: @light-background;
+        border-color: @page-bg;
+        background: @page-bg;
         font-weight: normal;
         height: 60px;
     }
 
     .ant-modal-footer {
         padding: 10px 24px;
+        background-color: @page-bg;
     }
 }

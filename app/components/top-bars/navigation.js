@@ -5,8 +5,8 @@ import { Icon } from '../';
 
 const Navigation = ({ history }) => (
   <div className="flex-center-y navigation">
-    <Icon className="content-link dark-icon" onClick={history.goBack} type="back" />
-    <Icon className="content-link dark-icon" onClick={history.goForward} type="forward" />
+    <Icon className="content-link navigation__icon" onClick={history.goBack} type="back" />
+    <Icon className="content-link navigation__icon" onClick={history.goForward} type="forward" />
   </div>
 );
 

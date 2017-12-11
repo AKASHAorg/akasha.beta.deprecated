@@ -23,6 +23,10 @@
 // spin dot size
 @spin-dot-size-lg: 48px;
 
+// colors
+@disabled-color: @text-color-secondary;
+@input-placeholder-color: @text-color-secondary;
+
 .ant-btn-lg {
     font-weight: 400;
     font-size: 15px;
@@ -52,6 +56,67 @@
 .ant-tooltip-inner {
     font-size: 13px;
 }
+
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-ghost) {
+    background-color: @light-background;
+    &:hover {
+        background-color: @light-background;
+    }
+    &:focus {
+        background-color: @light-background;        
+    }
+}
+
+.ant-checkbox-inner {
+    background: @checkbox-bg;
+    border-color: @checkbox-border-color;    
+}
+
+.ant-radio-inner {
+    border-color: @radio-border-color;
+}
+
+.ant-tag {
+    color: @text-color;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ant-modal {
+    &-content {
+        background-color: @light-background;
+    }
+
+    &-footer {
+        background-color: @light-background;
+    }
+}
+
+.ant-select {
+    &-selection {
+        background-color: @input-bg;
+        // color: @input-color;
+
+        &-selected-value {
+            color: @input-color;
+        }
+    }
+    &-dropdown-menu-item-selected {
+        background-color: @item-selected-bg;
+        &:hover {
+            background-color: @item-selected-bg;        
+        }
+    }
+}
+
+.ant-slider-rail {
+    background-color: @slider-rail-color !important;
+    &:hover {
+        background-color: @slider-rail-color;    
+    }
+}
+
 .borderless {
     border: none;
 }
