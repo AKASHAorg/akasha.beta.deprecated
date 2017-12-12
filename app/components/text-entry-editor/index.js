@@ -77,8 +77,8 @@ class EntryEditor extends Component {
     }
 
     _handleEditorChange = (editorState) => {
-        const isOpen = this.suggestionsComponent.getIsOpen();
-        if (editorState.getLastChangeType() === 'split-block' && isOpen) {
+        // const isOpen = this.suggestionsComponent.getIsOpen();
+        if (editorState.getLastChangeType() === 'split-block') {
             return;
         }
         /**
