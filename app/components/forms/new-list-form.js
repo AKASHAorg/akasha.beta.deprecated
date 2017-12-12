@@ -123,7 +123,7 @@ class NewListForm extends Component {
 NewListForm.propTypes = {
     authorEthAddress: PropTypes.string,
     entryId: PropTypes.string.isRequired,
-    entryType: PropTypes.number.isRequired,
+    entryType: PropTypes.number,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     lists: PropTypes.shape().isRequired,
