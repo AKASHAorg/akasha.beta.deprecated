@@ -13,7 +13,9 @@ class PublishOptionsPanel extends Component {
         super(props);
         this.state = {};
     }
+
     shouldComponentUpdate (nextProps, nextState) {
+        // console.log(!nextProps.selectedLicence.equals(this.props.selectedLicence), 't o f');
         return nextProps.excerpt !== this.props.excerpt ||
             (!nextProps.linkEntry && !nextProps.featuredImage.equals(this.props.featuredImage)) ||
             !nextProps.selectedLicence.equals(this.props.selectedLicence) ||
@@ -27,6 +29,7 @@ class PublishOptionsPanel extends Component {
             scrolled: scrollTop > 0
         });
     }
+
     _handleLicenceChange = licenceType =>
         (value) => {
             if (licenceType === 'parent') {
@@ -35,15 +38,19 @@ class PublishOptionsPanel extends Component {
                 this.props.onLicenceChange(licenceType, value.target.value);
             }
         }
+
     _handleExcerptChange = (ev) => {
         this.props.onExcerptChange(ev.target.value);
     }
+
     _handleFeaturedImageChange = (image) => {
         this.props.onFeaturedImageChange(image);
     }
+
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
             excerpt, baseUrl, errors, linkEntry } = this.props;
+
         return (
           <div className="publish-options-panel">
             <div
@@ -72,10 +79,11 @@ class PublishOptionsPanel extends Component {
                   {intl.formatMessage(entryMessages.license)}
                 </h4>
                 <Select
-                  defaultValue={selectedLicence.parent}
+                  defaultValue={selectedLicence.get('parent')}
                   style={{ width: '100%' }}
                   className="publish-options-panel__licence-select"
                   onChange={this._handleLicenceChange('parent')}
+                  value={selectedLicence.get('parent')}
                 >
                   {licences.filter(lic => !lic.parent).map(parentLicence =>
                     <Option key={parentLicence.get('id')}>{parentLicence.get('label')}</Option>
@@ -87,7 +95,7 @@ class PublishOptionsPanel extends Component {
                     onChange={this._handleLicenceChange('id')}
                     value={selectedLicence.id}
                   >
-                      {licences.filter(lic => lic.get('parent') === selectedLicence.parent)
+                      {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
                         .map(childLic => (
                           <Radio
                             className="publish-options-panel__licence-radio"

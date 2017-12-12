@@ -30,7 +30,7 @@ class WebsiteParser extends ParserUtils {
                 return Promise.reject(error);
             }
             if ((ok && redirected) || redirectCodes.includes(status)) {
-                console.info('request redirected to:', response.url);
+                // console.info('request redirected to:', response.url);
                 this.requestHtmlString(response.url);
             }
             return response;
@@ -63,7 +63,14 @@ class WebsiteParser extends ParserUtils {
                         image: img
                     }
                 };
-            }));
+            }).catch(() => ({
+                url: this.parsedUrl.href,
+                info: {
+                    ...info,
+                    image: {}
+                }
+            }))
+        );
 
     matchParser = () =>
         new Promise((resolve) => {
