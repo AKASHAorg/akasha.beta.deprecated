@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import merge from 'webpack-merge';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MinifyPlugin from 'babel-minify-webpack-plugin';
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -146,7 +146,10 @@ export default merge(baseConfig, {
         /**
          * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
          */
-        new MinifyPlugin(),
+        new UglifyJSPlugin({
+            parallel: true,
+            sourceMap: true
+        }),
         new ExtractTextPlugin({
             filename: (process.env.DARK_THEME) ? 'dark-style.css' : 'style.css',
             allChunks: true,
