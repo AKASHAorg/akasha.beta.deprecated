@@ -31,6 +31,11 @@ const entryMessages = defineMessages({
         description: 'tooltip for collect button for the situation when a user cannot collect Essence for his vote',
         defaultMessage: 'You can only collect Essence if your vote is aligned with the majority (e.g. you upvoted and entry score is positive)'
     },
+    cannotExtractWebsiteInfo: {
+        id: 'app.entry.cannotExtractWebsiteInfo',
+        description: 'error shown when we cannot extract wesite info',
+        defaultMessage: 'Cannot extract information from website!'
+    },
     collected: {
         id: 'app.entry.collected',
         description: 'Essence was collected for an entry/vote',
@@ -91,6 +96,11 @@ const entryMessages = defineMessages({
         description: 'delete draft button label',
         defaultMessage: 'Delete draft',
     },
+    draftDeleteConfirm: {
+        id: 'app.entry.draftDeleteConfirm',
+        description: 'message to show when user wants to delete a draft',
+        defaultMessage: 'Are you sure you want to delete this draft?'
+    },
     draftEdit: {
         id: 'app.entry.draftEdit',
         description: 'edit draft button label',
@@ -129,6 +139,11 @@ const entryMessages = defineMessages({
             other {entries}
         }`
     },
+    enterWebAddress: {
+        id: 'app.entry.enterWebAddress',
+        description: 'placeholder for link entry address field',
+        defaultMessage: 'Enter an address. eg. www.akasha.world'
+    },
     errorOneTagRequired: {
         id: 'app.entry.oneTagRequired',
         description: 'Error message requiring at least one tag',
@@ -164,10 +179,20 @@ const entryMessages = defineMessages({
         description: 'label for load more replies button',
         defaultMessage: 'Load more replies'
     },
+    loadingDrafts: {
+        id: 'app.entry.loadingDrafts',
+        description: 'message to show when drafts are loading',
+        defaultMessage: 'Loading drafts...'
+    },
     localVersion: {
         id: 'app.entry.localVersion',
         description: 'label for local version of an entry',
         defaultMessage: 'Local version'
+    },
+    makeSureToOpenDApp: {
+        id: 'app.entry.makeSureToOpenDApp',
+        description: 'Message',
+        defaultMessage: 'Make sure to open AKASHA dApp on the computer you have published from.'
     },
     newComments: {
         id: 'app.entry.newComments',
@@ -184,6 +209,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for empty comments list',
         defaultMessage: 'No comments found'
     },
+    noDraftsFoundOnSearch: {
+        id: 'app.noDraftsFoundOnSearch',
+        description: 'when user searches for a draft and nothing found',
+        defaultMessage: 'No drafts matching your search criteria were found.'
+    },
     noEntries: {
         id: 'app.entry.noEntries',
         description: 'placeholder for empty entry list',
@@ -193,6 +223,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.noNewEntries',
         description: 'placeholder for empty latest entries list',
         defaultMessage: 'No new entries'
+    },
+    noTitle: {
+        id: 'app.entry.noTitle',
+        description: 'when a draft has no title',
+        defaultMessage: 'No title'
     },
     noVotes: {
         id: 'app.entry.noVotes',
@@ -228,6 +263,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.readTime',
         description: 'estimated time to read an entry (e.g. 10 min read)',
         defaultMessage: 'read'
+    },
+    resolvingIpfsHash: {
+        id: 'app.entry.resolvingIpfsHash',
+        description: 'message to show when an ipfs hash is in resolving state',
+        defaultMessage: 'Resolving ipfs hash...'
     },
     revertConfirmTitle: {
         id: 'app.entry.revertConfirmTitle',
@@ -268,6 +308,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.startComment',
         description: 'button label for starting a comment from a highlight',
         defaultMessage: 'Start comment'
+    },
+    title: {
+        id: 'app.entry.title',
+        description: 'placeholder for draft title input',
+        defaultMessage: 'Title'
     },
     titleRequired: {
         id: 'app.entry.titleRequired',
@@ -318,6 +363,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.votingPeriodDisclaimer',
         description: 'disclaimer message for votes when voting period has ended',
         defaultMessage: 'Users can still vote on the entry but the mana burned for these votes can\'t be collected by the author or the voters.'
+    },
+    websiteInfoFetchingError: {
+        id: 'app.entry.websiteInfoFetchingError',
+        description: 'error shown when fetching website info failed',
+        defaultMessage: 'An error occured while trying to fetch website info'
     },
     wordsCount: {
         id: 'app.entry.wordsCount',

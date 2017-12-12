@@ -10,6 +10,7 @@ import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
+import { generalMessages } from '../../locale-data/messages/general-messages';
 
 const { confirm } = Modal;
 class NewEntrySecondarySidebar extends Component {
@@ -87,12 +88,13 @@ class NewEntrySecondarySidebar extends Component {
     }
 
     _showDraftDeleteConfirm = (ev, draftId) => {
+        const { intl } = this.props;
         const handleDraftDelete = this._handleDraftDelete.bind(null, draftId);
         confirm({
-            content: 'Are you sure you want to delete this draft?',
-            okText: 'Yes',
+            content: intl.formatMessage(entryMessages.draftDeleteConfirmation),
+            okText: intl.formatMessage(generalMessages.yes),
             okType: 'danger',
-            cancelText: 'No',
+            cancelText: intl.formatMessage(generalMessages.no),
             onOk: handleDraftDelete,
             onCancel () {}
         });
@@ -258,8 +260,9 @@ class NewEntrySecondarySidebar extends Component {
                 new Date(a.get('created_at')) > new Date(b.get('created_at'))
             );
         const publishedDraftsByType = drafts.filter(drft =>
-            drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
+            drft.get('id') && drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
         const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
+
         return (
           <div
             className="new-entry-secondary-sidebar"
@@ -345,7 +348,7 @@ class NewEntrySecondarySidebar extends Component {
                         ))
                 }
                 {searching && searchResults.length === 0 &&
-                  <div>No drafts matching your search criteria were found.</div>
+                  <div>{intl.formatMessage(entryMessages.noDraftsFoundOnSearch)}</div>
                 }
                 {!searching &&
                     localDraftsByType.map(draft => (
@@ -361,7 +364,7 @@ class NewEntrySecondarySidebar extends Component {
                       />
                     )).toList()}
                 <div>
-                  <div className="new-entry-secondary-sidebar__draft-list-title">Published</div>
+                  <div className="new-entry-secondary-sidebar__draft-list-title">{intl.formatMessage(entryMessages.published)}</div>
                   {!searching && publishedDraftsByType.map(draft => (
                     <div key={`${draft.get('id')}`}>
                       <EntrySecondarySidebarItem
@@ -398,7 +401,7 @@ class NewEntrySecondarySidebar extends Component {
                         />
                   ))}
                   {searching && searchResults.length === 0 &&
-                    <div>No drafts matching your search criteria were found.</div>
+                    <div>{intl.formatMessage(entryMessages.noDraftsFoundOnSearch)}</div>
                   }
                 </div>
               </div>
