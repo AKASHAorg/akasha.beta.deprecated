@@ -169,6 +169,10 @@ export const selectFullEntry = state =>
 
 export const selectGethStatus = state => state.externalProcState.getIn(['geth', 'status']);
 
+export const selectGethSyncStatus = state => state.externalProcState.getIn(['geth', 'syncStatus']);
+
+export const selectGethSyncActionId = state => state.externalProcState.getIn(['geth', 'syncActionId']);
+
 export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
 
 export const selectIsFollower = (state, ethAddress) => state.profileState.getIn(['isFollower', ethAddress]);
