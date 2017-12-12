@@ -1,27 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
-import Link from 'megadraft/lib/components/Link';
+import { DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import { Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
-import { MentionDecorators } from '../../shared-components';
 import readOnlyImagePlugin from '../text-entry-editor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
 import { Icon } from '../';
 
-const { CompositeDecorator, ContentState, EditorState } = DraftJS;
+const { ContentState, EditorState } = DraftJS;
 
 class SelectableEditor extends Component {
     constructor (props) {
         super(props);
-        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator, {
-            strategy: createTypeStrategy('LINK'),
-            component: Link
-        }]);
-        const emptyState = EditorState.createEmpty(decorators);
+        const emptyState = EditorState.createEmpty();
         const editorState = EditorState.push(emptyState, editorStateFromRaw(props.draft).getCurrentContent());
         this.state = {
             editorState

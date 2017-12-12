@@ -59,7 +59,7 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.max, { max: 195 })}`,
                         regex: {
                             base: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                         }
