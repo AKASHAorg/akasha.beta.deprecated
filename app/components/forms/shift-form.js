@@ -85,7 +85,7 @@ class ShiftForm extends Component {
 
         return (
           <Form className="shift-form">
-            <div className="shift-form__title">
+            <div className="flex-center-y shift-form__title">
               {this.getTitle()}
             </div>
             <div className="shift-form__total-balance">
@@ -127,6 +127,7 @@ class ShiftForm extends Component {
             </div>
             <FormItem
               colon={false}
+              className="shift-form__slider-wrapper"
               help={this.getHelpMessage()}
             >
               <div className="flex-center">
@@ -148,7 +149,6 @@ class ShiftForm extends Component {
               <Button
                 className="shift-form__button"
                 onClick={onCancel}
-                size="large"
               >
                 {intl.formatMessage(generalMessages.cancel)}
               </Button>
@@ -157,7 +157,6 @@ class ShiftForm extends Component {
                 disabled={pendingShift || amountNotEnough}
                 loading={pendingShift}
                 onClick={this.onShift}
-                size="large"
                 type="primary"
               >
                 {intl.formatMessage(generalMessages.shift)}

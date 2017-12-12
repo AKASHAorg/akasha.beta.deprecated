@@ -116,36 +116,6 @@ html, body {
     }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background: transparent;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    box-shadow: 0px 3px 0px 0px #FFF, 0 -3px 0 0 #FFF;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 2px;
-    border-radius: 3px;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.content-link {
-    cursor: pointer;
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
 .generic-tooltip {
     background-color: #555 !important;
     font-size: 10px !important;

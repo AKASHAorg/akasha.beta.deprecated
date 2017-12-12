@@ -24,20 +24,30 @@
         align-items: center;
         height: 100%;
         text-align: center;
+        color: @text-color-secondary;
     }
 
     &__profile-card {
-        border: 2px solid #f3f3f3;
+        border: 2px solid @border-color;
         border-radius: 5px;
         width: 100%;
         padding: 16px;
         margin-bottom: 16px;
         cursor: pointer;
+        background-color: @light-background;
+
+        &_with-opacity {
+            opacity: 0.3;
+        }
+
+        &_selected {
+            cursor: default;
+        }
     }
 
     &__card-header {
         display: flex;
-        height: 48px;
+        height: 40px;
     }
 
     &__avatar {
@@ -54,12 +64,17 @@
     }
 
     &__name {
-        flex: 3 3 auto;
+        flex: 0 0 auto;
         width: 100%;
-        font-size: 16px;
+        font-size: 14px;
+        color: @heading-color;
+        line-height: 22px;
+        font-weight: 500;
     }
 
     &__akasha-id {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
+        font-size: 12px;
+        line-height: 16px;
     }
 }

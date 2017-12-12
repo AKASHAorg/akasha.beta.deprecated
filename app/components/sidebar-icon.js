@@ -6,12 +6,12 @@ import classNames from 'classnames';
 import { Icon } from './';
 
 const SidebarIcon = (props) => {
-    const { activePath, iconType, linkTo, location } = props;
+    const { activePath, className, iconType, linkTo, location } = props;
     const isActive = location.pathname.includes(activePath);
     const wrapperClassName = classNames('flex-center sidebar-icon__wrapper', {
         'sidebar-icon__wrapper_active': isActive,
     });
-    const iconClassName = classNames('sidebar-icon__icon', {
+    const iconClassName = classNames('sidebar-icon__icon', className, {
         'sidebar-icon__icon_active': isActive
     });
 
@@ -26,6 +26,7 @@ const SidebarIcon = (props) => {
 
 SidebarIcon.propTypes = {
     activePath: PropTypes.string.isRequired,
+    className: PropTypes.string,
     iconType: PropTypes.string.isRequired,
     linkTo: PropTypes.string,
     location: PropTypes.shape().isRequired,

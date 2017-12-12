@@ -3,45 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
-import throttle from 'lodash.throttle';
+import Waypoint from 'react-waypoint';
 import { selectPendingProfiles } from '../local-flux/selectors';
 import { profileMessages } from '../locale-data/messages';
-import { isInViewport } from '../utils/domUtils';
-import { DataLoader, ProfileCard } from './';
+import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
-    componentDidMount () {
-        if (this.container) {
-            this.container.addEventListener('scroll', this.throttledHandler);
-        }
-        window.addEventListener('resize', this.throttledHandler);
-    }
-
-    componentDidUpdate (prevProps) {
-        if (prevProps.fetchingProfiles && !this.props.fetchingProfiles) {
-            this.checkTrigger();
-        }
-    }
-
-    componentWillUnmount () {
-        if (this.container) {
-            this.container.removeEventListener('scroll', this.throttledHandler);
-        }
-        window.removeEventListener('resize', this.throttledHandler);
-    }
-
-    getContainerRef = (el) => { this.container = el; };
-
-    getTriggerRef = (el) => { this.trigger = el; };
-
-    checkTrigger = () => {
-        if (this.trigger && isInViewport(this.trigger)) {
-            this.props.fetchMoreProfiles();
-        }
-    };
-
-    throttledHandler = throttle(this.checkTrigger, 500);
-
     render () {
         const { fetchingProfiles, fetchingMoreProfiles, intl, moreProfiles, pendingProfiles,
             placeholderMessage, profiles, style } = this.props;
@@ -82,7 +49,7 @@ class ProfileList extends Component {
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreProfiles} size="small">
                       <div className="flex-center">
-                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
+                          <Waypoint onEnter={this.props.fetchMoreProfiles}/>
                       </div>
                     </DataLoader>
                   </div>
@@ -95,7 +62,6 @@ class ProfileList extends Component {
 }
 
 ProfileList.propTypes = {
-    context: PropTypes.string,
     fetchingProfiles: PropTypes.bool,
     fetchingMoreProfiles: PropTypes.bool,
     fetchMoreProfiles: PropTypes.func.isRequired,

@@ -7,11 +7,10 @@
     z-index: 100;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #cccccc;
     transition: left 0.175s ease-in-out;
     will-change: left;
     max-width: @sidebar-width;
-    background-color: @dark-background;
+    background-color: @sidebar-background;
 
     &__top-icons {
         flex-grow: 4;
@@ -20,16 +19,6 @@
 
     &__avatar {
         padding-bottom: 16px;
-    }
-
-    &__button-text {
-        font-size: 13px;
-        font-weight: 400;
-        padding: 8px 16px;
-        cursor: pointer;
-        &:hover {
-            background-color: #ecf6fd;
-        }
     }
 
     &__popover {
@@ -51,16 +40,12 @@
     }
 
     &__new-entry-icon {
-        stroke: @background-light;
+        stroke: @light-background;
     }
 
-    &__icon-button {
-        font-size: 24px;
-        padding: 0 12px;
-        color: @text-color;
-        &.active {
-            background-color: @avatar-bg;
-        }
+    &__profile-icon {
+        width: 21px !important;
+        height: 24px !important;
     }
 
     &_shown {
@@ -100,7 +85,7 @@
         left: @sidebar-width;
         bottom: 0;
         right: 100%;
-        background: fadeout(@sidebar-overlay-bg, 20%);
+        background: @overlay-color;
         transition: right 0.15s ease-in-out;
         cursor: pointer;
         &_visible {
@@ -110,7 +95,7 @@
     }
 
     &__progress-wrapper {
-        margin: 12px 0px;
+        margin-bottom: 12px;
     }
 
     &__essence-progress {

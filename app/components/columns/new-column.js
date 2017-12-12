@@ -10,7 +10,7 @@ import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
 import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
     entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumn, selectColumnEntries, selectListsNames, selectNewColumn, selectProfileSearchResults,
+import { selectColumn, selectColumnEntries, selectListsAll, selectNewColumn, selectProfileSearchResults,
     selectTagSearchResults } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -118,8 +118,12 @@ class NewColumn extends Component {
             return this.renderPlaceholder();
         }
 
-        let component, displayName, previewMessage, title, subtitle; // eslint-disable-line
+        let component, displayName, previewMessage, title, subtitle, listName; // eslint-disable-line
         const value = column.get('value');
+        if (newColumn.get('type') === columnTypes.list) {
+            const index = lists.indexOf(list => list.get('id') === value);
+            listName = lists.getIn([index, 'name']);
+        }
         const props = {
             column,
             dashboardResetNewColumn: this.props.dashboardResetNewColumn,
@@ -168,7 +172,7 @@ class NewColumn extends Component {
                 subtitle = dashboardMessages.addNewTagColumnSubtitle;
                 break;
             case columnTypes.list:
-                previewMessage = intl.formatMessage(dashboardMessages.previewList, { listName: value });
+                previewMessage = intl.formatMessage(dashboardMessages.previewList, { listName });
                 component = (
                   <NewSelectColumn
                     entryIterator={this.props.entryListIterator}
@@ -209,7 +213,6 @@ class NewColumn extends Component {
                   <Button
                     className="new-column__button"
                     onClick={this.onCancel}
-                    size="large"
                   >
                     {intl.formatMessage(generalMessages.cancel)}
                   </Button>
@@ -217,7 +220,6 @@ class NewColumn extends Component {
                     className="new-column__button"
                     disabled={this.isDisabled()}
                     onClick={this.onAddColumn}
-                    size="large"
                     type="primary"
                   >
                     {intl.formatMessage(generalMessages.add)}
@@ -256,7 +258,7 @@ NewColumn.propTypes = {
 function mapStateToProps (state) {
     return {
         column: selectColumn(state, 'newColumn'),
-        lists: selectListsNames(state),
+        lists: selectListsAll(state),
         newColumn: selectNewColumn(state),
         previewEntries: selectColumnEntries(state, 'newColumn'),
         profileResults: selectProfileSearchResults(state),

@@ -17,19 +17,29 @@ class HighlightCard extends Component {
     };
 
     handleSave = () => {
-        const { highlight, editNotes, toggleNoteEditable } = this.props;
+        const { highlight, editNotes, toggleEditing, toggleNoteEditable } = this.props;
         editNotes(highlight.get('id'), this.state.notes);
         toggleNoteEditable(highlight.get('id'));
+        toggleEditing(highlight.get('id'));
     };
 
+    handleCancel = () => {
+        const { highlight, toggleEditing, toggleNoteEditable } = this.props;
+        toggleNoteEditable(highlight.get('id'));
+        toggleEditing(highlight.get('id'));
+    }
+
     render () {
-        const { containerRef, deleteHighlight, highlight, intl, publisher, toggleNoteEditable } = this.props;
+        const { containerRef, deleteHighlight, editing, highlight, intl, publisher,
+            toggleEditing, toggleNoteEditable } = this.props;
         const notes = highlight.get('notes');
         const editNotes = highlight.get('editNotes');
+        const cardClassName = `highlight-card ${editNotes && 'highlight-card_editing'}
+            ${!!editing && 'highlight-card_opaque'}`;
 
         return (
           <Card
-            className="highlight-card"
+            className={cardClassName}
             title={
               <HighlightHeader
                 containerRef={containerRef}
@@ -37,11 +47,12 @@ class HighlightCard extends Component {
                 highlight={highlight}
                 publisher={publisher}
                 toggleNoteEditable={toggleNoteEditable}
+                toggleEditing={toggleEditing}
               />
             }
           >
             <div className="highlight-card__quote">
-              <div className="flex-center-y highlight-card__quote-icon-wrapper">
+              <div className="highlight-card__quote-icon-wrapper">
                 <Icon className="highlight-card__quote-icon" type="quote" />
               </div>
               <div className="highlight-card__content">
@@ -57,7 +68,6 @@ class HighlightCard extends Component {
                   <div className="highlight-card__notes-editor">
                     <Input.TextArea
                       autoFocus
-                      autosize
                       className="highlight-card__notes-input"
                       rows={3}
                       value={this.state.notes}
@@ -66,12 +76,14 @@ class HighlightCard extends Component {
                     <div className="highlight-card__notes-input-buttons">
                       <div className="highlight-card__notes-input-cancel">
                         <Button
-                          onClick={() => toggleNoteEditable(highlight.get('id'))}
+                          size="small"
+                          onClick={this.handleCancel}
                         >
                           {intl.formatMessage(generalMessages.cancel)}
                         </Button>
                       </div>
                       <Button
+                        size="small"
                         type="primary"
                         onClick={this.handleSave}
                       >
@@ -94,7 +106,9 @@ HighlightCard.propTypes = {
     containerRef: PropTypes.shape(),
     deleteHighlight: PropTypes.func,
     highlight: PropTypes.shape().isRequired,
+    editing: PropTypes.string,
     editNotes: PropTypes.func,
+    toggleEditing: PropTypes.func,
     toggleNoteEditable: PropTypes.func,
     intl: PropTypes.shape().isRequired,
     publisher: PropTypes.shape().isRequired

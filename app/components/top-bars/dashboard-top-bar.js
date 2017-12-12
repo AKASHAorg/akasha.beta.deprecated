@@ -50,7 +50,7 @@ const DashboardTopBar = (props) => {
         {columns.map(column => (
           <Tooltip key={column.get('id')} title={() => getTooltip(column)}>
             <Icon
-              className="content-link dark-icon dashboard-top-bar__column-icon"
+              className="content-link dashboard-top-bar__column-icon"
               onClick={() => scrollColumnIntoView(column.get('id'))}
               type={iconsTypes[column.get('type')]}
             />

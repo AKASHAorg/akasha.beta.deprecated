@@ -79,7 +79,7 @@ class CommentList extends Component {
                 <Spin />
               </div>
             }
-            {!fetchingComments && !comments.size &&
+            {!fetchingComments && !comments.size && !optimisticComments.length &&
               <div className="comment-list__placeholder">
                 {intl.formatMessage(entryMessages.noCommentsFound)}
               </div>

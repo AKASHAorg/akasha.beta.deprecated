@@ -13,6 +13,7 @@ class DashboardSidebarRow extends Component {
     state = {
         popoverVisible: false
     };
+    wasVisible = false;
 
     onDelete = () => {
         const { dashboard, dashboardDelete, intl } = this.props;
@@ -35,6 +36,7 @@ class DashboardSidebarRow extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -45,6 +47,7 @@ class DashboardSidebarRow extends Component {
             newDashboard } = this.props;
         const { popoverVisible } = this.state;
         const isActive = dashboard.get('id') === activeDashboard;
+        const closePopover = () => this.onVisibleChange(false);
         const className = classNames('has-hidden-action flex-center-y', {
             'dashboard-secondary-sidebar__row': true,
             'dashboard-secondary-sidebar__row_hovered': popoverVisible,
@@ -63,7 +66,7 @@ class DashboardSidebarRow extends Component {
             </div>
             <div
               className={deleteClass}
-              onClick={!isTheOnlyDashboard ? this.onDelete : undefined}
+              onClick={!isTheOnlyDashboard ? this.onDelete : closePopover}
             >
               {intl.formatMessage(generalMessages.delete)}
             </div>
@@ -81,7 +84,7 @@ class DashboardSidebarRow extends Component {
               </div>
               <Popover
                 arrowPointAtCenter
-                content={menu}
+                content={this.wasVisible ? menu : null}
                 onClick={ev => ev.stopPropagation()}
                 onVisibleChange={this.onVisibleChange}
                 overlayClassName="popover-menu"

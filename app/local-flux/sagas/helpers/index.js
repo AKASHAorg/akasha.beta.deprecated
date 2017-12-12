@@ -1,5 +1,6 @@
 import { eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';
+import { tap } from 'ramda';
 import { selectAction, selectLoggedEthAddress } from '../../selectors';
 
 const Channel = global.Channel;
@@ -10,7 +11,7 @@ export const enabledChannels = [];
 export function createActionChannel (channel) {
     return eventChannel((emit) => {
         const handler = (ev, resp) => {
-            emit(resp);
+            tap(emit, resp);
         };
         channel.on(handler);
 
@@ -28,8 +29,7 @@ export function createActionChannels () {
         const channels = Object.keys(Channel.client[module]);
         actionChannels[module] = {};
         channels.forEach((channel) => {
-            const actionChannel = createActionChannel(Channel.client[module][channel]);
-            actionChannels[module][channel] = actionChannel;
+            actionChannels[module][channel] = createActionChannel(Channel.client[module][channel]);
         });
     });
 }

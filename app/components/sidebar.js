@@ -19,7 +19,8 @@ class Sidebar extends Component {
         overlayVisible: false,
         showEntryMenu: false,
         visible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -28,6 +29,7 @@ class Sidebar extends Component {
     }
 
     handleVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({ visible });
     }
 
@@ -110,16 +112,16 @@ class Sidebar extends Component {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
 
         const menu = (
-          <div className="sidebar__menu" onClick={this.hide}>
+          <div onClick={this.hide}>
             <div
               onClick={this.props.profileEditToggle}
-              className="sidebar__button-text"
+              className="popover-menu__item"
             >
               {intl.formatMessage(generalMessages.editProfile)}
             </div>
             <div
               onClick={this._handleLogout}
-              className="sidebar__button-text"
+              className="popover-menu__item"
             >
               {intl.formatMessage(generalMessages.logout)}
             </div>
@@ -184,8 +186,9 @@ class Sidebar extends Component {
               />
               <SidebarIcon
                 activePath="/profileoverview"
+                className="sidebar__profile-icon"
                 linkTo="/profileoverview/myentries"
-                iconType="question"
+                iconType="profileOverview"
               />
               <SidebarIcon
                 activePath="/community"
@@ -203,19 +206,19 @@ class Sidebar extends Component {
                 iconType="chat"
               />
             </div>
-            <div className="flex-center-x sidebar__progress-wrapper">
+            <div className="flex-center-x content-link sidebar__progress-wrapper">
               <ManaPopover />
             </div>
-            <div className="flex-center-x sidebar__progress-wrapper">
+            <div className="flex-center-x content-link sidebar__progress-wrapper">
               <EssencePopover />
             </div>
             <div className="flex-center-x sidebar__avatar">
               <Popover
                 arrowPointAtCenter
                 placement="topRight"
-                content={menu}
+                content={this.wasVisible ? menu : null}
                 trigger="click"
-                overlayClassName="sidebar__popover"
+                overlayClassName="popover-menu"
                 visible={this.state.visible}
                 onVisibleChange={this.handleVisibleChange}
               >

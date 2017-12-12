@@ -21,42 +21,42 @@ class ProfileOverviewSecondarySidebar extends Component {
               {intl.formatMessage(profileMessages.myProfile)}
             </div>
             <div className="profile-overview-sidebar__menu">
-              {/* <Link to="/profileoverview/overview" className="profile-overview-sidebar__link">
+              {/* <Link to="/profileoverview/overview" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/overview')}>
                   {intl.formatMessage(profileMessages.overview)}
                 </div>
               </Link>
-              <Link to="/profileoverview/mybalance" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/mybalance" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/mybalance')}>
                   {intl.formatMessage(profileMessages.myBalance)}
                 </div>
               </Link>
-              <Link to="/profileoverview/rewardsandgoals" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/rewardsandgoals" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/rewardsandgoals')}>
                   {intl.formatMessage(profileMessages.rewardsAndGoals)}
                 </div>
               </Link>
-              <Link to="/profileoverview/contacts" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/contacts" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/contacts')}>
                   {intl.formatMessage(profileMessages.contacts)}
                 </div>
               </Link> */}
-              <Link to="/profileoverview/myentries" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/myentries" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/myentries')}>
                   {intl.formatMessage(profileMessages.myEntries)}
                 </div>
               </Link>
-              <Link to="/profileoverview/highlights" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/highlights" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/highlights')}>
                   {intl.formatMessage(profileMessages.highlights)}
                 </div>
               </Link>
-              <Link to="/profileoverview/lists" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/lists" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/lists')}>
                   {intl.formatMessage(profileMessages.lists)}
                 </div>
               </Link>
-              <Link to="/profileoverview/settings" className="profile-overview-sidebar__link">
+              <Link to="/profileoverview/settings" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/settings')}>
                   {intl.formatMessage(profileMessages.settings)}
                 </div>

@@ -15,9 +15,9 @@ import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
-const ALL_STREAM_LIMIT = 10;
-const ENTRY_ITERATOR_LIMIT = 5;
-const ENTRY_LIST_ITERATOR_LIMIT = 3;
+const ALL_STREAM_LIMIT = 2;
+const ENTRY_ITERATOR_LIMIT = 2;
+const ENTRY_LIST_ITERATOR_LIMIT = 2;
 
 function* enableExtraChannels () {
     const { canClaim, getEntryBalance, getVoteOf } = Channel.server.entry;
@@ -473,7 +473,7 @@ function* watchEntryGetChannel () {
         } else if (resp.request.full && !resp.request.asDraft) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
-            const version = resp.data.content.version;
+            const version = resp.data.content && resp.data.content.version;
             if (version && version > 0 && !resp.request.publishedDateOnly) {
                 for (let i = version; i >= 0; i -= 1) {
                     yield put(actions.entryGetFull({

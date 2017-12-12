@@ -10,7 +10,7 @@
 @grey: #B4BCC8;
 @light-grey: #D8DCDF;
 @background: #F8F8F8;
-@background-light: #fff;
+@light-background: #fff;
 @dark-background: #EFEFF1;
 @blue: #0598FF;
 @red: #F96A6A;
@@ -18,6 +18,8 @@
 @yellow: #FFC02F;
 @dark-blue: #0588E6;
 @dark-red: #E66363;
+@light-border: #eee;
+@dark-border: #d9d9d9;
 
 // This color is also used in JS code. keep them in sync. search for manaColor
 @mana-color: #4aadf3;
@@ -31,7 +33,7 @@
 @editor-title-input-height: 72px;
 
 @border-tab: #f1f1f1;
-@card-bg-color: white;
+@card-bg-color: @light-background;
 
 .heading {
     color: @heading-color;
@@ -43,10 +45,49 @@
 }
 
 .content-placeholder {
-    background-color: #2E3747;
-    opacity: 0.08;
+    background-color: @placeholder-color;
 }
 
 .input-error {
     font-size: 13px;
+}
+
+.content-link {
+    cursor: pointer;
+    &:hover {
+        filter: brightness(@content-link-brightness);
+    }
+}
+
+.question-circle-icon {
+    stroke: initial !important;
+    circle {
+        fill: @question-circle-bg !important;
+    }
+    path {
+        fill: @question-circle
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: transparent;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: 0px 3px 0px 0px @light-background, 0 -3px 0 0 @light-background;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 2px;
+    border-radius: 3px;
+    background: @scrollbar-active;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: @scrollbar-inactive;
 }

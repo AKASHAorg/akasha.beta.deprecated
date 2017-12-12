@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
@@ -10,11 +11,13 @@ import { searchTags } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
         const value = column.get('value');
-        if (!column.get('entries').size && value) {
+        if (!column.get('entriesList').size && !this.firstCallDone && value) {
             this.props.entryTagIterator({ columnId: column.get('id'), value });
+            this.firstCallDone = true;
         }
     }
 
@@ -39,7 +42,7 @@ class TagColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, tagExists, tagResults } = this.props;
+        const { column, entriesList, intl, tagExists, tagResults } = this.props;
         let placeholderMessage;
         if (column.get('value')) {
             placeholderMessage = tagExists.get(column.get('value')) ?
@@ -59,9 +62,10 @@ class TagColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchTags}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreTagIterator}
@@ -76,7 +80,7 @@ class TagColumn extends Component {
 
 TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -88,7 +92,7 @@ TagColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
-        entries: selectColumnEntries(state, columnId),
+        entriesList: selectColumnEntries(state, columnId),
         tagExists: selectTagExists(state),
         tagResults: selectTagSearchResults(state),
     };

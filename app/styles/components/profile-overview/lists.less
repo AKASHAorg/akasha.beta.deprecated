@@ -1,13 +1,18 @@
 .lists {
-    display: flex;
-    justify-content: center;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: @background;
 
-    &__wrap {
-        height: ~'calc(100% - 52px)';
+    &__wrapper {
+        height: 100%;
+        padding-right: 4px;
+    }
+
+    &__content-wrap {
+        height: 100%;
         width: 80%;
-        max-width: 730px;
-        margin-top: 30px;
+        margin: 40px auto 0;
 
         .ant-tabs {
             height: 100%;
@@ -23,24 +28,14 @@
     }
 
     &__content {
-        overflow-y: auto;
-        height: ~'calc(100% - 80px)';
-
+        height: 100%;
     }
 
     &__header {
-        width: 710px;
+        width: 100%;
         margin: 0 5px 25px 5px;
         display: inline-flex;
         justify-content: space-between;
-    }
-
-    &__create {
-        padding-left: 10px;
-
-        .ant-btn-lg {
-            height: 36px;
-        }
     }
 
     &__search {
@@ -50,11 +45,11 @@
         .ant-input-prefix {
             display: flex;
             justify-content: center;
-            height: 100%;
+            height: 34px;
             width: 36px;
             left: 0px;
             align-items: center;
-            border-right: 1px inset lightgrey;
+            border-right: 1px inset @border-color;
         }
 
         .ant-input-affix-wrapper .ant-input {
@@ -64,30 +59,5 @@
 
     &__masonry {
         transition: none;
-    }
-
-    &__new-list-form {
-        margin-top: 15px;
-        .ant-form {
-            margin-top: 10px;
-        }
-        .ant-form-item-label {
-            font-size: 11px;
-            margin-bottom: 3px;
-        }
-    }
-
-    &__new-list-header {
-        font-weight: 500;
-    }
-
-    &__new-list-footer {
-        width: 250px;
-        display: inline-flex;
-        justify-content: flex-end;
-    }
-
-    &__new-list-submit-btn {
-        padding-left: 10px;
     }
 }

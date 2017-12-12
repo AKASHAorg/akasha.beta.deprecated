@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { List } from 'immutable';
-import { Checkbox, Input, Popover } from 'antd';
+import { Checkbox, Input, Popover, Tooltip } from 'antd';
 import { Icon, NewListForm } from '../';
 import { listMessages } from '../../locale-data/messages';
 
@@ -11,6 +11,7 @@ class ListPopover extends Component {
         addNewList: false,
         popoverVisible: false,
     };
+    wasVisible = false;
 
     shouldComponentUpdate = (nextProps, nextState) => {
         const { lists, search } = nextProps;
@@ -63,6 +64,7 @@ class ListPopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         if (popoverVisible) {
             this.setInputFocusAsync();
         }
@@ -136,7 +138,7 @@ class ListPopover extends Component {
               {this.groupByState(lists).map((list) => {
                   const toggleList = () => {
                       this.onVisibleChange(false);
-                      listToggleEntry(list.get('name'), entryId, entryType, authorEthAddress);
+                      listToggleEntry(list.get('id'), entryId, entryType, authorEthAddress);
                   };
                   const isSaved = this.isSaved(list);
                   const root = 'list-popover__left-item list-popover__row-icon';
@@ -195,12 +197,12 @@ class ListPopover extends Component {
     };
 
     render () {
-        const { containerRef } = this.props;
+        const { containerRef, intl } = this.props;
 
         return (
           <Popover
             arrowPointAtCenter
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="popover-menu list-popover"
@@ -208,7 +210,14 @@ class ListPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Icon className="content-link list-popover__list-icon" type="bookmark" />
+            <Tooltip
+              arrowPointAtCenter
+              getPopupContainer={() => containerRef || document.body}
+              placement="topRight"
+              title={intl.formatMessage(listMessages.addToList)}
+            >
+              <Icon className="content-link list-popover__list-icon" type="bookmark" />
+            </Tooltip>
           </Popover>
         );
     }

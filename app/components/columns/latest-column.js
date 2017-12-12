@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreNewestIterator,
@@ -10,12 +11,14 @@ import { entryMoreNewestIterator,
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class LatestColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
-        if (!column.get('entries').size) {
+        if (!column.get('entriesList').size && !this.firstCallDone) {
             this.entryIterator();
+            this.firstCallDone = true;
         }
-    }
+    };
 
     entryIterator = () => this.props.entryNewestIterator(this.props.column.get('id'));
 
@@ -25,7 +28,7 @@ class LatestColumn extends Component {
     }
 
     render () {
-        const { column, entries, intl } = this.props;
+        const { column, entriesList, intl } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -37,9 +40,10 @@ class LatestColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.latest)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreNewestIterator}
@@ -54,7 +58,7 @@ class LatestColumn extends Component {
 
 LatestColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreNewestIterator: PropTypes.func.isRequired,
     entryNewestIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -62,7 +66,7 @@ LatestColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id'))
+        entriesList: selectColumnEntries(state, ownProps.column.get('id'))
     };
 }
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AutoComplete, Button, Input, Tag } from 'antd';
+import { Button, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
@@ -34,34 +34,10 @@ class NewIdentityInterests extends Component {
 
     getInputRef = (el) => { this.input = el; };
 
-    handleInputChange = (ev) => {
-        this.setState({
-            query: ev.target.value
-        });
-    };
-
-    handleKeyDown = (ev) => {
-        if (ev.key === 'Enter') {
-            if (!this.selecting) {
-                this.handleSearch();
-            }
-            this.selecting = false;
-        }
+    onChange = (ev) => {
+        this.setState({ query: ev.target.value });
+        this.props.searchTags(ev.target.value, 20);
     }
-
-    handleSearch = () => this.props.searchTags(this.state.query);
-
-    onChange = (val) => {
-        this.setState({ query: val });
-        this.props.searchTags(val);
-    }
-
-    onSelect = (val) => {
-        this.setState({ query: val });
-        this.props.searchTags(val);
-        this.selecting = true;
-    }
-
 
     handleSkipStep = () => {
         this.props.dashboardAddFirst();
@@ -100,27 +76,20 @@ class NewIdentityInterests extends Component {
                 </div>
               </div>
               <div className="new-identity-interests__right">
-                <AutoComplete
-                  dataSource={tags}
+                <Input
                   onChange={this.onChange}
-                  onSearch={this.handleSearch}
-                  onSelect={this.onSelect}
+                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
+                  prefix={<Icon type="search" />}
+                  ref={this.getInputRef}
                   size="large"
                   value={this.state.query}
-                >
-                  <Input
-                    ref={this.getInputRef}
-                    onKeyDown={this.handleKeyDown}
-                    size="large"
-                    placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                    prefix={<Icon onClick={this.handleSearch} type="search" />}
-                  />
-                </AutoComplete>
+                />
                 <TagListInterests
                   contextId={SEARCH}
                   entriesCount={entriesCount}
                   fetchingTags={fetchingTags}
                   profileInterests={profileInterests}
+                  query={this.state.query}
                   tags={tags}
                   toggleInterest={this.props.profileToggleInterest}
                 />
@@ -135,7 +104,6 @@ class NewIdentityInterests extends Component {
                 className="new-identity__button"
                 disabled={disabledSubmit}
                 onClick={this.handleSubmit}
-                size="large"
                 type="primary"
               >
                 {intl.formatMessage(generalMessages.submit)}

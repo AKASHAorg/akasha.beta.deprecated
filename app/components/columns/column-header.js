@@ -23,6 +23,8 @@ class ColumnHeader extends Component {
         };
     }
 
+    wasVisible = false;
+
     getInputRef = (el) => { this.input = el; };
 
     onBlur = () => {
@@ -74,7 +76,10 @@ class ColumnHeader extends Component {
         });
     };
 
-    onVisibleChange = (popoverVisible) => { this.setState({ popoverVisible }); };
+    onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
+        this.setState({ popoverVisible });
+    };
 
     deleteColumn = () => {
         this.setState({
@@ -140,7 +145,9 @@ class ColumnHeader extends Component {
                 value={value}
               >
                 {dataSource.map(option => (
-                  <Option key={option} value={option}>{option}</Option>
+                  <Option key={option.get('id')} value={option.get('id')}>
+                    {option.get('name')}
+                  </Option>
                 ))}
               </Select>
             );
@@ -168,7 +175,6 @@ class ColumnHeader extends Component {
     renderContent = () => {
         const { column, intl, notEditable, readOnly } = this.props;
         const message = column && column.get('large') ? dashboardMessages.small : dashboardMessages.large;
-
         return (
           <div className="dashboard-secondary-sidebar__popover-content">
             <div
@@ -232,7 +238,7 @@ class ColumnHeader extends Component {
             {this.showModal()}
             {!editMode &&
               <Popover
-                content={this.renderContent()}
+                content={this.wasVisible ? this.renderContent() : null}
                 onVisibleChange={this.onVisibleChange}
                 overlayClassName="popover-menu"
                 placement="bottom"

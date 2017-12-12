@@ -21,6 +21,7 @@ class ProfilePopover extends Component {
         popoverVisible: false,
         sendTip: false
     };
+    wasVisible = false;
 
     componentWillReceiveProps (nextProps) {
         const { tipPending } = nextProps;
@@ -59,6 +60,7 @@ class ProfilePopover extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         if (!this.props.ethAddress) {
             return;
         }
@@ -281,7 +283,7 @@ class ProfilePopover extends Component {
         return (
           <Popover
             arrowPointAtCenter
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={getPopupContainer}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="profile-popover"

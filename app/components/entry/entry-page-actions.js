@@ -131,7 +131,10 @@ class EntryPageAction extends Component {
                         getPopupContainer={() => containerRef || document.body}
                         title={intl.formatMessage(entryMessages.cannotClaimEntry)}
                       >
-                        <Icon className="entry-actions__info-icon" type="questionCircle" />
+                        <Icon
+                          className="question-circle-icon entry-actions__info-icon"
+                          type="questionCircle"
+                        />
                       </Tooltip>
                     }
                   </div>
@@ -158,7 +161,7 @@ class EntryPageAction extends Component {
                     <span className="entry-actions__comments-counter">
                       {entry.get('commentsCount')}
                     </span>
-                    <Icon className="entry-actions__comment-icon" type="comment" />
+                    <Icon className="entry-actions__comment-icon" type="commentLarge" />
                   </Link>
                 </div>
               }
@@ -166,7 +169,7 @@ class EntryPageAction extends Component {
                 authorEthAddress={entry.author.ethAddress}
                 containerRef={containerRef}
                 entryId={entry.entryId}
-                entryType={entry.entryType}
+                entryType={entry.getIn(['content', 'entryType'])}
                 listAdd={this.props.listAdd}
                 listDelete={this.props.listDelete}
                 lists={lists}
@@ -222,7 +225,7 @@ class EntryPageAction extends Component {
                       getPopupContainer={() => containerRef || document.body}
                       title={intl.formatMessage(entryMessages.cannotClaimVote)}
                     >
-                      <Icon className="entry-actions__info-icon" type="questionCircle" />
+                      <Icon className="question-circle-icon entry-actions__info-icon" type="questionCircle" />
                     </Tooltip>
                   }
                 </div>
@@ -288,7 +291,23 @@ class EntryPageAction extends Component {
                       {...voteProps}
                     />
                   </div>
-                  {!isFullEntry &&
+                </div>
+                {isFullEntry &&
+                <Tooltip placement="left" title={votePercentTooltip}>
+                  <div className={
+                    `flex-center-y
+                    entry-actions__vote-bar
+                    entry-actions__vote-bar${(upvotePercent || downvotePercent) ? '' : '_disabled'}`}
+                  >
+                    <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
+                    <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
+                  </div>
+                </Tooltip>
+                }
+              </div>
+              <div className="entry-actions__right-actions">
+                {!isFullEntry &&
+                  <div className="content-link entry-actions__comments">
                     <Link
                       className="unstyled-link"
                       to={{
@@ -300,40 +319,24 @@ class EntryPageAction extends Component {
                         <span className="entry-actions__comments-counter">
                           {entry.get('commentsCount')}
                         </span>
-                        <Icon className="entry-actions__comment-icon" type="comment" />
+                        <Icon className="entry-actions__comment-icon" type="commentLarge" />
                       </div>
                     </Link>
-                  }
-                </div>
-                {isFullEntry &&
-                  <Tooltip placement="left" title={votePercentTooltip}>
-                    <div className={
-                        `flex-center-y
-                        entry-actions__vote-bar
-                        entry-actions__vote-bar${(upvotePercent || downvotePercent) ? '' : '_disabled'}`}
-                    >
-                      <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
-                      <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
                     </div>
-                  </Tooltip>
-                }
-              </div>
-              <div className="entry-actions__right-actions">
-                {!isOwnEntry &&
-                  <ListPopover
-                    authorEthAddress={entry.author.ethAddress}
-                    containerRef={containerRef}
-                    entryId={entry.entryId}
-                    entryType={entry.content.entryType}
-                    listAdd={this.props.listAdd}
-                    listDelete={this.props.listDelete}
-                    lists={lists}
-                    listsAll={listsAll}
-                    listSearch={this.props.listSearch}
-                    listToggleEntry={this.props.listToggleEntry}
-                    search={listSearchKeyword}
-                  />
-                }
+                  }
+                <ListPopover
+                  authorEthAddress={entry.author.ethAddress}
+                  containerRef={containerRef}
+                  entryId={entry.entryId}
+                  entryType={entry.content.entryType}
+                  listAdd={this.props.listAdd}
+                  listDelete={this.props.listDelete}
+                  lists={lists}
+                  listsAll={listsAll}
+                  listSearch={this.props.listSearch}
+                  listToggleEntry={this.props.listToggleEntry}
+                  search={listSearchKeyword}
+                />
               </div>
             </div>
             {vote && vote.get('vote') !== '0' && this.renderCollectEntryVote()}
@@ -342,7 +345,7 @@ class EntryPageAction extends Component {
                 <span className="entry-actions__info-text">
                   {intl.formatMessage(entryMessages.votingPeriod)}
                   <Tooltip title={intl.formatMessage(entryMessages.votingPeriodDisclaimer)}>
-                    <Icon className="entry-actions__info-icon" type="questionCircle" />
+                    <Icon className="question-circle-icon entry-actions__info-icon" type="questionCircle" />
                   </Tooltip>
                 </span>
               </div>

@@ -34,7 +34,7 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
-        entries: new List(entryIds),
+        entriesList: new List(entryIds),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingEntries: false,
             moreEntries
@@ -68,7 +68,7 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
         !!data.lastBlock;
 
     return state.mergeIn(['columnById', request.columnId], {
-        entries: state.getIn(['columnById', request.columnId, 'entries']).push(...newIds),
+        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).push(...newIds),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingMoreEntries: false,
             moreEntries

@@ -14,29 +14,34 @@
 
     &__content {
         height: 330px;
-        padding: 8px 24px;
+        padding: 0px 12px;
         display: flex;
         flex-direction: column;
     }
 
     &__title {
-        font-size: 18px;
+        font-size: 15px;
+        height: 40px;
         color: @heading-color;
         flex: 0 0 auto;
     }
 
     &__mana-score {
         color: @heading-color;
-        font-weight: 600;
+        font-weight: 500;
         padding-left: 10px;
     }
 
     &__chart-wrapper {
-        flex: 0 0 auto;
+        flex: 1 1 auto;
+        width: 220px;
+        position: relative;
+        margin: 0px auto;
     }
 
     &__actions {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
+        padding: 12px 24px;
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
@@ -47,6 +52,7 @@
         padding: 0px 8px;
 
         svg {
+            flex: 0 0 auto;
             margin-right: 6px;
         }
 
@@ -54,5 +60,9 @@
             transition: all 150ms ease-in-out;
             stroke: @primary-color !important;
         }
+    }
+
+    .ant-popover-inner-content {
+        padding: 0px;
     }
 }

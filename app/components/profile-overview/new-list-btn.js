@@ -11,7 +11,8 @@ import { generalMessages } from '../../locale-data/messages/general-messages';
 class NewListBtn extends Component {
     state = {
         visible: false
-    }
+    };
+    wasVisible = false;
 
     hide = () => {
         this.setState({
@@ -21,6 +22,7 @@ class NewListBtn extends Component {
     }
 
     handleVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({ visible });
         this.props.form.validateFields();
     }
@@ -60,8 +62,8 @@ class NewListBtn extends Component {
         const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
         const newListForm = (
-          <div className="lists__new-list-form">
-            <span className="lists__new-list-header">
+          <div className="new-list-btn__form">
+            <span className="new-list-btn__header">
               {intl.formatMessage(listMessages.createNew)}
             </span>
             <Form>
@@ -92,38 +94,34 @@ class NewListBtn extends Component {
                   />
                 )}
               </Form.Item>
-              <Form.Item>
-                <div className="lists__new-list-footer">
-                  <div className="lists__new-list-cancel-btn">
-                    <Button
-                      size="large"
-                      onClick={this.hide}
-                    >
-                      {intl.formatMessage(generalMessages.cancel)}
-                    </Button>
-                  </div>
-                  <div className="lists__new-list-submit-btn">
-                    <Button
-                      size="large"
-                      disabled={hasErrors(getFieldsError())}
-                      htmlType="submit"
-                      onClick={this.handleSubmit}
-                      type="primary"
-                    >
-                      {intl.formatMessage(generalMessages.create)}
-                    </Button>
-                  </div>
+              <div className="new-list-btn__footer">
+                <div className="new-list-btn__cancel-btn">
+                  <Button
+                    onClick={this.hide}
+                  >
+                    {intl.formatMessage(generalMessages.cancel)}
+                  </Button>
                 </div>
-              </Form.Item>
+                <div className="new-list-btn__submit-btn">
+                  <Button
+                    disabled={hasErrors(getFieldsError())}
+                    htmlType="submit"
+                    onClick={this.handleSubmit}
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.create)}
+                  </Button>
+                </div>
+              </div>
             </Form>
           </div>
         );
 
         return (
-          <div className="lists__create">
+          <div className="new-list-btn__create">
             <Popover
               placement="bottomRight"
-              content={newListForm}
+              content={this.wasVisible ? newListForm : null}
               trigger="click"
               visible={this.state.visible}
               onVisibleChange={this.handleVisibleChange}

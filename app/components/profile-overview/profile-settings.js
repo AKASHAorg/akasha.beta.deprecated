@@ -46,6 +46,8 @@ class ProfileSettings extends Component {
                 });
                 if (value === '3') {
                     this.setState({ defaultLicenseId: '11' });
+                } else if (value === '2') {
+                    this.setState({ defaultLicenseId: '4' });
                 } else if (value === '1') {
                     this.setState({ defaultLicenseId: null });
                 }
@@ -184,7 +186,7 @@ class ProfileSettings extends Component {
                       placement="topLeft"
                       arrowPointAtCenter
                     >
-                      <Icon type="questionCircle" className="profile-settings__info-icon" />
+                      <Icon type="questionCircle" className="question-circle-icon profile-settings__info-icon" />
                     </Tooltip>
                   </div>
                   <div className="profile-settings__item-description">
