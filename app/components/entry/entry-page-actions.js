@@ -251,10 +251,10 @@ class EntryPageAction extends Component {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
         };
         const upvoteRatio = entry.get('upvoteRatio');
-        let upvotePercent = null;
-        let downvotePercent = null;
+        let upvotePercent = 0;
+        let downvotePercent = 0;
 
-        if (upvoteRatio) {
+        if (upvoteRatio && parseFloat(upvoteRatio, 10) >= 0) {
             upvotePercent = 100 * upvoteRatio;
             downvotePercent = 100 - upvotePercent;
         }

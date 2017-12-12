@@ -152,7 +152,7 @@ class EntryCard extends Component {
 
     render () {
         const { author, baseUrl, containerRef, entry, existingDraft, isPending, large,
-            style, toggleOutsideNavigation } = this.props;
+            style, toggleOutsideNavigation, intl } = this.props;
         const content = entry.get('content');
         const entryType = entry.getIn(['content', 'entryType']);
         // TODO use getLatestEntryVersion channel
@@ -224,6 +224,7 @@ class EntryCard extends Component {
                   onClick={toggleOutsideNavigation}
                   maxImageHeight={150}
                   infoExtracted
+                  intl={intl}
                 />
               </div>
             }
