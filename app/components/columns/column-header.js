@@ -145,7 +145,9 @@ class ColumnHeader extends Component {
                 value={value}
               >
                 {dataSource.map(option => (
-                  <Option key={option} value={option}>{option}</Option>
+                  <Option key={option.get('id')} value={option.get('id')}>
+                    {option.get('name')}
+                  </Option>
                 ))}
               </Select>
             );
