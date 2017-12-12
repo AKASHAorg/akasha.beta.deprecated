@@ -388,7 +388,6 @@
   "app.highlight.deleteHighlight": "Delete highlight",
   "app.highlight.editNote": "Edit note",
   "app.highlight.startEntry": "Start an entry",
-  "app.list.addToList": "Add to list",
   "app.list.addToNewList": "Add to a new list",
   "app.list.createNew": "Create a new list",
   "app.list.descriptionPlaceholder": "Add a short description",

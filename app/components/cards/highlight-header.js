@@ -74,9 +74,9 @@ class HighlightHeader extends Component {
 
         const menu = (
           <div onClick={this.hide}>
-            <div className="popover-menu__item">
+            {/* <div className="popover-menu__item">
               {intl.formatMessage(highlightMessages.startEntry)}
-            </div>
+            </div> */}
             <div
               onClick={this.edit}
               className="popover-menu__item"
