@@ -464,17 +464,16 @@ class ProfileCompleteForm extends Component {
                       >
                         <Card
                           bordered={false}
-                          noHovering
                         >
                           <h3>{formatMessage(formMessages.insufficientEth)}</h3>
                           <p>{formatMessage(formMessages.depositEth)}</p>
                           <div className="profile-complete-form__address-info">
-                            <div className="profile-complete-form__qr-wrap">
+                            {/* <div className="profile-complete-form__qr-wrap">
                               <span className="profile-complete-form__qr-title">QR Code</span>
                               <div className="profile-complete-form__qr-code">
                                 <QRCode value={loggedEthAddress} />
                               </div>
-                            </div>
+                            </div> */}
                             <div>
                               <FormItem
                                 className="profile-complete-form__form-item"
