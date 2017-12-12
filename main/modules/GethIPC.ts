@@ -17,7 +17,7 @@ class GethIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'geth';
-        this.DEFAULT_MANAGED = ['startService', 'stopService', 'status'];
+        this.DEFAULT_MANAGED = ['startService', 'stopService', 'status', 'syncStatus'];
         this.attachEmitters();
     }
 

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../index';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreStreamIterator,
@@ -10,10 +11,12 @@ import { entryMoreStreamIterator,
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class StreamColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
-        if (!column.get('entriesList').size) {
+        if (!column.get('entriesList').size && !this.firstCallDone) {
             this.props.entryStreamIterator(column.get('id'));
+            this.firstCallDone = true;
         }
     }
 
@@ -37,6 +40,7 @@ class StreamColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

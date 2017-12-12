@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, ProfileList } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { profileFollowingsIterator,
@@ -10,8 +11,12 @@ import { selectFetchingFollowings, selectFetchingMoreFollowings, selectFollowing
     selectMoreFollowings } from '../../local-flux/selectors';
 
 class ProfileFollowingsColumn extends Component {
-    componentDidMount () {
-        this.followingsIterator();
+    firstCallDone = false;
+    firstLoad = () => {
+        if (!this.firstCallDone) {
+            this.followingsIterator();
+            this.firstCallDone = true;
+        }
     }
 
     componentWillReceiveProps (nextProps) {
@@ -44,6 +49,7 @@ class ProfileFollowingsColumn extends Component {
               readOnly
               title={intl.formatMessage(profileMessages.followings)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <ProfileList
               context="profilePageFollowings"
               fetchingProfiles={fetchingFollowings}

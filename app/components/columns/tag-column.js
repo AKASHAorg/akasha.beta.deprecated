@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
@@ -10,11 +11,13 @@ import { searchTags } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
         const value = column.get('value');
-        if (!column.get('entriesList').size && value) {
+        if (!column.get('entriesList').size && !this.firstCallDone && value) {
             this.props.entryTagIterator({ columnId: column.get('id'), value });
+            this.firstCallDone = true;
         }
     }
 
@@ -59,6 +62,7 @@ class TagColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchTags}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

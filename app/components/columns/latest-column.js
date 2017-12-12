@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreNewestIterator,
@@ -10,12 +11,14 @@ import { entryMoreNewestIterator,
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class LatestColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
-        if (!column.get('entriesList').size) {
+        if (!column.get('entriesList').size && !this.firstCallDone) {
             this.entryIterator();
+            this.firstCallDone = true;
         }
-    }
+    };
 
     entryIterator = () => this.props.entryNewestIterator(this.props.column.get('id'));
 
@@ -37,6 +40,7 @@ class LatestColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.latest)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

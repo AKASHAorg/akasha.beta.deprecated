@@ -2,14 +2,19 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { selectProfileEntries, selectProfileEntriesFlags } from '../../local-flux/selectors';
 
 class ProfileEntriesColumn extends Component {
-    componentDidMount () {
-        this.entryIterator();
+    firstCallDone = false;
+    firstLoad = () => {
+        if (!this.firstCallDone) {
+            this.entryIterator();
+            this.firstCallDone = true;
+        }
     }
 
     componentWillReceiveProps (nextProps) {
@@ -42,6 +47,7 @@ class ProfileEntriesColumn extends Component {
               readOnly
               title={intl.formatMessage(profileMessages.entries)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId="profileEntries"
               entries={entriesList}
