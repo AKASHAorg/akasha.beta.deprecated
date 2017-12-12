@@ -15,8 +15,10 @@ const createListRecord = (list) => {
 const listState = createReducer(initialState, {
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
         const startIndex = data.collection.length;
+        const entryIds = state.getIn(['byId', request.value, 'entryIds']);
+        const moreEntries = entryIds && startIndex < entryIds.size;
         return state.mergeIn(['byId', request.value], {
-            moreEntries: startIndex < state.getIn(['byId', request.value, 'entryIds']).size,
+            moreEntries,
             startIndex,
         });
     },

@@ -106,7 +106,7 @@ class EntryList extends Component {
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreEntries} size="small">
                       <div className="flex-center">
-                          <Waypoint onEnter={this.props.fetchMoreEntries}/>
+                        <Waypoint onEnter={this.props.fetchMoreEntries} />
                       </div>
                     </DataLoader>
                   </div>

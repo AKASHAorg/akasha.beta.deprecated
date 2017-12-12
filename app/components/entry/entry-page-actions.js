@@ -169,7 +169,7 @@ class EntryPageAction extends Component {
                 authorEthAddress={entry.author.ethAddress}
                 containerRef={containerRef}
                 entryId={entry.entryId}
-                entryType={entry.entryType}
+                entryType={entry.getIn(['content', 'entryType'])}
                 listAdd={this.props.listAdd}
                 listDelete={this.props.listDelete}
                 lists={lists}
