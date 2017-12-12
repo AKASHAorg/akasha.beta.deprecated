@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
@@ -11,6 +12,16 @@ import { selectColumnEntries, selectProfileExists,
     selectProfileSearchResults } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
+    firstCallDone = false;
+    firstLoad = () => {
+        const { column } = this.props;
+        const value = column.get('value');
+        if (!column.get('entriesList').size && value && !this.firstCallDone) {
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
+            this.firstCallDone = true;
+        }
+    }
+
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
@@ -61,6 +72,7 @@ class ProfileColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchProfiles}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}
