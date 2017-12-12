@@ -34,7 +34,7 @@ const entryMessages = defineMessages({
     cannotExtractWebsiteInfo: {
         id: 'app.entry.cannotExtractWebsiteInfo',
         description: 'error shown when we cannot extract wesite info',
-        defaultMessage: 'Cannot extract information from website!'
+        defaultMessage: 'Cannot extract information from website! Please try another address'
     },
     collected: {
         id: 'app.entry.collected',

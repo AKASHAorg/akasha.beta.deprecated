@@ -93,10 +93,11 @@ const WebsiteInfoCard = (props) => {
             </a>
           </small>
         }
+        {!error &&
         <div
           className="website-info-card__title-wrapper"
         >
-          {!error && title &&
+          {title &&
             <h3
               className="website-info-card__title"
             >
@@ -110,7 +111,7 @@ const WebsiteInfoCard = (props) => {
               </a>
             </h3>
           }
-          {!error && description &&
+          {description &&
             <a
               href={url}
               onClick={navigateTo(url, onClick, isEdit)}
@@ -121,6 +122,7 @@ const WebsiteInfoCard = (props) => {
             </a>
           }
         </div>
+        }
       </Card>
     );
 };
