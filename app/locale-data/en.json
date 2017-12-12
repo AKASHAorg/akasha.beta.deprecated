@@ -457,7 +457,7 @@
   "app.profile.editProfileTitle": "Edit Profile Information",
   "app.profile.shortDescriptionLabel": "Type something about you",
   "app.profile.linksTitle": "LINKS",
-  "app.profile.addLinkButtontitle": "add link",
+  "app.profile.addLinkButtontitle": "Add a new link",
   "app.profile.removeLinkButtonTitle": "remove link",
   "app.profile.cryptoAddresses": "Other crypto addresses",
   "app.profile.addCryptoAddress": "Add cryptocurrency address",

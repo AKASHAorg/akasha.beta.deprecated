@@ -6,7 +6,7 @@ import throttle from 'lodash.throttle';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { profileExists } from '../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet,
-    tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
+    tempProfileUpdate, tempProfileCreate, tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
 import ProfileForm from './forms/profile-edit-form';
 import { profileMessages } from '../locale-data/messages';
@@ -20,6 +20,11 @@ class ProfileEdit extends Component {
 
     componentWillMount () {
         this._createTempProfile(this.props);
+    }
+
+    componentWillUnmount () {
+        this.formContainer.removeEventListener('scroll', this.throttledHandler);
+        this.props.tempProfileDelete();
     }
 
     _createTempProfile = (props) => {
@@ -113,6 +118,7 @@ ProfileEdit.propTypes = {
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,
     tempProfileCreate: PropTypes.func,
+    tempProfileDelete: PropTypes.func,
     tempProfileGet: PropTypes.func
 };
 
@@ -135,6 +141,7 @@ export default connect(
         showTerms,
         tempProfileUpdate,
         tempProfileCreate,
+        tempProfileDelete,
         tempProfileGet
     }
 )(injectIntl(ProfileEdit));

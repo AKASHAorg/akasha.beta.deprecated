@@ -4,7 +4,7 @@ import { Map, fromJS } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Input, Button, Form } from 'antd';
+import { Row, Col, Icon, Input, Button, Form } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -38,6 +38,7 @@ class ProfileEditForm extends Component {
             !tempProfile.get('backgroundImage').equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
             !tempProfile.get('links').equals(fromJS(loggedProfileData.get('links')))
         );
+        this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
         if (profileExistsData !== this.props.profileExistsData) {
             const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
             this.setState({
@@ -189,14 +190,17 @@ class ProfileEditForm extends Component {
                 return null;
             }
             if (typeof avatar === 'string') {
+                console.log('avatarString: ', avatar);
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatar)
                 );
             }
-            return uploadImage(avatar).then(avatarIpfs =>
-                onProfileUpdate(
+            return uploadImage(avatar).then((avatarIpfs) => {
+                console.log('avatarHash: ', avatarIpfs);
+                return onProfileUpdate(
                     tempProfile.set('avatar', avatarIpfs)
-                )
+                );
+            }
             );
         });
     }
@@ -243,7 +247,6 @@ class ProfileEditForm extends Component {
             }
         });
     }
-
 
     render () {
         const { intl, isUpdate, tempProfile } = this.props;
@@ -373,29 +376,27 @@ class ProfileEditForm extends Component {
                             help={this._getErrorMessages('links', index, 'url')}
                           >
                             <Input
+                              suffix={<Icon
+                                className="content-link"
+                                type="minus-circle"
+                                onClick={this._handleRemoveLink(link.get('id'), 'links')}
+                              />}
                               value={link.get('url')}
                               style={{ width: '100%' }}
                               onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                               onBlur={this._validateField('links')}
                             />
                           </FormItem>
-                          <Button
-                            type="primary"
-                            icon="close-circle"
-                            ghost
-                            onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                          >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                         </div>
                             ))}
                       <div className="profile-edit-form__add-links-btn">
                         <Button
-                          icon="plus"
+                          icon="plus-circle"
                           type="primary borderless"
                           onClick={this._handleAddLink('links')}
-                          title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
                           ghost
                           style={{ border: 'none' }}
-                        >Add more</Button>
+                        >{intl.formatMessage(profileMessages.addLinkButtonTitle)}</Button>
                       </div>
                     </Col>
                     {!isUpdate &&
@@ -433,7 +434,7 @@ class ProfileEditForm extends Component {
               <div className="profile-edit-form__update-btn">
                 <Button
                   type="primary"
-                  disabled={!tempProfile.get('akashaId') || !this.formChanged}
+                  disabled={!tempProfile.get('akashaId') || !this.formChanged || this.emptyLinks}
                   onClick={this._handleSubmit}
                   size="large"
                 >
