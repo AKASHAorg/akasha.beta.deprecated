@@ -242,10 +242,8 @@ function* watchGethStartChannel () {
             const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
                 (syncActionId === 1 || syncActionId === 0);
             if (gethIsSyncing && !gethSyncInterval) {
-                console.log('start interval');
                 gethSyncInterval = setInterval(() => {
                     if (syncActionId === 1) {
-                        console.log('get sync status');
                         Channel.server.geth.syncStatus.send({});
                     }
                 }, 2000);
@@ -308,9 +306,7 @@ function* watchGethSyncStatusChannel () {
         } else {
             yield put(actions.gethGetSyncStatusSuccess(resp.data, resp.services));
             if (resp.data.synced) {
-                console.log('synced!!!!!');
                 if (gethSyncInterval) {
-                    console.log('clear interval');
                     clearInterval(gethSyncInterval);
                     gethSyncInterval = null;
                 }
