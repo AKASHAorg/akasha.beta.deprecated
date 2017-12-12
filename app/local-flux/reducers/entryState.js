@@ -86,7 +86,8 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_CLEAN_FULL]: state =>
         state.merge({
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: null
+            fullEntry: null,
+            fullEntryLatestVersion: null
         }),
 
     [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
