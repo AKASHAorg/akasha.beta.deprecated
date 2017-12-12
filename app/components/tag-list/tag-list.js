@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import throttle from 'lodash.throttle';
-import { List, ListItem } from 'material-ui/List';
 import { DataLoader } from '../';
 import { isInViewport } from '../../utils/domUtils';
 
@@ -66,7 +65,7 @@ class TagList extends Component {
                     No Tags
                   </div>
                 }
-                <List>
+                {/* <List>
                   {tags && tags.map((tag) => {
                       if (!tag) {
                           return null;
@@ -75,7 +74,7 @@ class TagList extends Component {
                         <ListItem key={tag.tagName} primaryText={tag.tagName} secondaryText={<p> { tag.count } entries</p>} />
                       );
                   })}
-                </List>
+                </List> */}
                 {moreTags &&
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreTags} size="small">

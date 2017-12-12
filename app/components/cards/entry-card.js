@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
-import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, WebsiteInfoCard } from '../index';
+import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
 import { ProfileRecord } from '../../local-flux/reducers/records';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
@@ -257,17 +257,6 @@ class EntryCard extends Component {
                 containerRef={containerRef}
                 entry={entry}
                 noVotesBar
-              />
-            }
-            {!!latestVersion && this.state.showVersions &&
-              <EntryVersionsPanel
-                closeVersionsPanel={this.closeVersionsPanel}
-                currentVersion={latestVersion}
-                existingDraft={existingDraft}
-                getVersion={this.getVersion}
-                handleEdit={this.handleEdit}
-                isOwnEntry={this.isOwnEntry()}
-                latestVersion={latestVersion}
               />
             }
           </Card>
