@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import QRCode from 'qrcode.react';
-import { Row, Card, Col, Input, Button, Form, Switch } from 'antd';
+import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, Icon, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -79,7 +79,7 @@ class ProfileCompleteForm extends Component {
         const lastLink = links.last();
         if (lastLink) {
             if (linkType === 'links' &&
-                (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
+                (lastLink.get('url').length === 0)) {
                 return null;
             }
         }
@@ -407,7 +407,7 @@ class ProfileCompleteForm extends Component {
                     >
                       <Input.TextArea
                         className="profile-complete-form__textarea"
-                        rows={5}
+                        rows={3}
                         placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
                         value={about}
                         onChange={this._handleFieldChange('about')}
@@ -426,29 +426,27 @@ class ProfileCompleteForm extends Component {
                           help={this._getErrorMessages('links', index, 'url')}
                         >
                           <Input
+                            suffix={<AntIcon
+                              className="content-link"
+                              type="minus-circle"
+                              onClick={this._handleRemoveLink(link.get('id'), 'links')}
+                            />}
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                             onBlur={this._validateField('links')}
                           />
                         </FormItem>
-                        <Button
-                          type="primary"
-                          icon="close-circle"
-                          ghost
-                          onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                        >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                       </div>
                         ))}
                     <div className="profile-complete-form__add-links-btn">
                       <Button
-                        icon="plus"
+                        icon="plus-circle"
                         type="primary borderless"
                         onClick={this._handleAddLink('links')}
-                        title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
                         ghost
                         style={{ border: 'none' }}
-                      >Add more</Button>
+                      >{intl.formatMessage(profileMessages.addLinkButtonTitle)}</Button>
                     </div>
                   </Col>
                   {this.state.insufficientEth &&

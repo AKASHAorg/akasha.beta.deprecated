@@ -53,6 +53,8 @@ class AvatarEditr extends Component {
             rotation: 0,
             avatarScale: 1,
             highlightDropZone: false
+        }, () => {
+            this.forceUpdate();
         });
     }
     _handleSliderChange = (sliderValue) => {
@@ -74,6 +76,15 @@ class AvatarEditr extends Component {
     }
     _handleImageAdd = () => {
         const files = this.fileInput.files[0].path;
+        this.setState({
+            avatarImage: files,
+            isNewAvatarLoaded: true,
+            highlightDropZone: false,
+        });
+    }
+    _handleImageDrop = (ev) => {
+        this._handleAvatarClear();
+        const files = ev.target.toDataURL('image/jpeg', 1);
         this.setState({
             avatarImage: files,
             isNewAvatarLoaded: true,
@@ -105,13 +116,13 @@ class AvatarEditr extends Component {
         }
     }
     render () {
-        const { baseUrl, backgroundColor, image, intl, offsetBorder,
+        const { baseUrl, backgroundColor, image, offsetBorder,
             onMouseEnter, onMouseLeave, size, style } = this.props;
         let avatarImage;
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
-            avatarImage = `${baseUrl}/${image}`;;
+            avatarImage = `${baseUrl}/${image}`;
         }
         if (!avatarImage) {
             this.editor = null;
@@ -177,16 +188,16 @@ class AvatarEditr extends Component {
                         height: size
                     }}
                     className="avatar__avatar-editor"
-                    border={1}
+                    border={0}
                     image={avatarImage}
                     ref={(editor) => { this.editor = editor; }}
                     scale={this.state.avatarScale}
                     rotate={this.state.rotation}
-                    onDropFile={this._handleImageAdd}
+                    onDropFile={this._handleImageDrop}
                     onLoadSuccess={this._handleImageLoad}
                   />
                   {this.state.avatarClose &&
-                    <div className="image-uploader__clear-image-button">
+                    <div className="avatar__clear-image-button">
                       <Button
                         type="standard"
                         icon="close-circle"
@@ -242,7 +253,6 @@ AvatarEditr.propTypes = {
         PropTypes.string,
         PropTypes.shape()
     ]),
-    intl: PropTypes.shape().isRequired,
     onClick: PropTypes.func,
     offsetBorder: PropTypes.string,
     onImageAdd: PropTypes.func,
