@@ -126,7 +126,7 @@ class NewEntryPage extends Component {
         this.props.draftUpdate(
             draftObj.merge({
                 ethAddress: loggedProfile.get('ethAddress'),
-                content: draftObj.get('content').mergeIn(['licence', licenceField], licence)
+                content: draftObj.get('content').setIn(['licence', licenceField], licence)
             })
         );
     }
@@ -135,7 +135,7 @@ class NewEntryPage extends Component {
         const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(draftObj.merge({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
+            content: draftObj.get('content').setIn(['excerpt'], excerpt),
         }));
         this.setState(prevState => ({
             errors: {
@@ -263,21 +263,6 @@ class NewEntryPage extends Component {
           </Steps>
         );
     }
-    _handleScrollAtBottom = () => {
-        this.setState({
-            scrollPosition: 'bottom'
-        });
-    }
-    _handleScrollAtTop = () => {
-        this.setState({
-            scrollPosition: 'top'
-        });
-    }
-    _handleScrollInBetween = () => {
-        this.setState({
-            scrollPosition: 'between'
-        });
-    }
     /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors, shouldResetCaret, scrollPosition } = this.state;
@@ -288,7 +273,7 @@ class NewEntryPage extends Component {
             return (
               <DataLoader
                 flag
-                message={'Loading drafts...'}
+                message={intl.formatMessage(entryMessages.loadingDrafts)}
                 size="large"
                 className="edit-entry-page__data-loader"
               />
@@ -302,10 +287,10 @@ class NewEntryPage extends Component {
                 message={
                   <div>
                     <div>
-                      Resolving ipfs hash...
+                      {intl.formatMessage(entryMessages.resolvingIpfsHash)}
                     </div>
                     <div>
-                      Make sure to open AKASHA DApp on the computer you have published from.
+                      {intl.formatMessage(entryMessages.makeSureToOpenDApp)}
                     </div>
                   </div>
                 }
@@ -348,38 +333,39 @@ class NewEntryPage extends Component {
                     edit-entry-page__editor${showSecondarySidebar ? '' : '_full'}`
                   }
                 >
-                  <textarea
-                    ref={this._createRef('titleInput')}
-                    className={
+                  <div className="edit-entry-page__editor-inner">
+                    <textarea
+                      ref={this._createRef('titleInput')}
+                      className={
                         `edit-entry-page__title-input-field
                         edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}
                         edit-entry-page__title-input-field_${scrollPosition}`
+                      }
+                      placeholder={intl.formatMessage(entryMessages.title)}
+                      onChange={this._handleTitleChange}
+                      value={title}
+                    />
+                    {errors.title &&
+                      <small className="edit-entry-page__error-text">{errors.title}</small>
                     }
-                    placeholder="Title"
-                    onChange={this._handleTitleChange}
-                    value={title}
-                  />
-                  {errors.title &&
-                    <small className="edit-entry-page__error-text">{errors.title}</small>
-                  }
-                  <TextEntryEditor
-                    ref={this._createRef('editor')}
-                    className={
-                        `text-entry-editor${showSecondarySidebar ? '' : '_full'}
-                        text-entry-editor_${scrollPosition}`
+                    <TextEntryEditor
+                      ref={this._createRef('editor')}
+                      className={
+                        `text-entry-editor${showSecondarySidebar ? '' : '_full'}`
+                      }
+                      onChange={this._handleEditorChange}
+                      editorState={draftWithSelection}
+                      selectionState={currentSelection}
+                      baseUrl={baseUrl}
+                      onScrollBetween={this._handleScrollInBetween}
+                      onScrollBottom={this._handleScrollAtBottom}
+                      onScrollTop={this._handleScrollAtTop}
+                      intl={intl}
+                    />
+                    {errors.draft &&
+                      <small className="edit-entry-page__error-text">{errors.draft}</small>
                     }
-                    onChange={this._handleEditorChange}
-                    editorState={draftWithSelection}
-                    selectionState={currentSelection}
-                    baseUrl={baseUrl}
-                    onScrollBetween={this._handleScrollInBetween}
-                    onScrollBottom={this._handleScrollAtBottom}
-                    onScrollTop={this._handleScrollAtTop}
-                    intl={intl}
-                  />
-                  {errors.draft &&
-                    <small className="edit-entry-page__error-text">{errors.draft}</small>
-                  }
+                  </div>
                   <TagEditor
                     ref={this._createRef('tagEditor')}
                     className={

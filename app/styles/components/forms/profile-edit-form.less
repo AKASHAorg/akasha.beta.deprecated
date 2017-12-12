@@ -15,7 +15,7 @@
         margin-bottom: 5px;
     }
 
-    &__img-uploader-wrap {
+    &__bg-image-wrap {
         height: 160px;
         width: 320px;
         overflow: hidden;
@@ -45,7 +45,7 @@
 
     &__buttons-wrapper {
         padding: 20px;
-        border-top: 1px outset lightgrey;
+        border-top: 1px outset @light-border;
         display: flex;
         justify-content: flex-end;
     }
@@ -63,12 +63,22 @@
     }
 
     &__add-links-btn {
-        margin: 16px 0;
+        margin-bottom: 20px;
+        .ant-btn {
+            font-size: 12px;
+            padding: 0;
+        }
     }
 
     &__link {
-        padding-top: 20px;
+        padding-top: 10px;
         color: @text-color;
-        font-size: 13px;
+        font-size: 11px;
+        .ant-form-item {
+            margin-bottom: 23px;
+        }
+        .ant-form-item-with-help {
+            margin-bottom: 0;
+        }
     }
 }
