@@ -139,6 +139,14 @@ class ProfileCompleteForm extends Component {
         if (field === 'akashaId') {
             this.props.profileExists(this.props.tempProfile.get('akashaId'));
         }
+
+        if (field === 'links') {
+            this.props.tempProfile.get('links').forEach((link) => {
+                if (!link.get('url')) {
+                    this._handleRemoveLink(link.get('id'), 'links')();
+                }
+            });
+        }
     }
 
     _validateField = field =>
