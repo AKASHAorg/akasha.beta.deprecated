@@ -24,7 +24,7 @@ class EntryEditor extends Component {
         };
     }
     componentDidMount () {
-        this.rootNode.addEventListener('scroll', this._handleEditorScroll);
+        // this.rootNode.addEventListener('scroll', this._handleEditorScroll);
     }
 
     _handleEditorScroll = (ev) => {
@@ -87,12 +87,12 @@ class EntryEditor extends Component {
         this.props.onChange(editorState);
     };
 
-    _handleKeyPress = (ev) => {
-        ev.preventDefault();
-        if (ev.key === 'Enter') {
-            this._changeEditorFocus(true);
-        }
-    }
+    // _handleKeyPress = (ev) => {
+    //     ev.preventDefault();
+    //     if (ev.key === 'Enter') {
+    //         this._changeEditorFocus(true);
+    //     }
+    // }
 
     _changeEditorFocus = (focusState) => {
         const { editorState } = this.props;

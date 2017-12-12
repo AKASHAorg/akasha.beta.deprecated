@@ -60,7 +60,7 @@ class NewLinkEntryPage extends Component {
     }
 
     _processUrl = () => {
-        const { draftObj, loggedProfile, match } = this.props;
+        const { draftObj, loggedProfile, match, intl } = this.props;
         const url = draftObj.getIn(['content', 'cardInfo', 'url']);
         this.setState({
             parsingInfo: true,
@@ -91,7 +91,7 @@ class NewLinkEntryPage extends Component {
             }).catch(() => {
                 this.setState({
                     errors: {
-                        card: 'An error occured while trying to fetch website info',
+                        card: intl.formatMessage(entryMessages.websiteInfoFetchingError),
                     },
                     parsingInfo: false,
                     infoExtracted: true
@@ -301,7 +301,7 @@ class NewLinkEntryPage extends Component {
             return (
               <DataLoader
                 flag
-                message={'Loading drafts...'}
+                message={intl.formatMessage(entryMessages.loadingDrafts)}
                 size="large"
                 className="edit-entry-page__data-loader"
               />
@@ -331,7 +331,8 @@ class NewLinkEntryPage extends Component {
               type="flex"
               className="edit-entry-page__content"
             >
-              <div
+              <Col
+                span={showPublishPanel ? 17 : 24}
                 className="edit-entry-page__editor-wrapper"
               >
                 <div className="edit-entry-page__editor">
@@ -339,7 +340,7 @@ class NewLinkEntryPage extends Component {
                     <input
                       ref={this._createRef('titleInput')}
                       className="edit-entry-page__url-input-field"
-                      placeholder="Enter an address. eg. www.akasha.world"
+                      placeholder={intl.formatMessage(entryMessages.enterWebAddress)}
                       onChange={this._handleUrlChange}
                       onBlur={this._handleUrlBlur}
                       onKeyPress={this._handleKeyPress}
@@ -360,18 +361,18 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                   {!parsingInfo && infoExtracted &&
-                  <div style={{ position: 'relative', height: '100%' }}>
-                    <TextEntryEditor
-                      style={{ position: 'absolute', left: 0 }}
-                      ref={this._createRef('editor')}
-                      className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
-                      onChange={this._handleEditorChange}
-                      editorState={draftWithSelection}
-                      selectionState={currentSelection}
-                      baseUrl={baseUrl}
-                      intl={intl}
-                    />
-                  </div>
+                    <div style={{ position: 'relative', height: '100%' }}>
+                      <TextEntryEditor
+                        style={{ position: 'absolute', left: 0 }}
+                        ref={this._createRef('editor')}
+                        className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
+                        onChange={this._handleEditorChange}
+                        editorState={draftWithSelection}
+                        selectionState={currentSelection}
+                        baseUrl={baseUrl}
+                        intl={intl}
+                      />
+                    </div>
                   }
                 </div>
                 {!parsingInfo && infoExtracted &&
@@ -394,7 +395,7 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                 }
-              </div>
+              </Col>
               <Col
                 span={6}
                 className={
