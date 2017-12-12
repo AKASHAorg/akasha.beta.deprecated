@@ -36,7 +36,7 @@ class Comment extends Component {
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
             readOnly: true
         });
-        this.emojiPlugin = createEmojiPlugin({ imagePath: 'images/emoji-svg/' });
+        this.emojiPlugin = createEmojiPlugin({ imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/', allowImageCache: true });
         this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
     }

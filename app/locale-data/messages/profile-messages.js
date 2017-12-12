@@ -68,8 +68,8 @@ export const profileMessages = defineMessages({
     },
     addLinkButtonTitle: {
         id: 'app.profile.addLinkButtontitle',
-        description: 'tooltip for Add Link button',
-        defaultMessage: 'add link'
+        description: 'title for add link button',
+        defaultMessage: 'Add a new link'
     },
     removeLinkButtonTitle: {
         id: 'app.profile.removeLinkButtonTitle',

@@ -29,10 +29,7 @@ const addProfileData = (byEthAddress, { ...profileData }, full) => {
     }
     profileData.followersCount = Number(profileData.followersCount);
     profileData.followingCount = Number(profileData.followingCount);
-    const { avatar, baseUrl } = profileData;
-    if (avatar && baseUrl && !avatar.includes(baseUrl)) {
-        profileData.avatar = `${baseUrl}/${avatar}`;
-    }
+
     const oldProfile = byEthAddress.get(profileData.ethAddress);
     if (!full && oldProfile) {
         profileData.backgroundImage = oldProfile.get('backgroundImage');
