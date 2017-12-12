@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Col, Row, Button, Modal } from 'antd';
 import { DraftJS } from 'megadraft';
+import { fromJS } from 'immutable';
 import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
     TagEditor, WebsiteInfoCard, DataLoader, Icon } from '../components';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
@@ -71,19 +72,19 @@ class NewLinkEntryPage extends Component {
                 uploadImageToIpfs: true
             });
             parser.getInfo().then((data) => {
-                this.props.draftUpdate(draftObj.merge({
+                this.props.draftUpdate(draftObj.merge(fromJS({
                     ethAddress: loggedProfile.get('ethAddress'),
-                    content: draftObj.get('content').merge({
-                        cardInfo: draftObj.getIn(['content', 'cardInfo']).merge({
+                    content: draftObj.get('content').merge(fromJS({
+                        cardInfo: draftObj.getIn(['content', 'cardInfo']).merge(fromJS({
                             title: data.info.title,
                             description: data.info.description,
                             image: data.info.image,
                             bgColor: data.info.bgColor,
                             url: data.url
-                        }),
-                    }),
+                        })),
+                    })),
                     id: match.params.draftId,
-                }));
+                })));
                 this.setState({
                     parsingInfo: false,
                     infoExtracted: true
@@ -104,7 +105,7 @@ class NewLinkEntryPage extends Component {
         const { draftObj } = this.props;
         const { content } = draftObj;
         if (content.getIn(['cardInfo', 'url']).length > 0) {
-            this._processUrl();
+            return this._processUrl();
         }
         return this.props.draftUpdate(draftObj);
     }
@@ -124,31 +125,31 @@ class NewLinkEntryPage extends Component {
 
     _handleUrlChange = (ev) => {
         const { match, loggedProfile, draftObj } = this.props;
-        this.props.draftUpdate(draftObj.merge({
+        this.props.draftUpdate(draftObj.merge(fromJS({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').mergeIn(['cardInfo'], {
+            content: draftObj.get('content').mergeIn(['cardInfo'], fromJS({
                 url: ev.target.value,
-            }),
+            })),
             id: match.params.draftId,
-        }));
+        })));
     }
 
     _handleEditorChange = (editorState) => {
         const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
+        this.props.draftUpdate(draftObj.merge(fromJS({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').mergeDeep({
+            content: draftObj.get('content').mergeDeep(fromJS({
                 draft: editorState,
-            }),
-        }));
+            })),
+        })));
     }
 
     _handleTagUpdate = (tagList) => {
         const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
+        this.props.draftUpdate(draftObj.merge(fromJS({
             ethAddress: loggedProfile.get('ethAddress'),
             tags: draftObj.get('tags').clear().concat(tagList),
-        }));
+        })));
         this.setState(prevState => ({
             errors: {
                 ...prevState.errors,
@@ -160,19 +161,19 @@ class NewLinkEntryPage extends Component {
     _handleDraftLicenceChange = (licenceField, licence) => {
         const { draftObj, loggedProfile } = this.props;
         this.props.draftUpdate(
-            draftObj.merge({
+            draftObj.merge(fromJS({
                 ethAddress: loggedProfile.get('ethAddress'),
-                content: draftObj.get('content').mergeIn(['licence', licenceField], licence)
-            })
+                content: draftObj.get('content').setIn(['licence', licenceField], licence)
+            }))
         );
     }
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
+        this.props.draftUpdate(draftObj.merge(fromJS({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').mergeIn(['excerpt'], excerpt),
-        }));
+            content: draftObj.get('content').setIn(['excerpt'], excerpt),
+        })));
         this.setState(prevState => ({
             errors: {
                 ...prevState.errors,
@@ -265,17 +266,17 @@ class NewLinkEntryPage extends Component {
             infoExtracted: false,
         }, () => {
             this.props.draftUpdate(
-                draftObj.merge({
+                draftObj.merge(fromJS({
                     ethAddress: loggedProfile.get('ethAddress'),
-                    content: draftObj.get('content').mergeIn(['cardInfo'], {
+                    content: draftObj.get('content').mergeIn(['cardInfo'], fromJS({
                         url: '',
                         image: {},
                         title: '',
                         description: '',
                         bgColor: null,
-                    }),
+                    })),
                     id: match.params.draftId,
-                })
+                }))
             );
         });
     }
@@ -351,6 +352,7 @@ class NewLinkEntryPage extends Component {
                     <WebsiteInfoCard
                       baseUrl={baseUrl}
                       cardInfo={cardInfo}
+                      intl={intl}
                       hasCard={!!(title || description)}
                       url={url}
                       onClose={this._handleInfoCardClose}
@@ -361,9 +363,8 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                   {!parsingInfo && infoExtracted &&
-                    <div style={{ position: 'relative', height: '100%' }}>
+                    <div style={{ minHeight: '20%' }}>
                       <TextEntryEditor
-                        style={{ position: 'absolute', left: 0 }}
                         ref={this._createRef('editor')}
                         className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}
                         onChange={this._handleEditorChange}
@@ -374,27 +375,27 @@ class NewLinkEntryPage extends Component {
                       />
                     </div>
                   }
+                  {!parsingInfo && infoExtracted &&
+                    <div className="edit-entry-page__tag-editor_wrapper">
+                      <TagEditor
+                        className="edit-entry-page__tag-editor"
+                        ref={this._createRef('tagEditor')}
+                        match={match}
+                        nodeRef={(node) => { this.tagsField = node; }}
+                        intl={intl}
+                        ethAddress={loggedProfile.get('ethAddress')}
+                        onTagUpdate={this._handleTagUpdate}
+                        tags={tags}
+                        actionAdd={this.props.actionAdd}
+                        searchTags={this.props.searchTags}
+                        tagSuggestions={tagSuggestions}
+                        tagSuggestionsCount={tagSuggestionsCount}
+                        searchResetResults={this.props.searchResetResults}
+                        inputDisabled={onChain}
+                      />
+                    </div>
+                  }
                 </div>
-                {!parsingInfo && infoExtracted &&
-                  <div className="edit-entry-page__tag-editor_wrapper">
-                    <TagEditor
-                      className="edit-entry-page__tag-editor"
-                      ref={this._createRef('tagEditor')}
-                      match={match}
-                      nodeRef={(node) => { this.tagsField = node; }}
-                      intl={intl}
-                      ethAddress={loggedProfile.get('ethAddress')}
-                      onTagUpdate={this._handleTagUpdate}
-                      tags={tags}
-                      actionAdd={this.props.actionAdd}
-                      searchTags={this.props.searchTags}
-                      tagSuggestions={tagSuggestions}
-                      tagSuggestionsCount={tagSuggestionsCount}
-                      searchResetResults={this.props.searchResetResults}
-                      inputDisabled={onChain}
-                    />
-                  </div>
-                }
               </Col>
               <Col
                 span={6}

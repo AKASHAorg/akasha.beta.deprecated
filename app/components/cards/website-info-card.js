@@ -4,10 +4,11 @@ import { Card, Icon } from 'antd';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 import { getTextColor } from '../../utils/colorUtils';
 import ParserUtils from '../../utils/parsers/parser-utils';
+import { entryMessages } from '../../locale-data/messages/entry-messages';
 
 const getImageSrc = (imageObj, baseUrl, targetWidth) => {
-    const bestMatch = findClosestMatch((targetWidth || 700), imageObj.toJS(), imageObj.keys()[0]);
-    return imageCreator(imageObj.getIn([bestMatch, 'src']), baseUrl);
+    const bestMatch = findClosestMatch((targetWidth || 700), imageObj, Object.keys(imageObj)[0]);
+    return imageCreator(imageObj[bestMatch].src, baseUrl);
 };
 
 const navigateTo = (url, onClick, isEdit) =>
@@ -22,7 +23,7 @@ const navigateTo = (url, onClick, isEdit) =>
     };
 
 const WebsiteInfoCard = (props) => {
-    const { cardInfo, baseUrl, hasCard, baseWidth, onClick,
+    const { cardInfo, baseUrl, hasCard, baseWidth, onClick, intl,
         onClose, isEdit, loading, error, infoExtracted, maxImageHeight } = props;
     const { url, image, description, title, bgColor } = cardInfo;
     const bodyStyle = {
@@ -45,7 +46,7 @@ const WebsiteInfoCard = (props) => {
         // hoverable={false}
       >
         {!title && !description && infoExtracted && !error &&
-          <div>Cannot extract information from website!</div>
+          <div>{intl.formatMessage(entryMessages.cannotExtractWebsiteInfo)}</div>
         }
         {error &&
           <div className="website-info-card__error">
@@ -60,7 +61,7 @@ const WebsiteInfoCard = (props) => {
             onClick={onClose}
           />
         }
-        {!error && (image.size > 0) &&
+        {!error && image.xs &&
           <a
             onClick={navigateTo(url, onClick, isEdit)}
             href={url}

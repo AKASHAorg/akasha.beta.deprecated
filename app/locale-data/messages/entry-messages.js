@@ -31,6 +31,11 @@ const entryMessages = defineMessages({
         description: 'tooltip for collect button for the situation when a user cannot collect Essence for his vote',
         defaultMessage: 'You can only collect Essence if your vote is aligned with the majority (e.g. you upvoted and entry score is positive)'
     },
+    cannotExtractWebsiteInfo: {
+        id: 'app.entry.cannotExtractWebsiteInfo',
+        description: 'error shown when we cannot extract wesite info',
+        defaultMessage: 'Cannot extract information from website!'
+    },
     collected: {
         id: 'app.entry.collected',
         description: 'Essence was collected for an entry/vote',
