@@ -67,6 +67,7 @@ class EntryList extends Component {
               fetchingEntryBalance={fetchingEntryBalance}
               handleEdit={this.handleEdit}
               isPending={isPending}
+              intl={intl}
               key={entry.get('entryId')}
               large={large}
               loggedEthAddress={loggedEthAddress}

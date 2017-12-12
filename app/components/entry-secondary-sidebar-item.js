@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover, Icon } from 'antd';
+import { Icon as SvgIcon } from './';
 import { entryMessages } from '../locale-data/messages';
 
 const getIconType = (localChanges, published, unresolved) => {
     switch (true) {
         case unresolved:
-            return 'dot red-dot';
+            return <Icon type="dot red-dot" />;
         case (localChanges && published):
-            return 'dot';
+            return <Icon type="dot" />;
         case (!localChanges && published):
-            return 'check';
+            return <Icon type="check" />;
         default:
-            return 'hdd';
+            return <SvgIcon type="draft" />;
     }
 };
 
@@ -31,9 +32,7 @@ const EntrySecondarySidebarItem = ({
     {/* eslint-disable react/no-danger */}
     {matchString &&
     <div>
-      <Icon
-        type={getIconType(localChanges, published, unresolved)}
-      />
+        {getIconType(localChanges, published, unresolved)}
       <a
         href="/"
         dangerouslySetInnerHTML={{ __html: matchString }}
@@ -44,16 +43,18 @@ const EntrySecondarySidebarItem = ({
     }
     {!matchString &&
     <div>
-      <Icon
-        type={getIconType(localChanges, published, unresolved)}
-      />
+      {getIconType(localChanges, published, unresolved)}
       <a
         href="/"
         className="draft-list-item__link"
         onClick={ev => onItemClick(ev, `/draft/${draft.content.entryType}/${draft.id}`)}
       >
-        {draft.content.entryType === 'article' && ((draft.content && draft.content.title) || 'No title') }
-        {draft.content.entryType === 'link' && ((draft.content && draft.content.cardInfo.title) || 'No title')}
+        {draft.content.entryType === 'article' &&
+            ((draft.content && draft.content.title) || intl.formatMessage(entryMessages.noTitle))
+        }
+        {draft.content.entryType === 'link' &&
+            ((draft.content && draft.content.cardInfo.title) || intl.formatMessage(entryMessages.noTitle))
+        }
       </a>
     </div>
     }
@@ -75,17 +76,19 @@ const EntrySecondarySidebarItem = ({
               </div>
             }
             <div
-              className="draft-list-item__popover-button"
+              className="draft-list-item__popover-button disabled-button"
               onClick={ev => onPreviewCreate(ev, draft.id)}
             >
               <b>{intl.formatMessage(entryMessages.draftSharePreview)}</b>
             </div>
-            <div
-              className="draft-list-item__popover-button"
-              onClick={ev => onDraftDelete(ev, draft.id)}
-            >
-              <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
-            </div>
+            {!published &&
+              <div
+                className="draft-list-item__popover-button"
+                onClick={ev => onDraftDelete(ev, draft.id)}
+              >
+                <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
+              </div>
+            }
           </div>
         }
         trigger="click"

@@ -92,11 +92,17 @@ class EntryPageHeader extends Component {
         const { latestVersion, entry, intl } = this.props;
         const { versionsInfo } = entry;
         const versionsEnum = Array(latestVersion + 1).fill('');
-        return versionsEnum.map((version, index) =>
-            (<div key={`${index}`} onClick={this._switchToVersion(index)}>
-              V{index + 1} {/* intl.formatRelative(new Date(versionsInfo.get(index) * 1000)) */}
-            </div>
-            ));
+        return versionsEnum.map((version, index) => (
+          <div
+            key={`${index}`}
+            className="popover-menu__item"
+            onClick={this._switchToVersion(index)}
+          >
+            {intl.formatMessage(entryMessages.versionNumber, {
+                index: index + 1
+            })}
+          </div>
+        ));
     }
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
@@ -139,6 +145,7 @@ class EntryPageHeader extends Component {
               trigger="click"
               onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
               placement="bottomRight"
+              overlayClassName="popover-menu"
             >
               <span className="entry-page-header__versions-button">
                 <span style={{ paddingRight: '5px' }}>

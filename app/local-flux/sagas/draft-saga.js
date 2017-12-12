@@ -140,7 +140,9 @@ function* draftPublish ({ actionId, draft }) {
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
         );
         draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
-
+        if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
+            draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
+        }
         yield call(enableChannel, channel, Channel.client.entry.manager);
         yield call([channel, channel.send], {
             actionId,

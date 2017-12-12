@@ -85,12 +85,16 @@
         margin-right: 5px;
         padding: 2px;
         
-        svg:not(.add-image__icon) {
-            stroke: @text-color-secondary !important;
+        &:not(&_active) {
+            svg:not(.add-image__icon) {
+                stroke: @text-color-secondary !important;
+            }
         }
 
         &_active {
-            color: @primary-color !important;
+            svg {
+                stroke: @primary-color !important;
+            }
         }
     }
 
@@ -108,71 +112,5 @@
             color: @text-color-secondary;
             cursor: not-allowed;
         }
-    }
-
-    &__emoji-select {
-        flex: 0 0 auto;
-    }
-
-    &__emoji-select-button, &__emoji-select-button_pressed {
-        margin: 0 0 0 5px;
-        padding: 0;
-        width: 24px;
-        height: 24px;
-        font-size: 22px;
-        color: #888;
-        background: @light-background;
-        cursor: pointer;
-        border: none;
-        outline: none;
-        line-height: 1;
-
-        &_pressed {
-            color: @primary-color;
-        }
-    }
-
-    &__emoji-select-popover {
-        margin-top: 10px;
-        padding: 0 5px;
-        position: absolute;
-        right: 10px;
-        z-index: 1000;
-        box-sizing: content-box;
-        background: @light-background;
-        border: 1px solid @light-border;
-        box-shadow: 0 4px 30px 0 gainsboro;
-    }
-
-    &__emoji-select-popover-groups {
-        margin: 0 0 5px;
-        position: relative;
-        z-index: 0;
-        width: 280px;
-        height: 220px;
-    }
-
-    &__emoji-select-popover-closed {
-        display: none;
-    }
-
-    &__emoji-select-popover-title {
-        margin: 0 0 5px;
-        padding-left: 15px;
-        height: 30px;
-        line-height: 30px;
-        font-weight: normal;
-        font-size: 15px;
-        color: #9e9e9e;
-    }
-
-    &__emoji-select-popover-nav {
-        margin: 0;
-        padding: 0 7px;
-        display: flex;
-        align-items: center;
-        height: 30px;
-        width: 280px;
-        list-style: none;
     }
 }

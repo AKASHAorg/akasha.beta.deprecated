@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { ListItem, SvgIcon } from 'material-ui';
-import { colors } from 'material-ui/styles';
 import { searchQuery, searchHandshake, searchResetResults } from '../../local-flux/actions/search-actions';
 import { tagSearch } from '../../local-flux/actions/tag-actions';
 import { MenuSearch } from '../svg';
@@ -75,13 +73,9 @@ class SearchSecondarySidebar extends Component {
               Search
             </div>
             <div className="search-secondary-sidebar__search">
-              <SvgIcon
-                color={colors.lightBlack}
-                hoverColor={colors.darkBlack}
-                viewBox="0 0 32 32"
-              >
+              <svg viewBox="0 0 32 32">
                 <MenuSearch />
-              </SvgIcon>
+              </svg>
               <input
                 type="text"
                 className="search-secondary-sidebar__input"
@@ -105,7 +99,7 @@ class SearchSecondarySidebar extends Component {
             <div>{ this.props.handshakePending && 'Handshaking'} </div>
             <div>
               <SelectableList defaultValue={topics.indexOf(this.props.match.params.topic)}>
-                <ListItem
+                {/* <ListItem
                   value={0}
                   primaryText="Entries"
                   containerElement={<Link to={`/search/${topics[0]}/${this.state.queryInput}`} />}
@@ -124,17 +118,13 @@ class SearchSecondarySidebar extends Component {
                   value={3}
                   primaryText="Lists"
                   containerElement={<Link to={`/search/${topics[3]}/${this.state.queryInput}`} />}
-                />
+                /> */}
               </SelectableList>
             </div>
           </div>
         );
     }
 }
-
-SearchSecondarySidebar.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 SearchSecondarySidebar.propTypes = {
     handshakePending: PropTypes.bool,
