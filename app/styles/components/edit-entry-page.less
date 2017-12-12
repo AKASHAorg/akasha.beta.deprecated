@@ -1,14 +1,8 @@
 .edit-entry-page {
     position: relative;
-    height: ~"calc(100% - @{editor-footer-height})";
+    height: 100%;
     &.link-page {
-        // .edit-entry-page__tag-editor {
-        //     margin:0 auto;
-        // }
-        .text-entry-editor {
-            overflow-y: visible;
-            overflow-x: hidden;
-        }
+
     }
     &__data-loader {
         height: 100%;
@@ -36,19 +30,12 @@
         background: transparent;
         width: @text-editor-width;
         display: inherit;
-        position: absolute;
-        left: 50%;
-        margin-left: (@text-editor-width / 2) * -1;
         top: 24px;
-        &_bottom,
-        &_between {
-            top: @top-bar-height * -1;
-        }
+        margin: 0 auto;
     }
 
     &__content {
         height: 100%;
-        overflow: hidden
     }
 
     &__publish-options {
@@ -75,10 +62,8 @@
     }
 
     &__editor-wrapper {
-        text-align: center;
-        transition: width 0.218s @ease-in-out;
-        height: 100%;
-        width: 100%;
+        max-height: ~"calc(100% - @{editor-footer-height})";
+        overflow-y: auto;
     }
     &.link-page {
         .edit-entry-page__editor {
@@ -91,17 +76,14 @@
         }
     }
     &__editor {
-        height: ~"calc(100% - @{editor-footer-height} - @{top-bar-height})";
-        position: fixed;
-        top: @top-bar-height;
-        bottom: 0;
-        right: 0;
-        left: @sidebar-width + @secondary-sidebar-width;
-        &_full {
-            left: @sidebar-width;
-        }
+        height: 100%;
+        min-height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
-
+    &__editor-inner {
+        min-height: ~"calc(100% - 48px)";;
+    }
     &__editor,
     &__tag-editor {
         text-align: left;
@@ -111,19 +93,6 @@
     &__info-card-wrapper {
         max-width: @text-editor-width;
         margin: 0 auto;
-    }
-    &__tag-editor {
-        width: @text-editor-width;
-        left: 50%;
-        margin-left: (@text-editor-width / 2) * -1;
-        &_top,
-        &_between {
-            bottom: @editor-footer-height * -1.5;
-        }
-        &_bottom,
-        &_noScroll {
-            bottom: 0;
-        }
     }
     &__footer-wrapper {
         position: fixed;

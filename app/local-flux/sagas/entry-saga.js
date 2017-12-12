@@ -470,7 +470,7 @@ function* watchEntryGetChannel () {
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
         } else if (resp.request.publishedDateOnly) {
             yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
-        } else if (resp.request.full) {
+        } else if (resp.request.full && !resp.request.asDraft) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
             const version = resp.data.content.version;

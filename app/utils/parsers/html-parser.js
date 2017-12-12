@@ -13,8 +13,8 @@ class HtmlParser extends ParserUtils {
     getInfo = () => {
         this.htmlContent = this.parseHtmlFromString(this.htmlString);
         return Promise.all([
-            this.parseOGMetaTags(),
             this.parseTags(),
+            this.parseOGMetaTags(),
         ]).then(infoArr => infoArr.reduce((prev, curr) => ({
             ...curr,
             ...prev,
