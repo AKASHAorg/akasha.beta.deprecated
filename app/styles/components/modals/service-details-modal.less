@@ -2,7 +2,7 @@
     overflow: hidden !important;
     
     &__button-label {
-        font-size: 15px;
+        font-size: 14px;
     }
 
     &__tab-pane {
@@ -10,7 +10,7 @@
         height: 340px;
 
         &_logs {
-            padding: 10px 8px 0px;
+            padding: 0px 8px;
         }
     }
 
@@ -27,11 +27,14 @@
 
     &__footer-right {
         flex: 1 1 auto;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
     &__toggle-label {
         font-size: 14px;
-        font-weight: 500;
+        color: @input-color;
     }
 
     .ant-modal-body {
@@ -59,26 +62,28 @@
     }
 
     & > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
-        background: #fff;
+        background: @page-bg;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar {
-        border-color: #fff;
+        border-color: @page-bg;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
-        background: #f8f8f8;
+        background: @tabs-inactive-bg;
         border-color: transparent;
         height: 59px;
     }
 
     & > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
-        border-color: #fff;
-        background: #fff;
+        border-color: @page-bg;
+        background: @page-bg;
+        font-weight: normal;
         height: 60px;
     }
 
     .ant-modal-footer {
         padding: 10px 24px;
+        background-color: @page-bg;
     }
 }

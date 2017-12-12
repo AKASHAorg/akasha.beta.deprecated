@@ -15,7 +15,6 @@
             border-radius: 4px;
 
             &:focus {
-                background-color: #fbfbfb;
                 box-shadow: none;             
             }
         }
@@ -36,7 +35,7 @@
         border-radius: 4px;
 
         &:hover {
-            background-color: #fbfbfb;
+            background-color: @background;
         }
     }
 
@@ -57,13 +56,13 @@
     }
 
     &__row-icon {
-        background-color: black;
+        background-color: @dark;
         border-radius: 50%;
-        color: #fff;
+        color: @text-color-dark;
         font-size: 12px;
 
         &_saved {
-            background-color: green;
+            background-color: @green;
         }
     }
 
@@ -94,7 +93,7 @@
         display: flex;
         align-items: center;
         border-radius: 4px;
-        background-color: #f5f5f5;
+        background-color: @dark-background;
     }
 
     &__plus-icon {

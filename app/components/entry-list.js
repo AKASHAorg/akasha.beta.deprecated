@@ -4,47 +4,23 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
-import throttle from 'lodash.throttle';
+import Waypoint from 'react-waypoint';
 import { entryMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import { selectAllPendingClaims, selectAllPendingVotes,
     selectLoggedEthAddress } from '../local-flux/selectors';
-import { isInViewport } from '../utils/domUtils';
-import { DataLoader, EntryCard } from './';
+import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
-    componentDidMount () {
-        if (this.container) {
-            this.container.addEventListener('scroll', this.throttledHandler);
-        }
-        window.addEventListener('resize', this.throttledHandler);
+
+    shouldComponentUpdate (newProps) {
+        return !newProps.entries.isSubset(this.props.entries) ||
+            newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
+            newProps.fetchingEntries !== this.props.fetchingEntries ||
+            (this.props.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
+            newProps.large !== this.props.large;
     }
-
-    componentDidUpdate (prevProps) {
-        if (prevProps.fetchingEntries && !this.props.fetchingEntries) {
-            this.checkTrigger();
-        }
-    }
-
-    componentWillUnmount () {
-        if (this.container) {
-            this.container.removeEventListener('scroll', this.throttledHandler);
-        }
-        window.removeEventListener('resize', this.throttledHandler);
-    }
-
-    getContainerRef = (el) => { this.container = el; };
-
-    getTriggerRef = (el) => { this.trigger = el; };
-
-    checkTrigger = () => {
-        if (this.trigger && isInViewport(this.trigger)) {
-            this.props.fetchMoreEntries();
-        }
-    };
-
-    throttledHandler = throttle(this.checkTrigger, 500);
 
     getExistingDraft = (entryId) => {
         const { drafts } = this.props;
@@ -101,7 +77,6 @@ class EntryList extends Component {
               votePending={!!pendingVotes.get(entry.get('entryId'))}
             />);
         });
-
         return (
           <div
             className={`entry-list ${!masonry && 'entry-list_flex'}`}
@@ -132,7 +107,7 @@ class EntryList extends Component {
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreEntries} size="small">
                       <div className="flex-center">
-                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
+                        <Waypoint onEnter={this.props.fetchMoreEntries} />
                       </div>
                     </DataLoader>
                   </div>

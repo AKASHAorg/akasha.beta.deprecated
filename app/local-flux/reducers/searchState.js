@@ -62,11 +62,11 @@ const searchState = createReducer(initialState, {
             consecutiveQueryErrors: 0,
             currentPage: null,
             query: '',
-            entryIds: [],
+            entryIds: new List(),
             totalPages: null,
             resultsCount: null,
             tagResultsCount: 0,
-            tags: []
+            tags: new List()
         }),
 
     [types.SEARCH_TAGS]: (state, { query }) => state.set('query', query),

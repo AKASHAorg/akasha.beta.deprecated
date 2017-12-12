@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
+import classNames from 'classnames';
 import throttle from 'lodash.throttle';
 import { AuthProfileList, Icon } from '../';
 import { setupMessages } from '../../locale-data/messages';
@@ -73,6 +74,9 @@ class Auth extends Component {
             localProfilesFetched, pendingListProfiles } = this.props;
         const { isScrolled } = this.state;
         const withShadow = this.listContainer && isScrolled && 'auth__title-wrapper_with-shadow';
+        const backupButtonClass = classNames('auth__button auth__button_no-border', {
+            'auth__button_no-border_disabled': backupPending
+        });
         return (
           <div className="setup-content auth">
             <div className="flex-center-x setup-content__column_full">
@@ -102,10 +106,7 @@ class Auth extends Component {
               </div>
               <div className="setup-content__column-footer auth__footer">
                 <div className="flex-center-y auth__buttons-wrapper">
-                  <Button
-                    className="auth__button auth__button_no-border"
-                    size="large"
-                  >
+                  {/* <Button className="auth__button auth__button_no-border">
                     <div className="flex-center-y">
                       <Icon
                         className="auth__icon"
@@ -113,12 +114,11 @@ class Auth extends Component {
                       />
                       {intl.formatMessage(setupMessages.importKeys)}
                     </div>
-                  </Button>
+                  </Button> */}
                   <Button
-                    className="auth__button auth__button_no-border"
+                    className={backupButtonClass}
                     disabled={backupPending}
                     onClick={backupKeysRequest}
-                    size="large"
                   >
                     <div className="flex-center-y">
                       <Icon
@@ -131,10 +131,7 @@ class Auth extends Component {
                 </div>
                 <div id="button" className="auth__new-identity-button">
                   <Link to="/setup/new-identity">
-                    <Button
-                      className="auth__button"
-                      size="large"
-                    >
+                    <Button className="auth__button">
                       {intl.formatMessage(setupMessages.createIdentity)}
                     </Button>
                   </Link>

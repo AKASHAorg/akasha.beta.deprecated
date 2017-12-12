@@ -3,19 +3,22 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries, selectListsNames } from '../../local-flux/selectors';
+import { selectColumnEntries, selectListsAll } from '../../local-flux/selectors';
 
 class ListColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
         const value = column.get('value');
-        if (!column.get('entries').size && value) {
+        if (!column.get('entriesList').size && value && !this.firstCallDone) {
             this.props.entryListIterator({ columnId: column.get('id'), value });
+            this.firstCallDone = true;
         }
-    }
+    };
 
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
@@ -43,7 +46,8 @@ class ListColumn extends Component {
     render () {
         const { column, entries, intl, lists } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
-
+        const index = lists.indexOf(list => list.get('id') === column.get('value'));
+        const listName = lists.getIn([index, 'name']);
         return (
           <div className={className}>
             <ColumnHeader
@@ -51,7 +55,9 @@ class ListColumn extends Component {
               dataSource={lists}
               iconType="entries"
               onRefresh={this.onRefresh}
+              title={listName}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
               entries={entries}
@@ -80,7 +86,7 @@ function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, columnId),
-        lists: selectListsNames(state)
+        lists: selectListsAll(state)
     };
 }
 

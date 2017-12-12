@@ -1,3 +1,4 @@
+import { List } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { HighlightRecord, HighlightState } from './records';
@@ -26,14 +27,28 @@ const highlightState = createReducer(initialState, {
         state.set('search', search),
 
     [types.HIGHLIGHT_SEARCH_SUCCESS]: (state, { data }) =>
-        state.merge({
-            searchResults: data
-        }),
+        state.set('searchResults', new List(data)),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
-    [types.HIGHLIGHT_TOGGLE_NOTE_EDITABLE]: (state, { id }) =>
-        state.setIn(['byId', id, 'editNotes'], !state.getIn(['byId', id, 'editNotes']))
+    [types.HIGHLIGHT_TOGGLE_NOTE_EDITABLE]: (state, { id }) => {
+        const byId = state.get('byId');
+        const newById = byId.map((highlight) => {
+            if (highlight.get('id') === id) {
+                return highlight.set('editNotes', !highlight.get('editNotes'));
+            }
+            return highlight.set('editNotes', false);
+        });
+        return state.set('byId', newById);
+    },
+    // state.setIn(['byId', id, 'editNotes'], !state.getIn(['byId', id, 'editNotes'])),
+
+    [types.HIGHLIGHT_TOGGLE_EDITING]: (state, { id }) => {
+        if (id === state.get('editing')) {
+            return state.set('editing', null);
+        }
+        return state.set('editing', id);
+    }
 });
 
 export default highlightState;

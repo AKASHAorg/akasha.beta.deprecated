@@ -266,6 +266,11 @@ const errorMessages = defineMessages({
         description: 'error message for transforming Essence in AETH',
         defaultMessage: 'An error occured while transforming {amount} Essence'
     },
+    profileUpdate: {
+        id: 'app.error.profileUpdate',
+        description: 'error message for updating your profile',
+        defaultMessage: 'An error occured while updating your profile'
+    },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',
         description: 'error message for saving general settings',

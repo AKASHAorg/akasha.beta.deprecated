@@ -244,6 +244,8 @@ export const profileRegisterError = (error, request) => {
 export const profileRegisterSuccess = (data, request) =>
     action(types.PROFILE_REGISTER_SUCCESS, { data, request });
 
+export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENCE_EVENTS);
+
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
 

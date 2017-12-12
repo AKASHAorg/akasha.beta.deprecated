@@ -308,6 +308,9 @@ const entryState = createReducer(initialState, {
         });
         return state.set('voteCostByWeight', new Map(voteCost));
     },
+
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
+
     [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
 
     [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler

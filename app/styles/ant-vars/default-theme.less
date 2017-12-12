@@ -1,3 +1,5 @@
+@content-link-brightness: 80%;
+
 // just for test
 // @primary-color: purple;
 @avatar-bg: #4D5D69;
@@ -8,23 +10,61 @@
 // avatar editor
 @avatar-editor-bg: #f7f7f7;
 
-@page-bg: #f8f8f8;
-
-@secondary-sidebar-bg: #F5F5F5;
-// sidebar
-@sidebar-overlay-bg: #444;
-
 // colors
-@dark: #2E3747;
-@dark-grey: #778390;
-@grey: #B4BCC8;
-@light-grey: #D8DCDF;
-@background: #F8F8F8;
-@blue: #0598FF;
-@red: #F96A6A;
-@green: #7ACC80;
-@yellow: #FFC02F;
-@dark-blue: #0588E6;
-@dark-red: #E66363;
+@heading-color: #2E3747;
+@text-color: #778390;
+@text-color-dark: #fff;
+@text-color-secondary: #B4BCC8;
+@success-color: @green;
+@error-color: @red;
+@primary-color: @blue;
 
+@overlay-color: fade(@dark, 50%);
 @lighter-color: @dark-grey;
+
+// background
+@light-background: #FFF;
+@background: #F8F8F8;
+@dark-background: #EFEFF1;
+@page-bg: @light-background;
+@tabs-inactive-bg: @background;
+
+// borders
+@border-color: #eee;
+@radio-border-color: @border-color-base;
+@checkbox-border-color: @border-color-base;
+
+//sidebar
+@sidebar-background: #EFEFF1;
+@sidebar-icon-selected-bg: #FFF;
+
+// topbar
+@top-bar-icon: @heading-color;
+
+// scrollbar
+@scrollbar-active: #D8DCDF;
+@scrollbar-inactive: fade(@dark-background, 70%);
+
+// entry card
+@entry-excerpt: @heading-color;
+
+// question circle icon
+@question-circle-bg: #D8DCDF;
+@question-circle: @light-background;
+
+// logs
+@logs-color: @heading-color;
+
+@item-selected-bg: @background-color-light;
+
+// placeholders
+@placeholder-color: @background;
+
+// antd variables
+@shadow-color: rgba(46, 55, 71, 0.3);
+@tag-default-bg: #EEE;
+@input-color: @heading-color;
+@input-border-color: #D8DCDF;
+@checkbox-bg: @light-background;
+@radio-button-bg: @light-background;
+@slider-rail-color: @background-color-base;

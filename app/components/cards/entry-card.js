@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
-import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, WebsiteInfoCard } from '../';
+import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, WebsiteInfoCard } from '../index';
 import { ProfileRecord } from '../../local-flux/reducers/records';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
@@ -202,17 +202,17 @@ class EntryCard extends Component {
               </Link>
             }
             {hasContent && entryType === 0 &&
-              <Link
-                className="unstyled-link"
-                to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
-                    state: { overlay: true }
-                }}
-              >
-                <div className="content-link entry-card__title">
-                  {content.get('title')}
-                </div>
-              </Link>
+              <div className="entry-card__title">
+                <Link
+                  className="unstyled-link"
+                  to={{
+                      pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                      state: { overlay: true }
+                  }}
+                >
+                  <span className="content-link">{content.get('title')}</span>
+                </Link>
+              </div>
             }
             {hasContent && entryType === 1 &&
               <div>
@@ -229,17 +229,17 @@ class EntryCard extends Component {
               </div>
             }
             {hasContent && content.get('excerpt') &&
-              <Link
-                className="unstyled-link"
-                to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
-                    state: { overlay: true }
-                }}
-              >
-                <div className="content-link entry-card__excerpt">
-                  {content.get('excerpt')}
-                </div>
-              </Link>
+              <div className="entry-card__excerpt">
+                <Link
+                  className="unstyled-link"
+                  to={{
+                      pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                      state: { overlay: true }
+                  }}
+                >
+                  <span className="content-link">{content.get('excerpt')}</span>
+                </Link>
+              </div>
             }
             {hasContent &&
               <div className="entry-card__tags">

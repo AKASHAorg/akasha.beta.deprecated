@@ -38,12 +38,12 @@ const CyclingAeth = ({ cyclingStates, intl, onCollect, pendingCycleAeth, pending
           <div className="cycling-aeth__title">
             {intl.formatMessage(profileMessages.cyclingProcess)}
           </div>
-          {!pendingStates.size &&
+          {!pendingStates.length &&
             <div className="flex-center cycling-aeth__placeholder">
               {intl.formatMessage(profileMessages.cyclingPlaceholder)}
             </div>
           }
-          {(!!pendingStates.size || !!pendingCycleAeth) &&
+          {(!!pendingStates.length || !!pendingCycleAeth) &&
             <div className="cycling-aeth__table">
               <div className="flex-center-y cycling-aeth__header">
                 <div className="cycling-aeth__cell">
@@ -64,12 +64,12 @@ const CyclingAeth = ({ cyclingStates, intl, onCollect, pendingCycleAeth, pending
                 </div>
               }
               {pendingStates.map(cycle => (
-                <div key={cycle.get('unlockDate')} className="flex-center-y cycling-aeth__row">
+                <div key={cycle.unlockDate} className="flex-center-y cycling-aeth__row">
                   <div className="cycling-aeth__cell">
-                    {balanceToNumber(cycle.get('amount'))} AETH
+                    {balanceToNumber(cycle.amount)} AETH
                   </div>
                   <div className="cycling-aeth__cell">
-                    {formatDate(new Date(cycle.get('unlockDate') * 1000))}
+                    {formatDate(new Date(cycle.unlockDate * 1000))}
                   </div>
                 </div>
               ))}

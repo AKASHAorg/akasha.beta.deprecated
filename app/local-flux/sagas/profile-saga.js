@@ -1,8 +1,9 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import {reject, isNil} from 'ramda';
+import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
+import * as entryActions from '../actions/entry-actions';
 import * as actions from '../actions/profile-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
@@ -15,9 +16,9 @@ import * as actionStatus from '../../constants/action-status';
 import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
-const TRANSFERS_ITERATOR_LIMIT = 30;
-const FOLLOWERS_ITERATOR_LIMIT = 10;
-const FOLLOWINGS_ITERATOR_LIMIT = 10;
+const TRANSFERS_ITERATOR_LIMIT = 20;
+const FOLLOWERS_ITERATOR_LIMIT = 2;
+const FOLLOWINGS_ITERATOR_LIMIT = 2;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
@@ -32,10 +33,12 @@ function* profileEssenceIterator () {
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const ethAddress = yield select(selectLoggedEthAddress);
     const essenceStep = yield select(selectEssenceIterator);
-    const lastBlock = (essenceStep.lastBlock === null) ? yield select(selectBlockNumber) : essenceStep.lastBlock;
+    const lastBlock = (essenceStep.lastBlock === null) ?
+        yield select(selectBlockNumber) :
+        essenceStep.lastBlock;
     yield apply(channel,
         channel.send,
-        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 8 })]);
+        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 16 })]);
 }
 
 function* profileBondAeth ({ actionId, amount }) {
@@ -455,6 +458,14 @@ function* watchProfileEssenceIteratorChannel () {
         if (resp.error) {
             yield put(actions.profileEssenceIteratorError(resp.error));
         } else {
+            const entryEvents = ['entry:claim', 'entry:vote:claim'];
+            const { collection } = resp.data;
+            for (let i = 0; i < collection.length; i++) {
+                const { action, entryId } = collection[i];
+                if (entryEvents.indexOf(action) !== -1) {
+                    // yield put(entryActions.entryGetShort({ context: 'essenceEvents', entryId }));
+                }
+            }
             yield put(actions.profileEssenceIteratorSuccess(resp.data));
         }
     }

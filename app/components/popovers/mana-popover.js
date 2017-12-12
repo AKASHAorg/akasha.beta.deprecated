@@ -20,6 +20,7 @@ class ManaPopover extends Component {
         page: DEFAULT,
         popoverVisible: false
     };
+    wasVisible = false;
 
     componentWillUnmount () {
         if (this.timeout) {
@@ -28,6 +29,7 @@ class ManaPopover extends Component {
     }
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -65,7 +67,6 @@ class ManaPopover extends Component {
         const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const totalMana = balanceToNumber(balance.getIn(['mana', 'total']));
         const burnedMana = totalMana - remainingMana;
-        const manaColor = '#4aadf3';
         if (page === SHIFT_DOWN) {
             return (
               <ShiftForm
@@ -91,20 +92,20 @@ class ManaPopover extends Component {
         }
         return (
           <div className="mana-popover__content">
-            <div className="flex-center-x mana-popover__title">
+            <div className="flex-center mana-popover__title">
               {intl.formatMessage(generalMessages.manaBurned)}
               <span className="mana-popover__mana-score">
                 { burnedMana }
               </span>
             </div>
-            <div className="mana-popover__chart-wrapper">
+            <div className="flex-center mana-popover__chart-wrapper">
               <PieChart
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
                     datasets: [{
                         data: [
                             manaBurned.get('comments'),
-                            manaBurned.get('entries'),
+                            manaBurned.get('entriesTotal'),
                             manaBurned.get('votes')
                         ],
                         backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']
@@ -124,7 +125,6 @@ class ManaPopover extends Component {
               <Button
                 className="flex-center mana-popover__button"
                 onClick={this.onShiftDown}
-                size="large"
               >
                 <Icon type="arrowDown" />
                 {intl.formatMessage(formMessages.shiftDown)}
@@ -132,7 +132,6 @@ class ManaPopover extends Component {
               <Button
                 className="flex-center mana-popover__button"
                 onClick={this.onShiftUp}
-                size="large"
               >
                 <Icon type="arrowUp" />
                 {intl.formatMessage(formMessages.shiftUp)}
@@ -156,7 +155,7 @@ class ManaPopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             onVisibleChange={this.onVisibleChange}
             overlayClassName="mana-popover"
             placement="leftBottom"

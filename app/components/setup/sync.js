@@ -8,7 +8,6 @@ import { SyncStatus } from '../';
 import { LogsDetailsContainer } from '../../containers/';
 
 class Sync extends Component {
-    interval = null;
     state = {
         showDetails: false
     };
@@ -23,41 +22,14 @@ class Sync extends Component {
         }
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { gethStatus, gethGetSyncStatus, gethSyncStatus, syncActionId } = nextProps;
-        const gethSynced = gethSyncStatus.get('synced');
-        const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
-            !gethSynced && (syncActionId === 1 || syncActionId === 0);
-
-        if (gethIsSyncing && !this.interval) {
-            this.interval = setInterval(() => {
-                if (syncActionId === 1) {
-                    gethGetSyncStatus();
-                }
-            }, 2000);
-        }
-
-        if (gethSynced && !this.props.gethSyncStatus.get('syned')) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-    }
-
     componentWillUnmount () {
         const { gethStopLogger } = this.props;
         gethStopLogger();
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
     }
 
     handleCancel = () => {
         const { clearSyncStatus, gethStatus, gethStop, gethStopSync, ipfsStatus, ipfsStop,
             saveGeneralSettings } = this.props;
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
         gethStopSync();
         if (gethStatus.get('process')) {
             gethStop();
@@ -74,10 +46,6 @@ class Sync extends Component {
 
         switch (syncActionId) {
             case 1:
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = null;
-                }
                 gethStop();
                 gethPauseSync();
                 break;
@@ -163,38 +131,34 @@ class Sync extends Component {
               <div className="flex-center sync__actions">
                 {syncActionId !== 4 &&
                   <div className="flex-center-y">
-                    <Button onClick={this.toggleDetails}>
+                    <Button
+                      className="sync__button"
+                      onClick={this.toggleDetails}
+                    >
                       <div className="flex-center-y">
-                        <Icon
-                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
-                          type="eye-o"
-                        />
+                        <Icon className="sync__logs-icon" type="eye-o" />
                         <span>{intl.formatMessage(setupMessages.details)}</span>
                       </div>
                     </Button>
                     <Button
+                      className="sync__button"
                       style={{ marginLeft: '12px' }}
                       onClick={this.handlePause}
                       disabled={gethBusyState}
                     >
                       <div className="flex-center-y lowercase">
-                        <Icon
-                          style={{ fontSize: '18px', marginRight: '5px', position: 'relative', top: '1px' }}
-                          type={buttonIcon}
-                        />
+                        <Icon className="sync__pause-icon" type={buttonIcon} />
                         <span>{action}</span>
                       </div>
                     </Button>
                     <Button
+                      className="sync__button"
                       style={{ marginLeft: '12px' }}
                       onClick={this.handleCancel}
                       disabled={gethBusyState}
                     >
                       <div className="flex-center-y lowercase">
-                        <Icon
-                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
-                          type="stop"
-                        />
+                        <div className="sync__stop-icon" />
                         <span>{intl.formatMessage(generalMessages.cancel)}</span>
                       </div>
                     </Button>
@@ -211,12 +175,10 @@ class Sync extends Component {
                 }
               </div>
               <div className="sync__message">
-                <small>
-                  {syncActionId === 4 && !ipfsStatus.get('starting') ?
-                      intl.formatMessage(setupMessages.afterSyncFinish) :
-                      intl.formatMessage(setupMessages.onSyncStart)
-                  }
-                </small>
+                {syncActionId === 4 && !ipfsStatus.get('starting') ?
+                    intl.formatMessage(setupMessages.afterSyncFinish) :
+                    intl.formatMessage(setupMessages.onSyncStart)
+                }
               </div>
             </div>
           </div>
@@ -228,7 +190,6 @@ Sync.propTypes = {
     clearSyncStatus: PropTypes.func.isRequired,
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
-    gethGetSyncStatus: PropTypes.func.isRequired,
     gethPauseSync: PropTypes.func.isRequired,
     gethResumeSync: PropTypes.func.isRequired,
     gethStart: PropTypes.func.isRequired,

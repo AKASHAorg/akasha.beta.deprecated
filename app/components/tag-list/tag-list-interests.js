@@ -37,7 +37,10 @@ class TagListInterests extends Component {
     }
 
     render () {
-        const { defaultTimeout, fetchingTags, intl, tags } = this.props;
+        const { defaultTimeout, fetchingTags, intl, query, tags } = this.props;
+        if (!query) {
+            return null;
+        }
         return (
           <div className="tag-list-interests">
             <DataLoader
@@ -65,6 +68,7 @@ TagListInterests.propTypes = {
     fetchingTags: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     profileInterests: PropTypes.shape().isRequired,
+    query: PropTypes.string,
     tags: PropTypes.shape().isRequired,
     toggleInterest: PropTypes.func.isRequired
 };

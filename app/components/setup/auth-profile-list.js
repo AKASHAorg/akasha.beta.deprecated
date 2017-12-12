@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import classNames from 'classnames';
 import { Avatar, DataLoader, LoginForm } from '../';
-import clickAway from '../../utils/clickAway';
-import { isVisible } from '../../utils/domUtils';
 import { setupMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
+import { getDisplayName } from '../../utils/dataModule';
+import { isVisible } from '../../utils/domUtils';
 
 class AuthProfileList extends Component {
     container = null;
@@ -93,6 +95,7 @@ class AuthProfileList extends Component {
 
     renderListItem = (profile) => {
         const { hoveredEthAddress, selectedEthAddress } = this.state;
+        const hasName = profile.get('firstName') || profile.get('lastName');
         const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
         const avatar = profile.get('avatar');
         const akashaId = profile.get('akashaId');
@@ -100,6 +103,14 @@ class AuthProfileList extends Component {
         const isSelected = ethAddress === selectedEthAddress;
         const isHovered = ethAddress === hoveredEthAddress && !isSelected;
         const onClick = isSelected ? undefined : () => this.onSelectEthAddress(ethAddress);
+        const title = hasName ? profileName : getDisplayName({ akashaId, ethAddress, long: true });
+        const subtitle = hasName && akashaId;
+        const withOpacity = selectedEthAddress && !isSelected;
+        const cardClass = classNames('auth-profile-list__profile-card', {
+            'auth-profile-list__profile-card_hovered': isHovered,
+            'auth-profile-list__profile-card_selected': isSelected,
+            'auth-profile-list__profile-card_with-opacity': withOpacity
+        });
         const header = (
           <div className="auth-profile-list__card-header">
             <Avatar
@@ -110,11 +121,11 @@ class AuthProfileList extends Component {
             />
             <div className="auth-profile-list__header-text">
               <div className="overflow-ellipsis heading auth-profile-list__name">
-                {akashaId ? profileName : ethAddress}
+                {title}
               </div>
-              {akashaId &&
+              {subtitle &&
                 <div className="auth-profile-list__akasha-id">
-                  <small>@{akashaId}</small>
+                  @{subtitle}
                 </div>
               }
             </div>
@@ -123,17 +134,12 @@ class AuthProfileList extends Component {
 
         return (
           <div
-            className="auth-profile-list__profile-card"
+            className={cardClass}
             id={`ethAddress-${ethAddress}`}
             key={ethAddress}
             onClick={onClick}
             onMouseEnter={() => this.onMouseEnter(ethAddress)}
             onMouseLeave={this.onMouseLeave}
-            style={{
-                backgroundColor: isHovered ? '#fcfcfc' : '#fff',
-                opacity: selectedEthAddress && !isSelected ? 0.3 : 1,
-                cursor: isSelected && 'default'
-            }}
           >
             {header}
             <ReactCSSTransitionGroup
@@ -170,8 +176,10 @@ class AuthProfileList extends Component {
         if (placeholderMessage) {
             this.getContainerRef(null);
             return (
-              <div className="auth-profile-list__placeholder">
-                {placeholderMessage}
+              <div className="auth-profile-list__root">
+                <div className="auth-profile-list__placeholder">
+                  {placeholderMessage}
+                </div>
               </div>
             );
         }

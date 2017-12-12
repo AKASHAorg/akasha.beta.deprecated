@@ -12,8 +12,8 @@ export const EssenceBalance = Record({
     total: null
 });
 export const EssenceIterator = Record({
-   lastBlock: null,
-   lastIndex: null
+    lastBlock: null,
+    lastIndex: null
 });
 export const ManaBalance = Record({
     remaining: null,
@@ -40,7 +40,7 @@ export const CyclingStates = Record({
 
 const ManaBurned = Record({
     comments: 0,
-    entries: 0,
+    entriesTotal: 0,
     votes: 0
 });
 
@@ -53,6 +53,7 @@ export const ProfileRecord = Record({
     commentsCount: '0',
     donationsEnabled: false,
     entriesCount: '0',
+    essence: null,
     ethAddress: null,
     firstName: '',
     followersCount: null,

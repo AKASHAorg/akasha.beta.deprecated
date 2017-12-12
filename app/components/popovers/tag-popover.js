@@ -21,6 +21,7 @@ class TagPopover extends Component {
         content: null,
         visible: false
     };
+    wasVisible = false;
 
     componentWillUnmount () {
         if (this.resetTimeout) {
@@ -76,6 +77,7 @@ class TagPopover extends Component {
     };
 
     onVisibleChange = (visible) => {
+        this.wasVisible = true;
         this.setState({
             content: visible ? MENU : this.state.content,
             visible
@@ -124,8 +126,10 @@ class TagPopover extends Component {
                     </div>
                     <div className="tag-popover__list-wrapper">
                       {this.groupByState(dashboards).map((dashboard) => {
-                          const toggleDashboard = () =>
-                              this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                          const toggleDashboard = () => {
+                                this.onVisibleChange(false);
+                                this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                          };
                           const isSaved = this.isSaved(dashboard);
                           const root = 'tag-popover__left-item tag-popover__row-icon';
                           const modifier = 'tag-popover__row-icon_saved';
@@ -202,7 +206,7 @@ class TagPopover extends Component {
 
         return (
           <Popover
-            content={this.renderContent()}
+            content={this.wasVisible ? this.renderContent() : null}
             getPopupContainer={() => containerRef || document.body}
             onVisibleChange={this.onVisibleChange}
             overlayClassName={overlayClassName}

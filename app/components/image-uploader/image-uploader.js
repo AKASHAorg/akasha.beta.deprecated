@@ -109,7 +109,7 @@ class ImageUploader extends Component {
             if (this.container) {
                 containerSize = this.container.clientWidth;
             }
-            const bestKey = findClosestMatch(containerSize, image.toJS(), 'sm');
+            const bestKey = findClosestMatch(containerSize, image.toJS(), 'xs');
             if (bestKey) {
                 return imageCreator(image.getIn([bestKey, 'src']), baseUrl);
             }
@@ -203,10 +203,10 @@ class ImageUploader extends Component {
                 }
               >
                 <Icon className="image-uploader__add-image-icon" type="photoImage" />
-                <p className="image-uploader__helper-text">
+                <div className="image-uploader__helper-text">
                   {!highlightDropZone && intl.formatMessage(generalMessages.addImage)}
                   {highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
-                </p>
+                </div>
               </div>
             }
             <input

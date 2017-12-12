@@ -1,10 +1,39 @@
 .configuration {
     &__title {
+        color: @heading-color;
         font-weight: 500;
-        font-size: 20px;
+        font-size: 18px;
     }
 
     &__form {
         margin-top: 24px;
+    }
+
+    &__reset-button {
+        color: @heading-color;
+
+        svg {
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);            
+            stroke: @heading-color !important;
+            margin-right: 5px;
+            width: 14px;
+            height: 14px;
+        }
+
+        &:hover svg {
+            stroke: @primary-color !important;
+        }
+    }
+
+    .ant-radio-wrapper-checked {
+        color: @heading-color;
+    }
+
+    .ant-select-selection-selected-value {
+        color: @heading-color;
+    }
+
+    .ant-input {
+        color: @heading-color;
     }
 }

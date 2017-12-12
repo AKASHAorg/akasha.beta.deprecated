@@ -15,6 +15,7 @@
     &__editor-wrapper {
         flex: 1 1 auto;
         padding: 5px;
+        color: @heading-color;
 
         .public-DraftEditorPlaceholder-root {
             position: absolute;
@@ -33,7 +34,7 @@
         flex-direction: column;
         justify-content: space-between;
         margin-left: 8px;
-        border: 1px solid #DDD;
+        border: 1px solid @light-border;
         border-radius: 4px;
         padding: 0 8px;
         position: relative;
@@ -53,8 +54,8 @@
     }
 
     blockquote {
-        border-left: 3px solid #eee;
-        color: #666;
+        border-left: 3px solid @light-border;
+        color: @text-color;
         font-style: italic;
         margin: 8px 0;
         padding: 4px 8px;
@@ -64,7 +65,7 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        border-top: 1px solid #eee;
+        border-top: 1px solid @light-border;
         margin-top: 8px;
         height: 32px;
         background-color: @background;  
@@ -120,7 +121,7 @@
         height: 24px;
         font-size: 22px;
         color: #888;
-        background: #fff;
+        background: @light-background;
         cursor: pointer;
         border: none;
         outline: none;
@@ -138,8 +139,8 @@
         right: 10px;
         z-index: 1000;
         box-sizing: content-box;
-        background: #fff;
-        border: 1px solid #e0e0e0;
+        background: @light-background;
+        border: 1px solid @light-border;
         box-shadow: 0 4px 30px 0 gainsboro;
     }
 

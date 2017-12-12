@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
+import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
@@ -11,10 +12,20 @@ import { selectColumnEntries, selectProfileExists,
     selectProfileSearchResults } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
+    firstCallDone = false;
+    firstLoad = () => {
+        const { column } = this.props;
+        const value = column.get('value');
+        if (!column.get('entriesList').size && value && !this.firstCallDone) {
+            this.props.entryProfileIterator({ columnId: column.get('id'), value });
+            this.firstCallDone = true;
+        }
+    }
+
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
-        if (!column.get('entries').size && value) {
+        if (!column.get('entriesList').size && value) {
             this.props.entryProfileIterator({ columnId: column.get('id'), value });
         }
     }
@@ -41,7 +52,7 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, profileExists, profileResults } = this.props;
+        const { column, entriesList, intl, profileExists, profileResults } = this.props;
         let placeholderMessage;
         if (column.get('value') && profileExists.get('akashaId') === column.get('value')) {
             placeholderMessage = profileExists.getIn(['data', 'exists']) ?
@@ -61,9 +72,10 @@ class ProfileColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchProfiles}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreProfileIterator}
@@ -78,7 +90,7 @@ class ProfileColumn extends Component {
 
 ProfileColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -89,7 +101,7 @@ ProfileColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id')),
+        entriesList: selectColumnEntries(state, ownProps.column.get('id')),
         profileExists: selectProfileExists(state),
         profileResults: selectProfileSearchResults(state),
     };

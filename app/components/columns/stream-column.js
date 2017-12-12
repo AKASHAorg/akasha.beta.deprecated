@@ -3,17 +3,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import { ColumnHeader, EntryList } from '../';
+import Waypoint from 'react-waypoint';
+import { ColumnHeader, EntryList } from '../index';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class StreamColumn extends Component {
-    componentDidMount () {
+    firstCallDone = false;
+    firstLoad = () => {
         const { column } = this.props;
-        if (!column.get('entries').size) {
+        if (!column.get('entriesList').size && !this.firstCallDone) {
             this.props.entryStreamIterator(column.get('id'));
+            this.firstCallDone = true;
         }
     }
 
@@ -25,7 +28,7 @@ class StreamColumn extends Component {
     onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
 
     render () {
-        const { column, entries, intl } = this.props;
+        const { column, entriesList, intl } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
@@ -37,9 +40,10 @@ class StreamColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />
+            <Waypoint onEnter={this.firstLoad} horizontal={true} />
             <EntryList
               contextId={column.get('id')}
-              entries={entries}
+              entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
               fetchMoreEntries={this.entryMoreStreamIterator}
@@ -54,7 +58,7 @@ class StreamColumn extends Component {
 
 StreamColumn.propTypes = {
     column: PropTypes.shape().isRequired,
-    entries: PropTypes.shape().isRequired,
+    entriesList: PropTypes.shape().isRequired,
     entryMoreStreamIterator: PropTypes.func.isRequired,
     entryStreamIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -62,7 +66,7 @@ StreamColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id')),
+        entriesList: selectColumnEntries(state, ownProps.column.get('id')),
     };
 }
 

@@ -7,6 +7,10 @@
         padding: 0px 24px 24px;
     }
 
+    &__balance-label {
+        color: @text-color;
+    }
+
     &__balance {
         font-size: 32px;
         margin-right: 12px;
@@ -54,7 +58,7 @@
     }
 
     &__legend-label {
-        font-weight: 500;
+        color: @heading-color;
     }
 
     &__sent-icon {
@@ -77,8 +81,8 @@
     &__cycling-count {
         display: inline-block;
         margin-left: 6px;
-        background-color: #111;
-        color: #fff;
+        background-color: @dark;
+        color: @text-color-dark;
         height: 16px;
         padding: 4px;
         border-radius: 2px;

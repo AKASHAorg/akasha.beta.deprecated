@@ -228,7 +228,7 @@ class TransformForm extends Component {
               {this.renderDisclaimer()}
             </div>
             <div className="transform-form__actions">
-              <Button className="transfer-form__button" onClick={onCancel} size="large">
+              <Button className="transfer-form__button" onClick={onCancel}>
                 {intl.formatMessage(generalMessages.cancel)}
               </Button>
               <Button
@@ -237,7 +237,6 @@ class TransformForm extends Component {
                 htmlType="submit"
                 loading={isPending}
                 onClick={this.onSubmit}
-                size="large"
                 type="primary"
               >
                 {intl.formatMessage(generalMessages.transform)}

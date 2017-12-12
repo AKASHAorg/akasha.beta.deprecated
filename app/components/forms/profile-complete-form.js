@@ -192,7 +192,7 @@ class ProfileCompleteForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.getImage().then(avatar =>
+        this.avatar.refs.wrappedInstance.getImage().then(avatar =>
             onProfileUpdate(
                 tempProfile.set('avatar', avatar)
             )
@@ -281,18 +281,16 @@ class ProfileCompleteForm extends Component {
           <div className="profile-complete-form__wrap">
             <div className="profile-complete-form__form-wrapper" ref={this.getContainerRef}>
               <Row type="flex" className="">
-                <Form
-                  onSubmit={this._handleSubmit}
-                >
+                <Form onSubmit={this._handleSubmit}>
                   <Col type="flex" md={24} className="profile-complete-form__image-wrap">
                     <Col md={8}>
                       <div className="row">
-                        <p className="profile-complete-form__avatar-title">
+                        <div className="profile-complete-form__avatar-title">
                           {intl.formatMessage(profileMessages.avatarTitle)}
-                        </p>
+                        </div>
                         <div className="col-xs-12 center-xs">
                           <AvatarEditor
-                            size={100}
+                            size={124}
                             editable
                             ref={(avtr) => { this.avatar = avtr; }}
                             image={avatar}
@@ -304,9 +302,9 @@ class ProfileCompleteForm extends Component {
                     </Col>
                     <Col md={16}>
                       <div className="row">
-                        <p className="profile-complete-form__bg-image-title" >
+                        <div className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                        </p>
+                        </div>
                         <div className="col-xs-12">
                           <ImageUploader
                             ref={(imageUploader) => { this.imageUploader = imageUploader; }}
@@ -330,10 +328,11 @@ class ProfileCompleteForm extends Component {
                       style={{ marginRight: 8 }}
                     >
                       <Input
-                        value={akashaId}
+                        disabled={isUpdate}
                         onChange={this._handleFieldChange('akashaId')}
                         onBlur={this._validateField('akashaId')}
-                        disabled={isUpdate}
+                        placeholder={intl.formatMessage(formMessages.akashaIdPlaceholder)}
+                        value={akashaId}
                       />
                     </FormItem>
                   </Col>
@@ -365,9 +364,10 @@ class ProfileCompleteForm extends Component {
                         style={{ marginRight: 8 }}
                       >
                         <Input
-                          value={firstName}
                           onChange={this._handleFieldChange('firstName')}
                           onBlur={this._validateField('firstName')}
+                          placeholder={intl.formatMessage(formMessages.firstNamePlaceholder)}
+                          value={firstName}
                         />
                       </FormItem>
                     </Col>
@@ -380,9 +380,10 @@ class ProfileCompleteForm extends Component {
                         style={{ marginLeft: 8 }}
                       >
                         <Input
-                          value={lastName}
                           onChange={this._handleFieldChange('lastName')}
                           onBlur={this._validateField('lastName')}
+                          placeholder={intl.formatMessage(formMessages.lastNamePlaceholder)}
+                          value={lastName}
                         />
                       </FormItem>
                     </Col>
@@ -391,21 +392,23 @@ class ProfileCompleteForm extends Component {
                     <FormItem
                       label={formatMessage(profileMessages.aboutMeTitle)}
                       colon={false}
+                      validateStatus={this._getErrorMessages('about') ? 'error' : 'success'}
+                      help={this._getErrorMessages('about')}
                     >
                       <Input.TextArea
                         className="profile-complete-form__textarea"
-                        rows={2}
+                        rows={5}
                         placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
                         value={about}
                         onChange={this._handleFieldChange('about')}
-                        autosize={{ minRows: 2, maxRows: 5 }}
+                        onBlur={this._validateField('about')}
                       />
                     </FormItem>
                   </Col>
                   <Col md={24}>
-                    <h3 className="profile-complete-form__link">
+                    <div className="profile-complete-form__link">
                       {intl.formatMessage(profileMessages.linksTitle)}
-                    </h3>
+                    </div>
                     {links.map((link, index) => (
                       <div key={`${index + 1}`} className="profile-complete-form__link">
                         <FormItem
@@ -491,10 +494,7 @@ class ProfileCompleteForm extends Component {
               </div>
               <div className="profile-complete-form__buttons-wrapper">
                 <div className="profile-complete-form__save-btn">
-                  <Button
-                    size="large"
-                    onClick={this._handleSave}
-                  >
+                  <Button onClick={this._handleSave}>
                     {intl.formatMessage(profileMessages.saveForLater)}
                   </Button>
                 </div>
@@ -502,7 +502,6 @@ class ProfileCompleteForm extends Component {
                   htmlType="submit"
                   className="new-identity__button"
                   onClick={this._handleSubmit}
-                  size="large"
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.submit)}

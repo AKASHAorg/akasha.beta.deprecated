@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const formMessages = defineMessages({
+    about: {
+        id: 'app.form.about',
+        description: 'label for about me validation',
+        defaultMessage: 'About Me'
+    },
     addressRequired: {
         id: 'app.form.addressRequired',
         description: 'error message for empty receiver input field',
@@ -10,6 +15,11 @@ const formMessages = defineMessages({
         id: 'app.form.acceptTips',
         description: 'label for accept tips switch (personal settings)',
         defaultMessage: 'Accept tips'
+    },
+    akashaIdPlaceholder: {
+        id: 'akashaIdPlaceholder',
+        description: 'placeholder for username input field',
+        defaultMessage: 'Type your username'
     },
     insufficientEth: {
         id: 'app.form.insufficientEth',
@@ -35,6 +45,16 @@ const formMessages = defineMessages({
         id: 'app.form.ethAmount',
         description: 'eth amount input label',
         defaultMessage: 'ETH amount'
+    },
+    firstNamePlaceholder: {
+        id: 'firstNamePlaceholder',
+        description: 'placeholder for first name input field',
+        defaultMessage: 'Type your first name'
+    },
+    lastNamePlaceholder: {
+        id: 'lastNamePlaceholder',
+        description: 'placeholder for last name input field',
+        defaultMessage: 'Type your last name'
     },
     maxAethAmount: {
         id: 'app.form.maxAethAmount',
@@ -279,7 +299,7 @@ const formMessages = defineMessages({
     updateSettings: {
         id: 'app.form.updateSettings',
         description: 'label for update settings button',
-        defaultMessage: 'Update settings'
+        defaultMessage: 'Update Settings'
     }
 });
 export { formMessages };

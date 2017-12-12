@@ -5,9 +5,12 @@ import * as actions from '../actions/external-process-actions';
 import * as appActions from '../actions/app-actions';
 import * as searchActions from '../actions/search-actions';
 import * as types from '../constants';
-import { selectLastGethLog, selectLastIpfsLog } from '../selectors';
+import { selectGethStatus, selectGethSyncActionId, selectLastGethLog,
+    selectLastIpfsLog } from '../selectors';
 
 const Channel = global.Channel;
+
+let gethSyncInterval = null;
 
 function* gethResetBusyState () {
     yield apply(reduxSaga, reduxSaga.delay, [2000]);
@@ -120,6 +123,10 @@ function* watchGethStopChannel () {
         if (resp.error) {
             yield put(actions.gethStopError(resp.error));
         } else {
+            if (gethSyncInterval) {
+                clearInterval(gethSyncInterval);
+                gethSyncInterval = null;
+            }
             yield put(actions.gethStopSuccess(resp.data, resp.services));
         }
         if (resp.error || resp.services.geth.process === false) {
@@ -230,6 +237,17 @@ function* watchGethStartChannel () {
         if (resp.error) {
             yield put(actions.gethStartError(resp.data, resp.error));
         } else {
+            const gethStatus = yield select(selectGethStatus);
+            const syncActionId = yield select(selectGethSyncActionId);
+            const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
+                (syncActionId === 1 || syncActionId === 0);
+            if (gethIsSyncing && !gethSyncInterval) {
+                gethSyncInterval = setInterval(() => {
+                    if (syncActionId === 1) {
+                        Channel.server.geth.syncStatus.send({});
+                    }
+                }, 2000);
+            }
             yield put(actions.gethStartSuccess(resp.data, resp.services));
         }
         if (resp.error || resp.services.geth.process || resp.data.started) {
@@ -288,7 +306,10 @@ function* watchGethSyncStatusChannel () {
         } else {
             yield put(actions.gethGetSyncStatusSuccess(resp.data, resp.services));
             if (resp.data.synced) {
-                console.log('synced!!!!!');
+                if (gethSyncInterval) {
+                    clearInterval(gethSyncInterval);
+                    gethSyncInterval = null;
+                }
                 yield put(searchActions.searchSyncTags());
             }
         }

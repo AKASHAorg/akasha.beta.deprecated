@@ -3,37 +3,37 @@ import React, { Component } from 'react';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { Card, Modal } from 'antd';
+import { EditListBtn, Icon } from '../';
 import { generalMessages } from '../../locale-data/messages';
 import { listMessages } from '../../locale-data/messages/list-messages';
-import { Icon } from '../';
 
 class ListCard extends Component {
     state = {
-        modalVisible: false
+        deleteModalVisible: false
     }
 
     deleteList = () => {
         this.setState({
-            modalVisible: true
+            deleteModalVisible: true
         });
     };
 
-    showModal = () => {
+    showDeleteModal = () => {
         const { intl, deleteList, list } = this.props;
         const onOk = () => {
-            deleteList(list.get('id'), list.get('name'));
+            deleteList(list.get('id'));
         };
         const content = intl.formatMessage(listMessages.deleteList);
         return (
           <Modal
-            visible={this.state.modalVisible}
+            visible={this.state.deleteModalVisible}
             className={'delete-modal'}
             width={320}
             okText={intl.formatMessage(generalMessages.delete)}
             okType={'danger'}
             cancelText={intl.formatMessage(generalMessages.cancel)}
             onOk={onOk}
-            onCancel={() => { this.setState({ modalVisible: false }); }}
+            onCancel={() => { this.setState({ deleteModalVisible: false }); }}
             closable={false}
           >
             {content}
@@ -52,7 +52,7 @@ class ListCard extends Component {
             year="numeric"
           />
         );
-        const listUrl = `/profileoverview/lists/${list.get('name')}`;
+        const listUrl = `/profileoverview/lists/${list.get('id')}`;
         const title = (
           <div className="list-card__title">
             <div className="heading flex-center-y content-link list-card__list-name">
@@ -71,7 +71,7 @@ class ListCard extends Component {
 
         return (
           <Card className="list-card" title={title}>
-            {this.showModal()}
+            {this.showDeleteModal()}
             <div className="content-link">
               <Link className="unstyled-link" to={listUrl}>
                 <div className="list-card__description">
@@ -86,14 +86,16 @@ class ListCard extends Component {
                   <Icon className="list-card__icon" type="entry" />
                 </div>
               </Link>
-              {/* <div className="list-card__right-actions">
-                <Icon className="content-link list-card__icon" type="edit" />
+              <div className="list-card__right-actions">
+                <EditListBtn
+                  list={list}
+                />
                 <Icon
-                  className="content-link list-card__icon"
+                  className="content-link list-card__icon list-card__icon_delete"
                   onClick={this.deleteList}
                   type="trash"
                 />
-              </div> */}
+              </div>
             </div>
           </Card>
         );

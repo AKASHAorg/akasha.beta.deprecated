@@ -150,7 +150,7 @@ class AvatarEditr extends Component {
               >
                 <Icon className="avatar__add-image-icon" type="photoImage" />
               </div>
-              <div
+              {/* <div
                 className={
                     `avatar__add-image-help-text
                     avatar__add-image-help-text${this.state.highlightDropZone ? '_dragEnter' : ''}`
@@ -158,7 +158,7 @@ class AvatarEditr extends Component {
               >
                 {!this.state.highlightDropZone && intl.formatMessage(generalMessages.addImage)}
                 {this.state.highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
-              </div>
+              </div> */}
             </div>
             }
             {avatarImage &&
@@ -254,4 +254,4 @@ AvatarEditr.defaultProps = {
     size: 200,
 };
 
-export default injectIntl(AvatarEditr);
+export default injectIntl(AvatarEditr, { withRef: true });

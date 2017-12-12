@@ -12,13 +12,14 @@ import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
-import { formatBalance } from '../../utils/number-formatter';
+import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
 
 class ProfileDetails extends Component {
     state = {
         followHovered: false,
         popoverVisible: false,
     };
+    wasVisible = false;
 
     getBackgroundImageClass = (backgroundImage) => {
         if (!backgroundImage) {
@@ -55,6 +56,7 @@ class ProfileDetails extends Component {
     };
 
     onVisibleChange = (popoverVisible) => {
+        this.wasVisible = true;
         this.setState({
             popoverVisible
         });
@@ -161,7 +163,7 @@ class ProfileDetails extends Component {
                   firstName={firstName}
                   image={avatar}
                   lastName={lastName}
-                  size={'large'}
+                  size="large"
                 />
               </div>
               <div className="profile-details__heading">
@@ -182,7 +184,9 @@ class ProfileDetails extends Component {
               </div>
               <div>
                 {intl.formatMessage(generalMessages.essenceTotalScore)}
-                <span className="profile-details__score">216</span>
+                <span className="profile-details__score">
+                  {balanceToNumber(profileData.essence, 1)}
+                </span>
               </div>
             </div>
             <div className="profile-details__actions">
@@ -190,12 +194,13 @@ class ProfileDetails extends Component {
               {!isOwnProfile &&
                 <Popover
                   arrowPointAtCenter
-                  content={
+                  content={this.wasVisible ?
                     <SendTipForm
                       balance={balance}
                       onSubmit={this.sendTip}
                       tipPending={tipPending}
-                    />
+                    /> :
+                    null
                   }
                   onVisibleChange={this.onVisibleChange}
                   overlayClassName="profile-details__popover"

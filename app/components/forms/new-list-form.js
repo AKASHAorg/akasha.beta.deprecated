@@ -97,7 +97,7 @@ class NewListForm extends Component {
               )}
             </FormItem>
             <div className="new-list-form__actions">
-              <Button className="new-list-form__button" onClick={onCancel}>
+              <Button className="new-list-form__button" onClick={onCancel} size="small">
                 <span className="new-list-form__button-label">
                   {intl.formatMessage(generalMessages.cancel)}
                 </span>
@@ -107,6 +107,7 @@ class NewListForm extends Component {
                 disabled={hasErrors(getFieldsError())}
                 htmlType="submit"
                 onClick={this.onSubmit}
+                size="small"
                 type="primary"
               >
                 <span className="new-list-form__button-label">
@@ -122,7 +123,7 @@ class NewListForm extends Component {
 NewListForm.propTypes = {
     authorEthAddress: PropTypes.string,
     entryId: PropTypes.string.isRequired,
-    entryType: PropTypes.number.isRequired,
+    entryType: PropTypes.number,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     lists: PropTypes.shape().isRequired,
