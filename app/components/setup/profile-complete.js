@@ -21,12 +21,11 @@ class ProfileComplete extends Component {
     }
 
     _createTempProfile = (props) => {
-        const { ipfsBaseUrl, loggedProfileData, loggedProfile } = props;
+        const { ipfsBaseUrl, loggedProfileData } = props;
         const profileData = loggedProfileData.get('baseUrl') ?
             loggedProfileData :
             loggedProfileData.set('baseUrl', ipfsBaseUrl);
         this.props.setTempProfile(profileData);
-        this.props.tempProfileGet(loggedProfile.get('ethAddress'));
     }
 
     _updateTempProfile = (updatedProfile) => {

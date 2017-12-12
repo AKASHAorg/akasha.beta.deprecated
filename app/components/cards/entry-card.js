@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
-import { EntryCardHeader, EntryPageActions, EntryVersionsPanel, TagPopover, WebsiteInfoCard } from '../index';
+import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
 import { ProfileRecord } from '../../local-flux/reducers/records';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
@@ -152,7 +152,7 @@ class EntryCard extends Component {
 
     render () {
         const { author, baseUrl, containerRef, entry, existingDraft, isPending, large,
-            style, toggleOutsideNavigation } = this.props;
+            style, toggleOutsideNavigation, intl } = this.props;
         const content = entry.get('content');
         const entryType = entry.getIn(['content', 'entryType']);
         // TODO use getLatestEntryVersion channel
@@ -224,6 +224,7 @@ class EntryCard extends Component {
                   onClick={toggleOutsideNavigation}
                   maxImageHeight={150}
                   infoExtracted
+                  intl={intl}
                 />
               </div>
             }
@@ -256,17 +257,6 @@ class EntryCard extends Component {
                 containerRef={containerRef}
                 entry={entry}
                 noVotesBar
-              />
-            }
-            {!!latestVersion && this.state.showVersions &&
-              <EntryVersionsPanel
-                closeVersionsPanel={this.closeVersionsPanel}
-                currentVersion={latestVersion}
-                existingDraft={existingDraft}
-                getVersion={this.getVersion}
-                handleEdit={this.handleEdit}
-                isOwnEntry={this.isOwnEntry()}
-                latestVersion={latestVersion}
               />
             }
           </Card>

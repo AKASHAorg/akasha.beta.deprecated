@@ -1,10 +1,10 @@
 import React from 'react';
-import './styles/ant-icons/iconfont.css';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import createHashHistory from 'history/createHashHistory';
 import Route from 'react-router-dom/Route';
 import { ConnectedRouter } from 'react-router-redux';
+import './styles/ant-icons/iconfont.css';
 import ConnectedIntlProvider from './connected-intl-provider';
 import rootSaga from './local-flux/sagas';
 import configureStore from './local-flux/store/configureStore';

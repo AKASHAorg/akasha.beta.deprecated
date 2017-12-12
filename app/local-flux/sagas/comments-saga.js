@@ -7,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
 import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
-    selectNewCommentsBlock, selectNewestCommentBlock, selectToken } from '../selectors';
+    selectNewCommentsBlock, selectNewestCommentBlock, selectToken, selectLoggedAkashaId } from '../selectors';
 
 const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;
@@ -226,6 +226,15 @@ function* watchCommentsIteratorChannel () {
                 yield put(actions.commentsIteratorError(resp.error, resp.request));
             }
         } else if (resp.request.checkNew) {
+            const collection = [];
+            const loggedEthAddress = yield select(selectLoggedEthAddress);
+            resp.data.collection.forEach((comm) => {
+                console.log('comment', comm);
+                if (comm.author.ethAddress !== loggedEthAddress) {
+                    collection.push(comm);
+                }
+            });
+            resp.data.collection = collection;
             yield fork(commentsGetExtra, resp.data.collection, resp.request);
             yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
         } else if (resp.request.reversed) {

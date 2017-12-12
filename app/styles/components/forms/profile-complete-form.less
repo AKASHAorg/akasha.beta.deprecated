@@ -11,6 +11,16 @@
         margin-bottom: 10px;        
     }
 
+    &__bg-image-wrap {
+        height: 160px;
+        width: 320px;
+        overflow: hidden;
+    }
+
+    &__bg-image-float {
+        float: right;
+    }
+
     &__textarea {
         resize: none;
     }
@@ -31,7 +41,7 @@
             color: @text-color;
         }
         .ant-input {
-            color: @heading-color;
+            color: @input-color;
         }
     }
 
@@ -72,13 +82,16 @@
     }
 
     &__add-links-btn {
-        margin: 8px 0 0 0;
+        .ant-btn {
+            font-size: 12px;
+            padding: 0;
+        }
     }
 
     &__link {
         padding-top: 20px;
         color: @text-color;
-        font-size: 13px;
+        font-size: 11px;
     }
 
     &__footer {
@@ -97,20 +110,19 @@
     }
 
     &__my-address {
-        min-width: 370px;
+        min-width: 350px;
         border-radius: 2px 0 0 2px;
         width: ~'calc(100% - 46px)';
     }
 
     &__copy-button {
         position: relative;
-        bottom: 1px;
         color: @primary-color;
         border-top: 1px solid @light-border;
         border-right: 1px solid @light-border;
         border-bottom: 1px solid @light-border;
         width: 46px;
-        height: 36px;
+        height: 32px;
         font-size: 13px;
         display: inline-flex;
         justify-content: center;

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import AvatarEditor from 'react-avatar-editor/dist';
 import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { Icon } from '../';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import { selectBaseUrl } from '../../local-flux/selectors/index';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -38,7 +40,7 @@ class AvatarEditr extends Component {
                 reader.onloadend = ev =>
                     resolve(new Uint8Array(ev.target.result));
                 reader.readAsArrayBuffer(blob);
-            }, 'image/jpg');
+            }, 'image/jpeg');
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;
@@ -51,6 +53,8 @@ class AvatarEditr extends Component {
             rotation: 0,
             avatarScale: 1,
             highlightDropZone: false
+        }, () => {
+            this.forceUpdate();
         });
     }
     _handleSliderChange = (sliderValue) => {
@@ -72,6 +76,15 @@ class AvatarEditr extends Component {
     }
     _handleImageAdd = () => {
         const files = this.fileInput.files[0].path;
+        this.setState({
+            avatarImage: files,
+            isNewAvatarLoaded: true,
+            highlightDropZone: false,
+        });
+    }
+    _handleImageDrop = (ev) => {
+        this._handleAvatarClear();
+        const files = ev.target.toDataURL('image/jpeg', 1);
         this.setState({
             avatarImage: files,
             isNewAvatarLoaded: true,
@@ -103,13 +116,13 @@ class AvatarEditr extends Component {
         }
     }
     render () {
-        const { backgroundColor, image, intl, offsetBorder, onMouseEnter, onMouseLeave,
-            size, style } = this.props;
+        const { baseUrl, backgroundColor, image, offsetBorder,
+            onMouseEnter, onMouseLeave, size, style } = this.props;
         let avatarImage;
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
-            avatarImage = image;
+            avatarImage = `${baseUrl}/${image}`;
         }
         if (!avatarImage) {
             this.editor = null;
@@ -175,16 +188,16 @@ class AvatarEditr extends Component {
                         height: size
                     }}
                     className="avatar__avatar-editor"
-                    border={1}
+                    border={0}
                     image={avatarImage}
                     ref={(editor) => { this.editor = editor; }}
                     scale={this.state.avatarScale}
                     rotate={this.state.rotation}
-                    onDropFile={this._handleImageAdd}
+                    onDropFile={this._handleImageDrop}
                     onLoadSuccess={this._handleImageLoad}
                   />
                   {this.state.avatarClose &&
-                    <div className="image-uploader__clear-image-button">
+                    <div className="avatar__clear-image-button">
                       <Button
                         type="standard"
                         icon="close-circle"
@@ -234,12 +247,12 @@ class AvatarEditr extends Component {
 }
 AvatarEditr.propTypes = {
     avatarScale: PropTypes.number,
+    baseUrl: PropTypes.string,
     backgroundColor: PropTypes.string,
     image: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape()
     ]),
-    intl: PropTypes.shape().isRequired,
     onClick: PropTypes.func,
     offsetBorder: PropTypes.string,
     onImageAdd: PropTypes.func,
@@ -254,4 +267,10 @@ AvatarEditr.defaultProps = {
     size: 200,
 };
 
-export default injectIntl(AvatarEditr, { withRef: true });
+function mapStateToProps (state) {
+    return {
+        baseUrl: selectBaseUrl(state)
+    };
+  }
+
+export default connect(mapStateToProps, null, null, { withRef: true })(injectIntl(AvatarEditr, { withRef: true }));

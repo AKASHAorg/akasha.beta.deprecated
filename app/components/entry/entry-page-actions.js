@@ -254,10 +254,10 @@ class EntryPageAction extends Component {
             containerRef, iconClassName, isOwnEntity: isOwnEntry, votePending, vote: voteWeight
         };
         const upvoteRatio = entry.get('upvoteRatio');
-        let upvotePercent = 50;
-        let downvotePercent = 50;
+        let upvotePercent = 0;
+        let downvotePercent = 0;
 
-        if (upvoteRatio) {
+        if (upvoteRatio && parseFloat(upvoteRatio, 10) >= 0) {
             upvotePercent = 100 * upvoteRatio;
             downvotePercent = 100 - upvotePercent;
         }
@@ -293,12 +293,16 @@ class EntryPageAction extends Component {
                   </div>
                 </div>
                 {isFullEntry &&
-                  <Tooltip placement="left" title={votePercentTooltip}>
-                    <div className="flex-center-y entry-actions__vote-bar">
-                      <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
-                      <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
-                    </div>
-                  </Tooltip>
+                <Tooltip placement="left" title={votePercentTooltip}>
+                  <div className={
+                    `flex-center-y
+                    entry-actions__vote-bar
+                    entry-actions__vote-bar${(upvotePercent || downvotePercent) ? '' : '_disabled'}`}
+                  >
+                    <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
+                    <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
+                  </div>
+                </Tooltip>
                 }
               </div>
               <div className="entry-actions__right-actions">
@@ -318,8 +322,8 @@ class EntryPageAction extends Component {
                         <Icon className="entry-actions__comment-icon" type="commentLarge" />
                       </div>
                     </Link>
-                  </div>
-                }
+                    </div>
+                  }
                 <ListPopover
                   authorEthAddress={entry.author.ethAddress}
                   containerRef={containerRef}

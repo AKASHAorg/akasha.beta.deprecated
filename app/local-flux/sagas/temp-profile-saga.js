@@ -3,7 +3,6 @@ import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as registryService from '../services/registry-service';
 
-const Channel = global.Channel;
 
 /**
  * Get temp profile from database
@@ -35,24 +34,8 @@ function* createTempProfile () {
     }
 }
 
-/**
- * ... watchers ...
- */
-
-function* tempProfileRemove ({ ethAddress }) {
-    try {
-        yield call(
-            [registryService, registryService.deleteTempProfile],
-            ethAddress
-        );
-        yield put(tempProfileActions.tempProfileDeleteSuccess());
-    } catch (err) {
-        yield put(tempProfileActions.tempProfileDeleteError(err));
-    }
-}
 
 export function* watchTempProfileActions () {
     yield takeLatest(types.TEMP_PROFILE_GET, tempProfileGet);
     yield takeLatest(types.TEMP_PROFILE_CREATE, createTempProfile);
-    yield takeLatest(types.TEMP_PROFILE_DELETE, tempProfileRemove);
 }

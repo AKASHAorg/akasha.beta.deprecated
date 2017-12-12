@@ -89,12 +89,14 @@ function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, va
 }
 
 function* entryDownvoteSuccess ({ data }) {
+    const { getVoteRatio } = Channel.server.entry;
     yield call(entryVoteSuccess, data.entryId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({
         id: 'downvoteEntrySuccess',
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
 function* entryGetBalance ({ entryIds }) {
@@ -329,12 +331,14 @@ function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, valu
 }
 
 function* entryUpvoteSuccess ({ data }) {
+    const { getVoteRatio } = Channel.server.entry;
     yield call(entryVoteSuccess, data.entryId);
     yield put(appActions.showNotification({
         id: 'upvoteEntrySuccess',
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
 function* entryVoteCost () {
@@ -460,13 +464,13 @@ function* watchEntryGetChannel () {
             }
         } else if (resp.request.asDraft) {
             yield put(actions.entryGetFullAsDraftSuccess({ ...resp.data, ...resp.request }));
-        } else if (resp.request.latestVersion) {
+        } else if (resp.request.latestVersion && !resp.request.full) {
             // TODO Use getLatestEntryVersion channel
             const { content } = resp.data;
             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
         } else if (resp.request.publishedDateOnly) {
             yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
-        } else if (resp.request.full) {
+        } else if (resp.request.full && !resp.request.asDraft) {
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
             const version = resp.data.content && resp.data.content.version;

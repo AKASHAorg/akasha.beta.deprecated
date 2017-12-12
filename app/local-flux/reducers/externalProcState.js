@@ -69,7 +69,8 @@ const eProcState = createReducer(initialState, {
                 gethStarting: false,
             }),
             status: state.getIn(['geth', 'status']).merge(newStatus),
-            syncActionId
+            syncActionId,
+            syncStatus: new GethSyncStatus()
         });
     },
 
@@ -96,10 +97,10 @@ const eProcState = createReducer(initialState, {
     },
 
     [types.GETH_GET_STATUS_SUCCESS]: (state, { data, services }) =>
-        state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(Object.assign({}, data, services.geth)),
-            syncActionId: 1
-        }),
+        state.setIn(
+            ['geth', 'status'],
+            state.getIn(['geth', 'status']).merge(Object.assign({}, data, services.geth)),
+        ),
 
     [types.IPFS_START]: state =>
         state.mergeIn(['ipfs'], {

@@ -79,12 +79,9 @@ class ListEntries extends Component {
             <div className="list-entries__pad">
               <div className="list-entries__wrap">
                 <div className="list-entries__header">
-                  <div className="list-entries__name">
-                    {list.get('name')}
-                  </div>
                   <div className="list-entries__subheader">
-                    <div className="list-entries__date">
-                      {description}
+                    <div className="list-entries__name">
+                      {list.get('name')}
                     </div>
                     <div className="list-entries__actions">
                       <EditListBtn
@@ -96,6 +93,9 @@ class ListEntries extends Component {
                         type="trash"
                       />
                     </div>
+                  </div>
+                  <div className="list-entries__date">
+                    {description}
                   </div>
                 </div>
                 <div className="list-entries__content">

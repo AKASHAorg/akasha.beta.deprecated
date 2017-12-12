@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import QRCode from 'qrcode.react';
-import { Row, Card, Col, Input, Button, Form, Switch } from 'antd';
+import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, Icon, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -32,11 +32,11 @@ class ProfileCompleteForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { balance, isUpdate, tempProfile, profileExistsData } = nextProps;
-        // we need to enable update temp profile button only if something has changed
-        // so we need to keep a ref to old temp profile.
-        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
-            this.refTempProfile = tempProfile;
+        const { balance, tempProfile, profileExistsData, loggedEthAddress, onProfileUpdate } = nextProps;
+        if (loggedEthAddress && !tempProfile.get('ethAddress')) {
+            onProfileUpdate(
+                tempProfile.set('ethAddress', loggedEthAddress)
+            );
         }
         if (balance.get('eth') >= 0.1) {
             this.setState({
@@ -79,7 +79,7 @@ class ProfileCompleteForm extends Component {
         const lastLink = links.last();
         if (lastLink) {
             if (linkType === 'links' &&
-                (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
+                (lastLink.get('url').length === 0)) {
                 return null;
             }
         }
@@ -139,6 +139,14 @@ class ProfileCompleteForm extends Component {
         if (field === 'akashaId') {
             this.props.profileExists(this.props.tempProfile.get('akashaId'));
         }
+
+        if (field === 'links') {
+            this.props.tempProfile.get('links').forEach((link) => {
+                if (!link.get('url')) {
+                    this._handleRemoveLink(link.get('id'), 'links')();
+                }
+            });
+        }
     }
 
     _validateField = field =>
@@ -169,7 +177,7 @@ class ProfileCompleteForm extends Component {
         const { intl, tempProfile, profileExistsData } = this.props;
         const { akashaIdIsValid, akashaIdExists } = this.state;
         if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
-            if (!akashaIdIsValid) {
+            if (!akashaIdIsValid && tempProfile.get('akashaId').length > 1) {
                 return intl.formatMessage(validationMessages.akashaIdNotValid);
             }
             if (akashaIdExists) {
@@ -192,11 +200,21 @@ class ProfileCompleteForm extends Component {
 
     _handleAvatarAdd = () => {
         const { tempProfile, onProfileUpdate } = this.props;
-        this.avatar.refs.wrappedInstance.getImage().then(avatar =>
-            onProfileUpdate(
-                tempProfile.set('avatar', avatar)
-            )
-        );
+        this.avatar.wrappedInstance.refs.wrappedInstance.getImage().then((avatar) => {
+            if (!avatar) {
+                return null;
+            }
+            if (typeof avatar === 'string') {
+                return onProfileUpdate(
+                    tempProfile.set('avatar', avatar)
+                );
+            }
+            return uploadImage(avatar).then(avatarIpfs =>
+                onProfileUpdate(
+                    tempProfile.set('avatar', avatarIpfs)
+                )
+            );
+        });
     }
 
     _handleBackgroundClear = () => {
@@ -301,14 +319,14 @@ class ProfileCompleteForm extends Component {
                       </div>
                     </Col>
                     <Col md={16}>
-                      <div className="row">
+                      <div className="profile-complete-form__bg-image-float">
                         <div className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
                         </div>
-                        <div className="col-xs-12">
+                        <div className="col-xs-12 profile-complete-form__bg-image-wrap">
                           <ImageUploader
                             ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                            minWidth={360}
+                            minWidth={320}
                             intl={intl}
                             initialImage={backgroundImage}
                             baseUrl={baseUrl}
@@ -397,7 +415,7 @@ class ProfileCompleteForm extends Component {
                     >
                       <Input.TextArea
                         className="profile-complete-form__textarea"
-                        rows={5}
+                        rows={3}
                         placeholder={formatMessage(profileMessages.shortDescriptionLabel)}
                         value={about}
                         onChange={this._handleFieldChange('about')}
@@ -416,29 +434,27 @@ class ProfileCompleteForm extends Component {
                           help={this._getErrorMessages('links', index, 'url')}
                         >
                           <Input
+                            suffix={<AntIcon
+                              className="content-link"
+                              type="minus-circle"
+                              onClick={this._handleRemoveLink(link.get('id'), 'links')}
+                            />}
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                             onBlur={this._validateField('links')}
                           />
                         </FormItem>
-                        <Button
-                          type="primary"
-                          icon="close-circle"
-                          ghost
-                          onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                        >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                       </div>
                         ))}
                     <div className="profile-complete-form__add-links-btn">
                       <Button
-                        icon="plus"
+                        icon="plus-circle"
                         type="primary borderless"
                         onClick={this._handleAddLink('links')}
-                        title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
                         ghost
                         style={{ border: 'none' }}
-                      >Add more</Button>
+                      >{intl.formatMessage(profileMessages.addLinkButtonTitle)}</Button>
                     </div>
                   </Col>
                   {this.state.insufficientEth &&
@@ -448,17 +464,16 @@ class ProfileCompleteForm extends Component {
                       >
                         <Card
                           bordered={false}
-                          noHovering
                         >
                           <h3>{formatMessage(formMessages.insufficientEth)}</h3>
                           <p>{formatMessage(formMessages.depositEth)}</p>
                           <div className="profile-complete-form__address-info">
-                            <div className="profile-complete-form__qr-wrap">
+                            {/* <div className="profile-complete-form__qr-wrap">
                               <span className="profile-complete-form__qr-title">QR Code</span>
                               <div className="profile-complete-form__qr-code">
                                 <QRCode value={loggedEthAddress} />
                               </div>
-                            </div>
+                            </div> */}
                             <div>
                               <FormItem
                                 className="profile-complete-form__form-item"
