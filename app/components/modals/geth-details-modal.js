@@ -135,9 +135,10 @@ class GethDetailsModal extends Component {
     };
 
     render () {
-        const { gethBusyState, gethStatus, intl } = this.props;
+        const { gethBusyState, gethStatus, intl, syncActionId } = this.props;
         const { isFormDirty } = this.state;
-        const toggleDisabled = gethBusyState || gethStatus.get('downloading') || gethStatus.get('upgrading');
+        const toggleDisabled = gethBusyState || gethStatus.get('downloading') || gethStatus.get('upgrading') ||
+            syncActionId === 1;
         const isGethOn = this.isGethOn();
         const toggleLabel = isGethOn ?
             intl.formatMessage(generalMessages.gethServiceOn) :
@@ -171,6 +172,7 @@ GethDetailsModal.propTypes = {
     gethStop: PropTypes.func,
     gethStopLogger: PropTypes.func,
     intl: PropTypes.shape().isRequired,
+    syncActionId: PropTypes.number,
     toggleGethDetailsModal: PropTypes.func,
 };
 
@@ -181,6 +183,7 @@ function mapStateToProps (state) {
         gethSettings: state.settingsState.get('geth'),
         gethStarting: state.externalProcState.getIn(['geth', 'flags', 'gethStarting']),
         gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        gethSyncStatus: state.externalProcState.getIn(['geth', 'syncStatus']),
         syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
     };
 }

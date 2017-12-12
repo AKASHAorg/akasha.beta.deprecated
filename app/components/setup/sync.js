@@ -8,7 +8,6 @@ import { SyncStatus } from '../';
 import { LogsDetailsContainer } from '../../containers/';
 
 class Sync extends Component {
-    interval = null;
     state = {
         showDetails: false
     };
@@ -23,41 +22,14 @@ class Sync extends Component {
         }
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { gethStatus, gethGetSyncStatus, gethSyncStatus, syncActionId } = nextProps;
-        const gethSynced = gethSyncStatus.get('synced');
-        const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
-            !gethSynced && (syncActionId === 1 || syncActionId === 0);
-
-        if (gethIsSyncing && !this.interval) {
-            this.interval = setInterval(() => {
-                if (syncActionId === 1) {
-                    gethGetSyncStatus();
-                }
-            }, 2000);
-        }
-
-        if (gethSynced && !this.props.gethSyncStatus.get('syned')) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-    }
-
     componentWillUnmount () {
         const { gethStopLogger } = this.props;
         gethStopLogger();
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
     }
 
     handleCancel = () => {
         const { clearSyncStatus, gethStatus, gethStop, gethStopSync, ipfsStatus, ipfsStop,
             saveGeneralSettings } = this.props;
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
         gethStopSync();
         if (gethStatus.get('process')) {
             gethStop();
@@ -74,10 +46,6 @@ class Sync extends Component {
 
         switch (syncActionId) {
             case 1:
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = null;
-                }
                 gethStop();
                 gethPauseSync();
                 break;
@@ -222,7 +190,6 @@ Sync.propTypes = {
     clearSyncStatus: PropTypes.func.isRequired,
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
-    gethGetSyncStatus: PropTypes.func.isRequired,
     gethPauseSync: PropTypes.func.isRequired,
     gethResumeSync: PropTypes.func.isRequired,
     gethStart: PropTypes.func.isRequired,
