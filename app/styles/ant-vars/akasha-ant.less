@@ -26,7 +26,11 @@
 // colors
 @disabled-color: @text-color-secondary;
 @input-placeholder-color: @text-color-secondary;
-
+.disabled-button {
+    user-select: none;
+    cursor: default !important;
+    color: @disabled-color;
+}
 .ant-btn-lg {
     font-weight: 400;
     font-size: 15px;
@@ -57,19 +61,24 @@
     font-size: 13px;
 }
 
-.ant-btn:not(.ant-btn-primary):not(.ant-btn-ghost) {
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-ghost):not(.ant-btn-danger) {
     background-color: @light-background;
-    &:hover {
+    &:hover, &:focus {
         background-color: @light-background;
     }
-    &:focus {
-        background-color: @light-background;        
+}
+
+.ant-btn-danger {
+    background-color: @light-background;
+    &:active,
+    &.active {
+        background-color: @error-color !important;
     }
 }
 
 .ant-checkbox-inner {
     background: @checkbox-bg;
-    border-color: @checkbox-border-color;    
+    border-color: @checkbox-border-color;
 }
 
 .ant-radio-inner {
@@ -105,7 +114,7 @@
     &-dropdown-menu-item-selected {
         background-color: @item-selected-bg;
         &:hover {
-            background-color: @item-selected-bg;        
+            background-color: @item-selected-bg;
         }
     }
 }
@@ -113,7 +122,7 @@
 .ant-slider-rail {
     background-color: @slider-rail-color !important;
     &:hover {
-        background-color: @slider-rail-color;    
+        background-color: @slider-rail-color;
     }
 }
 

@@ -49,7 +49,7 @@ class NewSelectColumn extends Component {
               </Select>
             </div>
             {column.get('value') &&
-              <div className="flex-center-y new-select-column__preview-title">
+              <div className="overflow-ellipsis new-select-column__preview-title">
                 {previewMessage}
               </div>
             }

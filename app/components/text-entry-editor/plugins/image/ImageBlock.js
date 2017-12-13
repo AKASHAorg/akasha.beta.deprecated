@@ -1,15 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {
-    CardMedia,
-    CardText,
-    SelectField,
-    MenuItem,
-    TextField,
-    SvgIcon,
-    Toolbar,
-    ToolbarGroup } from 'material-ui';
-import withWidth from 'material-ui/utils/withWidth';
+import { Input, Popover, Menu, Dropdown } from 'antd';
 import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 import {
     ImageSizeXS,
@@ -18,9 +9,12 @@ import {
     ImageSizeSmall,
     ImageSizeXL,
     ImageSizeXXL } from '../../../../components/svg';
+import { SvgIcon } from '../../../../components';
 import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import styles from './image-block.scss';
+
+const { TextArea } = Input;
 
 class ImageBlock extends Component {
     constructor (props) {
@@ -32,7 +26,8 @@ class ImageBlock extends Component {
             licence,
             termsAccepted,
             imageSrc: media ? imageCreator(files[media].src) : null,
-            isCardEnabled: false
+            isCardEnabled: false,
+            popoverVisible: false
         };
     }
     componentDidMount () {
@@ -82,7 +77,6 @@ class ImageBlock extends Component {
             });
         }
     }
-
     _handleCaptionChange = (ev) => {
         ev.stopPropagation();
         this.props.container.updateData({ caption: ev.target.value });
@@ -98,7 +92,7 @@ class ImageBlock extends Component {
     _handleImageClick = (ev) => {
         ev.stopPropagation();
         this.setState({
-            isCardEnabled: true,
+            isCardEnabled: true
         }, () => {
             this.props.blockProps.setReadOnly(true);
             window.addEventListener('keyup', this._removeImageContainer);
@@ -143,6 +137,42 @@ class ImageBlock extends Component {
         }
         return {};
     }
+    _getImageSizeMenu = () => (
+      <Menu className="image-block__image-size-menu">
+        <Menu.Item className="image-block__image-size-menu-item">
+          <SvgIcon viewBox="0 0 24 24">
+            <ImageSizeXS />
+          </SvgIcon>
+        </Menu.Item>
+        <Menu.Item className="image-block__image-size-menu-item">
+          <SvgIcon viewBox="0 0 24 24">
+            <ImageSizeMedium />
+          </SvgIcon>
+        </Menu.Item>
+        <Menu.Item className="image-block__image-size-menu-item">
+          <SvgIcon viewBox="0 0 24 24">
+            <ImageSizeXL />
+          </SvgIcon>
+        </Menu.Item>
+      </Menu>
+    )
+    _getImagePopoverContent = () => {
+        return (
+          <Dropdown
+            overlay={this._getImageSizeMenu()}
+            trigger={['click']}
+            className="test"
+          >
+            <div className="test">Select size</div>
+          </Dropdown>
+        );
+    }
+    _handlePopoverVisibility = (visible) => {
+        this.setState({
+            popoverVisible: visible
+        });
+    }
+    /* eslint-disable complexity */
     render () {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
         const { files, caption } = this.props.data;
@@ -168,121 +198,63 @@ class ImageBlock extends Component {
               className={`${styles.rootInner}`}
             >
               {files &&
-              <Toolbar
-                className={`${styles.toolbar}`}
-                style={{
+                <Popover
+                  style={{
                     backgroundColor: '#FFF',
                     opacity: (isCardEnabled ? 1 : 0),
                     top: (isCardEnabled ? -64 : 0)
-                }}
-              >
-                <ToolbarGroup>
-                  <SelectField
-                    value={(previewImage === 'xxl') ? 'xl' : previewImage}
-                    onChange={this._handleSizeChange}
-                  >
-                    {files.xs &&
-                      <MenuItem
-                        leftIcon={
-                          <SvgIcon>
-                            <ImageSizeSmall />
-                          </SvgIcon>
-                        }
-                        value={'xs'}
-                        primaryText={'Small'}
-                      />
-                    }
-                    {files.md &&
-                      <MenuItem
-                        leftIcon={
-                          <SvgIcon>
-                            <ImageSizeMedium />
-                          </SvgIcon>
-                        }
-                        value={'md'}
-                        primaryText={'Normal'}
-                      />
-                    }
-                    {(files.xl || files.xxl) &&
-                      <MenuItem
-                        leftIcon={
-                          <SvgIcon>
-                            <ImageSizeLarge />
-                          </SvgIcon>
-                        }
-                        value={'xl'}
-                        primaryText={'Large'}
-                      />
-                    }
-                  </SelectField>
-                </ToolbarGroup>
-              </Toolbar>
-              }
-              <CardMedia
-
-                onClick={this._handleImageClick}
-              >
-                <div
-                  style={{
+                  }}
+                  content={this._getImageSizeMenu()}
+                  placement="top"
+                  trigger="click"
+                  visible={this.state.popoverVisible}
+                  onVisibleChange={this._handlePopoverVisibility}
+                  autoAdjustOverflow={false}
+                >
+                  <div
+                    style={{
                       boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none',
                       position: 'relative'
-                  }}
-                >
-                  {files && files.gif &&
-                    <div
-                      style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          marginTop: '-48px',
-                          marginLeft: '-48px'
-                      }}
-                    >
-                      <PlayIcon
+                    }}
+                  >
+                    {files && files.gif &&
+                      <div
                         style={{
-                            fill: 'rgba(255, 255, 255, 0.86)',
-                            color: '#FFF',
-                            height: 96,
-                            width: 96,
-                            opacity: isCardEnabled ? 0 : 1,
-                            filter: `blur(${isCardEnabled ? '3px' : '0'}) drop-shadow(0 0 2px #444)`,
-                            transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out',
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            marginTop: '-48px',
+                            marginLeft: '-48px'
                         }}
-                      />
-                    </div>
-                  }
-                  <img
-                    src={imageSource}
-                    alt=""
-                    style={{ width: '100%', display: 'block' }}
+                      >
+                        <PlayIcon
+                          style={{
+                              fill: 'rgba(255, 255, 255, 0.86)',
+                              color: '#FFF',
+                              height: 96,
+                              width: 96,
+                              opacity: isCardEnabled ? 0 : 1,
+                              filter: `blur(${isCardEnabled ? '3px' : '0'}) drop-shadow(0 0 2px #444)`,
+                              transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out',
+                          }}
+                        />
+                      </div>
+                    }
+                    <img
+                      src={imageSource}
+                      alt=""
+                      style={{ width: '100%', display: 'block' }}
+                    />
+                  </div>
+                  <TextArea
+                    className={`${styles.caption}`}
+                    placeholder="image caption"
+                    value={caption}
+                    autosize
+                    onChange={this._handleCaptionChange}
                   />
-                </div>
-              </CardMedia>
-              <CardText style={{ padding: 0, marginTop: 8, borderBottom: '1px solid #F5F5F5' }}>
-                <TextField
-                  className={`${styles.caption}`}
-                  hintText="image caption"
-                  style={{ height: 'auto' }}
-                  hintStyle={{
-                      textAlign: 'center',
-                      color: isCardEnabled ? '#4285f4' : '#DDD',
-                      left: 0,
-                      right: 0,
-                      top: 0
-                  }}
-                  value={caption}
-                  textareaStyle={{
-                      textAlign: 'center',
-                      margin: 0,
-                      fontSize: 14,
-                      color: 'rgba(0,0,0,0.8)'
-                  }}
-                  multiLine
-                  fullWidth
-                  underlineShow={false}
-                  onChange={this._handleCaptionChange}
-                />
-              </CardText>
+                </Popover>
+              }
             </div>
           </div>
         );
@@ -305,8 +277,4 @@ ImageBlock.propTypes = {
     baseUrl: PropTypes.string,
 };
 
-export default withWidth({
-    largeWidth: 1920,
-    mediumWidth: 700,
-    smallWidth: 320
-})(clickAway(ImageBlock));
+export default clickAway(ImageBlock);

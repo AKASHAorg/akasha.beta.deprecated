@@ -8,6 +8,7 @@ import { ColumnHeader, EntryList } from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries, selectListsAll } from '../../local-flux/selectors';
+import { dashboardMessages } from '../../locale-data/messages/dashboard-messages';
 
 class ListColumn extends Component {
     firstCallDone = false;
@@ -46,8 +47,8 @@ class ListColumn extends Component {
     render () {
         const { column, entries, intl, lists } = this.props;
         const className = classNames('column', { column_large: column.get('large') });
-        const index = lists.indexOf(list => list.get('id') === column.get('value'));
-        const listName = lists.getIn([index, 'name']);
+        const list = lists.find(lst => lst.get('id') === column.get('value'));
+        const listName = list ? list.get('name') : ' ';
         return (
           <div className={className}>
             <ColumnHeader
@@ -55,19 +56,27 @@ class ListColumn extends Component {
               dataSource={lists}
               iconType="entries"
               onRefresh={this.onRefresh}
+              readOnly={!list}
               title={listName}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
-            <EntryList
-              contextId={column.get('id')}
-              entries={entries}
-              fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-              fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreListIterator}
-              large={column.get('large')}
-              moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
-            />
+            <Waypoint onEnter={this.firstLoad} horizontal />
+            {!list &&
+              <div className="flex-center column__placeholder">
+                {intl.formatMessage(dashboardMessages.listDeleted)}
+              </div>
+            }
+            {list &&
+              <EntryList
+                contextId={column.get('id')}
+                entries={entries}
+                fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
+                fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
+                fetchMoreEntries={this.entryMoreListIterator}
+                large={column.get('large')}
+                moreEntries={column.getIn(['flags', 'moreEntries'])}
+                placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
+              />
+            }
           </div>
         );
     }
