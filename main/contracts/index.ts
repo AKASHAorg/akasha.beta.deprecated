@@ -3,7 +3,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import { descend, filter, last, prop, sortWith, take, uniq, head } from 'ramda';
 import auth from '../modules/auth/Auth';
 
-class Contracts {
+export class Contracts {
     public instance: any;
 
     /**
