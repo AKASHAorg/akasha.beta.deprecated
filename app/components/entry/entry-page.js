@@ -84,7 +84,7 @@ class EntryPage extends Component {
     getFullEntry = ({ props } = {}) => {
         const { location, match } = props || this.props;
         const { akashaId, entryId, ethAddress } = match.params;
-        const prefixed = `0x${ethAddress}`;
+        const prefixed = ethAddress === '0' ? undefined : `0x${ethAddress}`;
         const { version } = parse(location.search);
         const versionNr = isNaN(Number(version)) ? null : Number(version);
         this.props.entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });

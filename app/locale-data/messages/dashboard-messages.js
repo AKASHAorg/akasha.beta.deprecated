@@ -106,6 +106,11 @@ const dashboardMessages = defineMessages({
         description: 'label for list column',
         defaultMessage: 'List'
     },
+    listDeleted: {
+        id: 'app.dashboard.listDeleted',
+        description: 'message displayed when the list used in a list column was deleted',
+        defaultMessage: 'This list was deleted. Please remove this column'
+    },
     myBoards: {
         id: 'app.dashboard.myBoards',
         description: 'header for boards page secondary sidebar',

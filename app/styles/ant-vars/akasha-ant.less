@@ -63,11 +63,16 @@
 
 .ant-btn:not(.ant-btn-primary):not(.ant-btn-ghost):not(.ant-btn-danger) {
     background-color: @light-background;
-    &:hover {
+    &:hover, &:focus {
         background-color: @light-background;
     }
-    &:focus {
-        background-color: @light-background;
+}
+
+.ant-btn-danger {
+    background-color: @light-background;
+    &:active,
+    &.active {
+        background-color: @error-color !important;
     }
 }
 
