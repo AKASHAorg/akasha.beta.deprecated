@@ -458,12 +458,13 @@ function* watchProfileEssenceIteratorChannel () {
         if (resp.error) {
             yield put(actions.profileEssenceIteratorError(resp.error));
         } else {
+            const entries = yield select(state => state.entryState.get('byId'));
             const entryEvents = ['entry:claim', 'entry:vote:claim'];
             const { collection } = resp.data;
             for (let i = 0; i < collection.length; i++) {
-                const { action, entryId } = collection[i];
-                if (entryEvents.indexOf(action) !== -1) {
-                    // yield put(entryActions.entryGetShort({ context: 'essenceEvents', entryId }));
+                const { action, sourceId } = collection[i];
+                if (entryEvents.indexOf(action) !== -1 && !entries.get(sourceId)) {
+                    yield put(entryActions.entryGetShort({ context: 'essenceEvents', entryId: sourceId }));
                 }
             }
             yield put(actions.profileEssenceIteratorSuccess(resp.data));

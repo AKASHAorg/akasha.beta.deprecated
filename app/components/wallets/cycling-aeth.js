@@ -30,7 +30,7 @@ const CyclingAeth = ({ cyclingStates, intl, onCollect, pendingCycleAeth, pending
           </div>
           <div>
             {intl.formatMessage(profileMessages.cycledAmountAvailable, { amount: availableTotal })}
-            <span className={className} onClick={onCollect}>
+            <span className={className} onClick={disabled ? undefined : onCollect}>
               {pendingFreeAeth && <Spin size="small" />}
               {intl.formatMessage(generalMessages.collect)}
             </span>

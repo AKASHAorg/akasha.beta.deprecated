@@ -52,6 +52,11 @@ const generalMessages = defineMessages({
         description: 'a random entry',
         defaultMessage: 'an entry'
     },
+    anEntryVote: {
+        id: 'app.general.anEntryVote',
+        description: 'an entry vote',
+        defaultMessage: 'an entry vote'
+    },
     akasha: {
         id: 'app.general.akasha',
         description: 'AKASHA',
