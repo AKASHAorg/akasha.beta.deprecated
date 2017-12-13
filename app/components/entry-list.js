@@ -15,7 +15,7 @@ import { DataLoader, EntryCard } from './index';
 class EntryList extends Component {
 
     shouldComponentUpdate (newProps) {
-        return !newProps.entries.isSubset(this.props.entries) ||
+        return !newProps.entries.equals(this.props.entries) ||
             newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
             newProps.fetchingEntries !== this.props.fetchingEntries ||
             (this.props.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
