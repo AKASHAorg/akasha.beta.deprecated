@@ -26,16 +26,13 @@ const entryIteratorError = (state, { request }) => {
 };
 
 const entryIteratorSuccess = (state, { data, type, request }) => {
-    console.log('request', request);
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        console.log('return state');
         return state;
     }
     const entryIds = data.collection.map(entry => entry.entryId);
     const moreEntries = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
-    console.log('entry ids', entryIds);
     return state.mergeIn(['columnById', request.columnId], {
         entriesList: new List(entryIds),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({

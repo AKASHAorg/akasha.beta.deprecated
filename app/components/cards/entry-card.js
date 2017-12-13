@@ -143,7 +143,6 @@ class EntryCard extends Component {
         const cardClass = classNames('entry-card entry-card_transparent', {
             'entry-card_large': large
         });
-        console.log('entry pending');
         return (
           <Card className={cardClass} title={<EntryCardHeader loading />}>
             {this.renderContentPlaceholder()}
