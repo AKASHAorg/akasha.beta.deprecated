@@ -83,11 +83,9 @@ class ImageBlock extends Component {
         const { data, baseUrl } = this.props;
         const { caption, files, media } = data;
         const { isPlaying, imageLoaded } = this.state;
-        const baseNodeStyle = {};
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
-            style={baseNodeStyle}
             className={`image-block image-block__readonly image-block__readonly_${media}`}
           >
             {files.gif &&

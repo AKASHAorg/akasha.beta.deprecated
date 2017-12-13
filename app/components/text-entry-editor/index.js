@@ -23,27 +23,24 @@ class EntryEditor extends Component {
             selectionState: null
         };
     }
-    componentDidMount () {
-        // this.rootNode.addEventListener('scroll', this._handleEditorScroll);
-    }
 
-    _handleEditorScroll = (ev) => {
-        const scrollHeight = ev.target.scrollHeight;
-        const scrollTop = ev.target.scrollTop;
-        const rootNode = this.rootNode;
-        const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
-        const scroller = nodeHeight + scrollTop;
-        if ((scroller >= scrollHeight - 10) && this.lastPos === 'between') {
-            this.lastPos = 'bottom';
-            this.props.onScrollBottom();
-        } else if ((nodeHeight === scroller) && this.lastPos === 'between') {
-            this.lastPos = 'top';
-            this.props.onScrollTop();
-        } else if (scrollTop > 0 && scrollHeight - scroller > 132 && this.lastPos !== 'between') {
-            this.lastPos = 'between';
-            this.props.onScrollBetween();
-        }
-    }
+    // _handleEditorScroll = (ev) => {
+    //     const scrollHeight = ev.target.scrollHeight;
+    //     const scrollTop = ev.target.scrollTop;
+    //     const rootNode = this.rootNode;
+    //     const nodeHeight = parseInt(window.getComputedStyle(rootNode).height, 10);
+    //     const scroller = nodeHeight + scrollTop;
+    //     if ((scroller >= scrollHeight - 10) && this.lastPos === 'between') {
+    //         this.lastPos = 'bottom';
+    //         this.props.onScrollBottom();
+    //     } else if ((nodeHeight === scroller) && this.lastPos === 'between') {
+    //         this.lastPos = 'top';
+    //         this.props.onScrollTop();
+    //     } else if (scrollTop > 0 && scrollHeight - scroller > 132 && this.lastPos !== 'between') {
+    //         this.lastPos = 'between';
+    //         this.props.onScrollBetween();
+    //     }
+    // }
 
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
@@ -77,8 +74,8 @@ class EntryEditor extends Component {
     }
 
     _handleEditorChange = (editorState) => {
-        // const isOpen = this.suggestionsComponent.getIsOpen();
-        if (editorState.getLastChangeType() === 'split-block') {
+        const isOpen = this.suggestionsComponent.getIsOpen();
+        if (editorState.getLastChangeType() === 'split-block' && isOpen) {
             return;
         }
         /**
@@ -86,13 +83,6 @@ class EntryEditor extends Component {
          */
         this.props.onChange(editorState);
     };
-
-    // _handleKeyPress = (ev) => {
-    //     ev.preventDefault();
-    //     if (ev.key === 'Enter') {
-    //         this._changeEditorFocus(true);
-    //     }
-    // }
 
     _changeEditorFocus = (focusState) => {
         const { editorState } = this.props;
@@ -114,7 +104,16 @@ class EntryEditor extends Component {
             sidebarOpen: isOpen
         });
     }
-
+    blockStyleFn = (contentBlock) => {
+        const type = contentBlock.getType();
+        const data = contentBlock.getData().toObject();
+        if (type === 'unstyled') {
+            return 'paragraph';
+        }
+        if (type === 'atomic' && data.type === 'image') {
+            return `image-block__${data.media}`;
+        }
+    }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly, showTerms, onError } = this.props;
         if (showSidebar && !readOnly) {
@@ -133,7 +132,7 @@ class EntryEditor extends Component {
     };
 
     render () {
-        const { editorPlaceholder, readOnly, editorState, className, style } = this.props;
+        const { editorPlaceholder, readOnly, editorState, className, style, intl } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
           <div
@@ -161,12 +160,14 @@ class EntryEditor extends Component {
                         onAutosave: this.props.onAutosave,
                         onImageError: this._handleImageError,
                         baseUrl: this.props.baseUrl,
+                        intl
                     })
                 ]}
                 placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
                 tabIndex="0"
                 hasFocus={this._checkEditorFocus()}
                 spellCheck
+                blockStyleFn={this.blockStyleFn}
               />
               <MentionSuggestions
                 ref={this.setSuggestionsRef}
@@ -197,10 +198,8 @@ EntryEditor.propTypes = {
     editorState: PropTypes.shape(),
     readOnly: PropTypes.bool,
     onAutosave: PropTypes.func,
-    onScrollBottom: PropTypes.func,
-    onScrollTop: PropTypes.func,
-    onScrollBetween: PropTypes.func,
     editorPlaceholder: PropTypes.string,
+    intl: PropTypes.shape(),
     showSidebar: PropTypes.bool,
     onChange: PropTypes.func,
     onError: PropTypes.func,
