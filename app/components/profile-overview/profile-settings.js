@@ -20,65 +20,59 @@ class ProfileSettings extends Component {
         super(props);
         const pref = props.userSettings.passwordPreference;
         const license = props.userSettings.get('defaultLicense');
+        const donations = props.loggedProfileData.get('donationsEnabled');
         this.state = {
             defaultLicenseParent: license.parent || '2',
             defaultLicenseId: license.id || '4',
-            isDirty: false,
             rememberTime: pref && pref.remember ? pref.remember : false,
             unlockTime: pref && pref.time ? pref.time : 5,
-            donationsValue: props.loggedProfileData.get('donationsEnabled')
+            donationsValue: donations
         };
     }
 
     componentWillReceiveProps (nextProps) {
         const donationsEnabled = nextProps.loggedProfileData.get('donationsEnabled');
-        if (donationsEnabled !== this.props.loggedProfileData.get('donationsEnabled')) {
+        if (this.props.loggedProfileData.get('donationsEnabled') !== donationsEnabled) {
             this.setState({ donationsValue: donationsEnabled });
         }
     }
 
     handleLicenseChange = licenceType =>
         (value) => {
+            const license = this.props.userSettings.get('defaultLicense');
             if (licenceType === 'parent') {
                 this.setState({
                     defaultLicenseParent: value,
-                    isDirty: true
                 });
                 if (value === '3') {
-                    this.setState({ defaultLicenseId: '11' });
+                    const lic = (value === license.parent) ? license.id : '11';
+                    this.setState({ defaultLicenseId: lic });
                 } else if (value === '2') {
-                    this.setState({ defaultLicenseId: '4' });
+                    const lic = (value === license.parent) ? license.id : '4';
+                    this.setState({ defaultLicenseId: lic });
                 } else if (value === '1') {
                     this.setState({ defaultLicenseId: null });
                 }
             } else if (licenceType === 'id') {
                 this.setState({
                     defaultLicenseId: value.target.value,
-                    isDirty: true
                 });
             }
         }
 
     handleTimeChange = (value) => {
         this.setState({
-            isDirty: true,
             unlockTime: Number(value),
             rememberTime: true
         });
     };
 
     handleRememberTimeChange = (e) => {
-        this.setState({
-            isDirty: true,
-            rememberTime: e.target.checked
-        });
+        this.setState({ rememberTime: e.target.checked });
     };
 
     handleTipsChange = (e) => {
-        this.setState({
-            isDirty: true,
-            donationsValue: e.target.value,
-        });
+        this.setState({ donationsValue: e.target.value });
     }
 
     onSaveSettings = () => {
@@ -92,15 +86,22 @@ class ProfileSettings extends Component {
             this.props.actionAdd(loggedEthAddress, toggleDonations, { status: donationsValue });
         }
         this.props.userSettingsSave(loggedEthAddress, payload);
-        this.setState({
-            isDirty: false
-        });
     }
 
     render () {
         const { intl, licenses, pendingToggleDonations, savingUserSettings } = this.props;
-        const { defaultLicenseId, defaultLicenseParent, isDirty,
-            unlockTime, rememberTime } = this.state;
+        const { defaultLicenseId, defaultLicenseParent, unlockTime, rememberTime } = this.state;
+        const pref = this.props.userSettings.passwordPreference;
+        const license = this.props.userSettings.get('defaultLicense');
+        const donationsEnabled = this.props.loggedProfileData.get('donationsEnabled');
+
+        const formChanged = (
+            pref.remember !== this.state.rememberTime ||
+            pref.time !== this.state.unlockTime ||
+            license.id !== this.state.defaultLicenseId ||
+            license.parent !== this.state.defaultLicenseParent ||
+            donationsEnabled !== this.state.donationsValue
+        );
 
         return (
           <div className="profile-settings">
@@ -186,7 +187,10 @@ class ProfileSettings extends Component {
                       placement="topLeft"
                       arrowPointAtCenter
                     >
-                      <Icon type="questionCircle" className="question-circle-icon profile-settings__info-icon" />
+                      <Icon
+                        type="questionCircle"
+                        className="question-circle-icon profile-settings__info-icon"
+                      />
                     </Tooltip>
                   </div>
                   <div className="profile-settings__item-description">
@@ -203,7 +207,7 @@ class ProfileSettings extends Component {
             </div>
             <div className="profile-settings__footer">
               <Button
-                disabled={pendingToggleDonations || savingUserSettings || !isDirty}
+                disabled={pendingToggleDonations || savingUserSettings || !formChanged}
                 onClick={this.onSaveSettings}
                 type="primary"
               >
