@@ -362,7 +362,7 @@ class NewLinkEntryPage extends Component {
                       error={errors.card}
                     />
                   </div>
-                  {!parsingInfo && infoExtracted &&
+                  {!parsingInfo && infoExtracted && !errors.card &&
                     <div style={{ minHeight: '20%' }}>
                       <TextEntryEditor
                         ref={this._createRef('editor')}
@@ -375,7 +375,7 @@ class NewLinkEntryPage extends Component {
                       />
                     </div>
                   }
-                  {!parsingInfo && infoExtracted &&
+                  {!parsingInfo && infoExtracted && !errors.card &&
                     <div className="edit-entry-page__tag-editor_wrapper">
                       <TagEditor
                         className="edit-entry-page__tag-editor"

@@ -146,7 +146,7 @@ class ListPopover extends Component {
                   const className = `${root} ${isSaved && modifier}`;
                   return (
                     <div
-                      className="has-hidden-action content-link list-popover__row"
+                      className="has-hidden-action list-popover__row"
                       key={list.get('id')}
                       onClick={toggleList}
                     >
