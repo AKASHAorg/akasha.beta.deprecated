@@ -179,7 +179,7 @@ function* entryGetFull ({
         publishedDateOnly,
         latestVersion
     }]);
-    if (!asDraft) {
+    if (!asDraft && ethAddress) {
         yield put(profileActions.profileGetData({ ethAddress }));
     }
 }
@@ -209,14 +209,14 @@ function* entryGetVoteOf ({ entryIds }) {
 
 function* entryListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
     const collection = yield select(state => selectListEntries(state, value, limit));
+    yield call(entryGetExtraOfList, collection, columnId);
     yield put(actions.entryListIteratorSuccess({ collection }, { columnId, value, limit }));
-    yield fork(entryGetExtraOfList, collection, columnId);
 }
 
 function* entryMoreListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
     const collection = yield select(state => selectListNextEntries(state, value, limit));
+    yield call(entryGetExtraOfList, collection, columnId);
     yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId, value, limit }));
-    yield fork(entryGetExtraOfList, collection, columnId);
 }
 
 function* entryMoreNewestIterator ({ columnId }) {
@@ -449,6 +449,7 @@ function* watchEntryGetBalanceChannel () {
     }
 }
 /* eslint-disable complexity */
+/* eslint-disable max-statements */
 function* watchEntryGetChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntry);
@@ -471,6 +472,10 @@ function* watchEntryGetChannel () {
         } else if (resp.request.publishedDateOnly) {
             yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
         } else if (resp.request.full && !resp.request.asDraft) {
+            if (!resp.request.ethAddress) {
+                resp.request.ethAddress = resp.data.ethAddress;
+                yield put(profileActions.profileGetData({ ethAddress: resp.data.ethAddress }));
+            }
             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
             const version = resp.data.content && resp.data.content.version;
@@ -490,6 +495,7 @@ function* watchEntryGetChannel () {
     }
 }
 /* eslint-enable complexity */
+/* eslint-enable max-statements */
 
 function* watchEntryGetScoreChannel () {
     while (true) {
@@ -560,7 +566,7 @@ function* watchEntryNewestIteratorChannel () {
             }
         } else {
             const { columnId } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
+            yield call(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.request.more) {
                 yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
             } else {
@@ -583,7 +589,7 @@ function* watchEntryProfileIteratorChannel () {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
             }
         } else if (resp.request.more) {
-            yield fork(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+            yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
             yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
         } else if (resp.request.asDrafts) {
             yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
@@ -596,7 +602,7 @@ function* watchEntryProfileIteratorChannel () {
                 }));
             }
         } else {
-            yield fork(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+            yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
             yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
         }
     }
@@ -613,7 +619,7 @@ function* watchEntryStreamIteratorChannel () {
             }
         } else {
             const { columnId } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
+            yield call(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.request.more) {
                 yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
@@ -634,7 +640,7 @@ function* watchEntryTagIteratorChannel () {
             }
         } else {
             const { columnId } = resp.request;
-            yield fork(entryGetExtraOfList, resp.data.collection, columnId);
+            yield call(entryGetExtraOfList, resp.data.collection, columnId);
             if (resp.request.more) {
                 yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
             } else {
