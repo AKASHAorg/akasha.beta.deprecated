@@ -74,6 +74,7 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
     const cCount = yield commentsCount.execute([data.entryId]);
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
+        ethAddress: ethAddress,
         totalVotes: _totalVotes.toString(10),
         score: _score.toString(10),
         publishDate: (_endPeriod.minus(votingPeriod)).toNumber(),

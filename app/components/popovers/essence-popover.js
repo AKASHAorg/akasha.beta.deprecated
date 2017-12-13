@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
 import { Button, Form, Popover, Progress, Spin, Tooltip } from 'antd';
@@ -113,19 +114,37 @@ class EssencePopover extends Component {
                 {!loadingLogs && essenceEvents.map((ev) => {
                     const isLast = lastEvent.equals(ev);
                     const fromComment = ev.action === 'comment:claim';
+                    const fromEntry = ev.action === 'entry:claim';
+                    const fromEntryVote = ev.action === 'entry:vote:claim';
                     const className = classNames('flex-center-y essence-popover__log-row', {
                         'essence-popover__log-row_last': isLast
                     });
                     if (pendingEntries && pendingEntries.get(ev.sourceId)) {
                         return (
-                          <div className={className}>
+                          <div className={className} key={ev.hashCode()}>
                             <div className="essence-popover__log-placeholder">
                               <div />
                             </div>
                           </div>
                         );
                     }
+                    const fallbackMessage = fromEntryVote ?
+                        intl.formatMessage(generalMessages.anEntryVote) :
+                        intl.formatMessage(generalMessages.anEntry);
                     const entryTitle = entries.getIn([ev.sourceId, 'content', 'title']);
+                    const entryLink = (fromEntry || fromEntryVote) && (
+                      <Link
+                        className="unstyled-link"
+                        to={{
+                            pathname: `/0x0/${ev.sourceId}`,
+                            state: { overlay: true }
+                        }}
+                      >
+                        <span className="content-link heading" onClick={() => this.onVisibleChange(false)}>
+                          {entryTitle || fallbackMessage}
+                        </span>
+                      </Link>
+                    );
                     return (
                       <div className={className} key={ev.hashCode()}>
                         <span className="essence-popover__log-message">
@@ -136,7 +155,7 @@ class EssencePopover extends Component {
                         </span>
                         {fromComment ?
                             intl.formatMessage(generalMessages.aComment) :
-                            entryTitle || intl.formatMessage(generalMessages.anEntry)
+                            entryLink
                         }
                       </div>
                     );
