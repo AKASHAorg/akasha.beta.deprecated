@@ -1,8 +1,8 @@
 import * as Promise from 'bluebird';
 import { post as POST } from 'request';
 import { FAUCET_TOKEN, FAUCET_URL } from '../../config/settings';
-
-const execute = Promise.coroutine(function* (data: RequestEtherRequest) {
+import { Contracts } from '../../contracts/index';
+const execute = Promise.coroutine(function* (data: RequestEtherRequest, cb) {
     return new Promise((resolve, reject) => {
         POST({
                 url: FAUCET_URL,
@@ -13,10 +13,11 @@ const execute = Promise.coroutine(function* (data: RequestEtherRequest) {
                 if (error) {
                     return reject(error);
                 }
-                return resolve(body);
+                resolve(body);
+                Contracts.watchTx(body.tx).then(success => cb('', success)).catch(err => cb(err));
             }
         );
     });
 });
 
-export default { execute, name: 'requestEther' };
+export default { execute, name: 'requestEther', hasStream: true };

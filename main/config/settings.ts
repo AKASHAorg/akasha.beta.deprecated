@@ -30,7 +30,7 @@ export const BACKUP_KEYS_NAME = 'akasha_keystore.zip';
 export const FAUCET_TOKEN = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
     '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
 
-export const FAUCET_URL = 'https://138.68.78.152:1337/get/faucet';
+export const FAUCET_URL = 'https://akasha.fun/get/faucet';
 
 export const BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a' +
     '1a7eaf06630234d22d1b0c1d98b4643be5f28e5fe79@138.68.78.152:30301';
