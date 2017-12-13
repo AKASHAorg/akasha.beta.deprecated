@@ -1,5 +1,12 @@
 .image-block {
     position: relative;
+    &__gif-play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -48px;
+        margin-left: -48px;
+    }
     &__image-size-menu {
         display: flex;
         border: none;
@@ -11,9 +18,10 @@
         float: left;
         width: 320px !important;
         margin-left: ~'calc((100% - 700px) / 2)' !important;
+        margin-right: 48px !important;
     }
     &__md {
-        width: 700px;
+        width: 700px !important;
         clear: left;
         .image-block__image-caption {
             max-width: 700px;
@@ -90,5 +98,15 @@
         margin-bottom: 8px;
         text-align: center;
         font-style: italic;
+    }
+    &__caption-input {
+        resize: none;
+        border: none;
+        text-align: center;
+        outline: none;
+        &:focus {
+            border: none;
+            box-shadow: none;
+        }
     }
 }

@@ -36,6 +36,11 @@ const entryMessages = defineMessages({
         description: 'error shown when we cannot extract wesite info',
         defaultMessage: 'Cannot extract information from website! Please try another address'
     },
+    imageCaptionPlaceholder: {
+        id: 'app.entry.imageCaptionPlaceholder',
+        description: 'text for caption input placeholder',
+        defaultMessage: 'add a caption'
+    },
     collected: {
         id: 'app.entry.collected',
         description: 'Essence was collected for an entry/vote',
@@ -96,7 +101,7 @@ const entryMessages = defineMessages({
         description: 'delete draft button label',
         defaultMessage: 'Delete draft',
     },
-    draftDeleteConfirm: {
+    draftDeleteConfirmation: {
         id: 'app.entry.draftDeleteConfirm',
         description: 'message to show when user wants to delete a draft',
         defaultMessage: 'Are you sure you want to delete this draft?'
