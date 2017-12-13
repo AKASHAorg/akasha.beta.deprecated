@@ -328,6 +328,7 @@ class NewEntryPage extends Component {
                 className="edit-entry-page__editor-wrapper"
               >
                 <div
+                  id="editor"
                   className={
                     `edit-entry-page__editor
                     edit-entry-page__editor${showSecondarySidebar ? '' : '_full'}`
