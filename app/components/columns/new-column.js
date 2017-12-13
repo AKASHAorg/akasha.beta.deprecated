@@ -113,7 +113,6 @@ class NewColumn extends Component {
 
     render () {
         const { column, intl, lists, newColumn, previewEntries, profileResults, tagResults } = this.props;
-
         if (!newColumn) {
             return this.renderPlaceholder();
         }
@@ -121,8 +120,8 @@ class NewColumn extends Component {
         let component, displayName, previewMessage, title, subtitle, listName; // eslint-disable-line
         const value = column.get('value');
         if (newColumn.get('type') === columnTypes.list) {
-            const index = lists.indexOf(list => list.get('id') === value);
-            listName = lists.getIn([index, 'name']);
+            const list = lists.find(lst => lst.get('id') === value);
+            listName = list && list.get('name');
         }
         const props = {
             column,
