@@ -134,19 +134,22 @@ class SelectableEditor extends Component {
     };
 
     checkSelection = () => {
-        const range = window.getSelection().getRangeAt(0);
-        if (range.startOffset === range.endOffset) {
-            this.setState({
-                range: null,
-                showPopover: false
-            });
-            return;
-        }
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            if (range.startOffset === range.endOffset) {
+                this.setState({
+                    range: null,
+                    showPopover: false
+                });
+                return;
+            }
 
-        this.setState({
-            range,
-            showPopover: true
-        });
+            this.setState({
+                range,
+                showPopover: true
+            });
+        }
     };
 
     getHighlightText = () => {

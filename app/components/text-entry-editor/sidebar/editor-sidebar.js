@@ -8,19 +8,18 @@ class SideBar extends Component {
         super(props);
         this.state = {
             top: -1,
-            sidebarVisible: false
+            sidebarVisible: true
         };
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (nextState.top !== this.state.top) ||
-            (nextState.sidebarVisible !== this.state.sidebarVisible) ||
             (nextState.left !== this.state.left) ||
             !nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()) ||
             (nextProps.editorHasFocus !== this.props.editorHasFocus);
     }
-    componentWillReceiveProps (nextProps) {
+    componentDidUpdate (prevProps) {
         // if (nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()))
-        this.updateSidebarPosition();
+        this.updateSidebarPosition(this.props);
     }
     componentWillUnmount () {
         this.setState({
@@ -32,23 +31,16 @@ class SideBar extends Component {
         this.updateSidebarPosition();
     }
     getSelectedBlockElement = () => {
-        const { editorState } = this.props;
         const selection = window.getSelection();
-        const startKey = editorState.getSelection().getStartKey();
-        const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-        if (selection.rangeCount === 0) {
-            this.setState({
-                sidebarVisible: false
-            });
-            return null;
+        if (selection.rangeCount > 0) {
+            let node = selection.getRangeAt(0).startContainer;
+            do {
+                if (node.getAttribute && node.getAttribute('data-block') === 'true') {
+                    return node;
+                }
+                node = node.parentNode;
+            } while (node != null);
         }
-        let node = selection.getRangeAt(0).startContainer;
-        do {
-            if (node.getAttribute && node.getAttribute('data-block') === 'true') {
-                return node;
-            }
-            node = node.parentNode;
-        } while (node != null);
         return null;
     }
     getValidSidebarPlugins () {
@@ -66,8 +58,13 @@ class SideBar extends Component {
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
         // console.log(element, container, isBlackListed);
-        if (!element || !container || isBlackListed) {
-            return;
+
+        if ((!element || !container || isBlackListed)) {
+            return null;
+            // return this.setState({
+            //     top: -9999,
+            //     left: -9999
+            // });
         }
         const containerTop =
             (container.getBoundingClientRect().top) - document.documentElement.clientTop;
@@ -76,8 +73,7 @@ class SideBar extends Component {
         let top = element.getBoundingClientRect().top - containerTop;
         top = Math.floor(top);
 
-        this.setState({
-            sidebarVisible: true,
+        return this.setState({
             top,
             left
         });
@@ -86,7 +82,6 @@ class SideBar extends Component {
     resetSidebarPosition = () => {
         this.setState({
             top: -1,
-            sidebarVisible: false
         });
     }
 
@@ -108,13 +103,13 @@ class SideBar extends Component {
               style={{
                   top: `${this.state.top}px`,
                   left: `${this.state.left}px`,
-                  zIndex: 9
+                  zIndex: 9,
+                  transition: 'top 0.13s ease-in-out',
               }}
               className="sidebar__menu"
             >
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
-                  sidebarVisible
                   editorState={this.props.editorState}
                   onChange={this.onChange}
                   plugins={this.getValidSidebarPlugins()}

@@ -35,7 +35,7 @@ class NewEntrySecondarySidebar extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         return (nextProps.draftsFetched !== this.props.draftsFetched) ||
-            (nextProps.draftsCount !== this.props.draftsCount) ||
+            (nextProps.drafts.size !== this.props.drafts.size) ||
             (nextProps.match.params.draftType !== this.props.match.params.draftType) ||
             (nextProps.match.params.draftId !== this.props.match.params.draftId) ||
             nextProps.drafts.getIn([nextProps.match.params.draftId, 'localChanges']) !==
