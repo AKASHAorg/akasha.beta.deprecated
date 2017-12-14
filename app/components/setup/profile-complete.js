@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+import { Card, Spin, Icon } from 'antd';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileExists } from '../../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet, tempProfileUpdate,
@@ -10,6 +11,7 @@ import { setTempProfile, tempProfileGet, tempProfileUpdate,
 import ProfileForm from '../forms/profile-complete-form';
 import { selectBalance, selectLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { setupMessages } from '../../locale-data/messages';
+import * as actionTypes from '../../constants/action-types';
 
 class ProfileComplete extends Component {
     state = {
@@ -59,11 +61,53 @@ class ProfileComplete extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { intl, history, tempProfile, loggedProfileData,
+        const { faucet, intl, history, tempProfile, loggedProfileData,
             loggedEthAddress, profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withShadow = isScrolled && 'profile-complete__header_with-shadow';
+        const spinIcon = <Icon type="loading-3-quarters" style={{ fontSize: 30 }} spin />;
+
+        function FaucetDiv (props) {
+            const faucetState = props.faucet;
+            if (faucet === 'success') {
+                return (
+                  <Card>
+                    <div className="profile-complete__faucet-icon">
+                      <Icon type="check" style={{ fontSize: 30 }} />
+                    </div>
+                    <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div>
+                  </Card>
+                );
+            }
+            if (faucetState === 'error') {
+                return (
+                  <Card>
+                    <div className="profile-complete__faucet-icon">
+                      <Icon type="close" style={{ fontSize: 30 }} />
+                    </div>
+                    <div>{intl.formatMessage(setupMessages.faucetError)}</div>
+                    <div
+                      onClick={this.props.actionAdd(loggedEthAddress, actionTypes.faucet,
+                        { ethAddress: loggedEthAddress })}
+                      className="content-link"
+                    >
+                      {intl.formatMessage(setupMessages.faucetRetry)}
+                    </div>
+                  </Card>
+                );
+            }
+            if (!faucetState) {
+                return (
+                  <Card>
+                    <div className="profile-complete__faucet-icon">
+                      <Spin indicator={spinIcon} />
+                    </div>
+                    <div>{intl.formatMessage(setupMessages.faucetPending)}</div>
+                  </Card>
+                );
+            }
+        }
 
         return (
           <div className="setup-content setup-content__column_full">
@@ -73,6 +117,9 @@ class ProfileComplete extends Component {
                   {intl.formatMessage(setupMessages.authComplete)}
                 </div>
                 <span>{intl.formatMessage(setupMessages.completeProfile)}</span>
+                <div className="profile-complete__faucet">
+                  <FaucetDiv faucet={faucet} />
+                </div>
               </div>
               <div className="profile-complete__right">
                 <div className={`profile-complete__header ${withShadow}`} />
@@ -100,6 +147,7 @@ class ProfileComplete extends Component {
 ProfileComplete.propTypes = {
     actionAdd: PropTypes.func,
     balance: PropTypes.shape(),
+    faucet: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     ipfsBaseUrl: PropTypes.string,
     loggedProfile: PropTypes.shape(),
@@ -118,6 +166,7 @@ ProfileComplete.propTypes = {
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
+        faucet: state.profileState.get('faucet'),
         ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedEthAddress: selectLoggedEthAddress(state),

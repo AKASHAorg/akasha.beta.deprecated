@@ -14,6 +14,7 @@ import {
     selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken
 } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
+import * as actionTypes from '../../constants/action-types';
 import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
@@ -102,6 +103,12 @@ function* profileExists ({ akashaId }) {
         yield call(enableChannel, channel, Channel.client.registry.manager);
         yield apply(channel, channel.send, [{ akashaId }]);
     }
+}
+
+function* profileFaucet ({ actionId, ethAddress }) {
+    const channel = Channel.server.auth.requestEther;
+    yield call(enableChannel, channel, Channel.client.auth.manager);
+    yield apply(channel, channel.send, [{ address: ethAddress, actionId }]);
 }
 
 function* profileFollow ({ actionId, ethAddress }) {
@@ -509,6 +516,8 @@ function* watchProfileCreateEthAddressChannel () {
             const ethAddress = resp.data.address;
             const { password } = resp.request;
             yield put(actions.profileLogin({ ethAddress, password }));
+            // request funds from faucet
+            yield put(actionActions.actionAdd(ethAddress, actionTypes.faucet, { ethAddress }));
         }
     }
 }
@@ -553,6 +562,27 @@ function* watchProfileExistsChannel () {
             yield put(actions.profileExistsError(resp.error, resp.request));
         } else {
             yield put(actions.profileExistsSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileFaucetChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.auth.requestEther);
+        const { actionId } = resp.request;
+        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+        if (true) {
+            if (resp.error) {
+                yield put(actions.profileFaucetError(resp.error, resp.request));
+            } else if (resp.data.receipt) {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                if (!resp.data.receipt.success) {
+                    yield put(actions.profileFaucetError({}));
+                }
+            } else {
+                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+                yield put(actionActions.actionUpdate(changes));
+            }
         }
     }
 }
@@ -955,6 +985,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileManaBurnedChannel);
+    yield fork(watchProfileFaucetChannel);
     yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileToggleDonationsChannel);
@@ -976,6 +1007,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
     yield takeEvery(types.PROFILE_ESSENCE_ITERATOR, profileEssenceIterator);
     yield takeLatest(types.PROFILE_EXISTS, profileExists);
+    yield takeEvery(types.PROFILE_FAUCET, profileFaucet);
     yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
     yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
     yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);

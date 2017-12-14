@@ -122,6 +122,10 @@ const profileState = createReducer(initialState, {
             })
         }),
 
+    [types.PROFILE_FAUCET_ERROR]: state => state.set('faucet', 'error'),
+
+    [types.PROFILE_FAUCET_SUCCESS]: state => state.set('faucet', 'success'),
+
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
