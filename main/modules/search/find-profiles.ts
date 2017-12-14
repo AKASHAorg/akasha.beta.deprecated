@@ -9,10 +9,12 @@ const execute = Promise.coroutine(function* (data: { text: string, limit: number
         field: 'akashaId',
         threshold: 1,
         limit: pageSize,
-        type: 'simple'
+        type: 'ID'
     };
     dbs.profiles.searchIndex.match(options)
-        .on('data', (data) => { collection.push(data); })
+        .on('data', (data) => {
+           collection.push({akashaId: data.token, ethAddress: data.documents[0]});
+        })
         .on('end', () => { cb('', { collection});
         });
     return {};
