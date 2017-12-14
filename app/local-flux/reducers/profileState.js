@@ -328,7 +328,9 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('loginPending', false),
             loggedProfile: state.get('loggedProfile').merge(data)
         }),
+
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
+
     [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
         const comments = balanceToNumber(data.comments.manaCost);
         const entriesTotal = balanceToNumber(data.entries.manaCost);

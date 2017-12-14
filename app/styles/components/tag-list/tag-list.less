@@ -1,0 +1,65 @@
+.tag-list {
+    display: flex;
+    flex-flow: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    background-color: @background;
+    
+    &__placeholder {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: @text-color-secondary;
+    }
+
+    &__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid @border-color;
+        padding: 15px 0px;
+        margin: 0px 15px;
+
+        &_last {
+            border-bottom: none;
+            margin-bottom: 6px;
+        }
+    }
+
+    &__item-text-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__tag-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: @input-color;
+        text-transform: uppercase;
+    }
+
+    &__entry-count {
+        font-size: 12px;
+        font-weight: 150;
+        color: @text-color-secondary;
+    }
+
+    &__buttons {
+        padding-right: 15px;
+        display: flex;
+    }
+
+    &__button {
+        margin-left: 12px;
+        font-size: 12px;
+    }
+
+    &__preview-button {
+        color: @primary-color;
+        border-color: @primary-color;
+    }
+
+}

@@ -62,7 +62,7 @@ class TagColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchTags}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

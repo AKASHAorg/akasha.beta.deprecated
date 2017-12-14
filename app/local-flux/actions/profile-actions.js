@@ -93,8 +93,8 @@ export const profileFollowersIteratorError = (error, request) => {
 
 export const profileFollowersIteratorSuccess = (data, request) =>
     action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
-export const profileFollowingsIterator = ({ context, ethAddress }) =>
-    action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress });
+export const profileFollowingsIterator = ({ context, ethAddress, limit, entrySync }) =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress, limit, entrySync });
 
 export const profileFollowingsIteratorError = (error, request) => {
     error.code = 'PFIE02';
@@ -144,6 +144,14 @@ export const profileGetDataError = (error, request) => {
 
 export const profileGetDataSuccess = (data, request) =>
     action(types.PROFILE_GET_DATA_SUCCESS, { data, request });
+
+export const profileGetEntrySyncBlockError = (error) => {
+    error.code = 'PGESBE01';
+    return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
+};
+
+export const profileGetEntrySyncBlockSuccess = block =>
+    action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
 export const profileGetList = ethAddresses =>
     action(types.PROFILE_GET_LIST, { ethAddresses });
 

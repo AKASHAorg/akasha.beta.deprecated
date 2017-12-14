@@ -102,7 +102,6 @@ export PublishOptionsPanel from './panels/publish-options-panel';
 export RadarChart from './charts/radar-chart';
 export RememberPassphrase from './forms/remember-passphrase';
 export RememberPassphraseSelect from './forms/remember-passphrase-select';
-export SearchSecondarySidebar from './secondary-sidebars/search-secondary-sidebar';
 export SecondarySidebar from './secondary-sidebars/secondary-sidebar';
 export Select from './common/select';
 export SelectableEditor from './editors/selectable-editor';

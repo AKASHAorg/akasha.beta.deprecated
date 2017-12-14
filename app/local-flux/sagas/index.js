@@ -2,7 +2,7 @@ import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
-import { profileManaBurned } from '../actions/profile-actions';
+import * as profileActions from '../actions/profile-actions';
 import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
@@ -57,10 +57,16 @@ function* launchHomeActions () {
     yield fork(highlightSaga.highlightGetAll);
     yield fork(listSaga.listGetAll);
     yield fork(settingsSaga.userSettingsRequest);
-    if (yield select(selectLoggedEthAddress)) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    if (loggedEthAddress) {
         yield put(actionActions.actionGetPending());
+        yield put(profileActions.profileFollowingsIterator({
+            ethAddress: loggedEthAddress,
+            entrySync: true,
+            limit: 1000
+        }));
     }
-    yield put(profileManaBurned());
+    yield put(profileActions.profileManaBurned());
 }
 
 function* bootstrapApp () {

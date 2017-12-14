@@ -5,6 +5,7 @@ import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actions from '../actions/profile-actions';
+import * as searchActions from '../actions/search-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
@@ -125,10 +126,14 @@ function* profileFollowersIterator ({ context, ethAddress }) {
     yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
 }
 
-function* profileFollowingsIterator ({ context, ethAddress }) {
+function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, entrySync }) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWINGS_ITERATOR_LIMIT }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ context, ethAddress, limit, entrySync }]
+    );
 }
 
 function* profileFreeAeth ({ actionId, amount }) {
@@ -600,6 +605,9 @@ function* watchProfileFollowingsIteratorChannel () {
             } else {
                 yield put(actions.profileFollowingsIteratorError(resp.error, resp.request));
             }
+        } else if (resp.request.entrySync) {
+            const followings = resp.data.collection.map(profile => profile.ethAddress);
+            yield put(searchActions.searchSyncEntries(followings));
         } else {
             yield call(profileGetExtraOfList, resp.data.collection, resp.request.context);
             if (resp.request.lastBlock) {

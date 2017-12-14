@@ -10,26 +10,26 @@ import * as actionStatus from '../../constants/action-status';
 
 const Channel = global.Channel;
 
-function* transactionAddToQueue ({ txs }) {
-    const channel = Channel.server.tx.addToQueue;
-    yield call(enableChannel, channel, Channel.client.tx.manager);
-    const akashaId = yield select(selectLoggedAkashaId);
-    txs.forEach((tx) => { tx.akashaId = akashaId; });
-    yield apply(channel, channel.send, [txs]);
-}
+// function* transactionAddToQueue ({ txs }) {
+//     const channel = Channel.server.tx.addToQueue;
+//     yield call(enableChannel, channel, Channel.client.tx.manager);
+//     const akashaId = yield select(selectLoggedAkashaId);
+//     txs.forEach((tx) => { tx.akashaId = akashaId; });
+//     yield apply(channel, channel.send, [txs]);
+// }
 
-function* transactionEmitMinedSuccess (data) {
-    console.error('transaction emit mined is depracated');
-    const { blockNumber, cumulativeGasUsed } = data;
-    const loggedAkashaId = yield select(selectLoggedAkashaId);
-    const actionId = yield apply(actionService, actionService.getActionByTx, [data.mined]);
-    const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
-    if (action && action.get('akashaId') === loggedAkashaId) {
-        const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
-        yield put(actionActions.actionUpdate(changes));
-        yield put(profileActions.profileGetBalance());
-    }
-}
+// function* transactionEmitMinedSuccess (data) {
+//     console.error('transaction emit mined is depracated');
+//     const { blockNumber, cumulativeGasUsed } = data;
+//     const loggedAkashaId = yield select(selectLoggedAkashaId);
+//     const actionId = yield apply(actionService, actionService.getActionByTx, [data.mined]);
+//     const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+//     if (action && action.get('akashaId') === loggedAkashaId) {
+//         const changes = { id: actionId, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+//         yield put(actionActions.actionUpdate(changes));
+//         yield put(profileActions.profileGetBalance());
+//     }
+// }
 
 export function* transactionGetStatus ({ txs, ids }) {
     const channel = Channel.server.tx.getTransaction;
@@ -38,9 +38,9 @@ export function* transactionGetStatus ({ txs, ids }) {
 
 // Action watchers
 
-function* watchTransactionAddToQueue () {
-    yield takeEvery(types.TRANSACTION_ADD_TO_QUEUE, transactionAddToQueue);
-}
+// function* watchTransactionAddToQueue () {
+//     yield takeEvery(types.TRANSACTION_ADD_TO_QUEUE, transactionAddToQueue);
+// }
 
 function* watchTransactionGetStatus () {
     yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
@@ -57,16 +57,16 @@ function* watchTransactionAddToQueueChannel () {
     }
 }
 
-function* watchTransactionEmitMinedChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tx.emitMined);
-        if (resp.error) {
-            yield put(actions.transactionEmitMinedError(resp.error));
-        } else {
-            yield fork(transactionEmitMinedSuccess, resp.data);
-        }
-    }
-}
+// function* watchTransactionEmitMinedChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tx.emitMined);
+//         if (resp.error) {
+//             yield put(actions.transactionEmitMinedError(resp.error));
+//         } else {
+//             yield fork(transactionEmitMinedSuccess, resp.data);
+//         }
+//     }
+// }
 
 function* watchTransactionGetStatusChannel () {
     while (true) {
@@ -99,11 +99,11 @@ function* watchTransactionGetStatusChannel () {
 
 export function* registerTransactionListeners () {
     yield fork(watchTransactionAddToQueueChannel);
-    yield fork(watchTransactionEmitMinedChannel);
+    // yield fork(watchTransactionEmitMinedChannel);
     yield fork(watchTransactionGetStatusChannel);
 }
 
 export function* watchTransactionActions () {
-    yield fork(watchTransactionAddToQueue);
+    // yield fork(watchTransactionAddToQueue);
     yield fork(watchTransactionGetStatus);
 }

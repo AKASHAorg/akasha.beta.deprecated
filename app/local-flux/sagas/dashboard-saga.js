@@ -87,18 +87,6 @@ export function* dashboardGetAll () {
     }
 }
 
-export function* dashboardGetProfileSuggestions (request) {
-    try {
-        const { akashaId } = request;
-        const suggestions = yield apply(profileService, profileService.profileGetSuggestions, [akashaId]);
-        yield put(actions.dashboardGetProfileSuggestionsSuccess(suggestions, request));
-        return { suggestions };
-    } catch (error) {
-        yield put(actions.dashboardGetProfileSuggestionsError(error, request));
-        return { error };
-    }
-}
-
 function* dashboardRename ({ dashboardId, newName }) {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
@@ -172,7 +160,6 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_ADD_FIRST, dashboardAddFirst);
     yield takeEvery(types.DASHBOARD_DELETE, dashboardDelete);
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
-    yield takeLatest(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, dashboardGetProfileSuggestions);
     yield takeEvery(types.DASHBOARD_RENAME, dashboardRename);
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);

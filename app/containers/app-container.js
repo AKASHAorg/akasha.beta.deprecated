@@ -11,13 +11,12 @@ import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
-    TagSearchPage } from './';
+import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
     ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
     MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
-    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SearchSecondarySidebar,
-    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
+    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
+    Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
 
 notification.config({
     top: 60,
@@ -123,7 +122,6 @@ class AppContainer extends Component {
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
-                {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size="large" style={{ paddingTop: '100px' }}>
                     <div>
@@ -134,7 +132,6 @@ class AppContainer extends Component {
                         <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
                         <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                         <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
-                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                         <Route exact path="/@:akashaId" component={ProfilePage} />
@@ -145,8 +142,7 @@ class AppContainer extends Component {
                         <Route exact path="/profileoverview/lists" component={Lists} />
                         <Route path="/profileoverview/lists/:listId" component={ListEntries} />
                         <Route path="/profileoverview/settings" component={ProfileSettings} />
-                        <Route path="/search/entries/:query?" component={EntrySearchPage} />
-                        <Route path="/search/tags/:query?" component={TagSearchPage} />
+                        <Route path="/search" component={SearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />

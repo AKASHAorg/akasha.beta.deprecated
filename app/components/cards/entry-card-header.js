@@ -21,7 +21,7 @@ const EntryCardHeader = (props) => {
         );
     }
     const ethAddress = entry.getIn(['author', 'ethAddress']);
-    const akashaId = entry.getIn(['author', 'akashaId']);
+    const akashaId = author.get('akashaId');
     const content = entry.get('content');
     const publishDate = new Date(entry.get('publishDate') * 1000);
     const wordCount = (content && content.get('wordCount')) || 0;
