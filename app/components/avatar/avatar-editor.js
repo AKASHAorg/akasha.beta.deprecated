@@ -89,6 +89,8 @@ class AvatarEditr extends Component {
             avatarImage: files,
             isNewAvatarLoaded: true,
             highlightDropZone: false,
+        }, () => {
+            console.log('files: ', this.state.avatarImage);
         });
     }
     _handleImageLoad = () => {
@@ -190,10 +192,10 @@ class AvatarEditr extends Component {
                     className="avatar__avatar-editor"
                     border={0}
                     image={avatarImage}
+                    disableDrop
                     ref={(editor) => { this.editor = editor; }}
                     scale={this.state.avatarScale}
                     rotate={this.state.rotation}
-                    onDropFile={this._handleImageDrop}
                     onLoadSuccess={this._handleImageLoad}
                   />
                   {this.state.avatarClose &&
