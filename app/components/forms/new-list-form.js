@@ -77,6 +77,7 @@ class NewListForm extends Component {
                   autoFocus
                   onKeyDown={this.onKeyDown}
                   placeholder={intl.formatMessage(listMessages.namePlaceholder)}
+                  maxLength="70"
                 />
               )}
             </FormItem>
@@ -93,6 +94,7 @@ class NewListForm extends Component {
                 <Input
                   onKeyDown={this.onKeyDown}
                   placeholder={intl.formatMessage(listMessages.descriptionPlaceholder)}
+                  maxLength="100"
                 />
               )}
             </FormItem>
