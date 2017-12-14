@@ -11,13 +11,13 @@ class SideMenu extends Component {
         };
     }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.editorHasFocus) {
-            this.setState({
-                open: false
-            }, () => {
-                this.props.onSidebarToggle(false);
-            });
-        }
+        // if (nextProps.editorHasFocus) {
+        //     this.setState({
+        //         open: false
+        //     }, () => {
+        //         this.props.onSidebarToggle(false);
+        //     });
+        // }
     }
     componentWillUnmount () {
         this.setState({

@@ -31,12 +31,14 @@ class TagEditor extends Component {
         };
         this._openedChannels = [];
     }
+
     componentDidMount () {
         const { tags } = this.props;
         if (tags && tags.size > 0) {
             this._checkTagExistence(tags);
         }
     }
+
     componentWillReceiveProps (nextProps) {
         const { tags, match } = nextProps;
         const { draftId } = match.params;
@@ -51,6 +53,8 @@ class TagEditor extends Component {
                     this._checkTagExistence(tags);
                 }
             });
+        } else if (!this.props.tags && tags && tags.size > 0) {
+            this._checkTagExistence(tags);
         }
     }
     // capture up and down keys.
@@ -93,6 +97,7 @@ class TagEditor extends Component {
             }
         }
     }
+
     openChannel = (channel, manager, cb) => {
         if (!this._openedChannels.includes(channel.channel)) {
             manager.on(() => {
@@ -103,6 +108,7 @@ class TagEditor extends Component {
         }
         return cb();
     }
+
     _checkTagCreationAllowance = () => {
         const { ethAddress } = this.props;
         const serverChannel = self.Channel.server.tags.canCreate;
@@ -117,6 +123,7 @@ class TagEditor extends Component {
             serverChannel.send({ ethAddress });
         });
     }
+
     _checkTagExistence = (tagList) => {
         const serverChannel = window.Channel.server.tags.exists;
         const clientChannel = window.Channel.client.tags.exists;
@@ -135,36 +142,41 @@ class TagEditor extends Component {
         }
         clientChannel.on(this.channelCb);
         tagList.forEach((tagName) => {
-            if (!this.state.existentTags.includes(tagName)) {
-                serverChannel.send({ tagName });
-            }
+            serverChannel.send({ tagName });
         });
     }
+
     removeExistsListener = () => {
         window.Channel.client.tags.exists.removeListener(this.channelCb);
     }
+
     componentWillUnmount () {
         if (this.channelCb) {
             this.removeExistsListener();
         }
     }
+
     _addNewTag = (tagName, existent) => {
         const { tags } = this.props;
+        if (tags.includes(tagName.toLowerCase())) {
+            return;
+        }
         this.setState({
             existentTags: existent ? [...this.state.existentTags, existent] : this.state.existentTags,
             partialTag: '',
             tagInputWidth: 0
         }, () => {
-            this.props.onTagUpdate(tags.push(tagName));
+            this.props.onTagUpdate(tags.push(tagName.toLowerCase().replace('#', '')));
             this.props.searchResetResults();
             this.tagInput.focus();
         });
     }
+
     _detectTagCreationKeys = (ev) => {
         if (tagCreatorKeycodes.includes(ev.which)) {
             if (this.state.partialTag.length > 2) {
-                this._checkTagExistence([this.state.partialTag]);
-                this._addNewTag(this.state.partialTag);
+                this._checkTagExistence([this.state.partialTag.toLowerCase()]);
+                this._addNewTag(this.state.partialTag.toLowerCase());
                 this.props.searchResetResults();
             }
             ev.preventDefault();
@@ -213,20 +225,22 @@ class TagEditor extends Component {
     }
 
     _handleTagChange = (ev) => {
-        if (this.state.partialTag.length === 32 && ev.target.value.length > 32) {
+        const { partialTag } = this.state;
+        if (partialTag.length === 32 && ev.target.value.length > 32) {
             return;
         }
         this.setState({
             partialTag: ev.target.value,
             tagInputWidth: this._getTextWidth(ev.target.value).width + 20,
         }, () => {
-            if (this.state.partialTag.length >= 1) {
-                this.props.searchTags(this.state.partialTag);
+            if (partialTag.length >= 1) {
+                this.props.searchTags(partialTag.replace('#', ''));
             } else {
                 this.props.searchResetResults();
             }
         });
     }
+
     _handleTagRegister = tagName =>
         (ev) => {
             const { actionAdd, ethAddress } = this.props;
@@ -237,6 +251,7 @@ class TagEditor extends Component {
             actionAdd(ethAddress, actionTypes.tagCreate, payload);
             ev.preventDefault();
         }
+
     _changeInputFocus = focusState =>
         () => setTimeout(() => this.setState({
             inputHasFocus: focusState
@@ -250,6 +265,7 @@ class TagEditor extends Component {
                 this.props.searchResetResults();
             }
         }), 100);
+
     _getTagPopoverContent = (tag) => {
         const { intl } = this.props;
         const { canCreateTags } = this.state;
@@ -271,24 +287,13 @@ class TagEditor extends Component {
               >
                 {intl.formatMessage(generalMessages.cancel)}
               </Button>
-              {canCreateTags &&
-                <Button
-                  type="primary"
-                  size="small"
-                  className="tag-editor__tag-item-popover-actions-button"
-                  onClick={this._handleTagRegister(tag)}
-                >
-                  {intl.formatMessage(generalMessages.create)}
-                </Button>
-              }
             </div>
           </div>
         );
     }
     render () {
-        const { tagInputWidth, inputHasFocus, existentTags } = this.state;
+        const { tagInputWidth, inputHasFocus, existentTags, tagError } = this.state;
         const { tagSuggestionsCount, intl, tags, inputDisabled } = this.props;
-
         return (
           <div
             className={`tag-editor ${this.props.className}`}
@@ -310,7 +315,7 @@ class TagEditor extends Component {
                     }
                 >
                   { tag }
-                  {existentTags.includes(tag) &&
+                  {existentTags.includes(tag) && !tagError &&
                     <span
                       className="tag-item__delete-button"
                       onClick={this._deleteTag(tag)}
@@ -318,7 +323,7 @@ class TagEditor extends Component {
                       <Icon type="close" />
                     </span>
                   }
-                  {!existentTags.includes(tag) &&
+                  {!existentTags.includes(tag) && !tagError &&
                     <span className="tag-item__info-button" >
                       <Icon type="question" />
                     </span>

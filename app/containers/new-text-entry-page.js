@@ -25,7 +25,6 @@ class NewEntryPage extends Component {
         showPublishPanel: false,
         errors: {},
         shouldResetCaret: false,
-        scrollPosition: 'noScroll'
     }
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
@@ -46,20 +45,16 @@ class NewEntryPage extends Component {
                 entryType: 'article',
             });
         }
-        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId) {
+        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
-                    shouldResetCaret: true,
-                    scrollPosition: 'noScroll'
+                    shouldResetCaret: true
                 });
             } else {
                 const selection = EditorState.moveSelectionToEnd(
                     draftObj.getIn(['content', 'draft'])
                 ).getSelection();
                 this.editor.updateCaretPosition(selection);
-                this.setState({
-                    scrollPosition: 'noScroll'
-                });
             }
         } else {
             this.setState({
@@ -265,7 +260,7 @@ class NewEntryPage extends Component {
     }
     /* eslint-disable complexity */
     render () {
-        const { showPublishPanel, errors, shouldResetCaret, scrollPosition } = this.state;
+        const { showPublishPanel, errors, shouldResetCaret } = this.state;
         const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
@@ -339,8 +334,7 @@ class NewEntryPage extends Component {
                       ref={this._createRef('titleInput')}
                       className={
                         `edit-entry-page__title-input-field
-                        edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}
-                        edit-entry-page__title-input-field_${scrollPosition}`
+                        edit-entry-page__title-input-field${showSecondarySidebar ? '' : '_full'}`
                       }
                       placeholder={intl.formatMessage(entryMessages.title)}
                       onChange={this._handleTitleChange}
@@ -369,10 +363,7 @@ class NewEntryPage extends Component {
                   </div>
                   <TagEditor
                     ref={this._createRef('tagEditor')}
-                    className={
-                        `edit-entry-page__tag-editor
-                        edit-entry-page__tag-editor_${scrollPosition}`
-                    }
+                    className="edit-entry-page__tag-editor"
                     match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
