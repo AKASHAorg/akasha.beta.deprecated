@@ -258,9 +258,6 @@ export const selectLocalProfiles = state =>
         .get('localProfiles')
         .map(ethAddress => selectProfile(state, ethAddress));
 
-export const selectLoggedAkashaId = state =>
-    state.profileState.getIn(['loggedProfile', 'akashaId']);
-
 export const selectLoggedEthAddress = state =>
     state.profileState.getIn(['loggedProfile', 'ethAddress']);
 
@@ -375,9 +372,16 @@ export const selectResolvingComment = (state, commentId) =>
     state.commentsState.getIn(['flags', 'resolvingComments', commentId]);
 
 export const selectSearchEntries = state =>
-    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+    state.searchState.entryIds.map(entryId => state.entryState.getIn(['byId', entryId]));
+
+export const selectSearchEntryOffset = state => state.searchState.entryIds.size;
+
+export const selectSearchProfiles = state =>
+    state.searchState.profiles.map(ethAddress => state.profileState.getIn(['byEthAddress', ethAddress]));
 
 export const selectSearchQuery = state => state.searchState.get('query');
+
+export const selectSearchTags = state => state.searchState.get('tags');
 
 export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);

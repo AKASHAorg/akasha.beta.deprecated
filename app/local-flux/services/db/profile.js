@@ -9,27 +9,6 @@ profileDB.version(1).stores({
     tempProfile: '&ethAddress'
 });
 
-// Add a new table: knownAkashaIds
-profileDB.version(2).stores({
-    knownAkashaIds: '&akashaId'
-});
-
-//
-// Ugrading to a new version
-//
-// profileDB.version(2).stores({
-//     localProfiles: '&account, createdAt',
-//     loggedProfile: '&account',
-//     tempProfile: '&akashaId, currentStatus'
-// }).upgrade((transaction) => {
-//     transaction.localProfiles.toCollection().modify((profile) => {
-//         profile.account = profile.address;
-//         profile.createdAt = new Date();
-//         delete profile.address;
-//         delete profile.akashaId;
-//     });
-// });
-
 profileDB.tempProfile.defineClass(tempProfileSchema);
 profileDB.tempProfile.defineClass(loggedProfileSchema);
 

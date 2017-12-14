@@ -18,7 +18,7 @@ class NewSearchColumn extends Component {
 
     getInputRef = (el) => { this.input = el; };
 
-    onSearch = value => this.props.onSearch(value);
+    onSearch = value => this.props.onSearch(value, true);
 
     onChange = (value) => {
         const { column } = this.props;

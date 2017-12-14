@@ -35,6 +35,14 @@ const entryIteratorHandler = (state, { data }) => {
     return state.set('byId', byId);
 };
 
+const entrySearchIteratorHandler = (state, { data }) => {
+    const collection = data.collection.map(res => ({
+        entryId: res.entryId,
+        author: { ethAddress: res.ethAddress }
+    }));
+    return entryIteratorHandler(state, { data: { collection } });
+};
+
     // state.withMutations((mState) => {
     //     const moreEntries = data.limit === data.collection.length;
     //     data.collection.forEach((entry, index) => {
@@ -311,9 +319,9 @@ const entryState = createReducer(initialState, {
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
-    [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
+    [types.SEARCH_MORE_QUERY_SUCCESS]: entrySearchIteratorHandler,
 
-    [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler
+    [types.SEARCH_QUERY_SUCCESS]: entrySearchIteratorHandler
 });
 
 export default entryState;

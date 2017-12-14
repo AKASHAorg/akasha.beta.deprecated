@@ -39,7 +39,7 @@ class NewIdentityInterests extends Component {
 
     onChange = (ev) => {
         this.setState({ query: ev.target.value });
-        this.props.searchTags(ev.target.value, 20);
+        this.props.searchTags(ev.target.value);
     }
 
     handleSkipStep = () => {

@@ -1,11 +1,13 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const searchMoreQuery = (text, offset) => action(types.SEARCH_MORE_QUERY, { text, offset });
+export const searchMoreProfiles = () => action(types.SEARCH_MORE_PROFILES);
+
+export const searchMoreQuery = () => action(types.SEARCH_MORE_QUERY);
 export const searchMoreQuerySuccess = data => action(types.SEARCH_MORE_QUERY_SUCCESS, { data });
 export const searchMoreQueryError = error => action(types.SEARCH_MORE_QUERY_ERROR, { error });
 
-export const searchProfiles = query => action(types.SEARCH_PROFILES, { query });
+export const searchProfiles = (query, autocomplete) => action(types.SEARCH_PROFILES, { query, autocomplete });
 export const searchProfilesError = (error) => {
     error.code = 'SPE01';
     error.messageId = 'searchProfiles';
@@ -19,6 +21,13 @@ export const searchQueryError = error => action(types.SEARCH_QUERY_ERROR, { erro
 
 export const searchResetResults = () => action(types.SEARCH_RESET_RESULTS);
 
+export const searchSyncEntries = following => action(types.SEARCH_SYNC_ENTRIES, { following });
+export const searchSyncEntriesError = (error) => {
+    error.code = 'SSEE01';
+    return action(types.SEARCH_SYNC_ENTRIES_ERROR, { error });
+};
+export const searchSyncEntriesSuccess = data => action(types.SEARCH_SYNC_ENTRIES_SUCCESS, { data });
+
 export const searchSyncTags = () => action(types.SEARCH_SYNC_TAGS);
 export const searchSyncTagsError = (error) => {
     error.code = 'SSTE01';
@@ -26,7 +35,7 @@ export const searchSyncTagsError = (error) => {
 };
 export const searchSyncTagsSuccess = data => action(types.SEARCH_SYNC_TAGS_SUCCESS, { data });
 
-export const searchTags = (query, limit) => action(types.SEARCH_TAGS, { query, limit });
+export const searchTags = (query, autocomplete) => action(types.SEARCH_TAGS, { query, autocomplete });
 export const searchTagsError = (error) => {
     error.code = 'STE01';
     error.messageId = 'searchTags';

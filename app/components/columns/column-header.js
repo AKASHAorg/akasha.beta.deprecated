@@ -61,7 +61,7 @@ class ColumnHeader extends Component {
     onSearch = (value) => {
         const { onSearch } = this.props;
         if (onSearch) {
-            onSearch(value);
+            onSearch(value, true);
         }
     };
 

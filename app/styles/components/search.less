@@ -1,26 +1,16 @@
-.highlights {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+.search {
     background-color: @background;
-    padding-bottom: 40px;
-
-    &__wrap {
-        height: 100%;
-        padding-right: 4px;
-    }
+    height: 100%;
     
     &__content {
-        width: 80%;
+        width: 60%;
+        height: 100%;
         margin: 0 auto;
     }
 
-    &__search {
+    &__input-wrapper {
         padding: 40px 5px 20px 5px;
-
-        &_editing {
-            opacity: 0.7;
-        }    
+        height: 96px;
 
         .ant-input-prefix {
             display: flex;
@@ -35,5 +25,17 @@
         .ant-input-affix-wrapper .ant-input {
             padding-left: 45px;
         }
+    }
+
+    .ant-tabs {
+        height: ~'calc(100% - 96px)';
+    }
+
+    .ant-tabs-bar {
+        margin-bottom: 0px;
+    }
+
+    .ant-tabs-content {
+        height: ~'calc(100% - 44px)';
     }
 }

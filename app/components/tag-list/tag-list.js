@@ -1,91 +1,51 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import throttle from 'lodash.throttle';
+import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
+import classNames from 'classnames';
 import { DataLoader } from '../';
-import { isInViewport } from '../../utils/domUtils';
+import { entryMessages, searchMessages } from '../../locale-data/messages';
 
 class TagList extends Component {
-    componentDidMount () {
-        if (this.container) {
-            this.container.addEventListener('scroll', this.throttledHandler);
-        }
-        window.addEventListener('resize', this.throttledHandler);
+    renderTagListItem = (tag, index) => {
+        const { entriesCount, intl, tags } = this.props;
+        const itemClass = classNames('tag-list__item', {
+            'tag-list__item_last': index === tags.size - 1
+        });
+        return (
+          <div key={tag} className={itemClass}>
+            <div className="tag-list__item-text-wrapper">
+              <span className="tag-list__tag-name">#{tag}</span>
+              <span className="tag-list__entry-count">
+                {intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) })}
+              </span>
+            </div>
+            <div className="tag-list__buttons">
+              <Button className="tag-list__button" size="small">Add to board</Button>
+              <Button className="tag-list__button tag-list__preview-button" size="small">
+                Preview
+              </Button>
+            </div>
+          </div>
+        );
     }
-
-    componentWillUnmount () {
-        if (this.container) {
-            this.container.removeEventListener('scroll', this.throttledHandler);
-        }
-        window.removeEventListener('resize', this.throttledHandler);
-    }
-
-    getContainerRef = (el) => { this.container = el; };
-
-    getTriggerRef = (el) => { this.trigger = el; };
-
-    checkTrigger = () => {
-        if (this.trigger && isInViewport(this.trigger)) {
-            this.props.fetchMoreTags();
-        }
-    };
-
-    throttledHandler = throttle(this.checkTrigger, 500);
-
 
     render () {
-        const { tags, style, defaultTimeout, fetchingTags, fetchingMoreTags, moreTags } = this.props;
-        const { palette } = this.context.muiTheme;
+        const { fetchingTags, intl, placeholderMessage, tags } = this.props;
+        const placeholder = placeholderMessage || intl.formatMessage(searchMessages.noResults);
         return (
-          <div
-            style={Object.assign({}, {
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                minHeight: '500px'
-            }, style)}
-            ref={this.getContainerRef}
-          >
+          <div className="tag-list">
             <DataLoader
               flag={fetchingTags}
-              timeout={defaultTimeout}
               style={{ paddingTop: '80px' }}
             >
-              <div style={{ width: '100%' }}>
+              <div style={{ height: '100%' }}>
                 {tags.size === 0 &&
-                  <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        color: palette.disabledColor,
-                        paddingTop: '10px'
-                    }}
-                  >
-                    No Tags
+                  <div className="tag-list__placeholder">
+                    {placeholder}
                   </div>
                 }
-                {/* <List>
-                  {tags && tags.map((tag) => {
-                      if (!tag) {
-                          return null;
-                      }
-                      return (
-                        <ListItem key={tag.tagName} primaryText={tag.tagName} secondaryText={<p> { tag.count } entries</p>} />
-                      );
-                  })}
-                </List> */}
-                {moreTags &&
-                  <div style={{ height: '35px' }}>
-                    <DataLoader flag={fetchingMoreTags} size="small">
-                      <div
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
-                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
-                      </div>
-                    </DataLoader>
-                  </div>
-                }
+                {tags && tags.map(this.renderTagListItem)}
               </div>
             </DataLoader>
           </div>
@@ -94,17 +54,11 @@ class TagList extends Component {
 }
 
 TagList.propTypes = {
-    tags: PropTypes.shape(),
-    defaultTimeout: PropTypes.number,
-    style: PropTypes.shape(),
-    fetchMoreTags: PropTypes.func,
-    fetchingMoreTags: PropTypes.bool,
+    entriesCount: PropTypes.shape(),
     fetchingTags: PropTypes.bool,
-    moreTags: PropTypes.bool
+    intl: PropTypes.shape().isRequired,
+    placeholderMessage: PropTypes.string,
+    tags: PropTypes.shape().isRequired,
 };
 
-TagList.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
-export default TagList;
+export default injectIntl(TagList);
