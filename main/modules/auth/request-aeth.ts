@@ -9,9 +9,12 @@ const execute = Promise.coroutine(function* (data: RequestEtherRequest, cb) {
                 json: { address: data.address, token: FAUCET_TOKEN },
                 agentOptions: { rejectUnauthorized: false }
             },
-            (error: Error, response: any, body: { tx: string }) => {
+            (error: Error, response: any, body: { tx: string, message?: string }) => {
                 if (error) {
                     return reject(error);
+                }
+                if (!body.tx) {
+                    return reject(new Error( body.message ? body.message : 'The request could not be completed.'));
                 }
                 resolve(body);
                 Contracts.watchTx(body.tx).then(success => cb('', success)).catch(err => cb(err));
