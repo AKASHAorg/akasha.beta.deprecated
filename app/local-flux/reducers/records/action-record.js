@@ -43,5 +43,6 @@ export const ActionState = Record({
         toggleDonations: false
     }),
     published: new List(),
-    publishing: new List()
+    publishing: new List(),
+    toPublish: null
 });
