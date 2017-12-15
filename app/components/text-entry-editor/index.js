@@ -26,7 +26,7 @@ class EntryEditor extends Component {
         const targetNode = document.querySelector(`div[data-offset-key='${dataKey}']`);
 
         if (targetNode) {
-            targetNode.scrollIntoView();
+            targetNode.scrollIntoViewIfNeeded();
         }
     };
 

@@ -88,12 +88,12 @@ class NewEntryPage extends Component {
 
     _handleEditorChange = (editorState) => {
         const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
+        this.props.draftUpdate(draftObj.merge(fromJS({
             ethAddress: loggedProfile.get('ethAddress'),
-            content: draftObj.get('content').mergeDeep({
+            content: draftObj.get('content').mergeDeep(fromJS({
                 draft: editorState,
-            }),
-        }));
+            })),
+        })));
         this.setState(prevState => ({
             errors: {
                 ...prevState.errors,
@@ -352,9 +352,6 @@ class NewEntryPage extends Component {
                       editorState={draftWithSelection}
                       selectionState={currentSelection}
                       baseUrl={baseUrl}
-                      onScrollBetween={this._handleScrollInBetween}
-                      onScrollBottom={this._handleScrollAtBottom}
-                      onScrollTop={this._handleScrollAtTop}
                       intl={intl}
                     />
                     {errors.draft &&

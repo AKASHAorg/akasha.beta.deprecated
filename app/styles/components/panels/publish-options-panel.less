@@ -1,6 +1,7 @@
 .publish-options-panel {
     height: 100%;
     position: relative;
+    border-left: 1px solid @border-color;
     &__header {
         display: flex;
         flex-wrap: nowrap;
@@ -10,24 +11,31 @@
         left: 0;
         right: 0;
         background: @light-background;
+        z-index: 10;
+        transition: padding 0.218s ease-in-out;
         &_scrolled {
             border-bottom: 1px solid @light-border;
+            padding: 6px 24px;
         }
     }
     &__content {
         position: absolute;
-        top: 64px;
+        top: 68px;
         left: 0;
         right: 0;
         bottom: 0;
         overflow-y: auto;
         overflow-x: hidden;
         padding: 0 24px 64px 24px;
+        &_scrolled {
+            top: 45px;
+        }
     }
     &__header-title {
         flex: 100%;
         font-weight: 500;
         font-size: 14px;
+        align-self: center;
     }
     &__header-actions {
         flex: 1 auto;
