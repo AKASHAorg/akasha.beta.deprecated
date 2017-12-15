@@ -7,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
 import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
-    selectNewCommentsBlock, selectNewestCommentBlock, selectToken, selectLoggedAkashaId } from '../selectors';
+    selectNewCommentsBlock, selectNewestCommentBlock, selectToken } from '../selectors';
 
 const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;

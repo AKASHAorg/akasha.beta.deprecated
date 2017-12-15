@@ -136,6 +136,26 @@ const setupMessages = defineMessages({
         description: 'Express setup option checkbox',
         defaultMessage: 'Express setup'
     },
+    faucetPending: {
+        id: 'app.setup.faucetPending',
+        description: 'message shown while faucet tx is pending',
+        defaultMessage: 'You will receive test ethers shortly...'
+    },
+    faucetError: {
+        id: 'app.setup.faucetError',
+        description: 'message shown when faucet tx fails',
+        defaultMessage: 'Something went wrong!'
+    },
+    faucetRetry: {
+        id: 'app.setup.faucetRetry',
+        description: 'message shown when faucet tx fails to allow user to retry the tx',
+        defaultMessage: 'Try again here'
+    },
+    faucetSuccess: {
+        id: 'app.setup.faucetSuccess',
+        description: 'message shown on faucet tx success',
+        defaultMessage: 'You now have test ethers in your balance.'
+    },
     advancedSetup: {
         id: 'app.setup.advancedSetup',
         description: 'Advanced setup option checkbox',

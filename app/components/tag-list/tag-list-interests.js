@@ -19,7 +19,10 @@ class TagListInterests extends Component {
         });
         return (
           <div key={tag} className={itemClass}>
-            <div className="tag-list-interests__tag-list-item-text-wrapper">
+            <div
+              className="tag-list-interests__tag-list-item-text-wrapper content-link"
+              onClick={() => this.handleSwitch(tag)}
+            >
               <span className="tag-list-interests__tag-list-tag-name">#{tag}</span>
               <span className="tag-list-interests__tag-list-entry-count">
                 {intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) })}

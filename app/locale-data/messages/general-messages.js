@@ -320,6 +320,16 @@ const generalMessages = defineMessages({
         description: 'an action is pending',
         defaultMessage: 'Pending'
     },
+    people: {
+        id: 'app.general.people',
+        description: 'people',
+        defaultMessage: 'People'
+    },
+    preview: {
+        id: 'app.general.preview',
+        description: 'preview',
+        defaultMessage: 'Preview'
+    },
     processingImage: {
         id: 'app.general.processingImage',
         description: 'Message to show while images are being precessed',
@@ -434,6 +444,11 @@ const generalMessages = defineMessages({
         id: 'app.general.submit',
         description: 'submit button label',
         defaultMessage: 'Submit'
+    },
+    tags: {
+        id: 'app.general.tags',
+        description: 'tags',
+        defaultMessage: 'Tags'
     },
     terms: {
         id: 'app.general.terms',

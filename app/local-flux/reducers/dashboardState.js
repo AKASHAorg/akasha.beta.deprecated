@@ -254,7 +254,13 @@ const dashboardState = createReducer(initialState, {
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
+    [types.HIDE_PREVIEW]: state =>
+        state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
+
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
+
+    [types.SHOW_PREVIEW]: state =>
+        state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
 });
 
 export default dashboardState;

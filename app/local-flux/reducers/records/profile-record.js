@@ -110,6 +110,7 @@ export const ProfileState = Record({
     essenceIterator: new EssenceIterator(),
     errors: new List(), // to be removed
     exists: new Map(),
+    faucet: null,
     fetchingFullLoggedProfile: false, // to be removed
     flags: new Flags(),
     followers: new Map(),

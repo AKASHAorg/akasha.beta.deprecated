@@ -95,6 +95,7 @@ class ProfileEdit extends Component {
                 tempProfileCreate={this.props.tempProfileCreate}
                 onProfileUpdate={this._updateTempProfile}
                 onTermsShow={this.props.showTerms}
+                profileEditToggle={this.props.profileEditToggle}
               />
             </div>
             <div className="profile-edit__grey-background" />

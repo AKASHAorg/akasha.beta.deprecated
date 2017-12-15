@@ -49,7 +49,7 @@ class ProfileList extends Component {
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreProfiles} size="small">
                       <div className="flex-center">
-                          <Waypoint onEnter={this.props.fetchMoreProfiles}/>
+                        <Waypoint onEnter={this.props.fetchMoreProfiles} />
                       </div>
                     </DataLoader>
                   </div>

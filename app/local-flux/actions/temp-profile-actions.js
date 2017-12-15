@@ -9,6 +9,8 @@ export const setTempProfile = data => action(types.SET_TEMP_PROFILE, { data });
 
 export const tempProfileDelete = () => action(types.TEMP_PROFILE_DELETE);
 
+export const tempProfileDeleteFull = () => action(types.TEMP_PROFILE_DELETE_FULL);
+
 export const tempProfileUpdate = data => action(types.TEMP_PROFILE_UPDATE, { data });
 
 export const tempProfileGet = ethAddress => action(types.TEMP_PROFILE_GET, { ethAddress });

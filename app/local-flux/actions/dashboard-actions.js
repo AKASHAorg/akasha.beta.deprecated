@@ -66,17 +66,6 @@ export const dashboardGetAllError = (error) => {
 };
 
 export const dashboardGetAllSuccess = data => action(types.DASHBOARD_GET_ALL_SUCCESS, { data });
-export const dashboardGetProfileSuggestions = (akashaId, columnId) =>
-    action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, { akashaId, columnId });
-
-export const dashboardGetProfileSuggestionsError = (error, request) => {
-    error.code = 'DGTSE01';
-    error.messageId = 'dashboardGetProfileSuggestions';
-    return action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS_ERROR, { error, request });
-};
-
-export const dashboardGetProfileSuggestionsSuccess = (data, request) =>
-    action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS, { data, request });
 export const dashboardRename = (dashboardId, newName) =>
     action(types.DASHBOARD_RENAME, { dashboardId, newName });
 
