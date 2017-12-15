@@ -42,10 +42,12 @@ class TransferForm extends Component {
     render () {
         const { ethAddress, balance, form, intl, onCancel, pendingTransfer, type } = this.props;
         const { getFieldDecorator, getFieldError } = form;
+        const { amount, receiver } = form.getFieldsValue();
         const amountError = getFieldError('amount');
         const extra = type === 'eth' ?
             intl.formatMessage(formMessages.maxEthAmount, { eth: balance }) :
             intl.formatMessage(formMessages.maxAethAmount, { aeth: balance });
+        const emptyInputs = !amount || !receiver;
 
         return (
           <Form className="transfer-form" hideRequiredMark onSubmit={this.onSubmit}>
@@ -108,7 +110,7 @@ class TransferForm extends Component {
               </Button>
               <Button
                 className="transfer-form__button"
-                disabled={!!amountError || pendingTransfer}
+                disabled={!!amountError || pendingTransfer || emptyInputs}
                 htmlType="submit"
                 loading={pendingTransfer}
                 onClick={this.onSubmit}
