@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Input } from 'antd';
 import * as columnTypes from '../../constants/columns';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { dashboardAdd } from '../../local-flux/actions/dashboard-actions';
+import { selectAllDashboards } from '../../local-flux/selectors';
 
 const FormItem = Form.Item;
 
@@ -31,10 +34,10 @@ class NewDashboardForm extends Component {
 
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { form, onSave, tag } = this.props;
+        const { form, tag } = this.props;
         const { name } = form.getFieldsValue();
         const columns = [{ type: columnTypes.tag, value: tag }];
-        onSave(name, columns);
+        this.props.dashboardAdd(name, columns);
     };
 
     validateName = (rule, value, callback) => {
@@ -107,12 +110,23 @@ class NewDashboardForm extends Component {
 }
 
 NewDashboardForm.propTypes = {
+    dashboardAdd: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
     tag: PropTypes.string.isRequired,
 };
 
-export default Form.create()(injectIntl(NewDashboardForm));
+function mapStateToProps (state) {
+    return {
+        dashboards: selectAllDashboards(state)
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        dashboardAdd
+    }
+)(Form.create()(injectIntl(NewDashboardForm)));

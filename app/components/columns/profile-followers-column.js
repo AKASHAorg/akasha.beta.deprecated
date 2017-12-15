@@ -49,7 +49,7 @@ class ProfileFollowersColumn extends Component {
               readOnly
               title={intl.formatMessage(profileMessages.followers)}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <ProfileList
               context="profilePageFollowers"
               fetchingProfiles={fetchingFollowers}

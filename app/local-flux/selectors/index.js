@@ -11,6 +11,8 @@ export const selectActionsHistory = state =>
 export const selectActionPending = (state, actionType) =>
     state.actionState.getIn(['pending', actionType]);
 
+export const selectActionToPublish = state => state.actionState.get('toPublish');
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {
@@ -35,6 +37,9 @@ export const selectActiveDashboardColumns = (state) => {
 export const selectActiveDashboardId = state => state.dashboardState.get('activeDashboard');
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
+
+export const selectAllDashboards = state =>
+    state.dashboardState.get('allDashboards').map(id => selectDashboard(state, id));
 
 export const selectAllLicenses = state => state.licenseState.get('byId');
 
@@ -110,7 +115,8 @@ export const selectDashboards = (state) => {
     return state.dashboardState.get('allDashboards')
         .filter(id =>
             selectDashboard(state, id).get('name').toLowerCase().includes(search.toLowerCase())
-        );
+        )
+        .map(id => selectDashboard(state, id));
 };
 
 export const selectDashboardSearch = state => state.dashboardState.get('search');
@@ -258,9 +264,6 @@ export const selectLocalProfiles = state =>
         .get('localProfiles')
         .map(ethAddress => selectProfile(state, ethAddress));
 
-export const selectLoggedAkashaId = state =>
-    state.profileState.getIn(['loggedProfile', 'akashaId']);
-
 export const selectLoggedEthAddress = state =>
     state.profileState.getIn(['loggedProfile', 'ethAddress']);
 
@@ -375,9 +378,16 @@ export const selectResolvingComment = (state, commentId) =>
     state.commentsState.getIn(['flags', 'resolvingComments', commentId]);
 
 export const selectSearchEntries = state =>
-    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+    state.searchState.entryIds.map(entryId => state.entryState.getIn(['byId', entryId]));
+
+export const selectSearchEntryOffset = state => state.searchState.entryIds.size;
+
+export const selectSearchProfiles = state =>
+    state.searchState.profiles.map(ethAddress => state.profileState.getIn(['byEthAddress', ethAddress]));
 
 export const selectSearchQuery = state => state.searchState.get('query');
+
+export const selectSearchTags = state => state.searchState.get('tags');
 
 export const selectSelectionState = (state, draftId, ethAddress) =>
     state.draftState.getIn(['selection', draftId, ethAddress]);

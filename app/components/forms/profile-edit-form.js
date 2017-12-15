@@ -35,8 +35,8 @@ class ProfileEditForm extends Component {
             tempProfile.get('lastName') !== loggedProfileData.get('lastName') ||
             tempProfile.get('about') !== loggedProfileData.get('about') ||
             tempProfile.get('avatar') !== loggedProfileData.get('avatar') ||
-            !tempProfile.get('backgroundImage').equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
-            !tempProfile.get('links').equals(fromJS(loggedProfileData.get('links')))
+            !fromJS(tempProfile.get('backgroundImage')).equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
+            !fromJS(tempProfile.get('links')).equals(fromJS(loggedProfileData.get('links')))
         );
         this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
         if (profileExistsData !== this.props.profileExistsData) {
@@ -198,13 +198,11 @@ class ProfileEditForm extends Component {
                 return null;
             }
             if (typeof avatar === 'string') {
-                console.log('avatarString: ', avatar);
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatar)
                 );
             }
             return uploadImage(avatar).then((avatarIpfs) => {
-                console.log('avatarHash: ', avatarIpfs);
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatarIpfs)
                 );
@@ -231,6 +229,7 @@ class ProfileEditForm extends Component {
     _handleSave = () => {
         const { tempProfile } = this.props;
         this.props.tempProfileCreate(tempProfile);
+        this.props.profileEditToggle();
     }
 
     _handleSubmit = (ev) => {
@@ -470,6 +469,7 @@ ProfileEditForm.propTypes = {
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
+    profileEditToggle: PropTypes.func,
     profileExists: PropTypes.func,
     profileExistsData: PropTypes.shape(),
     style: PropTypes.shape(),

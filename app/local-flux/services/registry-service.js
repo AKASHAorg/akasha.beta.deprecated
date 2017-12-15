@@ -69,7 +69,8 @@ export const updateTempProfile = (tempProfile, status) =>
  */
 export const deleteTempProfile = ethAddress =>
     profileDB.tempProfile
-        .delete(ethAddress);
+        .delete(ethAddress)
+        .catch(err => err);
 
 /**
  * Get all available temporary profiles

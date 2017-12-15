@@ -1,7 +1,19 @@
 import searchDB from './db/search';
 
-export const getLastBlock = type =>
-    searchDB.lastBlock
+export const getLastEntriesBlock = ethAddress =>
+    searchDB.lastEntriesBlock
+        .where('ethAddress')
+        .equals(ethAddress)
+        .first()
+        .then((data) => {
+            if (!data) {
+                return 0;
+            }
+            return data.blockNr;
+        });
+
+export const getLastTagsBlock = type =>
+    searchDB.lastTagsBlock
         .where('type')
         .equals(type)
         .first()
@@ -12,6 +24,10 @@ export const getLastBlock = type =>
             return data.blockNr;
         });
 
-export const updateLastBlock = ({ type, blockNr }) =>
-    searchDB.lastBlock
+export const updateLastEntriesBlock = ({ ethAddress, blockNr }) =>
+    searchDB.lastEntriesBlock
+        .put({ ethAddress, blockNr });
+
+export const updateLastTagsBlock = ({ type, blockNr }) =>
+    searchDB.lastTagsBlock
         .put({ type, blockNr });

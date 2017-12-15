@@ -260,7 +260,7 @@ class TagEditor extends Component {
         }, () => {
             if (this.state.inputHasFocus) {
                 if (this.state.partialTag.length >= 1) {
-                    this.props.searchTags(this.state.partialTag);
+                    this.props.searchTags(this.state.partialTag, true);
                 }
             }
             if (!this.state.inputHasFocus) {

@@ -9,6 +9,7 @@ export const draftPublish = 'draftPublish';
 export const draftPublishUpdate = 'draftPublishUpdate';
 export const entryDownvote = 'entryDownvote';
 export const entryUpvote = 'entryUpvote';
+export const faucet = 'faucet';
 export const follow = 'follow';
 export const freeAeth = 'freeAeth';
 export const profileRegister = 'profileRegister';

@@ -4,20 +4,19 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
+import { bootstrapHome, hidePreview, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, NewTextEntryPage, NewLinkEntryPage,
-    TagSearchPage } from './';
+import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
     ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
-    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
-    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SearchSecondarySidebar,
-    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
+    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
+    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
+    Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
 
 notification.config({
     top: 60,
@@ -123,7 +122,6 @@ class AppContainer extends Component {
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
-                {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size="large" style={{ paddingTop: '100px' }}>
                     <div>
@@ -134,7 +132,6 @@ class AppContainer extends Component {
                         <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
                         <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                         <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
-                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                         <Route exact path="/@:akashaId" component={ProfilePage} />
@@ -145,14 +142,13 @@ class AppContainer extends Component {
                         <Route exact path="/profileoverview/lists" component={Lists} />
                         <Route path="/profileoverview/lists/:listId" component={ListEntries} />
                         <Route path="/profileoverview/settings" component={ProfileSettings} />
-                        <Route path="/search/entries/:query?" component={EntrySearchPage} />
-                        <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
                           <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
+                          <Route path="/search" component={SearchPage} />
                         </Switch>
                         {isOverlay &&
                           <div>
@@ -172,6 +168,12 @@ class AppContainer extends Component {
                           showWallet={showWallet}
                           toggleAethWallet={this.props.toggleAethWallet}
                           toggleEthWallet={this.props.toggleEthWallet}
+                        />
+                      }
+                      {!!appState.get('showPreview') &&
+                        <PreviewPanel
+                          hidePreview={this.props.hidePreview}
+                          showPreview={appState.get('showPreview')}
                         />
                       }
                     </div>
@@ -214,7 +216,7 @@ AppContainer.propTypes = {
     errorDeleteFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     gethGetStatus: PropTypes.func,
-    // hideReportModal: PropTypes.func.isRequired,
+    hidePreview: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
@@ -243,8 +245,8 @@ export default connect(
         entryVoteCost,
         errorDeleteFatal,
         gethGetStatus,
+        hidePreview,
         hideTerms,
-        // hideReportModal,
         licenseGetAll,
         toggleAethWallet,
         toggleEthWallet,

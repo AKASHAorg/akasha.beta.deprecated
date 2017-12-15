@@ -35,6 +35,7 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
     let pendingComments;
     switch (action.type) {
         case actionTypes.bondAeth:
+        case actionTypes.faucet:
         case actionTypes.freeAeth:
         case actionTypes.toggleDonations:
         case actionTypes.transferAeth:
@@ -79,6 +80,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
     let pendingComments;
     switch (action.type) {
         case actionTypes.bondAeth:
+        case actionTypes.faucet:
         case actionTypes.freeAeth:
         case actionTypes.toggleDonations:
         case actionTypes.transferAeth:
@@ -118,7 +120,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
 const actionState = createReducer(initialState, {
     [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
         const id = `${new Date().getTime()}-${actionType}`;
-        const status = actionStatus.needAuth;
+        const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
         const action = createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, action),
