@@ -35,8 +35,8 @@ class ProfileEditForm extends Component {
             tempProfile.get('lastName') !== loggedProfileData.get('lastName') ||
             tempProfile.get('about') !== loggedProfileData.get('about') ||
             tempProfile.get('avatar') !== loggedProfileData.get('avatar') ||
-            !tempProfile.get('backgroundImage').equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
-            !tempProfile.get('links').equals(fromJS(loggedProfileData.get('links')))
+            !fromJS(tempProfile.get('backgroundImage')).equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
+            !fromJS(tempProfile.get('links')).equals(fromJS(loggedProfileData.get('links')))
         );
         this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
         if (profileExistsData !== this.props.profileExistsData) {
