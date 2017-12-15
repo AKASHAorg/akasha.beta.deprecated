@@ -229,6 +229,7 @@ class ProfileEditForm extends Component {
     _handleSave = () => {
         const { tempProfile } = this.props;
         this.props.tempProfileCreate(tempProfile);
+        this.props.profileEditToggle();
     }
 
     _handleSubmit = (ev) => {
@@ -468,6 +469,7 @@ ProfileEditForm.propTypes = {
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
+    profileEditToggle: PropTypes.func,
     profileExists: PropTypes.func,
     profileExistsData: PropTypes.shape(),
     style: PropTypes.shape(),
