@@ -50,13 +50,13 @@ class PublishOptionsPanel extends Component {
     render () {
         const { intl, onClose, licences, selectedLicence, featuredImage,
             excerpt, baseUrl, errors, linkEntry } = this.props;
-
+        const { scrolled } = this.state;
         return (
           <div className="publish-options-panel">
             <div
               className={
                   `publish-options-panel__header
-                  publish-options-panel__header${this.state.scrolled ? '_scrolled' : ''}`
+                  publish-options-panel__header${scrolled ? '_scrolled' : ''}`
               }
             >
               <div className="publish-options-panel__header-title">
@@ -71,7 +71,7 @@ class PublishOptionsPanel extends Component {
               </div>
             </div>
             <div
-              className="publish-options-panel__content"
+              className={`publish-options-panel__content publish-options-panel__content${scrolled ? '_scrolled' : ''}`}
               onScroll={this._handleContentScroll}
             >
               <div className="publish-options-panel__licence-container">

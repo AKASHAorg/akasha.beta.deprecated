@@ -53,7 +53,7 @@ class TagEditor extends Component {
                     this._checkTagExistence(tags);
                 }
             });
-        } else if (!this.props.tags && tags && tags.size > 0) {
+        } else if (!this.props.tags.size && tags && tags.size > 0) {
             this._checkTagExistence(tags);
         }
     }
