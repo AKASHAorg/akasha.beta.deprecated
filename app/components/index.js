@@ -81,6 +81,7 @@ export PanelContainerFooter from './panel-container/panel-container-footer';
 export PathInputField from './common/path-input-field';
 export PieChart from './charts/pie-chart';
 export PlusSquareIcon from './plus-square-icon';
+export PreviewPanel from './panels/preview-panel';
 export ProfileActivity from './profile/profile-activity';
 export ProfileCard from './cards/profile-card';
 export ProfileCardHeader from './cards/profile-card-header';

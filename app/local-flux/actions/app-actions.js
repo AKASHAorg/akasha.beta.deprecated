@@ -7,8 +7,10 @@ export const appSettingsToggle = () => action(types.APP_SETTINGS_TOGGLE);
 
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
+
 export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
+export const hidePreview = () => action(types.HIDE_PREVIEW);
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
 export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
@@ -28,6 +30,7 @@ export const secondarySidebarToggle = ({ forceToggle }) =>
 
 export const showNotification = notification =>
     action(types.SHOW_NOTIFICATION, { notification });
+export const showPreview = ({ columnType, value }) => action(types.SHOW_PREVIEW, { columnType, value });
 export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
 export const showTerms = () => action(types.SHOW_TERMS);
 export const toggleAethWallet = () => action(types.TOGGLE_AETH_WALLET);

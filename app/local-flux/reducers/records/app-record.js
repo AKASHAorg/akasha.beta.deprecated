@@ -8,6 +8,11 @@ export const NotificationRecord = Record({
     values: new Map(),
 });
 
+export const PreviewRecord = Record({
+    type: null,
+    value: null
+});
+
 export const AppRecord = Record({
     appReady: false,
     homeReady: false,
@@ -20,6 +25,7 @@ export const AppRecord = Record({
     showAppSettings: false,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
+    showPreview: null,
     showProfileEditor: false,
     showReportModal: null,
     showSecondarySidebar: false, // must default to false

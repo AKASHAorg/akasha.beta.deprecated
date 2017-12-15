@@ -4,6 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Popover } from 'antd';
 import classNames from 'classnames';
 import { AddToBoard, NewDashboardForm } from '../';
+import * as columnTypes from '../../constants/columns';
 import { dashboardMessages, entryMessages, generalMessages } from '../../locale-data/messages';
 
 const DASHBOARDS = 'DASHBOARDS';
@@ -70,6 +71,11 @@ class TagListItem extends Component {
         }, 100);
     };
 
+    showPreview = () => {
+        const { showPreview, tag } = this.props;
+        showPreview({ columnType: columnTypes.tag, value: tag });
+    }
+
     renderContent = () => {
         const { tag } = this.props;
         const { content } = this.state;
@@ -122,7 +128,11 @@ class TagListItem extends Component {
                   {intl.formatMessage(dashboardMessages.addToBoard)}
                 </Button>
               </Popover>
-              <Button className="tag-list-item__button tag-list-item__preview-button" size="small">
+              <Button
+                className="tag-list-item__button tag-list-item__preview-button"
+                onClick={this.showPreview}
+                size="small"
+              >
                 {intl.formatMessage(generalMessages.preview)}
               </Button>
             </div>
@@ -136,6 +146,7 @@ TagListItem.propTypes = {
     entriesCount: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     isLast: PropTypes.bool,
+    showPreview: PropTypes.func.isRequired,
     tag: PropTypes.string.isRequired,
 };
 

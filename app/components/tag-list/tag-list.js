@@ -6,13 +6,14 @@ import { searchMessages } from '../../locale-data/messages';
 
 class TagList extends Component {
     renderTagListItem = (tag, index) => {
-        const { dashboardSearch, entriesCount, tags } = this.props;
+        const { dashboardSearch, entriesCount, showPreview, tags } = this.props;
         return (
           <TagListItem
             dashboardSearch={dashboardSearch}
             entriesCount={entriesCount}
             key={tag}
             isLast={index === tags.size - 1}
+            showPreview={showPreview}
             tag={tag}
           />
         );
@@ -47,6 +48,7 @@ TagList.propTypes = {
     fetchingTags: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     placeholderMessage: PropTypes.string,
+    showPreview: PropTypes.func.isRequired,
     tags: PropTypes.shape().isRequired,
 };
 
