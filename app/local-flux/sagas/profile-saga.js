@@ -441,7 +441,7 @@ function* profileRegister ({ actionId, akashaId, address, about, avatar, backgro
 function* profileRegisterSuccess (payload) {
     const { akashaId, ethAddress } = payload.data;
     // remove saved temp profile from DB and clear tempProfileState
-    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
     // get updated profile data
     yield call(profileGetData, { akashaId, full: true });
     yield put(appActions.showNotification({
@@ -570,19 +570,16 @@ function* watchProfileFaucetChannel () {
     while (true) {
         const resp = yield take(actionChannels.auth.requestEther);
         const { actionId } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (true) {
-            if (resp.error) {
-                yield put(actions.profileFaucetError(resp.error, resp.request));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.profileFaucetError({}));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
+        if (resp.error) {
+            yield put(actions.profileFaucetError(resp.error, resp.request));
+        } else if (resp.data.receipt) {
+            yield put(actionActions.actionPublished(resp.data.receipt));
+            if (!resp.data.receipt.success) {
+                yield put(actions.profileFaucetError({}));
             }
+        } else {
+            const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+            yield put(actionActions.actionUpdate(changes));
         }
     }
 }

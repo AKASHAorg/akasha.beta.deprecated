@@ -64,7 +64,7 @@ const publishSuccessActions = {
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
     [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
     [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
-    [actionTypes.faucet]: profileActions.profileFaucet,
+    [actionTypes.faucet]: profileActions.profileFaucetSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,

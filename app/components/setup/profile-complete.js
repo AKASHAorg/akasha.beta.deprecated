@@ -67,6 +67,7 @@ class ProfileComplete extends Component {
         const { isScrolled } = this.state;
         const withShadow = isScrolled && 'profile-complete__header_with-shadow';
         const spinIcon = <Icon type="loading-3-quarters" style={{ fontSize: 30 }} spin />;
+        const self = this;
 
         function FaucetDiv (props) {
             const faucetState = props.faucet;
@@ -88,7 +89,7 @@ class ProfileComplete extends Component {
                     </div>
                     <div>{intl.formatMessage(setupMessages.faucetError)}</div>
                     <div
-                      onClick={this.props.actionAdd(loggedEthAddress, actionTypes.faucet,
+                      onClick={self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
                         { ethAddress: loggedEthAddress })}
                       className="content-link"
                     >
