@@ -34,8 +34,16 @@ function* createTempProfile () {
     }
 }
 
+/**
+ * Delete temp profile in database
+ */
+function* deleteTempProfile ({ ethAddress }) {
+    yield call([registryService, registryService.deleteTempProfile], ethAddress);
+}
+
 
 export function* watchTempProfileActions () {
     yield takeLatest(types.TEMP_PROFILE_GET, tempProfileGet);
     yield takeLatest(types.TEMP_PROFILE_CREATE, createTempProfile);
+    yield takeLatest(types.TEMP_PROFILE_DELETE_FULL, deleteTempProfile);
 }

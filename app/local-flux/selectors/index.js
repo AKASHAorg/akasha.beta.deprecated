@@ -11,6 +11,8 @@ export const selectActionsHistory = state =>
 export const selectActionPending = (state, actionType) =>
     state.actionState.getIn(['pending', actionType]);
 
+export const selectActionToPublish = state => state.actionState.get('toPublish');
+
 export const selectActiveDashboard = (state) => {
     const activeDashboard = state.dashboardState.get('activeDashboard');
     if (!activeDashboard) {

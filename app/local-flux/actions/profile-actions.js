@@ -252,6 +252,15 @@ export const profileRegisterError = (error, request) => {
 export const profileRegisterSuccess = (data, request) =>
     action(types.PROFILE_REGISTER_SUCCESS, { data, request });
 
+export const profileFaucet = ({ actionId, ethAddress }) =>
+    action(types.PROFILE_FAUCET, { actionId, ethAddress });
+
+export const profileFaucetError = (error, request) =>
+    action(types.PROFILE_FAUCET_ERROR, { error, request });
+
+export const profileFaucetSuccess = (data, request) =>
+    action(types.PROFILE_FAUCET_SUCCESS, { data, request });
+
 export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENCE_EVENTS);
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
