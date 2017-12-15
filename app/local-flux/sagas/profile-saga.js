@@ -91,7 +91,7 @@ function* profileDeleteLogged () {
         yield apply(profileService, profileService.profileDeleteLogged);
         yield put(actions.profileDeleteLoggedSuccess());
     } catch (error) {
-        yield put(actions.profileDeleteLoggedError());
+        yield put(actions.profileDeleteLoggedError(error));
     }
 }
 
@@ -427,7 +427,7 @@ function* profileUpdateLogged (loggedProfile) {
 
 function* profileRegister ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled,
     firstName, lastName, links, ethAddress }) {
-    const isProfileEdit = select(selectProfileEditToggle);
+    const isProfileEdit = yield select(selectProfileEditToggle);
     if (isProfileEdit) {
         yield put(appActions.profileEditToggle());
     }

@@ -198,13 +198,11 @@ class ProfileEditForm extends Component {
                 return null;
             }
             if (typeof avatar === 'string') {
-                console.log('avatarString: ', avatar);
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatar)
                 );
             }
             return uploadImage(avatar).then((avatarIpfs) => {
-                console.log('avatarHash: ', avatarIpfs);
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatarIpfs)
                 );
