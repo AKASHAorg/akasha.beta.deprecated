@@ -146,14 +146,14 @@ class AppContainer extends Component {
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
-                          <Route path="/@:akashaId/:entryId" component={EntryPageContainer} />
-                          <Route path="/0x:ethAddress/:entryId" component={EntryPageContainer} />
+                          <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
+                          <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
                           <Route path="/search" component={SearchPage} />
                         </Switch>
                         {isOverlay &&
                           <div>
-                            <Route path="/@:akashaId/:entryId" component={EntryPageContainer} />
-                            <Route path="/0x:ethAddress/:entryId" component={EntryPageContainer} />
+                            <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
+                            <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
                           </div>
                         }
                       </PageContent>

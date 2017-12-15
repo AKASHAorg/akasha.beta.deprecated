@@ -20,7 +20,6 @@ class EntryCard extends Component {
         this.state = {
             expanded: false,
             showVotes: false,
-            showVersions: false
         };
     }
 
@@ -38,8 +37,7 @@ class EntryCard extends Component {
             (style && style.width !== this.props.style.width) ||
             votePending !== this.props.votePending ||
             nextState.expanded !== this.state.expanded ||
-            nextState.showVotes !== this.state.showVotes ||
-            nextState.showVersions !== this.state.showVersions
+            nextState.showVotes !== this.state.showVotes
         ) {
             return true;
         }
@@ -72,6 +70,11 @@ class EntryCard extends Component {
         handleEdit(entry.get('entryId'));
     };
 
+    _handleNavigation = (href) => {
+        const { history } = this.props;
+        history.push(href);
+    };
+
     getVersion = (version) => {
         const { entry, loggedAkashaId, entryPageShow } = this.props;
         // const query = version !== undefined ? `?version=${version}` : '';
@@ -88,18 +91,6 @@ class EntryCard extends Component {
     closeVotesPanel = () => {
         this.setState({
             showVotes: false
-        });
-    };
-
-    openVersionsPanel = () => {
-        this.setState({
-            showVersions: true
-        });
-    };
-
-    closeVersionsPanel = () => {
-        this.setState({
-            showVersions: false
         });
     };
 
@@ -184,6 +175,8 @@ class EntryCard extends Component {
                 isOwnEntry={this.isOwnEntry()}
                 large={large}
                 openVersionsPanel={this.openVersionsPanel}
+                onEntryVersionNavigation={this._handleNavigation}
+                onDraftNavigation={this._handleNavigation}
               />
             }
           >

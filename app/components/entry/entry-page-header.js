@@ -45,7 +45,7 @@ class EntryPageHeader extends Component {
     };
 
     handleEdit = () => {
-        const { entry, existingDraft, history } = this.props;
+        const { entry, history } = this.props;
         const entryType = entryTypes[entry.getIn(['content', 'entryType'])];
         history.push(`/draft/${entryType}/${entry.get('entryId')}`);
         // if (existingDraft) {
@@ -88,6 +88,7 @@ class EntryPageHeader extends Component {
           </ProfilePopover>
         );
     };
+
     _getVersionsPopoverContent = () => {
         const { latestVersion, entry, intl } = this.props;
         const { versionsInfo } = entry;
@@ -104,6 +105,7 @@ class EntryPageHeader extends Component {
           </div>
         ));
     }
+
     renderSubtitle = () => {
         const { entry, intl, latestVersion } = this.props;
         const { showVersions } = this.state;
