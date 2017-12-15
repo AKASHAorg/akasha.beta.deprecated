@@ -1,22 +1,18 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Popover, Tag } from 'antd';
+import { Button, Popover } from 'antd';
 import classNames from 'classnames';
-import { dashboardAdd, dashboardSearch } from '../../local-flux/actions/dashboard-actions';
-import { selectAllDashboards } from '../../local-flux/selectors';
-import { dashboardMessages } from '../../locale-data/messages';
 import { AddToBoard, NewDashboardForm } from '../';
+import { dashboardMessages, entryMessages, generalMessages } from '../../locale-data/messages';
 
-const MENU = 'MENU';
 const DASHBOARDS = 'DASHBOARDS';
 const NEW_DASHBOARD = 'NEW_DASHBOARD';
 
-class TagPopover extends Component {
+class TagListItem extends Component {
     state = {
         content: null,
-        visible: false
+        popoverVisible: false
     };
     wasVisible = false;
 
@@ -44,14 +40,14 @@ class TagPopover extends Component {
         });
     };
 
-    onVisibleChange = (visible) => {
+    onVisibleChange = (popoverVisible) => {
         this.wasVisible = true;
         this.setState({
-            content: visible ? MENU : this.state.content,
-            visible
+            content: popoverVisible ? DASHBOARDS : this.state.content,
+            popoverVisible
         });
         // Delay state reset until popover animation is finished
-        if (!visible) {
+        if (!popoverVisible) {
             this.resetTimeout = setTimeout(() => {
                 this.resetTimeout = null;
                 this.props.dashboardSearch('');
@@ -59,6 +55,8 @@ class TagPopover extends Component {
                     content: null
                 });
             }, 100);
+        } else {
+            this.setInputFocusAsync();
         }
     };
 
@@ -73,7 +71,7 @@ class TagPopover extends Component {
     };
 
     renderContent = () => {
-        const { intl, tag } = this.props;
+        const { tag } = this.props;
         const { content } = this.state;
 
         switch (content) {
@@ -92,65 +90,53 @@ class TagPopover extends Component {
                     tag={tag}
                   />
                 );
-            case MENU:
-                return (
-                  <div>
-                    <div
-                      className="popover-menu__item"
-                      onClick={this.onAddToDashboard}
-                    >
-                      <span>{intl.formatMessage(dashboardMessages.addToBoard)}</span>
-                    </div>
-                  </div>
-                );
             default:
                 return null;
         }
-    };
+    }
 
     render () {
-        const { containerRef, tag } = this.props;
-        const overlayClassName = classNames('popover-menu tag-popover', {
-            'tag-popover_narrow': this.state.content === MENU
+        const { entriesCount, intl, isLast, tag } = this.props;
+        const { popoverVisible } = this.state;
+        const itemClass = classNames('tag-list-item', {
+            'tag-list-item_last': isLast
         });
-
         return (
-          <Popover
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName={overlayClassName}
-            placement="bottomLeft"
-            trigger="click"
-            visible={this.state.visible}
-          >
-            <Tag className="uppercase tag-popover__tag">
-              {tag}
-            </Tag>
-          </Popover>
+          <div className={itemClass}>
+            <div className="tag-list-item__text-wrapper">
+              <span className="tag-list-item__tag">#{tag}</span>
+              <span className="tag-list-item__entry-count">
+                {intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) })}
+              </span>
+            </div>
+            <div className="tag-list-item__buttons">
+              <Popover
+                content={this.wasVisible ? this.renderContent() : null}
+                onVisibleChange={this.onVisibleChange}
+                overlayClassName="popover-menu"
+                placement="bottom"
+                trigger="click"
+                visible={popoverVisible}
+              >
+                <Button className="tag-list-item__button" size="small">
+                  {intl.formatMessage(dashboardMessages.addToBoard)}
+                </Button>
+              </Popover>
+              <Button className="tag-list-item__button tag-list-item__preview-button" size="small">
+                {intl.formatMessage(generalMessages.preview)}
+              </Button>
+            </div>
+          </div>
         );
     }
 }
 
-TagPopover.propTypes = {
-    containerRef: PropTypes.shape(),
-    dashboardAdd: PropTypes.func.isRequired,
-    dashboards: PropTypes.shape().isRequired,
+TagListItem.propTypes = {
     dashboardSearch: PropTypes.func.isRequired,
+    entriesCount: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
+    isLast: PropTypes.bool,
     tag: PropTypes.string.isRequired,
 };
 
-function mapStateToProps (state) {
-    return {
-        dashboards: selectAllDashboards(state),
-    };
-}
-
-export default connect(
-    mapStateToProps,
-    {
-        dashboardAdd,
-        dashboardSearch,
-    }
-)(injectIntl(TagPopover));
+export default injectIntl(TagListItem);
