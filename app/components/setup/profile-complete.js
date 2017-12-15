@@ -89,7 +89,7 @@ class ProfileComplete extends Component {
                     </div>
                     <div>{intl.formatMessage(setupMessages.faucetError)}</div>
                     <div
-                      onClick={self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
+                      onClick={() => self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
                         { ethAddress: loggedEthAddress })}
                       className="content-link"
                     >
