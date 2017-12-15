@@ -38,6 +38,9 @@ export const selectActiveDashboardId = state => state.dashboardState.get('active
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
+export const selectAllDashboards = state =>
+    state.dashboardState.get('allDashboards').map(id => selectDashboard(state, id));
+
 export const selectAllLicenses = state => state.licenseState.get('byId');
 
 export const selectAllPendingClaims = state => state.actionState.getIn(['pending', 'claim']);
@@ -112,7 +115,8 @@ export const selectDashboards = (state) => {
     return state.dashboardState.get('allDashboards')
         .filter(id =>
             selectDashboard(state, id).get('name').toLowerCase().includes(search.toLowerCase())
-        );
+        )
+        .map(id => selectDashboard(state, id));
 };
 
 export const selectDashboardSearch = state => state.dashboardState.get('search');

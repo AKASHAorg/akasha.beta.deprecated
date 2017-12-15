@@ -1,0 +1,35 @@
+.preview-panel {
+    position: fixed;
+    top: 40px;
+    bottom: 0px;
+    right: 0px;
+    width: 356px;
+    background-color: @light-background;
+    box-shadow: -2px 0px 15px -3px @shadow-color;
+
+    &__header {
+        display: flex;      
+        align-items: center;
+        padding: 24px;
+        height: 70px;
+    }
+
+    &__title {
+        flex: 1 1 auto;
+        color: @heading-color;
+        font-weight: 500;
+        line-height: 20px;          
+    }
+
+    &__icon {
+        flex: 0 0 auto;
+        height: 16px;
+        width: 16px;
+    }
+
+    &__list-wrapper {
+        height: ~'calc(100% - 70px)';
+        background-color: @background;
+        border-top: 1px solid @light-border;        
+    }
+}

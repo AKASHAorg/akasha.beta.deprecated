@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
+import { bootstrapHome, hidePreview, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
@@ -14,7 +14,7 @@ import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
     ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
-    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, ProfileOverview,
+    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
     Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
 
@@ -142,13 +142,13 @@ class AppContainer extends Component {
                         <Route exact path="/profileoverview/lists" component={Lists} />
                         <Route path="/profileoverview/lists/:listId" component={ListEntries} />
                         <Route path="/profileoverview/settings" component={ProfileSettings} />
-                        <Route path="/search" component={SearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                           <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                           <Route path="/@:akashaId/:entryId" component={EntryPageContainer} />
                           <Route path="/0x:ethAddress/:entryId" component={EntryPageContainer} />
+                          <Route path="/search" component={SearchPage} />
                         </Switch>
                         {isOverlay &&
                           <div>
@@ -168,6 +168,12 @@ class AppContainer extends Component {
                           showWallet={showWallet}
                           toggleAethWallet={this.props.toggleAethWallet}
                           toggleEthWallet={this.props.toggleEthWallet}
+                        />
+                      }
+                      {!!appState.get('showPreview') &&
+                        <PreviewPanel
+                          hidePreview={this.props.hidePreview}
+                          showPreview={appState.get('showPreview')}
                         />
                       }
                     </div>
@@ -210,7 +216,7 @@ AppContainer.propTypes = {
     errorDeleteFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     gethGetStatus: PropTypes.func,
-    // hideReportModal: PropTypes.func.isRequired,
+    hidePreview: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
@@ -239,8 +245,8 @@ export default connect(
         entryVoteCost,
         errorDeleteFatal,
         gethGetStatus,
+        hidePreview,
         hideTerms,
-        // hideReportModal,
         licenseGetAll,
         toggleAethWallet,
         toggleEthWallet,
