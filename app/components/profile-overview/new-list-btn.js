@@ -81,6 +81,7 @@ class NewListBtn extends Component {
                   <Input
                     autoFocus
                     onKeyDown={this.onKeyDown}
+                    maxLength="70"
                   />
                 )}
               </Form.Item>
@@ -91,6 +92,7 @@ class NewListBtn extends Component {
                 {getFieldDecorator('description')(
                   <Input
                     onKeyDown={this.onKeyDown}
+                    maxLength="100"
                   />
                 )}
               </Form.Item>

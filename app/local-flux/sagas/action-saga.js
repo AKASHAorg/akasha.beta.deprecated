@@ -7,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectAction, selectLoggedEthAddress } from '../selectors';
+import { selectAction, selectLoggedEthAddress, selectActionToPublish } from '../selectors';
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -32,6 +32,7 @@ const publishActions = {
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdate,
     [actionTypes.entryDownvote]: entryActions.entryDownvote,
     [actionTypes.entryUpvote]: entryActions.entryUpvote,
+    [actionTypes.faucet]: profileActions.profileFaucet,
     [actionTypes.follow]: profileActions.profileFollow,
     [actionTypes.freeAeth]: profileActions.profileFreeAeth,
     [actionTypes.profileRegister]: profileActions.profileRegister,
@@ -63,6 +64,7 @@ const publishSuccessActions = {
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
     [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
     [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
+    [actionTypes.faucet]: profileActions.profileFaucetSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,
     [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
@@ -74,6 +76,13 @@ const publishSuccessActions = {
     [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
+
+function* actionAdd ({ actionType }) {
+    if (actionType === actionTypes.faucet) {
+        const id = yield select(selectActionToPublish);
+        yield put(actions.actionPublish(id)); // eslint-disable-line no-use-before-define
+    }
+}
 
 function* actionDelete ({ id }) {
     try {
@@ -245,6 +254,7 @@ function* actionUpdate ({ changes }) {
 // Action watchers
 
 export function* watchActionActions () {
+    yield takeEvery(types.ACTION_ADD, actionAdd);
     yield takeEvery(types.ACTION_DELETE, actionDelete);
     yield takeEvery(types.ACTION_GET_CLAIMABLE, actionGetClaimable);
     yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);

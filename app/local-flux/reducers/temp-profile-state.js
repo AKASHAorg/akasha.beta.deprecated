@@ -27,6 +27,8 @@ const tempProfileState = createReducer(initialState, {
 
 
     [types.TEMP_PROFILE_DELETE]: state => state.clear(),
+
+    [types.TEMP_PROFILE_DELETE_FULL]: state => state.clear(),
 });
 
 export default tempProfileState;
