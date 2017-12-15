@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 export AddImage from './comment/add-image';
+export AddToBoard from './popovers/add-to-board';
 export AethWallet from './wallets/aeth-wallet';
 export AppSettings from './app-settings';
 export Auth from './setup/auth';
@@ -122,6 +123,7 @@ export Sync from './setup/sync';
 export TagColumn from './columns/tag-column';
 export TagEditor from './tag-editor';
 export TagList from './tag-list/tag-list';
+export TagListItem from './tag-list/tag-list-item';
 export TagListInterests from './tag-list/tag-list-interests';
 export TagPopover from './popovers/tag-popover';
 export Terms from './terms';

@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardDelete, dashboardRename } from '../../local-flux/actions/dashboard-actions';
-import { selectDashboards } from '../../local-flux/selectors';
+import { selectAllDashboards } from '../../local-flux/selectors';
 import { DashboardSidebarRow, PlusSquareIcon } from '../';
 
 class DashboardSecondarySidebar extends Component {
@@ -166,7 +166,7 @@ DashboardSecondarySidebar.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
-        dashboards: selectDashboards(state),
+        dashboards: selectAllDashboards(state),
         lists: state.listState.get('byName'),
         renamingDashboard: state.dashboardState.getIn(['flags', 'renamingDashboard'])
     };
