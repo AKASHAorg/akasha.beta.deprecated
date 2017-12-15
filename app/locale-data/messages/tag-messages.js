@@ -6,11 +6,6 @@ const tagMessages = defineMessages({
         description: 'placeholder for tag editor field',
         defaultMessage: '#category...'
     },
-    addToDashboard: {
-        id: 'app.tag.addToDashboard',
-        description: 'add tag to dashboard button',
-        defaultMessage: 'Add to dashboard'
-    },
     notEnoughKarma: {
         id: 'app.tag.notEnoughKarma',
         description: 'message to display when user does not have enough karma to create a tag',

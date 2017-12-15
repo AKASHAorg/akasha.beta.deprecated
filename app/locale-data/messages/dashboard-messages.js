@@ -46,6 +46,11 @@ const dashboardMessages = defineMessages({
         description: 'panel subtitle for adding a new tag column',
         defaultMessage: 'Please choose a tag'
     },
+    addToBoard: {
+        id: 'app.dashboard.addToBoard',
+        description: 'button label for adding a tag/profile column to a board',
+        defaultMessage: 'Add to board'
+    },
     addToNewDashboard: {
         id: 'app.list.addToNewDashboard',
         description: 'popover title for creating a new dashboard',
