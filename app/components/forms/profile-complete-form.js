@@ -271,8 +271,9 @@ class ProfileCompleteForm extends Component {
     }
 
     _handleSave = () => {
-        const { tempProfile } = this.props;
+        const { history, tempProfile } = this.props;
         this.props.tempProfileCreate(tempProfile);
+        history.push('/setup/new-identity-interests');
     }
 
     onCopy = () => {
