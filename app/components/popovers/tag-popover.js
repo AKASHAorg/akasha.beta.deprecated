@@ -4,9 +4,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Popover, Tag } from 'antd';
 import classNames from 'classnames';
-import { dashboardAdd, dashboardSearch } from '../../local-flux/actions/dashboard-actions';
+import * as columnTypes from '../../constants/columns';
+import { showPreview } from '../../local-flux/actions/app-actions';
+import { dashboardSearch } from '../../local-flux/actions/dashboard-actions';
 import { selectAllDashboards } from '../../local-flux/selectors';
-import { dashboardMessages } from '../../locale-data/messages';
+import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { AddToBoard, NewDashboardForm } from '../';
 
 const MENU = 'MENU';
@@ -30,6 +32,12 @@ class TagPopover extends Component {
     }
 
     closePopover = () => this.onVisibleChange(false);
+
+    showPreview = () => {
+        const { tag } = this.props;
+        this.closePopover();
+        this.props.showPreview({ columnType: columnTypes.column, value: tag });
+    }
 
     onAddToDashboard = () => {
         this.setInputFocusAsync();
@@ -101,6 +109,12 @@ class TagPopover extends Component {
                     >
                       <span>{intl.formatMessage(dashboardMessages.addToBoard)}</span>
                     </div>
+                    <div
+                      className="popover-menu__item"
+                      onClick={this.showPreview}
+                    >
+                      <span>{intl.formatMessage(generalMessages.preview)}</span>
+                    </div>
                   </div>
                 );
             default:
@@ -134,10 +148,9 @@ class TagPopover extends Component {
 
 TagPopover.propTypes = {
     containerRef: PropTypes.shape(),
-    dashboardAdd: PropTypes.func.isRequired,
-    dashboards: PropTypes.shape().isRequired,
     dashboardSearch: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    showPreview: PropTypes.func.isRequired,
     tag: PropTypes.string.isRequired,
 };
 
@@ -150,7 +163,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        dashboardAdd,
         dashboardSearch,
+        showPreview
     }
 )(injectIntl(TagPopover));

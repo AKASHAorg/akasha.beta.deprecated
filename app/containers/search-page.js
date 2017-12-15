@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Input, Tabs } from 'antd';
 import { EntryList, Icon, ProfileList, TagList } from '../components';
+import { showPreview } from '../local-flux/actions/app-actions';
 import { dashboardSearch } from '../local-flux/actions/dashboard-actions';
 import { searchMoreQuery, searchProfiles, searchQuery, searchResetResults,
     searchTags } from '../local-flux/actions/search-actions';
@@ -89,6 +90,7 @@ class SearchPage extends Component {
             dashboardSearch={this.props.dashboardSearch}
             entriesCount={tagEntriesCount}
             fetchingTags={fetchingResults}
+            showPreview={this.props.showPreview}
             tags={tags}
           />
         );
@@ -144,6 +146,7 @@ SearchPage.propTypes = {
     searchQuery: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
     searchTags: PropTypes.func.isRequired,
+    showPreview: PropTypes.func.isRequired,
     tagEntriesCount: PropTypes.shape().isRequired,
     tags: PropTypes.shape().isRequired,
 };
@@ -169,6 +172,7 @@ export default connect(
         searchProfiles,
         searchQuery,
         searchResetResults,
-        searchTags
+        searchTags,
+        showPreview
     }
 )(injectIntl(SearchPage));

@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { AppRecord, NotificationRecord } from './records';
+import { AppRecord, NotificationRecord, PreviewRecord } from './records';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
@@ -14,6 +14,8 @@ const appState = createReducer(initialState, {
             displayedNotifications: state.get('displayedNotifications').delete(indexToRemove)
         });
     },
+
+    [types.HIDE_PREVIEW]: state => state.set('showPreview', null),
 
     [types.HIDE_TERMS]: state =>
         state.merge({
@@ -63,6 +65,9 @@ const appState = createReducer(initialState, {
             notifications: state.get('notifications').push(new NotificationRecord(notification))
         });
     },
+
+    [types.SHOW_PREVIEW]: (state, { columnType, value }) =>
+        state.set('showPreview', new PreviewRecord({ columnType, value })),
 
     [types.SHOW_REPORT_MODAL]: state =>
         state.set('showReportModal', true),
