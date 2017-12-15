@@ -115,39 +115,6 @@ class ImageBlock extends Component {
         }
     }
 
-    _getBaseNodeStyle = () => {
-        // const { previewImage } = this.state;
-        // if (previewImage === 'xs') {
-        //     if (this.baseNodeRef) {
-        //         this.baseNodeRef.parentNode.parentNode.style.float = 'left';
-        //         this.baseNodeRef.parentNode.parentNode.style.width = 'inherit';
-        //     }
-        //     return {
-        //         width: 320,
-        //         float: 'left',
-        //         marginRight: 48,
-        //         // @TODO: DIRTYHACK!! GET RID OF THIS!!!
-        //         marginLeft: this.baseNodeRef ?
-        //             this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft : 0
-        //     };
-        // }
-        // if (previewImage === 'md') {
-        //     if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
-        //     return {
-        //         margin: '0 auto',
-        //         width: 700
-        //     };
-        // }
-        // if (previewImage === 'xl') {
-        //     if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
-        //     return {
-        //         margin: '0 auto',
-        //         width: '100%'
-        //     };
-        // }
-        // return {};
-    }
-
     _handleImageSizeChange = ({ key }) => {
         const { container } = this.props;
         container.updateData({ media: key });
@@ -185,13 +152,14 @@ class ImageBlock extends Component {
     }
     _getImageSource = (files) => {
         const { media } = this.props.data;
+        console.log(media);
         switch (media) {
             case 'xs':
                 return files[findClosestMatch(320, files, 'xs')].src;
             case 'md':
                 return files[findClosestMatch(700, files, 'md')].src;
-            case 'lg':
-                return files[findClosestMatch(1920, files, 'xl')].src;
+            case 'xl':
+                return files[findClosestMatch(1280, files, 'xl')].src;
             default:
                 break;
         }

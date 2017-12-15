@@ -158,9 +158,11 @@ class TagEditor extends Component {
 
     _addNewTag = (tagName, existent) => {
         const { tags } = this.props;
+
         if (tags.includes(tagName.toLowerCase())) {
             return;
         }
+
         this.setState({
             existentTags: existent ? [...this.state.existentTags, existent] : this.state.existentTags,
             partialTag: '',
