@@ -13,7 +13,6 @@ const FormItem = Form.Item;
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class NewDashboardForm extends Component {
-
     componentDidMount () {
         this.props.form.validateFields();
     }
@@ -34,9 +33,11 @@ class NewDashboardForm extends Component {
 
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { form, tag } = this.props;
+        const { ethAddress, form, tag } = this.props;
         const { name } = form.getFieldsValue();
-        const columns = [{ type: columnTypes.tag, value: tag }];
+        const type = tag ? columnTypes.tag : columnTypes.profile;
+        const value = tag || ethAddress;
+        const columns = [{ type, value }];
         this.props.dashboardAdd(name, columns);
     };
 
@@ -112,10 +113,11 @@ class NewDashboardForm extends Component {
 NewDashboardForm.propTypes = {
     dashboardAdd: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,
+    ethAddress: PropTypes.string,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func.isRequired,
-    tag: PropTypes.string.isRequired,
+    tag: PropTypes.string,
 };
 
 function mapStateToProps (state) {
