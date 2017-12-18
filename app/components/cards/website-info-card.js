@@ -29,7 +29,7 @@ const WebsiteInfoCard = (props) => {
     const bodyStyle = {
         padding: 0
     };
-    let textColor = '#444';
+    let textColor = 'inherit';
     if (bgColor) {
         bodyStyle.backgroundColor = bgColor;
         textColor = getTextColor(bgColor);
@@ -60,7 +60,7 @@ const WebsiteInfoCard = (props) => {
             onClick={onClose}
           />
         }
-        {!error && image.get('xs') &&
+        {!error && image && image.get('xs') &&
           <a
             onClick={navigateTo(url, onClick, isEdit)}
             href={url}

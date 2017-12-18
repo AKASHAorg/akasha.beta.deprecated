@@ -129,16 +129,21 @@
 }
 .edit-entry-page__timeline-steps {
     .ant-steps-status-none {
-        .ant-steps-tail {
-            > i {
-                border-top: 3px dashed @light-border;
-                background: transparent;
+        .ant-steps-item-tail {
+            border-top: 3px dashed @light-border;
+            background: transparent;
+        }
+    }
+    .ant-steps-item {
+        .ant-steps-item-tail {
+            &:after {
+                background: @border-color;
             }
         }
     }
     &.ant-steps {
-        .ant-steps-title {
-            font-size: 10px;
+        .ant-steps-item-title {
+            font-size: 12px;
         }
         .ant-steps-item {
             .ant-steps-main {
