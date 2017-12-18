@@ -50,7 +50,7 @@ class WebsiteParser extends ParserUtils {
             })
         ).then(info =>
             this.resizeImage(this.getAbsoluteUrl(info.image, this.parsedUrl), {
-                uploadImageToIpfs: this.uploadImageToIpfs
+                ipfsFile: true
             }).then((image) => {
                 let img = {};
                 if (image) {
