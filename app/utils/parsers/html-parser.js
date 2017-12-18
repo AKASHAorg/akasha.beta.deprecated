@@ -1,5 +1,5 @@
 import ParserUtils from './parser-utils';
-import { targetMetaTags } from './parser-config';
+import { targetMetaTags, targetTags } from './parser-config';
 
 class HtmlParser extends ParserUtils {
     constructor ({ htmlString, parsedUrl, uploadImageToIpfs }) {
@@ -14,11 +14,9 @@ class HtmlParser extends ParserUtils {
         this.htmlContent = this.parseHtmlFromString(this.htmlString);
         return Promise.all([
             this.parseTags(),
+            this.parseMetaTags(),
             this.parseOGMetaTags(),
-        ]).then(infoArr => infoArr.reduce((prev, curr) => ({
-            ...curr,
-            ...prev,
-        })));
+        ]).then(infoArr => infoArr.reduce((prev, curr) => Object.assign({}, prev, curr)));
     }
     /**
      * parse Open graph meta tags
@@ -45,7 +43,7 @@ class HtmlParser extends ParserUtils {
         );
     }
 
-    parseTags = () => {
+    parseMetaTags = () => {
         const props = targetMetaTags.metaNames.map((tag) => {
             const domTag = this.htmlContent.getElementsByTagName('meta')[tag.name];
             if (domTag) {
@@ -58,6 +56,26 @@ class HtmlParser extends ParserUtils {
         return Promise.all(props).then(values =>
             values.reduce((prev, current) => Object.assign({}, prev, current))
         );
+    }
+    parseTags = () => {
+        const props = targetTags.map((tag) => {
+            const domTag = Array.from(this.htmlContent.getElementsByTagName(tag.name))
+                .filter(item => (item.textContent.length > 0 || item.attributes.src));
+
+            if (domTag.length > 0) {
+                if (domTag[0].tagName === 'IMG') {
+                    return Promise.resolve({
+                        [tag.key]: domTag[0].attributes.src.textContent
+                    });
+                }
+                return Promise.resolve({
+                    [tag.key]: domTag[0].innerText
+                });
+            }
+            return Promise.resolve({});
+        });
+
+        return Promise.all(props).then(val => val.reduce((prev, curr) => Object.assign({}, curr, prev)));
     }
     parseClassNames = () => {
         console.log('not implemented yet!');
