@@ -101,6 +101,7 @@ class TransferForm extends Component {
                   max={balanceToNumber(balance, 5)}
                   placeholder={intl.formatMessage(profileMessages.amountPlaceholder)}
                   step={0.01}
+                  maxLength={22}
                 />
               )}
             </FormItem>
