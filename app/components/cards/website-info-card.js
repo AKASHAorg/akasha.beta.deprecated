@@ -43,7 +43,6 @@ const WebsiteInfoCard = (props) => {
             website-info-card${isEdit ? '_edit' : ''}`
         }
         loading={loading}
-        // hoverable={false}
       >
         {!title && !description && infoExtracted && !error &&
           <div>{intl.formatMessage(entryMessages.cannotExtractWebsiteInfo)}</div>
@@ -61,7 +60,7 @@ const WebsiteInfoCard = (props) => {
             onClick={onClose}
           />
         }
-        {!error && image.xs &&
+        {!error && image.get('xs') &&
           <a
             onClick={navigateTo(url, onClick, isEdit)}
             href={url}
@@ -74,7 +73,7 @@ const WebsiteInfoCard = (props) => {
             >
               <img
                 alt="card-cover"
-                src={getImageSrc(image, baseUrl, baseWidth)}
+                src={getImageSrc(image.toJS(), baseUrl, baseWidth)}
               />
             </div>
           </a>
