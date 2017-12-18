@@ -1,4 +1,3 @@
-
 export const redirectCodes = [301, 302, 303, 307, 308];
 
 export const targetMetaTags = {
@@ -7,6 +6,9 @@ export const targetMetaTags = {
         key: 'title'
     }, {
         name: 'description',
+        key: 'description'
+    }, {
+        name: 'Description',
         key: 'description'
     }, {
         name: 'msapplication-TileColor',
