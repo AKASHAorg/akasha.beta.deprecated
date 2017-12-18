@@ -185,7 +185,7 @@ class EntryCard extends Component {
               <Link
                 className="unstyled-link"
                 to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                    pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
                     state: { overlay: true }
                 }}
               >
@@ -199,7 +199,7 @@ class EntryCard extends Component {
                 <Link
                   className="unstyled-link"
                   to={{
-                      pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
                       state: { overlay: true }
                   }}
                 >
@@ -226,7 +226,7 @@ class EntryCard extends Component {
                 <Link
                   className="unstyled-link"
                   to={{
-                      pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
                       state: { overlay: true }
                   }}
                 >
