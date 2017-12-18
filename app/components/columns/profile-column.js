@@ -72,7 +72,7 @@ class ProfileColumn extends Component {
               onRefresh={this.onRefresh}
               onSearch={this.props.searchProfiles}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

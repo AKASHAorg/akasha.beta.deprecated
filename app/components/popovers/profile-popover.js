@@ -10,24 +10,29 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
-import { generalMessages, profileMessages } from '../../locale-data/messages';
+import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { formatBalance } from '../../utils/number-formatter';
-import { Avatar, Icon, SendTipForm } from '../';
+import { AddToBoard, Avatar, Icon, NewDashboardForm, SendTipForm } from '../';
+
+const DEFAULT = 'DEFAULT';
+const DASHBOARDS = 'DASHBOARDS';
+const NEW_DASHBOARD = 'NEW_DASHBOARD';
+const SEND_TIP = 'SEND_TIP';
 
 class ProfilePopover extends Component {
     state = {
+        content: null,
         followHovered: false,
         popoverVisible: false,
-        sendTip: false
     };
     wasVisible = false;
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps (nextProps, nextState) {
         const { tipPending } = nextProps;
         // Close the send tip form after sending tip
-        if (tipPending && !this.props.tipPending) {
-            this.toggleSendTip();
+        if (tipPending && !this.props.tipPending && !nextState.popoverVisible) {
+            this.setState({ content: null });
         }
     }
 
@@ -36,6 +41,16 @@ class ProfilePopover extends Component {
             clearTimeout(this.timeout);
         }
     }
+
+    closePopover = () => this.onVisibleChange(false);
+
+    onAddToDashboard = () => {
+        this.setState({ content: DASHBOARDS });
+    };
+
+    onNewDashboard = () => {
+        this.setState({ content: NEW_DASHBOARD });
+    };
 
     onMouseEnter = () => {
         this.setState({
@@ -47,6 +62,11 @@ class ProfilePopover extends Component {
         this.setState({
             followHovered: false
         });
+    };
+
+    onEditProfile = () => {
+        this.onVisibleChange(false);
+        this.props.profileEditToggle();
     };
 
     onFollow = () => {
@@ -65,6 +85,7 @@ class ProfilePopover extends Component {
             return;
         }
         this.setState({
+            content: popoverVisible ? DEFAULT : this.state.content,
             popoverVisible
         });
         if (!popoverVisible) {
@@ -72,20 +93,19 @@ class ProfilePopover extends Component {
             this.timeout = setTimeout(() => {
                 this.timeout = null;
                 this.setState({
-                    sendTip: false,
+                    content: null,
                 });
             }, 100);
         }
     };
 
-    profileEdit = () => {
-        this.props.profileEditToggle();
-        this.setState({ popoverVisible: false });
-    }
+    onDefaultContent = () => {
+        this.setState({ content: DEFAULT });
+    };
 
-    toggleSendTip = () => {
+    onSendTip = () => {
         this.setState({
-            sendTip: !this.state.sendTip
+            content: SEND_TIP
         });
     };
 
@@ -137,7 +157,6 @@ class ProfilePopover extends Component {
             onClick={this.onFollow}
             onMouseEnter={this.onMouseEnter}
             onMouseLeave={this.onMouseLeave}
-            size="large"
             type={canFollow ? 'primary' : 'default'}
           >
             {label}
@@ -145,25 +164,20 @@ class ProfilePopover extends Component {
         );
     };
 
-    renderContent () {
+    renderProfileInfo = () => {
         const { ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
-        if (!ethAddress) {
-            return null;
-        }
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
         const name = firstName || lastName ? `${firstName} ${lastName}` : null;
         const isOwnProfile = ethAddress === loggedEthAddress;
-
-        if (this.state.sendTip) {
-            return (
-              <SendTipForm
-                profile={profile}
-                onCancel={this.toggleSendTip}
-              />
-            );
-        }
+        const tipTooltip = tipPending ?
+            intl.formatMessage(profileMessages.sendingTip) :
+            intl.formatMessage(profileMessages.sendTip);
+        const tipIconClass = classNames('profile-popover__tip-icon', {
+            'content-link': !tipPending,
+            'profile-popover__tip-icon_disabled': tipPending
+        });
 
         return (
           <div className="profile-popover__content">
@@ -179,22 +193,35 @@ class ProfilePopover extends Component {
                   size="small"
                 />
               </div>
-              <div>
-                <Link
-                  className="unstyled-link"
-                  onClick={() => this.onVisibleChange(false)}
-                  to={`/${ethAddress}`}
-                >
-                  <div className="content-link flex-center-y overflow-ellipsis profile-popover__name">
-                    {name || getDisplayName({ akashaId, ethAddress })}
-                  </div>
-                </Link>
+              <div className="profile-popover__header-text-wrapper">
+                <div className="overflow-ellipsis profile-popover__name-wrapper">
+                  <Link
+                    className="unstyled-link"
+                    onClick={() => this.onVisibleChange(false)}
+                    to={`/${ethAddress}`}
+                  >
+                    <span className="content-link">
+                      {name || getDisplayName({ akashaId, ethAddress })}
+                    </span>
+                  </Link>
+                </div>
                 {name &&
-                  <div className="profile-popover__akasha-id">
+                  <div className="overflow-ellipsis profile-popover__akasha-id">
                     @{akashaId}
                   </div>
                 }
               </div>
+              {!isOwnProfile &&
+                <div className="flex-center profile-popover__tip-icon-wrapper">
+                  <Tooltip title={tipTooltip}>
+                    <Icon
+                      className={tipIconClass}
+                      onClick={tipPending ? undefined : this.onSendTip}
+                      type="wallet"
+                    />
+                  </Tooltip>
+                </div>
+              }
             </div>
             <div className="profile-popover__details">
               <div className="flex-center-y">
@@ -242,21 +269,15 @@ class ProfilePopover extends Component {
               {!isOwnProfile &&
                 <Button
                   className="profile-popover__button"
-                  disabled={tipPending}
-                  onClick={this.toggleSendTip}
-                  size="large"
+                  onClick={this.onAddToDashboard}
                 >
-                  <div>
-                    <Icon className="profile-popover__button-icon" type="heart" />
-                    {intl.formatMessage(profileMessages.support)}
-                  </div>
+                  {intl.formatMessage(dashboardMessages.addToBoard)}
                 </Button>
               }
               {isOwnProfile &&
                 <Button
                   className="profile-popover__button"
-                  onClick={this.profileEdit}
-                  size="large"
+                  onClick={this.onEditProfile}
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.editProfile)}
@@ -265,6 +286,43 @@ class ProfilePopover extends Component {
             </div>
           </div>
         );
+    };
+
+    renderContent () {
+        const { ethAddress, profile } = this.props;
+        const { content } = this.state;
+        if (!ethAddress) {
+            return null;
+        }
+
+        switch (content) {
+            case DEFAULT:
+                return this.renderProfileInfo();
+            case SEND_TIP:
+                return (
+                  <SendTipForm
+                    profile={profile}
+                    onCancel={this.onDefaultContent}
+                  />
+                );
+            case DASHBOARDS:
+                return (
+                  <AddToBoard
+                    closePopover={this.closePopover}
+                    ethAddress={ethAddress}
+                    onNewDashboard={this.onNewDashboard}
+                  />
+                );
+            case NEW_DASHBOARD:
+                return (
+                  <NewDashboardForm
+                    onCancel={this.onAddToDashboard}
+                    ethAddress={ethAddress}
+                  />
+                );
+            default:
+                return null;
+        }
     }
 
     render () {

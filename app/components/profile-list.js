@@ -4,23 +4,25 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
-import { selectPendingProfiles } from '../local-flux/selectors';
+import { selectPendingProfiles, selectLoggedEthAddress } from '../local-flux/selectors';
 import { profileMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
     render () {
-        const { fetchingProfiles, fetchingMoreProfiles, intl, moreProfiles, pendingProfiles,
+        const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, moreProfiles, pendingProfiles,
             placeholderMessage, profiles, style } = this.props;
         const profileRows = profiles && profiles.map((profile) => {
             if (!profile.ethAddress) {
                 console.error('invalid profile');
                 return null;
             }
+            const isOwnProfile = profile.ethAddress === loggedEthAddress;
             const isPending = pendingProfiles && pendingProfiles.get(profile.ethAddress);
 
             return (
               <ProfileCard
+                isOwnProfile={isOwnProfile}
                 isPending={isPending}
                 key={profile.ethAddress}
                 profile={profile}
@@ -66,6 +68,7 @@ ProfileList.propTypes = {
     fetchingMoreProfiles: PropTypes.bool,
     fetchMoreProfiles: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
+    loggedEthAddress: PropTypes.string.isRequired,
     moreProfiles: PropTypes.bool,
     pendingProfiles: PropTypes.shape(),
     placeholderMessage: PropTypes.string,
@@ -76,6 +79,7 @@ ProfileList.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { context } = ownProps;
     return {
+        loggedEthAddress: selectLoggedEthAddress(state),
         pendingProfiles: selectPendingProfiles(state, context),
     };
 }
