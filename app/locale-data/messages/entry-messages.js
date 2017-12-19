@@ -169,6 +169,21 @@ const entryMessages = defineMessages({
         description: 'featured image section title',
         defaultMessage: 'Featured image'
     },
+    hiddenContent: {
+        id: 'app.entry.hiddenContent',
+        description: 'message for hidden content due to score lower than user\'s preferences',
+        defaultMessage: 'This content has a score lower than {score}.'
+    },
+    hiddenContent2: {
+        id: 'app.entry.hiddenContent2',
+        description: 'message for hidden content due to score lower than user\'s preferences (part 2)',
+        defaultMessage: 'You can change this value from your'
+    },
+    hiddenContent3: {
+        id: 'app.entry.hiddenContent3',
+        description: 'message for hidden content due to score lower than user\'s preferences (part 3)',
+        defaultMessage: 'personal settings'
+    },
     license: {
         id: 'app.entry.license',
         description: 'License label',
@@ -298,6 +313,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.searchTag',
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
+    },
+    showAnyway: {
+        id: 'app.entry.showAnyway',
+        description: 'button label for showing hidded content',
+        defaultMessage: 'Show anyway'
     },
     showLess: {
         id: 'app.entry.showLess',

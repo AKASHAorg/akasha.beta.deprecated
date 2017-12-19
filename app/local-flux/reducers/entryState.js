@@ -43,27 +43,6 @@ const entrySearchIteratorHandler = (state, { data }) => {
     return entryIteratorHandler(state, { data: { collection } });
 };
 
-    // state.withMutations((mState) => {
-    //     const moreEntries = data.limit === data.collection.length;
-    //     data.collection.forEach((entry, index) => {
-    //         const publisherEthAddress = entry.author.ethAddress;
-    //         // the request is made for n + 1 entries to determine if there are more entries left
-    //         // if this is the case, ignore the extra entry
-    //         if (!moreEntries || index !== data.collection.length - 1) {
-    //             let newEntry = createEntryRecord(entry);
-    //             const oldContent = state.getIn(['byId', entry.entryId, 'content']);
-    //             // it shouldn't reset the entry content
-    //             if (!newEntry.get('content') && oldContent) {
-    //                 newEntry = newEntry.set('content', oldContent);
-    //             }
-    //             mState.setIn(['byId', entry.entryId], newEntry)
-    //                 .setIn(['byEthAddress', publisherEthAddress],
-    //                     new List(mState.getIn(['byEthAddress', publisherEthAddress])).push(entry.entryId)
-    //                 );
-    //         }
-    //     });
-    // });
-
 /**
  * State of the entries and drafts
  */

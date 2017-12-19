@@ -7,7 +7,7 @@ import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
 import { ProfileRecord } from '../../local-flux/reducers/records';
-import { generalMessages } from '../../locale-data/messages';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
 
 const smallCard = 320;
@@ -44,20 +44,15 @@ class EntryCard extends Component {
         return false;
     }
 
-    onExpandChange = (expanded) => {
+    showHiddenContent = () => {
         this.setState({
-            expanded
+            expanded: true
         });
     };
 
     isOwnEntry = () => {
         const { entry, loggedEthAddress } = this.props;
         return entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
-    };
-
-    isPossiblyUnsafe = () => {
-        const { entry } = this.props;
-        return !this.isOwnEntry() && parseInt(entry.get('score'), 10) <= -30;
     };
 
     handleComments = () => {
@@ -113,6 +108,30 @@ class EntryCard extends Component {
       </div>
     );
 
+    renderHiddenContent = () => (
+      <div style={{ position: 'relative' }}>
+        {this.renderContentPlaceholder()}
+        <div className="entry-card__hidden">
+          <div className="heading flex-center">
+            {this.props.intl.formatMessage(entryMessages.hiddenContent, {
+                score: this.props.hideEntrySettings.value
+            })}
+          </div>
+          <div className="heading entry-card__hidden-message">
+            {this.props.intl.formatMessage(entryMessages.hiddenContent2)}
+            <Link className="entry-card__settings-link" to="/profileoverview/settings">
+              {this.props.intl.formatMessage(entryMessages.hiddenContent3)}
+            </Link>
+          </div>
+          <div className="flex-center">
+            <span className="content-link entry-card__retry-button" onClick={this.showHiddenContent}>
+              {this.props.intl.formatMessage(entryMessages.showAnyway)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+
     renderUnresolvedPlaceholder = () => (
       <div style={{ position: 'relative' }}>
         {this.renderContentPlaceholder()}
@@ -142,26 +161,54 @@ class EntryCard extends Component {
     };
 
     render () {
-        const { author, baseUrl, containerRef, entry, existingDraft, isPending, large,
+        const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
             style, toggleOutsideNavigation, intl } = this.props;
+        const { expanded } = this.state;
         const content = entry.get('content');
         const entryType = entry.getIn(['content', 'entryType']);
-        // TODO use getLatestEntryVersion channel
-        const latestVersion = content && content.get('version');
         if (isPending) {
             return this.renderResolvingPlaceholder();
         }
         const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title']).length > 0) ||
             !!content.get('title');
+        const hideContent = !this.isOwnEntry() && hideEntrySettings.checked &&
+            entry.score < hideEntrySettings.value && !expanded;
         const featuredImage = content.get('featuredImage');
         const hasFeaturedImage = featuredImage && !!Object.keys(featuredImage).length;
         const featuredImageClass = classNames('flex-center entry-card__featured-image-wrapper', {
             'entry-card__featured-image-wrapper_large': large
         });
         const cardClass = classNames('entry-card', {
-            'entry-card_transparent': (this.isPossiblyUnsafe() && !this.state.expanded) || !hasContent,
+            'entry-card_transparent': hideContent || !hasContent,
             'entry-card_large': large
         });
+        if (hideContent) {
+            return (
+              <Card
+                className={cardClass}
+                style={style}
+                title={
+                  <EntryCardHeader
+                    author={author}
+                    containerRef={containerRef}
+                    entry={entry}
+                    isOwnEntry={this.isOwnEntry()}
+                    large={large}
+                    openVersionsPanel={this.openVersionsPanel}
+                    onEntryVersionNavigation={this._handleNavigation}
+                    onDraftNavigation={this._handleNavigation}
+                  />
+                }
+              >
+                {this.renderHiddenContent()}
+                <EntryPageActions
+                  containerRef={containerRef}
+                  entry={entry}
+                  noVotesBar
+                />
+              </Card>
+            );
+        }
         return (
           <Card
             className={cardClass}
@@ -171,7 +218,6 @@ class EntryCard extends Component {
                 author={author}
                 containerRef={containerRef}
                 entry={entry}
-                isNotSafe={this.isPossiblyUnsafe()}
                 isOwnEntry={this.isOwnEntry()}
                 large={large}
                 openVersionsPanel={this.openVersionsPanel}
@@ -274,6 +320,7 @@ EntryCard.propTypes = {
     existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
+    hideEntrySettings: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     isPending: PropTypes.bool,

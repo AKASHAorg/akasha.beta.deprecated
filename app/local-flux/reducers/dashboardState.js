@@ -177,6 +177,21 @@ const dashboardState = createReducer(initialState, {
             newColumn: null
         }),
 
+    [types.DASHBOARD_TOGGLE_PROFILE_COLUMN_SUCCESS]: (state, { data }) => {
+        let columnById = state.get('columnById');
+        let byId = state.get('byId');
+        data.columns.forEach((column) => {
+            if (!columnById.get(column.id)) {
+                columnById = columnById.set(column.id, new ColumnRecord(column));
+            }
+        });
+        byId = byId.set(data.id, createDashboardRecord(data));
+        return state.merge({
+            byId,
+            columnById,
+        });
+    },
+
     [types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS]: (state, { data }) => {
         let columnById = state.get('columnById');
         let byId = state.get('byId');

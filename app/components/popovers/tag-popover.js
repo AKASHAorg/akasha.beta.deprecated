@@ -73,7 +73,7 @@ class TagPopover extends Component {
     setInputFocusAsync = () => {
         this.focusTimeout = setTimeout(() => {
             this.focusTimeout = null;
-            const input = document.getElementById('tag-popover-search');
+            const input = document.getElementById('add-to-board-search');
             if (input) {
                 input.focus();
             }

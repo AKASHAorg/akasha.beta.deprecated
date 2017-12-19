@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { Button, Popover, Spin } from 'antd';
+import { Button } from 'antd';
 import classNames from 'classnames';
-import { Avatar, DisplayName, Icon, SendTipForm } from '../';
+import { Avatar, DisplayName, FollowButton, Icon, TipPopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
-import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
+import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
@@ -48,10 +48,11 @@ class ProfileDetails extends Component {
     onFollow = () => {
         const { isFollower, loggedEthAddress, profileData } = this.props;
         const ethAddress = profileData.get('ethAddress');
+        const akashaId = profileData.get('akashaId');
         if (isFollower) {
-            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { akashaId, ethAddress });
         } else {
-            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { ethAddress });
+            this.props.actionAdd(loggedEthAddress, actionTypes.follow, { akashaId, ethAddress });
         }
     };
 
@@ -74,67 +75,14 @@ class ProfileDetails extends Component {
         });
     };
 
-    renderFollowButton = () => {
-        const { intl, isFollower, followPending } = this.props;
-        const { followHovered } = this.state;
-        const canFollow = !isFollower && !followPending;
-        let label;
-        if (followPending) {
-            label = (
-              <div className="flex-center">
-                <Spin className="profile-details__button-icon" size="small" />
-                {intl.formatMessage(generalMessages.pending)}
-              </div>
-            );
-        } else if (isFollower) {
-            const message = followHovered ?
-                intl.formatMessage(profileMessages.unfollow) :
-                intl.formatMessage(profileMessages.following);
-            label = (
-              <div className="flex-center">
-                <Icon className="profile-details__button-icon" type={followHovered ? 'close' : 'check'} />
-                {message}
-              </div>
-            );
-        } else {
-            label = (
-              <div className="flex-center">
-                <Icon className="profile-details__follow-button" type="plus" />
-                {intl.formatMessage(profileMessages.follow)}
-              </div>
-            );
-        }
-        const className = classNames(
-            'profile-details__button',
-            {
-                'profile-details__unfollow-button': !followPending && isFollower && followHovered,
-                'profile-details__following-button': !followPending && isFollower && !followHovered
-            }
-        );
-
-        return (
-          <Button
-            className={className}
-            disabled={followPending}
-            onClick={this.onFollow}
-            onMouseEnter={this.onMouseEnter}
-            onMouseLeave={this.onMouseLeave}
-            size="large"
-            type={canFollow ? 'primary' : 'default'}
-          >
-            {label}
-          </Button>
-        );
-    };
-
     render () {
         if (!this.props.profileData) {
             console.error('no profile data');
         }
-        const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
+        const { ethAddress, followPending, intl, isFollower, loggedEthAddress, profileData,
+            tipPending } = this.props;
         const { about, akashaId, avatar, backgroundImage, links, firstName, lastName,
-            followersCount, followingCount } = profileData;
-        const { balance, ethAddress, intl, loggedEthAddress, tipPending } = this.props;
+            followersCount, followingCount } = profileData.toJS();
         const isOwnProfile = ethAddress === loggedEthAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
         const displayName = firstName || lastName ?
@@ -143,6 +91,9 @@ class ProfileDetails extends Component {
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
+        const supportButtonClass = classNames('profile-details__button profile-details__support-button', {
+            'profile-details__support-button_disabled': tipPending
+        });
 
         return (
           <div className="profile-details">
@@ -190,28 +141,18 @@ class ProfileDetails extends Component {
               </div>
             </div>
             <div className="profile-details__actions">
-              {!isOwnProfile && this.renderFollowButton()}
               {!isOwnProfile &&
-                <Popover
-                  arrowPointAtCenter
-                  content={this.wasVisible ?
-                    <SendTipForm
-                      balance={balance}
-                      onSubmit={this.sendTip}
-                      tipPending={tipPending}
-                    /> :
-                    null
-                  }
-                  onVisibleChange={this.onVisibleChange}
-                  overlayClassName="profile-details__popover"
-                  placement="bottomLeft"
-                  trigger="click"
-                  visible={this.state.popoverVisible}
-                >
+                <FollowButton
+                  followPending={followPending}
+                  isFollower={isFollower}
+                  onFollow={this.onFollow}
+                />
+              }
+              {!isOwnProfile &&
+                <TipPopover profile={profileData}>
                   <Button
-                    className="profile-details__button profile-details__support-button"
+                    className={supportButtonClass}
                     disabled={tipPending}
-                    size="large"
                   >
                     <div>
                       <Icon
@@ -221,13 +162,12 @@ class ProfileDetails extends Component {
                       {intl.formatMessage(profileMessages.support)}
                     </div>
                   </Button>
-                </Popover>
+                </TipPopover>
               }
               {isOwnProfile &&
                 <Button
                   className="profile-details__button"
                   onClick={this.props.profileEditToggle}
-                  size="large"
                   type="primary"
                 >
                   {intl.formatMessage(generalMessages.editProfile)}
@@ -275,7 +215,6 @@ class ProfileDetails extends Component {
 
 ProfileDetails.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    balance: PropTypes.string,
     ethAddress: PropTypes.string.isRequired,
     followPending: PropTypes.bool,
     intl: PropTypes.shape(),
@@ -289,7 +228,6 @@ ProfileDetails.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        balance: selectEthBalance(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
