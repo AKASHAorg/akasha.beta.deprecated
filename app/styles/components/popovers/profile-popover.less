@@ -9,6 +9,10 @@
         padding: 8px 12px;
     }
 
+    &__send-tip-form {
+        padding: 8px 12px;        
+    }
+
     &__header {
         display: flex;
         height: 32px;
@@ -105,30 +109,8 @@
         height: 12px;
     }
 
-    &__button-icon {
-        margin-right: 5px;        
-        width: 10px;
-        height: 10px;
-    }
-
-    &__contrast-color {
-        color: @light-background;        
-        svg {
-            stroke: @light-background;        
-        }
-    }
-
-    &__unfollow-button {
-        background-color: @error-color !important;
-        color: @heading-color !important;
-    }
-
-    &__following-button {
-        color: @primary-color !important;
-        border-color: @primary-color !important;
-
-        svg {
-            stroke: @primary-color !important;
-        }
+    &__karma-icon {
+        stroke: initial !important;
+        fill: @text-color;
     }
 }

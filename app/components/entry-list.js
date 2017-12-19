@@ -13,7 +13,6 @@ import { selectAllPendingClaims, selectAllPendingVotes,
 import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
-
     shouldComponentUpdate (newProps) {
         return !newProps.entries.equals(this.props.entries) ||
             newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
@@ -21,6 +20,8 @@ class EntryList extends Component {
             (this.props.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
             newProps.large !== this.props.large;
     }
+
+    getContainerRef = (el) => { this.container = el; };
 
     getExistingDraft = (entryId) => {
         const { drafts } = this.props;

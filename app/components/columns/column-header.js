@@ -22,7 +22,6 @@ class ColumnHeader extends Component {
             value: props.column && props.column.get('value')
         };
     }
-
     wasVisible = false;
 
     getInputRef = (el) => { this.input = el; };

@@ -14,12 +14,18 @@ import { dashboardMessages } from '../../locale-data/messages';
 
 class AddToBoard extends Component {
     isSaved = (dashboard) => {
-        const { columns, ethAddress, tag } = this.props;
+        const { columns, profile, tag } = this.props;
         const columnType = tag ? columnTypes.tag : columnTypes.profile;
-        const value = tag || ethAddress;
+        if (tag) {
+            return dashboard.get('columns').some(id =>
+                columns.getIn([id, 'type']) === columnType &&
+                columns.getIn([id, 'value']) === tag
+            );
+        }
         return dashboard.get('columns').some(id =>
             columns.getIn([id, 'type']) === columnType &&
-            columns.getIn([id, 'value']) === value
+            (columns.getIn([id, 'value']) === profile.ethAddress ||
+            columns.getIn([id, 'value']) === profile.akashaId)
         );
     };
 
@@ -47,7 +53,7 @@ class AddToBoard extends Component {
     };
 
     render () {
-        const { closePopover, dashboards, ethAddress, intl, onNewDashboard, search, tag } = this.props;
+        const { closePopover, dashboards, intl, onNewDashboard, profile, search, tag } = this.props;
         return (
           <div>
             <div>
@@ -69,7 +75,8 @@ class AddToBoard extends Component {
                         if (tag) {
                             this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
                         } else {
-                            this.props.dashboardToggleProfileColumn(dashboard.get('id'), ethAddress);
+                            const value = profile.akashaId || profile.ethAddress;
+                            this.props.dashboardToggleProfileColumn(dashboard.get('id'), value);
                         }
                   };
                   const isSaved = this.isSaved(dashboard);
@@ -105,7 +112,7 @@ class AddToBoard extends Component {
                   );
               })}
             </div>
-            <div className="content-link add-to-board__button" onClick={onNewDashboard}>
+            <div className="add-to-board__button" onClick={onNewDashboard}>
               <div className="add-to-board__left-item">
                 <Icon className="add-to-board__icon" type="plus" />
               </div>
@@ -126,9 +133,9 @@ AddToBoard.propTypes = {
     dashboardSearch: PropTypes.func.isRequired,
     dashboardToggleProfileColumn: PropTypes.func.isRequired,
     dashboardToggleTagColumn: PropTypes.func.isRequired,
-    ethAddress: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     onNewDashboard: PropTypes.func.isRequired,
+    profile: PropTypes.shape(),
     search: PropTypes.string,
     tag: PropTypes.string,
 };
