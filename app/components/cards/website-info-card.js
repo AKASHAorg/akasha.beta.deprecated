@@ -39,12 +39,12 @@ const WebsiteInfoCard = (props) => {
         bodyStyle={bodyStyle}
         className={
             `website-info-card
-            website-info-card${!infoExtracted && !error ? '_empty' : ''}
+            website-info-card${!infoExtracted && !error && !hasCard ? '_empty' : ''}
             website-info-card${isEdit ? '_edit' : ''}`
         }
         loading={loading}
       >
-        {!title && !description && infoExtracted && !error &&
+        {!title && !description && infoExtracted && !error && url &&
           <div>{intl.formatMessage(entryMessages.cannotExtractWebsiteInfo)}</div>
         }
         {error &&

@@ -17,7 +17,8 @@ class EntryEditor extends Component {
             component: Link
         }]);
         this.state = {
-            selectionState: null
+            selectionState: null,
+            imageErr: null
         };
     }
     updateCaretPosition = (newSelectionState) => {
@@ -30,12 +31,10 @@ class EntryEditor extends Component {
         }
     };
 
-    _handleImageError = (imageBlockKey, err) => {
-        this.setState(prevState => ({
-            errors: [prevState.errors, {
-                [imageBlockKey]: err
-            }]
-        }));
+    _handleImageError = (err) => {
+        this.setState({
+            imageErr: err
+        });
     }
 
     componentDidUpdate (prevProps) {
@@ -44,14 +43,6 @@ class EntryEditor extends Component {
         if (prevSelection.getAnchorKey() !== currSelection.getAnchorKey()) {
             this.updateCaretPosition(currSelection);
         }
-    }
-    // check if the block with the caret is in viewport
-    checkBlockInView = (editorState) => {
-        const selectionState = editorState.getSelection();
-        const anchorKey = selectionState.getAnchorKey();
-        const dataKey = `${anchorKey}-0-0`;
-        const target = document.querySelector(`div[data-offset-key='${dataKey}']`);
-        console.log(target, 'the target');
     }
     _handleEditorChange = (editorState) => {
         // after pressing enter, check if the current block is in view.
@@ -68,12 +59,14 @@ class EntryEditor extends Component {
             sidebarOpen: isOpen
         });
     }
-    // _changeEditorFocus = (focusState) => {
-    //     const { editorState } = this.props;
-    //     const selectionState = editorState.getSelection();
-    //     const focusedSelection = selectionState.set('hasFocus', focusState);
-    //     return this._handleEditorChange(EditorState.acceptSelection(editorState, focusedSelection));
-    // }
+    _handleEditorFocus = () => {
+        const { editorState } = this.props;
+        // this.editor.editorEl.focus();
+        // console.log(this.editor, 'the editor');
+        const selectionState = editorState.getSelection();
+        const focusedSelection = selectionState.set('hasFocus', true);
+        return this.props.onChange(EditorState.forceSelection(editorState, focusedSelection));
+    }
 
     blockStyleFn = (contentBlock) => {
         const type = contentBlock.getType();
@@ -115,9 +108,11 @@ class EntryEditor extends Component {
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
+              onClick={this._handleEditorFocus}
             >
               <MegadraftEditor
                 ref={(edtr) => {
+                    this.editor = edtr;
                     if (this.props.editorRef) {
                         this.props.editorRef(edtr);
                     }
