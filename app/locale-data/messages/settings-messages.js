@@ -22,6 +22,26 @@ const settingsMessages = defineMessages({
         description: 'app language',
         defaultMessage: 'English'
     },
+    hideContent: {
+        id: 'app.settings.hideContent',
+        description: 'title for "hide content" settings',
+        defaultMessage: 'Hide content'
+    },
+    hideContentDescription: {
+        id: 'app.settings.hideContentDescription',
+        description: 'description for "hide content" settings',
+        defaultMessage: 'Choose if you don\'t want to see content with a score lower than a specific value'
+    },
+    hideCommentsLabel: {
+        id: 'app.settings.hideCommentsLabel',
+        description: 'label for "hide comments content" checkbox',
+        defaultMessage: 'Hide comments with a score lower than'
+    },
+    hideEntriesLabel: {
+        id: 'app.settings.hideEntriesLabel',
+        description: 'label for "hide entries content" checkbox',
+        defaultMessage: 'Hide entries with a score lower than'
+    },
     passphraseOptions: {
         id: 'app.settings.passphraseOptions',
         description: 'title for profile passphrase options',

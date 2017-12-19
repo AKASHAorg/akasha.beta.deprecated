@@ -24,6 +24,11 @@ export const IpfsSettings = Record({
     storagePath: null,
 });
 
+export const HiddenContent = Record({
+    checked: true,
+    value: -30
+});
+
 const Notifications = Record({
     muted: []
 });
@@ -38,6 +43,8 @@ export const UserSettings = Record({
     lastBlockNr: null,
     latestMention: null,
     defaultLicense: License(),
+    hideCommentContent: new HiddenContent(),
+    hideEntryContent: new HiddenContent(),
     notifications: new Notifications(),
     passwordPreference: new PasswordPreference()
 });

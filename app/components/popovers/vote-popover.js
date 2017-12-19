@@ -117,7 +117,7 @@ class VotePopover extends Component {
             {intl.formatMessage(formMessages.voteWeightExtra, { min: MIN, max: MAX })}
           </span>
         );
-        const weight = getFieldValue('weight');
+        const weight = getFieldValue('weight') || 1;
 
         return (
           <Form className="vote-popover__content" hideRequiredMark onSubmit={this.onSubmit}>
