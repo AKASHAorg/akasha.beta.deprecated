@@ -44,7 +44,7 @@ class NewEntrySecondarySidebar extends Component {
             (nextState.searchString !== this.state.searchString) ||
             (nextState.searching !== this.state.searching) ||
             (nextState.draftTypeVisible !== this.state.draftTypeVisible) ||
-            (nextState.searchBarVisible !== this.state.draftTypeVisible);
+            (nextState.searchBarVisible !== this.state.searchBarVisible);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -192,8 +192,12 @@ class NewEntrySecondarySidebar extends Component {
     }
 
     _getFilteredDrafts = (drafts, resolvingEntries, draftType) =>
-        drafts.filter(draft =>
-            draft.content.entryType === draftType && draft.content && draft.content.title);
+        drafts.filter((draft) => {
+            if (draftType === 'link') {
+                return draft.content && draft.content.entryType === draftType && draft.content.cardInfo.title;
+            }
+            return draft.content && draft.content.entryType === draftType && draft.content.title;
+        })
 
     _toggleSearchBarVisibility = (ev) => {
         ev.preventDefault();
@@ -220,10 +224,16 @@ class NewEntrySecondarySidebar extends Component {
         const searchOptions = {
             pre: '<b>',
             post: '</b>',
-            extract: el => el.content.title,
+            extract: (el) => {
+                if (draftType === 'link') {
+                    return el.content.cardInfo.title;
+                }
+                return el.content.title;
+            },
         };
         if (this.state.searching) {
             const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
+            console.log(allDrafts, 'alldrafts');
             return fuzzy.filter(this.state.searchString, allDrafts.toList().toJS(), searchOptions);
         }
         return null;
@@ -262,7 +272,7 @@ class NewEntrySecondarySidebar extends Component {
         const publishedDraftsByType = drafts.filter(drft =>
             drft.get('id') && drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
         const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
-
+        console.log(searchResults, 'search results');
         return (
           <div
             className="new-entry-secondary-sidebar"
@@ -364,7 +374,9 @@ class NewEntrySecondarySidebar extends Component {
                       />
                     )).toList()}
                 <div>
-                  <div className="new-entry-secondary-sidebar__draft-list-title">{intl.formatMessage(entryMessages.published)}</div>
+                  <div className="new-entry-secondary-sidebar__draft-list-title">
+                    {intl.formatMessage(entryMessages.published)}
+                  </div>
                   {!searching && publishedDraftsByType.map(draft => (
                     <div key={`${draft.get('id')}`}>
                       <EntrySecondarySidebarItem
