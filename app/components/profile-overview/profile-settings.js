@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Checkbox, Form, Select, Tooltip, Radio } from 'antd';
+import { Button, Checkbox, Form, InputNumber, Select, Tooltip, Radio } from 'antd';
 import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionAdd } from '../../local-flux/actions/action-actions';
@@ -21,9 +21,15 @@ class ProfileSettings extends Component {
         const pref = props.userSettings.passwordPreference;
         const license = props.userSettings.get('defaultLicense');
         const donations = props.loggedProfileData.get('donationsEnabled');
+        const hideCommentContent = props.userSettings.get('hideCommentContent');
+        const hideEntryContent = props.userSettings.get('hideEntryContent');
         this.state = {
             defaultLicenseParent: license.parent || '2',
             defaultLicenseId: license.id || '4',
+            hideComments: hideCommentContent.checked,
+            hideCommentsValue: hideCommentContent.value,
+            hideEntries: hideEntryContent.checked,
+            hideEntriesValue: hideEntryContent.value,
             rememberTime: pref && pref.remember ? pref.remember : false,
             unlockTime: pref && pref.time ? pref.time : 5,
             donationsValue: donations
@@ -36,6 +42,22 @@ class ProfileSettings extends Component {
             this.setState({ donationsValue: donationsEnabled });
         }
     }
+
+    handleHideCommentsChange = (ev) => {
+        this.setState({ hideComments: ev.target.checked });
+    };
+
+    handleHideCommentsValueChange = (value) => {
+        this.setState({ hideCommentsValue: value });
+    };
+
+    handleHideEntriesChange = (ev) => {
+        this.setState({ hideEntries: ev.target.checked });
+    };
+
+    handleHideEntriesValueChange = (value) => {
+        this.setState({ hideEntriesValue: value });
+    };
 
     handleLicenseChange = licenceType =>
         (value) => {
@@ -77,22 +99,27 @@ class ProfileSettings extends Component {
 
     onSaveSettings = () => {
         const { loggedEthAddress, loggedProfileData } = this.props;
-        const { defaultLicenseId, defaultLicenseParent, donationsValue,
-            unlockTime, rememberTime } = this.state;
+        const { defaultLicenseId, defaultLicenseParent, donationsValue, hideComments,
+            hideCommentsValue, hideEntries, hideEntriesValue, unlockTime, rememberTime } = this.state;
         const passwordPreference = { remember: rememberTime, time: unlockTime };
         const defaultLicense = { id: defaultLicenseId, parent: defaultLicenseParent };
-        const payload = { defaultLicense, passwordPreference };
+        const hideCommentContent = { checked: hideComments, value: hideCommentsValue };
+        const hideEntryContent = { checked: hideEntries, value: hideEntriesValue };
+        const payload = { defaultLicense, hideCommentContent, hideEntryContent, passwordPreference };
         if (donationsValue !== loggedProfileData.get('donationsEnabled')) {
             this.props.actionAdd(loggedEthAddress, toggleDonations, { status: donationsValue });
         }
         this.props.userSettingsSave(loggedEthAddress, payload);
     }
 
-    render () {
+    render () { // eslint-disable-line complexity
         const { intl, licenses, pendingToggleDonations, savingUserSettings } = this.props;
-        const { defaultLicenseId, defaultLicenseParent, unlockTime, rememberTime } = this.state;
+        const { defaultLicenseId, defaultLicenseParent, hideComments, hideCommentsValue, hideEntries,
+            hideEntriesValue, unlockTime, rememberTime } = this.state;
         const pref = this.props.userSettings.passwordPreference;
         const license = this.props.userSettings.get('defaultLicense');
+        const hideCommentContent = this.props.userSettings.get('hideCommentContent');
+        const hideEntryContent = this.props.userSettings.get('hideEntryContent');
         const donationsEnabled = this.props.loggedProfileData.get('donationsEnabled');
 
         const formChanged = (
@@ -100,7 +127,11 @@ class ProfileSettings extends Component {
             pref.time !== this.state.unlockTime ||
             license.id !== this.state.defaultLicenseId ||
             license.parent !== this.state.defaultLicenseParent ||
-            donationsEnabled !== this.state.donationsValue
+            donationsEnabled !== this.state.donationsValue ||
+            hideCommentContent.checked !== this.state.hideComments ||
+            hideCommentContent.value !== this.state.hideCommentsValue ||
+            hideEntryContent.checked !== this.state.hideEntries ||
+            hideEntryContent.value !== this.state.hideEntriesValue
         );
 
         return (
@@ -164,20 +195,60 @@ class ProfileSettings extends Component {
                           onChange={this.handleLicenseChange('id')}
                           value={defaultLicenseId}
                         >
-                            {licenses.filter(lic => lic.get('parent') === defaultLicenseParent)
-                              .map(childLic => (
-                                <Radio
-                                  className="profile-settings__license-radio"
-                                  key={childLic.id}
-                                  value={childLic.id}
-                                >
-                                  {childLic.label}
-                                </Radio>
-                              )).toIndexedSeq()}
+                          {licenses.filter(lic => lic.get('parent') === defaultLicenseParent)
+                            .map(childLic => (
+                              <Radio
+                                className="profile-settings__license-radio"
+                                key={childLic.id}
+                                value={childLic.id}
+                              >
+                                {childLic.label}
+                              </Radio>
+                            )).toIndexedSeq()}
                         </RadioGroup>
                       }
                     </div>
                   </FormItem>
+                </div>
+                <div className="profile-settings__hide-content">
+                  <div className="profile-settings__item-title">
+                    {intl.formatMessage(settingsMessages.hideContent)}
+                  </div>
+                  <div className="profile-settings__item-description">
+                    {intl.formatMessage(settingsMessages.hideContentDescription)}
+                  </div>
+                  <div className="profile-settings__hide-content-row">
+                    <Checkbox
+                      checked={hideEntries}
+                      onChange={this.handleHideEntriesChange}
+                    >
+                      {intl.formatMessage(settingsMessages.hideEntriesLabel)}
+                    </Checkbox>
+                    <InputNumber
+                      className="profile-settings__score-input"
+                      onChange={this.handleHideEntriesValueChange}
+                      step={1}
+                      maxLength={22}
+                      precision={0}
+                      value={hideEntriesValue}
+                    />
+                  </div>
+                  <div className="profile-settings__hide-content-row">
+                    <Checkbox
+                      checked={hideComments}
+                      onChange={this.handleHideCommentsChange}
+                    >
+                      {intl.formatMessage(settingsMessages.hideCommentsLabel)}
+                    </Checkbox>
+                    <InputNumber
+                      className="profile-settings__score-input"
+                      onChange={this.handleHideCommentsValueChange}
+                      step={1}
+                      maxLength={22}
+                      precision={0}
+                      value={hideCommentsValue}
+                    />
+                  </div>
                 </div>
                 <div>
                   <div className="profile-settings__item-title">

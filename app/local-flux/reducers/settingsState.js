@@ -1,16 +1,22 @@
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
+import { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, PasswordPreference,
     PortsRecord, SettingsRecord, UserSettings } from './records';
 
 const initialState = new SettingsRecord();
 
 const getUserSettings = (state, data) => {
     const preference = new PasswordPreference(data.passwordPreference);
+    const hideComment = new HiddenContent(data.hideCommentContent);
+    const hideEntry = new HiddenContent(data.hideEntryContent);
     if (!data.defaultLicense) {
         data.defaultLicense = state.getIn(['userSettings', 'defaultLicense']);
     }
-    return new UserSettings(data).set('passwordPreference', preference);
+    return new UserSettings(data).merge({
+        hideCommentContent: hideComment,
+        hideEntryContent: hideEntry,
+        passwordPreference: preference
+    });
 };
 
 const settingsState = createReducer(initialState, {
