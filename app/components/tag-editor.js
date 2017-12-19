@@ -187,7 +187,10 @@ class TagEditor extends Component {
 
     _deleteTag = tagName =>
         () => {
-            const { tags } = this.props;
+            const { tags, inputDisabled } = this.props;
+            if (inputDisabled) {
+                return;
+            }
             this.props.onTagUpdate(tags.filter(tag => tag !== tagName));
         }
 
