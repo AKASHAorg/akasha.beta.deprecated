@@ -289,7 +289,7 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
-function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value }) {
+function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value, tokenAmount }) {
     const channel = Channel.server.profile.tip;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
@@ -299,7 +299,8 @@ function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value }) {
         akashaId,
         ethAddress,
         receiver,
-        value
+        value,
+        tokenAmount
     }]);
 }
 

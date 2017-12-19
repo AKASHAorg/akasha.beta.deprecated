@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
-import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
+import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
     selectPendingTip, selectProfile, } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -89,18 +89,6 @@ class ProfilePopover extends Component {
         });
     };
 
-    sendTip = ({ value, message }) => {
-        const { ethAddress, loggedEthAddress, profile } = this.props;
-        this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
-            akashaId: profile.akashaId,
-            ethAddress,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            message,
-            value
-        });
-    };
-
     renderFollowButton = () => {
         const { intl, isFollower, followPending } = this.props;
         const { followHovered } = this.state;
@@ -158,7 +146,7 @@ class ProfilePopover extends Component {
     };
 
     renderContent () {
-        const { balance, ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
+        const { ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
         if (!ethAddress) {
             return null;
         }
@@ -171,10 +159,8 @@ class ProfilePopover extends Component {
         if (this.state.sendTip) {
             return (
               <SendTipForm
-                balance={balance}
+                profile={profile}
                 onCancel={this.toggleSendTip}
-                onSubmit={this.sendTip}
-                tipPending={tipPending}
               />
             );
         }
@@ -308,7 +294,6 @@ ProfilePopover.defaultProps = {
 
 ProfilePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    balance: PropTypes.string,
     children: PropTypes.node.isRequired,
     containerRef: PropTypes.shape(),
     ethAddress: PropTypes.string,
@@ -325,7 +310,6 @@ ProfilePopover.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        balance: selectEthBalance(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
