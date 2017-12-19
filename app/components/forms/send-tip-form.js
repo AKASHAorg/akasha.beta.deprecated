@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, InputNumber } from 'antd';
+import { actionAdd } from '../../local-flux/actions/action-actions';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
-import { formatBalance } from '../../utils/number-formatter';
+import { selectBalance, selectLoggedEthAddress,
+    selectPendingTip } from '../../local-flux/selectors';
+import { balanceToNumber } from '../../utils/number-formatter';
+import * as actionTypes from '../../constants/action-types';
 
 const FormItem = Form.Item;
 
@@ -15,22 +20,47 @@ class SendTipForm extends Component {
         }
     };
 
+    sendTip = ({ value, message, tokenAmount }) => {
+        const { loggedEthAddress, profile } = this.props;
+        this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
+            akashaId: profile.akashaId,
+            ethAddress: profile.ethAddress,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            message,
+            value,
+            tokenAmount
+        });
+    };
+
     onSubmit = (ev) => {
         ev.preventDefault();
-        const { form, onSubmit } = this.props;
-        const { amount, message } = form.getFieldsValue();
-        onSubmit({ message, value: amount.toString() });
+        const { form } = this.props;
+        const { aethAmount, ethAmount, message } = form.getFieldsValue();
+        this.sendTip({ message, value: ethAmount.toString(), tokenAmount: aethAmount.toString() });
     };
 
     render () {
         const { balance, form, intl, onCancel, tipPending } = this.props;
+        const ethBalance = balance.get('eth');
+        const aethBalance = balance.getIn(['aeth', 'free']);
         const { getFieldDecorator, getFieldError } = form;
         const amountError = getFieldError('amount');
-        const maxAmount = Number(formatBalance((balance - 0.1).toString(), 7));
-        const extra = (
+        const { aethAmount, ethAmount } = form.getFieldsValue();
+        const emptyFields = !aethAmount && !ethAmount;
+        const maxEthAmount = balanceToNumber((ethBalance - 0.1).toString(), 7);
+        const maxAethAmount = balanceToNumber((aethBalance), 7);
+        const extraEth = (
           <span className="send-tip-form__extra">
             {intl.formatMessage(formMessages.maxAethAmountLabel, {
-                balance: maxAmount
+                balance: maxEthAmount
+            })}
+          </span>
+        );
+        const extraAeth = (
+          <span className="send-tip-form__extra">
+            {intl.formatMessage(formMessages.maxAethAmountLabel, {
+                balance: maxAethAmount
             })}
           </span>
         );
@@ -43,7 +73,7 @@ class SendTipForm extends Component {
             <FormItem
               className="send-tip-form__form-item"
               colon={false}
-              help={amountError || extra}
+              help={amountError || extraEth}
               label={
                 <span className="uppercase">
                   {intl.formatMessage(formMessages.ethAmountLabel)}
@@ -51,8 +81,8 @@ class SendTipForm extends Component {
               }
               validateStatus={amountError ? 'error' : ''}
             >
-              {getFieldDecorator('amount', {
-                  initialValue: 0.001,
+              {getFieldDecorator('ethAmount', {
+                  initialValue: 0,
                   rules: [{
                       required: true,
                       message: intl.formatMessage(formMessages.amountRequired)
@@ -61,11 +91,41 @@ class SendTipForm extends Component {
                 <InputNumber
                   autoFocus
                   className="send-tip-form__amount"
-                  min={0.001}
-                  max={maxAmount}
+                  min={0}
+                  max={maxEthAmount}
                   onKeyDown={this.handleKeyDown}
                   placeholder={intl.formatMessage(profileMessages.tipAmount)}
                   step={0.001}
+                  maxLength={22}
+                />
+              )}
+            </FormItem>
+            <FormItem
+              className="send-tip-form__form-item"
+              colon={false}
+              help={amountError || extraAeth}
+              label={
+                <span className="uppercase">
+                  {intl.formatMessage(formMessages.aethAmountLabel)}
+                </span>
+              }
+              validateStatus={amountError ? 'error' : ''}
+            >
+              {getFieldDecorator('aethAmount', {
+                  initialValue: 0,
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage(formMessages.amountRequired)
+                }],
+              })(
+                <InputNumber
+                  autoFocus
+                  className="send-tip-form__amount"
+                  min={0}
+                  max={maxAethAmount}
+                  onKeyDown={this.handleKeyDown}
+                  placeholder={intl.formatMessage(profileMessages.tipAmount)}
+                  step={0.01}
                   maxLength={22}
                 />
               )}
@@ -97,7 +157,7 @@ class SendTipForm extends Component {
               }
               <Button
                 className="send-tip-form__button"
-                disabled={!!amountError || tipPending}
+                disabled={!!amountError || tipPending || emptyFields}
                 htmlType="submit"
                 onClick={this.onSubmit}
                 type="primary"
@@ -113,12 +173,28 @@ class SendTipForm extends Component {
 }
 
 SendTipForm.propTypes = {
-    balance: PropTypes.string,
+    actionAdd: PropTypes.func,
+    balance: PropTypes.shape(),
+    loggedEthAddress: PropTypes.string,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func,
-    onSubmit: PropTypes.func.isRequired,
+    profile: PropTypes.shape(),
     tipPending: PropTypes.bool
 };
 
-export default Form.create()(injectIntl(SendTipForm));
+function mapStateToProps (state, ownProps) {
+    const { profile } = ownProps;
+    return {
+        balance: selectBalance(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
+        tipPending: selectPendingTip(state, profile.ethAddress)
+    };
+}
+
+export default Form.create()(connect(
+    mapStateToProps,
+    {
+        actionAdd
+    }
+)(injectIntl(SendTipForm)));

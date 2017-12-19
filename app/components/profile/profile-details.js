@@ -9,7 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
-import { selectEthBalance, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
+import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
@@ -59,18 +59,6 @@ class ProfileDetails extends Component {
         this.wasVisible = true;
         this.setState({
             popoverVisible
-        });
-    };
-
-    sendTip = ({ value, message }) => {
-        const { ethAddress, loggedEthAddress, profileData } = this.props;
-        this.props.actionAdd(loggedEthAddress, actionTypes.sendTip, {
-            akashaId: profileData.get('akashaId'),
-            ethAddress,
-            firstName: profileData.get('firstName'),
-            lastName: profileData.get('lastName'),
-            message,
-            value
         });
     };
 
@@ -134,7 +122,7 @@ class ProfileDetails extends Component {
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
         const { about, akashaId, avatar, backgroundImage, links, firstName, lastName,
             followersCount, followingCount } = profileData;
-        const { balance, ethAddress, intl, loggedEthAddress, tipPending } = this.props;
+        const { ethAddress, intl, loggedEthAddress, tipPending } = this.props;
         const isOwnProfile = ethAddress === loggedEthAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
         const displayName = firstName || lastName ?
@@ -196,9 +184,7 @@ class ProfileDetails extends Component {
                   arrowPointAtCenter
                   content={this.wasVisible ?
                     <SendTipForm
-                      balance={balance}
-                      onSubmit={this.sendTip}
-                      tipPending={tipPending}
+                      profile={profileData}
                     /> :
                     null
                   }
@@ -275,7 +261,6 @@ class ProfileDetails extends Component {
 
 ProfileDetails.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    balance: PropTypes.string,
     ethAddress: PropTypes.string.isRequired,
     followPending: PropTypes.bool,
     intl: PropTypes.shape(),
@@ -289,7 +274,6 @@ ProfileDetails.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        balance: selectEthBalance(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
