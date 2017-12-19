@@ -69,7 +69,6 @@ class ParserUtils {
             });
         }
         return Promise.all(filePromises).then((results) => {
-            console.log(results, 'the res');
             let promise = Promise.resolve();
             if (results[0]) {
                 promise = uploadImage(results[0]);

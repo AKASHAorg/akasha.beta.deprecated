@@ -67,9 +67,9 @@ class Sidebar extends Component {
                         content: {
                             featuredImage: {},
                             licence: userSelectedLicense,
+                            entryType: 'article',
                         },
                         tags: [],
-                        entryType: 'article',
                     });
                     return history.push(`/draft/article/${draftId}`);
                 }
@@ -79,10 +79,10 @@ class Sidebar extends Component {
                         ethAddress: loggedProfile.get('ethAddress'),
                         content: {
                             featuredImage: {},
-                            licence: userSelectedLicense
+                            licence: userSelectedLicense,
+                            entryType: 'link'
                         },
                         tags: [],
-                        entryType: 'link'
                     });
                     return history.push(`/draft/link/${draftId}`);
                 }
@@ -121,7 +121,7 @@ class Sidebar extends Component {
             <div>{karmaScore} / {nextLevel}</div>
           </div>
         );
-        
+
         const menu = (
           <div onClick={this.hide}>
             <div
