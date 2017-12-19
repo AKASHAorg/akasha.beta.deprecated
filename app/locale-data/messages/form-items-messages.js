@@ -17,7 +17,7 @@ const formMessages = defineMessages({
         defaultMessage: 'Accept tips'
     },
     akashaIdPlaceholder: {
-        id: 'akashaIdPlaceholder',
+        id: 'app.form.akashaIdPlaceholder',
         description: 'placeholder for username input field',
         defaultMessage: 'Type your username'
     },
@@ -47,12 +47,12 @@ const formMessages = defineMessages({
         defaultMessage: 'ETH amount'
     },
     firstNamePlaceholder: {
-        id: 'firstNamePlaceholder',
+        id: 'app.form.firstNamePlaceholder',
         description: 'placeholder for first name input field',
         defaultMessage: 'Type your first name'
     },
     lastNamePlaceholder: {
-        id: 'lastNamePlaceholder',
+        id: 'app.form.lastNamePlaceholder',
         description: 'placeholder for last name input field',
         defaultMessage: 'Type your last name'
     },
@@ -107,17 +107,17 @@ const formMessages = defineMessages({
         defaultMessage: '{amount} AETH will generate {amount} Mana every 24 hours for as long as it is kept in this state.'
     },
     firstName: {
-        id: 'app.firstName',
+        id: 'app.form.firstName',
         description: 'Placeholder for first name input',
         defaultMessage: 'First name'
     },
     lastName: {
-        id: 'app.lastName',
+        id: 'app.form.lastName',
         description: 'Placeholder for last name input',
         defaultMessage: 'Last Name'
     },
     akashaId: {
-        id: 'app.akashaId',
+        id: 'app.form.akashaId',
         description: 'Placeholder for username (Akasha ID) input',
         defaultMessage: 'Username'
     },
@@ -167,7 +167,7 @@ const formMessages = defineMessages({
         defaultMessage: 'Mana total score'
     },
     name: {
-        id: 'app.inputField.name',
+        id: 'app.form.name',
         description: 'Placeholder for name input field',
         defaultMessage: 'Name'
     },
@@ -177,7 +177,7 @@ const formMessages = defineMessages({
         defaultMessage: 'Passphrases don\'t match. Please type the passphrases again'
     },
     passphraseVerify: {
-        id: 'app.passphraseVerify',
+        id: 'app.form.passphraseVerify',
         description: 'Placeholder for passphrase verify input',
         defaultMessage: 'Verify passphrase'
     },
@@ -222,7 +222,7 @@ const formMessages = defineMessages({
         defaultMessage: 'TIPS'
     },
     title: {
-        id: 'app.inputField.title',
+        id: 'app.form.title',
         description: 'Placeholder for title input field',
         defaultMessage: 'Title'
     },
@@ -232,7 +232,7 @@ const formMessages = defineMessages({
         defaultMessage: 'Total AETH balance'
     },
     url: {
-        id: 'app.inputField.url',
+        id: 'app.form.url',
         description: 'Placeholder for url input field',
         defaultMessage: 'URL'
     },

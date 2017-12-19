@@ -78,6 +78,11 @@ class ProfilePopover extends Component {
         }
     };
 
+    profileEdit = () => {
+        this.props.profileEditToggle();
+        this.setState({ popoverVisible: false });
+    }
+
     toggleSendTip = () => {
         this.setState({
             sendTip: !this.state.sendTip
@@ -264,7 +269,7 @@ class ProfilePopover extends Component {
               {isOwnProfile &&
                 <Button
                   className="profile-popover__button"
-                  onClick={this.props.profileEditToggle}
+                  onClick={this.profileEdit}
                   size="large"
                   type="primary"
                 >

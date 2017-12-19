@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
-import { Button, Popover, Tooltip } from 'antd';
+import { Button, Popover, Progress, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
+import { balanceToNumber } from '../utils/number-formatter';
 import { Avatar, EssencePopover, Icon, ManaPopover, SidebarIcon } from './';
-import { generalMessages } from '../locale-data/messages';
+import { generalMessages, profileMessages } from '../locale-data/messages';
 import { draftCreate } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
@@ -110,7 +111,17 @@ class Sidebar extends Component {
 
     render () {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
-
+        const karmaScore = balanceToNumber(loggedProfileData.get('karma'));
+        const karmaLevel = Math.floor(karmaScore / 1000);
+        const nextLevel = (karmaLevel + 1) * 1000;
+        const percent = (karmaScore / nextLevel) * 100;
+        const tooltip = (
+          <div>
+            <div>{intl.formatMessage(profileMessages.karmaLevel, { karmaLevel })}</div>
+            <div>{karmaScore} / {nextLevel}</div>
+          </div>
+        );
+        
         const menu = (
           <div onClick={this.hide}>
             <div
@@ -211,6 +222,21 @@ class Sidebar extends Component {
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
               <EssencePopover />
+            </div>
+            <div className="flex-center-x sidebar__progress-wrapper">
+              <Tooltip
+                placement="topLeft"
+                title={tooltip}
+              >
+                <Progress
+                  className="sidebar__karma-progress"
+                  format={() => <Icon className="sidebar__karma-icon" type="karma" />}
+                  percent={percent}
+                  strokeWidth={10}
+                  type="circle"
+                  width={35}
+                />
+              </Tooltip>
             </div>
             <div className="flex-center-x sidebar__avatar">
               <Popover

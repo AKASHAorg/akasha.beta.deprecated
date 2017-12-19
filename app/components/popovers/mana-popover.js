@@ -162,14 +162,14 @@ class ManaPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip title={tooltip}>
+            <Tooltip placement="topLeft" title={tooltip}>
               <Progress
                 className="mana-popover__progress"
-                format={() => <Icon type="question" />}
+                format={() => <Icon type="mana" />}
                 percent={percent}
                 strokeWidth={10}
                 type="circle"
-                width={32}
+                width={35}
               />
             </Tooltip>
           </Popover>
