@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
@@ -12,7 +12,7 @@ const createEntryRecord = entry =>
         if (entry.content) {
             let cardInfo = new CardInfo();
             if (entry.content.cardInfo) {
-                cardInfo = cardInfo.merge(entry.content.cardInfo);
+                cardInfo = cardInfo.merge(fromJS(entry.content.cardInfo));
             }
             mEntry.set('content', new EntryContent({
                 ...entry.content,

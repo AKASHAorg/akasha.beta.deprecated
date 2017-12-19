@@ -90,7 +90,7 @@
         cursor: pointer;
         &_visible {
             right: 0;
-            transition: right 0.15s ease-in-out;
+            transition: right 0.15 s ease-in-out;
         }
     }
 
@@ -106,5 +106,19 @@
         .ant-progress-circle-path {
             stroke: @essence-color;
         }
+    }
+
+    &__karma-progress {
+        .ant-progress-circle-trail {
+            stroke: @karma-color;
+            opacity: 0.2;
+        }
+        .ant-progress-circle-path {
+            stroke: @karma-color;
+        }
+    }
+
+    &__karma-icon {
+        stroke: initial !important;
     }
 }

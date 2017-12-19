@@ -61,6 +61,11 @@ export const profileMessages = defineMessages({
         description: 'Label for Short description text field',
         defaultMessage: 'Type something about you'
     },
+    karmaLevel: {
+        id: 'app.profile.karmaLevel',
+        description: 'Karma level',
+        defaultMessage: 'Karma lvl. {karmaLevel}'
+    },
     linksTitle: {
         id: 'app.profile.linksTitle',
         description: 'Links section title',

@@ -208,14 +208,14 @@ class EssencePopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip title={tooltip}>
+            <Tooltip placement="topLeft" title={tooltip}>
               <Progress
                 className="essence-popover__progress"
-                format={() => <Icon type="question" />}
+                format={() => <Icon className="essence-popover__icon" type="essence" />}
                 percent={percent}
                 strokeWidth={10}
                 type="circle"
-                width={32}
+                width={35}
               />
             </Tooltip>
           </Popover>

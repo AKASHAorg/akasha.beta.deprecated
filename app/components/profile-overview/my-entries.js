@@ -32,7 +32,7 @@ class Highlights extends Component {
               fetchMoreEntries={this.fetchMoreProfileEntries}
               moreEntries={moreProfileEntries}
               masonry
-              style={{ padding: '30px 0px', margin: '6px 0px' }}
+              style={{ padding: '30px 0px' }}
             />
           </div>
         );

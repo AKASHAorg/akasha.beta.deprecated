@@ -66,6 +66,7 @@ class SendTipForm extends Component {
                   onKeyDown={this.handleKeyDown}
                   placeholder={intl.formatMessage(profileMessages.tipAmount)}
                   step={0.001}
+                  maxLength={22}
                 />
               )}
             </FormItem>

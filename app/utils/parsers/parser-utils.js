@@ -61,14 +61,15 @@ class ParserUtils {
         return superParser.parseFromString(htmlString, 'text/html');
     }
 
-    resizeImage = (image, { uploadImageToIpfs }) => {
+    resizeImage = (image, { ipfsFile }) => {
         let filePromises = [];
         if (image) {
             filePromises = getResizedImages([image], {
-                ipfsFile: uploadImageToIpfs
+                ipfsFile
             });
         }
         return Promise.all(filePromises).then((results) => {
+            console.log(results, 'the res');
             let promise = Promise.resolve();
             if (results[0]) {
                 promise = uploadImage(results[0]);
