@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import classNames from 'classnames';
@@ -12,8 +13,9 @@ import { Icon, ProfilePopover, VotesModal, VotePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
-import { selectBlockNumber, selectComment, selectCommentVote, selectLoggedEthAddress,
-    selectPendingCommentVote, selectProfile, selectResolvingComment } from '../../local-flux/selectors';
+import { selectBlockNumber, selectComment, selectCommentVote, selectHideCommentSettings,
+    selectLoggedEthAddress, selectPendingCommentVote, selectProfile,
+    selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
@@ -29,6 +31,7 @@ class Comment extends Component {
         const editorState = content ? EditorState.createWithContent(content) : EditorState.createEmpty();
         this.state = {
             editorState,
+            isHidden: true,
             isExpanded: null,
             showVotes: false
         };
@@ -111,6 +114,12 @@ class Comment extends Component {
         });
     };
 
+    showHiddenContent = () => {
+        this.setState({
+            isHidden: false
+        });
+    };
+
     handleVote = ({ type, weight }) => {
         const { comment, entryId, loggedEthAddress } = this.props;
         const payload = {
@@ -169,6 +178,56 @@ class Comment extends Component {
       </div>
     );
 
+    renderHiddenContent = voteProps => (
+      <div className="comment">
+        <div className="comment__inner">
+          <div className="comment__votes">
+            <VotePopover
+              onSubmit={this.handleVote}
+              type={actionTypes.commentUpvote}
+              {...voteProps}
+            />
+            <span className="comment__score content-link" onClick={this.openVotesPanel}>
+              {this.props.comment.score}
+            </span>
+            <VotePopover
+              onSubmit={this.handleVote}
+              type={actionTypes.commentDownvote}
+              {...voteProps}
+            />
+          </div>
+          <div className="comment__main" style={{ position: 'relative' }}>
+            <div className="content-placeholder comment__content-placeholder" />
+            <div
+              className="content-placeholder comment__content-placeholder"
+              style={{ width: '70%', marginTop: '6px' }}
+            />
+            <div className="flex-center-y comment__actions">
+              <div className="content-placeholder comment__reply-button-placeholder" />
+            </div>
+            <div className="comment__hidden">
+              <div className="heading flex-center">
+                {this.props.intl.formatMessage(entryMessages.hiddenContent, {
+                    score: this.props.hideCommentSettings.value
+                })}
+              </div>
+              <div className="heading comment__hidden-message">
+                {this.props.intl.formatMessage(entryMessages.hiddenContent2)}
+                <Link className="comment__settings-link" to="/profileoverview/settings">
+                  {this.props.intl.formatMessage(entryMessages.hiddenContent3)}
+                </Link>
+              </div>
+              <div className="flex-center">
+                <span className="content-link comment__retry-button" onClick={this.showHiddenContent}>
+                  {this.props.intl.formatMessage(entryMessages.showAnyway)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
     renderUnresolvedPlaceholder = () => (
       <div style={{ position: 'relative' }}>
         <div className="content-placeholder comment__content-placeholder" />
@@ -192,15 +251,16 @@ class Comment extends Component {
       </div>
     );
 
-    render () {
-        const { author, blockNr, comment, containerRef, children, intl, onReply, resolvingComment,
-            showReplyButton, vote, votePending } = this.props;
-
+    render () { // eslint-disable-line max-statements
+        const { author, blockNr, comment, containerRef, children, hideCommentSettings, intl,
+            onReply, resolvingComment, showReplyButton, vote, votePending } = this.props;
+        const { editorState, isExpanded, isHidden } = this.state;
+        const hideContent = !this.isLogged() && hideCommentSettings.checked &&
+            comment.score < hideCommentSettings.value && isHidden;
         if (resolvingComment) {
             return this.renderPlaceholder();
         }
 
-        const { editorState, isExpanded } = this.state;
         const publishDate = comment.publishDate;
         const content = comment.content;
         let commentText = '';
@@ -224,6 +284,10 @@ class Comment extends Component {
         });
         const iconClassName = 'comment__vote-icon';
         const voteProps = { containerRef, iconClassName, isOwnEntity: this.isLogged(), votePending, vote };
+
+        if (hideContent) {
+            return this.renderHiddenContent(voteProps);
+        }
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
@@ -311,6 +375,7 @@ Comment.propTypes = {
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
     ethAddress: PropTypes.string,
+    hideCommentSettings: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     loggedEthAddress: PropTypes.string,
     onReply: PropTypes.func,
@@ -330,6 +395,7 @@ function mapStateToProps (state, ownProps) {
         comment,
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
         ethAddress,
+        hideCommentSettings: selectHideCommentSettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         resolvingComment: selectResolvingComment(state, comment.ipfsHash),
         vote: selectCommentVote(state, commentId),

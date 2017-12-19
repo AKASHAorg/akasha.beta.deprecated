@@ -8,7 +8,7 @@ import Waypoint from 'react-waypoint';
 import { entryMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { selectAllPendingClaims, selectAllPendingVotes,
+import { selectAllPendingClaims, selectAllPendingVotes, selectHideEntrySettings,
     selectLoggedEthAddress } from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
@@ -40,9 +40,9 @@ class EntryList extends Component {
 
     render () {
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
-            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, intl, large, loggedEthAddress,
-            masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes, placeholderMessage, profiles,
-            style } = this.props;
+            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,
+            loggedEthAddress, masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes,
+            placeholderMessage, profiles, style } = this.props;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
                 return null;
@@ -67,6 +67,7 @@ class EntryList extends Component {
               existingDraft={this.getExistingDraft(entry.get('entryId'))}
               fetchingEntryBalance={fetchingEntryBalance}
               handleEdit={this.handleEdit}
+              hideEntrySettings={hideEntrySettings}
               isPending={isPending}
               intl={intl}
               key={entry.get('entryId')}
@@ -136,6 +137,7 @@ EntryList.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
     fetchMoreEntries: PropTypes.func.isRequired,
+    hideEntrySettings: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     large: PropTypes.bool,
@@ -158,6 +160,7 @@ function mapStateToProps (state, ownProps) {
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
+        hideEntrySettings: selectHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingClaims: selectAllPendingClaims(state),
         pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
