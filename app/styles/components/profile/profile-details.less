@@ -115,10 +115,18 @@
         margin-right: 5px;
     }
 
-    &__support-button:hover {
-        svg {
-            transition: all 100ms ease-in-out;            
-            stroke: @primary-color !important;
+    &__support-button {
+        &:hover:not(&_disabled) {
+            svg {
+                transition: all 100ms ease-in-out;            
+                stroke: @primary-color !important;
+            }
+        }
+
+        &_disabled {
+            svg {
+                stroke: @text-color-secondary !important;
+            } 
         }
     }
 

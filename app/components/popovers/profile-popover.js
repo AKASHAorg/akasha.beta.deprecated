@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { Button, Popover, Spin, Tooltip } from 'antd';
+import { Button, Popover, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
@@ -13,7 +13,7 @@ import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
 import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { formatBalance } from '../../utils/number-formatter';
-import { AddToBoard, Avatar, Icon, NewDashboardForm, SendTipForm } from '../';
+import { AddToBoard, Avatar, FollowButton, Icon, NewDashboardForm, SendTipForm } from '../';
 
 const DEFAULT = 'DEFAULT';
 const DASHBOARDS = 'DASHBOARDS';
@@ -109,63 +109,9 @@ class ProfilePopover extends Component {
         });
     };
 
-    renderFollowButton = () => {
-        const { intl, isFollower, followPending } = this.props;
-        const { followHovered } = this.state;
-        const canFollow = !isFollower && !followPending;
-        let label;
-        if (followPending) {
-            label = (
-              <div className="flex-center">
-                <Spin className="profile-popover__icon" size="small" />
-                {intl.formatMessage(generalMessages.pending)}
-              </div>
-            );
-        } else if (isFollower) {
-            const message = followHovered ?
-                intl.formatMessage(profileMessages.unfollow) :
-                intl.formatMessage(profileMessages.following);
-            const className = classNames('flex-center', {
-                'profile-popover__contrast-color': followHovered
-            });
-            label = (
-              <div className={className}>
-                <Icon className="profile-popover__button-icon" type={followHovered ? 'close' : 'check'} />
-                {message}
-              </div>
-            );
-        } else {
-            label = (
-              <div className="flex-center">
-                <Icon className="profile-popover__button-icon" type="plus" />
-                {intl.formatMessage(profileMessages.follow)}
-              </div>
-            );
-        }
-        const className = classNames(
-            'profile-popover__button',
-            {
-                'profile-popover__unfollow-button': !followPending && isFollower && followHovered,
-                'profile-popover__following-button': !followPending && isFollower && !followHovered
-            }
-        );
-
-        return (
-          <Button
-            className={className}
-            disabled={followPending}
-            onClick={this.onFollow}
-            onMouseEnter={this.onMouseEnter}
-            onMouseLeave={this.onMouseLeave}
-            type={canFollow ? 'primary' : 'default'}
-          >
-            {label}
-          </Button>
-        );
-    };
-
     renderProfileInfo = () => {
-        const { ethAddress, intl, loggedEthAddress, profile, tipPending } = this.props;
+        const { ethAddress, followPending, intl, isFollower, loggedEthAddress, profile,
+            tipPending } = this.props;
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
@@ -238,7 +184,7 @@ class ProfilePopover extends Component {
                   {profile.get('commentsCount')}
                 </div>
                 <Tooltip title={intl.formatMessage(generalMessages.karma)}>
-                  <Icon className="profile-popover__icon" type="comment" />
+                  <Icon className="profile-popover__icon profile-popover__karma-icon" type="karma" />
                 </Tooltip>
                 <div className="profile-popover__counter-text">
                   {formatBalance(profile.get('karma'))}
@@ -265,7 +211,13 @@ class ProfilePopover extends Component {
               </div>
             </div>
             <div className="profile-popover__actions">
-              {!isOwnProfile && this.renderFollowButton()}
+              {!isOwnProfile &&
+                <FollowButton
+                  followPending={followPending}
+                  isFollower={isFollower}
+                  onFollow={this.onFollow}
+                />
+              }
               {!isOwnProfile &&
                 <Button
                   className="profile-popover__button"
@@ -301,6 +253,7 @@ class ProfilePopover extends Component {
             case SEND_TIP:
                 return (
                   <SendTipForm
+                    className="profile-popover__send-tip-form"
                     profile={profile}
                     onCancel={this.onDefaultContent}
                   />
@@ -309,8 +262,8 @@ class ProfilePopover extends Component {
                 return (
                   <AddToBoard
                     closePopover={this.closePopover}
-                    ethAddress={ethAddress}
                     onNewDashboard={this.onNewDashboard}
+                    profile={profile}
                   />
                 );
             case NEW_DASHBOARD:

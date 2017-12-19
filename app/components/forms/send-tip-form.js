@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, InputNumber } from 'antd';
+import classNames from 'classnames';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { selectBalance, selectLoggedEthAddress,
@@ -41,7 +42,7 @@ class SendTipForm extends Component {
     };
 
     render () {
-        const { balance, form, intl, onCancel, tipPending } = this.props;
+        const { balance, className, form, intl, onCancel, tipPending } = this.props;
         const ethBalance = balance.get('eth');
         const aethBalance = balance.getIn(['aeth', 'free']);
         const { getFieldDecorator, getFieldError } = form;
@@ -50,6 +51,7 @@ class SendTipForm extends Component {
         const emptyFields = !aethAmount && !ethAmount;
         const maxEthAmount = balanceToNumber((ethBalance - 0.1).toString(), 7);
         const maxAethAmount = balanceToNumber((aethBalance), 7);
+        const rootClass = classNames('send-tip-form', className);
         const extraEth = (
           <span className="send-tip-form__extra">
             {intl.formatMessage(formMessages.maxAethAmountLabel, {
@@ -66,7 +68,7 @@ class SendTipForm extends Component {
         );
 
         return (
-          <Form className="send-tip-form" hideRequiredMark onSubmit={this.onSubmit}>
+          <Form className={rootClass} hideRequiredMark onSubmit={this.onSubmit}>
             <div className="overflow-ellipsis send-tip-form__title">
               {intl.formatMessage(profileMessages.sendTip)}
             </div>
@@ -119,7 +121,6 @@ class SendTipForm extends Component {
                 }],
               })(
                 <InputNumber
-                  autoFocus
                   className="send-tip-form__amount"
                   min={0}
                   max={maxAethAmount}
@@ -175,6 +176,7 @@ class SendTipForm extends Component {
 SendTipForm.propTypes = {
     actionAdd: PropTypes.func,
     balance: PropTypes.shape(),
+    className: PropTypes.string,
     loggedEthAddress: PropTypes.string,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,

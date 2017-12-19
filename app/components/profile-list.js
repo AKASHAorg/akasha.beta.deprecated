@@ -9,6 +9,8 @@ import { profileMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
+    getContainerRef = (el) => { this.container = el; };
+
     render () {
         const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, moreProfiles, pendingProfiles,
             placeholderMessage, profiles, style } = this.props;
@@ -22,6 +24,7 @@ class ProfileList extends Component {
 
             return (
               <ProfileCard
+                containerRef={this.container}
                 isOwnProfile={isOwnProfile}
                 isPending={isPending}
                 key={profile.ethAddress}
