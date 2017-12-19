@@ -26,10 +26,11 @@ function* searchQuery ({ text }) {
     yield apply(channel, channel.send, [{ text, pageSize: entrySearchLimit }]);
 }
 
-function* searchProfiles ({ query, automplete }) {
+function* searchProfiles ({ query, autocomplete }) {
     const channel = Channel.server.search.findProfiles;
-    const limit = automplete ? autocompleteLimit : profileSearchLimit;
-    yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit }]);
+    console.log('autocomplete request', autocomplete);
+    const limit = autocomplete ? autocompleteLimit : profileSearchLimit;
+    yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit, autocomplete }]);
 }
 
 function* searchSyncEntries ({ following }) {
@@ -88,7 +89,7 @@ function* watchSearchProfilesChannel () {
         if (resp.error) {
             yield put(actions.searchProfilesError(resp.error));
         } else if (collection && query === resp.request.text) {
-            if (!resp.request.automplete) {
+            if (!resp.request.autocomplete) {
                 const ethAddresses = collection.map(res => res.ethAddress);
                 for (let i = 0; i < collection.length; i++) {
                     const { ethAddress } = collection[i];
@@ -96,7 +97,8 @@ function* watchSearchProfilesChannel () {
                 }
                 yield put(actions.searchProfilesSuccess(ethAddresses));
             } else {
-                yield put(actions.searchProfilesSuccess(collection));
+                const akashaIds = collection.map(profile => profile.akashaId);
+                yield put(actions.searchProfilesSuccess(akashaIds));
             }
         }
     }

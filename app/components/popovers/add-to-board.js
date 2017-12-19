@@ -4,19 +4,28 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Checkbox, Input } from 'antd';
 import { List } from 'immutable';
+import classNames from 'classnames';
 import { Icon } from '../';
 import * as columnTypes from '../../constants/columns';
-import { dashboardDelete, dashboardSearch,
+import { dashboardDelete, dashboardSearch, dashboardToggleProfileColumn,
     dashboardToggleTagColumn } from '../../local-flux/actions/dashboard-actions';
 import { selectColumns, selectDashboards, selectDashboardSearch } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 
 class AddToBoard extends Component {
     isSaved = (dashboard) => {
-        const { columns, tag } = this.props;
+        const { columns, profile, tag } = this.props;
+        const columnType = tag ? columnTypes.tag : columnTypes.profile;
+        if (tag) {
+            return dashboard.get('columns').some(id =>
+                columns.getIn([id, 'type']) === columnType &&
+                columns.getIn([id, 'value']) === tag
+            );
+        }
         return dashboard.get('columns').some(id =>
-            columns.getIn([id, 'type']) === columnTypes.tag &&
-            columns.getIn([id, 'value']) === tag
+            columns.getIn([id, 'type']) === columnType &&
+            (columns.getIn([id, 'value']) === profile.ethAddress ||
+            columns.getIn([id, 'value']) === profile.akashaId)
         );
     };
 
@@ -44,13 +53,13 @@ class AddToBoard extends Component {
     };
 
     render () {
-        const { closePopover, dashboards, intl, onNewDashboard, search, tag } = this.props;
+        const { closePopover, dashboards, intl, onNewDashboard, profile, search, tag } = this.props;
         return (
           <div>
             <div>
               <Input
-                className="tag-popover__search"
-                id="tag-popover-search"
+                className="add-to-board__search"
+                id="add-to-board-search"
                 onChange={this.onSearchChange}
                 onKeyDown={this.onKeyDown}
                 placeholder={intl.formatMessage(dashboardMessages.searchForBoard)}
@@ -59,33 +68,37 @@ class AddToBoard extends Component {
                 value={search}
               />
             </div>
-            <div className="tag-popover__list-wrapper">
+            <div className="add-to-board__list-wrapper">
               {this.groupByState(dashboards).map((dashboard) => {
                   const toggleDashboard = () => {
                         closePopover();
-                        this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                        if (tag) {
+                            this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                        } else {
+                            const value = profile.akashaId || profile.ethAddress;
+                            this.props.dashboardToggleProfileColumn(dashboard.get('id'), value);
+                        }
                   };
                   const isSaved = this.isSaved(dashboard);
-                  const root = 'tag-popover__left-item tag-popover__row-icon';
-                  const modifier = 'tag-popover__row-icon_saved';
-                  const className = `${root} ${isSaved && modifier}`;
-
+                  const className = classNames('add-to-board__left-item add-to-board__row-icon', {
+                      'add-to-board__row-icon_saved': isSaved
+                  });
                   return (
                     <div
-                      className="has-hidden-action content-link tag-popover__row"
+                      className="has-hidden-action add-to-board__row"
                       key={dashboard.get('id')}
                       onClick={toggleDashboard}
                     >
                       <div className={`hidden-action-reverse ${className}`}>
                         {dashboard.get('columns').size}
                       </div>
-                      <div className="hidden-action tag-popover__left-item">
+                      <div className="hidden-action add-to-board__left-item">
                         <Checkbox checked={isSaved} />
                       </div>
-                      <div className="overflow-ellipsis tag-popover__name">
+                      <div className="overflow-ellipsis add-to-board__name">
                         {dashboard.get('name')}
                       </div>
-                      <div className="hidden-action flex-center tag-popover__icon">
+                      <div className="hidden-action flex-center add-to-board__icon">
                         <Icon
                           type="trash"
                           onClick={(ev) => {
@@ -99,9 +112,9 @@ class AddToBoard extends Component {
                   );
               })}
             </div>
-            <div className="content-link tag-popover__button" onClick={onNewDashboard}>
-              <div className="tag-popover__left-item">
-                <Icon className="tag-popover__icon" type="plus" />
+            <div className="add-to-board__button" onClick={onNewDashboard}>
+              <div className="add-to-board__left-item">
+                <Icon className="add-to-board__icon" type="plus" />
               </div>
               <div style={{ flex: '1 1 auto' }}>
                 {intl.formatMessage(dashboardMessages.createNew)}
@@ -118,11 +131,13 @@ AddToBoard.propTypes = {
     dashboardDelete: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,
     dashboardSearch: PropTypes.func.isRequired,
+    dashboardToggleProfileColumn: PropTypes.func.isRequired,
     dashboardToggleTagColumn: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     onNewDashboard: PropTypes.func.isRequired,
+    profile: PropTypes.shape(),
     search: PropTypes.string,
-    tag: PropTypes.string.isRequired,
+    tag: PropTypes.string,
 };
 
 function mapStateToProps (state) {
@@ -138,6 +153,7 @@ export default connect(
     {
         dashboardDelete,
         dashboardSearch,
+        dashboardToggleProfileColumn,
         dashboardToggleTagColumn
     }
 )(injectIntl(AddToBoard));

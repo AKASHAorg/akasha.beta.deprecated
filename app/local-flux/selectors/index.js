@@ -325,8 +325,8 @@ export const selectPendingCommentVote = (state, commentId) =>
 
 export const selectPendingCycleAeth = state => state.actionState.getIn(['pending', 'cycleAeth']);
 
-export const selectPendingFollow = (state, akashaId) =>
-    !!state.actionState.getIn(['pending', 'follow', akashaId]);
+export const selectPendingFollow = (state, ethAddress) =>
+    !!state.actionState.getIn(['pending', 'follow', ethAddress]);
 
 export const selectPendingProfiles = (state, context) =>
     state.profileState.getIn(['flags', 'pendingProfiles', context]);

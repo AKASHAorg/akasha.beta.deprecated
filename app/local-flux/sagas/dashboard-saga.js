@@ -1,7 +1,6 @@
-import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
 import * as dashboardService from '../services/dashboard-service';
-import * as profileService from '../services/profile-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboards,
@@ -126,12 +125,25 @@ function* dashboardSetNextActive (id) {
     }
 }
 
+function* dashboardToggleProfileColumn ({ dashboardId, ethAddress }) {
+    try {
+        const dashboard = yield apply(
+            dashboardService,
+            dashboardService.toggleColumn,
+            [{ dashboardId, columnType: columnTypes.profile, value: ethAddress }]
+        );
+        yield put(actions.dashboardToggleProfileColumnSuccess(dashboard));
+    } catch (error) {
+        yield put(actions.dashboardToggleProfileColumnError(error));
+    }
+}
+
 function* dashboardToggleTagColumn ({ dashboardId, tag }) {
     try {
         const dashboard = yield apply(
             dashboardService,
-            dashboardService.toggleTagColumn,
-            [{ dashboardId, tag }]
+            dashboardService.toggleColumn,
+            [{ dashboardId, columnType: columnTypes.tag, value: tag }]
         );
         yield put(actions.dashboardToggleTagColumnSuccess(dashboard));
     } catch (error) {
@@ -162,6 +174,7 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
     yield takeEvery(types.DASHBOARD_RENAME, dashboardRename);
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
+    yield takeEvery(types.DASHBOARD_TOGGLE_PROFILE_COLUMN, dashboardToggleProfileColumn);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
 }
