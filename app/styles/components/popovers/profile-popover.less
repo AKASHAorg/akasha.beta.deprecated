@@ -1,5 +1,17 @@
 .profile-popover {
-    width: 300px;
+    width: 250px;
+
+    .ant-popover-inner-content {
+        padding: 4px;
+    }
+
+    &__content {
+        padding: 8px 12px;
+    }
+
+    &__send-tip-form {
+        padding: 8px 12px;        
+    }
 
     &__header {
         display: flex;
@@ -11,8 +23,16 @@
         margin-right: 10px;
     }
 
-    &__name {
-        max-width: 184px;
+    &__header-text-wrapper {
+        flex: 1 1 auto;
+        max-width: 150px;
+
+        &_own-profile {
+            max-width: 170px;
+        }
+    }
+
+    &__name-wrapper {
         font-size: 13px;
         font-weight: 600;
         color: @heading-color;
@@ -24,10 +44,13 @@
         cursor: default;
     }
 
-    &__tip-icon {
-        position: relative;
-        top: 2px;
-        margin-right: 5px;
+    &__tip-icon-wrapper {
+        flex: 0 0 auto;
+        margin-left: 5px;
+    }
+
+    &__tip-icon_disabled {
+        stroke: @text-color-secondary !important;
     }
 
     &__details {
@@ -86,26 +109,8 @@
         height: 12px;
     }
 
-    &__button-icon {
-        margin-right: 5px;        
-        width: 10px;
-        height: 10px;
-    }
-
-    &__contrast-color {
-        color: @light-background;        
-        svg {
-            stroke: @light-background;        
-        }
-    }
-
-    &__unfollow-button {
-        background-color: @error-color !important;
-        color: @heading-color !important;
-    }
-
-    &__following-button {
-        color: @primary-color !important;
-        border-color: @primary-color !important;
+    &__karma-icon {
+        stroke: initial !important;
+        fill: @text-color;
     }
 }

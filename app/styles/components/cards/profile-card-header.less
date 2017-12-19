@@ -4,10 +4,13 @@
     height: 60px;
     padding: 16px 0px 12px;
 
-    &__avatar {
+    &__avatar-wrapper {
         flex: 0 0 auto;
         margin-right: 10px;
+        height: 32px;
+    }
 
+    &__avatar {
         &_placeholder {
             background-color: @placeholder-color;
             border-radius: 4px;            
@@ -18,14 +21,15 @@
 
     &__text {
         flex: 1 1 auto;
-        font-size: 15px;
-        line-height: 1;
+        max-width: 270px;   
+        font-size: 14px;
         height: 32px;  
     }
 
     &__title {
-        display: inline-block;
-        max-width: 270px;
+        height: 17px;        
+        line-height: 17px;
+        width: 100%;
 
         &_placeholder {
             height: 13px;
@@ -36,13 +40,12 @@
     }
 
     &__subtitle {
-        display: flex;
-        align-items: center;
-        margin-top: 5px;
         font-size: 12px;
         font-weight: 400;
-        height: 14px;
+        height: 15px;
         color: @text-color-secondary;
+        cursor: default;
+        width: 100%;        
         
         &_placeholder {
             height: 11px;
@@ -56,5 +59,9 @@
         height: 15px;
         background-color: @placeholder-color;
         width: 70px;
+    }
+
+    &__tip-icon_disabled {
+        stroke: @text-color-secondary !important;
     }
 }

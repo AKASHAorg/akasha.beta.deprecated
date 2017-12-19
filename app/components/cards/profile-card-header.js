@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { Tooltip } from 'antd';
+import classNames from 'classnames';
+import { profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
-import { Avatar, ProfilePopover } from '../';
+import { Avatar, Icon, TipPopover } from '../';
 
 const getSubtitle = (profile) => {
     const { akashaId, ethAddress, firstName, lastName } = profile.toJS();
@@ -20,7 +25,7 @@ const getTitle = (profile) => {
 };
 
 const ProfileCardHeader = (props) => {
-    const { containerRef, loading, profile } = props;
+    const { intl, isOwnProfile, loading, profile, tipPending } = props;
     if (loading) {
         return (
           <div className="profile-card-header">
@@ -35,38 +40,66 @@ const ProfileCardHeader = (props) => {
     const ethAddress = profile.get('ethAddress');
     const title = getTitle(profile);
     const subtitle = getSubtitle(profile);
+    const tipTooltip = tipPending ?
+        intl.formatMessage(profileMessages.sendingTip) :
+        intl.formatMessage(profileMessages.sendTip);
+    const tipIconClass = classNames('profile-card-header__tip-icon', {
+        'content-link': !tipPending,
+        'profile-card-header__tip-icon_disabled': tipPending
+    });
 
     return (
       <div className="profile-card-header">
-        <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
+        <div className="profile-card-header__avatar-wrapper">
           <Avatar
             className="profile-card-header__avatar"
+            ethAddress={ethAddress}
             firstName={profile.get('firstName')}
             image={profile.get('avatar')}
             lastName={profile.get('lastName')}
+            link
             size="small"
           />
-        </ProfilePopover>
+        </div>
         <div className="profile-card-header__text">
-          <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-            <div className="content-link overflow-ellipsis profile-card-header__title">
-              {title}
-            </div>
-          </ProfilePopover>
+          <div className="overflow-ellipsis profile-card-header__title">
+            <Link
+              className="unstyled-link"
+              to={`/${ethAddress}`}
+            >
+              <span className="content-link">
+                {title}
+              </span>
+            </Link>
+          </div>
           {subtitle &&
             <div className="profile-card-header__subtitle">
               {subtitle}
             </div>
           }
         </div>
+        {!isOwnProfile &&
+          <div className="hidden-action">
+            <TipPopover disabled={tipPending} profile={profile}>
+              <Tooltip title={tipTooltip}>
+                <Icon
+                  className={tipIconClass}
+                  type="wallet"
+                />
+              </Tooltip>
+            </TipPopover>
+          </div>
+        }
       </div>
     );
 };
 
 ProfileCardHeader.propTypes = {
-    containerRef: PropTypes.shape(),
+    intl: PropTypes.shape().isRequired,
+    isOwnProfile: PropTypes.bool,
     loading: PropTypes.bool,
+    tipPending: PropTypes.bool,
     profile: PropTypes.shape(),
 };
 
-export default ProfileCardHeader;
+export default injectIntl(ProfileCardHeader);

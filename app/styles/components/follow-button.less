@@ -1,0 +1,40 @@
+.follow-button {
+    &__button-icon {
+        margin-right: 5px;
+    }
+
+    &__unfollow-button {
+        background-color: @error-color !important;
+        color: @text-color-dark !important;
+
+        svg {
+            stroke: @text-color-dark !important;
+        }
+    }
+
+    &__follow-button {
+        stroke: @text-color-dark !important;
+        margin-right: 5px;
+    }
+
+    &__following-button {
+        color: @primary-color !important;
+        border-color: @primary-color !important;
+
+        svg {
+            stroke: @primary-color !important;
+        }
+    }
+
+    &__follow-button {
+        svg {
+            stroke: @text-color-dark;
+        }
+    }
+
+    &__button {
+        font-weight: 400;
+        font-size: 13px;
+        width: ~'calc(50% - 8px)';            
+    }
+}

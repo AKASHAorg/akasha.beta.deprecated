@@ -22,7 +22,6 @@ class ColumnHeader extends Component {
             value: props.column && props.column.get('value')
         };
     }
-
     wasVisible = false;
 
     getInputRef = (el) => { this.input = el; };
@@ -109,8 +108,7 @@ class ColumnHeader extends Component {
             {content}
           </Modal>
         );
-    }
-
+    };
 
     editColumn = (ev) => {
         ev.preventDefault();
@@ -214,6 +212,9 @@ class ColumnHeader extends Component {
     render () {
         const { column, iconType, readOnly, title } = this.props;
         const { editMode, value } = this.state;
+        const titleWrapperClass = classNames('column-header__title-wrapper', {
+            'column-header__title-wrapper_no-icon': !iconType
+        });
         const titleClass = classNames('overflow-ellipsis column-header__title', {
             'column-header__title_large': column && column.get('large')
         });
@@ -223,7 +224,7 @@ class ColumnHeader extends Component {
             {iconType &&
               <Icon className="dark-icon column-header__icon" type={iconType} />
             }
-            <div className="column-header__title-wrapper">
+            <div className={titleWrapperClass}>
               {(readOnly || !editMode) &&
                 <div
                   className={titleClass}
