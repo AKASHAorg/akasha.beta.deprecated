@@ -188,6 +188,12 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectIsFollower = (state, ethAddress) => state.profileState.getIn(['isFollower', ethAddress]);
 
+export const selectHideEntrySettings = state =>
+    state.settingsState.getIn(['userSettings', 'hideEntryContent']);
+
+export const selectHideCommentSettings = state =>
+    state.settingsState.getIn(['userSettings', 'hideCommentContent']);
+
 export const selectHighlight = (state, id) => state.highlightState.getIn(['byId', id]);
 
 export const selectHighlights = (state) => {

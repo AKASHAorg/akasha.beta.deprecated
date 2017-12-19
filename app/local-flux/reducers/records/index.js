@@ -14,7 +14,7 @@ export { ListRecord, ListState } from './list-record';
 export { LogRecord } from './log-record';
 export { AethBalance, Balance, EssenceBalance, LoggedProfile, ManaBalance, ProfileExistsRecord, ProfileRecord,
     ProfileState } from './profile-record';
-export { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
+export { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, PasswordPreference,
     PortsRecord, SettingsRecord, UserSettings } from './settings-record';
 export { TagRecord } from './tag-record';
 export { TempProfileRecord } from './temp-profile-record';
