@@ -41,21 +41,27 @@ class NewLinkEntryPage extends Component {
                 id: match.params.draftId,
                 ethAddress: loggedProfile.get('ethAddress'),
                 content: {
+                    cardInfo: {},
                     licence: userDefaultLicense,
                     featuredImage: {},
+                    entryType: 'link',
                 },
                 tags: [],
-                entryType: 'link',
             });
         }
         const hasCardContent = draftObj &&
-            (draftObj.getIn(['content', 'cardInfo', 'title']) ||
-            draftObj.getIn(['content', 'cardInfo', 'description']));
-
+            (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
+            draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
+            draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
         if (hasCardContent) {
             this.setState({
                 urlInputHidden: true,
                 infoExtracted: true
+            });
+        } else {
+            this.setState({
+                urlInputHidden: false,
+                infoExtracted: false
             });
         }
     }
@@ -353,7 +359,7 @@ class NewLinkEntryPage extends Component {
                       baseUrl={baseUrl}
                       cardInfo={cardInfo}
                       intl={intl}
-                      hasCard={!!(title || description)}
+                      hasCard={!!(title.length > 0 || description.length > 0)}
                       url={url}
                       onClose={this._handleInfoCardClose}
                       isEdit

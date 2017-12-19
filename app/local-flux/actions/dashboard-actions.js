@@ -88,17 +88,27 @@ export const dashboardSetActiveError = (error) => {
 
 export const dashboardSetActiveSuccess = data =>
     action(types.DASHBOARD_SET_ACTIVE_SUCCESS, { data });
+
+export const dashboardToggleProfileColumn = (dashboardId, ethAddress) =>
+    action(types.DASHBOARD_TOGGLE_PROFILE_COLUMN, { dashboardId, ethAddress });
+export const dashboardToggleProfileColumnError = (error) => {
+    error.code = 'DTPCE01';
+    error.messageId = 'dashboardToggleProfileColumn';
+    return action(types.DASHBOARD_TOGGLE_PROFILE_COLUMN_ERROR, { error });
+};
+export const dashboardToggleProfileColumnSuccess = data =>
+    action(types.DASHBOARD_TOGGLE_PROFILE_COLUMN_SUCCESS, { data });
+
 export const dashboardToggleTagColumn = (dashboardId, tag) =>
     action(types.DASHBOARD_TOGGLE_TAG_COLUMN, { dashboardId, tag });
-
 export const dashboardToggleTagColumnError = (error) => {
     error.code = 'DTTCE01';
     error.messageId = 'dashboardToggleTagColumn';
     return action(types.DASHBOARD_TOGGLE_TAG_COLUMN_ERROR, { error });
 };
-
 export const dashboardToggleTagColumnSuccess = data =>
     action(types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS, { data });
+
 export const dashboardUpdateColumn = (id, changes) =>
     action(types.DASHBOARD_UPDATE_COLUMN, { id, changes });
 

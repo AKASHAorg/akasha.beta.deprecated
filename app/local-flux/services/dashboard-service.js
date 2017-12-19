@@ -158,7 +158,7 @@ export const setActive = payload =>
             .catch(reject);
     });
 
-export const toggleTagColumn = ({ dashboardId, tag }) =>
+export const toggleColumn = ({ dashboardId, columnType, value }) =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboards
             .where('id')
@@ -167,18 +167,18 @@ export const toggleTagColumn = ({ dashboardId, tag }) =>
             .then((dashboard) => {
                 dashboard.columns = dashboard.columns || [];
                 const index = dashboard.columns
-                    .findIndex(col => col.type === columnTypes.tag && col.value === tag);
+                    .findIndex(col => col.type === columnType && col.value === value);
 
                 if (index === -1) {
                     dashboard.columns.push({
                         id: genId(),
                         timestamp: new Date().getTime(),
-                        type: columnTypes.tag,
-                        value: tag
+                        type: columnType,
+                        value
                     });
                 } else {
                     dashboard.columns = dashboard.columns.filter(col =>
-                        col.type !== columnTypes.tag || col.value !== tag
+                        col.type !== columnType || col.value !== value
                     );
                 }
 

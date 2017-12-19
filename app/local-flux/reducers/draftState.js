@@ -158,7 +158,8 @@ const draftState = createReducer(initialState, {
                 mState.get('resolvingEntries').delete(mState.get('resolvingEntries').indexOf(entryId))
             );
         });
-    }
+    },
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 });
 
 export default draftState;

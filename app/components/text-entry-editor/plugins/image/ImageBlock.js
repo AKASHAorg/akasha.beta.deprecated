@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { DraftJS } from 'megadraft';
 import { Input, Popover, Menu, Icon } from 'antd';
 import {
     ImageSizeXS,
@@ -9,6 +10,8 @@ import { SvgIcon } from '../../../../components';
 import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
+
+const { EditorState, SelectionState } = DraftJS;
 
 const { TextArea } = Input;
 
@@ -34,54 +37,13 @@ class ImageBlock extends Component {
         };
     }
 
-    // componentDidMount () {
-    //     this.setImageSrc();
-    // }
-
-    // componentDidUpdate (prevProps, prevState) {
-    //     if (prevState.previewImage !== this.state.previewImage) {
-    //         this.setImageSrc();
-    //     }
-    // }
-    // this method will get the `best fit` image based on current container`s width;
-    // because we want to be efficient :)
-    // setImageSrc = () => {
-    //     /**
-    //      * containerWidth <enum> [1, 2, 3]
-    //      * 1 => smallWidth
-    //      * 2 => mediumWidth
-    //      * 3 => largeWidth
-    //      * Please see those attrs passed when exporting this component;
-    //      */
-    //     let imageKey = this.state.previewImage;
-    //     const baseNode = this.baseNodeRef;
-    //     // const containerWidth = baseNode.parentNode.clientWidth;
-    //     const imageFiles = this.props.data.files;
-    //     // if (imageKey === 'xl') {
-    //     //     imageKey = findClosestMatch(containerWidth, imageFiles, this.state.previewImage);
-    //     // }
-    //     // this.props.container.updateData({ media: imageKey });
-    //     // if (typeof imageFiles[imageKey].src === 'string') {
-    //     //     return this.setState({
-    //     //         previewImage: imageKey,
-    //     //         imageSrc: `${this.props.baseUrl}/${imageFiles[imageKey].src}`
-    //     //     });
-    //     // }
-    //     return this.setState({
-    //         previewImage: imageKey,
-    //         imageSrc: imageCreator(imageFiles[imageKey].src)
-    //     });
-    // }
-
     componentClickAway = () => {
-        if (this.state.isCardEnabled) {
-            this.setState({
-                isCardEnabled: false
-            }, () => {
-                this.props.blockProps.setReadOnly(false);
-                // window.removeEventListener('keyup', this._removeImageContainer);
-            });
-        }
+        this.setState({
+            isCardEnabled: false
+        }, () => {
+            this.props.blockProps.setReadOnly(false);
+            window.removeEventListener('keyup', this._removeImageContainer);
+        });
     }
 
     _handleCaptionChange = (ev) => {
@@ -98,12 +60,20 @@ class ImageBlock extends Component {
     }
 
     _handleImageClick = (ev) => {
-        ev.stopPropagation();
+        const { editorState, onChange } = this.props.blockProps;
+        const selection = editorState.getSelection();
+        const selWithoutFocus = selection.set('hasFocus', false);
         this.setState({
-            isCardEnabled: true
+            isCardEnabled: !this.state.isCardEnabled
         }, () => {
-            this.props.blockProps.setReadOnly(true);
-            window.addEventListener('keyup', this._removeImageContainer);
+            if (this.state.isCardEnabled) {
+                this.props.blockProps.setReadOnly(true);
+                onChange(EditorState.forceSelection(editorState, selWithoutFocus));
+                window.addEventListener('keyup', this._removeImageContainer);
+            } else {
+                this.props.blockProps.setReadOnly(false);
+                window.removeEventListener('keyup', this._removeImageContainer);
+            }
         });
     }
 
@@ -135,11 +105,13 @@ class ImageBlock extends Component {
                 <ImageSizeXS />
               </SvgIcon>
             </Menu.Item>
-            <Menu.Item className="image-block__image-size-menu-item" key="md">
-              <SvgIcon viewBox="0 0 24 24">
-                <ImageSizeMedium />
-              </SvgIcon>
-            </Menu.Item>
+            {data.files.md &&
+              <Menu.Item className="image-block__image-size-menu-item" key="md">
+                <SvgIcon viewBox="0 0 24 24">
+                  <ImageSizeMedium />
+                </SvgIcon>
+              </Menu.Item>
+            }
             {data.files.xl &&
               <Menu.Item className="image-block__image-size-menu-item" key="lg">
                 <SvgIcon viewBox="0 0 24 24">
@@ -150,9 +122,10 @@ class ImageBlock extends Component {
           </Menu>
         );
     }
+
     _getImageSource = (files) => {
         const { media } = this.props.data;
-        // console.log(media);
+
         switch (media) {
             case 'xs':
                 return files[findClosestMatch(320, files, 'xs')].src;
@@ -164,10 +137,10 @@ class ImageBlock extends Component {
                 break;
         }
     }
+
     _handlePopoverVisibility = (visible) => {
         this.setState({
-            popoverVisible: visible,
-            isCardEnabled: visible,
+            popoverVisible: visible
         });
     }
 
@@ -200,6 +173,7 @@ class ImageBlock extends Component {
                         image-block__image-wrapper_${media}
                         image-block__image-wrapper${isCardEnabled ? '_active' : ''}`
                     }
+                    onClick={this._handleImageClick}
                   >
                     {files && files.gif &&
                       <div
