@@ -5,8 +5,8 @@ import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from '
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { columnId, value }) => {
-    if (!columnId || !state.getIn(['columnById', columnId])) {
+const entryIterator = (state, { columnId, value, reversed }) => {
+    if (reversed || !columnId || !state.getIn(['columnById', columnId])) {
         return state;
     }
     if (columnId === 'newColumn') {
@@ -15,11 +15,14 @@ const entryIterator = (state, { columnId, value }) => {
             value
         });
     }
-    return state.mergeIn(['columnById', columnId, 'flags'], { fetchingEntries: true });
+    return state.mergeIn(['columnById', columnId], {
+        flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
+        hasNewEntries: false
+    });
 };
 
 const entryIteratorError = (state, { request }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+    if (request.reversed || !request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
     return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingEntries: false });
@@ -29,12 +32,19 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
+    if (request.reversed) {
+        const hasNewEntries = !!data.collection.length;
+        return state.mergeIn(['columnById', request.columnId], {
+            hasNewEntries,
+        });
+    }
     const entryIds = data.collection.map(entry => entry.entryId);
     const moreEntries = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
         entriesList: new List(entryIds),
+        firstBlock: request.toBlock + 1,
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingEntries: false,
             moreEntries

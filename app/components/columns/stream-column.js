@@ -10,22 +10,54 @@ import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
+const DELAY = 60000;
+
 class StreamColumn extends Component {
     firstCallDone = false;
-    firstLoad = () => {
-        const { column } = this.props;
-        if (!column.get('entriesList').size && !this.firstCallDone) {
-            this.props.entryStreamIterator(column.get('id'));
-            this.firstCallDone = true;
+    interval = null;
+    timeout = null;
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.column.get('hasNewEntries') && this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
         }
     }
+
+    componentWillUnmount () {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
+    firstLoad = () => {
+        if (!this.firstCallDone) {
+            this.entryIterator();
+            this.firstCallDone = true;
+        }
+    };
+
+    setPollingInterval = () => {
+        this.interval = setInterval(() => {
+            this.props.entryStreamIterator(this.props.column.get('id'), true);
+        }, DELAY);
+    };
+
+    entryIterator = () => {
+        this.props.entryStreamIterator(this.props.column.get('id'));
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        this.timeout = setTimeout(this.setPollingInterval, DELAY);
+    };
 
     entryMoreStreamIterator = () => {
         const { column } = this.props;
         this.props.entryMoreStreamIterator(column.get('id'));
     }
-
-    onRefresh = () => this.props.entryStreamIterator(this.props.column.get('id'));
 
     render () {
         const { column, entriesList, intl } = this.props;
@@ -36,11 +68,11 @@ class StreamColumn extends Component {
             <ColumnHeader
               column={column}
               iconType="entries"
-              onRefresh={this.onRefresh}
+              onRefresh={this.entryIterator}
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}
