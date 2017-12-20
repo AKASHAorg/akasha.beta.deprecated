@@ -26,9 +26,7 @@ const tempProfileState = createReducer(initialState, {
         state.mergeIn(['tempProfile'], data),
 
 
-    [types.TEMP_PROFILE_DELETE]: state => state.clear(),
-
-    [types.TEMP_PROFILE_DELETE_FULL]: state => state.clear(),
+    [types.TEMP_PROFILE_DELETE]: state => state.clear()
 });
 
 export default tempProfileState;
