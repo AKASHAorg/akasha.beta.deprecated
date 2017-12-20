@@ -14,20 +14,20 @@ export const syncTags = {
 };
 
 
-const execute = Promise.coroutine(function* (data: { fromBlock: number }, cb) {
+const execute = Promise.coroutine(function* (data: { fromBlock: number }) {
     const v = new schema.Validator();
     v.validate(data, syncTags, { throwError: true });
 
-    const fetched = yield contracts.fromEvent(contracts.instance.Tags.TagCreate, {}, data.fromBlock,
-            10000, { lastIndex: 0, reversed: true });
+    const tagCreateEvent = contracts.createWatcher(contracts.instance.Tags.TagCreate, {}, data.fromBlock);
     const toUtf8 = GethConnector.getInstance().web3.toUtf8;
-    const tagDocs = fetched.results.map((event) => {
-       return { id: event.args.tag, tagName: toUtf8(event.args.tag) };
+    tagCreateEvent.watch((err, event) => {
+        const data = { id: event.args.tag, tagName: toUtf8(event.args.tag) };
+        dbs.tags
+            .searchIndex
+             .concurrentAdd({}, [data], (err) => { if (err) { console.log(err); } });
     });
-    dbs.tags
-        .searchIndex
-        .concurrentAdd({}, tagDocs, (err) => { if (err) { return cb(err); } cb('', { lastBlock: fetched.fromBlock, done: true }); });
-    return { done: false };
+    const lastBlock = yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
+    return { done: true, lastBlock };
 });
 
-export default { execute, name: 'syncTags', hasStream: true };
+export default { execute, name: 'syncTags'};
