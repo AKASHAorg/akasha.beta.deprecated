@@ -79,7 +79,7 @@ const setupMessages = defineMessages({
     lightSyncDescription: {
         id: 'app.setup.lightSyncDescription',
         description: 'info when user selects light sync mode',
-        defaultMessage: 'Lorem ipsum for light sync!'
+        defaultMessage: '...'
     },
     newIdentitySubtitle: {
         id: 'app.setup.newIdentitySubtitle',
@@ -94,7 +94,12 @@ const setupMessages = defineMessages({
     normalSyncDescription: {
         id: 'app.setup.normalSyncDescription',
         description: 'info when user selects normal sync mode',
-        defaultMessage: 'Lorem ipsum for Normal Sync!'
+        defaultMessage: `Congratulations, you are a pioneer synchronizing with the Ethereum test network! We recommend Normal Sync with the Express setup but the brave ones can also choose the (very) experimental Light Sync! :)`
+    },
+    normalSyncDescriptionAlt: {
+        id: 'app.setup.normalSyncDescriptionAlt',
+        description: 'more info',
+        defaultMessage: 'We recommend Normal Sync with the Express setup. The brave ones can also choose the experimental Light Sync.'
     },
     synchronization: {
         id: 'app.setup.synchronization',

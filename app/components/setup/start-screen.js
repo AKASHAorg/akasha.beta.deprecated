@@ -17,8 +17,7 @@ const StartScreen = (props) => {
           }
         />
         <p className="start-screen__text">
-          {lightSync && intl.formatMessage(setupMessages.lightSyncDescription)}
-          {!lightSync && intl.formatMessage(setupMessages.normalSyncDescription)}
+          {intl.formatMessage(setupMessages.normalSyncDescription)}
         </p>
       </div>
     );
