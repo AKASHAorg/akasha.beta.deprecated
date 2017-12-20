@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Icon } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { SyncStatus } from '../';
+import { SyncStatus, StartScreen } from '../';
 import { LogsDetailsContainer } from '../../containers/';
 
 class Sync extends Component {
@@ -109,7 +109,7 @@ class Sync extends Component {
           <div className="setup-content sync">
             <div className="setup-content__column setup-pages_left">
               {!this.state.showDetails &&
-                <div>Placeholder</div>
+                <StartScreen />
               }
               {this.state.showDetails &&
                 <div className="sync__logs-container">
