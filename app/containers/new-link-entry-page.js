@@ -15,6 +15,7 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import * as actionTypes from '../constants/action-types';
+// import websiteInfoCard from '../components/cards/website-info-card';
 
 const { EditorState } = DraftJS;
 const { confirm } = Modal;
@@ -297,6 +298,19 @@ class NewLinkEntryPage extends Component {
     _createRef = nodeName =>
         (node) => { this[nodeName] = node; }
 
+    _calculateEditorMinHeight = () => {
+        let height = '20%';
+        const websiteInfoCard = this.websiteInfoCard;
+        const baseNode = this.editorBaseNodeRef;
+        if (websiteInfoCard && websiteInfoCard.getNodeRef().container && baseNode) {
+            const wicNode = websiteInfoCard.getNodeRef().container;
+            const rootNodeHeight = baseNode.getBoundingClientRect().height;
+            const maxHeight = rootNodeHeight;
+            height = maxHeight - wicNode.getBoundingClientRect().height - 50;
+        }
+        return height;
+    }
+
     /* eslint-disable complexity */
     render () {
         const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
@@ -325,8 +339,11 @@ class NewLinkEntryPage extends Component {
         } else if (currentSelection && currentSelection.size > 0) {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
+        const editorMinHeight = this._calculateEditorMinHeight();
         return (
-          <div className="edit-entry-page link-page">
+          <div
+            className="edit-entry-page link-page"
+          >
             <div
               className="flex-center-y edit-entry-page__publish-options"
               onClick={this._togglePublishPanel(true)}
@@ -342,7 +359,10 @@ class NewLinkEntryPage extends Component {
                 span={showPublishPanel ? 17 : 24}
                 className="edit-entry-page__editor-wrapper"
               >
-                <div className="edit-entry-page__editor">
+                <div
+                  className="edit-entry-page__editor"
+                  ref={(node) => { this.editorBaseNodeRef = node; }}
+                >
                   {!urlInputHidden &&
                     <input
                       ref={this._createRef('titleInput')}
@@ -356,6 +376,7 @@ class NewLinkEntryPage extends Component {
                   }
                   <div className="edit-entry-page__info-card-wrapper">
                     <WebsiteInfoCard
+                      ref={(node) => { this.websiteInfoCard = node; }}
                       baseUrl={baseUrl}
                       cardInfo={cardInfo}
                       intl={intl}
@@ -369,7 +390,7 @@ class NewLinkEntryPage extends Component {
                     />
                   </div>
                   {!parsingInfo && infoExtracted && !errors.card &&
-                    <div style={{ minHeight: '20%' }}>
+                    <div style={{ minHeight: editorMinHeight }}>
                       <TextEntryEditor
                         ref={this._createRef('editor')}
                         className={`text-entry-editor${showSecondarySidebar ? '' : '_full'} link-entry`}

@@ -11,7 +11,7 @@ export const dashboardAddError = (error) => {
 
 export const dashboardAddSuccess = data => action(types.DASHBOARD_ADD_SUCCESS, { data });
 
-export const dashboardAddFirst = interests => action(types.DASHBOARD_ADD_FIRST, { interests });
+export const dashboardAddFirst = (name, interests) => action(types.DASHBOARD_ADD_FIRST, { name, interests });
 export const dashboardAddFirstSuccess = () => action(types.DASHBOARD_ADD_FIRST_SUCCESS);
 
 export const dashboardAddColumn = (columnType, value) =>

@@ -1,3 +1,5 @@
+import startScreen from "./setup/start-screen";
+
 /* eslint-disable import/no-named-as-default */
 export AddImage from './comment/add-image';
 export AddToBoard from './popovers/add-to-board';
@@ -117,6 +119,7 @@ export SetupPages from './setup/setup-pages';
 export ShiftForm from './forms/shift-form';
 export Sidebar from './sidebar';
 export SidebarIcon from './sidebar-icon';
+export StartScreen from './setup/start-screen';
 export StreamColumn from './columns/stream-column';
 export SvgIcon from './svg-icon/svg-icon';
 export SyncProgressLoader from './setup/sync-progress';

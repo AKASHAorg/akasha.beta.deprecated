@@ -166,7 +166,8 @@ class TagEditor extends Component {
         this.setState({
             existentTags: existent ? [...this.state.existentTags, existent] : this.state.existentTags,
             partialTag: '',
-            tagInputWidth: 0
+            tagInputWidth: 0,
+            selectedSuggestionIndex: 0,
         }, () => {
             this.props.onTagUpdate(tags.push(tagName.toLowerCase().replace('#', '')));
             this.props.searchResetResults();
@@ -212,13 +213,13 @@ class TagEditor extends Component {
     }
 
     _getTagSuggestions = () => {
-        const { tagSuggestions } = this.props;
+        const { tagSuggestions, tags } = this.props;
         let selectionIndex = this.state.selectedSuggestionIndex;
         if (selectionIndex > tagSuggestions.length) {
             selectionIndex = tagSuggestions.length - 1;
         }
         /* eslint-disable react/no-array-index-key */
-        return tagSuggestions.map((tag, index) => (
+        return tagSuggestions.filter(tag => !tags.contains(tag)).map((tag, index) => (
           <div
             key={`suggested-${tag}-${index}`}
             onClick={() => this._addNewTag(tag, tag)}

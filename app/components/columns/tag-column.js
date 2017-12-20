@@ -10,35 +10,71 @@ import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
 
+const DELAY = 60000;
+
 class TagColumn extends Component {
     firstCallDone = false;
-    firstLoad = () => {
-        const { column } = this.props;
-        const value = column.get('value');
-        if (!column.get('entriesList').size && !this.firstCallDone && value) {
-            this.props.entryTagIterator({ columnId: column.get('id'), value });
-            this.firstCallDone = true;
-        }
-    }
+    interval = null;
+    timeout = null;
 
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
             this.props.entryTagIterator({ columnId: column.get('id'), value });
+            if (this.interval) {
+                clearInterval(this.interval);
+            }
+            this.timeout = setTimeout(this.setPollingInterval, DELAY);
+        }
+        if (column.get('hasNewEntries') && this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
         }
     }
 
-    entryMoreTagIterator = () => {
+    componentWillUnmount () {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
+    firstLoad = () => {
         const { column } = this.props;
-        this.props.entryMoreTagIterator({ columnId: column.get('id'), value: column.get('value') });
+        const value = column.get('value');
+        if (!this.firstCallDone && value) {
+            this.entryIterator();
+            this.firstCallDone = true;
+        }
     };
 
-    onRefresh = () => {
+    setPollingInterval = () => {
+        this.interval = setInterval(() => {
+            this.props.entryTagIterator({
+                columnId: this.props.column.get('id'),
+                reversed: true,
+                value: this.props.column.get('value')
+            });
+        }, DELAY);
+    };
+
+    entryIterator = () => {
         const { column } = this.props;
         this.props.entryTagIterator({
             columnId: column.get('id'),
             value: column.get('value')
         });
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        this.timeout = setTimeout(this.setPollingInterval, DELAY);
+    }
+
+    entryMoreTagIterator = () => {
+        const { column } = this.props;
+        this.props.entryMoreTagIterator({ columnId: column.get('id'), value: column.get('value') });
     };
 
     render () {
@@ -59,7 +95,7 @@ class TagColumn extends Component {
               column={column}
               dataSource={tagResults}
               iconType="tag"
-              onRefresh={this.onRefresh}
+              onRefresh={this.entryIterator}
               onSearch={this.props.searchTags}
             />
             <Waypoint onEnter={this.firstLoad} horizontal />
