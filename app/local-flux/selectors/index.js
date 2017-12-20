@@ -68,6 +68,9 @@ export const selectColumnEntries = (state, columnId) =>
         .getIn(['columnById', columnId, 'entriesList'])
         .map(id => selectEntry(state, id));
 
+export const selectColumnFirstBlock = (state, columnId) =>
+    state.dashboardState.getIn(['columnById', columnId, 'firstBlock']);
+
 export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
 

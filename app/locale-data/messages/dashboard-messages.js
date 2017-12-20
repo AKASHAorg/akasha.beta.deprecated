@@ -96,6 +96,11 @@ const dashboardMessages = defineMessages({
         description: 'confirmation message for deleting a board',
         defaultMessage: 'Are you sure you want to delete {name}?'
     },
+    firstDashboard: {
+        id: 'app.dashboard.firstDashboard',
+        description: 'the name for the first board',
+        defaultMessage: 'My board'
+    },
     large: {
         id: 'app.dashboard.large',
         description: 'large column width',
