@@ -187,7 +187,10 @@ class TagEditor extends Component {
 
     _deleteTag = tagName =>
         () => {
-            const { tags } = this.props;
+            const { tags, inputDisabled } = this.props;
+            if (inputDisabled) {
+                return;
+            }
             this.props.onTagUpdate(tags.filter(tag => tag !== tagName));
         }
 
@@ -210,14 +213,18 @@ class TagEditor extends Component {
 
     _getTagSuggestions = () => {
         const { tagSuggestions } = this.props;
+        let selectionIndex = this.state.selectedSuggestionIndex;
+        if (selectionIndex > tagSuggestions.length) {
+            selectionIndex = tagSuggestions.length - 1;
+        }
         /* eslint-disable react/no-array-index-key */
         return tagSuggestions.map((tag, index) => (
           <div
             key={`suggested-${tag}-${index}`}
             onClick={() => this._addNewTag(tag, tag)}
             className={
-                `tag-editor__suggestion-item ${tag}
-                tag-editor__suggestion-item${this.state.selectedSuggestionIndex === index ? '_selected' : ''}`
+              `tag-editor__suggestion-item ${tag}
+               tag-editor__suggestion-item${selectionIndex === index ? '_selected' : ''}`
             }
           >
             {tag}
