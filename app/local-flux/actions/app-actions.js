@@ -33,6 +33,7 @@ export const showNotification = notification =>
 export const showPreview = ({ columnType, value }) => action(types.SHOW_PREVIEW, { columnType, value });
 export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
 export const showTerms = () => action(types.SHOW_TERMS);
+export const toggleLightSyncMode = lightSync => action(types.TOGGLE_LIGHT_SYNC_MODE, { lightSync });
 export const toggleAethWallet = () => action(types.TOGGLE_AETH_WALLET);
 export const toggleEthWallet = () => action(types.TOGGLE_ETH_WALLET);
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);

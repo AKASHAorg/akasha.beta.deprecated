@@ -353,6 +353,7 @@ class NewEntryPage extends Component {
                       selectionState={currentSelection}
                       baseUrl={baseUrl}
                       intl={intl}
+                      sidebarReposition={showPublishPanel}
                     />
                     {errors.draft &&
                       <small className="edit-entry-page__error-text">{errors.draft}</small>

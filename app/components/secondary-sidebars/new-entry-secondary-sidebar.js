@@ -233,7 +233,6 @@ class NewEntrySecondarySidebar extends Component {
         };
         if (this.state.searching) {
             const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
-            console.log(allDrafts, 'alldrafts');
             return fuzzy.filter(this.state.searchString, allDrafts.toList().toJS(), searchOptions);
         }
         return null;
@@ -272,7 +271,7 @@ class NewEntrySecondarySidebar extends Component {
         const publishedDraftsByType = drafts.filter(drft =>
             drft.get('id') && drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
         const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
-        console.log(searchResults, 'search results');
+
         return (
           <div
             className="new-entry-secondary-sidebar"

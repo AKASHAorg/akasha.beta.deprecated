@@ -34,11 +34,11 @@ function* dashboardAddColumn ({ columnType, value }) {
     }
 }
 
-function* dashboardAddFirst ({ interests }) {
+function* dashboardAddFirst ({ name, interests }) {
     const columns = interests ?
         interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) :
         [];
-    yield call(dashboardAdd, { name: 'General', columns });
+    yield call(dashboardAdd, { name, columns });
     yield put(actions.dashboardAddFirstSuccess());
 }
 

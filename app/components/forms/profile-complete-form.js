@@ -4,7 +4,6 @@ import { Map } from 'immutable';
 import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import QRCode from 'qrcode.react';
 import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, Icon, ImageUploader } from '../';
@@ -194,7 +193,7 @@ class ProfileCompleteForm extends Component {
     _handleAvatarClear = () => {
         const { tempProfile, onProfileUpdate } = this.props;
         onProfileUpdate(
-            tempProfile.set('avatar', null)
+            tempProfile.set('avatar', '')
         );
     }
 
@@ -267,6 +266,7 @@ class ProfileCompleteForm extends Component {
                 history.push('/setup/new-identity-interests');
                 actionAdd(ethAddress, actionType, data);
             }
+            this.props.tempProfileCreate(tempProfile);
         });
     }
 
@@ -469,12 +469,6 @@ class ProfileCompleteForm extends Component {
                           <h3>{formatMessage(formMessages.insufficientEth)}</h3>
                           <p>{formatMessage(formMessages.depositEth)}</p>
                           <div className="profile-complete-form__address-info">
-                            {/* <div className="profile-complete-form__qr-wrap">
-                              <span className="profile-complete-form__qr-title">QR Code</span>
-                              <div className="profile-complete-form__qr-code">
-                                <QRCode value={loggedEthAddress} />
-                              </div>
-                            </div> */}
                             <div>
                               <FormItem
                                 className="profile-complete-form__form-item"
@@ -517,6 +511,7 @@ class ProfileCompleteForm extends Component {
                 <Button
                   htmlType="submit"
                   className="new-identity__button"
+                  disabled={!akashaId}
                   onClick={this._handleSubmit}
                   type="primary"
                 >

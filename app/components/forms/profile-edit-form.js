@@ -31,6 +31,7 @@ class ProfileEditForm extends Component {
     componentWillReceiveProps (nextProps) {
         const { loggedProfileData, tempProfile, profileExistsData } = nextProps;
         this.formChanged = (
+            tempProfile.get('akashaId') !== loggedProfileData.get('akashaId') ||
             tempProfile.get('firstName') !== loggedProfileData.get('firstName') ||
             tempProfile.get('lastName') !== loggedProfileData.get('lastName') ||
             tempProfile.get('about') !== loggedProfileData.get('about') ||
@@ -187,7 +188,7 @@ class ProfileEditForm extends Component {
     _handleAvatarClear = () => {
         const { tempProfile, onProfileUpdate } = this.props;
         onProfileUpdate(
-            tempProfile.set('avatar', null)
+            tempProfile.set('avatar', '')
         );
     }
 
@@ -252,14 +253,21 @@ class ProfileEditForm extends Component {
                 const data = tempProfile ? tempProfile.toJS() : null;
                 actionAdd(ethAddress, actionType, data);
             }
+            this.props.tempProfileCreate(tempProfile);
         });
     }
-
+    /* eslint-disable complexity */
     render () {
-        const { intl, isUpdate, tempProfile } = this.props;
+        const { intl, isUpdate, pendingActions, tempProfile } = this.props;
         const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
             baseUrl } = tempProfile;
         const { formatMessage } = intl;
+        const actionType = isUpdate ?
+            actionTypes.profileUpdate :
+            actionTypes.profileRegister;
+        const updatePending = pendingActions.get(actionType);
+        const disableSubmit = !tempProfile.get('akashaId') || !this.formChanged || this.emptyLinks || updatePending;
+        const disableAkashaIdInput = isUpdate || updatePending;
 
         return (
           <div className="profile-edit-form__wrap">
@@ -319,7 +327,7 @@ class ProfileEditForm extends Component {
                           value={akashaId}
                           onChange={this._handleFieldChange('akashaId')}
                           onBlur={this._validateField('akashaId')}
-                          disabled={isUpdate}
+                          disabled={disableAkashaIdInput}
                         />
                       </FormItem>
                     </Col>
@@ -441,7 +449,7 @@ class ProfileEditForm extends Component {
               <div className="profile-edit-form__update-btn">
                 <Button
                   type="primary"
-                  disabled={!tempProfile.get('akashaId') || !this.formChanged || this.emptyLinks}
+                  disabled={disableSubmit}
                   onClick={this._handleSubmit}
                   size="large"
                 >
@@ -469,6 +477,7 @@ ProfileEditForm.propTypes = {
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
+    pendingActions: PropTypes.shape(),
     profileEditToggle: PropTypes.func,
     profileExists: PropTypes.func,
     profileExistsData: PropTypes.shape(),

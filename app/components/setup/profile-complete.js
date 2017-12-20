@@ -6,7 +6,7 @@ import throttle from 'lodash.throttle';
 import { Card, Spin, Icon } from 'antd';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileExists } from '../../local-flux/actions/profile-actions';
-import { setTempProfile, tempProfileGet, tempProfileUpdate,
+import { setTempProfile, tempProfileUpdate,
     tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/profile-complete-form';
 import { selectBalance, selectLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
@@ -24,9 +24,12 @@ class ProfileComplete extends Component {
 
     _createTempProfile = (props) => {
         const { ipfsBaseUrl, loggedProfileData } = props;
-        const profileData = loggedProfileData.get('baseUrl') ?
+        let profileData = loggedProfileData.get('baseUrl') ?
             loggedProfileData :
             loggedProfileData.set('baseUrl', ipfsBaseUrl);
+        profileData = !loggedProfileData.get('avatar') ?
+            loggedProfileData.set('avatar', '') :
+            loggedProfileData;
         this.props.setTempProfile(profileData);
     }
 
@@ -151,7 +154,6 @@ ProfileComplete.propTypes = {
     faucet: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     ipfsBaseUrl: PropTypes.string,
-    loggedProfile: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     loggedProfileData: PropTypes.shape(),
     loggedEthAddress: PropTypes.string,
@@ -160,8 +162,7 @@ ProfileComplete.propTypes = {
     setTempProfile: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,
-    tempProfileCreate: PropTypes.func,
-    tempProfileGet: PropTypes.func
+    tempProfileCreate: PropTypes.func
 };
 
 function mapStateToProps (state) {
@@ -169,7 +170,6 @@ function mapStateToProps (state) {
         balance: selectBalance(state),
         faucet: state.profileState.get('faucet'),
         ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
-        loggedProfile: state.profileState.get('loggedProfile'),
         loggedEthAddress: selectLoggedEthAddress(state),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         loggedProfileData: selectLoggedProfileData(state),
@@ -185,7 +185,6 @@ export default connect(
         profileExists,
         setTempProfile,
         tempProfileUpdate,
-        tempProfileCreate,
-        tempProfileGet,
+        tempProfileCreate
     }
 )(injectIntl(ProfileComplete));

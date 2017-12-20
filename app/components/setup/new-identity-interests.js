@@ -3,17 +3,15 @@ import React, { Component } from 'react';
 import { Button, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { selectTagEntriesCount, selectTagSearchResults,
-    selectDashboardIdByName } from '../../local-flux/selectors';
+import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
-import { generalMessages, searchMessages, setupMessages } from '../../locale-data/messages';
+import { dashboardMessages, generalMessages, searchMessages,
+    setupMessages } from '../../locale-data/messages';
 import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
-
-const firstDashboardName = 'General';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -47,7 +45,8 @@ class NewIdentityInterests extends Component {
     };
 
     handleSubmit = () => {
-        this.props.dashboardAddFirst(this.props.profileInterests.toJS());
+        const name = this.props.intl.formatMessage(dashboardMessages.firstDashboard);
+        this.props.dashboardAddFirst(name, this.props.profileInterests.toJS());
         this.setState({ disableSubmit: true });
     };
 
@@ -132,10 +131,11 @@ NewIdentityInterests.propTypes = {
 };
 
 function mapStateToProps (state) {
+    const firstDashboard = state.dashboardState.get('byId').first(); 
     return {
         entriesCount: selectTagEntriesCount(state),
         fetchingTags: state.tagState.getIn(['flags', 'searchPending']),
-        firstDashboardId: selectDashboardIdByName(state, firstDashboardName).first(),
+        firstDashboardId: firstDashboard && firstDashboard.get('id'),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
         profileInterests: state.profileState.get('interests'),
         tags: selectTagSearchResults(state)

@@ -246,7 +246,7 @@ function* watchGethStartChannel () {
                     if (syncActionId === 1) {
                         Channel.server.geth.syncStatus.send({});
                     }
-                }, 2000);
+                }, 14000);
             }
             yield put(actions.gethStartSuccess(resp.data, resp.services));
         }

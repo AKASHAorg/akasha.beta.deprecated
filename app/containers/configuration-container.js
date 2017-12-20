@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { saveConfiguration } from '../local-flux/actions/settings-actions';
+import { toggleLightSyncMode } from '../local-flux/actions/app-actions';
 import { Configuration } from '../components';
 
 function mapStateToProps (state) {
@@ -15,7 +16,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        saveConfiguration
+        saveConfiguration,
+        toggleLightSyncMode,
     },
     null,
     // this option will disable the "shouldComponentUpdate" method on the connected component

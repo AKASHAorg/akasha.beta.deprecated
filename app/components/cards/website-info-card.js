@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Icon } from 'antd';
 import imageCreator, { findClosestMatch } from '../../utils/imageUtils';
@@ -22,109 +22,114 @@ const navigateTo = (url, onClick, isEdit) =>
         return true;
     };
 
-const WebsiteInfoCard = (props) => {
-    const { cardInfo, baseUrl, hasCard, baseWidth, onClick, intl,
-        onClose, isEdit, loading, error, infoExtracted, maxImageHeight } = props;
-    const { url, image, description, title, bgColor } = cardInfo;
-    const bodyStyle = {
-        padding: 0
-    };
-    let textColor = 'inherit';
-    if (bgColor) {
-        bodyStyle.backgroundColor = bgColor;
-        textColor = getTextColor(bgColor);
-    }
-    return (
-      <Card
-        bodyStyle={bodyStyle}
-        className={
-            `website-info-card
-            website-info-card${!infoExtracted && !error && !hasCard ? '_empty' : ''}
-            website-info-card${isEdit ? '_edit' : ''}`
+class WebsiteInfoCard extends Component {
+    getNodeRef = () => this.baseNodeRef;
+    render () {
+        const { cardInfo, baseUrl, hasCard, baseWidth, onClick, intl,
+            onClose, isEdit, loading, error, infoExtracted, maxImageHeight } = this.props;
+        const { url, image, description, title, bgColor } = cardInfo;
+        const bodyStyle = {
+            padding: 0
+        };
+        let textColor = 'inherit';
+        if (bgColor) {
+            bodyStyle.backgroundColor = bgColor;
+            textColor = getTextColor(bgColor);
         }
-        loading={loading}
-      >
-        {!title && !description && infoExtracted && !error && url &&
-          <div>{intl.formatMessage(entryMessages.cannotExtractWebsiteInfo)}</div>
-        }
-        {error &&
-          <div className="website-info-card__error">
-            <Icon type="exclamation-circle-o" />
-            {error}
-          </div>
-        }
-        {isEdit && infoExtracted &&
-          <Icon
-            type="close-square"
-            className="website-info-card__close-button"
-            onClick={onClose}
-          />
-        }
-        {!error && image && image.get('xs') &&
-          <a
-            onClick={navigateTo(url, onClick, isEdit)}
-            href={url}
-            title={url}
-            className="website-info-card__image-link"
+        return (
+          <Card
+            bodyStyle={bodyStyle}
+            ref={(node) => { this.baseNodeRef = node; }}
+            className={
+                `website-info-card
+                website-info-card${!infoExtracted && !error && !hasCard ? '_empty' : ''}
+                website-info-card${isEdit ? '_edit' : ''}`
+            }
+            loading={loading}
           >
-            <div
-              className="website-info-card__card-cover-wrapper"
-              style={{ height: maxImageHeight }}
-            >
-              <img
-                alt="card-cover"
-                src={getImageSrc(image.toJS(), baseUrl, baseWidth)}
+            {!title && !description && infoExtracted && !error && url &&
+              <div>{intl.formatMessage(entryMessages.cannotExtractWebsiteInfo)}</div>
+            }
+            {error &&
+              <div className="website-info-card__error">
+                <Icon type="exclamation-circle-o" />
+                {error}
+              </div>
+            }
+            {isEdit && infoExtracted &&
+              <Icon
+                type="close-square"
+                className="website-info-card__close-button"
+                onClick={onClose}
               />
-            </div>
-          </a>
-        }
-        {!error && url && hasCard &&
-          <small
-            title={url}
-            className="website-info-card__source-url"
-          >
-            <a
-              onClick={navigateTo(url, onClick, isEdit)}
-              href={url}
-              style={{ color: textColor, opacity: 0.75 }}
-            >
-              {ParserUtils.parseUrl(url).hostname}
-            </a>
-          </small>
-        }
-        {!error &&
-        <div
-          className="website-info-card__title-wrapper"
-        >
-          {title &&
-            <h3
-              className="website-info-card__title"
-            >
+            }
+            {!error && image && image.get('xs') &&
               <a
                 onClick={navigateTo(url, onClick, isEdit)}
                 href={url}
                 title={url}
-                style={{ color: textColor }}
+                className="website-info-card__image-link"
               >
-                {title}
+                <div
+                  className="website-info-card__card-cover-wrapper"
+                  style={{ height: maxImageHeight }}
+                >
+                  <img
+                    alt="card-cover"
+                    src={getImageSrc(image.toJS(), baseUrl, baseWidth)}
+                  />
+                </div>
               </a>
-            </h3>
-          }
-          {description &&
-            <a
-              href={url}
-              onClick={navigateTo(url, onClick, isEdit)}
-              className="website-info-card__description"
-              style={{ color: textColor, opacity: 0.85 }}
+            }
+            {!error && url && hasCard &&
+              <small
+                title={url}
+                className="website-info-card__source-url"
+              >
+                <a
+                  onClick={navigateTo(url, onClick, isEdit)}
+                  href={url}
+                  style={{ color: textColor, opacity: 0.75 }}
+                >
+                  {ParserUtils.parseUrl(url).hostname}
+                </a>
+              </small>
+            }
+            {!error &&
+            <div
+              className="website-info-card__title-wrapper"
             >
-              {description}
-            </a>
-          }
-        </div>
-        }
-      </Card>
-    );
-};
+              {title &&
+                <h3
+                  className="website-info-card__title"
+                >
+                  <a
+                    onClick={navigateTo(url, onClick, isEdit)}
+                    href={url}
+                    title={url}
+                    style={{ color: textColor }}
+                  >
+                    {title}
+                  </a>
+                </h3>
+              }
+              {description &&
+                <a
+                  href={url}
+                  onClick={navigateTo(url, onClick, isEdit)}
+                  className="website-info-card__description"
+                  style={{ color: textColor, opacity: 0.85 }}
+                >
+                  {description}
+                </a>
+              }
+            </div>
+            }
+          </Card>
+        );
+    }
+}
+
 WebsiteInfoCard.defaultProps = {
     maxImageHeight: 350,
 };

@@ -1,0 +1,32 @@
+.start-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    &__image {
+        min-height: 62%;
+        background-size: contain !important;
+    }
+    // for light sync
+    &_light {
+        .start-screen__image {
+            background: url('../../../images/tutorials-light/akasha-light.png') top center no-repeat;
+        }
+        .start-screen__image_dark {
+            background: url('../../../images/tutorials-dark/akasha-light.png') top center no-repeat;
+        }
+    }
+    &__image {
+        background: url('../../../images/tutorials-light/akasha-normal.png') top center no-repeat;
+        &_dark {
+            background: url('../../../images/tutorials-dark/akasha-normal.png') top center no-repeat;
+        }
+    }
+    &__text {
+        max-width: 80%;
+        text-align: center;
+        padding-top: 10%;
+        margin: 0 auto;
+        font-size: 16px;
+    }
+}

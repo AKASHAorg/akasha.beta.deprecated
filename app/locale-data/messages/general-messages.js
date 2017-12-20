@@ -187,6 +187,11 @@ const generalMessages = defineMessages({
         description: 'Placeholder for ethereum address field.',
         defaultMessage: 'Ethereum address'
     },
+    forged: {
+        id: 'app.general.forged',
+        description: 'new AETH created from Essence',
+        defaultMessage: 'Forged'
+    },
     generatingPreview: {
         id: 'app.general.generatingPreview',
         description: 'placeholder to show while an image preview is being generated',
@@ -345,8 +350,13 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
-    receivedAmount: {
+    received: {
         id: 'app.general.received',
+        description: 'received',
+        defaultMessage: 'received'
+    },
+    receivedAmount: {
+        id: 'app.general.receivedAmount',
         description: 'incoming transactions',
         defaultMessage: '+{amount} {symbol} from '
     },
@@ -404,6 +414,11 @@ const generalMessages = defineMessages({
         id: 'app.general.send',
         description: 'send button label',
         defaultMessage: 'Send'
+    },
+    sent: {
+        id: 'app.general.sent',
+        description: 'sent (past for send)',
+        defaultMessage: 'Sent'
     },
     settings: {
         id: 'app.general.settings',
