@@ -9,12 +9,14 @@ import { roomFactory } from './modules/chat/join';
 import { initMenu } from './menu';
 import updater from './check-version';
 import * as Promise from 'bluebird';
+import contracts from './contracts';
 
 const windowStateKeeper = require('electron-window-state');
 
 let modules;
 let mainWindow = null;
 const shutDown = Promise.coroutine(function* () {
+    yield contracts.stopAllWatchers();
     yield feed.execute({ stop: true }, () => {
     });
     yield GethConnector.getInstance().stop();
