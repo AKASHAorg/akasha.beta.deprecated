@@ -48,7 +48,7 @@ class AethWallet extends Component {
         const { cyclingStates, loggedEthAddress } = this.props;
         const amount = balanceToNumber(cyclingStates.getIn(['available', 'total']));
         this.props.actionAdd(loggedEthAddress, actionTypes.freeAeth, { amount });
-    }
+    };
 
     onTransfer = (payload) => {
         const { loggedEthAddress } = this.props;
@@ -56,21 +56,42 @@ class AethWallet extends Component {
     };
 
     getActionCell = (action) => {
+        const { intl } = this.props;
         const sentIcon = <Icon className="aeth-wallet__sent-icon" type="arrowUp" />;
         const receivedIcon = <Icon className="aeth-wallet__received-icon" type="arrowDown" />;
         const transformedIcon = <Icon className="aeth-wallet__transformed-icon" type="reload" />;
 
         switch (action.type) {
             case actionTypes.transferAeth:
-                return <span className="flex-center-y">{sentIcon}Sent</span>;
+                return (
+                  <span className="flex-center-y">
+                    {sentIcon}{intl.formatMessage(generalMessages.sent)}
+                  </span>
+                );
             case actionTypes.bondAeth:
-                return <span className="flex-center-y">{transformedIcon}Manafied</span>;
+                return (
+                  <span className="flex-center-y">
+                    {transformedIcon}{intl.formatMessage(generalMessages.manafied)}
+                  </span>
+                );
             case actionTypes.freeAeth:
-                return <span className="flex-center-y">{transformedIcon}Collected</span>;
+                return (
+                  <span className="flex-center-y">
+                    {transformedIcon}{intl.formatMessage(generalMessages.collected)}
+                  </span>
+                );
             case actionTypes.transformEssence:
-                return <span className="flex-center-y">{receivedIcon}Forged</span>;
+                return (
+                  <span className="flex-center-y">
+                    {receivedIcon}{intl.formatMessage(generalMessages.forged)}
+                  </span>
+                );
             case actionTypes.receiveAeth:
-                return <span className="flex-center-y">{receivedIcon}Received</span>;
+                return (
+                  <span className="flex-center-y">
+                    {receivedIcon}{intl.formatMessage(generalMessages.received)}
+                  </span>
+                );
             default:
                 return null;
         }

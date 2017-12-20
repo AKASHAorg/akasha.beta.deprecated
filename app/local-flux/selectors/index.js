@@ -11,6 +11,8 @@ export const selectActionsHistory = state =>
 export const selectActionPending = (state, actionType) =>
     state.actionState.getIn(['pending', actionType]);
 
+export const selectActionPendingAll = state => state.actionState.get('pending');
+
 export const selectActionToPublish = state => state.actionState.get('toPublish');
 
 export const selectActiveDashboard = (state) => {
@@ -65,6 +67,9 @@ export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entriesList'])
         .map(id => selectEntry(state, id));
+
+export const selectColumnFirstBlock = (state, columnId) =>
+    state.dashboardState.getIn(['columnById', columnId, 'firstBlock']);
 
 export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);

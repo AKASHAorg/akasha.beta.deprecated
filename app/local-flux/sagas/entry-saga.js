@@ -8,8 +8,8 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnLastBlock, selectColumnLastIndex, selectListEntries,
-    selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
+import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
+    selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
     selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
@@ -275,43 +275,63 @@ function* entryMoreTagIterator ({ columnId, value }) {
     );
 }
 
-function* entryNewestIterator ({ columnId }) {
+function* entryNewestIterator ({ columnId, reversed }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock }]);
+    const toBlock = reversed ?
+        yield select(state => selectColumnFirstBlock(state, columnId)) :
+        yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts }) {
+function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts, reversed }) {
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = yield select(selectBlockNumber);
+    const toBlock = reversed ?
+        yield select(state => selectColumnFirstBlock(state, columnId)) :
+        yield select(selectBlockNumber);
     let akashaId, ethAddress; // eslint-disable-line
     if (isEthAddress(value)) {
         ethAddress = value;
     } else {
         akashaId = value;
     }
-    yield apply(channel, channel.send, [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
+    );
 }
 
-function* entryStreamIterator ({ columnId }) {
+function* entryStreamIterator ({ columnId, reversed }) {
     const channel = Channel.server.entry.followingStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = yield select(selectBlockNumber);
+    const toBlock = reversed ?
+        yield select(state => selectColumnFirstBlock(state, columnId)) :
+        yield select(selectBlockNumber);
     const ethAddress = yield select(selectLoggedEthAddress);
-    yield apply(channel, channel.send, [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, reversed }]
+    );
 }
 
-function* entryTagIterator ({ columnId, value }) {
+function* entryTagIterator ({ columnId, value, reversed }) {
     yield put(tagActions.tagExists(value));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock }]);
+    const toBlock = reversed ?
+        yield select(state => selectColumnFirstBlock(state, columnId)) :
+        yield select(selectBlockNumber);
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock, reversed }]
+    );
 }
 
 function* entryVoteSuccess (entryId) {
@@ -565,8 +585,10 @@ function* watchEntryNewestIteratorChannel () {
                 yield put(actions.entryNewestIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId } = resp.request;
-            yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            const { columnId, reversed } = resp.request;
+            if (!reversed) {
+                yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            }
             if (resp.request.more) {
                 yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
             } else {
@@ -579,7 +601,7 @@ function* watchEntryNewestIteratorChannel () {
 function* watchEntryProfileIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryProfileIterator);
-        const { columnId, asDrafts } = resp.request;
+        const { columnId, asDrafts, reversed } = resp.request;
         if (resp.error) {
             if (resp.request.more) {
                 yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
@@ -602,7 +624,9 @@ function* watchEntryProfileIteratorChannel () {
                 }));
             }
         } else {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+            if (!reversed) {
+                yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+            }
             yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
         }
     }
@@ -618,8 +642,10 @@ function* watchEntryStreamIteratorChannel () {
                 yield put(actions.entryStreamIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId } = resp.request;
-            yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            const { columnId, reversed } = resp.request;
+            if (!reversed) {
+                yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            }
             if (resp.request.more) {
                 yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
@@ -639,8 +665,10 @@ function* watchEntryTagIteratorChannel () {
                 yield put(actions.entryTagIteratorError(resp.error, resp.request));
             }
         } else {
-            const { columnId } = resp.request;
-            yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            const { columnId, reversed } = resp.request;
+            if (!reversed) {
+                yield call(entryGetExtraOfList, resp.data.collection, columnId);
+            }
             if (resp.request.more) {
                 yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
             } else {
