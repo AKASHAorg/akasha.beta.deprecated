@@ -15,10 +15,10 @@ class SideBar extends Component {
         return (nextState.top !== this.state.top) ||
             (nextState.left !== this.state.left) ||
             !nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()) ||
-            (nextProps.editorHasFocus !== this.props.editorHasFocus);
+            (nextProps.editorHasFocus !== this.props.editorHasFocus) ||
+            (nextProps.sidebarReposition !== this.props.sidebarReposition);
     }
-    componentDidUpdate (prevProps) {
-        // if (nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()))
+    componentDidUpdate () {
         this.updateSidebarPosition(this.props);
     }
     componentWillUnmount () {
@@ -53,18 +53,19 @@ class SideBar extends Component {
         return plugins;
     }
     setSidebarPosition () {
+        const { editorState } = this.props;
+        const selection = editorState.getSelection();
         const container = this.container;
-        const element = this.getSelectedBlockElement();
+        let element = this.getSelectedBlockElement();
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
-        // console.log(element, container, isBlackListed);
-
-        if ((!element || !container || isBlackListed)) {
+        if (!selection.getHasFocus()) {
+            element = document.querySelector(`div[data-offset-key='${selection.anchorKey}-0-0']`);
+        }
+        const noElement = !element || !container || isBlackListed;
+        if (noElement) {
+            // must return the position of the last selected element
             return null;
-            // return this.setState({
-            //     top: -9999,
-            //     left: -9999
-            // });
         }
         const containerTop =
             (container.getBoundingClientRect().top) - document.documentElement.clientTop;
