@@ -76,6 +76,11 @@ const setupMessages = defineMessages({
         description: 'geth light sync option',
         defaultMessage: 'Light sync'
     },
+    lightSyncDescription: {
+        id: 'app.setup.lightSyncDescription',
+        description: 'info when user selects light sync mode',
+        defaultMessage: 'Lorem ipsum for light sync!'
+    },
     newIdentitySubtitle: {
         id: 'app.setup.newIdentitySubtitle',
         description: 'subtitle for new identity page',
@@ -85,6 +90,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.normalSync',
         description: 'geth normal sync option',
         defaultMessage: 'Normal sync'
+    },
+    normalSyncDescription: {
+        id: 'app.setup.normalSyncDescription',
+        description: 'info when user selects normal sync mode',
+        defaultMessage: 'Lorem ipsum for Normal Sync!'
     },
     synchronization: {
         id: 'app.setup.synchronization',
