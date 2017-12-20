@@ -408,8 +408,8 @@ function* profileUpdate ({ actionId, about, avatar, backgroundImage, firstName, 
 
 function* profileUpdateSuccess (payload) {
     const { akashaId, ethAddress } = payload.data;
-    // remove saved temp profile from DB and clear tempProfileState
-    yield put(tempProfileActions.tempProfileDelete(ethAddress));
+    // remove saved temp profile from DB
+    yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
     // get updated profile data
     yield call(profileGetData, { akashaId, full: true });
     yield put(appActions.showNotification({
@@ -441,7 +441,7 @@ function* profileRegister ({ actionId, akashaId, address, about, avatar, backgro
 
 function* profileRegisterSuccess (payload) {
     const { akashaId, ethAddress } = payload.data;
-    // remove saved temp profile from DB and clear tempProfileState
+    // remove saved temp profile from DB
     yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
     // get updated profile data
     yield call(profileGetData, { akashaId, full: true });
