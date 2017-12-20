@@ -80,7 +80,7 @@ class EntryEditor extends Component {
         return '';
     }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
-        const { showSidebar, readOnly, showTerms, onError } = this.props;
+        const { showSidebar, readOnly, showTerms, onError, sidebarReposition } = this.props;
         if (showSidebar && !readOnly) {
             return (
               <EditorSidebar
@@ -91,6 +91,7 @@ class EntryEditor extends Component {
                 onError={onError}
                 onSidebarToggle={this._handleSidebarToggle}
                 sidebarOpen={this.state.sidebarOpen}
+                sidebarReposition={sidebarReposition}
               />);
         }
         return null;
