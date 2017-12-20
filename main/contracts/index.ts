@@ -1,10 +1,12 @@
 const initContracts = require('@akashaproject/contracts.js');
 import { GethConnector } from '@akashaproject/geth-connector';
 import { descend, filter, last, prop, sortWith, take, uniq, head } from 'ramda';
+import * as BlPromise from 'bluebird';
 import auth from '../modules/auth/Auth';
 
 export class Contracts {
     public instance: any;
+    public watchers: any[] = [];
 
     /**
      * Init web3 contract js bindings
@@ -56,6 +58,20 @@ export class Contracts {
             };
             getReceipt();
         });
+    }
+
+    public createWatcher(ethEvent: any, args: any, fromBlock: number) {
+        const currentWatcher = ethEvent(args, { fromBlock });
+        this.watchers.push(currentWatcher);
+        return currentWatcher;
+    }
+
+    public stopAllWatchers() {
+        this.watchers.forEach((watcher) => {
+           return watcher.stopWatching(() => {});
+        });
+        this.watchers.length = 0;
+        return BlPromise.delay(1000);
     }
 
     public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number,
