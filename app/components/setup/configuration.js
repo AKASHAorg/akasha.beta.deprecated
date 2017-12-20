@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Radio, Select as AntdSelect } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../../locale-data/messages';
-import { GethCacheSelect, Icon, PathInputField, Select } from '../';
+import { GethCacheSelect, Icon, PathInputField, Select, StartScreen } from '../';
 
 const { Option } = AntdSelect;
 const RadioGroup = Radio.Group;
@@ -39,8 +39,8 @@ class Config extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { gethSettings, ipfsSettings } = nextProps;
-        if (gethSettings.equals(this.props.gethSettings)
-                || ipfsSettings.equals(this.props.ipfsSettings)) {
+        if (!gethSettings.equals(this.props.gethSettings)
+                || !ipfsSettings.equals(this.props.ipfsSettings)) {
             this.setState({
                 cache: gethSettings.get('cache').toString(),
                 gethDataDir: gethSettings.get('datadir'),
@@ -96,11 +96,18 @@ class Config extends Component {
     };
 
     onSyncModeChange = (val) => {
+        const { toggleLightSyncMode } = this.props;
+
+        if (val === syncModes.light) {
+            toggleLightSyncMode(true);
+        } else {
+            toggleLightSyncMode(false);
+        }
+
         this.setState({
             syncmode: val
         });
     };
-
     renderAdvancedSettings = () => {
         const { intl } = this.props;
         const { cache, gethDataDir, ipfsPath } = this.state;
@@ -137,12 +144,12 @@ class Config extends Component {
     render () {
         const { configurationSaved, intl } = this.props;
         const { isAdvanced, syncmode } = this.state;
-
+        console.log(syncmode, 'sync mode');
         return (
           <div className="setup-content configuration">
             {configurationSaved && <Redirect to="/setup/synchronization" />}
             <div className="setup-content__column setup-pages_left">
-              Placeholder
+              <StartScreen />
             </div>
             <div className="setup-content__column setup-pages_right">
               <div className="setup-content__column-content">
@@ -152,7 +159,7 @@ class Config extends Component {
                 <div className="configuration__form">
                   <Select
                     label={intl.formatMessage(formMessages.selectOneOption)}
-                    onChange={this.onSyncModeChange}
+                    onSelect={this.onSyncModeChange}
                     size="large"
                     style={{ width: '100%' }}
                     value={syncmode}
@@ -207,6 +214,7 @@ Config.propTypes = {
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
     saveConfiguration: PropTypes.func.isRequired,
+    toggleLightSyncMode: PropTypes.func,
 };
 
 export default injectIntl(Config);

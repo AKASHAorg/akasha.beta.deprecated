@@ -16,6 +16,7 @@ export const PreviewRecord = Record({
 export const AppRecord = Record({
     appReady: false,
     homeReady: false,
+    isLightSync: false,
     notifications: new List(),
     displayedNotifications: new List(),
     outsideNavigation: new Map({
