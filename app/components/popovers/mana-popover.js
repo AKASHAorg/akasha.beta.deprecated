@@ -145,7 +145,7 @@ class ManaPopover extends Component {
         const { balance, intl } = this.props;
         const remaining = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const total = balanceToNumber(balance.getIn(['mana', 'total']));
-        const percent = (remaining / total) * 100;
+        const percent = total ? (remaining / total) * 100 : 0;
         const tooltip = (
           <div>
             <div>{intl.formatMessage(generalMessages.mana)}</div>

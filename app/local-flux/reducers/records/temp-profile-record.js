@@ -7,7 +7,7 @@ export const TempProfileRecord = Record({
     akashaId: '',
     donationsEnabled: true,
     ethAddress: '',
-    avatar: null,
+    avatar: '',
     backgroundImage: new Map(),
     baseUrl: '',
     about: '',

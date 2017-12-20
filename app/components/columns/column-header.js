@@ -175,12 +175,6 @@ class ColumnHeader extends Component {
         const message = column && column.get('large') ? dashboardMessages.small : dashboardMessages.large;
         return (
           <div className="dashboard-secondary-sidebar__popover-content">
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={this.onRefresh}
-            >
-              {intl.formatMessage(generalMessages.refresh)}
-            </div>
             {!notEditable &&
               <div
                 className="flex-center-y popover-menu__item"
@@ -237,6 +231,18 @@ class ColumnHeader extends Component {
               {!readOnly && editMode && this.renderEditMode()}
             </div>
             {this.showModal()}
+            {!editMode &&
+              <div className="column-header__refresh-icon">
+                <Icon
+                  className="content-link"
+                  onClick={this.onRefresh}
+                  type="refresh"
+                />
+                {column.get('hasNewEntries') &&
+                  <div className="column-header__new-entries" />
+                }
+              </div>
+            }
             {!editMode &&
               <Popover
                 content={this.wasVisible ? this.renderContent() : null}

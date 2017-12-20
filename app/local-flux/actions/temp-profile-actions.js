@@ -7,9 +7,9 @@ export const tempProfileCreateError = error => action(types.TEMP_PROFILE_CREATE_
 
 export const setTempProfile = data => action(types.SET_TEMP_PROFILE, { data });
 
-export const tempProfileDelete = () => action(types.TEMP_PROFILE_DELETE);
+export const tempProfileDelete = ethAddress => action(types.TEMP_PROFILE_DELETE, { ethAddress });
 
-export const tempProfileDeleteFull = () => action(types.TEMP_PROFILE_DELETE_FULL);
+export const tempProfileDeleteFull = ethAddress => action(types.TEMP_PROFILE_DELETE_FULL, { ethAddress });
 
 export const tempProfileUpdate = data => action(types.TEMP_PROFILE_UPDATE, { data });
 

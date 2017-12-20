@@ -10,22 +10,54 @@ import { entryMoreNewestIterator,
     entryNewestIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
+const DELAY = 60000;
+
 class LatestColumn extends Component {
     firstCallDone = false;
+    interval = null;
+    timeout = null;
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.column.get('hasNewEntries') && this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    }
+
+    componentWillUnmount () {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
     firstLoad = () => {
-        const { column } = this.props;
-        if (!column.get('entriesList').size && !this.firstCallDone) {
+        if (!this.firstCallDone) {
             this.entryIterator();
             this.firstCallDone = true;
         }
     };
 
-    entryIterator = () => this.props.entryNewestIterator(this.props.column.get('id'));
+    setPollingInterval = () => {
+        this.interval = setInterval(() => {
+            this.props.entryNewestIterator(this.props.column.get('id'), true);
+        }, DELAY);
+    };
+
+    entryIterator = () => {
+        this.props.entryNewestIterator(this.props.column.get('id'));
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        this.timeout = setTimeout(this.setPollingInterval, DELAY);
+    };
 
     entryMoreNewestIterator = () => {
         const { column } = this.props;
         this.props.entryMoreNewestIterator(column.get('id'));
-    }
+    };
 
     render () {
         const { column, entriesList, intl } = this.props;
@@ -40,7 +72,7 @@ class LatestColumn extends Component {
               readOnly
               title={intl.formatMessage(dashboardMessages.latest)}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
               contextId={column.get('id')}
               entries={entriesList}

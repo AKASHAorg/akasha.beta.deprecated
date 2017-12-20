@@ -24,7 +24,10 @@ const createEntryRecord = entry =>
 const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
-const entryIteratorHandler = (state, { data }) => {
+const entryIteratorHandler = (state, { data, request }) => {
+    if (!request || request.reverse) {
+        return state;
+    }
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
         if (!state.getIn(['byId', entry.entryId])) {

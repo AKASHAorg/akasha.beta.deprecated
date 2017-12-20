@@ -11,17 +11,37 @@
         margin-right: 10px;
     }
 
+    &__refresh-icon {
+        position: relative;
+        flex: 0 0 auto;
+        margin-right: 5px;
+        width: 22px;
+        height: 22px;
+        padding: 3px;
+    }
+
+    &__new-entries {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 6px;
+        height: 6px;
+        background-color: @primary-color;
+        border-radius: 50%;
+    }
+
     &__menu-icon {
+        flex: 0 0 auto;
         height: 18px;
         width: 22px;
         padding: 4px;
-        fill: @heading-color;
+        fill: @text-color;
         stroke: initial !important;
     }
 
     &__title-wrapper {
         flex: 1 1 auto;
-        max-width: ~'calc(100% - 52px)';
+        max-width: ~'calc(100% - 79px)';
 
         &_no-icon {
             max-width: 100%;

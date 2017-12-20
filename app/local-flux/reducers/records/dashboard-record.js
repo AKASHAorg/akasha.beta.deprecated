@@ -14,7 +14,9 @@ const ColumnFlags = Record({
 export const ColumnRecord = Record({
     id: null,
     entriesList: new List(),
+    firstBlock: null,
     flags: new ColumnFlags(),
+    hasNewEntries: false,
     large: false,
     lastBlock: null,
     lastIndex: null,

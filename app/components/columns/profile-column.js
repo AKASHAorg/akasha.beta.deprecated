@@ -11,44 +11,72 @@ import { searchProfiles } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectProfileExists,
     selectProfileSearchResults } from '../../local-flux/selectors';
 
+const DELAY = 60000;
+
 class ProfileColumn extends Component {
     firstCallDone = false;
-    firstLoad = () => {
-        const { column } = this.props;
-        const value = column.get('value');
-        if (!column.get('entriesList').size && value && !this.firstCallDone) {
-            this.props.entryProfileIterator({ columnId: column.get('id'), value });
-            this.firstCallDone = true;
-        }
-    }
-
-    componentDidMount () {
-        const { column } = this.props;
-        const value = column.get('value');
-        if (!column.get('entriesList').size && value) {
-            this.props.entryProfileIterator({ columnId: column.get('id'), value });
-        }
-    }
+    interval = null;
+    timeout = null;
 
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
             this.props.entryProfileIterator({ columnId: column.get('id'), value });
+            if (this.interval) {
+                clearInterval(this.interval);
+            }
+            this.timeout = setTimeout(this.setPollingInterval, DELAY);
         }
+        if (column.get('hasNewEntries') && this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    }
+
+    componentWillUnmount () {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
+    firstLoad = () => {
+        const { column } = this.props;
+        const value = column.get('value');
+        if (value && !this.firstCallDone) {
+            this.entryIterator();
+            this.firstCallDone = true;
+        }
+    };
+
+    setPollingInterval = () => {
+        this.interval = setInterval(() => {
+            this.props.entryProfileIterator({
+                columnId: this.props.column.get('id'),
+                reversed: true,
+                value: this.props.column.get('value')
+            });
+        }, DELAY);
+    };
+
+    entryIterator = () => {
+        const { column } = this.props;
+        this.props.entryProfileIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        });
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        this.timeout = setTimeout(this.setPollingInterval, DELAY);
     }
 
     entryMoreProfileIterator = () => {
         const { column } = this.props;
         const value = column.get('value');
         this.props.entryMoreProfileIterator({ columnId: column.get('id'), value });
-    };
-
-    onRefresh = () => {
-        const { column } = this.props;
-        this.props.entryProfileIterator({
-            columnId: column.get('id'),
-            value: column.get('value')
-        });
     };
 
     render () {
@@ -69,7 +97,7 @@ class ProfileColumn extends Component {
               column={column}
               dataSource={profileResults}
               iconType="user"
-              onRefresh={this.onRefresh}
+              onRefresh={this.entryIterator}
               onSearch={this.props.searchProfiles}
             />
             <Waypoint onEnter={this.firstLoad} horizontal />

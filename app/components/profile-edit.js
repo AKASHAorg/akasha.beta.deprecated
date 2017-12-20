@@ -10,7 +10,7 @@ import { setTempProfile, tempProfileGet,
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
 import ProfileForm from './forms/profile-edit-form';
 import { profileMessages } from '../locale-data/messages';
-import { selectLoggedProfileData } from '../local-flux/selectors';
+import { selectActionPendingAll, selectLoggedProfileData } from '../local-flux/selectors';
 import { Icon } from './';
 
 class ProfileEdit extends Component {
@@ -29,9 +29,12 @@ class ProfileEdit extends Component {
 
     _createTempProfile = (props) => {
         const { ipfsBaseUrl, loggedProfileData, loggedProfile } = props;
-        const profileData = loggedProfileData.get('baseUrl') ?
+        let profileData = loggedProfileData.get('baseUrl') ?
             loggedProfileData :
             loggedProfileData.set('baseUrl', ipfsBaseUrl);
+        profileData = !loggedProfileData.get('avatar') ?
+            loggedProfileData.set('avatar', '') :
+            loggedProfileData;
         this.props.setTempProfile(profileData);
         this.props.tempProfileGet(loggedProfile.get('ethAddress'));
     }
@@ -67,7 +70,7 @@ class ProfileEdit extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { intl, tempProfile, loggedProfileData, profileExistsData } = this.props;
+        const { intl, tempProfile, loggedProfileData, pendingActions, profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withBorder = isScrolled && 'profile-edit__title_with-border';
@@ -89,6 +92,7 @@ class ProfileEdit extends Component {
                 isUpdate={isUpdate}
                 getFormContainerRef={this.getFormContainerRef}
                 loggedProfileData={loggedProfileData}
+                pendingActions={pendingActions}
                 profileExists={this.props.profileExists}
                 profileExistsData={profileExistsData}
                 tempProfile={tempProfile}
@@ -111,6 +115,7 @@ ProfileEdit.propTypes = {
     ipfsBaseUrl: PropTypes.string,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
     profileEditToggle: PropTypes.func,
     profileExists: PropTypes.func,
     profileExistsData: PropTypes.shape(),
@@ -127,6 +132,7 @@ const mapStateToProps = state => ({
     ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),
+    pendingActions: selectActionPendingAll(state),
     profileExistsData: state.profileState.get('exists'),
     tempProfile: state.tempProfileState.get('tempProfile')
 });
