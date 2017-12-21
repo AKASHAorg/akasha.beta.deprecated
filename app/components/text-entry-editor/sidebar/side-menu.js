@@ -40,7 +40,7 @@ class SideMenu extends Component {
 
     render () {
         return (
-          <li className="sidemenu">
+          <li className="sidemenu" id="sidebar-menu">
             <ToggleButton
               toggle={this.toggle}
               open={this.state.open}
