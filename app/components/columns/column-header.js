@@ -238,7 +238,7 @@ class ColumnHeader extends Component {
                   onClick={this.onRefresh}
                   type="refresh"
                 />
-                {column.get('hasNewEntries') &&
+                {column && column.get('hasNewEntries') &&
                   <div className="column-header__new-entries" />
                 }
               </div>

@@ -19,7 +19,7 @@ const SidebarIcon = (props) => {
         return (
           <Tooltip
             title={tooltipTitle}
-            placement="topLeft"
+            placement="right"
           >
             <div className={wrapperClassName}>
               <Icon className={iconClassName} type={iconType} />
@@ -32,7 +32,7 @@ const SidebarIcon = (props) => {
       <Link to={linkTo || ''}>
         <Tooltip
           title={tooltipTitle}
-          placement="topLeft"
+          placement="right"
         >
           <div className={wrapperClassName}>
             <Icon className={iconClassName} type={iconType} />
