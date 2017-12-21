@@ -101,7 +101,11 @@ class ServiceStatusBar extends Component {
               </div>
             </Tooltip>
             <div className="content-link flex-center service-status-bar__button">
-              <Tooltip title={intl.formatMessage(settingsMessages.title)}>
+              <Tooltip
+                arrowPointAtCenter
+                placement="bottomLeft"
+                title={intl.formatMessage(settingsMessages.title)}
+              >
                 <Icon
                   type="settings"
                   onClick={this.props.appSettingsToggle}
