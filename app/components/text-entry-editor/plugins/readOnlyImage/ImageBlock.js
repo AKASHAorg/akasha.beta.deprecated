@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
+import classNames from 'classnames';
 import { findClosestMatch } from '../../../../utils/imageUtils';
 
 
@@ -31,32 +32,39 @@ class ImageBlock extends Component {
             placeholderLoaded: false,
         };
     }
-    _handleImageClick = (ev) => {
-        const { files } = this.props.data;
-        if (files.gif) {
-            this.setState({
-                isPlaying: !this.state.isPlaying
-            });
-        }
-    }
+
+    onMouseEnter = () => {
+        this.setState({
+            isPlaying: true
+        });
+    };
+
+    onMouseLeave = () => {
+        this.setState({
+            isPlaying: false
+        });
+    };
 
     _getImageSrc = () => {
         const { baseUrl, data } = this.props;
         const { files, media } = data;
-        let fileKey = findClosestMatch(700, files, media);
+        const gifPlaying = files.gif && this.state.isPlaying;
+        const closestMatch = findClosestMatch(700, files, media);
+        let fileKey = closestMatch;
         if ((media === 'xl' || media === 'xxl') && this.baseNodeRef) {
             fileKey = findClosestMatch(this.baseNodeRef.parentNode.clientWidth, files, media);
         }
         // @todo: get rid of this too;
-        if (files.gif && this.state.isPlaying) {
+        if (gifPlaying) {
             fileKey = 'gif';
         }
         return {
-            width: files[fileKey].width,
-            height: files[fileKey].height,
+            width: gifPlaying ? files[closestMatch].width : files[fileKey].width,
+            height: gifPlaying ? files[closestMatch].height : files[fileKey].height,
             src: `${baseUrl}/${files[fileKey].src}`
         };
-    }
+    };
+
     _handlePlaceholderLoad = (ev) => {
         const image = ev.target;
         this.setState((prevState) => {
@@ -71,31 +79,34 @@ class ImageBlock extends Component {
             }
             return prevState;
         });
-    }
+    };
 
     _onLargeImageLoad = () => {
         this.setState({
             imageLoaded: true
         });
-    }
+    };
 
     render () {
         const { data, baseUrl } = this.props;
         const { caption, files, media } = data;
         const { isPlaying, imageLoaded } = this.state;
+        console.log('is playing', isPlaying);
+        const image = this._getImageSrc();
+        const gifClass = classNames('image-block__gif-play-icon', {
+            'image-block__gif-play-icon_is-playing': isPlaying
+        });
         return (
           <div
-            ref={(baseNode) => { this.baseNodeRef = baseNode; }}
             className={`image-block image-block__readonly image-block__readonly_${media}`}
+            ref={(baseNode) => { this.baseNodeRef = baseNode; }}
+            onMouseEnter={files.gif && this.onMouseEnter}
+            onMouseLeave={files.gif && this.onMouseLeave}
           >
             {files.gif &&
-            <Icon
-              type="play-circle-o"
-              className={
-                `image-block__gif-image
-                image-block__gif-image${isPlaying ? '_is-playing' : ''}`
-              }
-            />
+              <div className={gifClass}>
+                <Icon type="play-circle-o" />
+              </div>
             }
             <div
               className={
@@ -118,13 +129,15 @@ class ImageBlock extends Component {
                 />
               </div>
               <img
-                src={this._getImageSrc().src}
+                src={image.src}
                 alt=""
                 className="image-block__image"
                 onLoad={this._onLargeImageLoad}
                 style={{
                   opacity: imageLoaded ? 1 : 0,
                   display: imageLoaded ? 'block' : 'none',
+                  width: image.width,
+                  height: image.height
                 }}
               />
             </div>

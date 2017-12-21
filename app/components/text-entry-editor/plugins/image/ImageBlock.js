@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DraftJS } from 'megadraft';
-import { Input, Popover, Menu, Icon as AntdIcon } from 'antd';
+import { Input, Popover, Menu, Icon } from 'antd';
 import {
     ImageSizeXS,
     ImageSizeMedium,
     ImageSizeXL } from '../../../../components/svg';
-import { SvgIcon, Icon } from '../../../../components';
+import { SvgIcon } from '../../../../components';
 import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
@@ -51,13 +51,13 @@ class ImageBlock extends Component {
         this.props.container.updateData({ caption: ev.target.value });
     }
 
-    // _handleSizeChange = (ev, key, payload) => {
-    //     ev.stopPropagation();
-    //     this.setState({
-    //         previewImage: payload
-    //     });
-    //     this.props.container.updateData({ media: payload });
-    // }
+    _handleSizeChange = (ev, key, payload) => {
+        ev.stopPropagation();
+        this.setState({
+            previewImage: payload
+        });
+        this.props.container.updateData({ media: payload });
+    }
 
     _handleImageClick = (ev) => {
         const { editorState, onChange } = this.props.blockProps;
@@ -83,12 +83,6 @@ class ImageBlock extends Component {
             this.props.blockProps.setReadOnly(false);
             window.removeEventListener('keyup', this._removeImageContainer);
         }
-    }
-
-    _removeImage = (ev) => {
-        this.props.container.remove();
-        this.props.blockProps.setReadOnly(false);
-        window.removeEventListener('keyup', this._removeImageContainer);
     }
 
     _handleImageSizeChange = ({ key }) => {
@@ -131,12 +125,13 @@ class ImageBlock extends Component {
 
     _getImageSource = (files) => {
         const { media } = this.props.data;
+
         switch (media) {
             case 'xs':
                 return files[findClosestMatch(320, files, 'xs')].src;
             case 'md':
                 return files[findClosestMatch(700, files, 'md')].src;
-            case 'lg':
+            case 'xl':
                 return files[findClosestMatch(1280, files, 'xl')].src;
             default:
                 break;
@@ -156,7 +151,6 @@ class ImageBlock extends Component {
         const { baseUrl, data, intl } = this.props;
         const { isCardEnabled } = this.state;
         const { files, caption, media } = data;
-        console.log(this._getImageSource(files), files);
         return (
           <div ref={(baseNode) => { this.baseNodeRef = baseNode; }} className="image-block">
             <div
@@ -182,24 +176,14 @@ class ImageBlock extends Component {
                     onClick={this._handleImageClick}
                   >
                     {files && files.gif &&
-                      <div
-                        className="image-block__gif-play-icon"
-                      >
-                        <AntdIcon
-                          type="play-circle-o"
-                          className="image-block__gif-image"
-                        />
+                      <div className="image-block__gif-play-icon">
+                        <Icon type="play-circle-o" />
                       </div>
                     }
                     <img
                       src={`${baseUrl}/${this._getImageSource(files)}`}
                       alt=""
                       style={{ width: '100%', display: 'block' }}
-                    />
-                    <Icon
-                      type="close"
-                      onClick={this._removeImage}
-                      className="image-block__image-remove-button"
                     />
                   </div>
                   <TextArea
