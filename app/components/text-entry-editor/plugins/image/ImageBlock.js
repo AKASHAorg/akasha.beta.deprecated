@@ -176,13 +176,8 @@ class ImageBlock extends Component {
                     onClick={this._handleImageClick}
                   >
                     {files && files.gif &&
-                      <div
-                        className="image-block__gif-play-icon"
-                      >
-                        <Icon
-                          type="play-circle-o"
-                          className="image-block__gif-image"
-                        />
+                      <div className="image-block__gif-play-icon">
+                        <Icon type="play-circle-o" />
                       </div>
                     }
                     <img

@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Icon } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { SyncStatus } from '../';
+import { SyncStatus, StartScreen } from '../';
 import { LogsDetailsContainer } from '../../containers/';
 
 class Sync extends Component {
@@ -13,9 +13,11 @@ class Sync extends Component {
     };
 
     componentDidMount () {
-        const { gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
+        const { gethGetSyncStatus, gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
         if (!gethStatus.get('process')) {
             gethStart();
+        } else {
+            gethGetSyncStatus();
         }
         if (!ipfsStatus.get('process')) {
             ipfsStart();
@@ -109,7 +111,7 @@ class Sync extends Component {
           <div className="setup-content sync">
             <div className="setup-content__column setup-pages_left">
               {!this.state.showDetails &&
-                <div>Placeholder</div>
+                <StartScreen />
               }
               {this.state.showDetails &&
                 <div className="sync__logs-container">
@@ -190,6 +192,7 @@ Sync.propTypes = {
     clearSyncStatus: PropTypes.func.isRequired,
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
+    gethGetSyncStatus: PropTypes.func.isRequired,
     gethPauseSync: PropTypes.func.isRequired,
     gethResumeSync: PropTypes.func.isRequired,
     gethStart: PropTypes.func.isRequired,
