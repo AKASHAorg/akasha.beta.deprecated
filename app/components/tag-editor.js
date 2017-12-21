@@ -110,7 +110,7 @@ class TagEditor extends Component {
     }
 
     _checkTagCreationAllowance = () => {
-        const { ethAddress } = this.props;
+        const { ethAddress, onTagError } = this.props;
         const serverChannel = self.Channel.server.tags.canCreate;
         const clientChannel = self.Channel.client.tags.canCreate;
         const manager = self.Channel.client.tags.manager;
@@ -118,6 +118,10 @@ class TagEditor extends Component {
             clientChannel.on((ev, data) => {
                 this.setState({
                     canCreateTags: data.can
+                }, () => {
+                    if (!data.can) {
+                        onTagError(true);
+                    }
                 });
             });
             serverChannel.send({ ethAddress });
@@ -189,10 +193,16 @@ class TagEditor extends Component {
     _deleteTag = tagName =>
         () => {
             const { tags, inputDisabled } = this.props;
+            const { existentTags } = this.state;
             if (inputDisabled) {
                 return;
             }
-            this.props.onTagUpdate(tags.filter(tag => tag !== tagName));
+            const filteredTags = tags.filter(tag => tag !== tagName);
+            this.props.onTagUpdate(filteredTags);
+            if (existentTags.includes(tagName)) {
+                return;
+            }
+            this.props.onTagError(false);
         }
 
     _getTextWidth = (text) => {
@@ -281,6 +291,7 @@ class TagEditor extends Component {
     _getTagPopoverContent = (tag) => {
         const { intl } = this.props;
         const { canCreateTags } = this.state;
+
         return (
           <div
             className="tag-editor__tag-item-popover-content"

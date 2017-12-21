@@ -241,7 +241,11 @@ class NewEntryPage extends Component {
         }
         ev.preventDefault();
     }
-
+    _handleInternalTagError = (hasError) => {
+        this.setState({
+            tagError: hasError
+        });
+    }
     _createTimeline = (draftObj) => {
         const { content, localChanges } = draftObj;
         const { latestVersion, version } = content;
@@ -257,6 +261,11 @@ class NewEntryPage extends Component {
             }
           </Steps>
         );
+    }
+    _checkIfDisabled = () => {
+        if (this.state.tagError) {
+            return true;
+        }
     }
     /* eslint-disable complexity */
     render () {
@@ -374,6 +383,7 @@ class NewEntryPage extends Component {
                     tagSuggestionsCount={tagSuggestionsCount}
                     searchResetResults={this.props.searchResetResults}
                     inputDisabled={onChain}
+                    onTagError={this._handleInternalTagError}
                   />
                   {errors.tags &&
                     <small className="edit-entry-page__error-text">{errors.tags}</small>
@@ -430,6 +440,7 @@ class NewEntryPage extends Component {
                       type="primary"
                       onClick={this._handlePublish}
                       loading={draftObj.get('publishing')}
+                      disabled={this._checkIfDisabled()}
                     >
                       {onChain ?
                         intl.formatMessage(generalMessages.update) :
