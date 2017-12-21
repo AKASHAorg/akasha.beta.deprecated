@@ -111,8 +111,14 @@ export function* ipfsGetStatus () {
 
 function* gethGetSyncStatus () {
     const channel = Channel.server.geth.syncStatus;
-    yield call(enableChannel, channel, Channel.client.geth.manager);
-    yield apply(channel, channel.send, [{}]);
+    const syncActionId = yield select(selectGethSyncActionId);
+    if (!gethSyncInterval) {
+        gethSyncInterval = setInterval(() => {
+            if (syncActionId === 0 || syncActionId === 1) {
+                channel.send({});
+            }
+        }, 2000);
+    }
 }
 
 // WATCHERS
@@ -242,11 +248,7 @@ function* watchGethStartChannel () {
             const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
                 (syncActionId === 1 || syncActionId === 0);
             if (gethIsSyncing && !gethSyncInterval) {
-                gethSyncInterval = setInterval(() => {
-                    if (syncActionId === 1) {
-                        Channel.server.geth.syncStatus.send({});
-                    }
-                }, 14000);
+                yield call(gethGetSyncStatus);
             }
             yield put(actions.gethStartSuccess(resp.data, resp.services));
         }

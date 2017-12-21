@@ -173,7 +173,13 @@ const eProcState = createReducer(initialState, {
         state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
     [types.GETH_GET_SYNC_STATUS_SUCCESS]: (state, { data, services }) => {
-        const syncActionId = data.synced ? 4 : state.getIn(['geth', 'syncActionId']);
+        const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
+        let syncActionId = oldSyncActionId;
+        if (data.synced) {
+            syncActionId = 4;
+        } else if (!oldSyncActionId) {
+            syncActionId = 1;
+        }
         return state.mergeIn(['geth'], {
             status: state.getIn(['geth', 'status']).merge(services.geth),
             syncActionId,

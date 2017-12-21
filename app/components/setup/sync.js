@@ -13,9 +13,11 @@ class Sync extends Component {
     };
 
     componentDidMount () {
-        const { gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
+        const { gethGetSyncStatus, gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
         if (!gethStatus.get('process')) {
             gethStart();
+        } else {
+            gethGetSyncStatus();
         }
         if (!ipfsStatus.get('process')) {
             ipfsStart();
@@ -190,6 +192,7 @@ Sync.propTypes = {
     clearSyncStatus: PropTypes.func.isRequired,
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
+    gethGetSyncStatus: PropTypes.func.isRequired,
     gethPauseSync: PropTypes.func.isRequired,
     gethResumeSync: PropTypes.func.isRequired,
     gethStart: PropTypes.func.isRequired,
