@@ -33,7 +33,9 @@ class NewEntryPage extends Component {
         const ethAddress = loggedProfile.get('ethAddress');
         const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
         const draftIsPublished = resolvingEntries.includes(match.params.draftId);
-        if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
+        const onChain = match.params.draftId.startsWith('0x');
+        console.log(onChain, 'onchain');
+        if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished && !onChain) {
             this.props.draftCreate({
                 id: match.params.draftId,
                 ethAddress: loggedProfile.get('ethAddress'),
@@ -45,7 +47,7 @@ class NewEntryPage extends Component {
                 entryType: 'article',
             });
         }
-        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
+        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor && !onChain) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true
@@ -340,7 +342,7 @@ class NewEntryPage extends Component {
                   }
                 >
                   <div className="edit-entry-page__editor-inner">
-                    <textarea
+                    <input
                       ref={this._createRef('titleInput')}
                       className={
                         `edit-entry-page__title-input-field

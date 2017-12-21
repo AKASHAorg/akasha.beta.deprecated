@@ -2,17 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
-import { MentionDecorators, MentionSuggestions } from '../';
 import EditorSidebar from './sidebar/editor-sidebar';
 import imagePlugin from './plugins/image/image-plugin';
-import { Tooltip } from 'antd';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
 class EntryEditor extends Component {
     constructor (props) {
         super(props);
-        this.decorators = new CompositeDecorator([MentionDecorators.editableDecorator, {
+        this.decorators = new CompositeDecorator([{
             strategy: createTypeStrategy('LINK'),
             component: Link
         }]);

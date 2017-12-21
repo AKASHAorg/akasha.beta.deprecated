@@ -172,7 +172,6 @@ class TagEditor extends Component {
             this.props.onTagUpdate(tags.push(tagName.toLowerCase().replace('#', '')));
             this.props.searchResetResults();
             this.tagInput.focus();
-            this.tagInput.scrollIntoView();
         });
     }
 
