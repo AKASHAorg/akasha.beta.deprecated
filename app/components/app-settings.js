@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Select, Radio } from 'antd';
 import { connect } from 'react-redux';
 import { settingsMessages } from '../locale-data/messages';
-import { appSettingsToggle } from '../local-flux/actions/app-actions';
+import { appSettingsToggle, showNotification } from '../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Icon } from './';
 
@@ -18,15 +18,26 @@ class AppSettings extends Component {
             initTheme: this.props.generalSettings.get('darkTheme'),
             locale: this.props.generalSettings.get('locale'),
             darkTheme: this.props.generalSettings.get('darkTheme'),
-            isDirty: false
+            isDirty: false,
+            showThemeTip: false
         };
     }
 
-    handleUpdate = () =>
+    handleUpdate = () => {
+        const { initTheme, darkTheme } = this.state;
         this.props.saveGeneralSettings({
             locale: this.state.locale,
             darkTheme: this.state.darkTheme
         });
+        if (darkTheme !== initTheme) {
+            this.props.showNotification({
+                id: 'themeTips',
+                duration: 4
+            });
+        }
+        this.setState({ isDirty: false });
+    }
+
 
     handleSelector = (value) => {
         const { darkTheme, initLocale, initTheme } = this.state;
@@ -126,6 +137,7 @@ AppSettings.propTypes = {
     appSettingsToggle: PropTypes.func,
     generalSettings: PropTypes.shape(),
     intl: PropTypes.shape(),
+    showNotification: PropTypes.func,
     sidebar: PropTypes.bool
 };
 
@@ -138,6 +150,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        showNotification,
         saveGeneralSettings,
         appSettingsToggle
     }

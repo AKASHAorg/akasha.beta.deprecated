@@ -167,6 +167,8 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
+    [types.DASHBOARD_HIDE_TUTORIAL]: state => state.setIn(['flags', 'firstDashboardReady'], false),
+
     [types.DASHBOARD_RENAME]: state => state.setIn(['flags', 'renamingDashboard'], true),
 
     [types.DASHBOARD_RENAME_SUCCESS]: (state, { data }) =>

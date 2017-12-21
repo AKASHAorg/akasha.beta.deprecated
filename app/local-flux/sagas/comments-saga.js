@@ -229,7 +229,6 @@ function* watchCommentsIteratorChannel () {
             const collection = [];
             const loggedEthAddress = yield select(selectLoggedEthAddress);
             resp.data.collection.forEach((comm) => {
-                console.log('comment', comm);
                 if (comm.author.ethAddress !== loggedEthAddress) {
                     collection.push(comm);
                 }
