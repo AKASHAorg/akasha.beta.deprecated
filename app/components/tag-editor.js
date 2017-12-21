@@ -163,10 +163,6 @@ class TagEditor extends Component {
     _addNewTag = (tagName, existent) => {
         const { tags } = this.props;
 
-        if (tags.includes(tagName.toLowerCase())) {
-            return;
-        }
-
         this.setState({
             existentTags: existent ? [...this.state.existentTags, existent] : this.state.existentTags,
             partialTag: '',
@@ -176,6 +172,7 @@ class TagEditor extends Component {
             this.props.onTagUpdate(tags.push(tagName.toLowerCase().replace('#', '')));
             this.props.searchResetResults();
             this.tagInput.focus();
+            this.tagInput.scrollIntoView();
         });
     }
 
@@ -261,18 +258,12 @@ class TagEditor extends Component {
         });
     }
     _focusTagInput = () => {
-        this.tagInput.focus();
+        this.setState({
+            inputHasFocus: true
+        }, () => {
+            this.tagInput.focus();
+        });
     }
-    _handleTagRegister = tagName =>
-        (ev) => {
-            const { actionAdd, ethAddress } = this.props;
-            const payload = {
-                ethAddress,
-                tagName
-            };
-            actionAdd(ethAddress, actionTypes.tagCreate, payload);
-            ev.preventDefault();
-        }
 
     _changeInputFocus = focusState =>
         () => setTimeout(() => this.setState({
@@ -402,6 +393,7 @@ TagEditor.propTypes = {
     tagSuggestionsCount: PropTypes.number,
     tags: PropTypes.shape(),
     searchResetResults: PropTypes.func,
+    onTagError: PropTypes.func,
 };
 
 export default TagEditor;

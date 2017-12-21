@@ -67,7 +67,7 @@ export default merge(baseConfig, {
             {
                 test: /\.woff(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         limit: 10000,
                         mimetype: 'application/font-woff',
@@ -78,7 +78,7 @@ export default merge(baseConfig, {
             {
                 test: /\.woff2(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         limit: 10000,
                         mimetype: 'application/font-woff',
@@ -89,7 +89,7 @@ export default merge(baseConfig, {
             {
                 test: /\.ttf(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         limit: 10000,
                         mimetype: 'application/octet-stream',
@@ -100,7 +100,7 @@ export default merge(baseConfig, {
             {
                 test: /\.eot(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         name: 'fonts/[name].[ext]'
                     }
@@ -109,7 +109,7 @@ export default merge(baseConfig, {
             {
                 test: /\.svg(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         limit: 10000,
                         mimetype: 'image/svg+xml',
@@ -120,7 +120,7 @@ export default merge(baseConfig, {
             {
                 test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
                         name: 'fonts/[name].[ext]'
                     }
