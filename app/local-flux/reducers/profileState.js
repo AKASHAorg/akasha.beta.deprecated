@@ -93,7 +93,7 @@ const profileState = createReducer(initialState, {
         const essenceEvents = state.get('essenceEvents');
         data.collection.forEach((event) => {
             const newEssenceRecord = new EssenceEvent({
-                amount: balanceToNumber(event.amount) / 10,
+                amount: balanceToNumber(event.amount),
                 action: event.action,
                 sourceId: event.sourceId,
                 blockNumber: event.blockNumber
