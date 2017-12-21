@@ -204,6 +204,11 @@ const notificationMessages = defineMessages({
         defaultMessage: `You have successfully set the IPFS ports. You need to restart the IPFS
                         service for your changes to be applied.`
     },
+    themeTips: {
+        id: 'app.settings.themeTips',
+        description: 'theme tips',
+        defaultMessage: 'Your theme will change after refreshing the app.'
+    },
     toggleDonationsSuccess: {
         id: 'app.notification.toggleDonationsSuccess',
         description: 'toggle accepting donations/tips transaction was succesfully mined',
