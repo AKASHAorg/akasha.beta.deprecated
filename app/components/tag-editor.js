@@ -250,7 +250,9 @@ class TagEditor extends Component {
             }
         });
     }
-
+    _focusTagInput = () => {
+        this.tagInput.focus();
+    }
     _handleTagRegister = tagName =>
         (ev) => {
             const { actionAdd, ethAddress } = this.props;
@@ -308,6 +310,7 @@ class TagEditor extends Component {
           <div
             className={`tag-editor ${this.props.className}`}
             ref={this.props.nodeRef}
+            onClick={this._focusTagInput}
           >
             { /* eslint-disable react/no-array-index-key */ }
             {tags.map((tag, index) => (
