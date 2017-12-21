@@ -86,7 +86,6 @@ class EntryPage extends Component {
         const { akashaId, entryId, ethAddress } = match.params;
         const prefixed = ethAddress === '0' ? undefined : `0x${ethAddress}`;
         const version = parseInt(match.params.version, 10);
-        console.log('version is', version);
         const versionNr = isNaN(Number(version)) ? null : Number(version);
         this.props.entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
     };

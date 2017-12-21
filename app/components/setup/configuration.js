@@ -144,7 +144,7 @@ class Config extends Component {
     render () {
         const { configurationSaved, intl } = this.props;
         const { isAdvanced, syncmode } = this.state;
-        console.log(syncmode, 'sync mode');
+
         return (
           <div className="setup-content configuration">
             {configurationSaved && <Redirect to="/setup/synchronization" />}
