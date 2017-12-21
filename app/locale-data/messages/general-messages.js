@@ -350,6 +350,11 @@ const generalMessages = defineMessages({
         description: 'button label for publish action',
         defaultMessage: 'Publish'
     },
+    publishing: {
+        id: 'app.general.publishing',
+        description: 'button label when draft is publishing',
+        defaultMessage: 'Publishing'
+    },
     received: {
         id: 'app.general.received',
         description: 'received',
@@ -497,6 +502,11 @@ const generalMessages = defineMessages({
         id: 'app.general.update',
         description: 'Update data',
         defaultMessage: 'Update'
+    },
+    updating: {
+        id: 'app.general.updating',
+        description: 'button label when entry is updating',
+        defaultMessage: 'Updating'
     },
     upgrading: {
         id: 'app.general.upgrading',
