@@ -292,7 +292,27 @@ const setupMessages = defineMessages({
         description: 'message to be displayed when ipfs is stopped and profiles cannot be loaded',
         defaultMessage: `IPFS service is stopped. Please start it manually in order to fetch
                         your profiles.`
-    }
+    },
+    tutorialTitle: {
+        id: 'app.setup.tutorialTitle',
+        description: 'title for tutorial Modal',
+        defaultMessage: 'A few tips before you get started'
+    },
+    tutorialEth: {
+        id: 'app.setup.tutorialEth',
+        description: 'text for tutorial Modal',
+        defaultMessage: 'This dapp uses test ETH (ether) so please DO NOT send real ETH to in-dapp addresses.'
+    },
+    tutorialMana: {
+        id: 'app.setup.tutorialMana',
+        description: 'text for tutorial Modal',
+        defaultMessage: 'The dapp requieres Manafied AETH (mana) for interactions. You can obtain Mana by clicking your AETH balance in the upper right side, selecting Manafy in the Transform tab.'
+    },
+    tutorialManaAlt: {
+        id: 'app.setup.tutorialManaAlt',
+        description: 'text for tutorial Modal',
+        defaultMessage: 'Alternatively, you can click the sidebar Mana indicator next to your avatar photo.'
+    },
 });
 
 export { setupMessages };

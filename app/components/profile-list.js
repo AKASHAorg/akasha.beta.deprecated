@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
+import Masonry from 'react-masonry-component';
 import Waypoint from 'react-waypoint';
 import { selectPendingProfiles, selectLoggedEthAddress } from '../local-flux/selectors';
 import { profileMessages } from '../locale-data/messages';
@@ -12,8 +13,8 @@ class ProfileList extends Component {
     getContainerRef = (el) => { this.container = el; };
 
     render () {
-        const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, moreProfiles, pendingProfiles,
-            placeholderMessage, profiles, style } = this.props;
+        const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, masonry, moreProfiles,
+            pendingProfiles, placeholderMessage, profiles, style } = this.props;
         const profileRows = profiles && profiles.map((profile) => {
             if (!profile.ethAddress) {
                 console.error('invalid profile');
@@ -49,7 +50,15 @@ class ProfileList extends Component {
                     {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
                   </div>
                 }
-                {profileRows}
+                {masonry ?
+                  <Masonry
+                    options={{ transitionDuration: 0, fitWidth: true }}
+                    style={{ margin: '0 auto' }}
+                  >
+                    {profileRows}
+                  </Masonry> :
+                  profileRows
+                }
                 {moreProfiles &&
                   <div style={{ height: '35px' }}>
                     <DataLoader flag={fetchingMoreProfiles} size="small">
@@ -72,6 +81,7 @@ ProfileList.propTypes = {
     fetchMoreProfiles: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     loggedEthAddress: PropTypes.string.isRequired,
+    masonry: PropTypes.bool,
     moreProfiles: PropTypes.bool,
     pendingProfiles: PropTypes.shape(),
     placeholderMessage: PropTypes.string,

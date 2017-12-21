@@ -76,6 +76,7 @@ class SearchPage extends Component {
             fetchingProfiles={fetchingResults}
             fetchingMoreProfiles={false}
             fetchMoreProfiles={() => {}}
+            masonry
             moreProfiles={false}
             profiles={profiles}
             style={{ padding: '12px 0px' }}

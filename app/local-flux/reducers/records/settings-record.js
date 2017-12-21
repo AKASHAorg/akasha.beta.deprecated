@@ -3,7 +3,7 @@ import { License } from './license-record';
 
 export const GethSettings = Record({
     autodag: null,
-    cache: null,
+    cache: '',
     datadir: null,
     fast: null,
     ipcpath: null,
