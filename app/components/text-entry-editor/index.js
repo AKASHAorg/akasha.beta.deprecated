@@ -59,13 +59,16 @@ class EntryEditor extends Component {
             sidebarOpen: isOpen
         });
     }
-    _handleEditorFocus = () => {
-        const { editorState } = this.props;
+    _handleEditorFocus = (ev) => {
+        // const { editorState } = this.props;
+        // ev.stopPropagation();
         // this.editor.editorEl.focus();
         // console.log(this.editor, 'the editor');
-        const selectionState = editorState.getSelection();
-        const focusedSelection = selectionState.set('hasFocus', true);
-        return this.props.onChange(EditorState.forceSelection(editorState, focusedSelection));
+        // const selectionState = editorState.getSelection();
+        // if (!selectionState.getHasFocus()) {
+        //     const focusedSelection = selectionState.set('hasFocus', true);
+        //     this.props.onChange(EditorState.forceSelection(editorState, focusedSelection));
+        // }
     }
 
     blockStyleFn = (contentBlock) => {
