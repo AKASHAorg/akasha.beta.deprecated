@@ -1,5 +1,35 @@
 .tutorial-modal {
-    top: 200px;
+    top: 60px;
+    max-width: 760px;
+    &__page {
+        padding: 5px 0;
+    }
+
+    &__test-img {
+        min-height: 300px;
+        height: 80%;
+        background-size: contain !important;
+        background: url('../../../images/first-login-modal/tutorial-step1.png') top center no-repeat;
+    }
+
+    &__aeth-wallet-img {
+        min-height: 300px;
+        height: 80%;        
+        background-size: contain !important;
+        background: url('../../../images/first-login-modal/tutorial-step2.png') top center no-repeat;
+    }
+
+    &__mana-popover-img {
+        min-height: 300px;
+        height: 80%;        
+        background-size: contain !important;
+        background: url('../../../images/first-login-modal/tutorial-step3.png') top center no-repeat;        
+    }
+
+    &__text {
+        margin-top: 12px;
+        text-align: center;
+    }
 
     .ant-modal-content {
         border-radius: 5px;
@@ -20,7 +50,14 @@
         padding: 0px 24px 24px 24px;
     }
 
-    &__text {
-        padding: 5px 0;
+    .ant-carousel {
+        .slick-slide {
+            height: 50vh;
+            min-height: 400px;
+        }
+
+        .slick-dots li button {
+            background-color: @text-color-secondary;
+        }
     }
 }

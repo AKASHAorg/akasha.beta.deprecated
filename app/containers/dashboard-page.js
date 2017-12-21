@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Modal, Button } from 'antd';
+import { Button, Carousel, Modal } from 'antd';
 import { Dashboard, DataLoader } from '../components';
 import { dashboardHideTutorial, dashboardSetActive,
     dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
@@ -49,7 +49,7 @@ class DashboardPage extends Component {
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
             <Modal
               title={intl.formatMessage(setupMessages.tutorialTitle)}
-              className={'tutorial-modal'}
+              className="tutorial-modal"
               visible={this.state.modalVisible}
               onOk={this.handleClose}
               onCancel={this.handleClose}
@@ -58,16 +58,28 @@ class DashboardPage extends Component {
                   {intl.formatMessage(generalMessages.ok)}
                 </Button>,
               ]}
+              width="50%"
             >
-              <div className="tutorial-modal__text">
-                {intl.formatMessage(setupMessages.tutorialEth)}
-              </div>
-              <div className="tutorial-modal__text">
-                {intl.formatMessage(setupMessages.tutorialMana)}
-              </div>
-              <div className="tutorial-modal__text">
-                {intl.formatMessage(setupMessages.tutorialManaAlt)}
-              </div>
+              <Carousel>
+                <div className="tutorial-modal__page">
+                  <div className="tutorial-modal__test-img" />
+                  <div className="tutorial-modal__text">
+                    {intl.formatMessage(setupMessages.tutorialEth)}
+                  </div>
+                </div>
+                <div className="tutorial-modal__page">
+                  <div className="tutorial-modal__aeth-wallet-img" />
+                  <div className="tutorial-modal__text">
+                    {intl.formatMessage(setupMessages.tutorialMana)}
+                  </div>
+                </div>
+                <div className="tutorial-modal__page">
+                  <div className="tutorial-modal__mana-popover-img" />
+                  <div className="tutorial-modal__text">
+                    {intl.formatMessage(setupMessages.tutorialManaAlt)}
+                  </div>
+                </div>
+              </Carousel>
             </Modal>
             <DataLoader flag={!homeReady} size="large" style={{ paddingTop: '200px' }}>
               <div style={{ height: '100%' }}>
