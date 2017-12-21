@@ -66,6 +66,9 @@ export const dashboardGetAllError = (error) => {
 };
 
 export const dashboardGetAllSuccess = data => action(types.DASHBOARD_GET_ALL_SUCCESS, { data });
+
+export const dashboardHideTutorial = () => action(types.DASHBOARD_HIDE_TUTORIAL);
+
 export const dashboardRename = (dashboardId, newName) =>
     action(types.DASHBOARD_RENAME, { dashboardId, newName });
 
