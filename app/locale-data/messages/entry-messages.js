@@ -344,6 +344,11 @@ const entryMessages = defineMessages({
         description: 'validation message in case of missing title field',
         defaultMessage: 'Title must not be empty'
     },
+    tooltipAuthor: {
+        id: 'app.entry.tooltipAuthor',
+        description: 'error message in case author cannot be resolved',
+        defaultMessage: 'Cannot resolve entry author'
+    },
     upvote: {
         id: 'app.entry.upvote',
         description: 'upvote button tooltip',
