@@ -28,7 +28,6 @@ function* searchQuery ({ text }) {
 
 function* searchProfiles ({ query, autocomplete }) {
     const channel = Channel.server.search.findProfiles;
-    console.log('autocomplete request', autocomplete);
     const limit = autocomplete ? autocompleteLimit : profileSearchLimit;
     yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit, autocomplete }]);
 }
