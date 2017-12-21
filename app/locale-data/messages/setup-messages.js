@@ -229,9 +229,7 @@ const setupMessages = defineMessages({
     onSyncStart: {
         id: 'app.setup.onSyncStart',
         description: 'Message to show when synchronizing',
-        defaultMessage: `Your machine is currently synchronizing with the Ethereum world computer
-                        network. You will be able to log in and enjoy the full AKASHA experience as
-                        soon as the sync is complete.`
+        defaultMessage: 'You will be able to log in and enjoy the full experience as soon as the sync is complete! We are waiting for you on the other side! o/'
     },
     afterSyncFinish: {
         id: 'app.setup.afterSyncFinish',

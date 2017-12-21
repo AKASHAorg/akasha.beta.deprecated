@@ -4,15 +4,42 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin-top: -48px;
-        margin-left: -48px;
+        margin-top: -30px;
+        margin-left: -30px;
+        color: rgba(255, 255, 255, 0.86);
+        opacity: 1;
+        transition: opacity 0.218s ease-in-out;
+        font-size: 60px;
+        line-height: 1;
+        z-index: 999;
+
+        &_is-playing {
+            opacity: 0;
+        }
     }
+
     &__image-size-menu {
         display: flex;
         border: none;
     }
+
     &__image-size-menu-item {
         height: 24px !important;
+    }
+
+    &__image-wrapper {
+        position: relative;
+    }
+    &__image-remove-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: @red;
+        cursor: pointer;
+        height: 24px;
+        width: 24px;
+        stroke: #FFF !important;
+        padding: 5px;
     }
     &__xs {
         float: left;
@@ -20,6 +47,7 @@
         margin-left: ~'calc((100% - 700px) / 2)' !important;
         margin-right: 48px !important;
     }
+
     &__md {
         width: 700px !important;
         clear: left;
@@ -28,7 +56,8 @@
             margin: 0 auto;
         }
     }
-    &__xl {
+
+    &__lg {
         width: 100%;
         clear: left;
         .image-block__image-caption {
@@ -36,30 +65,13 @@
             margin: 0 auto;
         }
     }
+
     &__image {
         position: relative;
         margin: 0 auto;
         img {
             width: 100%;
             display: inherit;
-        }
-        &__gif-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -48px;
-            margin-left: -48px;
-            fill: #FFF;
-            color: rgba(255, 255, 255, 0.86);
-            height: 96px;
-            width: 96px;
-            opacity: 1;
-            filter: blur(0px) drop-shadow(0 0 2px #444);
-            transition: opacity 0.218s ease-in-out, blur 0.218s ease-in-out;
-            &_is-playing {
-                opacity: 0;
-                filter: blur(3px) drop-shadow(0 0 2px #444);
-            }
         }
     }
     &__image-placeholder {
@@ -78,7 +90,7 @@
             max-width: 700px;
             overflow: hidden;
         }
-        &_xl {
+        &_lg {
             max-width: 100%;
             overflow: hidden;
         }
