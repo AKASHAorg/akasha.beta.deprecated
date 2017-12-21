@@ -7,12 +7,29 @@
         margin-top: -48px;
         margin-left: -48px;
     }
+
     &__image-size-menu {
         display: flex;
         border: none;
     }
+
     &__image-size-menu-item {
         height: 24px !important;
+    }
+
+    &__image-wrapper {
+        position: relative;
+    }
+    &__image-remove-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: @red;
+        cursor: pointer;
+        height: 24px;
+        width: 24px;
+        stroke: #FFF !important;
+        padding: 5px;
     }
     &__xs {
         float: left;
@@ -20,6 +37,7 @@
         margin-left: ~'calc((100% - 700px) / 2)' !important;
         margin-right: 48px !important;
     }
+
     &__md {
         width: 700px !important;
         clear: left;
@@ -28,7 +46,8 @@
             margin: 0 auto;
         }
     }
-    &__xl {
+
+    &__lg {
         width: 100%;
         clear: left;
         .image-block__image-caption {
@@ -36,6 +55,7 @@
             margin: 0 auto;
         }
     }
+
     &__image {
         position: relative;
         margin: 0 auto;
@@ -78,7 +98,7 @@
             max-width: 700px;
             overflow: hidden;
         }
-        &_xl {
+        &_lg {
             max-width: 100%;
             overflow: hidden;
         }
