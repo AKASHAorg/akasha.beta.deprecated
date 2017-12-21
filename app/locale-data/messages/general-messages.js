@@ -430,6 +430,41 @@ const generalMessages = defineMessages({
         description: 'settings button label',
         defaultMessage: 'Settings'
     },
+    sidebarTooltipDashboard: {
+        id: 'app.general.sidebarTooltipDashboard',
+        description: 'tooltip text for sidebar dashboard button',
+        defaultMessage: 'Dashboard'
+    },
+    sidebarTooltipProfile: {
+        id: 'app.general.sidebarTooltipProfile',
+        description: 'tooltip text for sidebar profile button',
+        defaultMessage: 'My Profile'
+    },
+    sidebarTooltipCommunity: {
+        id: 'app.general.sidebarTooltipCommunity',
+        description: 'tooltip text for sidebar community button',
+        defaultMessage: 'Community: coming soon'
+    },
+    sidebarTooltipSearch: {
+        id: 'app.general.sidebarTooltipSearch',
+        description: 'tooltip text for sidebar search button',
+        defaultMessage: 'Search'
+    },
+    sidebarTooltipChat: {
+        id: 'app.general.sidebarTooltipChat',
+        description: 'tooltip text for sidebar chat button',
+        defaultMessage: 'Chat: coming soon'
+    },
+    sidebarTooltipDraftText: {
+        id: 'app.general.sidebarTooltipDraftText',
+        description: 'tooltip text for sidebar draft text entry button',
+        defaultMessage: 'Text Entry'
+    },
+    sidebarTooltipDraftLink: {
+        id: 'app.general.sidebarTooltipDraftLink',
+        description: 'tooltip text for sidebar draft link entry button',
+        defaultMessage: 'Link Entry'
+    },
     shift: {
         id: 'app.general.shift',
         description: 'convert tokens',
