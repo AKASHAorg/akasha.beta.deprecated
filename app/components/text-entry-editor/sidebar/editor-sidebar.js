@@ -16,7 +16,8 @@ class SideBar extends Component {
             (nextState.left !== this.state.left) ||
             !nextProps.editorState.getSelection().equals(this.props.editorState.getSelection()) ||
             (nextProps.editorHasFocus !== this.props.editorHasFocus) ||
-            (nextProps.sidebarReposition !== this.props.sidebarReposition);
+            (nextProps.sidebarReposition !== this.props.sidebarReposition) ||
+            (nextProps.error !== this.props.error);
     }
     componentDidUpdate () {
         this.updateSidebarPosition(this.props);
@@ -109,6 +110,9 @@ class SideBar extends Component {
               }}
               className="sidebar__menu"
             >
+              {this.props.error &&
+                <div className="sidebar__image-error">{this.props.error}</div>
+              }
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
                   editorState={this.props.editorState}
@@ -133,7 +137,9 @@ SideBar.propTypes = {
     showTerms: PropTypes.func,
     onError: PropTypes.func,
     onSidebarToggle: PropTypes.func,
-    editorHasFocus: PropTypes.bool
+    editorHasFocus: PropTypes.bool,
+    sidebarReposition: PropTypes.bool,
+    error: PropTypes.string
 };
 
 export default SideBar;

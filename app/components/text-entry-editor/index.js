@@ -5,7 +5,7 @@ import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from '../';
 import EditorSidebar from './sidebar/editor-sidebar';
 import imagePlugin from './plugins/image/image-plugin';
-import { TAG_GET_ENTRIES_COUNT } from '../../local-flux/constants/index';
+import { Tooltip } from 'antd';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
@@ -45,30 +45,13 @@ class EntryEditor extends Component {
         }
     }
     _handleEditorChange = (editorState) => {
-        // after pressing enter, check if the current block is in view.
-        // if (editorState.getLastChangeType() === 'split-block') {
-        //     this.checkBlockInView(editorState);
-        // }
-        /**
-         * Save selectionState locally and contentState in reduxs` state;
-         */
         this.props.onChange(editorState);
     };
     _handleSidebarToggle = (isOpen) => {
         this.setState({
-            sidebarOpen: isOpen
+            sidebarOpen: isOpen,
+            imageErr: null,
         });
-    }
-    _handleEditorFocus = (ev) => {
-        // const { editorState } = this.props;
-        // ev.stopPropagation();
-        // this.editor.editorEl.focus();
-        // console.log(this.editor, 'the editor');
-        // const selectionState = editorState.getSelection();
-        // if (!selectionState.getHasFocus()) {
-        //     const focusedSelection = selectionState.set('hasFocus', true);
-        //     this.props.onChange(EditorState.forceSelection(editorState, focusedSelection));
-        // }
     }
 
     blockStyleFn = (contentBlock) => {
@@ -95,7 +78,9 @@ class EntryEditor extends Component {
                 onSidebarToggle={this._handleSidebarToggle}
                 sidebarOpen={this.state.sidebarOpen}
                 sidebarReposition={sidebarReposition}
-              />);
+                error={this.state.imageErr}
+              />
+            );
         }
         return null;
     };
@@ -112,7 +97,6 @@ class EntryEditor extends Component {
             <div
               className="text-entry-editor__editor-wrapper"
               ref={(el) => { this.container = el; }}
-              onClick={this._handleEditorFocus}
             >
               <MegadraftEditor
                 ref={(edtr) => {
@@ -168,6 +152,7 @@ EntryEditor.propTypes = {
     onError: PropTypes.func,
     baseUrl: PropTypes.string,
     style: PropTypes.shape(),
+    sidebarReposition: PropTypes.bool,
 };
 
 export default EntryEditor;
