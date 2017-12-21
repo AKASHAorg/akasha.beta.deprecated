@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DraftJS } from 'megadraft';
-import { Input, Popover, Menu, Icon } from 'antd';
+import { Input, Popover, Menu, Icon as AntdIcon } from 'antd';
 import {
     ImageSizeXS,
     ImageSizeMedium,
     ImageSizeXL } from '../../../../components/svg';
-import { SvgIcon } from '../../../../components';
+import { SvgIcon, Icon } from '../../../../components';
 import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
@@ -84,7 +84,11 @@ class ImageBlock extends Component {
             window.removeEventListener('keyup', this._removeImageContainer);
         }
     }
-
+    _removeImage = (ev) => {
+        this.props.container.remove();
+        this.props.blockProps.setReadOnly(false);
+        window.removeEventListener('keyup', this._removeImageContainer);
+    }
     _handleImageSizeChange = ({ key }) => {
         const { container } = this.props;
         container.updateData({ media: key });
@@ -131,8 +135,8 @@ class ImageBlock extends Component {
                 return files[findClosestMatch(320, files, 'xs')].src;
             case 'md':
                 return files[findClosestMatch(700, files, 'md')].src;
-            case 'xl':
-                return files[findClosestMatch(1280, files, 'xl')].src;
+            case 'lg':
+                return files[findClosestMatch(1280, files, 'lg')].src;
             default:
                 break;
         }
@@ -177,13 +181,18 @@ class ImageBlock extends Component {
                   >
                     {files && files.gif &&
                       <div className="image-block__gif-play-icon">
-                        <Icon type="play-circle-o" />
+                        <AntdIcon type="play-circle-o" />
                       </div>
                     }
                     <img
                       src={`${baseUrl}/${this._getImageSource(files)}`}
                       alt=""
                       style={{ width: '100%', display: 'block' }}
+                    />
+                    <Icon
+                      type="close"
+                      onClick={this._removeImage}
+                      className="image-block__image-remove-button"
                     />
                   </div>
                   <TextArea
