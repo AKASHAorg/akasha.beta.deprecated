@@ -141,7 +141,8 @@ export default merge(baseConfig, {
          */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production'),
-            'process.env.DARK_THEME': JSON.stringify(process.env.DARK_THEME)
+            'process.env.DARK_THEME': JSON.stringify(process.env.DARK_THEME),
+            'process.env.AKASHA_VERSION': JSON.stringify('beta#1')
         }),
         /**
          * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)

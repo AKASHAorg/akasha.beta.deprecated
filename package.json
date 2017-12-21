@@ -83,11 +83,11 @@
   },
   "homepage": "https://github.com/AkashaProject/node-app#readme",
   "devDependencies": {
-    "@types/bluebird": "3.5.18",
+    "@types/bluebird": "3.5.19",
     "@types/chai": "4.0.10",
     "@types/lru-cache": "4.1.0",
     "@types/mocha": "2.2.44",
-    "@types/node": "8.5.1",
+    "@types/node": "8.5.2",
     "@types/ramda": "0.25.8",
     "@types/rimraf": "2.0.2",
     "antd": "3.0.2",

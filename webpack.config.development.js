@@ -151,7 +151,8 @@ export default merge(baseConfig, {
          */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development'),
-            'process.env.DARK_THEME': JSON.stringify(process.env.DARK_THEME)
+            'process.env.DARK_THEME': JSON.stringify(process.env.DARK_THEME),
+            'process.env.AKASHA_VERSION': JSON.stringify('beta#0')
         }),
         // turn debug mode on.
         new webpack.LoaderOptionsPlugin({
