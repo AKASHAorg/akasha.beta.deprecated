@@ -4,8 +4,18 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin-top: -48px;
-        margin-left: -48px;
+        margin-top: -30px;
+        margin-left: -30px;
+        color: rgba(255, 255, 255, 0.86);
+        opacity: 1;
+        transition: opacity 0.218s ease-in-out;
+        font-size: 60px;
+        line-height: 1;
+        z-index: 999;
+
+        &_is-playing {
+            opacity: 0;
+        }
     }
 
     &__image-size-menu {
@@ -62,24 +72,6 @@
         img {
             width: 100%;
             display: inherit;
-        }
-        &__gif-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -48px;
-            margin-left: -48px;
-            fill: #FFF;
-            color: rgba(255, 255, 255, 0.86);
-            height: 96px;
-            width: 96px;
-            opacity: 1;
-            filter: blur(0px) drop-shadow(0 0 2px #444);
-            transition: opacity 0.218s ease-in-out, blur 0.218s ease-in-out;
-            &_is-playing {
-                opacity: 0;
-                filter: blur(3px) drop-shadow(0 0 2px #444);
-            }
         }
     }
     &__image-placeholder {
