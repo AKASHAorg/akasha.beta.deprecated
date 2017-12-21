@@ -52,7 +52,10 @@ const EntryCardHeader = (props) => {
         'content-link': displayName,
     });
     const authorPlaceholder = (
-      <Tooltip getPopupContainer={() => containerRef || document.body} title="Cannot resolve entry author">
+      <Tooltip
+        getPopupContainer={() => containerRef || document.body}
+        title={intl.formatMessage(entryMessages.tooltipAuthor)}
+      >
         <div className="entry-card-header__author-placeholder" />
       </Tooltip>
     );

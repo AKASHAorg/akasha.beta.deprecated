@@ -177,6 +177,7 @@
   "app.entry.startComment": "Start comment",
   "app.entry.title": "Title",
   "app.entry.titleRequired": "Title must not be empty",
+  "app.entry.tooltipAuthor": "Cannot resolve entry author",
   "app.entry.upvote": "Upvote",
   "app.entry.version": "version",
   "app.entry.versionHistory": "Version history",
