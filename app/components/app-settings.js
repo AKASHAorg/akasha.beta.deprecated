@@ -96,8 +96,6 @@ class AppSettings extends Component {
                   onChange={this.handleSelector}
                 >
                   <Option value="en">{intl.formatMessage(settingsMessages.english)}</Option>
-                  <Option value="zh">{intl.formatMessage(settingsMessages.chinese)}</Option>
-                  <Option value="ru">{intl.formatMessage(settingsMessages.russian)}</Option>
                   <Option value="es">{intl.formatMessage(settingsMessages.spanish)}</Option>
                 </Select>
               </div>
