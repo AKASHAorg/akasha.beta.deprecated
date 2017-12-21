@@ -1,5 +1,5 @@
 /// <reference path="typings/main.d.ts" />
-import { app, BrowserWindow, crashReporter, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
@@ -33,15 +33,8 @@ const stopServices = () => {
     shutDown().delay(800).finally(() => process.exit(0));
 };
 
-export function bootstrapApp() {
+(function bootstrapApp() {
     const viewHtml = resolve(__dirname, '..');
-    if (process.env.NODE_ENV !== 'development') {
-        crashReporter.start({
-            productName: 'AKASHA',
-            companyName: 'Akasha Project',
-            submitURL: 'http://46.101.103.114:1127/post'
-        });
-    }
 
     if (process.env.NODE_ENV === 'development') {
         require('electron-debug')({ showDevTools: true });
@@ -135,6 +128,6 @@ export function bootstrapApp() {
         process.on('SIGINT', stopServices);
         process.on('SIGTERM', stopServices);
     });
-}
+})();
 
 

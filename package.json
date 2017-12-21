@@ -3,7 +3,7 @@
   "productName": "AKASHA",
   "private": true,
   "description": "Akasha platform",
-  "main": "main.js",
+  "main": "main/index.js",
   "version": "0.5.2",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --require test/test-setup.js --compilers js:babel-register test/app/setup.js --recursive test/**/*.spec.js",
@@ -22,7 +22,7 @@
     "lang-diff": "babel ./app/utils/create-lang-diff.js | node",
     "start": "cross-env NODE_ENV=production electron ./main.js",
     "prestart-hot": "npm run build-lang",
-    "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --inspect=5858 ./main.js",
+    "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --inspect=5858 .",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "package": "npm run build && build --publish never",
     "package-win": "npm run build && build --win --x64",
