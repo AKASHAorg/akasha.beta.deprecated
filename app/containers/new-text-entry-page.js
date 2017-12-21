@@ -266,6 +266,7 @@ class NewEntryPage extends Component {
         if (this.state.tagError) {
             return true;
         }
+        return false;
     }
     /* eslint-disable complexity */
     render () {
@@ -438,14 +439,18 @@ class NewEntryPage extends Component {
                     <Button
                       size="large"
                       type="primary"
+                      className={
+                          `edit-entry-page__publish-button
+                          edit-entry-page__publish-button${draftObj.get('publishing') ? '_pending' : ''}`
+                      }
                       onClick={this._handlePublish}
                       loading={draftObj.get('publishing')}
                       disabled={this._checkIfDisabled()}
                     >
-                      {onChain ?
-                        intl.formatMessage(generalMessages.update) :
-                        intl.formatMessage(generalMessages.publish)
-                      }
+                      {!draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.update)}
+                      {!draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publish)}
+                      {draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.updating)}
+                      {draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publishing)}
                     </Button>
                   </div>
                 </div>

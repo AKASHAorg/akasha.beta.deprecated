@@ -4,6 +4,12 @@
     &.link-page {
 
     }
+    &__publish-button {
+        &_pending {
+            background-color: @warning-color;
+            border-color: darken(@warning-color, 5%);
+        }
+    }
     &__error-text {
         width: @text-editor-width;
         display: block;
