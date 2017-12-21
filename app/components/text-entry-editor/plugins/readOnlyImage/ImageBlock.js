@@ -91,7 +91,6 @@ class ImageBlock extends Component {
         const { data, baseUrl } = this.props;
         const { caption, files, media } = data;
         const { isPlaying, imageLoaded } = this.state;
-        console.log('is playing', isPlaying);
         const image = this._getImageSrc();
         const gifClass = classNames('image-block__gif-play-icon', {
             'image-block__gif-play-icon_is-playing': isPlaying
