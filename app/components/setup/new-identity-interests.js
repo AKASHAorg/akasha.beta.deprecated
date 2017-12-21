@@ -41,7 +41,8 @@ class NewIdentityInterests extends Component {
     }
 
     handleSkipStep = () => {
-        this.props.dashboardAddFirst();
+        const name = this.props.intl.formatMessage(dashboardMessages.firstDashboard);
+        this.props.dashboardAddFirst(name);
     };
 
     handleSubmit = () => {
