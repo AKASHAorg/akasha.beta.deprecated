@@ -306,7 +306,7 @@ class NewLinkEntryPage extends Component {
             const wicNode = websiteInfoCard.getNodeRef().container;
             const rootNodeHeight = baseNode.getBoundingClientRect().height;
             const maxHeight = rootNodeHeight;
-            height = maxHeight - wicNode.getBoundingClientRect().height - 50;
+            height = maxHeight - wicNode.getBoundingClientRect().height - 70;
         }
         return height;
     }
@@ -431,6 +431,9 @@ class NewLinkEntryPage extends Component {
                         inputDisabled={onChain}
                         onTagError={this._handleInternalTagError}
                       />
+                      {errors.tags &&
+                        <small className="edit-entry-page__error-text">{errors.tags}</small>
+                      }
                     </div>
                   }
                 </div>
@@ -444,6 +447,7 @@ class NewLinkEntryPage extends Component {
               >
                 <PublishOptionsPanel
                   linkEntry
+                  errors={errors}
                   baseUrl={baseUrl}
                   intl={intl}
                   onClose={this._togglePublishPanel(false)}
@@ -451,7 +455,6 @@ class NewLinkEntryPage extends Component {
                   onExcerptChange={this._handleExcerptChange}
                   title={title}
                   excerpt={excerpt}
-                  errors={errors}
                   selectedLicence={licence}
                   licences={licences}
                 />
