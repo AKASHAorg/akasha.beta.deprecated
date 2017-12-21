@@ -10,7 +10,7 @@ import { actionAdd, actionGetClaimable } from '../local-flux/actions/action-acti
 import { selectClaimableEntries, selectClaimableEntryIds, selectLoggedEthAddress, selectPendingClaims,
     selectPendingClaimVotes } from '../local-flux/selectors';
 import { generalMessages, profileMessages } from '../locale-data/messages';
-import { formatEssence } from '../utils/number-formatter';
+import { balanceToNumber } from '../utils/number-formatter';
 import { DataLoader } from './';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
@@ -51,8 +51,8 @@ class ClaimableList extends Component {
             };
 
             const balance = isOwnEntry ?
-                formatEssence(entryBalance.getIn([entryId, 'totalKarma'])) :
-                formatEssence(vote && vote.get('essence'));
+                balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
+                balanceToNumber(vote && vote.get('essence'));
             const endPeriod = entry.get('endPeriod');
             let timeDiff;
             const isActive = endPeriod > Date.now() / 1000;
