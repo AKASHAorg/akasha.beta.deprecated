@@ -1,0 +1,1 @@
+{"version":3,"file":"main.js","sourceRoot":"","sources":["main.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAGrC,IAAI,CAAC,YAAY,EAAE,CAAC","sourcesContent":["import * as main from './main/index';\n\n// start the app\nmain.bootstrapApp();\n"]}
