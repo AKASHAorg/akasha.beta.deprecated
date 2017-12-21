@@ -159,7 +159,7 @@ class Sidebar extends Component {
                   <ul className="sidebar__entry-menu-buttons">
                     <li>
                       <Tooltip
-                        title="Text Entry"
+                        title={intl.formatMessage(generalMessages.sidebarTooltipDraftText)}
                         placement="bottom"
                       >
                         <Button
@@ -174,7 +174,7 @@ class Sidebar extends Component {
                     </li>
                     <li>
                       <Tooltip
-                        title="Link Entry"
+                        title={intl.formatMessage(generalMessages.sidebarTooltipDraftLink)}
                         placement="bottom"
                       >
                         <Button
@@ -194,27 +194,34 @@ class Sidebar extends Component {
                 activePath="/dashboard"
                 linkTo={`/dashboard/${activeDashboard || ''}`}
                 iconType="dashboard"
+                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipDashboard)}
               />
               <SidebarIcon
                 activePath="/profileoverview"
                 className="sidebar__profile-icon"
                 linkTo="/profileoverview/myentries"
                 iconType="profileOverview"
+                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipProfile)}
               />
               <SidebarIcon
                 activePath="/community"
                 linkTo="/community"
                 iconType="community"
+                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipCommunity)}
+                disabled
               />
               <SidebarIcon
                 activePath="/search"
                 linkTo="/search/entries"
                 iconType="search"
+                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipSearch)}
               />
               <SidebarIcon
                 activePath="/chat"
                 linkTo="/chat"
                 iconType="chat"
+                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipChat)}
+                disabled
               />
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
