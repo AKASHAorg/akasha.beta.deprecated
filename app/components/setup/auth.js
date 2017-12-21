@@ -84,7 +84,7 @@ class Auth extends Component {
                 <div className="auth__content-inner">
                   <div className={`auth__title-wrapper ${withShadow}`}>
                     <div className="auth__title heading">
-                      {intl.formatMessage(setupMessages.welcomeBack)}
+                      {intl.formatMessage(setupMessages.welcome)}
                     </div>
                     <div className="auth__subtitle">
                       {intl.formatMessage(setupMessages.chooseIdentity)}

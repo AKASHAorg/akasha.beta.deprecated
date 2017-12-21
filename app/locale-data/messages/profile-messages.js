@@ -64,7 +64,7 @@ export const profileMessages = defineMessages({
     karmaLevel: {
         id: 'app.profile.karmaLevel',
         description: 'Karma level',
-        defaultMessage: 'Karma lvl. {karmaLevel}'
+        defaultMessage: 'Karma lvl {karmaLevel}'
     },
     linksTitle: {
         id: 'app.profile.linksTitle',
