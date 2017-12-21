@@ -203,13 +203,13 @@ class Sidebar extends Component {
                 iconType="profileOverview"
                 tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipProfile)}
               />
-              <SidebarIcon
+              {/* <SidebarIcon
                 activePath="/community"
                 linkTo="/community"
                 iconType="community"
                 tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipCommunity)}
                 disabled
-              />
+              /> */}
               <SidebarIcon
                 activePath="/search"
                 linkTo="/search/entries"

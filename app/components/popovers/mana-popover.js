@@ -90,6 +90,16 @@ class ManaPopover extends Component {
               />
             );
         }
+        const comments = manaBurned.get('comments');
+        const entries = manaBurned.get('entriesTotal');
+        const votes = manaBurned.get('votes');
+        let data;
+        const noValues = comments === 0 && entries === 0 && votes === 0;
+        if (noValues) {
+            data = [1, 1, 1];
+        } else {
+            data = [comments, entries, votes];
+        }
         return (
           <div className="mana-popover__content">
             <div className="flex-center mana-popover__title">
@@ -103,18 +113,15 @@ class ManaPopover extends Component {
                 data={{
                     labels: ['Comments', 'Entries', 'Votes'],
                     datasets: [{
-                        data: [
-                            manaBurned.get('comments'),
-                            manaBurned.get('entriesTotal'),
-                            manaBurned.get('votes')
-                        ],
+                        data,
                         backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']
                     }]
                 }}
                 options={{
                     legend: { display: false },
                     tooltips: {
-                        displayColors: false
+                        displayColors: false,
+                        enabled: !noValues
                     }
                 }}
                 width={240}

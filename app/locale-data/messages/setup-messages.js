@@ -121,10 +121,10 @@ const setupMessages = defineMessages({
         description: 'title for login page',
         defaultMessage: 'Login'
     },
-    welcomeBack: {
-        id: 'app.setup.welcomeBack',
+    welcome: {
+        id: 'app.setup.welcome',
         description: 'auth page title',
-        defaultMessage: 'Welcome back!'
+        defaultMessage: 'Welcome!'
     },
     chooseIdentity: {
         id: 'app.setup.chooseIdentity',
@@ -301,17 +301,17 @@ const setupMessages = defineMessages({
     tutorialEth: {
         id: 'app.setup.tutorialEth',
         description: 'text for tutorial Modal',
-        defaultMessage: 'This dapp uses test ETH (ether) so please DO NOT send real ETH to in-dapp addresses.'
+        defaultMessage: 'This dapp uses test ETH (Ether) so please DO NOT send real ETH to in-dapp addresses.'
     },
     tutorialMana: {
         id: 'app.setup.tutorialMana',
         description: 'text for tutorial Modal',
-        defaultMessage: 'The dapp requieres Manafied AETH (mana) for interactions. You can obtain Mana by clicking your AETH balance in the upper right side, selecting Manafy in the Transform tab.'
+        defaultMessage: 'The dapp requires Manafied AETH (Mana) for interactions. You can obtain Mana by clicking your AETH balance in the upper right side, selecting Manafy in the Transform tab.'
     },
     tutorialManaAlt: {
         id: 'app.setup.tutorialManaAlt',
         description: 'text for tutorial Modal',
-        defaultMessage: 'Alternatively, you can click the sidebar Mana indicator next to your avatar photo.'
+        defaultMessage: 'Alternatively, you can click the sidebar Mana indicator next to your avatar photo and choose Shift up.'
     },
 });
 

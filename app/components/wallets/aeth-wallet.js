@@ -180,11 +180,15 @@ class AethWallet extends Component {
             <span className="flex-center aeth-wallet__cycling-count">{cyclingCount}</span>
           </span>
         );
-        const data = [
-            balanceToNumber(aethBalance.free),
-            balanceToNumber(aethBalance.bonded),
-            balanceToNumber(aethBalance.cycling)
-        ];
+        const free = balanceToNumber(aethBalance.free);
+        const bonded = balanceToNumber(aethBalance.bonded);
+        const cycling = balanceToNumber(aethBalance.cycling);
+        let data;
+        if (free === 0 && bonded === 0 && cycling === 0) {
+            data = [1, 1, 1];
+        } else {
+            data = [free, bonded, cycling];
+        }
         return (
           <div className="aeth-wallet">
             <div className="aeth-wallet__header">
