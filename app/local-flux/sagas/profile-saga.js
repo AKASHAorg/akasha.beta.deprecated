@@ -1,4 +1,4 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { apply, call, fork, put, select, take, takeEvery, takeLatest, actionChannel } from 'redux-saga/effects';
 import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
@@ -216,6 +216,17 @@ export function* profileGetLogged () {
         }
     } catch (error) {
         yield put(actions.profileGetLoggedError(error));
+    }
+}
+
+export function* profileGetPublishingCost () {
+    try {
+        const channel = Channel.server.utils.manaCosts;
+        const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
+        yield call(enableChannel, channel, Channel.client.utils.manager);
+        yield apply(channel, channel.send, [{ethAddress: loggedProfile.get('ethAddress')}]);
+    } catch (ex) {
+        yield call(actions.profileGetPublishingCostError(ex));
     }
 }
 
@@ -575,6 +586,7 @@ function* watchProfileFaucetChannel () {
             yield put(actions.profileFaucetError(resp.error, resp.request));
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
+            yield put(actions.profileFaucetSuccess());
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFaucetError({}));
             }
@@ -740,7 +752,16 @@ function* watchProfileGetListChannel () {
         }
     }
 }
-
+function* watchProfileGetPublishingCostChannel () {
+    while (true) {
+        const response = yield take(actionChannels.utils.manaCosts);
+        if (response.error) {
+            yield put(actions.profileGetPublishingCostError(response.error));
+        } else {
+            yield put(actions.profileGetPublishingCostSuccess(response.data));
+        }
+    }
+}
 function* watchProfileIsFollowerChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.isFollower);
@@ -773,6 +794,7 @@ function* watchProfileLoginChannel () {
             yield call(profileSaveLogged, resp.data);
         }
         yield put(actions.profileGetBalance());
+        yield put(actions.profileGetPublishingCost());
     }
 }
 
@@ -980,6 +1002,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileGetDataChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
+    yield fork(watchProfileGetPublishingCostChannel)
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileManaBurnedChannel);
@@ -1018,6 +1041,8 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
     yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
     yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
+    yield takeLatest(types.PROFILE_GET_LOGGED_SUCCESS, profileGetPublishingCost);
+    yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
     yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);

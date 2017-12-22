@@ -3,13 +3,14 @@ import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
-import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
+import { selectToken, selectDraftById, selectLoggedEthAddress, selectBalance } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount } from '../../utils/dataModule';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
 import * as actionActions from '../actions/action-actions';
+import * as appActions from '../actions/app-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
 import * as eProcActions from '../actions/external-process-actions';
@@ -128,35 +129,52 @@ function* draftDelete ({ data }) {
         yield put(draftActions.draftDeleteError({ error: ex, draftId: data.draftId }));
     }
 }
-
+/* eslint-disable max-statements */
 function* draftPublish ({ actionId, draft }) {
     const channel = Channel.server.entry.publish;
     const { id } = draft;
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
-    try {
-        draftToPublish.content.draft = JSON.parse(
-            editorStateToJSON(draftFromState.getIn(['content', 'draft']))
-        );
-        draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
-        if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
-            draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
+    const balance = yield select(selectBalance);
+    const manaPublishingCost = yield select(state => state.profileState.getIn(['publishingCost', 'entry']));
+    const hasEnoughMana = parseFloat(balance.mana.remaining) > parseFloat(manaPublishingCost);
+    if (parseFloat(balance.eth) === 0 && hasEnoughMana) {
+        console.error('Hey, you need ethers');
+        yield put(appActions.showNotification({
+            id: 'notEnoughEthers',
+            duration: 4,
+        }));
+    } else if (parseFloat(balance.eth) >= 0 && !hasEnoughMana) {
+        console.error('hey, you need mana and/or ethers');
+        yield put(appActions.showNotification({
+            id: 'notEnoughEthOrMana',
+            duration: 4,
+        }));
+    } else {
+        try {
+            draftToPublish.content.draft = JSON.parse(
+                editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+            );
+            draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
+            if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
+                draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
+            }
+            yield call(enableChannel, channel, Channel.client.entry.manager);
+            yield call([channel, channel.send], {
+                actionId,
+                id,
+                token,
+                tags: draftToPublish.tags,
+                content: draftToPublish.content,
+                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
+            });
+        } catch (ex) {
+            yield put(draftActions.draftPublishError(ex));
         }
-        yield call(enableChannel, channel, Channel.client.entry.manager);
-        yield call([channel, channel.send], {
-            actionId,
-            id,
-            token,
-            tags: draftToPublish.tags,
-            content: draftToPublish.content,
-            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
-        });
-    } catch (ex) {
-        yield put(draftActions.draftPublishError(ex));
     }
 }
-
+/* eslint-enable max-statements */
 function* draftPublishSuccess ({ data }) {
     const ethAddress = yield select(selectLoggedEthAddress);
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));
@@ -165,6 +183,12 @@ function* draftPublishSuccess ({ data }) {
         value: ethAddress,
         limit: 1000000,
         asDrafts: true
+    }));
+    const isUpdate = data.draft.id.startsWith('0x');
+    yield put(appActions.showNotification({
+        id: isUpdate ? 'newVersionPublishedSuccessfully' : 'draftPublishedSuccessfully',
+        duration: 4,
+        values: { title: data.draft.title }
     }));
 }
 
@@ -259,6 +283,7 @@ function* watchDraftPublishUpdateChannel () {
                     response.error,
                     response.request.id
                 ));
+                console.log(response, 'errored update response');
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
