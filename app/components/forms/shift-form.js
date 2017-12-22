@@ -27,7 +27,7 @@ class ShiftForm extends Component {
             case 'shiftUpMana':
                 return intl.formatMessage(formMessages.shiftUpMana);
             case 'transformEssence':
-                return intl.formatMessage(formMessages.transformEssence);
+                return intl.formatMessage(formMessages.forgeAeth);
             default:
                 return '';
         }
@@ -69,6 +69,19 @@ class ShiftForm extends Component {
                 return '';
         }
     };
+
+    getSliderTitle = () => {
+        const { intl, type } = this.props;
+        switch (type) {
+            case 'shiftDownMana':
+            case 'shiftUpMana':
+                return intl.formatMessage(formMessages.amountToShift);
+            case 'transformEssence':
+                return intl.formatMessage(formMessages.amountToForge);
+            default:
+                return '';
+        }
+    }
 
     onChange = (amount) => { this.setState({ amount }); };
 
@@ -123,7 +136,7 @@ class ShiftForm extends Component {
               </div>
             </div>
             <div>
-              {intl.formatMessage(formMessages.amountToShift)}
+              {this.getSliderTitle()}
             </div>
             <FormItem
               colon={false}
@@ -159,7 +172,7 @@ class ShiftForm extends Component {
                 onClick={this.onShift}
                 type="primary"
               >
-                {intl.formatMessage(generalMessages.shift)}
+                {intl.formatMessage(generalMessages.submit)}
               </Button>
             </div>
           </Form>

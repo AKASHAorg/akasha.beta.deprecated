@@ -141,6 +141,11 @@ const formMessages = defineMessages({
         description: 'placeholder for passphrase input',
         defaultMessage: 'Type your passphrase'
     },
+    amountToForge: {
+        id: 'app.form.amountToForge',
+        description: 'label for forge AETH amount slider',
+        defaultMessage: 'Select the amount of Essence to be transformed'
+    },
     amountToShift: {
         id: 'app.form.amountToShift',
         description: 'label for shift amount slider',

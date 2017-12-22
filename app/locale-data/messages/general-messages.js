@@ -172,6 +172,11 @@ const generalMessages = defineMessages({
         description: 'essence',
         defaultMessage: 'Essence'
     },
+    essenceTotal: {
+        id: 'app.general.essenceTotal',
+        description: 'popover title',
+        defaultMessage: 'Total Essence'
+    },
     essenceTotalScore: {
         id: 'app.general.essenceTotalScore',
         description: 'essence total score',
