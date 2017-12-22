@@ -34,7 +34,6 @@ class NewEntryPage extends Component {
         const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
         const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         const onChain = match.params.draftId.startsWith('0x');
-        console.log(onChain, 'onchain');
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished && !onChain) {
             this.props.draftCreate({
                 id: match.params.draftId,
@@ -47,7 +46,7 @@ class NewEntryPage extends Component {
                 entryType: 'article',
             });
         }
-        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor && !onChain) {
+        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true

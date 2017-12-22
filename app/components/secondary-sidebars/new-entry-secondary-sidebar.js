@@ -32,12 +32,18 @@ class NewEntrySecondarySidebar extends Component {
             asDrafts: true
         });
     }
-
+    /* eslint-disable complexity */
     shouldComponentUpdate (nextProps, nextState) {
+        const draftId = nextProps.match.params.draftId;
+        const draftTitle = nextProps.drafts.getIn([draftId, 'content', 'title']);
+        const draftCardTitle = nextProps.drafts.getIn([draftId, 'content', 'cardInfo', 'title']);
+
         return (nextProps.draftsFetched !== this.props.draftsFetched) ||
             (nextProps.drafts.size !== this.props.drafts.size) ||
             (nextProps.match.params.draftType !== this.props.match.params.draftType) ||
-            (nextProps.match.params.draftId !== this.props.match.params.draftId) ||
+            (draftId !== this.props.match.params.draftId) ||
+            (draftTitle !== this.props.drafts.getIn([draftId, 'content', 'title'])) ||
+            (draftCardTitle !== this.props.drafts.getIn([draftId, 'content', 'cardInfo', 'title'])) ||
             nextProps.drafts.getIn([nextProps.match.params.draftId, 'localChanges']) !==
                 this.props.drafts.getIn([this.props.match.params.draftId, 'localChanges']) ||
             !nextProps.resolvingEntries.equals(this.props.resolvingEntries) ||
@@ -46,7 +52,7 @@ class NewEntrySecondarySidebar extends Component {
             (nextState.draftTypeVisible !== this.state.draftTypeVisible) ||
             (nextState.searchBarVisible !== this.state.searchBarVisible);
     }
-
+    /* eslint-enable complexity */
     componentWillReceiveProps (nextProps) {
         const { draftsFetched, draftsCount } = nextProps;
         const { ethAddress } = this.props;
