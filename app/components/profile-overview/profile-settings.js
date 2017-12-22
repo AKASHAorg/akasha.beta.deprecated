@@ -113,14 +113,16 @@ class ProfileSettings extends Component {
     }
 
     render () { // eslint-disable-line complexity
-        const { intl, licenses, pendingToggleDonations, savingUserSettings } = this.props;
+        const { intl, licenses, loggedProfileData, pendingToggleDonations, savingUserSettings,
+            userSettings } = this.props;
         const { defaultLicenseId, defaultLicenseParent, hideComments, hideCommentsValue, hideEntries,
             hideEntriesValue, unlockTime, rememberTime } = this.state;
-        const pref = this.props.userSettings.passwordPreference;
-        const license = this.props.userSettings.get('defaultLicense');
-        const hideCommentContent = this.props.userSettings.get('hideCommentContent');
-        const hideEntryContent = this.props.userSettings.get('hideEntryContent');
-        const donationsEnabled = this.props.loggedProfileData.get('donationsEnabled');
+        const pref = userSettings.passwordPreference;
+        const license = userSettings.get('defaultLicense');
+        const hideCommentContent = userSettings.get('hideCommentContent');
+        const hideEntryContent = userSettings.get('hideEntryContent');
+        const donationsEnabled = loggedProfileData.get('donationsEnabled');
+        const tipsDisabled = !loggedProfileData.get('akashaId');
 
         const formChanged = (
             pref.remember !== this.state.rememberTime ||
@@ -254,7 +256,10 @@ class ProfileSettings extends Component {
                   <div className="profile-settings__item-title">
                     {intl.formatMessage(settingsMessages.tipsOptions)}
                     <Tooltip
-                      title={intl.formatMessage(settingsMessages.tipsInfo)}
+                      title={tipsDisabled ?
+                          intl.formatMessage(settingsMessages.tipsDisabled) :
+                          intl.formatMessage(settingsMessages.tipsInfo)
+                      }
                       placement="topLeft"
                       arrowPointAtCenter
                     >
@@ -268,7 +273,11 @@ class ProfileSettings extends Component {
                     {intl.formatMessage(settingsMessages.tipsDescription)}
                   </div>
                   <div className="profile-settings__tips">
-                    <RadioGroup onChange={this.handleTipsChange} value={this.state.donationsValue}>
+                    <RadioGroup
+                      disabled={tipsDisabled}
+                      onChange={this.handleTipsChange}
+                      value={this.state.donationsValue}
+                    >
                       <Radio value>{intl.formatMessage(settingsMessages.tipsAccept)}</Radio>
                       <Radio value={false}>{intl.formatMessage(settingsMessages.tipsDoNotAccept)}</Radio>
                     </RadioGroup>
