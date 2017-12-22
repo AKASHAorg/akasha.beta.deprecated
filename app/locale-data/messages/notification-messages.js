@@ -61,6 +61,16 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when unfollow transaction was mined',
         defaultMessage: 'You are not following {displayName} anymore'
     },
+    notEnoughEthers: {
+        id: 'app.notification.notEnoughEthers',
+        description: 'Notification to show when not enough ethers',
+        defaultMessage: 'You don\`t have enough ethers.'
+    },
+    notEnoughEthOrMana: {
+        id: 'app.notification.notEnoughEthOrMana',
+        description: 'Notification when not enough eth or mana',
+        defaultMessage: 'You don\`t have enough ethers or mana.'
+    },
     registerProfileSuccess: {
         id: 'app.notification.registerProfileSuccess',
         description: 'Notification to be displayed when register profile transaction was mined',
@@ -84,12 +94,12 @@ const notificationMessages = defineMessages({
     newVersionPublishedSuccessfully: {
         id: 'app.notification.newVersionPublishedSuccessfully',
         description: 'Notification for when a new version was published',
-        defaultMessage: 'Entry updated successfully'
+        defaultMessage: 'Entry "{title}" successfully updated.'
     },
     draftPublishedSuccessfully: {
         id: 'app.notification.draftPublishedSuccessfully',
         description: 'Notification for when draft successfully registered/published',
-        defaultMessage: 'Entry published successfully'
+        defaultMessage: 'Draft "{title}" successfully published.'
     },
     claimSuccess: {
         id: 'app.notification.claimSuccess',

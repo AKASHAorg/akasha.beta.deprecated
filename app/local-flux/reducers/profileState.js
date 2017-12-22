@@ -1,6 +1,6 @@
-import {List, Map, Record, Collection} from 'immutable';
+import { List, Map, Record, Collection, fromJS } from 'immutable';
 import * as types from '../constants';
-import {createReducer} from './create-reducer';
+import { createReducer } from './create-reducer';
 import {
     AethBalance,
     Balance,
@@ -12,7 +12,7 @@ import {
     ProfileRecord,
     ProfileState
 } from './records';
-import {balanceToNumber} from '../../utils/number-formatter';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 const initialState = new ProfileState();
 
@@ -121,7 +121,7 @@ const profileState = createReducer(initialState, {
                 data: new ProfileExistsRecord(data)
             })
         }),
-
+    [types.PROFILE_FAUCET]: state => state.set('faucet', 'requested'),
     [types.PROFILE_FAUCET_ERROR]: state => state.set('faucet', 'error'),
 
     [types.PROFILE_FAUCET_SUCCESS]: state => state.set('faucet', 'success'),
@@ -308,6 +308,9 @@ const profileState = createReducer(initialState, {
             loggedProfile: new LoggedProfile(data)
         });
     },
+
+    [types.PROFILE_GET_PUBLISHING_COST_SUCCESS]: (state, { data }) =>
+        state.set('publishingCost', fromJS(data)),
 
     [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
         let isFollower = state.get('isFollower');

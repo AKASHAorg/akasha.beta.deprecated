@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { Form, Modal } from 'antd';
 import * as actionTypes from '../../constants/action-types';
-import { actionDelete, actionPublish } from '../../local-flux/actions/action-actions';
-import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
+import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
+import { profileClearLoginErrors, profileLogin, profileFaucet } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration } from '../../local-flux/selectors';
+import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration, selectBalance } from '../../local-flux/selectors';
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
-import { Input, RememberPassphrase } from '../';
+import { Input, RememberPassphrase, NoMana, NoEth } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 
 const FormItem = Form.Item;
@@ -23,7 +24,12 @@ class ConfirmationDialog extends Component {
             userIsLoggedIn: Date.parse(props.tokenExpiration) - 3000 > Date.now()
         };
     }
-
+    componentWillReceiveProps (nextProps) {
+        const { action, faucet } = nextProps;
+        if (faucet === 'success' && this.props.faucet !== 'success') {
+            this.props.actionDelete(action.get('id'));
+        }
+    }
     onRememberPasswordToggle = () => {
         this.setState({
             unlockIsChecked: !this.state.unlockIsChecked
@@ -74,8 +80,23 @@ class ConfirmationDialog extends Component {
     };
 
     handleSubmit = (ev) => {
+        const { balance, publishingCost, needAuth, action, loggedProfile, faucet } = this.props;
+        const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
+        const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
+        const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
         ev.preventDefault();
-        this.onSubmit();
+        if (!hasEthers && (!faucet || faucet === 'error')) {
+            this.props.profileFaucet({ ethAddress: loggedProfile.get('ethAddress'), actionId: actionTypes.faucet });
+            return;
+        }
+        if (!hasEnoughMana && hasEthers) {
+            this.props.actionDelete(action.get('id'));
+            window.location.href = 'http://www.akasha.world';
+            return;
+        }
+        if (hasEnoughMana && hasEthers) {
+            this.onSubmit();
+        }
     };
 
     handleKeyPress = (ev) => {
@@ -83,9 +104,23 @@ class ConfirmationDialog extends Component {
             this.onSubmit();
         }
     }
+    _calculateMana = (actionType, balance, costs) => {
+        const remainingMana = parseFloat(balance.getIn(['mana', 'remaining']));
+        const entryManaCost = parseFloat(costs.getIn(['entry', 'cost']));
+        const commentManaCost = parseFloat(costs.getIn(['comments', 'cost']));
+        switch (actionType) {
+            case (actionTypes.draftPublish || actionTypes.draftPublishUpdate):
+                return remainingMana >= entryManaCost;
+            case actionTypes.comment:
+                return remainingMana >= commentManaCost;
+            default:
+                return true;
+        }
+    }
 
     render () {
-        const { action, intl, loginErrors, loginPending, needAuth } = this.props;
+        const { action, intl, loginErrors, loginPending, needAuth,
+            balance, publishingCost, faucet } = this.props;
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
@@ -94,6 +129,9 @@ class ConfirmationDialog extends Component {
         if (types.includes(actionType)) {
             payload.displayName = getDisplayName(payload);
         }
+        const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
+        const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
+
         return (
           <Modal
             visible
@@ -104,12 +142,14 @@ class ConfirmationDialog extends Component {
             }
             okText={
               <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.submit)}
+                {hasEthers && hasEnoughMana && intl.formatMessage(generalMessages.submit)}
+                {!hasEthers && intl.formatMessage(generalMessages.requestTestEthers)}
+                {!hasEnoughMana && hasEthers && intl.formatMessage(generalMessages.learnMore)}
               </span>
             }
             cancelText={
               <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.cancel)}
+                {hasEthers && hasEnoughMana && intl.formatMessage(generalMessages.cancel)}
               </span>
             }
             onOk={this.handleSubmit}
@@ -117,14 +157,22 @@ class ConfirmationDialog extends Component {
             maskClosable={false}
             style={{ top: 60, marginRight: 10 }}
             confirmLoading={loginPending}
-            wrapClassName="confirmation"
+            wrapClassName={`confirmation confirmation${(!hasEthers || !hasEnoughMana) ? '__no-funds' : ''}`}
             zIndex={1040}
             width={450}
           >
-            <div className="confirmation__message">
-              {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
-            </div>
-            {!this.state.userIsLoggedIn &&
+            {hasEnoughMana && hasEthers &&
+              <div className="confirmation__message">
+                {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
+              </div>
+            }
+            {!hasEthers &&
+              <div className="confirmation__message"><NoEth faucet={faucet} /></div>
+            }
+            {!hasEnoughMana && hasEthers &&
+              <div className="confirmation__message"><NoMana /></div>
+            }
+            {!this.state.userIsLoggedIn && hasEthers && hasEnoughMana &&
               <div>
                 <div className="confirmation__message">
                   {intl.formatMessage(confirmationMessages.passphrase)}
@@ -166,8 +214,11 @@ class ConfirmationDialog extends Component {
 
 ConfirmationDialog.propTypes = {
     action: PropTypes.shape(),
+    actionAdd: PropTypes.func,
     actionDelete: PropTypes.func.isRequired,
     actionPublish: PropTypes.func,
+    balance: PropTypes.shape(),
+    faucet: PropTypes.string,
     intl: PropTypes.shape(),
     loginPending: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
@@ -176,6 +227,8 @@ ConfirmationDialog.propTypes = {
     passwordPreference: PropTypes.shape(),
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
+    profileFaucet: PropTypes.func,
+    publishingCost: PropTypes.shape(),
     tokenExpiration: PropTypes.string,
     userSettingsSave: PropTypes.func.isRequired,
 };
@@ -183,11 +236,14 @@ ConfirmationDialog.propTypes = {
 function mapStateToProps (state) {
     return {
         action: selectNeedAuthAction(state),
+        faucet: state.profileState.get('faucet'),
         loginPending: selectProfileFlag(state, 'loginPending'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('loginErrors'),
         passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
-        tokenExpiration: selectTokenExpiration(state)
+        tokenExpiration: selectTokenExpiration(state),
+        balance: selectBalance(state),
+        publishingCost: state.profileState.get('publishingCost'),
     };
 }
 
@@ -196,8 +252,10 @@ export default connect(
     {
         actionDelete,
         actionPublish,
+        actionAdd,
         profileClearLoginErrors,
         profileLogin,
+        profileFaucet,
         userSettingsSave
     }
-)(ConfirmationDialog);
+)(withRouter(ConfirmationDialog));
