@@ -105,6 +105,10 @@ const entryState = createReducer(initialState, {
         data.entryId = entryId;
         const fullEntry = state.get('fullEntry');
         const { content } = data;
+        // This is needed to avoid inconsistency between "null" and "undefined" values
+        if (data.content === undefined) {
+            data.content = null;
+        }
         const version = content && content.version;
         const entryType = content && content.entryType;
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
@@ -118,10 +122,10 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_VERSION_PUBLISHED_DATE_SUCCESS]: (state, { data }) => {
-        const { version } = data.content;
-        return state.setIn(['fullEntry', 'versionsInfo', version], data.publishDate);
-    },
+    // [types.ENTRY_GET_VERSION_PUBLISHED_DATE_SUCCESS]: (state, { data }) => {
+    //     const { version } = data.content;
+    //     return state.setIn(['fullEntry', 'versionsInfo', version], data.publishDate);
+    // },
 
     [types.ENTRY_GET_LATEST_VERSION_SUCCESS]: (state, { data = null }) =>
         state.set('fullEntryLatestVersion', data),

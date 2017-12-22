@@ -78,6 +78,8 @@ export NewSearchColumn from './columns/new-search-column';
 export NewSelectColumn from './columns/new-select-column';
 export Notification from './notifications/notification';
 export NotificationHighlightNote from './notifications/notification-highlight-note';
+export NoMana from './dialogs/no-mana';
+export NoEth from './dialogs/no-eth';
 export OptimisticComment from './comment/optimistic-comment';
 export PageContent from './page-content';
 export PanelContainerFooter from './panel-container/panel-container-footer';

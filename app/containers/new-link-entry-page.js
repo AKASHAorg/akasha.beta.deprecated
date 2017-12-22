@@ -196,6 +196,9 @@ class NewLinkEntryPage extends Component {
             if (draftObj.get('tags').size === 0) {
                 return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
+            if (this.state.tagError) {
+                return reject({ tags: intl.formatMessage(entryMessages.oneOfTheTagsCannotBeUsed) });
+            }
             if (excerpt.length > 120) {
                 return this.setState({
                     showPublishPanel: true
