@@ -533,6 +533,11 @@ const generalMessages = defineMessages({
         description: 'change the state of AETH tokens',
         defaultMessage: 'Transform'
     },
+    usernameFirst: {
+        id: 'app.general.usernameFirst',
+        description: 'tooltip title for profile complete submit button',
+        defaultMessage: 'Please choose your username first!'
+    },
     update: {
         id: 'app.general.update',
         description: 'Update data',
