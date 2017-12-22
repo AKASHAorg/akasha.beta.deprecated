@@ -135,7 +135,6 @@ class ConfirmationDialog extends Component {
         }
         const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
         const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
-        console.log(hasEthers, hasEnoughMana, 'hasEthers, has Mana')
         return (
           <Modal
             visible
