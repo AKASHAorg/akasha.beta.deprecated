@@ -48,7 +48,6 @@ class TransferForm extends Component {
             intl.formatMessage(formMessages.maxEthAmount, { eth: balance }) :
             intl.formatMessage(formMessages.maxAethAmount, { aeth: balance });
         const emptyInputs = !amount || !receiver;
-
         return (
           <Form className="transfer-form" hideRequiredMark onSubmit={this.onSubmit}>
             <FormItem

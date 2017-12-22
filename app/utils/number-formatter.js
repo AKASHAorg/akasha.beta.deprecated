@@ -10,7 +10,7 @@ export const balanceToNumber = (balance, precision = 0) => {
         return 0;
     }
     let [integer, decimals] = balance.split('.');
-    integer = integer.replace(',', '');
+    integer = integer.split(',').join('');
     let result = integer;
     if (decimals && decimals.length > precision) {
         decimals = decimals.slice(0, precision);

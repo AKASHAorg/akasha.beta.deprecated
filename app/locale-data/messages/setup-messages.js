@@ -4,7 +4,7 @@ const setupMessages = defineMessages({
     authComplete: {
         id: 'app.setup.authComplete',
         description: 'title for complete profile setup page',
-        defaultMessage: 'This is your new Web 3.0 identity'
+        defaultMessage: 'This is your new identity'
     },
     backup: {
         id: 'app.setup.backup',
@@ -20,6 +20,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.createIdentity',
         description: 'Create identity button label',
         defaultMessage: 'Create new identity'
+    },
+    getStarted: {
+        id: 'app.setup.getStarted',
+        description: 'welcome subtitle when there are no profiles',
+        defaultMessage: 'Get started by creating a new identity!'
     },
     gethDataDirPath: {
         id: 'app.setup.gethDataDirPath',
@@ -159,17 +164,17 @@ const setupMessages = defineMessages({
     faucetPending1: {
         id: 'app.setup.faucetPending1',
         description: 'message shown while faucet tx is pending',
-        defaultMessage: 'Here are some test ETH on us:)'
+        defaultMessage: 'Here are some test ETH :)'
     },
     faucetError: {
         id: 'app.setup.faucetError',
         description: 'message shown when faucet tx fails',
-        defaultMessage: 'Something went wrong:('
+        defaultMessage: 'Something went wrong :('
     },
     faucetRetry: {
         id: 'app.setup.faucetRetry',
         description: 'message shown when faucet tx fails to allow user to retry the tx',
-        defaultMessage: 'Retry to receive you test ETH!'
+        defaultMessage: 'Click here to retry'
     },
     faucetSuccess: {
         id: 'app.setup.faucetSuccess',
@@ -251,7 +256,7 @@ const setupMessages = defineMessages({
     noProfilesFound: {
         id: 'app.setup.noProfilesFound',
         description: 'placeholder message shown if no local profiles were found',
-        defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+        defaultMessage: 'If you want to import an identity please see this link.'
     },
     findingPeers: {
         id: 'app.setup.findingPeers',
