@@ -345,6 +345,7 @@
   "app.general.eth": "ETH",
   "app.general.ethereumAddress": "Ethereum address",
   "app.general.forged": "Forged",
+  "app.general.forward": "Forward",
   "app.general.generatingPreview": "Generating preview",
   "app.general.gethServiceOff": "Geth service OFF",
   "app.general.gethServiceOn": "Geth service ON",

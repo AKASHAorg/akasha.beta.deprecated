@@ -192,6 +192,11 @@ const generalMessages = defineMessages({
         description: 'new AETH created from Essence',
         defaultMessage: 'Forged'
     },
+    forward: {
+        id: 'app.general.forward',
+        description: 'forward',
+        defaultMessage: 'Forward'
+    },
     generatingPreview: {
         id: 'app.general.generatingPreview',
         description: 'placeholder to show while an image preview is being generated',
