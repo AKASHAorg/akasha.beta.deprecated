@@ -89,6 +89,12 @@ const draftState = createReducer(initialState, {
     [types.DRAFT_PUBLISH_UPDATE_SUCCESS]: (state, { data }) =>
         state.setIn(['drafts', data.draft.id, 'publishing'], false),
 
+    [types.DRAFT_PUBLISH_ERROR]: (state, { draftId }) =>
+        state.setIn(['drafts', draftId, 'publishing'], false),
+
+    [types.DRAFT_PUBLISH_UPDATE_ERROR]: (state, { draftId }) =>
+        state.setIn(['drafts', draftId, 'publishing'], false),
+
     [types.ENTRIES_GET_AS_DRAFTS_SUCCESS]: (state, { data }) =>
         /**
          * check if entry already in store, if it`s already in store,

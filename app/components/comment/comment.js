@@ -285,7 +285,7 @@ class Comment extends Component {
         const iconClassName = 'comment__vote-icon';
         const voteProps = { containerRef, iconClassName, isOwnEntity: this.isLogged(), votePending, vote };
 
-        if (hideContent) {
+        if (content && hideContent) {
             return this.renderHiddenContent(voteProps);
         }
 

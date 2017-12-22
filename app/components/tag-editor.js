@@ -169,6 +169,9 @@ class TagEditor extends Component {
             tagInputWidth: 0,
             selectedSuggestionIndex: 0,
         }, () => {
+            if (tags.includes(tagName.toLowerCase().replace('#', ''))) {
+                return;
+            }
             this.props.onTagUpdate(tags.push(tagName.toLowerCase().replace('#', '')));
             this.props.searchResetResults();
             this.tagInput.focus();
@@ -275,6 +278,11 @@ class TagEditor extends Component {
             }
             if (!this.state.inputHasFocus) {
                 this.props.searchResetResults();
+                if (this.state.partialTag.length >= 1) {
+                    this._checkTagExistence([this.state.partialTag.toLowerCase()]);
+                    this._addNewTag(this.state.partialTag.toLowerCase());
+                    this.props.searchResetResults();
+                }
             }
         }), 100);
 

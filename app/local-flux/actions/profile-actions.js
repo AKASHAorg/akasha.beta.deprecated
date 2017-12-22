@@ -180,6 +180,13 @@ export const profileGetLoggedError = (error) => {
 };
 
 export const profileGetLoggedSuccess = data => action(types.PROFILE_GET_LOGGED_SUCCESS, { data });
+
+export const profileGetPublishingCost = data => action(types.PROFILE_GET_PUBLISHING_COST, { data });
+export const profileGetPublishingCostSuccess = data =>
+    action(types.PROFILE_GET_PUBLISHING_COST_SUCCESS, { data });
+export const profileGetPublishingCostError = error =>
+    action(types.PROFILE_GET_PUBLISHING_COST_ERROR, { error });
+
 export const profileIsFollower = followings => action(types.PROFILE_IS_FOLLOWER, { followings });
 
 export const profileIsFollowerError = (error, request) => {
