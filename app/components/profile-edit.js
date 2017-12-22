@@ -33,8 +33,8 @@ class ProfileEdit extends Component {
             loggedProfileData :
             loggedProfileData.set('baseUrl', ipfsBaseUrl);
         profileData = !loggedProfileData.get('avatar') ?
-            loggedProfileData.set('avatar', '') :
-            loggedProfileData;
+            profileData.set('avatar', '') :
+            profileData;
         this.props.setTempProfile(profileData);
         this.props.tempProfileGet(loggedProfile.get('ethAddress'));
     }
