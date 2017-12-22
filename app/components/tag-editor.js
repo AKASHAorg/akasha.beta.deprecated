@@ -38,7 +38,7 @@ class TagEditor extends Component {
             this._checkTagExistence(tags);
         }
     }
-
+    getIsBusy = () => this.state.editorBusy;
     componentWillReceiveProps (nextProps) {
         const { tags, match } = nextProps;
         const { draftId } = match.params;
@@ -119,9 +119,13 @@ class TagEditor extends Component {
                 this.setState({
                     canCreateTags: data.can
                 }, () => {
-                    if (!data.can) {
-                        onTagError(true);
-                    }
+                    this.setState({
+                        editorBusy: false
+                    }, () => {
+                        if (!data.can) {
+                            onTagError(true);
+                        }
+                    });
                 });
             });
             serverChannel.send({ ethAddress });
@@ -136,6 +140,7 @@ class TagEditor extends Component {
                 if (response.data.exists) {
                     return this.setState({
                         existentTags: [...this.state.existentTags, response.data.tagName],
+                        editorBusy: false
                     });
                 }
                 if (!response.data.exists) {
@@ -279,9 +284,13 @@ class TagEditor extends Component {
             if (!this.state.inputHasFocus) {
                 this.props.searchResetResults();
                 if (this.state.partialTag.length >= 1) {
-                    this._checkTagExistence([this.state.partialTag.toLowerCase()]);
-                    this._addNewTag(this.state.partialTag.toLowerCase());
-                    this.props.searchResetResults();
+                    this.setState({
+                        editorBusy: true
+                    }, () => {
+                        this._checkTagExistence([this.state.partialTag.toLowerCase()]);
+                        this._addNewTag(this.state.partialTag.toLowerCase());
+                        this.props.searchResetResults();
+                    });
                 }
             }
         }), 100);
