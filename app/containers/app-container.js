@@ -110,7 +110,7 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, intl,
-            location, needAuth } = this.props;
+            location, needAuth, faucet } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -234,6 +234,7 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         needAuth: state.actionState.get('needAuth'),
+        faucet: state.profileState.get('faucet'),
     };
 }
 
