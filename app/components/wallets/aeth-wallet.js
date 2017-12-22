@@ -88,7 +88,7 @@ class AethWallet extends Component {
                 );
             case actionTypes.receiveAeth:
                 return (
-                  <span className="flex-center-y">
+                  <span className="flex-center-y capitalize">
                     {receivedIcon}{intl.formatMessage(generalMessages.received)}
                   </span>
                 );
