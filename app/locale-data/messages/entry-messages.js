@@ -264,6 +264,11 @@ const entryMessages = defineMessages({
         description: 'label for original version',
         defaultMessage: 'Original'
     },
+    oneOfTheTagsCannotBeUsed: {
+        id: 'app.entry.oneOfTheTagsCannotBeUsed',
+        description: 'cannot use a tag',
+        defaultMessage: 'One of the tags cannot be used!'
+    },
     publicDiscussion: {
         id: 'app.entry.publicDiscussion',
         description: 'entry comments section title',

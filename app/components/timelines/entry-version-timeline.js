@@ -72,6 +72,7 @@ const EntryVersionTimeline = ({ draftObj, onRevertConfirm }) => {
         progressDot={(dot, details) => getProgressDot(dot, details, onRevertConfirm)}
         current={latestVersion + 1}
         className="edit-entry-page__timeline-steps"
+        size="small"
       >
         {
           getTimelineSteps(timelineItems, localChanges, version)

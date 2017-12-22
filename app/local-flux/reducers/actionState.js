@@ -212,7 +212,6 @@ const actionState = createReducer(initialState, {
             pending: addPendingAction(pending, action.toJS())
         });
     },
-
     [types.ACTION_UPDATE]: (state, { changes }) => {
         if (!changes || !changes.id) {
             return state;

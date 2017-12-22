@@ -53,10 +53,14 @@
     &__publish-options {
         position: fixed;
         top: 72px;
-        right: 16px;
+        right: 56px;
         display: inline-block;
         cursor: pointer;
         z-index: 5;
+        color: @primary-color;
+        svg {
+            stroke: @primary-color
+        }
     }
 
     &__publish-options-panel-wrapper {
@@ -120,10 +124,10 @@
     &__footer-timeline-wrapper {
         display: flex;
         flex: 100%;
+        max-width: 90%;
     }
     &__footer-timeline {
         margin-top: 16px;
-        width: 50%;
         &_empty {
             width: 25%;
         }

@@ -128,4 +128,5 @@ export const ProfileState = Record({
     moreFollowers: new Map(),
     moreFollowings: new Map(),
     profiles: new List(), // to be removed
+    publishingCost: new Map(),
 });
