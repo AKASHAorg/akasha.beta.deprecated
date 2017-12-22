@@ -109,6 +109,11 @@ class Sidebar extends Component {
         this.props.profileLogout();
     }
 
+    navigateToProfile = () => {
+        const { history, loggedProfileData } = this.props;
+        history.push(`/${loggedProfileData.ethAddress}`);
+    };
+
     render () {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
         const karmaScore = balanceToNumber(loggedProfileData.get('karma'));
@@ -124,6 +129,12 @@ class Sidebar extends Component {
 
         const menu = (
           <div onClick={this.hide}>
+            <div
+              onClick={this.navigateToProfile}
+              className="popover-menu__item"
+            >
+              {intl.formatMessage(generalMessages.viewProfile)}
+            </div>
             <div
               onClick={this.props.profileEditToggle}
               className="popover-menu__item"
