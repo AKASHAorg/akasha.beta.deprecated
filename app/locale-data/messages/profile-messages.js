@@ -146,8 +146,8 @@ export const profileMessages = defineMessages({
     },
     followings: {
         id: 'app.profile.followings',
-        description: 'Label for followings card',
-        defaultMessage: 'Followings'
+        description: 'Label for following card',
+        defaultMessage: 'Following'
     },
     followingsCount: {
         id: 'app.profile.followingsCount',
@@ -246,6 +246,11 @@ export const profileMessages = defineMessages({
         id: 'app.profile.sendTo',
         description: 'label for receiver input',
         defaultMessage: 'Send to'
+    },
+    sentTip: {
+        id: 'app.profile.sentTip',
+        description: 'sent tip action',
+        defaultMessage: 'Sent tip'
     },
     support: {
         id: 'app.profile.support',
