@@ -11,6 +11,7 @@ import { profileAethTransfersIterator, profileCyclingStates } from '../../local-
 import { selectActionsHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
     selectPendingActionByType } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
 
 const { TabPane } = Tabs;
@@ -41,6 +42,10 @@ class AethWallet extends Component {
     componentWillUnmount () {
         this.props.actionClearHistory();
     }
+
+    componentClickAway = () => {
+        this.props.toggleAethWallet();
+    };
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
@@ -88,7 +93,7 @@ class AethWallet extends Component {
                 );
             case actionTypes.receiveAeth:
                 return (
-                  <span className="flex-center-y">
+                  <span className="flex-center-y capitalize">
                     {receivedIcon}{intl.formatMessage(generalMessages.received)}
                   </span>
                 );
@@ -309,4 +314,4 @@ export default connect(
         profileCyclingStates,
         toggleAethWallet
     }
-)(injectIntl(AethWallet));
+)(injectIntl(clickAway(AethWallet)));
