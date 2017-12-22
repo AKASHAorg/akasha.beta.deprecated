@@ -165,7 +165,6 @@ class NewEntryPage extends Component {
             if (draftObj.getIn(['content', 'title']).length === 0) {
                 return reject({ title: intl.formatMessage(entryMessages.titleRequired) });
             }
-
             if (!draftState.getCurrentContent().hasText()) {
                 return reject({ draft: intl.formatMessage(entryMessages.draftContentRequired) });
             }
@@ -173,7 +172,9 @@ class NewEntryPage extends Component {
             if (this.state.tagError) {
                 return reject({ tags: intl.formatMessage(entryMessages.oneOfTheTagsCannotBeUsed) });
             }
-
+            if (this.tagEditor.getIsBusy()) {
+                return reject({ tags: 'tag validation in progress... please wait' });
+            }
             if (draftObj.get('tags').size === 0) {
                 return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
@@ -197,22 +198,24 @@ class NewEntryPage extends Component {
             title: draftObj.getIn(['content', 'title']),
             type: match.params.draftType
         };
-        this.validateData().then(() => {
-            if (draftObj.onChain) {
+        setTimeout(() => {
+            this.validateData().then(() => {
+                if (draftObj.onChain) {
+                    return this.props.actionAdd(
+                        loggedProfile.get('ethAddress'),
+                        actionTypes.draftPublishUpdate,
+                        { draft: publishPayload }
+                    );
+                }
                 return this.props.actionAdd(
                     loggedProfile.get('ethAddress'),
-                    actionTypes.draftPublishUpdate,
+                    actionTypes.draftPublish,
                     { draft: publishPayload }
                 );
-            }
-            return this.props.actionAdd(
-                loggedProfile.get('ethAddress'),
-                actionTypes.draftPublish,
-                { draft: publishPayload }
-            );
-        }).catch((errors) => {
-            this.setState({ errors });
-        });
+            }).catch((errors) => {
+                this.setState({ errors });
+            });
+        }, 100);
     }
 
     _handleVersionRevert = (version) => {
