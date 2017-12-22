@@ -170,7 +170,14 @@ class AuthProfileList extends Component {
         } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
             placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
         } else if (profiles.size === 0 && !fetchingProfiles) {
-            placeholderMessage = intl.formatMessage(setupMessages.noProfilesFound);
+            placeholderMessage = (
+              <div
+                href="https://akasha.world/"
+                className="content-link auth-profile-list__placeholder-link"
+              >
+                {intl.formatMessage(setupMessages.noProfilesFound)}
+              </div>
+            );
         }
 
         if (placeholderMessage) {
