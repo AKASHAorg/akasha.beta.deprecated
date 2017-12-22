@@ -1,5 +1,5 @@
 /// <reference path="typings/main.d.ts" />
-import { app, BrowserWindow, shell } from 'electron';
+import { app, autoUpdater, BrowserWindow, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
@@ -38,6 +38,10 @@ const stopServices = () => {
 
     if (process.env.NODE_ENV === 'development') {
         require('electron-debug')({ showDevTools: true });
+    } else {
+        const server = 'https://hazel-server-gieqzdwjdf.now.sh';
+        const feeds = `${server}/update/${process.platform}/${app.getVersion()}`;
+        autoUpdater.setFeedURL(feeds);
     }
 
     app.on('window-all-closed', () => {
