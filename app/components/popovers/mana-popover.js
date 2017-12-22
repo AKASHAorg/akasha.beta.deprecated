@@ -66,7 +66,6 @@ class ManaPopover extends Component {
         const { page } = this.state;
         const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const totalMana = balanceToNumber(balance.getIn(['mana', 'total']));
-        const burnedMana = totalMana - remainingMana;
         if (page === SHIFT_DOWN) {
             return (
               <ShiftForm
@@ -100,13 +99,19 @@ class ManaPopover extends Component {
         } else {
             data = [comments, entries, votes];
         }
+        const burnedMana = comments + entries + votes;
         return (
           <div className="mana-popover__content">
             <div className="flex-center mana-popover__title">
-              {intl.formatMessage(generalMessages.manaBurned)}
-              <span className="mana-popover__mana-score">
-                { burnedMana }
-              </span>
+              {intl.formatMessage(generalMessages.manaPool)}
+              <Tooltip
+                placement="top"
+                title={intl.formatMessage(generalMessages.manaBurned)}
+              >
+                <span className="mana-popover__mana-score">
+                  { burnedMana }
+                </span>
+              </Tooltip>
             </div>
             <div className="flex-center mana-popover__chart-wrapper">
               <PieChart

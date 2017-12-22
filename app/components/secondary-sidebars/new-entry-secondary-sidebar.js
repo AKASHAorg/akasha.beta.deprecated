@@ -298,6 +298,7 @@ class NewEntrySecondarySidebar extends Component {
                   trigger="click"
                   placement="bottomLeft"
                   overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
+                  overlayStyle={{ width: 193 }}
                   visible={this.state.draftTypeVisible}
                   onVisibleChange={this._forceDraftTypeVisibility}
                 >

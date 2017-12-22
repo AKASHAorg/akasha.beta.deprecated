@@ -104,7 +104,7 @@ class EssencePopover extends Component {
         return (
           <div className="essence-popover__content">
             <div className="flex-center essence-popover__title">
-              {intl.formatMessage(generalMessages.essence)}
+              {intl.formatMessage(generalMessages.essenceTotal)}
               <span className="essence-popover__essence-score">
                 {balanceToNumber(balance.getIn(['essence', 'total']), 1)}
               </span>

@@ -219,6 +219,10 @@ const actionState = createReducer(initialState, {
         if (!changes || !changes.id) {
             return state;
         }
+        const newActionId = state.getIn(['byId', changes.id]);
+        if (!newActionId) {
+            return state;
+        }
         const newAction = state.getIn(['byId', changes.id]).mergeDeep(changes);
         let publishing = state.get('publishing');
         let pending = state.get('pending');
