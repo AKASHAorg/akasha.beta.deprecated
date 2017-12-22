@@ -128,7 +128,10 @@ const actionState = createReducer(initialState, {
         });
     },
 
-    [types.ACTION_CLEAR_HISTORY]: state => state.set('history', new List()),
+    [types.ACTION_CLEAR_HISTORY]: state => state.merge({
+        history: new List(),
+        historyTypes: new List()
+    }),
 
     [types.ACTION_DELETE]: (state, { id }) => {
         const needAuth = state.get('needAuth');

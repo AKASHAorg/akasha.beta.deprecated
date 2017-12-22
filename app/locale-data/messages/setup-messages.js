@@ -4,7 +4,7 @@ const setupMessages = defineMessages({
     authComplete: {
         id: 'app.setup.authComplete',
         description: 'title for complete profile setup page',
-        defaultMessage: 'The authentication process was completed!'
+        defaultMessage: 'This is your new Web 3.0 identity'
     },
     backup: {
         id: 'app.setup.backup',
@@ -154,22 +154,32 @@ const setupMessages = defineMessages({
     faucetPending: {
         id: 'app.setup.faucetPending',
         description: 'message shown while faucet tx is pending',
-        defaultMessage: 'You will receive test ethers shortly...'
+        defaultMessage: 'Thank you for playing!'
+    },
+    faucetPending1: {
+        id: 'app.setup.faucetPending1',
+        description: 'message shown while faucet tx is pending',
+        defaultMessage: 'Here are some test ETH on us:)'
     },
     faucetError: {
         id: 'app.setup.faucetError',
         description: 'message shown when faucet tx fails',
-        defaultMessage: 'Something went wrong!'
+        defaultMessage: 'Something went wrong:('
     },
     faucetRetry: {
         id: 'app.setup.faucetRetry',
         description: 'message shown when faucet tx fails to allow user to retry the tx',
-        defaultMessage: 'Try again here'
+        defaultMessage: 'Retry to receive you test ETH!'
     },
     faucetSuccess: {
         id: 'app.setup.faucetSuccess',
         description: 'message shown on faucet tx success',
-        defaultMessage: 'You now have test ethers in your balance.'
+        defaultMessage: 'HoHoHoHo!'
+    },
+    faucetSuccess1: {
+        id: 'app.setup.faucetSuccess1',
+        description: 'message shown on faucet tx success',
+        defaultMessage: 'You received test ETH!'
     },
     advancedSetup: {
         id: 'app.setup.advancedSetup',

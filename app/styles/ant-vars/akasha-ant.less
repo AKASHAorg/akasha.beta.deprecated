@@ -63,6 +63,19 @@
     font-size: 13px;
 }
 
+.ant-carousel .slick-dots {
+    height: 12px;
+
+    li {
+        margin: 0 6px;
+    }
+    li button, li.slick-active button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+}
+
 .ant-btn:not(.ant-btn-primary):not(.ant-btn-ghost):not(.ant-btn-danger) {
     background-color: @light-background;
     &:hover, &:focus {
@@ -85,6 +98,10 @@
 
 .ant-radio-inner {
     border-color: @radio-border-color;
+}
+
+.ant-radio-disabled .ant-radio-inner:after {
+    background-color: @radio-disabled-bg;
 }
 
 .ant-tag {

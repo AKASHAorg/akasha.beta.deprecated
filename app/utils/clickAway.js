@@ -28,9 +28,13 @@ const canClickAway = (Component, props) => {
 
         _checkClickAway (ev) {
             const el = ReactDOM.findDOMNode(this);
+            const className = ev.target.getAttribute('class') || '';
             if (ev.target !== el &&
-            !isDescendant(el, ev.target) &&
-            document.documentElement.contains(ev.target)) {
+                !isDescendant(el, ev.target) &&
+                document.documentElement.contains(ev.target) &&
+                // ugly hack
+                !className.includes('ant-select-dropdown-menu-item')
+            ) {
                 if (this.refs.clickAwayableElement.componentClickAway) {
                     this.refs.clickAwayableElement.componentClickAway();
                 }

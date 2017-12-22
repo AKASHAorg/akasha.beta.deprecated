@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tabs } from 'antd';
 import { HistoryTable, Icon, TransferForm } from '../';
-import { transferEth } from '../../constants/action-types';
+import { sendTip, transferEth } from '../../constants/action-types';
 import { toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
     selectPendingActionByType } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
 
 const { TabPane } = Tabs;
 const WALLET = 'wallet';
@@ -21,12 +22,16 @@ class EthWallet extends Component {
     };
 
     componentDidMount () {
-        this.props.actionGetHistory([transferEth]);
+        this.props.actionGetHistory([sendTip, transferEth]);
     }
 
     componentWillUnmount () {
         this.props.actionClearHistory();
     }
+
+    componentClickAway = () => {
+        this.props.toggleEthWallet();
+    };
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
@@ -36,12 +41,16 @@ class EthWallet extends Component {
     };
 
     renderHistory = () => {
-        const { sentTransactions } = this.props;
-        const rows = sentTransactions.map(action => ({
+        const { intl, sentTransactions } = this.props;
+        const transactions = sentTransactions.filter(action => !!action.getIn(['payload', 'value']));
+        const rows = transactions.map(action => ({
             action: (
               <span className="flex-center-y">
                 <Icon className="eth-wallet__sent-icon" type="arrowUp" />
-                Sent
+                {action.type === sendTip ?
+                    intl.formatMessage(profileMessages.sentTip) :
+                    intl.formatMessage(generalMessages.sent)
+                }
               </span>
             ),
             amount: <span>{action.getIn(['payload', 'value'])} ETH</span>,
@@ -121,4 +130,4 @@ export default connect(
         actionGetHistory,
         toggleEthWallet
     }
-)(injectIntl(EthWallet));
+)(injectIntl(clickAway(EthWallet)));

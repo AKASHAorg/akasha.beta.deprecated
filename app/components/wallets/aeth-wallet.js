@@ -11,6 +11,7 @@ import { profileAethTransfersIterator, profileCyclingStates } from '../../local-
 import { selectActionsHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
     selectPendingActionByType } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
 
 const { TabPane } = Tabs;
@@ -28,7 +29,7 @@ class AethWallet extends Component {
         this.props.profileCyclingStates();
         this.props.profileAethTransfersIterator();
         this.props.actionGetHistory([actionTypes.transferAeth, actionTypes.bondAeth, actionTypes.freeAeth,
-            actionTypes.transformEssence]);
+            actionTypes.sendTip, actionTypes.transformEssence]);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -41,6 +42,10 @@ class AethWallet extends Component {
     componentWillUnmount () {
         this.props.actionClearHistory();
     }
+
+    componentClickAway = () => {
+        this.props.toggleAethWallet();
+    };
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
@@ -68,6 +73,12 @@ class AethWallet extends Component {
                     {sentIcon}{intl.formatMessage(generalMessages.sent)}
                   </span>
                 );
+            case actionTypes.sendTip:
+                return (
+                  <span className="flex-center-y">
+                    {sentIcon}{intl.formatMessage(profileMessages.sentTip)}
+                  </span>
+                );
             case actionTypes.bondAeth:
                 return (
                   <span className="flex-center-y">
@@ -88,7 +99,7 @@ class AethWallet extends Component {
                 );
             case actionTypes.receiveAeth:
                 return (
-                  <span className="flex-center-y">
+                  <span className="flex-center-y capitalize">
                     {receivedIcon}{intl.formatMessage(generalMessages.received)}
                   </span>
                 );
@@ -110,6 +121,8 @@ class AethWallet extends Component {
                 return amount ? Number(amount) / 1000 : '-';
             case actionTypes.receiveAeth:
                 return removeTrailingZeros(action.getIn(['payload', 'amount']));
+            case actionTypes.sendTip:
+                return action.getIn(['payload', 'tokenAmount']);
             default:
                 return '';
         }
@@ -117,7 +130,8 @@ class AethWallet extends Component {
 
     renderHistory = () => {
         const { intl, sentTransactions } = this.props;
-        const rows = sentTransactions.map(action => ({
+        const transactions = sentTransactions.filter(action => !!this.getAmount(action));
+        const rows = transactions.map(action => ({
             action: this.getActionCell(action),
             amount: <span>{this.getAmount(action)} {intl.formatMessage(generalMessages.aeth)}</span>,
             blockNumber: action.get('blockNumber'),
@@ -309,4 +323,4 @@ export default connect(
         profileCyclingStates,
         toggleAethWallet
     }
-)(injectIntl(AethWallet));
+)(injectIntl(clickAway(AethWallet)));
