@@ -25,7 +25,7 @@ export const HANDSHAKE_DONE = 'handshakeDone';
 
 export const BACKUP_KEYS_NAME = 'akasha_keystore.zip';
 
-export const FAUCET_TOKEN = '12345';
+export const FAUCET_TOKEN = '0x7016aec60a8cb208833d8cd9a05f5705a3600b2c2796180503373f56b3e0d959';
 
 export const FAUCET_URL = 'https://akasha.fun/get/faucet';
 
