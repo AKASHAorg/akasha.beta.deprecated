@@ -256,10 +256,10 @@ const formMessages = defineMessages({
         description: 'extra information about the vote weight input',
         defaultMessage: 'Define a value between {min} and {max}'
     },
-    notEnoughFunds: {
-        id: 'app.form.notEnoughFunds',
-        description: 'Error displayed when a user does not have enough funds for an action',
-        defaultMessage: 'You don\'t have enough funds in your balance'
+    notEnoughMana: {
+        id: 'app.form.notEnoughMana',
+        description: 'Error displayed when a user does not have enough Mana for an action',
+        defaultMessage: 'You don\'t have enough Mana for this action'
     },
     alphanumericError: {
         id: 'app.form.alphanumericError',

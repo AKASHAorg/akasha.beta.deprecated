@@ -159,7 +159,7 @@ const confirmationMessages = defineMessages({
     sendTip: {
         id: 'app.confirmations.sendTip',
         description: 'confirmation message for sending a tip',
-        defaultMessage: 'Please confirm that you want to send a tip of {value} ETH to {displayName}.'
+        defaultMessage: 'Please confirm that you want to send a tip to {displayName}.'
     },
     sendTipTitle: {
         id: 'app.confirmations.sendTipTitle',

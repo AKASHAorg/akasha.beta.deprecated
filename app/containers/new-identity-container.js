@@ -161,7 +161,7 @@ class NewIdentity extends Component {
                   onClick={this.handleSubmit}
                   type="primary"
                 >
-                  {intl.formatMessage(generalMessages.submit)}
+                  {intl.formatMessage(generalMessages.next)}
                 </Button>
               </div>
             </Form>

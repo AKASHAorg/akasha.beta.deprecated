@@ -96,7 +96,7 @@ class VotePopover extends Component {
         }
         const formatted = balanceToNumber(mana);
         if (!formatted || formatted <= Number(voteCost.get(value.toString()))) {
-            callback(intl.formatMessage(formMessages.notEnoughFunds));
+            callback(intl.formatMessage(formMessages.notEnoughMana));
             return;
         }
         callback();

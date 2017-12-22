@@ -18,11 +18,23 @@ const iconsTypes = {
     [columnTypes.list]: 'entries'
 };
 
+const removeClass = (id) => {
+    const column = document.getElementById(id);
+    if (column) {
+        const className = column.getAttribute('class');
+        const newClassName = className.replace('column_focused', '');
+        column.setAttribute('class', newClassName);
+    }
+};
+
 const DashboardTopBar = (props) => {
     const { columns, intl } = props;
     const scrollColumnIntoView = (id) => {
         const dashboard = document.getElementById('dashboard-container');
         const column = document.getElementById(id);
+        const className = column.getAttribute('class');
+        column.setAttribute('class', `${className} column_focused`);
+        setTimeout(() => removeClass(id), 500);
         const columnLeftOffset = column.offsetLeft;
         const scrollLeft = (columnLeftOffset - (dashboard.clientWidth / 2)) + (column.clientWidth / 2);
         dashboard.scrollLeft = scrollLeft;
@@ -68,7 +80,6 @@ const DashboardTopBar = (props) => {
 DashboardTopBar.propTypes = {
     columns: PropTypes.shape().isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
-    history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired
 };
 
