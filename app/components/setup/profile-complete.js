@@ -102,7 +102,7 @@ class ProfileComplete extends Component {
                   </Card>
                 );
             }
-            if (!faucetState) {
+            if (faucetState === 'requested' || !faucetState) {
                 return (
                   <Card>
                     <div className="profile-complete__faucet-icon">
