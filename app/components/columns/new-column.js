@@ -83,11 +83,8 @@ class NewColumn extends Component {
     renderPlaceholder = () => (
       <div className="new-column">
         <div className="new-column__inner">
-          <div
-            className="flex-center new-column__placeholder content-link"
-            onClick={this.props.dashboardAddNewColumn}
-          >
-            <span>
+          <div className="flex-center new-column__placeholder">
+            <span className="content-link" onClick={this.props.dashboardAddNewColumn}>
               {this.props.intl.formatMessage(dashboardMessages.addColumn)}
             </span>
           </div>
