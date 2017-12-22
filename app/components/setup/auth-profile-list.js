@@ -170,7 +170,13 @@ class AuthProfileList extends Component {
         } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
             placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
         } else if (profiles.size === 0 && !fetchingProfiles) {
-            placeholderMessage = intl.formatMessage(setupMessages.noProfilesFound);
+            placeholderMessage = (
+              <div className="content-link auth-profile-list__placeholder-link">
+                <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
+                  {intl.formatMessage(setupMessages.noProfilesFound)}
+                </a>
+              </div>
+            );
         }
 
         if (placeholderMessage) {
