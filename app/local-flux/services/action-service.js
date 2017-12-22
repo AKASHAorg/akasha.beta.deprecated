@@ -19,7 +19,7 @@ export const getActionByTx = tx =>
                 if (data[0]) {
                     resolve(data[0].id);
                 } else {
-                    resolve(null);
+                    reject({});
                 }
             })
             .catch(reject);
