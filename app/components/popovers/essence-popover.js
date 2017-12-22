@@ -195,7 +195,7 @@ class EssencePopover extends Component {
         const tooltip = (
           <div>
             <div>{intl.formatMessage(generalMessages.essence)}</div>
-            <div>{total} / {firstStep}</div>
+            <div>{total}</div>
           </div>
         );
 
