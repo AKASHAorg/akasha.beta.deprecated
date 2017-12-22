@@ -21,6 +21,11 @@ const setupMessages = defineMessages({
         description: 'Create identity button label',
         defaultMessage: 'Create new identity'
     },
+    getStarted: {
+        id: 'app.setup.getStarted',
+        description: 'welcome subtitle when there are no profiles',
+        defaultMessage: 'Get started by creating a new identity!'
+    },
     gethDataDirPath: {
         id: 'app.setup.gethDataDirPath',
         description: 'geth datadir path field label',
@@ -251,7 +256,7 @@ const setupMessages = defineMessages({
     noProfilesFound: {
         id: 'app.setup.noProfilesFound',
         description: 'placeholder message shown if no local profiles were found',
-        defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+        defaultMessage: 'If you want to import an identity please see this link.'
     },
     findingPeers: {
         id: 'app.setup.findingPeers',

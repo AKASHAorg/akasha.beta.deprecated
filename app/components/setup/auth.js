@@ -87,7 +87,10 @@ class Auth extends Component {
                       {intl.formatMessage(setupMessages.welcome)}
                     </div>
                     <div className="auth__subtitle">
-                      {intl.formatMessage(setupMessages.chooseIdentity)}
+                      {localProfiles.size ?
+                        intl.formatMessage(setupMessages.chooseIdentity) :
+                        intl.formatMessage(setupMessages.getStarted)
+                      }
                     </div>
                   </div>
                   <div className="auth__list-wrapper">
@@ -117,7 +120,7 @@ class Auth extends Component {
                   </Button> */}
                   <Button
                     className={backupButtonClass}
-                    disabled={backupPending}
+                    disabled={backupPending || !localProfiles.size}
                     onClick={backupKeysRequest}
                   >
                     <div className="flex-center-y">
@@ -129,11 +132,16 @@ class Auth extends Component {
                     </div>
                   </Button>
                 </div>
-                <div id="button" className="auth__new-identity-button">
+                <div id="button" className={`${localProfiles.size && 'auth__new-identity-button'}`}>
                   <Link to="/setup/new-identity">
-                    <Button className="auth__button">
-                      {intl.formatMessage(setupMessages.createIdentity)}
-                    </Button>
+                    {localProfiles.size ?
+                      <Button className="auth__button">
+                        {intl.formatMessage(setupMessages.createIdentity)}
+                      </Button> :
+                      <Button className="auth__button" type="primary">
+                        {intl.formatMessage(setupMessages.createIdentity)}
+                      </Button>
+                    }
                   </Link>
                 </div>
               </div>
