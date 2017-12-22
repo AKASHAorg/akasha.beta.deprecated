@@ -102,6 +102,11 @@ const settingsMessages = defineMessages({
         description: 'description for profile tips options',
         defaultMessage: 'Select your option for tips'
     },
+    tipsDisabled: {
+        id: 'app.settings.tipsDisabled',
+        description: 'tooltip info for profile tips options when it is disabled',
+        defaultMessage: 'You need to register your profile before changing this option'
+    },
     tipsOptions: {
         id: 'app.settings.tipsOptions',
         description: 'title for profile tips options',

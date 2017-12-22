@@ -10,6 +10,7 @@ import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flu
 import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
     selectPendingActionByType } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
 
 const { TabPane } = Tabs;
 const WALLET = 'wallet';
@@ -27,6 +28,10 @@ class EthWallet extends Component {
     componentWillUnmount () {
         this.props.actionClearHistory();
     }
+
+    componentClickAway = () => {
+        this.props.toggleEthWallet();
+    };
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
@@ -121,4 +126,4 @@ export default connect(
         actionGetHistory,
         toggleEthWallet
     }
-)(injectIntl(EthWallet));
+)(injectIntl(clickAway(EthWallet)));

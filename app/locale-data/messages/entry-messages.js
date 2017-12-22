@@ -244,6 +244,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for empty latest entries list',
         defaultMessage: 'No new entries'
     },
+    nothingToCollect: {
+        id: 'app.entry.nothingToCollect',
+        description: 'explainer message for not being able to collect when balance is 0 Essence',
+        defaultMessage: 'There is no Essence to collect from this entry'
+    },
     noTitle: {
         id: 'app.entry.noTitle',
         description: 'when a draft has no title',
