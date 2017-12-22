@@ -94,11 +94,13 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
         case actionTypes.claim:
         case actionTypes.claimVote:
             return pending.setIn([action.type, entryId], false);
-        case actionTypes.comment:
-            pendingComments = pending.getIn([action.type, entryId]).filter((comm) => {
+        case actionTypes.comment: {
+            const pendingEntry = pending.getIn([action.type, entryId]);
+            pendingComments = pendingEntry && pendingEntry.filter((comm) => {
                 return comm.id !== action.id;
             });
             return pending.setIn([action.type, entryId], pendingComments);
+        }
         case actionTypes.entryDownvote:
         case actionTypes.entryUpvote:
             return pending.deleteIn(['entryVote', entryId]);
@@ -136,6 +138,9 @@ const actionState = createReducer(initialState, {
     [types.ACTION_DELETE]: (state, { id }) => {
         const needAuth = state.get('needAuth');
         const action = state.getIn(['byId', id]);
+        if (!action) {
+            return state;
+        }
         const pending = removePendingAction(state.get('pending'), action.toJS());
         return state.merge({
             byId: state.get('byId').delete(id),
