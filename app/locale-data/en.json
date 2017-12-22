@@ -496,6 +496,7 @@
   "app.profile.editProfileTitle": "Edit Profile Information",
   "app.profile.shortDescriptionLabel": "Type something about you",
   "app.profile.karmaLevel": "Karma lvl {karmaLevel}",
+  "app.profile.linksPlaceholder": "Type or paste your link",
   "app.profile.linksTitle": "LINKS",
   "app.profile.addLinkButtontitle": "Add a new link",
   "app.profile.removeLinkButtonTitle": "remove link",
