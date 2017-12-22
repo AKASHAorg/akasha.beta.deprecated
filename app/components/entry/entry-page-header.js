@@ -143,7 +143,7 @@ class EntryPageHeader extends Component {
             <span style={{ padding: '0 7px' }}>|</span>
             <Popover
               content={this.wasVisible ? this._getVersionsPopoverContent() : null}
-              visible={showVersions}
+              visible={false}
               trigger="click"
               onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
               placement="bottomRight"
@@ -158,7 +158,7 @@ class EntryPageHeader extends Component {
                     {intl.formatRelative(publishDate)}
                   </span>
                 }
-                <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
+                {/* <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} /> */}
               </span>
             </Popover>
           </div>

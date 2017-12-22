@@ -136,42 +136,25 @@ function* draftPublish ({ actionId, draft }) {
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
-    const balance = yield select(selectBalance);
-    const manaPublishingCost = yield select(state => state.profileState.getIn(['publishingCost', 'entry']));
-    const hasEnoughMana = parseFloat(balance.mana.remaining) > parseFloat(manaPublishingCost);
-    if (parseFloat(balance.eth) === 0 && hasEnoughMana) {
-        console.error('Hey, you need ethers');
-        yield put(appActions.showNotification({
-            id: 'notEnoughEthers',
-            duration: 4,
-        }));
-    } else if (parseFloat(balance.eth) >= 0 && !hasEnoughMana) {
-        console.error('hey, you need mana and/or ethers');
-        yield put(appActions.showNotification({
-            id: 'notEnoughEthOrMana',
-            duration: 4,
-        }));
-    } else {
-        try {
-            draftToPublish.content.draft = JSON.parse(
-                editorStateToJSON(draftFromState.getIn(['content', 'draft']))
-            );
-            draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
-            if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
-                draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
-            }
-            yield call(enableChannel, channel, Channel.client.entry.manager);
-            yield call([channel, channel.send], {
-                actionId,
-                id,
-                token,
-                tags: draftToPublish.tags,
-                content: draftToPublish.content,
-                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
-            });
-        } catch (ex) {
-            yield put(draftActions.draftPublishError(ex));
+    try {
+        draftToPublish.content.draft = JSON.parse(
+            editorStateToJSON(draftFromState.getIn(['content', 'draft']))
+        );
+        draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
+        if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
+            draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
         }
+        yield call(enableChannel, channel, Channel.client.entry.manager);
+        yield call([channel, channel.send], {
+            actionId,
+            id,
+            token,
+            tags: draftToPublish.tags,
+            content: draftToPublish.content,
+            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
+        });
+    } catch (ex) {
+        yield put(draftActions.draftPublishError(ex));
     }
 }
 /* eslint-enable max-statements */

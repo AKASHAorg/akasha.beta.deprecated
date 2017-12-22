@@ -11,6 +11,7 @@ import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration, selectB
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Input, RememberPassphrase, NoMana, NoEth } from '../';
 import { getDisplayName } from '../../utils/dataModule';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 const FormItem = Form.Item;
 
@@ -108,7 +109,7 @@ class ConfirmationDialog extends Component {
         }
     }
     _calculateMana = (actionType, balance, costs) => {
-        const remainingMana = parseFloat(balance.getIn(['mana', 'remaining']));
+        const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const entryManaCost = parseFloat(costs.getIn(['entry', 'cost']));
         const commentManaCost = parseFloat(costs.getIn(['comments', 'cost']));
         switch (actionType) {
@@ -134,7 +135,6 @@ class ConfirmationDialog extends Component {
         }
         const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
         const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
-
         return (
           <Modal
             visible
