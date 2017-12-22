@@ -28,8 +28,8 @@ class ProfileComplete extends Component {
             loggedProfileData :
             loggedProfileData.set('baseUrl', ipfsBaseUrl);
         profileData = !loggedProfileData.get('avatar') ?
-            loggedProfileData.set('avatar', '') :
-            loggedProfileData;
+            profileData.set('avatar', '') :
+            profileData;
         this.props.setTempProfile(profileData);
     }
 
@@ -81,6 +81,7 @@ class ProfileComplete extends Component {
                       <Icon type="check" style={{ fontSize: 30 }} />
                     </div>
                     <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div>
+                    <div>{intl.formatMessage(setupMessages.faucetSuccess1)}</div>
                   </Card>
                 );
             }
@@ -108,6 +109,7 @@ class ProfileComplete extends Component {
                       <Spin indicator={spinIcon} />
                     </div>
                     <div>{intl.formatMessage(setupMessages.faucetPending)}</div>
+                    <div>{intl.formatMessage(setupMessages.faucetPending1)}</div>
                   </Card>
                 );
             }

@@ -23,7 +23,7 @@ class ClaimableList extends Component {
         const { canClaim, canClaimVote, entries, entryBalance, entryIds, entryVotes, fetchingClaimable, intl,
             loggedEthAddress, pendingClaim, pendingClaimVote, pendingEntries } = this.props;
 
-        const renderRow = (entry, index) => {
+        const renderRow = (entry, index) => { // eslint-disable-line
             const entryId = entryIds.get(index);
             const className = classNames('claimable-list__row', {
                 'claimable-list__row_last': index === (entries.size - 1)
@@ -53,6 +53,9 @@ class ClaimableList extends Component {
             const balance = isOwnEntry ?
                 balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
                 balanceToNumber(vote && vote.get('essence'));
+            if (!balance) {
+                return null;
+            }
             const endPeriod = entry.get('endPeriod');
             let timeDiff;
             const isActive = endPeriod > Date.now() / 1000;

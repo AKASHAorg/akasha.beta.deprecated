@@ -4,7 +4,7 @@ import { Map } from 'immutable';
 import { injectIntl } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch } from 'antd';
+import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch, Tooltip } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, Icon, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -289,6 +289,13 @@ class ProfileCompleteForm extends Component {
         document.body.removeChild(textArea);
     };
 
+    _handleLinkKeyDown = (ev) => {
+        if (ev.key === 'Enter') {
+            this._validateField('links');
+            document.activeElement.blur();
+        }
+    }
+
 
     render () {
         const { intl, isUpdate, tempProfile, loggedEthAddress } = this.props;
@@ -345,6 +352,7 @@ class ProfileCompleteForm extends Component {
                       validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                       help={this._getAkashaIdErrors('akashaId')}
                       style={{ marginRight: 8 }}
+                      required
                     >
                       <Input
                         disabled={isUpdate}
@@ -366,6 +374,7 @@ class ProfileCompleteForm extends Component {
                           checked={tempProfile.get('donationsEnabled')}
                           onChange={this._handleSwitchChange}
                           size="large"
+                          disabled={!akashaId}
                         />
                       </FormItem>
                     </div>
@@ -437,13 +446,15 @@ class ProfileCompleteForm extends Component {
                           <Input
                             suffix={<AntIcon
                               className="content-link"
-                              type="minus-circle"
+                              type="close-circle"
                               onClick={this._handleRemoveLink(link.get('id'), 'links')}
                             />}
                             value={link.get('url')}
                             style={{ width: '100%' }}
                             onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                             onBlur={this._validateField('links')}
+                            onKeyDown={this._handleLinkKeyDown}
+                            autoFocus
                           />
                         </FormItem>
                       </div>
@@ -508,15 +519,31 @@ class ProfileCompleteForm extends Component {
                     {intl.formatMessage(profileMessages.saveForLater)}
                   </Button>
                 </div>
-                <Button
-                  htmlType="submit"
-                  className="new-identity__button"
-                  disabled={!akashaId}
-                  onClick={this._handleSubmit}
-                  type="primary"
-                >
-                  {intl.formatMessage(generalMessages.submit)}
-                </Button>
+                {!akashaId ?
+                  <Tooltip
+                    placement="topRight"
+                    title={intl.formatMessage(generalMessages.usernameFirst)}
+                  >
+                    <Button
+                      htmlType="submit"
+                      className="new-identity__button"
+                      disabled={!akashaId}
+                      onClick={this._handleSubmit}
+                      type="primary"
+                    >
+                      {intl.formatMessage(generalMessages.next)}
+                    </Button>
+                  </Tooltip> :
+                  <Button
+                    htmlType="submit"
+                    className="new-identity__button"
+                    disabled={!akashaId}
+                    onClick={this._handleSubmit}
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.next)}
+                  </Button>
+                }
               </div>
             </div>
           </div>
