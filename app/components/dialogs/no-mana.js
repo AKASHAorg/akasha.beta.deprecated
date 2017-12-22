@@ -4,7 +4,7 @@ const NoMana = () => {
     return (
       <div>
         <div className="no-mana__bg" />
-        <p className="no-mana__text">Not enough Mana to publish entry. Please Manafy AETH before publishing</p>
+        <p className="no-mana__text">Please Manafy AETH before publishing!</p>
       </div>
     );
 };

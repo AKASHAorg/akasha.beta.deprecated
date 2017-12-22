@@ -224,7 +224,7 @@ export function* profileGetPublishingCost () {
         const channel = Channel.server.utils.manaCosts;
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
         yield call(enableChannel, channel, Channel.client.utils.manager);
-        yield apply(channel, channel.send, [{ethAddress: loggedProfile.get('ethAddress')}]);
+        yield apply(channel, channel.send, [{ ethAddress: loggedProfile.get('ethAddress') }]);
     } catch (ex) {
         yield call(actions.profileGetPublishingCostError(ex));
     }
@@ -587,6 +587,7 @@ function* watchProfileFaucetChannel () {
         } else if (resp.data.receipt) {
             yield put(actionActions.actionPublished(resp.data.receipt));
             yield put(actions.profileFaucetSuccess());
+            yield put(actions.profileGetBalance());
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFaucetError({}));
             }
