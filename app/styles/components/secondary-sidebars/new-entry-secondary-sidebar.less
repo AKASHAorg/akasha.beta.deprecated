@@ -3,15 +3,17 @@
     overflow: hidden;
     height: 100%;
     &__entry-type-list {
-        width: 115px;
+        width: 100%;
         font-size: 13px;
         font-weight: 500;
+        padding-left: 32px;
     }
     &__entry-type {
         cursor: pointer;
         padding: 8px 4px;
         border-radius: @border-radius-base;
         user-select: none;
+        padding-left: 12px;
         &:hover:not(&_active) {
             background-color: @background;
         }
@@ -128,7 +130,7 @@
             color: @heading-color;
             .draft-list-item {
                 &__link {
-                    color: @heading-color;                    
+                    color: @heading-color;
                     padding: 0 8px;
                     font-weight: 500;
                     font-size: 14px;
@@ -152,6 +154,7 @@
         padding-bottom: @top-bar-height;
     }
     &__draft-type-popover {
+        left: 67px !important;
         .ant-popover-inner-content {
             padding: 8px;
         }
