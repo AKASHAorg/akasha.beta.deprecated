@@ -558,6 +558,11 @@ const generalMessages = defineMessages({
         description: 'Upgrading services',
         defaultMessage: 'Upgrading'
     },
+    viewProfile: {
+        id: 'app.general.viewProfile',
+        description: 'View profile',
+        defaultMessage: 'View profile'
+    },
     vote: {
         id: 'app.general.vote',
         description: 'Vote',
