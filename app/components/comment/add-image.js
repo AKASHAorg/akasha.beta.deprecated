@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AtomicBlockUtils } from 'draft-js';
-import { MegadraftIcons } from 'megadraft';
 import { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import { genId } from '../../utils/dataModule';
 import { Icon } from '../';
 
 class AddImage extends Component {
     openFileInput = (ev) => {
-        ev.persist();
+        ev.stopPropagation();
+        ev.preventDefault();
         this.fileInput.value = '';
         this.fileInput.click();
     };
@@ -56,7 +56,8 @@ class AddImage extends Component {
     };
 
     handleImageAdd = (ev) => {
-        ev.persist();
+        ev.stopPropagation();
+        ev.preventDefault();
         const files = this.fileInput.files;
         const filePromises = getResizedImages(files, {
             minWidth: 1,

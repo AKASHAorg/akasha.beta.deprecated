@@ -78,13 +78,24 @@ class NewColumn extends Component {
         }
     }
 
-    onSelectColumn = (selectedColumn) => { this.setState({ selectedColumn }); };
+    onSelectColumn = (selectedColumn) => {
+        if (!oneStepColumns.includes(selectedColumn)) {
+            this.setState({ selectedColumn }, () => {
+                this.props.dashboardUpdateNewColumn({ type: selectedColumn });
+            });
+        } else {
+            this.setState({ selectedColumn });
+        }
+    };
 
     renderPlaceholder = () => (
       <div className="new-column">
         <div className="new-column__inner">
-          <div className="flex-center new-column__placeholder">
-            <span className="content-link" onClick={this.props.dashboardAddNewColumn}>
+          <div
+            className="flex-center new-column__placeholder"
+            onClick={this.props.dashboardAddNewColumn}
+          >
+            <span>
               {this.props.intl.formatMessage(dashboardMessages.addColumn)}
             </span>
           </div>

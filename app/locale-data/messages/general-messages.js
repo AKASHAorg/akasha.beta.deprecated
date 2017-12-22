@@ -192,6 +192,11 @@ const generalMessages = defineMessages({
         description: 'new AETH created from Essence',
         defaultMessage: 'Forged'
     },
+    forward: {
+        id: 'app.general.forward',
+        description: 'forward',
+        defaultMessage: 'Forward'
+    },
     generatingPreview: {
         id: 'app.general.generatingPreview',
         description: 'placeholder to show while an image preview is being generated',
@@ -533,6 +538,11 @@ const generalMessages = defineMessages({
         description: 'change the state of AETH tokens',
         defaultMessage: 'Transform'
     },
+    usernameFirst: {
+        id: 'app.general.usernameFirst',
+        description: 'tooltip title for profile complete submit button',
+        defaultMessage: 'Please choose your username first!'
+    },
     update: {
         id: 'app.general.update',
         description: 'Update data',
@@ -547,6 +557,11 @@ const generalMessages = defineMessages({
         id: 'app.general.upgrading',
         description: 'Upgrading services',
         defaultMessage: 'Upgrading'
+    },
+    viewProfile: {
+        id: 'app.general.viewProfile',
+        description: 'View profile',
+        defaultMessage: 'View profile'
     },
     vote: {
         id: 'app.general.vote',
