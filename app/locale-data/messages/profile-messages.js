@@ -66,6 +66,11 @@ export const profileMessages = defineMessages({
         description: 'Karma level',
         defaultMessage: 'Karma lvl {karmaLevel}'
     },
+    linksPlaceholder: {
+        id: 'app.profile.linksPlaceholder',
+        description: 'Links placeholder text',
+        defaultMessage: 'Type or paste your link'
+    },
     linksTitle: {
         id: 'app.profile.linksTitle',
         description: 'Links section title',

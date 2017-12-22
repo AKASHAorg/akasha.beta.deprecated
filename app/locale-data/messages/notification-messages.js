@@ -64,7 +64,7 @@ const notificationMessages = defineMessages({
     registerProfileSuccess: {
         id: 'app.notification.registerProfileSuccess',
         description: 'Notification to be displayed when register profile transaction was mined',
-        defaultMessage: 'Your profile was successfully updated'
+        defaultMessage: 'Highfives! Profile successfully registered!'
     },
     publishCommentSuccess: {
         id: 'app.notification.publishCommentSuccess',

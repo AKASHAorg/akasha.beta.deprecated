@@ -4,7 +4,7 @@ import { Map, fromJS } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Icon, Input, Button, Form } from 'antd';
+import { Row, Col, Icon, Input, Button, Form, Tooltip } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
@@ -256,6 +256,14 @@ class ProfileEditForm extends Component {
             this.props.tempProfileCreate(tempProfile);
         });
     }
+
+    _handleLinkKeyDown = (ev) => {
+        if (ev.key === 'Enter') {
+            this._validateField('links');
+            document.activeElement.blur();
+        }
+    }
+
     /* eslint-disable complexity */
     render () {
         const { intl, isUpdate, pendingActions, tempProfile } = this.props;
@@ -322,6 +330,7 @@ class ProfileEditForm extends Component {
                         colon={false}
                         validateStatus={this._getAkashaIdErrors('akashaId') ? 'error' : 'success'}
                         help={this._getAkashaIdErrors('akashaId')}
+                        required={!disableAkashaIdInput}
                       >
                         <Input
                           value={akashaId}
@@ -393,13 +402,16 @@ class ProfileEditForm extends Component {
                             <Input
                               suffix={<Icon
                                 className="content-link"
-                                type="minus-circle"
+                                type="close-circle"
                                 onClick={this._handleRemoveLink(link.get('id'), 'links')}
                               />}
                               value={link.get('url')}
                               style={{ width: '100%' }}
                               onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                               onBlur={this._validateField('links')}
+                              onKeyDown={this._handleLinkKeyDown}
+                              autoFocus
+                              placeholder={intl.formatMessage(profileMessages.linksPlaceholder)}
                             />
                           </FormItem>
                         </div>
@@ -447,17 +459,35 @@ class ProfileEditForm extends Component {
                 </Button>
               </div>
               <div className="profile-edit-form__update-btn">
-                <Button
-                  type="primary"
-                  disabled={disableSubmit}
-                  onClick={this._handleSubmit}
-                  size="large"
-                >
-                  {isUpdate ?
+                {!akashaId ?
+                  <Tooltip
+                    placement="topRight"
+                    title={intl.formatMessage(generalMessages.usernameFirst)}
+                  >
+                    <Button
+                      type="primary"
+                      disabled={disableSubmit}
+                      onClick={this._handleSubmit}
+                      size="large"
+                    >
+                      {isUpdate ?
+                            intl.formatMessage(profileMessages.updateProfile) :
+                            intl.formatMessage(profileMessages.registerProfile)
+                        }
+                    </Button>
+                  </Tooltip> :
+                  <Button
+                    type="primary"
+                    disabled={disableSubmit}
+                    onClick={this._handleSubmit}
+                    size="large"
+                  >
+                    {isUpdate ?
                         intl.formatMessage(profileMessages.updateProfile) :
                         intl.formatMessage(profileMessages.registerProfile)
                     }
-                </Button>
+                  </Button>
+                }
               </div>
             </div>
           </div>
