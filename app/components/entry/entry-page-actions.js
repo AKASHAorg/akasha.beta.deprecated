@@ -90,16 +90,17 @@ class EntryPageAction extends Component {
         const balance = entryBalance && balanceToNumber(entryBalance.get('totalKarma'));
         const isClaimed = entryBalance && entryBalance.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
+        const claimDisabled = !canClaim || !balance;
         const infoClass = classNames('entry-actions__info', {
             'entry-actions__info_full': isFullEntry
         });
         const infoTextClass = classNames('entry-actions__info-text', {
-            'entry-actions__info-text_can-claim': canClaim,
-            'entry-actions__info-text_cannot-claim': !canClaim && !this.isActive() && !isClaimed,
+            'entry-actions__info-text_can-claim': !claimDisabled,
+            'entry-actions__info-text_cannot-claim': claimDisabled && !this.isActive() && !isClaimed,
         });
         const collectClass = classNames('entry-actions__collect-button', {
-            'content-link': canClaim && !claimPending,
-            'entry-actions__collect-button_disabled': !canClaim || claimPending
+            'content-link': !claimDisabled && !claimPending,
+            'entry-actions__collect-button_disabled': claimDisabled || claimPending
         });
         return (
           <div className="flex-center-y entry-actions entry-actions_own-entry">
@@ -122,14 +123,17 @@ class EntryPageAction extends Component {
                     {claimPending && <Spin size="small" style={{ marginRight: '5px' }} />}
                     <span
                       className={collectClass}
-                      onClick={canClaim && !claimPending ? this.handleClaim : undefined}
+                      onClick={!claimDisabled && !claimPending ? this.handleClaim : undefined}
                     >
                       {intl.formatMessage(entryMessages.collectEssence)}
                     </span>
-                    {!canClaim &&
+                    {claimDisabled &&
                       <Tooltip
                         getPopupContainer={() => containerRef || document.body}
-                        title={intl.formatMessage(entryMessages.cannotClaimEntry)}
+                        title={balance ?
+                            intl.formatMessage(entryMessages.cannotClaimEntry) :
+                            intl.formatMessage(entryMessages.nothingToCollect)
+                        }
                       >
                         <Icon
                           className="question-circle-icon entry-actions__info-icon"
@@ -189,16 +193,17 @@ class EntryPageAction extends Component {
         const balance = vote && balanceToNumber(vote.get('essence'));
         const isVoteClaimed = vote && vote.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
+        const claimDisabled = !canClaimVote || !balance;
         const infoClass = classNames('entry-actions__info', {
             'entry-actions__info_full': isFullEntry
         });
         const infoTextClass = classNames('entry-actions__info-text', {
-            'entry-actions__info-text_can-claim': canClaimVote,
-            'entry-actions__info-text_cannot-claim': !canClaimVote && !this.isActive() && !isVoteClaimed,
+            'entry-actions__info-text_can-claim': !claimDisabled,
+            'entry-actions__info-text_cannot-claim': claimDisabled && !this.isActive() && !isVoteClaimed,
         });
         const collectClass = classNames('entry-actions__collect-button', {
-            'content-link': canClaimVote && !claimVotePending,
-            'entry-actions__collect-button_disabled': !canClaimVote || claimVotePending
+            'content-link': !claimDisabled && !claimVotePending,
+            'entry-actions__collect-button_disabled': claimDisabled || claimVotePending
         });
         return (
           <div className={infoClass}>
@@ -216,14 +221,17 @@ class EntryPageAction extends Component {
                   {claimVotePending && <Spin size="small" style={{ marginRight: '5px' }} />}
                   <span
                     className={collectClass}
-                    onClick={canClaimVote && !claimVotePending ? this.handleClaimVote : undefined}
+                    onClick={!claimDisabled && !claimVotePending ? this.handleClaimVote : undefined}
                   >
                     {intl.formatMessage(entryMessages.collectEssence)}
                   </span>
-                  {!canClaimVote &&
+                  {claimDisabled &&
                     <Tooltip
                       getPopupContainer={() => containerRef || document.body}
-                      title={intl.formatMessage(entryMessages.cannotClaimVote)}
+                      title={balance ?
+                          intl.formatMessage(entryMessages.cannotClaimVote) :
+                          intl.formatMessage(entryMessages.nothingToCollect)
+                      }
                     >
                       <Icon className="question-circle-icon entry-actions__info-icon" type="questionCircle" />
                     </Tooltip>

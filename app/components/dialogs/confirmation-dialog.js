@@ -118,7 +118,6 @@ class ConfirmationDialog extends Component {
             style={{ top: 60, marginRight: 10 }}
             confirmLoading={loginPending}
             wrapClassName="confirmation"
-            zIndex={1040}
             width={450}
           >
             <div className="confirmation__message">
