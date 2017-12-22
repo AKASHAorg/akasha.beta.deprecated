@@ -103,10 +103,15 @@ class ManaPopover extends Component {
         return (
           <div className="mana-popover__content">
             <div className="flex-center mana-popover__title">
-              {intl.formatMessage(generalMessages.manaBurned)}
-              <span className="mana-popover__mana-score">
-                { burnedMana }
-              </span>
+              {intl.formatMessage(generalMessages.manaPool)}
+              <Tooltip
+                placement="top"
+                title={intl.formatMessage(generalMessages.manaBurned)}
+              >
+                <span className="mana-popover__mana-score">
+                  { burnedMana }
+                </span>
+              </Tooltip>
             </div>
             <div className="flex-center mana-popover__chart-wrapper">
               <PieChart

@@ -37,7 +37,7 @@ class ShiftForm extends Component {
         const { balance, type } = this.props;
         switch (type) {
             case 'shiftDownMana':
-                return balanceToNumber(balance.getIn(['mana', 'total']));
+                return balanceToNumber(balance.getIn(['aeth', 'bonded']));
             case 'shiftUpMana':
                 return balanceToNumber(balance.getIn(['aeth', 'free']));
             case 'transformEssence':
@@ -74,8 +74,9 @@ class ShiftForm extends Component {
         const { intl, type } = this.props;
         switch (type) {
             case 'shiftDownMana':
+                return intl.formatMessage(formMessages.fromManafiedToCycling);
             case 'shiftUpMana':
-                return intl.formatMessage(formMessages.amountToShift);
+                return intl.formatMessage(formMessages.fromTransferableToManafied);
             case 'transformEssence':
                 return intl.formatMessage(formMessages.amountToForge);
             default:

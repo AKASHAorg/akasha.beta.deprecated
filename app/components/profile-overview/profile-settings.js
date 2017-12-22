@@ -20,7 +20,9 @@ class ProfileSettings extends Component {
         super(props);
         const pref = props.userSettings.passwordPreference;
         const license = props.userSettings.get('defaultLicense');
-        const donations = props.loggedProfileData.get('donationsEnabled');
+        const donations = props.loggedProfileData.get('akashaId') ?
+            props.loggedProfileData.get('donationsEnabled') :
+            true;
         const hideCommentContent = props.userSettings.get('hideCommentContent');
         const hideEntryContent = props.userSettings.get('hideEntryContent');
         this.state = {
@@ -121,7 +123,9 @@ class ProfileSettings extends Component {
         const license = userSettings.get('defaultLicense');
         const hideCommentContent = userSettings.get('hideCommentContent');
         const hideEntryContent = userSettings.get('hideEntryContent');
-        const donationsEnabled = loggedProfileData.get('donationsEnabled');
+        const donationsEnabled = loggedProfileData.get('akashaId') ?
+            loggedProfileData.get('donationsEnabled') :
+            true;
         const tipsDisabled = !loggedProfileData.get('akashaId');
 
         const formChanged = (

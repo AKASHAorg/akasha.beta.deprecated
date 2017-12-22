@@ -285,6 +285,11 @@ const generalMessages = defineMessages({
         description: 'mana burned',
         defaultMessage: 'Total Mana burned'
     },
+    manaPool: {
+        id: 'app.general.manaPool',
+        description: 'mana pool',
+        defaultMessage: 'Mana Pool Info'
+    },
     manafied: {
         id: 'app.general.manafied',
         description: 'AETH manafied/bonded state',

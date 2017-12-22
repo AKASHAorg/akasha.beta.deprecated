@@ -171,11 +171,10 @@ class AuthProfileList extends Component {
             placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
         } else if (profiles.size === 0 && !fetchingProfiles) {
             placeholderMessage = (
-              <div
-                href="https://akasha.world/"
-                className="content-link auth-profile-list__placeholder-link"
-              >
-                {intl.formatMessage(setupMessages.noProfilesFound)}
+              <div className="content-link auth-profile-list__placeholder-link">
+                <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
+                  {intl.formatMessage(setupMessages.noProfilesFound)}
+                </a>
               </div>
             );
         }
