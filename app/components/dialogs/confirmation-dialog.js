@@ -86,10 +86,7 @@ class ConfirmationDialog extends Component {
         const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
         ev.preventDefault();
         if (!hasEthers && (!faucet || faucet === 'error')) {
-            this.props.profileFaucet({
-                ethAddress: loggedProfile.get('ethAddress'),
-                actionId: actionTypes.faucet
-            });
+            this.props.actionAdd(loggedProfile.get('ethAddress'), actionTypes.faucet);
             return;
         }
         if (!hasEnoughMana && hasEthers) {
