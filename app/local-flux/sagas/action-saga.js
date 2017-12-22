@@ -203,7 +203,7 @@ function* actionSave (id) {
     let action = yield select(state => selectAction(state, id));
     // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
-    if (action.status === actionStatus.published) {
+    if (action && action.status === actionStatus.published) {
         const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
         if (nonPersistentFields && nonPersistentFields.size) {
             nonPersistentFields.forEach((field) => {
@@ -212,10 +212,12 @@ function* actionSave (id) {
         }
         action = action.deleteIn(['payload', 'nonPersistentFields']);
     }
-    try {
-        yield apply(actionService, actionService.saveAction, [action.toJS()]);
-    } catch (error) {
-        yield put(actions.actionSaveError(error));
+    if (action) {
+        try {
+            yield apply(actionService, actionService.saveAction, [action.toJS()]);
+        } catch (error) {
+            yield put(actions.actionSaveError(error));
+        }
     }
 }
 
@@ -224,6 +226,7 @@ function* actionPublished ({ receipt }) {
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
     const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+
     if (action && action.get('ethAddress') === loggedEthAddress) {
         const status = actionStatus.published;
         const changes = { id: actionId, blockNumber, cumulativeGasUsed, status, success };

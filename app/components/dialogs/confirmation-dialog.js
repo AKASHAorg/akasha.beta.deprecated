@@ -94,7 +94,7 @@ class ConfirmationDialog extends Component {
         }
         if (!hasEnoughMana && hasEthers) {
             this.props.actionDelete(action.get('id'));
-            window.location.href = 'http://www.akasha.world';
+            window.location.href = 'http://akasha.helpscoutdocs.com/article/21-how-to-manafy-aeth';
             return;
         }
         if (hasEnoughMana && hasEthers) {
