@@ -38,7 +38,9 @@ class SendTipForm extends Component {
         ev.preventDefault();
         const { form } = this.props;
         const { aethAmount, ethAmount, message } = form.getFieldsValue();
-        this.sendTip({ message, value: ethAmount.toString(), tokenAmount: aethAmount.toString() });
+        const value = ethAmount ? ethAmount.toString() : undefined;
+        const tokenAmount = aethAmount ? aethAmount.toString() : undefined;
+        this.sendTip({ message, value, tokenAmount });
     };
 
     render () {
