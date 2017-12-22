@@ -300,6 +300,11 @@ const generalMessages = defineMessages({
         description: 'short form of minutes count',
         defaultMessage: '{minutes, number} min'
     },
+    learnMore: {
+        id: 'app.general.learnMore',
+        description: '',
+        defaultMessage: 'Learn More'
+    },
     next: {
         id: 'app.general.next',
         description: 'Label for Next button',
@@ -409,6 +414,11 @@ const generalMessages = defineMessages({
         id: 'app.general.retry',
         description: 'Retry',
         defaultMessage: 'Retry'
+    },
+    requestTestEthers: {
+        id: 'app.general.requestTestEthers',
+        description: 'button label to request test ethers',
+        defaultMessage: 'Request test ETH'
     },
     running: {
         id: 'app.general.running',
@@ -567,6 +577,11 @@ const generalMessages = defineMessages({
         id: 'app.general.upgrading',
         description: 'Upgrading services',
         defaultMessage: 'Upgrading'
+    },
+    viewProfile: {
+        id: 'app.general.viewProfile',
+        description: 'View profile',
+        defaultMessage: 'View profile'
     },
     vote: {
         id: 'app.general.vote',
