@@ -172,6 +172,11 @@ const generalMessages = defineMessages({
         description: 'essence',
         defaultMessage: 'Essence'
     },
+    essenceTotal: {
+        id: 'app.general.essenceTotal',
+        description: 'popover title',
+        defaultMessage: 'Total Essence'
+    },
     essenceTotalScore: {
         id: 'app.general.essenceTotalScore',
         description: 'essence total score',
@@ -279,6 +284,11 @@ const generalMessages = defineMessages({
         id: 'app.general.manaBurned',
         description: 'mana burned',
         defaultMessage: 'Total Mana burned'
+    },
+    manaPool: {
+        id: 'app.general.manaPool',
+        description: 'mana pool',
+        defaultMessage: 'Mana Pool Info'
     },
     manafied: {
         id: 'app.general.manafied',

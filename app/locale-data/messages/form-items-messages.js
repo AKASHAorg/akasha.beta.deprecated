@@ -141,10 +141,25 @@ const formMessages = defineMessages({
         description: 'placeholder for passphrase input',
         defaultMessage: 'Type your passphrase'
     },
+    amountToForge: {
+        id: 'app.form.amountToForge',
+        description: 'label for forge AETH amount slider',
+        defaultMessage: 'Select the amount of Essence to be transformed'
+    },
     amountToShift: {
         id: 'app.form.amountToShift',
         description: 'label for shift amount slider',
         defaultMessage: 'Please select an amount to shift'
+    },
+    fromManafiedToCycling: {
+        id: 'app.form.fromManafiedToCycling',
+        description: 'label for shift amount slider',
+        defaultMessage: 'From Manafied to Cycling'
+    },
+    fromTransferableToManafied: {
+        id: 'app.form.fromTransferableToManafied',
+        description: 'label for shift amount slider',
+        defaultMessage: 'From Transferable to Manafied'
     },
     confirmPassphrase: {
         id: 'app.form.confirmPassphrase',
@@ -189,12 +204,12 @@ const formMessages = defineMessages({
     shiftDown: {
         id: 'app.form.shiftDown',
         description: 'shift down',
-        defaultMessage: 'Shift down'
+        defaultMessage: 'Decrease'
     },
     shiftDownMana: {
         id: 'app.form.shiftDownMana',
         description: 'title for shift down Mana form',
-        defaultMessage: 'Shift down Mana'
+        defaultMessage: 'Decrease Mana Pool'
     },
     shiftDownManaHelp: {
         id: 'app.form.shiftDownManaHelp',
@@ -204,17 +219,17 @@ const formMessages = defineMessages({
     shiftUp: {
         id: 'app.form.shiftUp',
         description: 'shift up',
-        defaultMessage: 'Shift up'
+        defaultMessage: 'Increase'
     },
     shiftUpMana: {
         id: 'app.form.shiftUpMana',
         description: 'title for shift up Mana form',
-        defaultMessage: 'Shift up Mana'
+        defaultMessage: 'Increase Mana Pool'
     },
     shiftUpManaHelp: {
         id: 'app.form.shiftUpManaHelp',
         description: 'label for shift up mana slider',
-        defaultMessage: '{value} Mana will manafy {value} Transferable AETH'
+        defaultMessage: '{value} AETH will generate {value} Mana'
     },
     tips: {
         id: 'app.form.tips',

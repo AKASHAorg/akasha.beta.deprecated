@@ -95,14 +95,14 @@ class ProfileComplete extends Component {
                     <div
                       onClick={() => self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
                         { ethAddress: loggedEthAddress })}
-                      className="content-link"
+                      className="profile-complete__faucet-retry "
                     >
                       {intl.formatMessage(setupMessages.faucetRetry)}
                     </div>
                   </Card>
                 );
             }
-            if (!faucetState) {
+            if (faucetState === 'requested' || !faucetState) {
                 return (
                   <Card>
                     <div className="profile-complete__faucet-icon">

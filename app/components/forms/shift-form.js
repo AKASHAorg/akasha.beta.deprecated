@@ -27,7 +27,7 @@ class ShiftForm extends Component {
             case 'shiftUpMana':
                 return intl.formatMessage(formMessages.shiftUpMana);
             case 'transformEssence':
-                return intl.formatMessage(formMessages.transformEssence);
+                return intl.formatMessage(formMessages.forgeAeth);
             default:
                 return '';
         }
@@ -37,7 +37,7 @@ class ShiftForm extends Component {
         const { balance, type } = this.props;
         switch (type) {
             case 'shiftDownMana':
-                return balanceToNumber(balance.getIn(['mana', 'total']));
+                return balanceToNumber(balance.getIn(['aeth', 'bonded']));
             case 'shiftUpMana':
                 return balanceToNumber(balance.getIn(['aeth', 'free']));
             case 'transformEssence':
@@ -69,6 +69,20 @@ class ShiftForm extends Component {
                 return '';
         }
     };
+
+    getSliderTitle = () => {
+        const { intl, type } = this.props;
+        switch (type) {
+            case 'shiftDownMana':
+                return intl.formatMessage(formMessages.fromManafiedToCycling);
+            case 'shiftUpMana':
+                return intl.formatMessage(formMessages.fromTransferableToManafied);
+            case 'transformEssence':
+                return intl.formatMessage(formMessages.amountToForge);
+            default:
+                return '';
+        }
+    }
 
     onChange = (amount) => { this.setState({ amount }); };
 
@@ -123,7 +137,7 @@ class ShiftForm extends Component {
               </div>
             </div>
             <div>
-              {intl.formatMessage(formMessages.amountToShift)}
+              {this.getSliderTitle()}
             </div>
             <FormItem
               colon={false}
@@ -159,7 +173,7 @@ class ShiftForm extends Component {
                 onClick={this.onShift}
                 type="primary"
               >
-                {intl.formatMessage(generalMessages.shift)}
+                {intl.formatMessage(generalMessages.submit)}
               </Button>
             </div>
           </Form>
