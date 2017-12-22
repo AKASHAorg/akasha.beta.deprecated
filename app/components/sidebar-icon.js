@@ -18,6 +18,7 @@ const SidebarIcon = (props) => {
     if (disabled) {
         return (
           <Tooltip
+            mouseEnterDelay={0.3}
             title={tooltipTitle}
             placement="right"
           >
@@ -31,6 +32,7 @@ const SidebarIcon = (props) => {
     return (
       <Link to={linkTo || ''}>
         <Tooltip
+          mouseEnterDelay={0.3}
           title={tooltipTitle}
           placement="right"
         >
