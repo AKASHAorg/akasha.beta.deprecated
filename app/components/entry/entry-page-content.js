@@ -86,9 +86,8 @@ class EntryPageContent extends Component {
         );
     };
     // when user clicks a link in an entry
-    _handleOutsideNavigation = (ev, url) => {
+    _handleOutsideNavigation = (url) => {
         const { toggleOutsideNavigation } = this.props;
-        ev.preventDefault();
         toggleOutsideNavigation(url);
     }
     render () {
@@ -113,6 +112,7 @@ class EntryPageContent extends Component {
                   }
                   isEdit={false}
                   infoExtracted
+                  onClick={this._handleOutsideNavigation}
                 />
               }
               <div className="entry-page-content__content">
