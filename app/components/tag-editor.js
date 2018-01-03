@@ -323,7 +323,8 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth, inputHasFocus, existentTags, tagError } = this.state;
-        const { tagSuggestionsCount, intl, tags, inputDisabled } = this.props;
+        const { tagSuggestionsCount, intl, tags, inputDisabled, tagSuggestions } = this.props;
+
         return (
           <div
             className={`tag-editor ${this.props.className}`}
@@ -366,7 +367,7 @@ class TagEditor extends Component {
             <Popover
               content={this._getTagSuggestions()}
               placement="topLeft"
-              visible={tagSuggestionsCount > 0 && inputHasFocus}
+              visible={(tagSuggestionsCount > 0 && inputHasFocus && tagSuggestions.filter(tag => !tags.contains(tag)).size > 0)}
               overlayClassName="tag-editor__suggestions-container"
             >
               <input
