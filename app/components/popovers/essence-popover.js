@@ -60,6 +60,7 @@ class EssencePopover extends Component {
     onEnterIterator = () => {
         const { essenceIterator } = this.props;
         if (essenceIterator.lastBlock !== 0) {
+            console.log('on enter iterator');
             this.props.profileEssenceIterator();
         }
     };
@@ -75,11 +76,11 @@ class EssencePopover extends Component {
 
     onShiftUpSubmit = (amount) => {
         const { loggedEthAddress } = this.props;
-        this.props.actionAdd(loggedEthAddress, actionTypes.bondAeth, { amount });
+        this.props.actionAdd(loggedEthAddress, actionTypes.transformEssence, { amount });
     };
 
     renderContent = () => {
-        const { balance, entries, essenceEvents, intl, loadingLogs, pendingEntries,
+        const { balance, entries, essenceEvents, intl, loadingLogs, loadingMoreLogs, pendingEntries,
             pendingTransformEssence } = this.props;
         const { page } = this.state;
         const lastEvent = essenceEvents.last();
@@ -113,7 +114,7 @@ class EssencePopover extends Component {
               <div className="essence-popover__logs">
                 {!loadingLogs && essenceEvents.map((ev) => {
                     const isLast = lastEvent.equals(ev);
-                    const fromComment = ev.action === 'comment:claim';
+                    const fromComment = ev.action === 'comment:vote';
                     const fromEntry = ev.action === 'entry:claim';
                     const fromEntryVote = ev.action === 'entry:vote:claim';
                     const className = classNames('flex-center-y essence-popover__log-row', {
@@ -162,10 +163,15 @@ class EssencePopover extends Component {
                 })}
                 {loadingLogs &&
                   <div className="flex-center-x essence-popover__spinner">
-                    <Spin spinning={loadingLogs} />
+                    <Spin spinning />
                   </div>
                 }
-                <Waypoint onEnter={this.onEnterIterator} />
+                {loadingMoreLogs &&
+                  <div className="flex-center-x">
+                    <Spin spinning />
+                  </div>
+                }
+                {!loadingLogs && !loadingMoreLogs && <Waypoint onEnter={this.onEnterIterator} />}
               </div>
             </div>
             <div className="essence-popover__actions">
@@ -231,6 +237,7 @@ EssencePopover.propTypes = {
     essenceIterator: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     loadingLogs: PropTypes.bool,
+    loadingMoreLogs: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
     pendingEntries: PropTypes.shape(),
     pendingTransformEssence: PropTypes.bool,
@@ -242,12 +249,13 @@ function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
         entries: state.entryState.get('byId'),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingTransformEssence: selectPendingTransformEssence(state),
         essenceEvents: state.profileState.get('essenceEvents'),
         essenceIterator: state.profileState.get('essenceIterator'),
         loadingLogs: state.profileState.getIn(['flags', 'fetchingEssenceIterator']),
+        loadingMoreLogs: state.profileState.getIn(['flags', 'fetchingMoreEssenceIterator']),
+        loggedEthAddress: selectLoggedEthAddress(state),
         pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', 'essenceEvents']),
+        pendingTransformEssence: selectPendingTransformEssence(state),
     };
 }
 

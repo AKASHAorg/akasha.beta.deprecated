@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withRouter } from 'react-router';
+import { injectIntl } from 'react-intl';
 import { Column, NewColumn } from './';
+import { dashboardMessages } from '../locale-data/messages/dashboard-messages';
 
 const smallColumn = 320;
 const largeColumn = 480;
 
 const Dashboard = (props) => {
-    const { columns, dashboards, getDashboardRef, match } = props;
+    const { columns, dashboardCreateNew, dashboards, getDashboardRef, intl, match } = props;
     const dashboardId = match.params.dashboardId;
     const activeDashboard = dashboards.get(dashboardId);
 
@@ -37,15 +39,25 @@ const Dashboard = (props) => {
             );
         })}
         {activeDashboard && <NewColumn />}
+        {!activeDashboard &&
+          <div className="flex-center dashboard__empty-placeholder">
+            {intl.formatMessage(dashboardMessages.noDashboards)}
+            <span className="content-link dashboard__create-button" onClick={dashboardCreateNew}>
+              {intl.formatMessage(dashboardMessages.createOneNow)}
+            </span>
+          </div>
+        }
       </div>
     );
 };
 
 Dashboard.propTypes = {
     columns: PropTypes.shape(),
+    dashboardCreateNew: PropTypes.func.isRequired,
     dashboards: PropTypes.shape(),
     getDashboardRef: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
     match: PropTypes.shape(),
 };
 
-export default withRouter(Dashboard);
+export default withRouter(injectIntl(Dashboard));

@@ -1,4 +1,4 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest, actionChannel } from 'redux-saga/effects';
+import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
@@ -480,7 +480,7 @@ function* watchProfileEssenceIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.essenceIterator);
         if (resp.error) {
-            yield put(actions.profileEssenceIteratorError(resp.error));
+            yield put(actions.profileEssenceIteratorError(resp.error, resp.request));
         } else {
             const entries = yield select(state => state.entryState.get('byId'));
             const entryEvents = ['entry:claim', 'entry:vote:claim'];
@@ -491,7 +491,7 @@ function* watchProfileEssenceIteratorChannel () {
                     yield put(entryActions.entryGetShort({ context: 'essenceEvents', entryId: sourceId }));
                 }
             }
-            yield put(actions.profileEssenceIteratorSuccess(resp.data));
+            yield put(actions.profileEssenceIteratorSuccess(resp.data, resp.request));
         }
     }
 }

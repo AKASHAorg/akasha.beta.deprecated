@@ -119,7 +119,7 @@ class Sidebar extends Component {
         const karmaScore = balanceToNumber(loggedProfileData.get('karma'));
         const karmaLevel = Math.floor(karmaScore / 1000);
         const nextLevel = (karmaLevel + 1) * 1000;
-        const percent = (karmaScore / nextLevel) * 100;
+        const percent = ((karmaScore % 1000) / 1000) * 100;
         const tooltip = (
           <div>
             <div>{intl.formatMessage(profileMessages.karmaLevel, { karmaLevel })}</div>

@@ -4,9 +4,10 @@ import { Map, fromJS } from 'immutable';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Row, Col, Icon, Input, Button, Form, Tooltip } from 'antd';
+import { Row, Col, Icon as AntIcon, Input, Button, Form, Tooltip } from 'antd';
 import * as actionTypes from '../../constants/action-types';
-import { AvatarEditor, ImageUploader } from '../';
+import { aboutMeMaxChars } from '../../constants/iterator-limits';
+import { AvatarEditor, ImageUploader, Icon } from '../';
 import { profileMessages, formMessages,
     generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
@@ -18,6 +19,7 @@ class ProfileEditForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            aboutMeCharCount: aboutMeMaxChars,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
@@ -116,6 +118,9 @@ class ProfileEditForm extends Component {
     _handleFieldChange = (field) => {
         const { tempProfile, onProfileUpdate } = this.props;
         return (ev) => {
+            if (field === 'about') {
+                this.setState({ aboutMeCharCount: aboutMeMaxChars - ev.target.value.length });
+            }
             onProfileUpdate(tempProfile.setIn([field], ev.target.value));
         };
     }
@@ -309,6 +314,16 @@ class ProfileEditForm extends Component {
                         <div className="row profile-edit-form__bg-image">
                           <div className="profile-edit-form__bg-image-title" >
                             {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                            <Tooltip
+                              title={intl.formatMessage(profileMessages.backgroundImageTooltip)}
+                              placement="topLeft"
+                              arrowPointAtCenter
+                            >
+                              <Icon
+                                type="questionCircle"
+                                className="question-circle-icon profile-settings__info-icon"
+                              />
+                            </Tooltip>
                           </div>
                           <div className="col-xs-12 profile-edit-form__bg-image-wrap">
                             <ImageUploader
@@ -388,6 +403,12 @@ class ProfileEditForm extends Component {
                           onBlur={this._validateField('about')}
                         />
                       </FormItem>
+                      <div className="profile-edit-form__char-count-wrap">
+                        {intl.formatMessage(profileMessages.aboutMeCharCount)}
+                        <div className="profile-edit-form__char-count">
+                          {this.state.aboutMeCharCount}
+                        </div>
+                      </div>
                     </Col>
                     <Col md={24}>
                       <div className="profile-edit-form__link">
@@ -400,7 +421,7 @@ class ProfileEditForm extends Component {
                             help={this._getErrorMessages('links', index, 'url')}
                           >
                             <Input
-                              suffix={<Icon
+                              suffix={<AntIcon
                                 className="content-link"
                                 type="close-circle"
                                 onClick={this._handleRemoveLink(link.get('id'), 'links')}

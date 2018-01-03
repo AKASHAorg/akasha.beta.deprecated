@@ -62,7 +62,7 @@ class AppLogger {
     registerLogger(name: string, {
         level = 'info',
         errorLevel = 'warn',
-        maxsize = 10 * 1024,
+        maxsize = 2 ** 23,
         maxFiles = 1
     } = {}) {
         if (!this.PATH_OK) {

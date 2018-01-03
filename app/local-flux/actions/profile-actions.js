@@ -382,8 +382,8 @@ export const profileUpdateLoggedError = (error) => {
 export const profileEssenceIterator = () =>
     action(types.PROFILE_ESSENCE_ITERATOR);
 
-export const profileEssenceIteratorSuccess = data =>
-    action(types.PROFILE_ESSENCE_ITERATOR_SUCCESS, { data });
+export const profileEssenceIteratorSuccess = (data, request) =>
+    action(types.PROFILE_ESSENCE_ITERATOR_SUCCESS, { data, request });
 
-export const profileEssenceIteratorError = error =>
-    action(types.PROFILE_ESSENCE_ITERATOR_ERROR, { error });
+export const profileEssenceIteratorError = (error, request) =>
+    action(types.PROFILE_ESSENCE_ITERATOR_ERROR, { error, request });

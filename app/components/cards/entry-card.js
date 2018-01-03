@@ -317,7 +317,6 @@ EntryCard.propTypes = {
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
-    existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     hideEntrySettings: PropTypes.shape().isRequired,
