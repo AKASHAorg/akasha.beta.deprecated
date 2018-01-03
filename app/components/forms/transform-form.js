@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Select, Slider } from 'antd';
+import { Button, Form, InputNumber, Select, Slider } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
@@ -117,7 +117,11 @@ class TransformForm extends Component {
         this.setState({ amount: 0, from, to });
     };
 
-    onSliderChange = (amount) => { this.setState({ amount }); };
+    onAmountChange = (amount) => {
+        if (!isNaN(amount)) {
+            this.setState({ amount });
+        }
+    };
 
     onSubmit = () => {
         const { actionAdd, loggedEthAddress } = this.props;
@@ -215,13 +219,22 @@ class TransformForm extends Component {
                   min={0}
                   // if both min and max are 0, the slider will not work properly
                   max={max || 1}
-                  onChange={max ? this.onSliderChange : () => {}}
+                  onChange={max ? this.onAmountChange : () => {}}
                   tipFormatter={null}
                   value={amount}
                 />
-                <div className="transform-form__slider-amount">
-                  {amount}
-                </div>
+                <InputNumber
+                  className="transform-form__slider-amount"
+                  disabled={!max}
+                  min={0}
+                  max={max}
+                  maxLength={12}
+                  onChange={this.onAmountChange}
+                  precision={0}
+                  size="small"
+                  step={1}
+                  value={amount}
+                />
               </div>
             </FormItem>
             <div className="transform-form__disclaimer">
