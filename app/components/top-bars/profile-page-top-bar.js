@@ -5,12 +5,24 @@ import { Tooltip } from 'antd';
 import { profileMessages } from '../../locale-data/messages';
 import { Icon, Navigation } from '../';
 
+const removeClass = (id) => {
+    const column = document.getElementById(id);
+    if (column) {
+        const className = column.getAttribute('class');
+        const newClassName = className.replace('column_focused', '');
+        column.setAttribute('class', newClassName);
+    }
+};
+
 const ProfilePageTopBar = (props) => {
     const { intl } = props;
 
     const scrollColumnIntoView = (id) => {
         const container = document.getElementById('profile-activity');
         const column = document.getElementById(id);
+        const className = column.getAttribute('class');
+        column.setAttribute('class', `${className} column_focused`);
+        setTimeout(() => removeClass(id), 500);
         const profileDetailsWidth = 352;
         const columnLeftOffset = column.offsetLeft - profileDetailsWidth;
         const scrollLeft = (columnLeftOffset - (container.clientWidth / 2)) + (column.clientWidth / 2);

@@ -11,12 +11,15 @@ const createEntryRecord = entry =>
     new EntryRecord(entry).withMutations((mEntry) => {
         if (entry.content) {
             let cardInfo = new CardInfo();
+            let title = entry.content.title;
             if (entry.content.cardInfo) {
                 cardInfo = cardInfo.merge(fromJS(entry.content.cardInfo));
+                title = title || entry.content.cardInfo.title;
             }
             mEntry.set('content', new EntryContent({
                 ...entry.content,
-                cardInfo
+                cardInfo,
+                title
             }));
         }
     });

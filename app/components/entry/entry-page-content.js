@@ -106,7 +106,7 @@ class EntryPageContent extends Component {
           <div className="entry-page-content">
             <div>
               <h1 className="entry-page-content__title">
-                {entry.getIn(['content', 'title'])}
+                {entry.getIn(['content', 'entryType']) === 0 && entry.getIn(['content', 'title'])}
               </h1>
               {entry.content.entryType === 1 &&
                 <WebsiteInfoCard

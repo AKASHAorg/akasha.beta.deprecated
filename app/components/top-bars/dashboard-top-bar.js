@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectActiveDashboardColumns } from '../../local-flux/selectors';
+import { selectActiveDashboard, selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
 import { Icon, Navigation, PlusSquareIcon } from '../';
@@ -28,7 +28,10 @@ const removeClass = (id) => {
 };
 
 const DashboardTopBar = (props) => {
-    const { columns, intl } = props;
+    const { activeDashboard, columns, intl } = props;
+    const addColumnTooltip = activeDashboard ?
+        intl.formatMessage(dashboardMessages.addColumn) :
+        intl.formatMessage(dashboardMessages.createDashboardFirst);
     const scrollColumnIntoView = (id) => {
         const dashboard = document.getElementById('dashboard-container');
         const column = document.getElementById(id);
@@ -68,9 +71,9 @@ const DashboardTopBar = (props) => {
             />
           </Tooltip>
         ))}
-        <Tooltip title={intl.formatMessage(dashboardMessages.addColumn)}>
-          <div onClick={props.dashboardAddNewColumn}>
-            <PlusSquareIcon />
+        <Tooltip title={addColumnTooltip}>
+          <div onClick={activeDashboard ? props.dashboardAddNewColumn : undefined}>
+            <PlusSquareIcon disabled={!activeDashboard} />
           </div>
         </Tooltip>
       </div>
@@ -78,6 +81,7 @@ const DashboardTopBar = (props) => {
 };
 
 DashboardTopBar.propTypes = {
+    activeDashboard: PropTypes.shape(),
     columns: PropTypes.shape().isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired
@@ -85,6 +89,7 @@ DashboardTopBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
+        activeDashboard: selectActiveDashboard(state),
         columns: selectActiveDashboardColumns(state)
     };
 }
