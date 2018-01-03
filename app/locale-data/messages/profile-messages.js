@@ -16,6 +16,16 @@ export const profileMessages = defineMessages({
         description: 'Background image section title',
         defaultMessage: 'COVER PHOTO'
     },
+    backgroundImageTooltip: {
+        id: 'app.profile.backgroundImageTooltip',
+        description: 'Background image section tooltip',
+        defaultMessage: 'Please upload a picture with a ratio of 2:1'
+    },
+    aboutMeCharCount: {
+        id: 'app.profile.aboutMeCharCount',
+        description: 'About Me character counter title',
+        defaultMessage: 'Characters left:'
+    },
     aboutMeTitle: {
         id: 'app.profile.aboutMeTitle',
         description: 'About Me section title',

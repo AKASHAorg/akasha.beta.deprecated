@@ -11,6 +11,7 @@ import { setupMessages, generalMessages } from '../locale-data/messages';
 
 class DashboardPage extends Component {
     state = {
+        carouselEnd: false,
         modalVisible: this.props.firstDashboardReady
     }
 
@@ -42,8 +43,21 @@ class DashboardPage extends Component {
         this.props.dashboardHideTutorial();
     }
 
+    handleCarouselChange = (old, newIndex) => {
+        if (newIndex === 2) {
+            this.setState({ carouselEnd: true });
+        }
+    }
+
     render () {
         const { intl, columns, dashboards, homeReady, isHidden } = this.props;
+        const modalFooterBtn = this.state.carouselEnd ?
+            (<Button key="submit" type="primary" onClick={this.handleClose}>
+              {intl.formatMessage(generalMessages.okTutorial)}
+            </Button>) :
+            (<Button key="next" type="primary" onClick={() => this.slider.next()}>
+              {intl.formatMessage(generalMessages.next)}
+            </Button>);
 
         return (
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
@@ -54,13 +68,14 @@ class DashboardPage extends Component {
               onOk={this.handleClose}
               onCancel={this.handleClose}
               footer={[
-                <Button key="submit" type="primary" onClick={this.handleClose}>
-                  {intl.formatMessage(generalMessages.ok)}
-                </Button>,
+                modalFooterBtn,
               ]}
               width="50%"
             >
-              <Carousel>
+              <Carousel
+                ref={(c) => { this.slider = c; }}
+                beforeChange={this.handleCarouselChange}
+              >
                 <div className="tutorial-modal__page">
                   <div className="tutorial-modal__test-img" />
                   <div className="tutorial-modal__text">
