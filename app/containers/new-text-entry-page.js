@@ -35,16 +35,16 @@ class NewEntryPage extends Component {
         const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         const onChain = match.params.draftId.startsWith('0x');
         if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished && !onChain) {
-            this.props.draftCreate({
-                id: match.params.draftId,
-                ethAddress: loggedProfile.get('ethAddress'),
-                content: {
-                    licence: userDefaultLicense,
-                    featuredImage: {},
-                },
-                tags: [],
-                entryType: 'article',
-            });
+            // this.props.draftCreate({
+            //     id: match.params.draftId,
+            //     ethAddress: loggedProfile.get('ethAddress'),
+            //     content: {
+            //         licence: userDefaultLicense,
+            //         featuredImage: {},
+            //     },
+            //     tags: [],
+            //     entryType: 'article',
+            // });
         }
         if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {

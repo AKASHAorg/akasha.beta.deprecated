@@ -11,6 +11,7 @@ import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import { draftPublishUpdate } from '../../constants/action-types';
 
 const { confirm } = Modal;
 class NewEntrySecondarySidebar extends Component {
@@ -88,9 +89,18 @@ class NewEntrySecondarySidebar extends Component {
         });
     }
 
-    _handleDraftDelete = (draftId) => {
-        const { ethAddress } = this.props;
-        this.props.draftDelete({ draftId, ethAddress });
+    _handleDraftDelete = (draftIdToDelete) => {
+        const { ethAddress, drafts, match, history } = this.props;
+        const { draftType, draftId } = match.params;
+
+        const nextDraft = drafts.filter(draft => !draft.get('onChain') &&
+            draft.getIn(['content', 'entryType']) === draftType && draft.get('id') !== draftId);
+
+        this.props.draftDelete({ draftIdToDelete, ethAddress });
+        console.log(nextDraft, draftIdToDelete === draftId, 'condition');
+        if (nextDraft && draftIdToDelete === draftId) {
+            history.push(`/draft/${draftType}/${nextDraft.get('id')}`);
+        }
     }
 
     _showDraftDeleteConfirm = (ev, draftId) => {

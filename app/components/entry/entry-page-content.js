@@ -2,12 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import DraftJS from 'draft-js';
-import { Tooltip } from 'antd';
+import { Tooltip, Icon } from 'antd';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from '../svg';
 import { SelectableEditor, TagPopover, WebsiteInfoCard } from '../';
+import { entryMessages } from '../../locale-data/messages/entry-messages';
 
 const { EditorState } = DraftJS;
 
@@ -91,11 +92,16 @@ class EntryPageContent extends Component {
         toggleOutsideNavigation(url);
     }
     render () {
-        const { commentEditor, containerRef, entry, licenses } = this.props;
+        const { commentEditor, containerRef, entry, licenses, intl } = this.props;
         const license = licenses.get(entry.content.licence.id);
-        const licenseLabel = license.parent ?
-            licenses.get(license.parent).label :
-            license.label;
+        let licenseLabel = intl.formatMessage(entryMessages.cannotRetrieveLicense);
+        if (license) {
+            if (license.parent) {
+                licenseLabel = licenses.get(license.parent).label;
+            } else {
+                licenseLabel = license.label;
+            }
+        }
         return (
           <div className="entry-page-content">
             <div>
@@ -126,6 +132,9 @@ class EntryPageContent extends Component {
               </div>
             </div>
             <div className="flex-center-y entry-page-content__info">
+              {!license &&
+                <Icon type="exclamation-circle-o" className="entry-page-content__licence-error-icon" />
+              }
               <span style={{ paddingRight: '10px' }}>
                 {licenseLabel}
               </span>
@@ -152,6 +161,7 @@ EntryPageContent.propTypes = {
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     highlightSave: PropTypes.func.isRequired,
+    intl: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),

@@ -36,6 +36,11 @@ const entryMessages = defineMessages({
         description: 'error shown when we cannot extract wesite info',
         defaultMessage: 'Cannot extract information from website! Please try another address'
     },
+    cannotRetrieveLicense: {
+        id: 'app.entry.cannotRetrieveLicense',
+        description: 'message to show when a licence cannot be retrieved or it was not saved correctly',
+        defaultMessage: 'Cannot retrieve licence info.'
+    },
     imageCaptionPlaceholder: {
         id: 'app.entry.imageCaptionPlaceholder',
         description: 'text for caption input placeholder',
