@@ -6,12 +6,16 @@ const LinkDecorator = (passedProps) => {
     const Link = (props) => {
         const contentState = props.contentState;
         const { url } = contentState.getEntity(props.entityKey).getData();
+        const onNavigation = (ev) => {
+            ev.preventDefault();
+            onOutsideNavigation(url);
+        };
         return (
           <a
             className="editor__link"
             href={url}
             title={url}
-            onClick={(ev) => { onOutsideNavigation(ev, url); }}
+            onClick={onNavigation}
           >
             {props.children}
           </a>
