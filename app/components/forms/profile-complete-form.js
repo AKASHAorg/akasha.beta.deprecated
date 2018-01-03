@@ -6,6 +6,7 @@ import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import { Row, Card, Col, Icon as AntIcon, Input, Button, Form, Switch, Tooltip } from 'antd';
 import * as actionTypes from '../../constants/action-types';
+import { aboutMeMaxChars } from '../../constants/iterator-limits';
 import { AvatarEditor, Icon, ImageUploader } from '../';
 import { profileMessages, formMessages,
     generalMessages, validationMessages } from '../../locale-data/messages';
@@ -18,6 +19,7 @@ class ProfileCompleteForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            aboutMeCharCount: aboutMeMaxChars,
             akashaIdIsValid: true,
             akashaIdExists: false,
             insufficientEth: false,
@@ -120,6 +122,9 @@ class ProfileCompleteForm extends Component {
     _handleFieldChange = (field) => {
         const { tempProfile, onProfileUpdate } = this.props;
         return (ev) => {
+            if (field === 'about') {
+                this.setState({ aboutMeCharCount: aboutMeMaxChars - ev.target.value.length });
+            }
             onProfileUpdate(tempProfile.setIn([field], ev.target.value));
         };
     }
@@ -330,6 +335,16 @@ class ProfileCompleteForm extends Component {
                       <div className="profile-complete-form__bg-image-float">
                         <div className="profile-complete-form__bg-image-title" >
                           {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                          <Tooltip
+                            title={intl.formatMessage(profileMessages.backgroundImageTooltip)}
+                            placement="topLeft"
+                            arrowPointAtCenter
+                          >
+                            <Icon
+                              type="questionCircle"
+                              className="question-circle-icon profile-settings__info-icon"
+                            />
+                          </Tooltip>
                         </div>
                         <div className="col-xs-12 profile-complete-form__bg-image-wrap">
                           <ImageUploader
@@ -432,6 +447,12 @@ class ProfileCompleteForm extends Component {
                         onBlur={this._validateField('about')}
                       />
                     </FormItem>
+                    <div className="profile-complete-form__char-count-wrap">
+                      {intl.formatMessage(profileMessages.aboutMeCharCount)}
+                      <div className="profile-complete-form__char-count">
+                        {this.state.aboutMeCharCount}
+                      </div>
+                    </div>
                   </Col>
                   <Col md={24}>
                     <div className="profile-complete-form__link">

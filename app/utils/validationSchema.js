@@ -1,6 +1,7 @@
 import * as Joi from 'joi-browser';
 import XRegExp from 'xregexp';
 import { formMessages, validationMessages } from '../locale-data/messages';
+import { aboutMeMaxChars } from '../constants/iterator-limits';
 
 const nameRegExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
 /**
@@ -54,7 +55,7 @@ export const getProfileSchema = (intl, options) => {
             }),
         about: Joi
             .string()
-            .max(195)
+            .max(aboutMeMaxChars)
             .allow('')
             .options({
                 language: {
