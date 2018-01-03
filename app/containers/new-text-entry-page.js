@@ -28,7 +28,7 @@ class NewEntryPage extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
-            userDefaultLicense, selectionState } = nextProps;
+            selectionState } = nextProps;
         const { loggedProfile } = this.props;
         const ethAddress = loggedProfile.get('ethAddress');
         const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
@@ -46,7 +46,7 @@ class NewEntryPage extends Component {
             //     entryType: 'article',
             // });
         }
-        if (match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
+        if (draftObj && match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true
@@ -296,9 +296,16 @@ class NewEntryPage extends Component {
     /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
-        const { loggedProfile, baseUrl, showSecondarySidebar, intl, draftObj,
+        const { loggedProfile, baseUrl, drafts, showSecondarySidebar, intl, draftObj, draftsFetched,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
+
+        const matchingDrafts = drafts.filter(draft =>
+            draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+
+        if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
+            return <div>You have no drafts!</div>;
+        }
         if (!draftObj || !draftObj.get('content')) {
             return (
               <DataLoader
@@ -491,6 +498,7 @@ NewEntryPage.propTypes = {
     baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
+    drafts: PropTypes.shape(),
     draftUpdate: PropTypes.func,
     draftRevertToVersion: PropTypes.func,
     draftsFetched: PropTypes.bool,
@@ -513,6 +521,7 @@ NewEntryPage.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
+    drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),

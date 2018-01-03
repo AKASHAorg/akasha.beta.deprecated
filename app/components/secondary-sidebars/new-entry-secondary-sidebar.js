@@ -94,12 +94,17 @@ class NewEntrySecondarySidebar extends Component {
         const { draftType, draftId } = match.params;
 
         const nextDraft = drafts.filter(draft => !draft.get('onChain') &&
-            draft.getIn(['content', 'entryType']) === draftType && draft.get('id') !== draftId);
+            draft.getIn(['content', 'entryType']) === draftType && draft.get('id') !== draftId).first();
 
-        this.props.draftDelete({ draftIdToDelete, ethAddress });
-        console.log(nextDraft, draftIdToDelete === draftId, 'condition');
+        this.props.draftDelete({
+            draftId: draftIdToDelete,
+            ethAddress
+        });
+        console.log(nextDraft, 'the next draft');
         if (nextDraft && draftIdToDelete === draftId) {
             history.push(`/draft/${draftType}/${nextDraft.get('id')}`);
+        } else if (!nextDraft) {
+            history.push(`draft/${draftType}/nodraft`);
         }
     }
 
