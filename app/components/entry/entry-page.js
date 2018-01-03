@@ -156,6 +156,7 @@ class EntryPage extends Component {
                     containerRef={this.container}
                     entry={entry}
                     highlightSave={highlightSave}
+                    intl={intl}
                     latestVersion={latestVersion}
                     licenses={licenses}
                     toggleOutsideNavigation={toggleOutsideNavigation}
