@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import { dashboardMessages } from '../../locale-data/messages';
-import { dashboardAdd, dashboardDelete, dashboardRename } from '../../local-flux/actions/dashboard-actions';
+import { dashboardAdd, dashboardDelete, dashboardDeleteNew,
+    dashboardRename } from '../../local-flux/actions/dashboard-actions';
 import { selectAllDashboards } from '../../local-flux/selectors';
 import { DashboardSidebarRow, PlusSquareIcon } from '../';
 
@@ -24,9 +25,14 @@ class DashboardSecondarySidebar extends Component {
         }
         if (nextProps.dashboards.size > this.props.dashboards.size) {
             this.setState({ newDashboard: null });
+            this.props.dashboardDeleteNew();
         }
         if (!nextProps.renamingDashboard && this.props.renamingDashboard) {
             this.setState({ renameDashboard: null, renameValue: null });
+        }
+        // Handle creating a new dashboard from outside this component
+        if (nextProps.newDashboard && !this.props.newDashboard) {
+            this.onToggleNewDashboard();
         }
     }
 
@@ -36,6 +42,7 @@ class DashboardSecondarySidebar extends Component {
         if (activeDashboard !== nextProps.activeDashboard ||
             !dashboards.equals(nextProps.dashboards) ||
             renamingDashboard !== nextProps.renamingDashboard ||
+            this.props.newDashboard !== nextProps.newDashboard ||
             newDashboard !== nextState.newDashboard ||
             renameDashboard !== nextState.renameDashboard ||
             renameValue !== nextState.renameValue
@@ -60,7 +67,7 @@ class DashboardSecondarySidebar extends Component {
         if (ev.key === 'Escape') {
             const { renameDashboard } = this.state;
             const dashboard = this.props.dashboards.find(board => board.get('id') === renameDashboard);
-            const initialName = dashboard.get('name');
+            const initialName = dashboard && dashboard.get('name');
             const changes = renameDashboard ?
                 { renameValue: initialName } :
                 { newDashboard: '' };
@@ -77,6 +84,7 @@ class DashboardSecondarySidebar extends Component {
             this.props.dashboardRename(renameDashboard, renameValue);
         } else {
             this.setState({ newDashboard: null, renameDashboard: null, renameValue: null });
+            this.props.dashboardDeleteNew();
         }
     };
 
@@ -155,11 +163,13 @@ DashboardSecondarySidebar.propTypes = {
     activeDashboard: PropTypes.string,
     dashboardAdd: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
+    dashboardDeleteNew: PropTypes.func.isRequired,
     dashboardRename: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    newDashboard: PropTypes.bool,
     renamingDashboard: PropTypes.bool,
 };
 
@@ -168,6 +178,7 @@ function mapStateToProps (state) {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         dashboards: selectAllDashboards(state),
         lists: state.listState.get('byName'),
+        newDashboard: state.dashboardState.get('newDashboard'),
         renamingDashboard: state.dashboardState.getIn(['flags', 'renamingDashboard'])
     };
 }
@@ -177,6 +188,7 @@ export default connect(
     {
         dashboardAdd,
         dashboardDelete,
+        dashboardDeleteNew,
         dashboardRename,
     }
 )(injectIntl(DashboardSecondarySidebar));

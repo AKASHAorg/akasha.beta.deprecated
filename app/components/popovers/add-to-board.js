@@ -54,6 +54,7 @@ class AddToBoard extends Component {
 
     render () {
         const { closePopover, dashboards, intl, onNewDashboard, profile, search, tag } = this.props;
+        const onlyOneBoard = dashboards.size === 1;
         return (
           <div>
             <div>
@@ -98,16 +99,18 @@ class AddToBoard extends Component {
                       <div className="overflow-ellipsis add-to-board__name">
                         {dashboard.get('name')}
                       </div>
-                      <div className="hidden-action flex-center add-to-board__icon">
-                        <Icon
-                          type="trash"
-                          onClick={(ev) => {
-                              ev.preventDefault();
-                              ev.stopPropagation();
-                              this.props.dashboardDelete(dashboard.get('id'));
-                          }}
-                        />
-                      </div>
+                      {!onlyOneBoard &&
+                        <div className="hidden-action flex-center add-to-board__icon">
+                          <Icon
+                            type="trash"
+                            onClick={(ev) => {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                this.props.dashboardDelete(dashboard.get('id'));
+                            }}
+                          />
+                        </div>
+                      }
                     </div>
                   );
               })}

@@ -9,6 +9,7 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import { toggleAethWallet } from '../../local-flux/actions/app-actions';
 
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
@@ -133,7 +134,7 @@ class EntryPage extends Component {
 
     render () {
         const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
-            licenses, loggedProfileData, newComments } = this.props;
+            licenses, loggedProfileData, newComments, toggleOutsideNavigation } = this.props;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -157,6 +158,7 @@ class EntryPage extends Component {
                     highlightSave={highlightSave}
                     latestVersion={latestVersion}
                     licenses={licenses}
+                    toggleOutsideNavigation={toggleOutsideNavigation}
                   />
                 }
                 {!entry.content &&
@@ -259,6 +261,7 @@ EntryPage.propTypes = {
     match: PropTypes.shape(),
     newComments: PropTypes.shape(),
     pendingComments: PropTypes.shape(),
+    toggleOutsideNavigation: PropTypes.func,
 };
 
 export default injectIntl(EntryPage);
