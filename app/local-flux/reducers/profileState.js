@@ -82,13 +82,21 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
 
-    [types.PROFILE_ESSENCE_ITERATOR]: state =>
-        state.setIn(['flags', 'fetchingEssenceIterator'], true),
+    [types.PROFILE_ESSENCE_ITERATOR]: (state) => {
+        const flag = state.getIn(['essenceIterator', 'lastIndex']) ?
+            'fetchingMoreEssenceIterator' :
+            'fetchingEssenceIterator';
+        return state.setIn(['flags', flag], true);
+    },
 
-    [types.PROFILE_ESSENCE_ITERATOR_ERROR]: state =>
-        state.setIn(['flags', 'fetchingEssenceIterator'], false),
+    [types.PROFILE_ESSENCE_ITERATOR_ERROR]: (state, { request }) => {
+        const flag = request.lastIndex ?
+            'fetchingMoreEssenceIterator' :
+            'fetchingEssenceIterator';
+        return state.setIn(['flags', flag], false);
+    },
 
-    [types.PROFILE_ESSENCE_ITERATOR_SUCCESS]: (state, { data }) => {
+    [types.PROFILE_ESSENCE_ITERATOR_SUCCESS]: (state, { data, request }) => {
         let latestIterable = new List();
         const essenceEvents = state.get('essenceEvents');
         data.collection.forEach((event) => {
@@ -106,10 +114,11 @@ const profileState = createReducer(initialState, {
 
         const latestSet = Collection.Set(latestIterable);
         latestIterable = essenceEvents.concat(latestSet);
+        const flag = request.lastIndex ? 'fetchingMoreEssenceIterator' : 'fetchingEssenceIterator';
 
         return state.merge({
             essenceEvents: latestIterable,
-            flags: state.get('flags').set('fetchingEssenceIterator', false),
+            flags: state.get('flags').set(flag, false),
             essenceIterator: new EssenceIterator({ lastBlock: data.lastBlock, lastIndex: data.lastIndex })
         });
     },
