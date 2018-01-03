@@ -29,7 +29,6 @@ node_modules
 .DS_Store
 
 # App packaged
-dist
 release
 .idea
 .vscode
