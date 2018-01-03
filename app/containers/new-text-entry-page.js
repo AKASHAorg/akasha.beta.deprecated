@@ -118,8 +118,24 @@ class NewEntryPage extends Component {
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
-        const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(
+        const { draftObj, loggedProfile, licences } = this.props;
+        if (licenceField === 'parent') {
+            const childLicence = licences.find(lic => lic.get('parent') === licence);
+            if (childLicence) {
+                return this.props.draftUpdate(
+                    draftObj.merge({
+                        ethAddress: loggedProfile.get('ethAddress'),
+                        content: draftObj.get('content').merge({
+                            licence: draftObj.getIn(['content', 'licence']).merge({
+                                parent: licence,
+                                id: childLicence.get('id'),
+                            })
+                        })
+                    })
+                );
+            }
+        }
+        return this.props.draftUpdate(
             draftObj.merge({
                 ethAddress: loggedProfile.get('ethAddress'),
                 content: draftObj.get('content').setIn(['licence', licenceField], licence)

@@ -129,6 +129,10 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
+    [types.DASHBOARD_CREATE_NEW]: state => state.set('newDashboard', true),
+
+    [types.DASHBOARD_DELETE_NEW]: state => state.set('newDashboard', false),
+
     [types.DASHBOARD_DELETE_COLUMN_SUCCESS]: (state, { data }) => {
         const { id } = data.dashboard;
         const byId = state.get('byId').set(id, createDashboardRecord(data.dashboard));

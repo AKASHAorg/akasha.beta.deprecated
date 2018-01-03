@@ -15,7 +15,6 @@ class PublishOptionsPanel extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        // console.log(!nextProps.selectedLicence.equals(this.props.selectedLicence), 't o f');
         return nextProps.excerpt !== this.props.excerpt ||
             (!nextProps.linkEntry && !nextProps.featuredImage.equals(this.props.featuredImage)) ||
             !nextProps.selectedLicence.equals(this.props.selectedLicence) ||
