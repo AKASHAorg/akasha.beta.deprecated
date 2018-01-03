@@ -66,6 +66,16 @@ const dashboardMessages = defineMessages({
         description: 'column title for "following feed" (entries published by the users that you are following)',
         defaultMessage: 'Following feed'
     },
+    createDashboardFirst: {
+        id: 'app.dashboard.createDashboardFirst',
+        description: 'Tooltip message for add column button when there is no board created',
+        defaultMessage: 'You must create a board first'
+    },
+    createOneNow: {
+        id: 'app.dashboard.createOneNow',
+        description: 'button label for creating a new board',
+        defaultMessage: 'Create one now'
+    },
     createNew: {
         id: 'app.dashboard.createNew',
         description: 'button label/tooltip for creating a new board',
@@ -130,6 +140,11 @@ const dashboardMessages = defineMessages({
         id: 'app.dashboard.namePlaceholder',
         description: 'placeholder for dashboard name input field',
         defaultMessage: 'Type board name'
+    },
+    noDashboards: {
+        id: 'app.dashboard.noDashboard',
+        description: 'placeholder message displayed when no boards were found',
+        defaultMessage: 'No boards found.'
     },
     previewList: {
         id: 'app.dashboard.previewList',
