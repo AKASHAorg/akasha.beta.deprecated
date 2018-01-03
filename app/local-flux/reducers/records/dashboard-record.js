@@ -47,5 +47,6 @@ export const DashboardState = Record({
     }),
     flags: new Flags(),
     newColumn: null,
+    newDashboard: false,
     search: null,
 });

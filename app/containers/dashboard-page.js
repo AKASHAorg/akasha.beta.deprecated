@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Carousel, Modal } from 'antd';
 import { Dashboard, DataLoader } from '../components';
-import { dashboardHideTutorial, dashboardSetActive,
+import { dashboardCreateNew, dashboardHideTutorial, dashboardSetActive,
     dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import { setupMessages, generalMessages } from '../locale-data/messages';
@@ -85,6 +85,7 @@ class DashboardPage extends Component {
               <div style={{ height: '100%' }}>
                 <Dashboard
                   columns={columns}
+                  dashboardCreateNew={this.props.dashboardCreateNew}
                   dashboards={dashboards}
                   getDashboardRef={this.getDashboardRef}
                   navigateRight={this.navigateRight}
@@ -101,6 +102,7 @@ DashboardPage.propTypes = {
     activeDashboard: PropTypes.string,
     columns: PropTypes.shape(),
     dashboards: PropTypes.shape(),
+    dashboardCreateNew: PropTypes.func.isRequired,
     dashboardHideTutorial: PropTypes.func,
     dashboardSetActive: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
@@ -128,6 +130,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        dashboardCreateNew,
         dashboardHideTutorial,
         dashboardSetActive,
         dashboardUpdateNewColumn,
