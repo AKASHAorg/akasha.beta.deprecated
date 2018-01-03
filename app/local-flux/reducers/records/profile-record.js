@@ -80,6 +80,7 @@ const Flags = Record({
     fetchingFollowings: new Map(),
     fetchingLocalProfiles: false,
     fetchingLoggedProfile: false,
+    fetchingMoreEssenceIterator: false,
     fetchingMoreFollowers: new Map(),
     fetchingMoreFollowings: new Map(),
     fetchingProfileList: false,

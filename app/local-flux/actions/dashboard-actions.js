@@ -26,6 +26,10 @@ export const dashboardAddColumnError = (error) => {
 export const dashboardAddColumnSuccess = data =>
     action(types.DASHBOARD_ADD_COLUMN_SUCCESS, { data });
 export const dashboardAddNewColumn = () => action(types.DASHBOARD_ADD_NEW_COLUMN);
+
+export const dashboardCreateNew = () => action(types.DASHBOARD_CREATE_NEW);
+export const dashboardDeleteNew = () => action(types.DASHBOARD_DELETE_NEW);
+
 export const dashboardDelete = id =>
     action(types.DASHBOARD_DELETE, { id });
 

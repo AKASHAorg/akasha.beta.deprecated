@@ -335,6 +335,11 @@ const generalMessages = defineMessages({
         description: 'Ok',
         defaultMessage: 'Ok'
     },
+    okTutorial: {
+        id: 'app.general.okTutorial',
+        description: 'Label for tutorial modal btn',
+        defaultMessage: 'Ok, Got It!'
+    },
     pause: {
         id: 'app.general.pause',
         description: 'pause button label',
