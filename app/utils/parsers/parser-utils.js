@@ -14,15 +14,19 @@ class ParserUtils {
         const reqHeaders = new Headers();
         reqHeaders.append('Content-Type', contentType);
         const reqParams = { ...this.fetchRequestParams, headers: reqHeaders };
-        const req = new Request(url, reqParams);
-        return new Promise((resolve, reject) => {
-            fetch(req).then(resolve).catch(reject);
-            setTimeout(() => {
-                const error = new Error('Request timeout!');
-                error.code = 408;
-                reject(error);
-            }, 5000);
-        });
+        try {
+            const req = new Request(url, reqParams);
+            return new Promise((resolve, reject) => {
+                fetch(req).then(resolve).catch(reject);
+                setTimeout(() => {
+                    const error = new Error('Request timeout!');
+                    error.code = 408;
+                    reject(error);
+                }, 5000);
+            });
+        } catch (ex) {
+            return Promise.reject('error!');
+        }
     }
 
     getUrlQueryParams = search => new URLSearchParams(search)
