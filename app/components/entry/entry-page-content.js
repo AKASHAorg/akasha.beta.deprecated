@@ -85,7 +85,11 @@ class EntryPageContent extends Component {
           </div>
         );
     };
-
+    // when user clicks a link in an entry
+    _handleOutsideNavigation = (url) => {
+        const { toggleOutsideNavigation } = this.props;
+        toggleOutsideNavigation(url);
+    }
     render () {
         const { commentEditor, containerRef, entry, licenses } = this.props;
         const license = licenses.get(entry.content.licence.id);
@@ -96,7 +100,7 @@ class EntryPageContent extends Component {
           <div className="entry-page-content">
             <div>
               <h1 className="entry-page-content__title">
-                {entry.getIn(['content', 'title'])}
+                {entry.getIn(['content', 'entryType']) === 0 && entry.getIn(['content', 'title'])}
               </h1>
               {entry.content.entryType === 1 &&
                 <WebsiteInfoCard
@@ -108,6 +112,7 @@ class EntryPageContent extends Component {
                   }
                   isEdit={false}
                   infoExtracted
+                  onClick={this._handleOutsideNavigation}
                 />
               }
               <div className="entry-page-content__content">
@@ -116,6 +121,7 @@ class EntryPageContent extends Component {
                   draft={entry.getIn(['content', 'draft'])}
                   highlightSave={this.highlightSave}
                   startComment={commentEditor && commentEditor.insertHighlight}
+                  onOutsideNavigation={this._handleOutsideNavigation}
                 />
               </div>
             </div>
@@ -146,6 +152,7 @@ EntryPageContent.propTypes = {
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     highlightSave: PropTypes.func.isRequired,
+    toggleOutsideNavigation: PropTypes.func,
     latestVersion: PropTypes.number,
     licenses: PropTypes.shape(),
 };
