@@ -1,21 +1,27 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
+import { DraftJS, editorStateFromRaw, MegadraftEditor, createTypeStrategy } from 'megadraft';
 import { Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import readOnlyImagePlugin from '../text-entry-editor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
+import LinkDecorator from './decorators/link-decorator';
 import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
 import { Icon } from '../';
 
-const { ContentState, EditorState } = DraftJS;
+const { ContentState, EditorState, CompositeDecorator } = DraftJS;
 
 class SelectableEditor extends Component {
     constructor (props) {
         super(props);
-        const emptyState = EditorState.createEmpty();
+        const { onOutsideNavigation } = props;
+        const decorators = new CompositeDecorator([{
+            strategy: createTypeStrategy('LINK'),
+            component: LinkDecorator({ onOutsideNavigation }),
+        }]);
+        const emptyState = EditorState.createEmpty(decorators);
         const editorState = EditorState.push(emptyState, editorStateFromRaw(props.draft).getCurrentContent());
         this.state = {
             editorState
@@ -45,6 +51,7 @@ class SelectableEditor extends Component {
         if (type === 'atomic' && data.type === 'image') {
             return `image-block__${data.media}`;
         }
+        return '';
     }
     onSelectionChange = () => {
         const { anchorNode, focusNode } = window.getSelection();
@@ -252,7 +259,8 @@ SelectableEditor.propTypes = {
     draft: PropTypes.shape().isRequired,
     highlightSave: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    startComment: PropTypes.func
+    startComment: PropTypes.func,
+    onOutsideNavigation: PropTypes.func,
 };
 
 export default injectIntl(clickAway(SelectableEditor));
