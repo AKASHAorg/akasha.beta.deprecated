@@ -290,9 +290,13 @@
       "category": "Network",
       "target": [
         "deb",
+        "snap",
         "zip"
       ],
       "icon": "resources/icons/"
+    },
+    "snap": {
+      "grade": "devel"
     },
     "mac": {
       "category": "public.app-category.social-networking",
