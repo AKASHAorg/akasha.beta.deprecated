@@ -88,7 +88,7 @@
     "@types/lru-cache": "4.1.0",
     "@types/mocha": "2.2.45",
     "@types/node": "8.5.2",
-    "@types/ramda": "0.25.13",
+    "@types/ramda": "0.25.8",
     "@types/rimraf": "2.0.2",
     "antd": "3.1.0",
     "asar": "0.14.0",
@@ -272,9 +272,9 @@
       "!main/typings/**/*",
       "!test${/*}*",
       "!app/**/*",
+      "!app/",
       "!intl/*",
       "!intl/**/*",
-      "node_modules/",
       "main.js",
       "main.js.map",
       "LICENSE",
@@ -285,7 +285,8 @@
       "target": [
         "nsis",
         "zip"
-      ]
+      ],
+        "icon": "resources/icon.ico"
     },
     "linux": {
       "category": "Network",
@@ -299,7 +300,7 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ], "icon": "resources/icon.icns"
     },
     "nsis": {
       "oneClick": false,
