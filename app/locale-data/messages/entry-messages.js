@@ -257,7 +257,7 @@ const entryMessages = defineMessages({
     noTitle: {
         id: 'app.entry.noTitle',
         description: 'when a draft has no title',
-        defaultMessage: 'No title'
+        defaultMessage: 'New draft'
     },
     noVotes: {
         id: 'app.entry.noVotes',

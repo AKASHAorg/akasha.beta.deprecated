@@ -62,9 +62,9 @@ class NewEntryPage extends Component {
             content: {
                 licence: userDefaultLicence,
                 featuredImage: {},
+                entryType: 'article',
             },
             tags: [],
-            entryType: 'article',
         });
         history.push(`/draft/article/${draftId}`);
         ev.preventDefault();
@@ -506,7 +506,10 @@ class NewEntryPage extends Component {
                       {!draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.update)}
                       {!draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publish)}
                       {draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.updating)}
-                      {draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publishing)}
+                      {draftObj.get('publishing') &&
+                        !onChain &&
+                        intl.formatMessage(generalMessages.publishing)
+                      }
                     </Button>
                   </div>
                 </div>
@@ -527,8 +530,8 @@ NewEntryPage.propTypes = {
     draftRevertToVersion: PropTypes.func,
     draftsFetched: PropTypes.bool,
     darkTheme: PropTypes.bool,
-    entriesFetched: PropTypes.bool,
     entryGetFull: PropTypes.func,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),

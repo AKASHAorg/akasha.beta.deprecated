@@ -7,6 +7,7 @@ import { DraftJS } from 'megadraft';
 import { fromJS } from 'immutable';
 import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
     TagEditor, WebsiteInfoCard, DataLoader, Icon } from '../components';
+import { genId } from '../utils/dataModule';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
@@ -15,7 +16,6 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import * as actionTypes from '../constants/action-types';
-// import websiteInfoCard from '../components/cards/website-info-card';
 
 const { EditorState } = DraftJS;
 const { confirm } = Modal;
@@ -33,23 +33,7 @@ class NewLinkEntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
-            userDefaultLicense } = nextProps;
-        const { loggedProfile } = this.props;
-        const draftIsPublished = resolvingEntries.includes(match.params.draftId);
-        if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished) {
-            this.props.draftCreate({
-                id: match.params.draftId,
-                ethAddress: loggedProfile.get('ethAddress'),
-                content: {
-                    cardInfo: {},
-                    licence: userDefaultLicense,
-                    featuredImage: {},
-                    entryType: 'link',
-                },
-                tags: [],
-            });
-        }
+        const { draftObj } = nextProps;
         const hasCardContent = draftObj &&
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
             draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
@@ -66,7 +50,23 @@ class NewLinkEntryPage extends Component {
             });
         }
     }
-
+    _createNewDraft = (ev) => {
+        const { history, loggedProfile, userDefaultLicence } = this.props;
+        const draftId = genId();
+        this.props.draftCreate({
+            id: draftId,
+            ethAddress: loggedProfile.get('ethAddress'),
+            content: {
+                cardInfo: {},
+                licence: userDefaultLicence,
+                featuredImage: {},
+                entryType: 'link',
+            },
+            tags: [],
+        });
+        history.push(`/draft/link/${draftId}`);
+        ev.preventDefault();
+    }
     _processUrl = () => {
         const { draftObj, loggedProfile, match, intl } = this.props;
         const url = draftObj.getIn(['content', 'cardInfo', 'url']);
@@ -326,11 +326,34 @@ class NewLinkEntryPage extends Component {
     }
     /* eslint-disable complexity */
     render () {
-        const { intl, baseUrl, draftObj, licences, match, tagSuggestions, tagSuggestionsCount,
+        const { intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences, match, tagSuggestions, tagSuggestionsCount,
             showSecondarySidebar, loggedProfile, selectionState } = this.props;
         const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
             infoExtracted, urlInputHidden } = this.state;
-
+        const matchingDrafts = drafts.filter(draft =>
+            draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+        if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
+            return (
+              <div
+                className={
+                    `edit-entry-page__no-drafts
+                    edit-entry-page__no-drafts${darkTheme ? '_dark' : ''}`
+                }
+              >
+                <div className="edit-entry-page__no-drafts_placeholder-image" />
+                <div className="edit-entry-page__no-drafts_placeholder-text">
+                  <h3>
+                    {intl.formatMessage(entryMessages.youHaveNoDrafts)}
+                  </h3>
+                  <p>
+                    <a href="#" onClick={this._createNewDraft}>
+                      {intl.formatMessage(entryMessages.startANewDraft)}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            );
+        }
         if (!draftObj || !draftObj.get('content')) {
             return (
               <DataLoader
@@ -513,10 +536,13 @@ class NewLinkEntryPage extends Component {
 NewLinkEntryPage.propTypes = {
     actionAdd: PropTypes.func,
     baseUrl: PropTypes.string,
+    history: PropTypes.shape(),
+    darkTheme: PropTypes.bool,
     draftObj: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
     draftRevertToVersion: PropTypes.func,
+    drafts: PropTypes.shape(),
     draftsFetched: PropTypes.bool,
     entriesFetched: PropTypes.bool,
     entryGetFull: PropTypes.func,
@@ -531,13 +557,15 @@ NewLinkEntryPage.propTypes = {
     searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
-    userDefaultLicense: PropTypes.shape(),
+    userDefaultLicence: PropTypes.shape(),
 
 };
 const mapStateToProps = (state, ownProps) => ({
     loggedProfile: selectLoggedProfile(state),
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+    darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
+    drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
@@ -546,7 +574,7 @@ const mapStateToProps = (state, ownProps) => ({
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
-    userDefaultLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
+    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicense'])
 });
 
 export default connect(
