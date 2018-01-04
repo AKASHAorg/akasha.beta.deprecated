@@ -430,11 +430,6 @@ const generalMessages = defineMessages({
         description: 'service status',
         defaultMessage: 'Running'
     },
-    rightNow: {
-        id: 'app.general.rightNow',
-        description: 'righ now :)',
-        defaultMessage: 'right now'
-    },
     save: {
         id: 'app.general.save',
         description: 'Save changes in a form',
