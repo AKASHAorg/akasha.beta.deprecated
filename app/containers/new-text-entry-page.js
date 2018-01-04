@@ -322,9 +322,8 @@ class NewEntryPage extends Component {
                     {intl.formatMessage(entryMessages.youHaveNoDrafts)}
                   </h3>
                   <p>
-                    {intl.formatMessage(entryMessages.startANewDraft)}
                     <a href="#" onClick={this._createNewDraft}>
-                      {intl.formatMessage(generalMessages.rightNow)}
+                      {intl.formatMessage(entryMessages.startANewDraft)}
                     </a>
                   </p>
                 </div>

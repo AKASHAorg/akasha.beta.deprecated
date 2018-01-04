@@ -352,7 +352,7 @@ const entryMessages = defineMessages({
     startANewDraft: {
         id: 'app.entry.startANewDraft',
         description: 'message to start a new draft',
-        defaultMessage: 'Write on the go and share you ideas'
+        defaultMessage: 'Create a draft now!'
     },
     title: {
         id: 'app.entry.title',
