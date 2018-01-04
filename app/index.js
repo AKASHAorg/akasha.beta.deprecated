@@ -18,7 +18,19 @@ if (process.env.DARK_THEME) {
     require('./styles/ant-vars/extract-default-theme.less');
 }
 
-const history = createHashHistory();
+const history = createHashHistory({
+    getUserConfirmation (message, callback) {
+        return callback(false);
+    }
+});
+
+history.block((location, action) => {
+    if ((location.pathname === '/setup/authenticate' || location.pathname === '/setup/new-identity-interests')
+        && action === 'POP') {
+        return '';
+    }
+    return null;
+});
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
 
