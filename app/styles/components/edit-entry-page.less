@@ -1,8 +1,28 @@
 .edit-entry-page {
     position: relative;
     height: 100%;
-    &.link-page {
-
+    &__no-drafts {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        text-align: center;
+        justify-content: center;
+        &_placeholder-image {
+            background: url('../../images/placeholders/NoDrafts-EmptyState-LightTheme.png') top center no-repeat;
+            min-height: 315px;
+        }
+        &_dark {
+            .edit-entry-page__no-drafts_placeholder-image {
+                min-height: 300px;
+                min-width: 300px;
+                background: url('../../images/placeholders/NoDrafts-EmptyState-DarkTheme.png') top center no-repeat;
+            }
+        }
+        &_placeholder-text {
+            a {
+                margin-left: 5px;
+            }
+        }
     }
     &__publish-button {
         &_pending {
