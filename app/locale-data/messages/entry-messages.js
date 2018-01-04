@@ -36,6 +36,11 @@ const entryMessages = defineMessages({
         description: 'error shown when we cannot extract wesite info',
         defaultMessage: 'Cannot extract information from website! Please try another address'
     },
+    cannotRetrieveLicense: {
+        id: 'app.entry.cannotRetrieveLicense',
+        description: 'message to show when a licence cannot be retrieved or it was not saved correctly',
+        defaultMessage: 'Cannot retrieve licence info.'
+    },
     imageCaptionPlaceholder: {
         id: 'app.entry.imageCaptionPlaceholder',
         description: 'text for caption input placeholder',
@@ -252,7 +257,7 @@ const entryMessages = defineMessages({
     noTitle: {
         id: 'app.entry.noTitle',
         description: 'when a draft has no title',
-        defaultMessage: 'No title'
+        defaultMessage: 'New draft'
     },
     noVotes: {
         id: 'app.entry.noVotes',
@@ -344,6 +349,11 @@ const entryMessages = defineMessages({
         description: 'button label for starting a comment from a highlight',
         defaultMessage: 'Start comment'
     },
+    startANewDraft: {
+        id: 'app.entry.startANewDraft',
+        description: 'message to start a new draft',
+        defaultMessage: 'Create a draft now!'
+    },
     title: {
         id: 'app.entry.title',
         description: 'placeholder for draft title input',
@@ -428,6 +438,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.writeReplyTo',
         description: 'placeholder for writing a reply to someone {name}',
         defaultMessage: 'Write a reply to {name}'
+    },
+    youHaveNoDrafts: {
+        id: 'app.entry.youHaveNoDrafts',
+        description: 'Message shown when all drafts are deleted',
+        defaultMessage: 'You have no drafts.'
     },
 });
 export { entryMessages };

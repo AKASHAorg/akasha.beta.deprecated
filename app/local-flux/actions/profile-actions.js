@@ -162,15 +162,16 @@ export const profileGetListError = (error) => {
 };
 
 export const profileGetListSuccess = data => action(types.PROFILE_GET_LIST_SUCCESS, { data });
-export const profileGetLocal = () => action(types.PROFILE_GET_LOCAL);
+export const profileGetLocal = polling => action(types.PROFILE_GET_LOCAL, { polling });
 
-export const profileGetLocalError = (error) => {
+export const profileGetLocalError = (error, request) => {
     error.code = 'PGLE01';
     error.messageId = 'profileGetLocal';
-    return action(types.PROFILE_GET_LOCAL_ERROR, { error });
+    return action(types.PROFILE_GET_LOCAL_ERROR, { error, request });
 };
 
-export const profileGetLocalSuccess = data => action(types.PROFILE_GET_LOCAL_SUCCESS, { data });
+export const profileGetLocalSuccess = (data, request) =>
+    action(types.PROFILE_GET_LOCAL_SUCCESS, { data, request });
 export const profileGetLogged = () => action(types.PROFILE_GET_LOGGED);
 
 export const profileGetLoggedError = (error) => {

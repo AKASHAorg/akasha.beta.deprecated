@@ -88,9 +88,22 @@ class NewEntrySecondarySidebar extends Component {
         });
     }
 
-    _handleDraftDelete = (draftId) => {
-        const { ethAddress } = this.props;
-        this.props.draftDelete({ draftId, ethAddress });
+    _handleDraftDelete = (draftIdToDelete) => {
+        const { ethAddress, drafts, match, history } = this.props;
+        const { draftType, draftId } = match.params;
+
+        const nextDraft = drafts.filter(draft => !draft.get('onChain') &&
+            draft.getIn(['content', 'entryType']) === draftType && draft.get('id') !== draftId).first();
+
+        this.props.draftDelete({
+            draftId: draftIdToDelete,
+            ethAddress
+        });
+        if (nextDraft && draftIdToDelete === draftId) {
+            history.push(`/draft/${draftType}/${nextDraft.get('id')}`);
+        } else if (!nextDraft) {
+            history.push(`/draft/${draftType}/nodraft`);
+        }
     }
 
     _showDraftDeleteConfirm = (ev, draftId) => {
