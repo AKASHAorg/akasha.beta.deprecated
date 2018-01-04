@@ -7,6 +7,7 @@ import { DraftJS } from 'megadraft';
 import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
     DataLoader, Icon } from '../components';
+import { genId } from '../utils/dataModule';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
@@ -27,25 +28,14 @@ class NewEntryPage extends Component {
         shouldResetCaret: false,
     }
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, draftsFetched, entriesFetched, resolvingEntries,
+        const { match, draftObj, resolvingEntries,
             selectionState } = nextProps;
         const { loggedProfile } = this.props;
         const ethAddress = loggedProfile.get('ethAddress');
         const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
         const draftIsPublished = resolvingEntries.includes(match.params.draftId);
         const onChain = match.params.draftId.startsWith('0x');
-        if (!draftObj && draftsFetched && entriesFetched && !draftIsPublished && !onChain) {
-            // this.props.draftCreate({
-            //     id: match.params.draftId,
-            //     ethAddress: loggedProfile.get('ethAddress'),
-            //     content: {
-            //         licence: userDefaultLicense,
-            //         featuredImage: {},
-            //     },
-            //     tags: [],
-            //     entryType: 'article',
-            // });
-        }
+
         if (draftObj && match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
@@ -63,7 +53,22 @@ class NewEntryPage extends Component {
             });
         }
     }
-
+    _createNewDraft = (ev) => {
+        const { history, loggedProfile, userDefaultLicence } = this.props;
+        const draftId = genId();
+        this.props.draftCreate({
+            id: draftId,
+            ethAddress: loggedProfile.get('ethAddress'),
+            content: {
+                licence: userDefaultLicence,
+                featuredImage: {},
+            },
+            tags: [],
+            entryType: 'article',
+        });
+        history.push(`/draft/article/${draftId}`);
+        ev.preventDefault();
+    }
     _showPublishOptionsPanel = () => {
         this.setState({
             showPublishPanel: true
@@ -296,7 +301,7 @@ class NewEntryPage extends Component {
     /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
-        const { loggedProfile, baseUrl, drafts, showSecondarySidebar, intl, draftObj, draftsFetched,
+        const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj, draftsFetched,
             tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
 
@@ -304,7 +309,27 @@ class NewEntryPage extends Component {
             draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
 
         if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
-            return <div>You have no drafts!</div>;
+            return (
+              <div
+                className={
+                  `edit-entry-page__no-drafts
+                  edit-entry-page__no-drafts${darkTheme ? '_dark' : ''}`
+                }
+              >
+                <div className="edit-entry-page__no-drafts_placeholder-image" />
+                <div className="edit-entry-page__no-drafts_placeholder-text">
+                  <h3>
+                    {intl.formatMessage(entryMessages.youHaveNoDrafts)}
+                  </h3>
+                  <p>
+                    {intl.formatMessage(entryMessages.startANewDraft)}
+                    <a href="#" onClick={this._createNewDraft}>
+                      {intl.formatMessage(generalMessages.rightNow)}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            );
         }
         if (!draftObj || !draftObj.get('content')) {
             return (
@@ -497,11 +522,12 @@ NewEntryPage.propTypes = {
     actionAdd: PropTypes.func,
     baseUrl: PropTypes.string,
     draftObj: PropTypes.shape(),
-    draftCreate: PropTypes.func,
     drafts: PropTypes.shape(),
+    draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
     draftRevertToVersion: PropTypes.func,
     draftsFetched: PropTypes.bool,
+    darkTheme: PropTypes.bool,
     entriesFetched: PropTypes.bool,
     entryGetFull: PropTypes.func,
     intl: PropTypes.shape(),
@@ -515,7 +541,7 @@ NewEntryPage.propTypes = {
     searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
-    userDefaultLicense: PropTypes.shape(),
+    userDefaultLicence: PropTypes.shape(),
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -523,6 +549,7 @@ const mapStateToProps = (state, ownProps) => ({
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
     drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
+    darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
     entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     loggedProfile: selectLoggedProfile(state),

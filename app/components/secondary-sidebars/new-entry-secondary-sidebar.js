@@ -11,7 +11,6 @@ import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { generalMessages } from '../../locale-data/messages/general-messages';
-import { draftPublishUpdate } from '../../constants/action-types';
 
 const { confirm } = Modal;
 class NewEntrySecondarySidebar extends Component {
@@ -100,11 +99,10 @@ class NewEntrySecondarySidebar extends Component {
             draftId: draftIdToDelete,
             ethAddress
         });
-        console.log(nextDraft, 'the next draft');
         if (nextDraft && draftIdToDelete === draftId) {
             history.push(`/draft/${draftType}/${nextDraft.get('id')}`);
         } else if (!nextDraft) {
-            history.push(`draft/${draftType}/nodraft`);
+            history.push(`/draft/${draftType}/nodraft`);
         }
     }
 
