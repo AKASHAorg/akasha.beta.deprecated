@@ -399,9 +399,10 @@ const profileState = createReducer(initialState, {
             lastBlock: data.lastBlock
         };
         data.collection.forEach((follower) => {
-            followersList = followersList.push(follower.ethAddress);
+            if (!followersList.includes(follower.ethAddress)) {
+                followersList = followersList.push(follower.ethAddress);
+            }
         });
-        followersList = followersList.toSet().toList();
         return state.merge({
             flags: state.get('flags').setIn(['fetchingMoreFollowers', request.ethAddress], false),
             followers: state.get('followers').set(request.ethAddress, followersList),
@@ -424,9 +425,10 @@ const profileState = createReducer(initialState, {
             lastBlock: data.lastBlock
         };
         data.collection.forEach((following) => {
-            followingsList = followingsList.push(following.ethAddress);
+            if (!followingsList.includes(following.ethAddress)) {
+                followingsList = followingsList.push(following.ethAddress);
+            }
         });
-        followingsList = followingsList.toSet().toList();
         return state.merge({
             flags: state.get('flags').setIn(['fetchingMoreFollowings', request.ethAddress], false),
             followings: state.get('followings').set(request.ethAddress, followingsList),
