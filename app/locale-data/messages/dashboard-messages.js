@@ -144,7 +144,7 @@ const dashboardMessages = defineMessages({
     noDashboards: {
         id: 'app.dashboard.noDashboard',
         description: 'placeholder message displayed when no boards were found',
-        defaultMessage: 'No boards found.'
+        defaultMessage: 'No boards found'
     },
     previewList: {
         id: 'app.dashboard.previewList',
