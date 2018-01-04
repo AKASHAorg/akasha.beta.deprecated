@@ -14,10 +14,25 @@
     }
 
     &__empty-placeholder {
+        flex-direction: column;
         height: 100%;
         width: 100%;
-        color: @text-color-secondary;
         cursor: default;
+    }
+
+    &__empty-placeholder-img {
+        height: 285px;
+        width: 792px;
+        background-size: contain !important;
+        background: url('../../images/placeholders/NoBoards-EmptyState-LightTheme.png') top center no-repeat;
+
+        &_dark {
+            background: url('../../images/placeholders/NoBoards-EmptyState-DarkTheme.png') top center no-repeat;            
+        }
+    }
+
+    &__placeholder-text {
+        margin-top: 32px;
     }
 
     &__create-button {
