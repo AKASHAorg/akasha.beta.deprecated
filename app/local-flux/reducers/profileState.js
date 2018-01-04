@@ -215,7 +215,8 @@ const profileState = createReducer(initialState, {
     },
 
     [types.PROFILE_GET_BALANCE_SUCCESS]: (state, { data }) => {
-        if (state.getIn(['loggedProfile', 'ethAddress']) !== data.etherBase) {
+        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
+        if (loggedEthAddress !== data.etherBase) {
             return state;
         }
         const balance = new Balance().merge({
@@ -224,7 +225,13 @@ const profileState = createReducer(initialState, {
             eth: data.balance,
             mana: new ManaBalance(data.mana)
         });
-        return state.set('balance', balance);
+        return state.merge({
+            balance,
+            byEthAddress: state.get('byEthAddress').mergeIn([loggedEthAddress], {
+                essence: data.essence.total,
+                karma: data.karma.total
+            })
+        });
     },
 
     [types.PROFILE_GET_DATA]: (state, { context, akashaId, ethAddress }) => {
