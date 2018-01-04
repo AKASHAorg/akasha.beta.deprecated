@@ -117,7 +117,7 @@ class EssencePopover extends Component {
                     const fromComment = ev.action === 'comment:vote';
                     const fromEntry = ev.action === 'entry:claim';
                     const fromEntryVote = ev.action === 'entry:vote:claim';
-                    const className = classNames('flex-center-y essence-popover__log-row', {
+                    const className = classNames('essence-popover__log-row', {
                         'essence-popover__log-row_last': isLast
                     });
                     if (pendingEntries && pendingEntries.get(ev.sourceId)) {

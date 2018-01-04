@@ -50,7 +50,7 @@ class DashboardPage extends Component {
     }
 
     render () {
-        const { intl, columns, dashboards, homeReady, isHidden } = this.props;
+        const { intl, columns, darkTheme, dashboards, homeReady, isHidden } = this.props;
         const modalFooterBtn = this.state.carouselEnd ?
             (<Button key="submit" type="primary" onClick={this.handleClose}>
               {intl.formatMessage(generalMessages.okTutorial)}
@@ -100,6 +100,7 @@ class DashboardPage extends Component {
               <div style={{ height: '100%' }}>
                 <Dashboard
                   columns={columns}
+                  darkTheme={darkTheme}
                   dashboardCreateNew={this.props.dashboardCreateNew}
                   dashboards={dashboards}
                   getDashboardRef={this.getDashboardRef}
@@ -116,6 +117,7 @@ class DashboardPage extends Component {
 DashboardPage.propTypes = {
     activeDashboard: PropTypes.string,
     columns: PropTypes.shape(),
+    darkTheme: PropTypes.bool,
     dashboards: PropTypes.shape(),
     dashboardCreateNew: PropTypes.func.isRequired,
     dashboardHideTutorial: PropTypes.func,
@@ -133,6 +135,7 @@ function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         columns: state.dashboardState.get('columnById'),
+        darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
         dashboards: state.dashboardState.get('byId'),
         entryPageOverlay: state.entryState.get('entryPageOverlay'),
         firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
