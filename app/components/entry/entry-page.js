@@ -9,7 +9,6 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
-import { toggleAethWallet } from '../../local-flux/actions/app-actions';
 
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
@@ -35,16 +34,13 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { commentsClean, entry, entryGetLatestVersion, fetchingFullEntry, location,
-            match, pendingComments } = this.props;
+        const { commentsClean, entry, location, match, pendingComments } = this.props;
 
         const { params } = match;
         const nextParams = nextProps.match.params;
         const { entryId } = nextParams;
         const { version } = parse(nextProps.location.search);
-        if (!nextProps.fetchingFullEntry && fetchingFullEntry) {
-            // entryGetLatestVersion(entryId);
-        }
+
         if ((params.entryId !== entryId && entry.get('entryId') !== entryId) ||
                 (version !== undefined && version !== location.query.version)) {
             commentsClean();
@@ -132,6 +128,12 @@ class EntryPage extends Component {
 
     throttledHandler = throttle(this.handleContentScroll, 300);
 
+    onRetry = () => {
+        const { entryId } = this.props.match.params;
+        this.getFullEntry();
+        this.fetchComments(entryId);
+    };
+
     render () {
         const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
             licenses, loggedProfileData, newComments, toggleOutsideNavigation } = this.props;
@@ -156,6 +158,7 @@ class EntryPage extends Component {
                     containerRef={this.container}
                     entry={entry}
                     highlightSave={highlightSave}
+                    intl={intl}
                     latestVersion={latestVersion}
                     licenses={licenses}
                     toggleOutsideNavigation={toggleOutsideNavigation}
@@ -167,7 +170,7 @@ class EntryPage extends Component {
                       {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
                     </div>
                     <div className="flex-center">
-                      <span className="content-link entry-page__retry-button" onClick={this.getFullEntry}>
+                      <span className="content-link entry-page__retry-button" onClick={this.onRetry}>
                         {this.props.intl.formatMessage(generalMessages.retry)}
                       </span>
                     </div>
@@ -250,7 +253,6 @@ EntryPage.propTypes = {
     entry: PropTypes.shape(),
     entryCleanFull: PropTypes.func.isRequired,
     entryGetFull: PropTypes.func.isRequired,
-    entryGetLatestVersion: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
     highlightSave: PropTypes.func.isRequired,
     intl: PropTypes.shape(),

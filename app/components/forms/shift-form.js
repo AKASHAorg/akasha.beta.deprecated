@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Slider } from 'antd';
+import { Button, Form, InputNumber, Slider } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
 
@@ -84,7 +84,11 @@ class ShiftForm extends Component {
         }
     }
 
-    onChange = (amount) => { this.setState({ amount }); };
+    onChange = (amount) => {
+        if (!isNaN(amount)) {
+            this.setState({ amount });
+        }
+    };
 
     onShift = () => {
         const { onShift } = this.props;
@@ -154,9 +158,18 @@ class ShiftForm extends Component {
                   value={amount}
                   style={{ flex: '1 1 auto' }}
                 />
-                <div className="shift-form__amount">
-                  {amount}
-                </div>
+                <InputNumber
+                  className="shift-form__amount"
+                  disabled={!max}
+                  min={0}
+                  max={max}
+                  maxLength={12}
+                  onChange={this.onChange}
+                  precision={0}
+                  size="small"
+                  step={1}
+                  value={amount}
+                />
               </div>
             </FormItem>
             <div className="shift-form__actions">

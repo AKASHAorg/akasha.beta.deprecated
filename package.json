@@ -25,10 +25,10 @@
     "start-hot": "tsc -p tsconfig.json && cross-env HOT=1 NODE_ENV=development electron --inspect=5858 .",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "package": "npm run build && build --publish never",
-    "package-win": "npm run build && build --win --x64",
-    "package-linux": "npm run build && build --linux",
-    "package-mac": "npm run build && build --mac",
-    "package-all": "npm run build && build -mwl",
+    "package-win": "build --win --x64",
+    "package-linux": "build --linux",
+    "package-mac": "build --mac",
+    "package-all": "build -mwl",
     "release": "standard-version",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -241,9 +241,6 @@
     "node": ">=6.x",
     "npm": ">=3.x"
   },
-  "engines": {
-    "electron": "1.7.10"
-  },
   "build": {
     "appId": "com.electron.akasha",
     "dmg": {
@@ -270,6 +267,7 @@
       "!main/test/**/*",
       "!main/typings/*",
       "!main/typings/**/*",
+      "!**/node_modules/babel-*",
       "!test${/*}*",
       "!app/**/*",
       "!app/",
@@ -286,21 +284,27 @@
         "nsis",
         "zip"
       ],
-        "icon": "resources/icon.ico"
+      "icon": "resources/icon.ico"
     },
     "linux": {
       "category": "Network",
       "target": [
         "deb",
+        "snap",
         "zip"
-      ]
+      ],
+      "icon": "resources/icons/"
+    },
+    "snap": {
+      "grade": "devel"
     },
     "mac": {
       "category": "public.app-category.social-networking",
       "target": [
         "dmg",
         "zip"
-      ], "icon": "resources/icon.icns"
+      ],
+      "icon": "resources/icon.icns"
     },
     "nsis": {
       "oneClick": false,
