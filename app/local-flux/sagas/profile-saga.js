@@ -19,8 +19,8 @@ import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
 const TRANSFERS_ITERATOR_LIMIT = 20;
-const FOLLOWERS_ITERATOR_LIMIT = 2;
-const FOLLOWINGS_ITERATOR_LIMIT = 2;
+const FOLLOWERS_ITERATOR_LIMIT = 3;
+const FOLLOWINGS_ITERATOR_LIMIT = 3;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
