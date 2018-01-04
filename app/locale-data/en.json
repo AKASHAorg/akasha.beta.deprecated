@@ -106,7 +106,7 @@
   "app.dashboard.listDeleted": "This list was deleted. Please remove this column",
   "app.dashboard.myBoards": "My boards",
   "app.dashboard.namePlaceholder": "Type board name",
-  "app.dashboard.noDashboard": "No boards found.",
+  "app.dashboard.noDashboard": "No boards found",
   "app.dashboard.previewList": "Preview for {listName}",
   "app.dashboard.previewProfile": "Preview for {displayName}",
   "app.dashboard.previewTag": "Preview for #{tagName}",

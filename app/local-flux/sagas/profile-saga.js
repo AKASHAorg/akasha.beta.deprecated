@@ -196,10 +196,10 @@ function* profileGetList ({ ethAddresses }) {
     yield apply(channel, channel.send, [ethAddresses]);
 }
 
-function* profileGetLocal () {
+function* profileGetLocal ({ polling }) {
     const channel = Channel.server.auth.getLocalIdentities;
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield apply(channel, channel.send, [{}]);
+    yield apply(channel, channel.send, [{ polling }]);
 }
 
 export function* profileGetLogged () {
@@ -727,18 +727,19 @@ function* watchProfileGetLocalChannel () {
     while (true) {
         const resp = yield take(actionChannels.auth.getLocalIdentities);
         if (resp.error) {
-            yield put(actions.profileGetLocalError(resp.error));
+            yield put(actions.profileGetLocalError(resp.error, resp.request));
         } else {
             const akashaIds = [];
+            const localProfiles = yield select(state => state.profileState.get('localProfiles'));
             resp.data.collection.forEach((data) => {
-                if (data.akashaId) {
+                if (data.akashaId && !localProfiles.includes(data.ethAddress)) {
                     akashaIds.push({ akashaId: data.akashaId });
                 }
             });
             if (akashaIds.length) {
                 yield put(actions.profileGetList(akashaIds));
             }
-            yield put(actions.profileGetLocalSuccess(resp.data.collection));
+            yield put(actions.profileGetLocalSuccess(resp.data.collection, resp.request));
         }
     }
 }
