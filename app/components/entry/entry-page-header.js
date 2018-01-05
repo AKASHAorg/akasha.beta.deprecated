@@ -58,9 +58,9 @@ class EntryPageHeader extends Component {
     };
     _switchToVersion = version =>
         (ev) => {
-            const { loggedEthAddress, entry, latestVersion } = this.props;
+            const { author, entry, latestVersion } = this.props;
             this.props.entryGetFull({
-                ethAddress: loggedEthAddress,
+                ethAddress: author.get('ethAddress'),
                 entryId: entry.get('entryId'),
                 version,
                 latestVersion
@@ -143,7 +143,7 @@ class EntryPageHeader extends Component {
             <span style={{ padding: '0 7px' }}>|</span>
             <Popover
               content={this.wasVisible ? this._getVersionsPopoverContent() : null}
-              visible={false}
+              visible={showVersions}
               trigger="click"
               onVisibleChange={visibility => this._handleVersionsPopoverVisibility(visibility, latestVersion)}
               placement="bottomRight"
@@ -158,7 +158,7 @@ class EntryPageHeader extends Component {
                     {intl.formatRelative(publishDate)}
                   </span>
                 }
-                {/* <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} /> */}
+                <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
               </span>
             </Popover>
           </div>
