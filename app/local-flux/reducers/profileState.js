@@ -285,31 +285,55 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_LOCAL]: state =>
-        state.mergeIn(['flags'], {
+    [types.PROFILE_GET_LOCAL]: (state, { polling }) => {
+        if (polling) {
+            return state;
+        }
+        return state.mergeIn(['flags'], {
             fetchingLocalProfiles: true,
             localProfilesFetched: false
-        }),
+        });
+    },
 
-    [types.PROFILE_GET_LOCAL_ERROR]: state =>
-        state.mergeIn(['flags'], {
+    [types.PROFILE_GET_LOCAL_ERROR]: (state, { request }) => {
+        if (request.polling) {
+            return state;
+        }
+        return state.mergeIn(['flags'], {
             fetchingLocalProfiles: false,
             localProfilesFetched: true
-        }),
-
-    [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
-        let localProfiles = new List();
-        let byEthAddress = state.get('byEthAddress');
-        data.forEach((prf) => {
-            byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
-            localProfiles = localProfiles.push(prf.ethAddress);
         });
+    },
+
+    [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data, request }) => {
+        let byEthAddress = state.get('byEthAddress');
+        if (!request.polling) {
+            let localProfiles = new List();
+            data.forEach((prf) => {
+                byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
+                localProfiles = localProfiles.push(prf.ethAddress);
+            });
+
+            return state.merge({
+                byEthAddress,
+                flags: state.get('flags').merge({
+                    fetchingLocalProfiles: false,
+                    localProfilesFetched: true
+                }),
+                localProfiles
+            });
+        }
+        let localProfiles = state.get('localProfiles');
+        data.forEach((prf) => {
+            if (!localProfiles.includes(prf.ethAddress)) {
+                byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
+                localProfiles = localProfiles.push(prf.ethAddress);
+            }
+        });
+        const ethAddresses = data.map(prf => prf.ethAddress);
+        localProfiles = localProfiles.filter(ethAddress => ethAddresses.includes(ethAddress));
         return state.merge({
             byEthAddress,
-            flags: state.get('flags').merge({
-                fetchingLocalProfiles: false,
-                localProfilesFetched: true
-            }),
             localProfiles
         });
     },
@@ -375,9 +399,10 @@ const profileState = createReducer(initialState, {
             lastBlock: data.lastBlock
         };
         data.collection.forEach((follower) => {
-            followersList = followersList.push(follower.ethAddress);
+            if (!followersList.includes(follower.ethAddress)) {
+                followersList = followersList.push(follower.ethAddress);
+            }
         });
-        followersList = followersList.toSet().toList();
         return state.merge({
             flags: state.get('flags').setIn(['fetchingMoreFollowers', request.ethAddress], false),
             followers: state.get('followers').set(request.ethAddress, followersList),
@@ -400,9 +425,10 @@ const profileState = createReducer(initialState, {
             lastBlock: data.lastBlock
         };
         data.collection.forEach((following) => {
-            followingsList = followingsList.push(following.ethAddress);
+            if (!followingsList.includes(following.ethAddress)) {
+                followingsList = followingsList.push(following.ethAddress);
+            }
         });
-        followingsList = followingsList.toSet().toList();
         return state.merge({
             flags: state.get('flags').setIn(['fetchingMoreFollowings', request.ethAddress], false),
             followings: state.get('followings').set(request.ethAddress, followingsList),
