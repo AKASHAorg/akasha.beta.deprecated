@@ -120,13 +120,29 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
 };
 
 const actionState = createReducer(initialState, {
-    [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
+    [types.ACTION_ADD_NO_FUNDS]: (state, action) => {
+        const { ethAddress, payload, actionType, needEth, needAeth, needMana } = action;
+        const id = `${new Date().getTime()}-${actionType}`;
+        const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
+        const publishAction = createAction({ id, ethAddress, payload, status, type: actionType });
+        return state.merge({
+            byId: state.get('byId').set(id, publishAction),
+            [status]: id,
+            needEth,
+            needAeth,
+            needMana
+        });
+    },
+    [types.ACTION_ADD_SUCCESS]: (state, { ethAddress, payload, actionType }) => {
         const id = `${new Date().getTime()}-${actionType}`;
         const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
         const action = createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, action),
-            [status]: id
+            [status]: id,
+            needEth: false,
+            needAeth: false,
+            needMana: false,
         });
     },
 
@@ -211,6 +227,13 @@ const actionState = createReducer(initialState, {
             publishing
         });
     },
+
+    [types.ACTION_RESET_FUNDING_REQUIREMENTS]: state =>
+        state.merge({
+            needEth: false,
+            needAeth: false,
+            needMana: false
+        }),
 
     [types.ACTION_PUBLISH]: (state, { id }) => {
         const action = state.getIn(['byId', id]);

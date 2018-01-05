@@ -11,6 +11,7 @@ import { selectAction, selectLoggedEthAddress, selectActionToPublish } from '../
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
+import { balanceToNumber } from '../../utils/number-formatter';
 
 /**
  * Mapping actionType to Action Creator (AC) that launches a "publishing" action
@@ -77,10 +78,50 @@ const publishSuccessActions = {
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
-function* actionAdd ({ actionType }) {
+function hasEnoughBalance (actionType, balance, publishingCost) {
+    let hasMana;
+    switch (actionType) {
+        case actionTypes.draftPublish:
+            hasMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5) >= balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5)
+            break;
+        default:
+            hasMana = true;
+    }
+    return {
+        eth: balanceToNumber(balance.get('eth'), 2) > 0.12,
+        aeth: balanceToNumber(balance.getIn(['aeth', 'bonded'])) > 0,
+        mana: hasMana,
+    };
+}
+
+function* actionAdd ({ ethAddress, payload, actionType }) {
     if (actionType === actionTypes.faucet) {
         const id = yield select(selectActionToPublish);
         yield put(actions.actionPublish(id)); // eslint-disable-line no-use-before-define
+    }
+    /**
+     * Check if user has enough balance to create the action
+     */
+    const balance = yield select(state => state.profileState.get('balance'));
+    const publishingCost = yield select(state => state.profileState.get('publishingCost'));
+    const hasBalance = hasEnoughBalance(actionType, balance, publishingCost);
+    if (hasBalance.eth && hasBalance.aeth && hasBalance.mana) {
+        /**
+         * continue to publishing
+         */
+        yield put(actions.actionAddSuccess(ethAddress, actionType, payload));
+    } else {
+        /**
+         * stop publishing and display the appropriate modal
+         */
+        yield put(actions.actionAddNoFunds({
+            ethAddress,
+            actionType,
+            payload,
+            needEth: !hasBalance.eth,
+            needAeth: !hasBalance.aeth,
+            needMana: !hasBalance.mana,
+        }));
     }
 }
 

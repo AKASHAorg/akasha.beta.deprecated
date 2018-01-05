@@ -27,6 +27,9 @@ export const ActionState = Record({
     history: new List(),
     historyTypes: new List(),
     needAuth: null,
+    needEth: null,
+    needAeth: null,
+    needMana: null,
     pending: new Map({
         bondAeth: false,
         claim: new Map(),
