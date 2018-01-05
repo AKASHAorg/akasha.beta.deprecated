@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { AtomicBlockUtils } from 'draft-js';
 import { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import { genId } from '../../utils/dataModule';
-import { Icon } from '../';
+import { Icon } from '../index';
 
 class AddImage extends Component {
-    openFileInput = (ev) => {
-        ev.stopPropagation();
-        ev.preventDefault();
+    openFileInput = () => {
+        // ev.stopPropagation();
+        // ev.preventDefault();
         this.fileInput.value = '';
         this.fileInput.click();
     };
@@ -104,7 +104,6 @@ class AddImage extends Component {
     render () {
         return (
           <div className="content-link">
-            <Icon className="add-image__icon" onMouseDown={this.openFileInput} type="photoImage" />
             <input
               ref={((input) => { this.fileInput = input; })}
               style={{ display: 'none' }}
@@ -112,6 +111,7 @@ class AddImage extends Component {
               accept="image/*"
               onChange={this.handleImageAdd}
             />
+            <Icon className="add-image__icon" onClick={this.openFileInput} type="photoImage" />
           </div>
         );
     }
