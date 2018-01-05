@@ -40,6 +40,7 @@ export EntryVersionTimeline from './timelines/entry-version-timeline';
 export ErrorNotification from './notifications/error-notification';
 export EssencePopover from './popovers/essence-popover';
 export EthWallet from './wallets/eth-wallet';
+export FaucetAndManafyModal from './modals/faucet-and-manafy-modal';
 export FollowButton from './follow-button';
 export GethCacheSelect from './forms/geth-cache-select';
 export GethDetailsModal from './modals/geth-details-modal';

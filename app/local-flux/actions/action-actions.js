@@ -3,6 +3,11 @@ import { action } from './helpers';
 
 export const actionAdd = (ethAddress, actionType, payload) =>
     action(types.ACTION_ADD, { ethAddress, actionType, payload });
+export const actionAddSuccess = (ethAddress, actionType, payload) =>
+    action(types.ACTION_ADD_SUCCESS, { ethAddress, actionType, payload });
+export const actionAddNoFunds = ({ ethAddress, actionType, payload, needEth, needAeth, needMana }) =>
+    action(types.ACTION_ADD_NO_FUNDS, { ethAddress, actionType, payload, needEth, needAeth, needMana });
+export const actionResetFundingRequirements = () => action(types.ACTION_RESET_FUNDING_REQUIREMENTS);
 export const actionClearHistory = () => action(types.ACTION_CLEAR_HISTORY);
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
 

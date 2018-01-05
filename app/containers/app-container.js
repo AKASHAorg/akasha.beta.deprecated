@@ -12,8 +12,8 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
-import { AppSettings, ConfirmationDialog, NavigateAwayModal, DashboardSecondarySidebar, DataLoader,
-    ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
+import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal, DashboardSecondarySidebar,
+    DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
     MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
     Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
@@ -110,13 +110,13 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, intl,
-            location, needAuth, faucet } = this.props;
+            location, needAuth, needEth, needAeth, needMana } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const showWallet = appState.get('showWallet');
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
-
+        const needFunds = needEth || needAeth || needMana;
         return (
           <div className="flex-center-x app-container__root">
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
@@ -196,9 +196,10 @@ class AppContainer extends Component {
                   navigation={appState.get('outsideNavigation')}
                   onClick={this.props.toggleOutsideNavigation}
                 />
+                {needFunds && <FaucetAndManafyModal />}
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
-                {needAuth && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
+                {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                 {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
                 {appState.get('showProfileEditor') && <ProfileEdit />}
               </div>
@@ -223,6 +224,9 @@ AppContainer.propTypes = {
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
     needAuth: PropTypes.string,
+    needEth: PropTypes.bool,
+    needAeth: PropTypes.bool,
+    needMana: PropTypes.bool,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
@@ -234,6 +238,9 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         needAuth: state.actionState.get('needAuth'),
+        needEth: state.actionState.get('needEth'),
+        needAeth: state.actionState.get('needAeth'),
+        needMana: state.actionState.get('needMana'),
         faucet: state.profileState.get('faucet'),
     };
 }

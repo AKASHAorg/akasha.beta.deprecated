@@ -25,12 +25,14 @@ class ConfirmationDialog extends Component {
             userIsLoggedIn: Date.parse(props.tokenExpiration) - 3000 > Date.now()
         };
     }
+
     componentWillReceiveProps (nextProps) {
         const { action, faucet } = nextProps;
         if (faucet === 'success' && this.props.faucet !== 'success') {
             this.props.actionDelete(action.get('id'));
         }
     }
+
     onRememberPasswordToggle = () => {
         this.setState({
             unlockIsChecked: !this.state.unlockIsChecked
@@ -108,6 +110,7 @@ class ConfirmationDialog extends Component {
             this.onSubmit();
         }
     }
+
     _calculateMana = (actionType, balance, costs) => {
         const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const entryManaCost = parseFloat(costs.getIn(['entry', 'cost']));

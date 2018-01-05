@@ -307,6 +307,7 @@ class NewEntrySecondarySidebar extends Component {
                 }
               >
                 <Popover
+                  arrowPointAtCenter
                   content={this.wasVisible ? this._getEntryTypePopover() : null}
                   trigger="click"
                   placement="bottomLeft"
