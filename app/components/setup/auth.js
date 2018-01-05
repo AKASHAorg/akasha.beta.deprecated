@@ -10,13 +10,13 @@ import { setupMessages } from '../../locale-data/messages';
 class Auth extends Component {
     state = {
         isScrolled: false
-    }
+    };
+    interval = null;
 
     componentDidMount () {
-        const { gethStatus, profileDeleteLogged, profileGetLocal } = this.props;
-        if (gethStatus.get('process')) {
-            profileGetLocal();
-        }
+        const { profileDeleteLogged } = this.props;
+        this.getLocalIdentities();
+        this.interval = setInterval(this.getLocalIdentities, 10000, true);
         profileDeleteLogged();
     }
 
@@ -29,6 +29,9 @@ class Auth extends Component {
 
         if (gethStatusChanged || ipfsStatusChanged) {
             profileGetLocal();
+            if (!this.interval) {
+                this.interval = setInterval(this.getLocalIdentities, 10000, true);
+            }
         }
     }
 
@@ -37,7 +40,17 @@ class Auth extends Component {
         if (this.listContainer) {
             this.listContainer.removeEventListener('scroll', this.throttledHandler);
         }
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
     }
+
+    getLocalIdentities = (polling) => {
+        const { gethStatus, profileGetLocal } = this.props;
+        if (gethStatus.get('process')) {
+            profileGetLocal(polling);
+        }
+    };
 
     getListContainerRef = (el) => {
         this.listContainer = el;
