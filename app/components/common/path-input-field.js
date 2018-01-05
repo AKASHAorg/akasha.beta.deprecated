@@ -26,18 +26,17 @@ export default function PathInputField ({ disabled, onChange, ...props }) {
 
     return (
       <div>
-        <Input
-          disabled={disabled}
-          onClick={disabled ? () => {} : handleDialogOpen}
-          onFocus={disabled ? () => {} : handleDialogOpen}
-          readOnly
-          {...props}
-        />
         <input
           type="file"
           ref={setFileInputRef}
           onChange={handlePathChange}
-          style={{ position: 'absolute', left: '9999px', top: '9999px', width: 0, height: 0 }}
+          style={{ display: 'none' }}
+        />
+        <Input
+          disabled={disabled}
+          onClick={disabled ? () => {} : handleDialogOpen}
+          readOnly
+          {...props}
         />
       </div>
     );

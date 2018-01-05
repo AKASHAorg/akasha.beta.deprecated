@@ -8,7 +8,7 @@ import { toggleGethDetailsModal } from '../../local-flux/actions/app-actions';
 import { gethPauseSync, gethResumeSync, gethStart, gethStartLogger, gethStop,
     gethStopLogger } from '../../local-flux/actions/external-process-actions';
 import { gethSaveSettings } from '../../local-flux/actions/settings-actions';
-import { GethCacheSelect, Input, LogsList, PathInputField, ServiceDetailsModal } from '../';
+import { GethCacheSelect, Input, LogsList, PathInputField, ServiceDetailsModal } from '../index';
 
 const { TabPane } = Tabs;
 
