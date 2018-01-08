@@ -40,7 +40,9 @@ class AppContainer extends Component {
     previousLocation = this.props.location;
 
     componentDidMount () {
+        const { history } = this.props;
         this._bootstrapApp(this.props);
+        localStorage.setItem('historyLocation', JSON.stringify([history.location.pathname]));
     }
 
     componentWillReceiveProps (nextProps) {

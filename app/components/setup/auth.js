@@ -18,6 +18,7 @@ class Auth extends Component {
         this.getLocalIdentities();
         this.interval = setInterval(this.getLocalIdentities, 10000, true);
         profileDeleteLogged();
+        localStorage.setItem('historyLocation', JSON.stringify(['/setup/authenticate']));
     }
 
     componentWillReceiveProps (nextProps) {
