@@ -290,7 +290,6 @@
       "category": "Network",
       "target": [
         "deb",
-        "snap",
         "zip"
       ],
       "icon": "resources/icons/"
