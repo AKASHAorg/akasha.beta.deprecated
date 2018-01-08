@@ -110,7 +110,7 @@ const settingsMessages = defineMessages({
     tipsOptions: {
         id: 'app.settings.tipsOptions',
         description: 'title for profile tips options',
-        defaultMessage: 'Tips Options'
+        defaultMessage: 'Tips options'
     },
     tipsInfo: {
         id: 'app.settings.tipsInfo',

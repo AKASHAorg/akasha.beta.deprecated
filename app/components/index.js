@@ -139,6 +139,8 @@ export TextEntryEditor from './text-entry-editor';
 export TipPopover from './popovers/tip-popover';
 export TopBar from './top-bars/top-bar';
 export TopBarRight from './top-bars/top-bar-right';
+export TransactionLog from './panels/transaction-log';
+export TransactionsLogPanel from './panels/transactions-log-panel';
 export TransferForm from './forms/transfer-form';
 export TransformForm from './forms/transform-form';
 export VotesModal from './modals/votes-modal';

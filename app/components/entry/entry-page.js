@@ -201,6 +201,7 @@ class EntryPage extends Component {
                   actionAdd={actionAdd}
                   containerRef={this.container}
                   entryId={entry.get('entryId')}
+                  entryTitle={entry.getIn(['content', 'title'])}
                   ethAddress={entry.getIn(['author', 'ethAddress'])}
                   intl={intl}
                   loggedProfileData={loggedProfileData}
