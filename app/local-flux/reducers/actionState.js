@@ -165,6 +165,25 @@ const actionState = createReducer(initialState, {
         });
     },
 
+    [types.ACTION_GET_ALL_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),
+
+    [types.ACTION_GET_ALL_HISTORY_ERROR]: state =>
+        state.setIn(['flags', 'fetchingHistory'], false),
+
+    [types.ACTION_GET_ALL_HISTORY_SUCCESS]: (state, { data }) => {
+        let byId = state.get('byId');
+        let list = new List();
+        data.forEach((action) => {
+            byId = byId.set(action.id, createAction(action));
+            list = list.push(action.id);
+        });
+        return state.merge({
+            byId,
+            flags: state.get('flags').set('fetchingHistory', false),
+            history: sortByBlockNr(byId, list),
+        });
+    },
+
     [types.ACTION_GET_CLAIMABLE]: state =>
         state.setIn(['flags', 'fetchingClaimable'], true),
 

@@ -36,6 +36,16 @@ export const getActionsByType = request =>
             .catch(reject);
     });
 
+export const getAllHistory = ethAddress =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('ethAddress')
+            .equals(ethAddress)
+            .toArray()
+            .then(resolve)
+            .catch(reject);
+    });
+
 export const getClaimable = request =>
     new Promise((resolve, reject) => {
         actionDB.actions

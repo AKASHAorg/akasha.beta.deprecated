@@ -117,6 +117,11 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
+    confirmedAtBlock: {
+        id: 'app.general.confirmedAtBlock',
+        description: 'transaction/action confirmed at block number x',
+        defaultMessage: 'Confirmed at block #{blockNr}'
+    },
     copy: {
         id: 'app.general.copy',
         description: 'copy',
@@ -191,6 +196,11 @@ const generalMessages = defineMessages({
         id: 'app.general.ethereumAddress',
         description: 'Placeholder for ethereum address field.',
         defaultMessage: 'Ethereum address'
+    },
+    failedAtBlock: {
+        id: 'app.general.failedAtBlock',
+        description: 'transaction/action failed at block number x',
+        defaultMessage: 'Failed at block #{blockNr}'
     },
     forged: {
         id: 'app.general.forged',
@@ -350,6 +360,11 @@ const generalMessages = defineMessages({
         description: 'an action is pending',
         defaultMessage: 'Pending'
     },
+    pendingConfirmation: {
+        id: 'app.general.pendingConfirmation',
+        description: 'an action is pending confirmation',
+        defaultMessage: 'Pending confirmation'
+    },
     people: {
         id: 'app.general.people',
         description: 'people',
@@ -444,6 +459,11 @@ const generalMessages = defineMessages({
         id: 'app.general.search',
         description: 'tooltip for sidebar search button',
         defaultMessage: 'Search'
+    },
+    seeOnEtherscan: {
+        id: 'app.general.seeOnEtherscan',
+        description: 'tooltip for link to etherscan for transaction details',
+        defaultMessage: 'See on Etherscan'
     },
     send: {
         id: 'app.general.send',

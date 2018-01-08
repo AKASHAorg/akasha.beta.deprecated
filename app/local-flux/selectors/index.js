@@ -156,6 +156,8 @@ export const selectFetchingFollowers = (state, ethAddress) =>
 export const selectFetchingFollowings = (state, ethAddress) =>
     state.profileState.getIn(['flags', 'fetchingFollowings', ethAddress]);
 
+export const selectFetchingHistory = state => state.actionState.getIn(['flags', 'fetchingHistory']);
+
 export const selectFetchingMoreFollowers = (state, ethAddress) =>
     state.profileState.getIn(['flags', 'fetchingMoreFollowers', ethAddress]);
 
@@ -384,6 +386,9 @@ export const selectProfileExists = state => state.profileState.get('exists');
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
 export const selectProfileSearchResults = state => state.searchState.get('profiles');
+
+export const selectPublishingActions = state =>
+    state.actionState.get('publishing').map(id => selectAction(state, id));
 
 export const selectResolvingComment = (state, commentId) =>
     state.commentsState.getIn(['flags', 'resolvingComments', commentId]);

@@ -6,7 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DashboardTopBar, Navigation, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
-import { toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
+import { showTransactionsLog, toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData, selectShowWallet } from '../../local-flux/selectors';
 
@@ -50,6 +50,7 @@ class TopBar extends PureComponent {
             </div>
             <TopBarRight
               balance={balance}
+              showTransactionsLog={this.props.showTransactionsLog}
               showWallet={showWallet}
               toggleAethWallet={this.props.toggleAethWallet}
               toggleEthWallet={this.props.toggleEthWallet}
@@ -66,6 +67,7 @@ TopBar.propTypes = {
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
+    showTransactionsLog: PropTypes.func.isRequired,
     showWallet: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
@@ -82,6 +84,7 @@ const mapStateToProps = state => ({
 export default connect(
     mapStateToProps,
     {
+        showTransactionsLog,
         toggleAethWallet,
         toggleEthWallet
     },

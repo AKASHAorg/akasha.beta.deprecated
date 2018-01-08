@@ -35,13 +35,16 @@ function* searchProfiles ({ query, autocomplete }) {
 function* searchSyncEntries ({ following }) {
     const channel = Channel.server.search.syncEntries;
     const ethAddress = yield select(selectLoggedEthAddress);
-    let fromBlock;
-    try {
-        fromBlock = yield apply(searchService, searchService.getLastEntriesBlock, [ethAddress]);
-    } catch (error) {
-        console.error('get last entries block error -', error);
+    if (ethAddress) {
+        let fromBlock;
+        try {
+            fromBlock = yield apply(searchService, searchService.getLastEntriesBlock, [ethAddress]);
+        } catch (error) {
+            console.error('get last entries block error -', error);
+            console.error('for ethAddress', ethAddress);
+        }
+        yield apply(channel, channel.send, [{ fromBlock, following }]);
     }
-    yield apply(channel, channel.send, [{ fromBlock, following }]);
 }
 
 function* searchSyncTags () {

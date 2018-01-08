@@ -133,6 +133,16 @@ function* actionDelete ({ id }) {
     }
 }
 
+function* actionGetAllHistory () {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    try {
+        const resp = yield apply(actionService, actionService.getAllHistory, [loggedEthAddress]);
+        yield put(actions.actionGetAllHistorySuccess(resp));
+    } catch (error) {
+        yield put(actions.actionGetAllHistoryError(error));
+    }
+}
+
 function* actionGetClaimable () {
     try {
         const loggedEthAddress = yield select(selectLoggedEthAddress);
@@ -300,6 +310,7 @@ function* actionUpdate ({ changes }) {
 export function* watchActionActions () {
     yield takeEvery(types.ACTION_ADD, actionAdd);
     yield takeEvery(types.ACTION_DELETE, actionDelete);
+    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory);
     yield takeEvery(types.ACTION_GET_CLAIMABLE, actionGetClaimable);
     yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
