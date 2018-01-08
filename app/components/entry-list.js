@@ -18,7 +18,8 @@ class EntryList extends Component {
             newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
             newProps.fetchingEntries !== this.props.fetchingEntries ||
             (this.props.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
-            newProps.large !== this.props.large;
+            newProps.large !== this.props.large ||
+            !newProps.profiles.equals(this.props.profiles);
     }
 
     getContainerRef = (el) => { this.container = el; };

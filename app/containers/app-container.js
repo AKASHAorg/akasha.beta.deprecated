@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { bootstrapHome, hidePreview, hideTerms, toggleAethWallet, toggleOutsideNavigation,
+import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
@@ -16,7 +16,7 @@ import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModa
     DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
     MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
-    Terms, TopBar, ProfileSettings, WalletPanel } from '../components';
+    Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel } from '../components';
 
 notification.config({
     top: 60,
@@ -173,10 +173,10 @@ class AppContainer extends Component {
                         />
                       }
                       {!!appState.get('showPreview') &&
-                        <PreviewPanel
-                          hidePreview={this.props.hidePreview}
-                          showPreview={appState.get('showPreview')}
-                        />
+                        <PreviewPanel />
+                      }
+                      {appState.get('showTransactionsLog') &&
+                        <TransactionsLogPanel />
                       }
                     </div>
                   </DataLoader>
@@ -185,12 +185,6 @@ class AppContainer extends Component {
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
                 <ErrorNotification />
-                {/* <ErrorReportingModal
-                  open={!!appState.get('showReportModal')}
-                  error={errorState.get('reportError')}
-                  intl={intl}
-                  onClose={hideReportModal}
-                /> */}
                 {appState.get('showAppSettings') &&
                   <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
                 }
@@ -219,7 +213,6 @@ AppContainer.propTypes = {
     errorDeleteFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     gethGetStatus: PropTypes.func,
-    hidePreview: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
@@ -239,11 +232,11 @@ function mapStateToProps (state) {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         appState: state.appState,
         errorState: state.errorState,
+        faucet: state.profileState.get('faucet'),
         needAuth: state.actionState.get('needAuth'),
         needEth: state.actionState.get('needEth'),
         needAeth: state.actionState.get('needAeth'),
         needMana: state.actionState.get('needMana'),
-        faucet: state.profileState.get('faucet'),
     };
 }
 
@@ -255,7 +248,6 @@ export default connect(
         entryVoteCost,
         errorDeleteFatal,
         gethGetStatus,
-        hidePreview,
         hideTerms,
         licenseGetAll,
         toggleAethWallet,

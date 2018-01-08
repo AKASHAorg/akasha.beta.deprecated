@@ -70,7 +70,7 @@ class CommentThread extends Component {
     };
 
     renderEditor = () => {
-        const { author, containerRef, comment, entryId, ethAddress, intl, loggedProfileData,
+        const { author, containerRef, comment, entryId, entryTitle, ethAddress, intl, loggedProfileData,
             onReplyClose } = this.props;
         const name = getDisplayName({
             akashaId: author.get('akashaId'),
@@ -82,6 +82,7 @@ class CommentThread extends Component {
               actionAdd={this.props.actionAdd}
               containerRef={containerRef}
               entryId={entryId}
+              entryTitle={entryTitle}
               ethAddress={ethAddress}
               intl={intl}
               isReply
@@ -128,6 +129,7 @@ CommentThread.propTypes = {
     commentsMoreIterator: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string,
+    entryTitle: PropTypes.string,
     ethAddress: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),
@@ -144,6 +146,7 @@ function mapStateToProps (state, ownProps) {
     return {
         author: selectProfile(state, comment.author.ethAddress),
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
+        entryTitle: state.entryState.getIn(['fullEntry', 'content', 'title']),
         ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
         loggedProfileData: selectLoggedProfileData(state),
         moreReplies: selectMoreComments(state, comment.commentId),

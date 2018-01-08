@@ -121,10 +121,11 @@ class Comment extends Component {
     };
 
     handleVote = ({ type, weight }) => {
-        const { comment, entryId, loggedEthAddress } = this.props;
+        const { comment, entryId, entryTitle, loggedEthAddress } = this.props;
         const payload = {
             commentId: comment.commentId,
             entryId,
+            entryTitle,
             weight
         };
         this.props.actionAdd(loggedEthAddress, type, payload);
@@ -374,6 +375,7 @@ Comment.propTypes = {
     commentsResolveIpfsHash: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
+    entryTitle: PropTypes.string,
     ethAddress: PropTypes.string,
     hideCommentSettings: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
@@ -394,6 +396,7 @@ function mapStateToProps (state, ownProps) {
         blockNr: selectBlockNumber(state),
         comment,
         entryId: state.entryState.getIn(['fullEntry', 'entryId']),
+        entryTitle: state.entryState.getIn(['fullEntry', 'content', 'title']),
         ethAddress,
         hideCommentSettings: selectHideCommentSettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
