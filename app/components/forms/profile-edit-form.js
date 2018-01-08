@@ -19,7 +19,9 @@ class ProfileEditForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            aboutMeCharCount: aboutMeMaxChars,
+            aboutMeCharCount: props.loggedProfileData.get('about') ?
+                aboutMeMaxChars - props.loggedProfileData.get('about').length :
+                aboutMeMaxChars,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
