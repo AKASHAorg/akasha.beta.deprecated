@@ -1,0 +1,122 @@
+.transactions-log-panel {
+    position: fixed;
+    top: 40px;
+    bottom: 0px;
+    right: 0px;
+    width: 335px;
+    background-color: @light-background;
+    box-shadow: -2px 0px 15px -3px @shadow-color;
+
+    &__header {
+        padding: 24px;
+        height: 90px;
+        background-color: @background;
+    }
+
+    &__title {
+        color: @heading-color;
+        font-weight: 500;
+        line-height: 20px;          
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        line-height: 18px;
+        margin-top: 4px;
+    }
+
+    &__timeline-wrapper {
+        padding: 26px 26px 0px;
+        height: 100%;
+        overflow-y: auto;
+        margin-right: 4px;
+    }
+
+    &__pending-count {
+        display: inline-block;
+        margin-left: 6px;
+        background-color: @dark;
+        color: @text-color-dark;
+        height: 16px;
+        padding: 4px;
+        border-radius: 2px;
+        font-size: 11px;
+        cursor: default;
+    }
+
+    &__pending {
+        color: @primary-color;
+    }
+
+    &__success {
+        color: @success-color;
+    }
+
+    &__failed {
+        color: @error-color;
+    }
+
+    .ant-tabs-nav {
+        width: 100%;
+    }
+
+    .ant-tabs-nav-wrap {
+        border-top: 1px solid @light-border;
+    }
+
+    .ant-tabs-content {
+        height: ~'calc(100% - 40px)';
+    }
+
+    .ant-tabs-tabpane {
+        height: 100%;
+    }
+
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container {
+        height: 40px;
+        font-size: 13px;
+    }
+
+    .ant-tabs-bar {
+        height: 40px;
+    }
+
+    .ant-tabs-tab {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+        background: @light-background;
+    }
+
+    .ant-tabs-card > .ant-tabs-bar {
+        border-color: @light-background;
+    }
+
+    .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+        background: @background;
+        border-color: transparent;
+        height: 39px;
+        margin-right: 0;
+        border-right: 1px solid @light-border;
+        border-bottom: 1px solid @light-border;
+        color: @text-color-secondary;
+    }
+
+    .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+        border-bottom: 1px solid @light-background;
+        background: @light-background;
+        height: 40px;
+        color: @heading-color;
+    }
+
+    .ant-tabs {
+        height: ~'calc(100% - 90px)';
+    }
+
+    .ant-tabs-tab {
+        width: 50%;
+    }
+}

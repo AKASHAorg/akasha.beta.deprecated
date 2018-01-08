@@ -292,6 +292,16 @@ export const profileMessages = defineMessages({
         description: 'total ETH balance',
         defaultMessage: 'Total balance'
     },
+    transactionsLog: {
+        id: 'app.profile.transactionsLog',
+        description: 'title for transactions log panel',
+        defaultMessage: 'Transactions log'
+    },
+    transactionsLogSubtitle: {
+        id: 'app.profile.transactionsLogSubtitle',
+        description: 'subtitle for transactions log panel',
+        defaultMessage: 'Your interactions with the blockchain'
+    },
     unfollow: {
         id: 'app.profile.unfollow',
         description: 'unfollow a profile',

@@ -181,7 +181,7 @@ class CommentEditor extends Component {
     };
 
     handleCommentCreate = () => {
-        const { actionAdd, entryId, ethAddress, loggedProfileData, parent } = this.props;
+        const { actionAdd, entryId, entryTitle, ethAddress, loggedProfileData, parent } = this.props;
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const rawContent = convertToRaw(editorState.getCurrentContent());
@@ -189,6 +189,7 @@ class CommentEditor extends Component {
             content: JSON.stringify(rawContent),
             date: new Date().toISOString(),
             entryId,
+            entryTitle,
             ethAddress,
             mentions,
             parent,
@@ -346,6 +347,7 @@ CommentEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
+    entryTitle: PropTypes.string.isRequired,
     ethAddress: PropTypes.string.isRequired,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
