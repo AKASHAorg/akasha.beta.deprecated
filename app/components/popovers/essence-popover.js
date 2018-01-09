@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import { ClaimableList, Icon, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { profileEssenceIterator,
+import { profileEssenceIterator, profileGetBalance,
     profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectLoggedEthAddress,
     selectPendingTransformEssence } from '../../local-flux/selectors';
@@ -37,6 +37,7 @@ class EssencePopover extends Component {
         this.wasVisible = true;
         if (popoverVisible) {
             this.props.profileEssenceIterator();
+            this.props.profileGetBalance();
         } else {
             this.props.profileResetEssenceEvents();
         }
@@ -60,7 +61,6 @@ class EssencePopover extends Component {
     onEnterIterator = () => {
         const { essenceIterator } = this.props;
         if (essenceIterator.lastBlock !== 0) {
-            console.log('on enter iterator');
             this.props.profileEssenceIterator();
         }
     };
@@ -242,6 +242,7 @@ EssencePopover.propTypes = {
     pendingEntries: PropTypes.shape(),
     pendingTransformEssence: PropTypes.bool,
     profileEssenceIterator: PropTypes.func.isRequired,
+    profileGetBalance: PropTypes.func.isRequired,
     profileResetEssenceEvents: PropTypes.func.isRequired,
 };
 
@@ -264,6 +265,7 @@ export default connect(
     {
         actionAdd,
         profileEssenceIterator,
+        profileGetBalance,
         profileResetEssenceEvents
     }
 )(Form.create()(injectIntl(EssencePopover)));

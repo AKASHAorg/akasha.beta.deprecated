@@ -12,34 +12,40 @@ export const actionClearHistory = () => action(types.ACTION_CLEAR_HISTORY);
 export const actionDelete = id => action(types.ACTION_DELETE, { id });
 
 export const actionDeleteError = error => action(types.ACTION_DELETE_ERROR, { error });
-export const actionGetClaimable = () => action(types.ACTION_GET_CLAIMABLE);
 
+export const actionGetAllHistory = () => action(types.ACTION_GET_ALL_HISTORY);
+export const actionGetAllHistoryError = (error) => {
+    error.code = 'AGAHE01';
+    error.messageId = 'actionGetAllHistory';
+    return action(types.ACTION_GET_ALL_HISTORY_ERROR, { error });
+};
+export const actionGetAllHistorySuccess = data => action(types.ACTION_GET_ALL_HISTORY_SUCCESS, { data });
+
+export const actionGetClaimable = () => action(types.ACTION_GET_CLAIMABLE);
 export const actionGetClaimableError = (error) => {
     error.code = 'AGCE01';
     error.messageId = 'actionGetClaimable';
     return action(types.ACTION_GET_CLAIMABLE_ERROR, { error });
 };
-
 export const actionGetClaimableSuccess = data => action(types.ACTION_GET_CLAIMABLE_SUCCESS, { data });
-export const actionGetHistory = request => action(types.ACTION_GET_HISTORY, { request });
 
+export const actionGetHistory = request => action(types.ACTION_GET_HISTORY, { request });
 export const actionGetHistoryError = (error) => {
     error.code = 'AGHE01';
     error.messageId = 'actionGetHistory';
     return action(types.ACTION_GET_HISTORY_ERROR, { error });
 };
-
 export const actionGetHistorySuccess = (data, request) =>
     action(types.ACTION_GET_HISTORY_SUCCESS, { data, request });
-export const actionGetPending = () => action(types.ACTION_GET_PENDING);
 
+export const actionGetPending = () => action(types.ACTION_GET_PENDING);
 export const actionGetPendingError = (error) => {
     error.code = 'AGPE01';
     error.messageId = 'actionGetPending';
     return action(types.ACTION_GET_PENDING_ERROR, { error });
 };
-
 export const actionGetPendingSuccess = data => action(types.ACTION_GET_PENDING_SUCCESS, { data });
+
 export const actionPublish = id => action(types.ACTION_PUBLISH, { id });
 export const actionPublished = receipt => action(types.ACTION_PUBLISHED, { receipt });
 
