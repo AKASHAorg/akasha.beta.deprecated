@@ -42,6 +42,11 @@ const generalMessages = defineMessages({
         description: 'aeth token',
         defaultMessage: 'AETH'
     },
+    akasha: {
+        id: 'app.general.akasha',
+        description: 'AKASHA',
+        defaultMessage: 'AKASHA'
+    },
     amount: {
         id: 'app.general.amount',
         description: 'currency amount',
@@ -57,10 +62,10 @@ const generalMessages = defineMessages({
         description: 'an entry vote',
         defaultMessage: 'an entry vote'
     },
-    akasha: {
-        id: 'app.general.akasha',
-        description: 'AKASHA',
-        defaultMessage: 'AKASHA'
+    appPreferences: {
+        id: 'app.general.appPreferences',
+        description: 'application settings/preferences',
+        defaultMessage: 'App preferences'
     },
     back: {
         id: 'app.general.back',
@@ -612,6 +617,11 @@ const generalMessages = defineMessages({
         id: 'app.general.usernameFirst',
         description: 'tooltip title for profile complete submit button',
         defaultMessage: 'Please choose your username first!'
+    },
+    userSettings: {
+        id: 'app.general.userSettings',
+        description: 'user settings menu item',
+        defaultMessage: 'User settings'
     },
     update: {
         id: 'app.general.update',
