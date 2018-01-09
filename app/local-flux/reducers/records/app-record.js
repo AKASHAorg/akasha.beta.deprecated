@@ -31,5 +31,6 @@ export const AppRecord = Record({
     showReportModal: null,
     showSecondarySidebar: false, // must default to false
     showTerms: false,
+    showTransactionsLog: false,
     showWallet: null,
 });

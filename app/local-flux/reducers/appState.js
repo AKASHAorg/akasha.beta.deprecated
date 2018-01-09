@@ -6,6 +6,14 @@ import { createReducer } from './create-reducer';
 const initialState = new AppRecord();
 
 const appState = createReducer(initialState, {
+    [types.APP_READY]: state =>
+        state.set('appReady', true),
+
+    [types.APP_SETTINGS_TOGGLE]: state =>
+        state.set('showAppSettings', !state.get('showAppSettings')),
+
+    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
+        state.set('homeReady', true),
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
         const indexToRemove = state.get('displayedNotifications').findIndex(displayId =>
@@ -17,22 +25,9 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_PREVIEW]: state => state.set('showPreview', null),
 
-    [types.HIDE_TERMS]: state =>
-        state.merge({
-            showTerms: false
-        }),
+    [types.HIDE_TERMS]: state => state.set('showTerms', false),
 
-    [types.APP_READY]: state =>
-        state.set('appReady', true),
-
-    [types.APP_SETTINGS_TOGGLE]: state =>
-        state.set('showAppSettings', !state.get('showAppSettings')),
-
-    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
-        state.set('homeReady', true),
-
-    [types.HIDE_REPORT_MODAL]: state =>
-        state.set('showReportModal', false),
+    [types.HIDE_TRANSACTIONS_LOG]: state => state.set('showTransactionsLog', false),
 
     [types.NOTIFICATION_DISPLAY]: (state, { notification }) => state.merge({
         displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
@@ -69,13 +64,9 @@ const appState = createReducer(initialState, {
     [types.SHOW_PREVIEW]: (state, { columnType, value }) =>
         state.set('showPreview', new PreviewRecord({ columnType, value })),
 
-    [types.SHOW_REPORT_MODAL]: state =>
-        state.set('showReportModal', true),
+    [types.SHOW_TERMS]: state => state.set('showTerms', true),
 
-    [types.SHOW_TERMS]: state =>
-        state.merge({
-            showTerms: true
-        }),
+    [types.SHOW_TRANSACTIONS_LOG]: state => state.set('showTransactionsLog', true),
 
     [types.TOGGLE_AETH_WALLET]: state =>
         state.set('showWallet', state.get('showWallet') === 'AETH' ? null : 'AETH'),

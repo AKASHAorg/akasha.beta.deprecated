@@ -11,8 +11,8 @@ export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hidePreview = () => action(types.HIDE_PREVIEW);
-export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const hideTransactionsLog = () => action(types.HIDE_TRANSACTIONS_LOG);
 export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
 
 // for publishing to blockchain
@@ -31,8 +31,8 @@ export const secondarySidebarToggle = ({ forceToggle }) =>
 export const showNotification = notification =>
     action(types.SHOW_NOTIFICATION, { notification });
 export const showPreview = ({ columnType, value }) => action(types.SHOW_PREVIEW, { columnType, value });
-export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
 export const showTerms = () => action(types.SHOW_TERMS);
+export const showTransactionsLog = () => action(types.SHOW_TRANSACTIONS_LOG);
 export const toggleLightSyncMode = lightSync => action(types.TOGGLE_LIGHT_SYNC_MODE, { lightSync });
 export const toggleAethWallet = () => action(types.TOGGLE_AETH_WALLET);
 export const toggleEthWallet = () => action(types.TOGGLE_ETH_WALLET);

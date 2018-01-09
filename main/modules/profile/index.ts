@@ -26,6 +26,7 @@ import transfer from './transfer';
 import transfersIterator from './aeth-transfers-iterator';
 import essenceIterator from './essence-iterator';
 import votesIterator from './votes-iterator';
+import karmaRanking from './ranking';
 
 export default [
     essenceIterator,
@@ -55,5 +56,6 @@ export default [
     transfersIterator,
     commentsCount,
     commentsIterator,
-    votesIterator
+    votesIterator,
+    karmaRanking
 ];

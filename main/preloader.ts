@@ -29,14 +29,13 @@ function injectApi() {
 
 window['Channel'] = injectApi();
 
-// @TODO: uncomment this before production build
 /*
-window['eval'] = function () {
+window['eval'] = global.eval = function () {
     throw new Error('eval disabled.');
 };
 */
 
-
+// @TODO: uncomment this before production build
 /*
  //spellchecking stuff
  window['spellCheckHandler'] = new SpellCheckHandler();

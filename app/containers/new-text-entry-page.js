@@ -225,13 +225,13 @@ class NewEntryPage extends Component {
                     return this.props.actionAdd(
                         loggedProfile.get('ethAddress'),
                         actionTypes.draftPublishUpdate,
-                        { draft: publishPayload }
+                        { draft: publishPayload, entryId: draftObj.id }
                     );
                 }
                 return this.props.actionAdd(
                     loggedProfile.get('ethAddress'),
                     actionTypes.draftPublish,
-                    { draft: publishPayload }
+                    { draft: publishPayload, entryId: draftObj.id }
                 );
             }).catch((errors) => {
                 this.setState({ errors });
