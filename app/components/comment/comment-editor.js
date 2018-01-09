@@ -185,6 +185,9 @@ class CommentEditor extends Component {
         const { editorState } = this.state;
         const mentions = getMentionsFromEditorState(editorState);
         const rawContent = convertToRaw(editorState.getCurrentContent());
+        this.setState({
+            editorFocused: false
+        });
         const payload = {
             content: JSON.stringify(rawContent),
             date: new Date().toISOString(),
