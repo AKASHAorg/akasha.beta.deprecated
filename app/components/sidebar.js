@@ -243,6 +243,7 @@ class Sidebar extends Component {
             </div>
             <div className="flex-center-x sidebar__progress-wrapper">
               <Tooltip
+                mouseEnterDelay={0.3}
                 placement="topLeft"
                 title={tooltip}
               >
