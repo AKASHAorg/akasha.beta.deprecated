@@ -13,6 +13,10 @@ export const hideNotification = notification =>
 export const hidePreview = () => action(types.HIDE_PREVIEW);
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const navCounterIncrement = navType => action(types.NAV_COUNTER_INCREMENT, { navType });
+export const navCounterDecrement = navType => action(types.NAV_COUNTER_DECREMENT, { navType });
+export const navForwardCounterReset = () => action(types.NAV_FORWARD_COUNTER_RESET);
+export const navBackCounterReset = () => action(types.NAV_BACK_COUNTER_RESET);
 export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
 
 // for publishing to blockchain
