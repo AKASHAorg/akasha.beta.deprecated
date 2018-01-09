@@ -18,6 +18,8 @@ export const AppRecord = Record({
     homeReady: false,
     isLightSync: false,
     notifications: new List(),
+    navigationBackCounter: 0,
+    navigationForwardCounter: 0,
     displayedNotifications: new List(),
     outsideNavigation: new Map({
         url: null,

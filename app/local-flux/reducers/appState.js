@@ -34,6 +34,30 @@ const appState = createReducer(initialState, {
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
 
+    [types.NAV_COUNTER_INCREMENT]: (state, { navType }) => {
+        if (navType === 'back') {
+            return state.set('navigationBackCounter', state.get('navigationBackCounter') + 1);
+        } else if (navType === 'forward') {
+            return state.set('navigationForwardCounter', state.get('navigationForwardCounter') + 1);
+        }
+        return state;
+    },
+
+    [types.NAV_COUNTER_DECREMENT]: (state, { navType }) => {
+        if (navType === 'back') {
+            return state.set('navigationBackCounter', state.get('navigationBackCounter') - 1);
+        } else if (navType === 'forward') {
+            return state.set('navigationForwardCounter', state.get('navigationForwardCounter') - 1);
+        }
+        return state;
+    },
+
+    [types.NAV_FORWARD_COUNTER_RESET]: state =>
+        state.set('navigationForwardCounter', 0),
+
+    [types.NAV_BACK_COUNTER_RESET]: state =>
+        state.set('navigationBackCounter', -1),
+
     [types.NOTIFICATION_DISPLAY]: (state, { notification }) => state.merge({
         displayedNotifications: state.get('displayedNotifications').push(notification.get('displayId'))
     }),
