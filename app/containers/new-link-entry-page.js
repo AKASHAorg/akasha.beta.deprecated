@@ -319,19 +319,26 @@ class NewLinkEntryPage extends Component {
         });
     }
     _checkIfDisabled = () => {
+        const { pendingFaucetTx } = this.props;
         if (this.state.tagError) {
+            return true;
+        }
+        if (pendingFaucetTx) {
             return true;
         }
         return false;
     }
     /* eslint-disable complexity */
     render () {
-        const { intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences, match, tagSuggestions, tagSuggestionsCount,
-            showSecondarySidebar, loggedProfile, selectionState } = this.props;
+        const { intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences,
+            match, tagSuggestions, tagSuggestionsCount, showSecondarySidebar,
+            loggedProfile, selectionState } = this.props;
+
         const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
             infoExtracted, urlInputHidden } = this.state;
         const matchingDrafts = drafts.filter(draft =>
             draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+
         if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
             return (
               <div
@@ -522,7 +529,9 @@ class NewLinkEntryPage extends Component {
                       {!draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.update)}
                       {!draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publish)}
                       {draftObj.get('publishing') && onChain && intl.formatMessage(generalMessages.updating)}
-                      {draftObj.get('publishing') && !onChain && intl.formatMessage(generalMessages.publishing)}
+                      {draftObj.get('publishing') && !onChain &&
+                        intl.formatMessage(generalMessages.publishing)
+                      }
                     </Button>
                   </div>
                 </div>
@@ -544,13 +553,11 @@ NewLinkEntryPage.propTypes = {
     draftRevertToVersion: PropTypes.func,
     drafts: PropTypes.shape(),
     draftsFetched: PropTypes.bool,
-    entriesFetched: PropTypes.bool,
     entryGetFull: PropTypes.func,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     match: PropTypes.shape(),
-    resolvingEntries: PropTypes.shape(),
     selectionState: PropTypes.shape(),
     showSecondarySidebar: PropTypes.bool,
     searchResetResults: PropTypes.func,
@@ -558,7 +565,7 @@ NewLinkEntryPage.propTypes = {
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicence: PropTypes.shape(),
-
+    pendingFaucetTx: PropTypes.bool,
 };
 const mapStateToProps = (state, ownProps) => ({
     loggedProfile: selectLoggedProfile(state),
@@ -574,7 +581,8 @@ const mapStateToProps = (state, ownProps) => ({
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
-    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicense'])
+    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicense']),
+    pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
 });
 
 export default connect(
