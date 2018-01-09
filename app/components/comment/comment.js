@@ -78,6 +78,9 @@ class Comment extends Component {
         if (contentHeight > 170) {
             isExpanded = false;
         }
+        if (comment.commentId === '0x9380fc737f634e8d372632d130a1b691ee0c784526fd3c586205c050c2e655bd') {
+            console.log('content height', contentHeight);
+        }
         return this.setState({ // eslint-disable-line react/no-did-mount-set-state
             isExpanded
         });
@@ -289,6 +292,9 @@ class Comment extends Component {
         if (content && hideContent) {
             return this.renderHiddenContent(voteProps);
         }
+        if (comment.commentId === '0x9380fc737f634e8d372632d130a1b691ee0c784526fd3c586205c050c2e655bd') {
+            console.log('is expanded', isExpanded);
+        }
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
@@ -346,6 +352,7 @@ class Comment extends Component {
                     {isExpanded !== null && this.renderExpandButton()}
                   </div>
                 }
+                {!showReplyButton && isExpanded !== null && this.renderExpandButton()}
               </div>
             </div>
             {children &&
