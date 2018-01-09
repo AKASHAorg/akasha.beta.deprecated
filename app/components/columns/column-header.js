@@ -204,7 +204,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { column, iconType, readOnly, title } = this.props;
+        const { column, iconType, noMenu, readOnly, title } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header__title-wrapper', {
             'column-header__title-wrapper_no-icon': !iconType
@@ -243,7 +243,7 @@ class ColumnHeader extends Component {
                 }
               </div>
             }
-            {!editMode &&
+            {!editMode && !noMenu &&
               <Popover
                 content={this.wasVisible ? this.renderContent() : null}
                 onVisibleChange={this.onVisibleChange}
@@ -274,6 +274,7 @@ ColumnHeader.propTypes = {
     dataSource: PropTypes.shape(),
     iconType: PropTypes.string,
     intl: PropTypes.shape().isRequired,
+    noMenu: PropTypes.bool,
     // when true, column cannot be modified or deleted
     notEditable: PropTypes.bool,
     onRefresh: PropTypes.func.isRequired,

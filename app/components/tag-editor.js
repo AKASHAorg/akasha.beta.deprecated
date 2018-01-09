@@ -249,19 +249,19 @@ class TagEditor extends Component {
     }
 
     _handleTagChange = (ev) => {
-        const { partialTag } = this.state;
-        if (partialTag.length === 32 && ev.target.value.length > 32) {
+        if (this.state.partialTag.length === 32 && ev.target.value.length > 32) {
             return;
         }
         this.setState({
             partialTag: ev.target.value,
             tagInputWidth: this._getTextWidth(ev.target.value).width + 20,
         }, () => {
-            if (partialTag.length >= 1) {
-                this.props.searchTags(partialTag.replace('#', ''));
+            if (this.state.partialTag.length >= 1) {
+                this.props.searchTags(this.state.partialTag.replace('#', ''));
             } else {
                 this.props.searchResetResults();
             }
+            return true;
         });
     }
     _focusTagInput = () => {

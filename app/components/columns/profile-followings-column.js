@@ -45,7 +45,7 @@ class ProfileFollowingsColumn extends Component {
           <div className="column">
             <ColumnHeader
               onRefresh={this.followingsIterator}
-              notEditable
+              noMenu
               readOnly
               title={intl.formatMessage(profileMessages.followings)}
             />

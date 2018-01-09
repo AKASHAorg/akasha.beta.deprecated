@@ -145,7 +145,6 @@ class DashboardSecondarySidebar extends Component {
                       dashboard={dashboard}
                       dashboardDelete={this.props.dashboardDelete}
                       isRenamed={isRenamed}
-                      isTheOnlyDashboard={dashboards.size === 1}
                       key={dashboard.get('id')}
                       newDashboard={this.state.newDashboard}
                       onRename={this.onRename}
