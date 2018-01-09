@@ -5,11 +5,11 @@ import { withRouter } from 'react-router';
 import { Form, Modal } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
-import { profileClearLoginErrors, profileLogin, profileFaucet } from '../../local-flux/actions/profile-actions';
+import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration, selectBalance } from '../../local-flux/selectors';
+import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration } from '../../local-flux/selectors';
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
-import { Input, RememberPassphrase, NoMana, NoEth } from '../';
+import { Input, RememberPassphrase } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 import { balanceToNumber } from '../../utils/number-formatter';
 
@@ -26,12 +26,12 @@ class ConfirmationDialog extends Component {
         };
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { action, faucet } = nextProps;
-        if (faucet === 'success' && this.props.faucet !== 'success') {
-            this.props.actionDelete(action.get('id'));
-        }
-    }
+    // componentWillReceiveProps (nextProps) {
+    //     const { action, faucet } = nextProps;
+    //     if (faucet === 'success' && this.props.faucet !== 'success') {
+    //         this.props.actionDelete(action.get('id'));
+    //     }
+    // }
 
     onRememberPasswordToggle = () => {
         this.setState({
@@ -83,26 +83,8 @@ class ConfirmationDialog extends Component {
     };
 
     handleSubmit = (ev) => {
-        const { balance, publishingCost, needAuth, action, loggedProfile, faucet } = this.props;
-        const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
-        const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
-        const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
         ev.preventDefault();
-        if (!hasEthers && (!faucet || faucet === 'error')) {
-            this.props.profileFaucet({
-                ethAddress: loggedProfile.get('ethAddress'),
-                actionId: actionTypes.faucet
-            });
-            return;
-        }
-        if (!hasEnoughMana && hasEthers) {
-            this.props.actionDelete(action.get('id'));
-            window.location.href = 'http://akasha.helpscoutdocs.com/article/21-how-to-manafy-aeth';
-            return;
-        }
-        if (hasEnoughMana && hasEthers) {
-            this.onSubmit();
-        }
+        this.onSubmit();
     };
 
     handleKeyPress = (ev) => {
@@ -127,7 +109,7 @@ class ConfirmationDialog extends Component {
 
     render () {
         const { action, intl, loginErrors, loginPending, needAuth,
-            balance, publishingCost, faucet } = this.props;
+            faucet } = this.props;
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
@@ -136,8 +118,6 @@ class ConfirmationDialog extends Component {
         if (types.includes(actionType)) {
             payload.displayName = getDisplayName(payload);
         }
-        const hasEthers = parseFloat(balance.get('eth')) >= 0.12;
-        const hasEnoughMana = this._calculateMana(actionType, balance, publishingCost);
         return (
           <Modal
             visible
@@ -148,14 +128,12 @@ class ConfirmationDialog extends Component {
             }
             okText={
               <span className="confirmation__button">
-                {hasEthers && hasEnoughMana && intl.formatMessage(generalMessages.submit)}
-                {!hasEthers && intl.formatMessage(generalMessages.requestTestEthers)}
-                {!hasEnoughMana && hasEthers && intl.formatMessage(generalMessages.learnMore)}
+                {intl.formatMessage(generalMessages.submit)}
               </span>
             }
             cancelText={
               <span className="confirmation__button">
-                {hasEthers && hasEnoughMana && intl.formatMessage(generalMessages.cancel)}
+                {intl.formatMessage(generalMessages.cancel)}
               </span>
             }
             onOk={this.handleSubmit}
@@ -163,21 +141,13 @@ class ConfirmationDialog extends Component {
             maskClosable={false}
             style={{ top: 60, marginRight: 10 }}
             confirmLoading={loginPending}
-            wrapClassName={`confirmation confirmation${(!hasEthers || !hasEnoughMana) ? '__no-funds' : ''}`}
+            wrapClassName="confirmation"
             width={450}
           >
-            {hasEnoughMana && hasEthers &&
-              <div className="confirmation__message">
-                {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
-              </div>
-            }
-            {!hasEthers &&
-              <div className="confirmation__message"><NoEth faucet={faucet} /></div>
-            }
-            {!hasEnoughMana && hasEthers &&
-              <div className="confirmation__message"><NoMana /></div>
-            }
-            {!this.state.userIsLoggedIn && hasEthers && hasEnoughMana &&
+            <div className="confirmation__message">
+              {intl.formatMessage(confirmationMessages[actionType], { ...payload })}
+            </div>
+            {!this.state.userIsLoggedIn &&
               <div>
                 <div className="confirmation__message">
                   {intl.formatMessage(confirmationMessages.passphrase)}
@@ -221,7 +191,6 @@ ConfirmationDialog.propTypes = {
     action: PropTypes.shape(),
     actionDelete: PropTypes.func.isRequired,
     actionPublish: PropTypes.func,
-    balance: PropTypes.shape(),
     faucet: PropTypes.string,
     intl: PropTypes.shape(),
     loginPending: PropTypes.bool,
@@ -231,8 +200,6 @@ ConfirmationDialog.propTypes = {
     passwordPreference: PropTypes.shape(),
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
-    profileFaucet: PropTypes.func,
-    publishingCost: PropTypes.shape(),
     tokenExpiration: PropTypes.string,
     userSettingsSave: PropTypes.func.isRequired,
 };
@@ -246,8 +213,6 @@ function mapStateToProps (state) {
         loginErrors: state.profileState.get('loginErrors'),
         passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
         tokenExpiration: selectTokenExpiration(state),
-        balance: selectBalance(state),
-        publishingCost: state.profileState.get('publishingCost'),
     };
 }
 
@@ -259,7 +224,6 @@ export default connect(
         actionAdd,
         profileClearLoginErrors,
         profileLogin,
-        profileFaucet,
         userSettingsSave
     }
 )(withRouter(ConfirmationDialog));

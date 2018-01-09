@@ -268,7 +268,7 @@ export const profileFaucetError = (error, request) =>
 
 export const profileFaucetSuccess = (data, request) =>
     action(types.PROFILE_FAUCET_SUCCESS, { data, request });
-
+export const profileResetFaucet = () => action(types.PROFILE_RESET_FAUCET);
 export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENCE_EVENTS);
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>

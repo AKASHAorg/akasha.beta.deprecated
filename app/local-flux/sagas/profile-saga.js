@@ -107,6 +107,9 @@ function* profileExists ({ akashaId }) {
 
 function* profileFaucet ({ actionId, ethAddress }) {
     const channel = Channel.server.auth.requestEther;
+    if (!ethAddress) {
+        ethAddress = yield select(selectLoggedEthAddress);
+    }
     yield call(enableChannel, channel, Channel.client.auth.manager);
     yield apply(channel, channel.send, [{ address: ethAddress, actionId }]);
 }
@@ -585,11 +588,12 @@ function* watchProfileFaucetChannel () {
         if (resp.error) {
             yield put(actions.profileFaucetError(resp.error, resp.request));
         } else if (resp.data.receipt) {
-            yield put(actionActions.actionPublished(resp.data.receipt));
-            yield put(actions.profileFaucetSuccess());
-            yield put(actions.profileGetBalance());
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFaucetError({}));
+            } else {
+                yield put(actionActions.actionPublished(resp.data.receipt));
+                yield put(actions.profileFaucetSuccess());
+                yield put(actions.profileGetBalance());
             }
         } else {
             const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
@@ -686,11 +690,15 @@ function* watchProfileFreeAethChannel () {
 
 function* watchProfileGetBalanceChannel () {
     while (true) {
-        const resp = yield take(actionChannels.profile.getBalance);
-        if (resp.error) {
-            yield put(actions.profileGetBalanceError(resp.error));
-        } else {
-            yield put(actions.profileGetBalanceSuccess(resp.data));
+        try {
+            const resp = yield take(actionChannels.profile.getBalance);
+            if (resp.error) {
+                yield put(actions.profileGetBalanceError(resp.error));
+            } else {
+                yield put(actions.profileGetBalanceSuccess(resp.data));
+            }
+        } catch (ex) {
+            console.error(ex, 'error');
         }
     }
 }
@@ -1004,7 +1012,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileGetDataChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
-    yield fork(watchProfileGetPublishingCostChannel)
+    yield fork(watchProfileGetPublishingCostChannel);
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileManaBurnedChannel);

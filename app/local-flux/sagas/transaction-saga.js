@@ -1,14 +1,14 @@
-import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
-import { actionChannels, enableChannel } from './helpers';
-import * as actionActions from '../actions/action-actions';
-import * as profileActions from '../actions/profile-actions';
-import * as actions from '../actions/transaction-actions';
-import * as types from '../constants';
-import { selectAction, selectLoggedAkashaId } from '../selectors';
-import * as actionService from '../services/action-service';
-import * as actionStatus from '../../constants/action-status';
+// import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+// import { actionChannels, enableChannel } from './helpers';
+// import * as actionActions from '../actions/action-actions';
+// import * as profileActions from '../actions/profile-actions';
+// import * as actions from '../actions/transaction-actions';
+// import * as types from '../constants';
+// import { selectAction, selectLoggedAkashaId } from '../selectors';
+// import * as actionService from '../services/action-service';
+// import * as actionStatus from '../../constants/action-status';
 
-const Channel = global.Channel;
+// const Channel = global.Channel;
 
 // function* transactionAddToQueue ({ txs }) {
 //     const channel = Channel.server.tx.addToQueue;
@@ -31,10 +31,10 @@ const Channel = global.Channel;
 //     }
 // }
 
-export function* transactionGetStatus ({ txs, ids }) {
-    const channel = Channel.server.tx.getTransaction;
-    yield apply(channel, channel.send, [{ transactionHash: txs, actionIds: ids }]);
-}
+// export function* transactionGetStatus ({ txs, ids }) {
+//     const channel = Channel.server.tx.getTransaction;
+//     yield apply(channel, channel.send, [{ transactionHash: txs, actionIds: ids }]);
+// }
 
 // Action watchers
 
@@ -42,20 +42,20 @@ export function* transactionGetStatus ({ txs, ids }) {
 //     yield takeEvery(types.TRANSACTION_ADD_TO_QUEUE, transactionAddToQueue);
 // }
 
-function* watchTransactionGetStatus () {
-    yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
-}
+// function* watchTransactionGetStatus () {
+//     yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
+// }
 
 // Channel watchers
 
-function* watchTransactionAddToQueueChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tx.addToQueue);
-        if (resp.error) {
-            yield put(actions.transactionAddToQueueError(resp.error));
-        }
-    }
-}
+// function* watchTransactionAddToQueueChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tx.addToQueue);
+//         if (resp.error) {
+//             yield put(actions.transactionAddToQueueError(resp.error));
+//         }
+//     }
+// }
 
 // function* watchTransactionEmitMinedChannel () {
 //     while (true) {
@@ -68,42 +68,42 @@ function* watchTransactionAddToQueueChannel () {
 //     }
 // }
 
-function* watchTransactionGetStatusChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tx.getTransaction);
-        if (resp.error) {
-            yield put(actions.transactionGetStatusError(resp.error));
-        } else {
-            const updates = [];
-            const actionIds = [];
-            resp.data.forEach((tx, index) => {
-                if (!tx) {
-                    actionIds.push(resp.request.actionIds[index]);
-                }
-                if (tx && tx.blockNumber) {
-                    const { blockNumber, cumulativeGasUsed } = tx;
-                    const id = resp.request.actionIds[index];
-                    const changes = { id, blockNumber, cumulativeGasUsed, status: actionStatus.published };
-                    updates.push(changes);
-                }
-            });
-            for (let i = 0; i < updates.length; i++) {
-                yield put(actionActions.actionUpdate(updates[i]));
-            }
-            for (let i = 0; i < actionIds.length; i++) {
-                yield put(actionActions.actionDelete(actionIds[i]));
-            }
-        }
-    }
-}
+// function* watchTransactionGetStatusChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tx.getTransaction);
+//         if (resp.error) {
+//             yield put(actions.transactionGetStatusError(resp.error));
+//         } else {
+//             const updates = [];
+//             const actionIds = [];
+//             resp.data.forEach((tx, index) => {
+//                 if (!tx) {
+//                     actionIds.push(resp.request.actionIds[index]);
+//                 }
+//                 if (tx && tx.blockNumber) {
+//                     const { blockNumber, cumulativeGasUsed } = tx;
+//                     const id = resp.request.actionIds[index];
+//                     const changes = { id, blockNumber, cumulativeGasUsed, status: actionStatus.published };
+//                     updates.push(changes);
+//                 }
+//             });
+//             for (let i = 0; i < updates.length; i++) {
+//                 yield put(actionActions.actionUpdate(updates[i]));
+//             }
+//             for (let i = 0; i < actionIds.length; i++) {
+//                 yield put(actionActions.actionDelete(actionIds[i]));
+//             }
+//         }
+//     }
+// }
 
-export function* registerTransactionListeners () {
-    yield fork(watchTransactionAddToQueueChannel);
-    // yield fork(watchTransactionEmitMinedChannel);
-    yield fork(watchTransactionGetStatusChannel);
-}
+// export function* registerTransactionListeners () {
+//     yield fork(watchTransactionAddToQueueChannel);
+//     // yield fork(watchTransactionEmitMinedChannel);
+//     yield fork(watchTransactionGetStatusChannel);
+// }
 
-export function* watchTransactionActions () {
-    // yield fork(watchTransactionAddToQueue);
-    yield fork(watchTransactionGetStatus);
-}
+// export function* watchTransactionActions () {
+//     // yield fork(watchTransactionAddToQueue);
+//     yield fork(watchTransactionGetStatus);
+// }

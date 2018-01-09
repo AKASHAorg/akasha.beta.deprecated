@@ -77,19 +77,35 @@ const publishSuccessActions = {
     [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
-
+function balanceRequired (actionType) {
+    const requireBalanceFor = [
+        actionTypes.comment,
+        actionTypes.commentUpvote,
+        actionTypes.commentDownvote,
+        actionTypes.draftPublish,
+        actionTypes.draftPublishUpdate,
+        actionTypes.entryUpvote,
+        actionTypes.entryDownvote,
+    ];
+    if (requireBalanceFor.includes(actionType)) {
+        return true;
+    }
+    return false;
+}
 function hasEnoughBalance (actionType, balance, publishingCost) {
+    const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
+    const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);
     let hasMana;
     switch (actionType) {
         case actionTypes.draftPublish:
-            hasMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5) >= balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5)
+            hasMana = remainingMana >= entryPublishingCost;
             break;
         default:
             hasMana = true;
     }
     return {
         eth: balanceToNumber(balance.get('eth'), 2) > 0.12,
-        aeth: balanceToNumber(balance.getIn(['aeth', 'bonded'])) > 0,
+        aeth: balanceToNumber(balance.getIn(['aeth', 'free'])) > 0,
         mana: hasMana,
     };
 }
@@ -105,7 +121,7 @@ function* actionAdd ({ ethAddress, payload, actionType }) {
     const balance = yield select(state => state.profileState.get('balance'));
     const publishingCost = yield select(state => state.profileState.get('publishingCost'));
     const hasBalance = hasEnoughBalance(actionType, balance, publishingCost);
-    if (hasBalance.eth && hasBalance.aeth && hasBalance.mana) {
+    if ((hasBalance.eth && hasBalance.aeth && hasBalance.mana) || !balanceRequired(actionType)) {
         /**
          * continue to publishing
          */
