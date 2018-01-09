@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
-    toggleEthWallet } from '../local-flux/actions/app-actions';
+    toggleEthWallet, navForwardCounterReset, navCounterIncrement } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
@@ -42,7 +42,16 @@ class AppContainer extends Component {
     componentDidMount () {
         const { history } = this.props;
         this._bootstrapApp(this.props);
-        localStorage.setItem('historyLocation', JSON.stringify([history.location.pathname]));
+        // keep track of location so we can block navigation when it would logout
+        // on app refresh counters get reset
+        // we also reset the back navigation counter whenever user logs out in auth.js
+        // or when a new profile is created, in new-identity-interests
+        history.listen((historyLocation, action) => {
+            if (action === 'PUSH') {
+                this.props.navCounterIncrement('back');
+                this.props.navForwardCounterReset();
+            }
+        });
     }
 
     componentWillReceiveProps (nextProps) {
@@ -111,7 +120,7 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { activeDashboard, appState, hideTerms, intl,
+        const { activeDashboard, appState, hideTerms, history, intl,
             location, needAuth, needEth, needAeth, needMana } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
@@ -119,6 +128,7 @@ class AppContainer extends Component {
         const showWallet = appState.get('showWallet');
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
         const needFunds = needEth || needAeth || needMana;
+
         return (
           <div className="flex-center-x app-container__root">
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
@@ -225,7 +235,8 @@ AppContainer.propTypes = {
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
-    toPublish: PropTypes.string,
+    navForwardCounterReset: PropTypes.func,
+    navCounterIncrement: PropTypes.func
 };
 
 function mapStateToProps (state) {
@@ -238,7 +249,6 @@ function mapStateToProps (state) {
         needEth: state.actionState.get('needEth'),
         needAeth: state.actionState.get('needAeth'),
         needMana: state.actionState.get('needMana'),
-        toPublish: state.actionState.get('toPublish'),
     };
 }
 
@@ -255,5 +265,7 @@ export default connect(
         toggleAethWallet,
         toggleEthWallet,
         toggleOutsideNavigation,
+        navCounterIncrement,
+        navForwardCounterReset
     }
 )(injectIntl(AppContainer));

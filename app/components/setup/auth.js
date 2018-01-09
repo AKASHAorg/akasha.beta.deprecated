@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import throttle from 'lodash.throttle';
 import { AuthProfileList, Icon } from '../';
 import { setupMessages } from '../../locale-data/messages';
+import { navBackCounterReset } from '../../local-flux/actions/app-actions';
 
 class Auth extends Component {
     state = {
@@ -18,7 +20,7 @@ class Auth extends Component {
         this.getLocalIdentities();
         this.interval = setInterval(this.getLocalIdentities, 10000, true);
         profileDeleteLogged();
-        localStorage.setItem('historyLocation', JSON.stringify(['/setup/authenticate']));
+        this.props.navBackCounterReset();
     }
 
     componentWillReceiveProps (nextProps) {
@@ -174,10 +176,16 @@ Auth.propTypes = {
     ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,
     localProfilesFetched: PropTypes.bool,
+    navBackCounterReset: PropTypes.func,
     pendingListProfiles: PropTypes.shape().isRequired,
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,
 };
 
-export default Auth;
+export default connect(
+    () => ({}),
+    {
+        navBackCounterReset
+    }
+)(Auth);

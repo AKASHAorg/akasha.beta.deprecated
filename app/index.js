@@ -19,39 +19,6 @@ if (process.env.DARK_THEME) {
 }
 
 const history = createHashHistory();
-
-if (!localStorage.getItem('historyLocation')) {
-    localStorage.setItem('historyLocation', JSON.stringify([]));
-}
-
-history.listen((location, action) => {
-    // keep track of location so we can block navigation when it would logout
-    // on app refresh we reset the route to the view on which the refresh was done
-    // this is done in app-container.js
-    // when user logs out we reset the route to /setup/authenticate
-    // this is done in auth.js
-    const historyLocation = JSON.parse(localStorage.getItem('historyLocation'));
-    switch (action) {
-        case 'PUSH':
-            historyLocation.push(location.pathname);
-            break;
-        case 'POP':
-            if (historyLocation[historyLocation.length - 2] === location.pathname) {
-                historyLocation.pop();
-            } else {
-                historyLocation.push(location.pathname);
-            }
-            break;
-        case 'REPLACE':
-            historyLocation.pop();
-            historyLocation.push(location.pathname);
-            break;
-        default:
-            break;
-    }
-    localStorage.setItem('historyLocation', JSON.stringify(historyLocation));
-});
-
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
 

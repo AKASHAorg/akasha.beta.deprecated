@@ -43,19 +43,15 @@ class DashboardSidebarRow extends Component {
     };
 
     render () {
-        const { activeDashboard, dashboard, intl, isTheOnlyDashboard,
-            newDashboard } = this.props;
+        const { activeDashboard, dashboard, intl, newDashboard } = this.props;
         const { popoverVisible } = this.state;
         const isActive = dashboard.get('id') === activeDashboard;
-        const closePopover = () => this.onVisibleChange(false);
         const className = classNames('has-hidden-action flex-center-y', {
             'dashboard-secondary-sidebar__row': true,
             'dashboard-secondary-sidebar__row_hovered': popoverVisible,
             'dashboard-secondary-sidebar__row_active': isActive && newDashboard === null
         });
-        const deleteClass = classNames('flex-center-y popover-menu__item', {
-            'popover-menu__item_disabled': isTheOnlyDashboard
-        });
+
         const menu = (
           <div className="dashboard-secondary-sidebar__popover-content">
             <div
@@ -65,8 +61,8 @@ class DashboardSidebarRow extends Component {
               {intl.formatMessage(generalMessages.rename)}
             </div>
             <div
-              className={deleteClass}
-              onClick={!isTheOnlyDashboard ? this.onDelete : closePopover}
+              className="flex-center-y popover-menu__item"
+              onClick={this.onDelete}
             >
               {intl.formatMessage(generalMessages.delete)}
             </div>
@@ -108,7 +104,6 @@ DashboardSidebarRow.propTypes = {
     dashboard: PropTypes.shape().isRequired,
     dashboardDelete: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    isTheOnlyDashboard: PropTypes.bool,
     newDashboard: PropTypes.string,
     onRename: PropTypes.func.isRequired,
 };

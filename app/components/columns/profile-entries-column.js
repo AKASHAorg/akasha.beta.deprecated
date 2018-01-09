@@ -43,11 +43,11 @@ class ProfileEntriesColumn extends Component {
           <div className="column">
             <ColumnHeader
               onRefresh={this.entryIterator}
-              notEditable
+              noMenu
               readOnly
               title={intl.formatMessage(profileMessages.entries)}
             />
-            <Waypoint onEnter={this.firstLoad} horizontal={true} />
+            <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
               contextId="profileEntries"
               entries={entriesList}
