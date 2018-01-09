@@ -110,7 +110,7 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, intl,
-            location, needAuth, needEth, needAeth, needMana } = this.props;
+            location, needAuth, needEth, needAeth, needMana, toPublish } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -230,6 +230,7 @@ AppContainer.propTypes = {
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
+    toPublish: PropTypes.string,
 };
 
 function mapStateToProps (state) {
@@ -242,6 +243,7 @@ function mapStateToProps (state) {
         needAeth: state.actionState.get('needAeth'),
         needMana: state.actionState.get('needMana'),
         faucet: state.profileState.get('faucet'),
+        toPublish: state.actionState.get('toPublish'),
     };
 }
 

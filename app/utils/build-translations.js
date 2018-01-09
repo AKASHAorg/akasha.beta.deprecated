@@ -49,5 +49,5 @@ getAvailableTranslations(TRANSLATIONS_FOLDER).then((translations) => {
             console.error('UUPS!!', ex);
         }
     });
-}).catch(err => console.error('An error occured!'));
+}).catch(err => console.error('An error occured!', err));
 

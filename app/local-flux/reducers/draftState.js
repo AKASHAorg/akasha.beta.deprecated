@@ -1,4 +1,3 @@
-import { Map } from 'immutable';
 import { editorStateFromRaw } from 'megadraft';
 import { DraftModel } from './models';
 import { createReducer } from './create-reducer';

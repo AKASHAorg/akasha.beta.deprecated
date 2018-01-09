@@ -1,5 +1,6 @@
 import { List, Map, Record, Collection, fromJS } from 'immutable';
 import * as types from '../constants';
+import * as actionTypes from '../../constants/action-types';
 import { createReducer } from './create-reducer';
 import {
     AethBalance,
@@ -54,7 +55,12 @@ const profileState = createReducer(initialState, {
     // [types.COMMENTS_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
     // [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
-
+    [types.ACTION_ADD]: (state, { actionType }) => {
+        if (actionType === actionTypes.faucet) {
+            return state.set('faucet', 'requested');
+        }
+        return state;
+    },
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
         state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
 
@@ -134,7 +140,7 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_FAUCET_ERROR]: state => state.set('faucet', 'error'),
 
     [types.PROFILE_FAUCET_SUCCESS]: state => state.set('faucet', 'success'),
-
+    [types.PROFILE_RESET_FAUCET]: state => state.set('faucet', null),
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);

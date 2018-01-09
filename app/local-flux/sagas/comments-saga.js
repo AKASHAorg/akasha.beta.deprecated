@@ -300,7 +300,7 @@ function* watchCommentsUpvoteChannel () {
         const resp = yield take(actionChannels.comments.upvote);
         const { actionId } = resp.request;
         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {        
+        if (shouldApplyChanges) {
             if (resp.error) {
                 yield put(actions.commentsUpvoteError(resp.error, resp.request));
                 yield put(actionActions.actionDelete(actionId));

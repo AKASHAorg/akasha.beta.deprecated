@@ -3,7 +3,7 @@ import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
-import { selectToken, selectDraftById, selectLoggedEthAddress, selectBalance } from '../selectors';
+import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount } from '../../utils/dataModule';
 import * as types from '../constants';
