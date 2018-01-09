@@ -7,6 +7,7 @@ import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
+import { navBackCounterReset } from '../../local-flux/actions/app-actions';
 import { dashboardMessages, generalMessages, searchMessages,
     setupMessages } from '../../locale-data/messages';
 import { Icon, TagListInterests } from '../';
@@ -31,6 +32,7 @@ class NewIdentityInterests extends Component {
 
     componentDidMount () {
         this.input.focus();
+        this.props.navBackCounterReset();
     }
 
     getInputRef = (el) => { this.input = el; };
@@ -125,6 +127,7 @@ NewIdentityInterests.propTypes = {
     intl: PropTypes.shape().isRequired,
     fetchingTags: PropTypes.bool,
     history: PropTypes.shape().isRequired,
+    navBackCounterReset: PropTypes.func,
     profileInterests: PropTypes.shape().isRequired,
     profileToggleInterest: PropTypes.func.isRequired,
     tags: PropTypes.shape().isRequired,
@@ -149,5 +152,6 @@ export default connect(
         dashboardAddFirst,
         profileToggleInterest,
         searchTags,
+        navBackCounterReset
     }
 )(injectIntl(NewIdentityInterests));
