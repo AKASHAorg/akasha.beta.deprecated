@@ -92,16 +92,34 @@ function balanceRequired (actionType) {
     }
     return false;
 }
-function hasEnoughBalance (actionType, balance, publishingCost) {
+function hasEnoughBalance (actionType, balance, publishingCost, weight) {
     const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
     const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);
+    const commentPublishingCost = balanceToNumber(publishingCost.getIn(['comments', 'cost']), 5);
+    let costByWeight = 0;
+    if (typeof weight === 'number') {
+        costByWeight = balanceToNumber(
+            publishingCost.get('votes').find(vote => vote.get('weight') === weight).get('cost'),
+            5
+        );
+    }
     let hasMana;
     switch (actionType) {
         case actionTypes.draftPublish:
             hasMana = remainingMana >= entryPublishingCost;
             break;
+        case actionTypes.comment:
+            hasMana = remainingMana >= commentPublishingCost;
+            break;
+        case actionTypes.commentUpvote:
+        case actionTypes.commentDownvote:
+        case actionTypes.entryUpvote:
+        case actionTypes.entryDownvote:
+            hasMana = remainingMana >= costByWeight;
+            break;
         default:
             hasMana = true;
+            break;
     }
     return {
         eth: balanceToNumber(balance.get('eth'), 2) > 0.12,
@@ -120,7 +138,7 @@ function* actionAdd ({ ethAddress, payload, actionType }) {
      */
     const balance = yield select(state => state.profileState.get('balance'));
     const publishingCost = yield select(state => state.profileState.get('publishingCost'));
-    const hasBalance = hasEnoughBalance(actionType, balance, publishingCost);
+    const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload ? payload.weight : null);
     if ((hasBalance.eth && hasBalance.aeth && hasBalance.mana) || !balanceRequired(actionType)) {
         /**
          * continue to publishing

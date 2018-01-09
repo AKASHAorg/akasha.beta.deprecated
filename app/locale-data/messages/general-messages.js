@@ -152,6 +152,11 @@ const generalMessages = defineMessages({
         description: 'Delete something button label',
         defaultMessage: 'Delete'
     },
+    done: {
+        id: 'app.general.done',
+        description: '',
+        defaultMessage: 'Done'
+    },
     downloading: {
         id: 'app.general.downloading',
         description: 'downloading geth/IPFS service',
@@ -435,10 +440,25 @@ const generalMessages = defineMessages({
         description: 'Retry',
         defaultMessage: 'Retry'
     },
+    requestTestAEthers: {
+        id: 'app.general.requestTestAEthers',
+        description: '',
+        defaultMessage: 'Request AETHERS'
+    },
     requestTestEthers: {
         id: 'app.general.requestTestEthers',
         description: 'button label to request test ethers',
         defaultMessage: 'Request test ETH'
+    },
+    requestTestEthersTitle: {
+        id: 'app.general.requestTestEthersTitle',
+        description: '',
+        defaultMessage: 'Request Test Ethers!'
+    },
+    requestTestAEthersTitle: {
+        id: 'app.general.requestTestAEthersTitle',
+        description: '',
+        defaultMessage: 'Request AKASHA Ethers!'
     },
     running: {
         id: 'app.general.running',
@@ -583,6 +603,11 @@ const generalMessages = defineMessages({
         description: 'change the state of AETH tokens',
         defaultMessage: 'Transform'
     },
+    transformAethers: {
+        id: 'app.general.transformAethers',
+        description: '',
+        defaultMessage: 'Manafy AETH'
+    },
     usernameFirst: {
         id: 'app.general.usernameFirst',
         description: 'tooltip title for profile complete submit button',
@@ -617,6 +642,11 @@ const generalMessages = defineMessages({
         id: 'app.general.wallet',
         description: 'wallet',
         defaultMessage: 'Wallet'
+    },
+    waiting: {
+        id: 'app.general.wailting',
+        description: '',
+        defaultMessage: 'Waiting'
     },
     yes: {
         id: 'app.general.yes',

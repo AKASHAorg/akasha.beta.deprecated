@@ -26,59 +26,56 @@ class FaucetAndManafyModal extends Component {
         }
         return null;
     }
+    _deleteNeedAuthActions = () =>
+        this.props.pendingActions.filter(action => action.get('status') === actionStatus.needAuth)
+            .forEach(action => this.props.actionDelete(action.get('id')));
 
     _handleModalCancel = () => {
-        const { pendingActions, faucetRequested } = this.props;
+        const { faucetRequested } = this.props;
         if (faucetRequested === 'requested' || faucetRequested === 'success') {
-            return null;
+            this._deleteNeedAuthActions();
+            return this.props.actionResetFundingRequirements();
         }
         if (!faucetRequested) {
-            pendingActions.filter(action => action.get('status') === actionStatus.needAuth)
-                .forEach(action => this.props.actionDelete(action.get('id')));
+            this._deleteNeedAuthActions();
             this.props.actionResetFundingRequirements();
         }
         return this.props.profileResetFaucet();
     }
 
     _handleModalOk = () => {
-        const { needEth, needAeth, needMana, faucetRequested,
-            loggedEthAddress, pendingActions } = this.props;
-        if (needMana && needAeth) {
-            if (!faucetRequested) {
+        const { needEth, needAeth, needMana, faucetRequested, faucetPending,
+            loggedEthAddress } = this.props;
+        if ((needMana && needAeth) || needEth) {
+            if (!faucetPending && !faucetRequested) {
                 return this.props.actionAdd(loggedEthAddress, actionTypes.faucet);
             }
             if (faucetRequested === 'success') {
                 this.props.actionResetFundingRequirements();
-                return this.props.profileResetFaucet();
             }
-        }
-        if (needEth) {
-            return this.props.actionAdd(loggedEthAddress, actionTypes.faucet);
-        }
-        if (needMana && !needAeth) {
+        } else if (needMana && !needAeth) {
             window.location.href = 'http://akasha.helpscoutdocs.com/article/21-how-to-manafy-aeth';
-            pendingActions.filter(action => action.get('status') === actionStatus.needAuth)
-                .forEach(action => this.props.actionDelete(action.get('id')));
-            return this.props.actionResetFundingRequirements();
+            this.props.actionResetFundingRequirements();
         }
-        return null;
+        this._deleteNeedAuthActions();
     }
 
     _getModalTitle = () => {
-        const { needEth, needAeth, needMana } = this.props;
+        const { needEth, needAeth, needMana, intl } = this.props;
         if (needEth) {
-            return <div>Request Test Ethers!</div>;
+            return <div>{intl.formatMessage(generalMessages.requestTestEthersTitle)}</div>;
         }
         if (needMana && needAeth) {
-            return <div>Request AKASHA Ethers!</div>;
+            return <div>{intl.formatMessage(generalMessages.requestTestAEthersTitle)}</div>;
         }
         if (needMana && !needAeth && !needEth) {
-            return <div>Manafy AETH</div>;
+            return <div>{intl.formatMessage(generalMessages.transformAethers)}</div>;
         }
         return null;
     }
     render () {
-        const { needAeth, needEth, needMana, faucetRequested, intl } = this.props;
+        const { needAeth, needEth, needMana, faucetRequested, faucetPending, intl } = this.props;
+        console.log(needAeth, needEth, needMana, 'asd');
         return (
           <div>
             <Modal
@@ -90,7 +87,6 @@ class FaucetAndManafyModal extends Component {
                 <Button
                   key="back"
                   onClick={this._handleModalCancel}
-                  disabled={faucetRequested}
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>,
@@ -98,13 +94,19 @@ class FaucetAndManafyModal extends Component {
                   key="submit"
                   type="primary"
                   onClick={this._handleModalOk}
-                  loading={faucetRequested === 'requested'}
+                  loading={faucetPending}
                 >
-                  {(faucetRequested === 'requested') && 'Waiting...'}
-                  {(faucetRequested === 'success') && 'Done'}
-                  {needEth && !faucetRequested && 'Request ETH'}
-                  {(needAeth && needMana) && !needEth && !faucetRequested && 'Request AETH'}
-                  {needMana && !needAeth && !needEth && !faucetRequested && intl.formatMessage(generalMessages.learnMore)}
+                  {faucetPending && intl.formatMessage(generalMessages.waiting)}
+                  {(faucetRequested === 'success' && !faucetPending && (needAeth || needEth)) &&
+                    intl.formatMessage(generalMessages.done)
+                  }
+                  {needEth && !faucetRequested && intl.formatMessage(generalMessages.requestTestEthers)}
+                  {(needAeth && needMana) && !needEth && !faucetRequested &&
+                    intl.formatMessage(generalMessages.requestTestAEthers)
+                  }
+                  {needMana && !needAeth && !needEth &&
+                    intl.formatMessage(generalMessages.learnMore)
+                  }
                 </Button>,
               ]}
             >
@@ -124,6 +126,7 @@ FaucetAndManafyModal.propTypes = {
     needMana: PropTypes.bool,
     pendingActions: PropTypes.shape(),
     faucetRequested: PropTypes.string,
+    faucetPending: PropTypes.bool,
     actionAdd: PropTypes.func,
     profileResetFaucet: PropTypes.func,
 };
@@ -136,6 +139,7 @@ function mapStateToProps (state) {
         needMana: state.actionState.get('needMana'),
         pendingActions: state.actionState.get('byId'),
         faucetRequested: state.profileState.get('faucet'),
+        faucetPending: state.actionState.getIn(['pending', 'faucet']),
     };
 }
 

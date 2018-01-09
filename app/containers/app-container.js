@@ -112,7 +112,7 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, intl,
-            location, needAuth, needEth, needAeth, needMana, toPublish } = this.props;
+            location, needAuth, needEth, needAeth, needMana } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');

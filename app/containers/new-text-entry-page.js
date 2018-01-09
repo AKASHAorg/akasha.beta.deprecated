@@ -14,7 +14,7 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile, selectPendingActionByType } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -293,7 +293,11 @@ class NewEntryPage extends Component {
         );
     }
     _checkIfDisabled = () => {
+        const { pendingFaucetTx } = this.props;
         if (this.state.tagError) {
+            return true;
+        }
+        if (pendingFaucetTx) {
             return true;
         }
         return false;
@@ -301,10 +305,9 @@ class NewEntryPage extends Component {
     /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
-        const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj, draftsFetched,
-            tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
+        const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
+            draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
-
         const matchingDrafts = drafts.filter(draft =>
             draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
 
@@ -544,6 +547,7 @@ NewEntryPage.propTypes = {
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicence: PropTypes.shape(),
+    pendingFaucetTx: PropTypes.bool,
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -560,7 +564,8 @@ const mapStateToProps = (state, ownProps) => ({
     showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     tagSuggestions: state.searchState.get('tags'),
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
-    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
+    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
+    pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
 });
 
 export default connect(
