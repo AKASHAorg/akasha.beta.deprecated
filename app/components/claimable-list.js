@@ -11,7 +11,7 @@ import { selectClaimableEntries, selectClaimableEntryIds, selectLoggedEthAddress
     selectPendingClaimVotes } from '../local-flux/selectors';
 import { generalMessages, profileMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
-import { DataLoader } from './';
+import { DataLoader, Icon } from './';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class ClaimableList extends Component {
@@ -21,7 +21,16 @@ class ClaimableList extends Component {
 
     render () {
         const { canClaim, canClaimVote, entries, entryBalance, entryIds, entryVotes, fetchingClaimable, intl,
-            loggedEthAddress, pendingClaim, pendingClaimVote, pendingEntries } = this.props;
+            loggedEthAddress, onBack, pendingClaim, pendingClaimVote, pendingEntries } = this.props;
+
+        const isOwnEntry = entry => entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
+
+        const isClaimed = (entry) => {
+            const vote = entryVotes.get(entry.entryId);
+            return isOwnEntry(entry) ?
+                entryBalance.getIn([entry.entryId, 'claimed']) :
+                vote && vote.get('claimed');
+        };
 
         const renderRow = (entry, index) => { // eslint-disable-line
             const entryId = entryIds.get(index);
@@ -41,16 +50,16 @@ class ClaimableList extends Component {
                   </div>
                 );
             }
-            const isOwnEntry = entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
+            const ownEntry = isOwnEntry(entry);
             const vote = entryVotes.get(entryId);
 
             const onCollect = () => {
                 const payload = { entryId, entryTitle: entry.getIn(['content', 'title']) };
-                const type = isOwnEntry ? actionTypes.claim : actionTypes.claimVote;
+                const type = ownEntry ? actionTypes.claim : actionTypes.claimVote;
                 this.props.actionAdd(loggedEthAddress, type, payload);
             };
 
-            const balance = isOwnEntry ?
+            const balance = ownEntry ?
                 balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
                 balanceToNumber(vote && vote.get('essence'));
             if (!balance) {
@@ -62,14 +71,11 @@ class ClaimableList extends Component {
             if (isActive) {
                 timeDiff = intl.formatRelative(new Date(endPeriod * 1000));
             }
-            const canCollect = isOwnEntry ? canClaim.get(entryId) : canClaimVote.get(entryId);
-            const loading = isOwnEntry ? pendingClaim.get(entryId) : pendingClaimVote.get(entryId);
-            const isClaimed = isOwnEntry ?
-                entryBalance.getIn([entryId, 'claimed']) :
-                vote && vote.get('claimed');
+            const canCollect = ownEntry ? canClaim.get(entryId) : canClaimVote.get(entryId);
+            const loading = ownEntry ? pendingClaim.get(entryId) : pendingClaimVote.get(entryId);
             let buttonTooltip;
             if (!canCollect) {
-                buttonTooltip = isOwnEntry ?
+                buttonTooltip = ownEntry ?
                     intl.formatMessage(entryMessages.cannotClaimEntry) :
                     intl.formatMessage(entryMessages.cannotClaimVote);
             }
@@ -95,7 +101,7 @@ class ClaimableList extends Component {
                   </div>
                 </div>
                 <div className="flex-center claimable-list__button-wrapper">
-                  {!isActive && !isClaimed &&
+                  {!isActive && !isClaimed(entry) &&
                     <Tooltip arrowPointAtCenter title={buttonTooltip}>
                       <Button
                         disabled={loading || !canCollect}
@@ -108,7 +114,7 @@ class ClaimableList extends Component {
                       </Button>
                     </Tooltip>
                   }
-                  {isClaimed &&
+                  {isClaimed(entry) &&
                     <div className="claimable-list__collected">
                       {intl.formatMessage(generalMessages.collected)}
                     </div>
@@ -123,17 +129,24 @@ class ClaimableList extends Component {
             );
         };
 
+        const filteredEntries = entries.filter(entry => !isClaimed(entry));
+
         return (
           <div className="claimable-list">
             <div style={{ height: '100%' }}>
               <div className="flex-center-y claimable-list__title">
+                <Icon
+                  className="content-link claimable-list__back-icon"
+                  onClick={onBack}
+                  type="arrowLeft"
+                />
                 {intl.formatMessage(profileMessages.collectEssence)}
-                <span className="flex-center claimable-list__counter">{entries.size}</span>
+                <span className="flex-center claimable-list__counter">{filteredEntries.size}</span>
               </div>
               <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
                 <div className="claimable-list__list-wrapper">
                   <div className="claimable-list__list">
-                    {entries.toList().map(renderRow)}
+                    {filteredEntries.toList().map(renderRow)}
                   </div>
                 </div>
               </DataLoader>
@@ -155,6 +168,7 @@ ClaimableList.propTypes = {
     fetchingClaimable: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
+    onBack: PropTypes.func.isRequired,
     pendingClaim: PropTypes.shape().isRequired,
     pendingClaimVote: PropTypes.shape().isRequired,
     pendingEntries: PropTypes.shape(),
