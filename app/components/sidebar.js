@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Button, Popover, Progress, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
@@ -10,7 +11,7 @@ import { balanceToNumber } from '../utils/number-formatter';
 import { Avatar, EssencePopover, Icon, ManaPopover, SidebarIcon } from './';
 import { generalMessages, profileMessages } from '../locale-data/messages';
 import { draftCreate } from '../local-flux/actions/draft-actions';
-import { profileEditToggle } from '../local-flux/actions/app-actions';
+import { appSettingsToggle, profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { selectLoggedProfileData, selectLoggedProfile,
     selectProfileEditToggle } from '../local-flux/selectors';
@@ -140,6 +141,17 @@ class Sidebar extends Component {
               className="popover-menu__item"
             >
               {intl.formatMessage(generalMessages.editProfile)}
+            </div>
+            <div className="popover-menu__item">
+              <Link className="unstyled-link" to="/profileoverview/settings">
+                {intl.formatMessage(generalMessages.userSettings)}
+              </Link>
+            </div>
+            <div
+              onClick={this.props.appSettingsToggle}
+              className="popover-menu__item"
+            >
+              {intl.formatMessage(generalMessages.appPreferences)}
             </div>
             <div
               onClick={this._handleLogout}
@@ -288,6 +300,7 @@ class Sidebar extends Component {
 }
 
 Sidebar.propTypes = {
+    appSettingsToggle: PropTypes.func.isRequired,
     activeDashboard: PropTypes.string,
     draftCreate: PropTypes.func,
     history: PropTypes.shape(),
@@ -319,6 +332,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        appSettingsToggle,
         draftCreate,
         profileEditToggle,
         profileLogout

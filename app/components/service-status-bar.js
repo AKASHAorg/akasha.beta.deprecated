@@ -76,7 +76,7 @@ class ServiceStatusBar extends Component {
     }
 
     render () {
-        const { intl, toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
+        const { toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
         const gethIcon = withCircles ? `geth${this.getCircleColor(gethState)}` : 'geth';
@@ -100,25 +100,12 @@ class ServiceStatusBar extends Component {
                 <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
               </div>
             </Tooltip>
-            <div className="content-link flex-center service-status-bar__button">
-              <Tooltip
-                arrowPointAtCenter
-                placement="bottomLeft"
-                title={intl.formatMessage(settingsMessages.title)}
-              >
-                <Icon
-                  type="settings"
-                  onClick={this.props.appSettingsToggle}
-                />
-              </Tooltip>
-            </div>
           </div>
         );
     }
 }
 
 ServiceStatusBar.propTypes = {
-    appSettingsToggle: PropTypes.func,
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
