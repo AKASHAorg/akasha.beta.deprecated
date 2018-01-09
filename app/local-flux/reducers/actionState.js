@@ -201,7 +201,7 @@ const actionState = createReducer(initialState, {
                 list = list.push(action.id);
             }
         });
-        list = sortByBlockNr(byId, list, true);
+        list = sortByBlockNr(byId, list);
         const claimable = list.map(id => byId.getIn([id, 'payload', 'entryId']));
         return state.merge({
             byId,

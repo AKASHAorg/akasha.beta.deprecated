@@ -86,7 +86,7 @@ class EssencePopover extends Component {
         const lastEvent = essenceEvents.last();
         if (page === COLLECT) {
             return (
-              <ClaimableList />
+              <ClaimableList onBack={this.onCancel} />
             );
         }
 
