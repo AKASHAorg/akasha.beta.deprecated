@@ -16,7 +16,8 @@
         background-color: @light-background;
     }
 
-    &__notifications {
+    &__icon-wrapper {
+        position: relative;
         flex: 0 0 auto;
         margin-right: 10px;
     }
@@ -24,6 +25,29 @@
     &__notifications-icon {
         height: 20px;
         width: 20px;
+    }
+
+    &__activity-icon {
+        stroke: initial !important;
+        width: 18px;
+        height: 16px;
+        path {
+            fill: @text-color;
+        }
+
+        &_selected path {
+            fill: @heading-color;
+        }
+    }
+
+    &__pending-indicator {
+        position: absolute;
+        top: 12px;
+        right: 0;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: @primary-color;
     }
 
     &__balance {

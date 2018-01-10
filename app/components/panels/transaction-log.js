@@ -101,9 +101,9 @@ class TransactionLog extends Component {
             </div>
             <div>
               <Tooltip title={intl.formatMessage(generalMessages.seeOnEtherscan)}>
-                <a className="unstyled-link has-hidden-action transaction-log__link" href={url}>
+                <a className="unstyled-link has-hidden-action flex-center-y transaction-log__link" href={url}>
                   {linkText}
-                  <Icon className="hidden-action transaction-log__link-icon" type="linkEntry" />
+                  <Icon className="hidden-action transaction-log__link-icon" type="link" />
                 </a>
               </Tooltip>
             </div>

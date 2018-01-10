@@ -420,6 +420,8 @@ export const selectToken = state => state.profileState.getIn(['loggedProfile', '
 
 export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
 
+export const selectTransactionsLog = state => state.appState.get('showTransactionsLog');
+
 export const selectVoteCost = state => state.entryState.get('voteCostByWeight');
 
 /* eslint-enable no-use-before-define */
