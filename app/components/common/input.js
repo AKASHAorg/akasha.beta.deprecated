@@ -16,7 +16,7 @@ const WrappedInput = ({ getInputRef, label, labelStyle, wrapperStyle, ...props }
 
 WrappedInput.propTypes = {
     getInputRef: PropTypes.func,
-    label: PropTypes.string,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
     labelStyle: PropTypes.shape(),
     wrapperStyle: PropTypes.shape()
 };

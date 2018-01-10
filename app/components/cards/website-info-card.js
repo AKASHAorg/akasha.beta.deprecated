@@ -135,7 +135,7 @@ WebsiteInfoCard.defaultProps = {
 };
 
 WebsiteInfoCard.propTypes = {
-    baseUrl: PropTypes.string,
+    baseUrl: PropTypes.string.isRequired,
     baseWidth: PropTypes.number,
     cardInfo: PropTypes.shape(),
     error: PropTypes.string,

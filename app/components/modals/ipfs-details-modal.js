@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Tabs } from 'antd';
+import { Tabs, Tooltip } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
 import { ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
     ipfsStopLogger } from '../../local-flux/actions/external-process-actions';
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
-import { InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
+import { Icon, InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
 
 const { TabPane } = Tabs;
 const SETTINGS = 'SETTINGS';
@@ -93,15 +93,23 @@ class IpfsDetailsModal extends Component {
     saveOptions = () => {
         const { ipfsSettings, ipfsStatus } = this.props;
         const { apiPort, gatewayPort, swarmPort, storagePath } = this.state;
-        const ports = {
-            api: Number(apiPort) || null,
-            gateway: Number(gatewayPort) || null,
-            swarm: Number(swarmPort) || null
-        };
+        const api = ipfsStatus.get('api');
+        const ports = {};
+        if (api && Number(apiPort) && apiPort !== ipfsSettings.getIn(['ports', 'apiPort'])) {
+            ports.apiPort = Number(apiPort);
+        }
+        if (Number(gatewayPort) && gatewayPort !== ipfsSettings.getIn(['ports', 'gatewayPort'])) {
+            ports.gatewayPort = Number(gatewayPort);
+        }
+        if (api && Number(swarmPort) && swarmPort !== ipfsSettings.getIn(['ports', 'swarmPort'])) {
+            ports.swarmPort = Number(swarmPort);
+        }
         if (storagePath !== ipfsSettings.get('storagePath')) {
             this.props.ipfsSaveSettings({ storagePath }, true);
-        } else if (ipfsStatus.get('api')) {
-            this.props.ipfsSetPorts(ports);
+        } else {
+            // if IPFS is running, automatically restart the service after setting the new ports
+            const shouldRestart = api;
+            this.props.ipfsSetPorts(ports, shouldRestart);
         }
         this.setState({
             isFormDirty: false
@@ -129,7 +137,17 @@ class IpfsDetailsModal extends Component {
               <TabPane key={SETTINGS} tab={intl.formatMessage(generalMessages.settings)}>
                 <div className="service-details-modal__tab-pane">
                   <PathInputField
-                    label={intl.formatMessage(setupMessages.ipfsStoragePath)}
+                    label={
+                      <div className="flex-center-y">
+                        {intl.formatMessage(setupMessages.ipfsStoragePath)}
+                        <Tooltip title={intl.formatMessage(setupMessages.ipfsStoragePathInfo)}>
+                          <Icon
+                            className="question-circle-icon ipfs-details-modal__info-icon"
+                            type="questionCircle"
+                          />
+                        </Tooltip>
+                      </div>
+                    }
                     onChange={this.onStorageChange}
                     size="large"
                     value={storagePath}
@@ -148,7 +166,7 @@ class IpfsDetailsModal extends Component {
                       label={intl.formatMessage(setupMessages.ipfsGatewayPort)}
                       value={gatewayPort}
                       onChange={this.onGatewayPortChange}
-                      disabled={!ipfsApi || ipfsPortsRequested}
+                      disabled={ipfsPortsRequested}
                       size="large"
                       style={{ width: '100%' }}
                       wrapperStyle={{ width: '48%', margin: '12px 0px' }}

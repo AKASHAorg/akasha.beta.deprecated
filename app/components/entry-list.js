@@ -8,7 +8,7 @@ import Waypoint from 'react-waypoint';
 import { entryMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { selectAllPendingClaims, selectAllPendingVotes, selectHideEntrySettings,
+import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress } from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
@@ -156,7 +156,7 @@ EntryList.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+        baseUrl: selectBaseUrl(state),
         blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         drafts: state.draftState.get('drafts'),

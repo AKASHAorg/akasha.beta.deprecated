@@ -45,6 +45,7 @@ function* launchActions () {
     yield fork(externalProcSaga.gethGetOptions);
     // from ipfs.getConfig channel
     yield fork(externalProcSaga.ipfsGetConfig);
+    yield fork(externalProcSaga.ipfsGetPorts);
 
     yield fork(externalProcSaga.gethGetStatus);
     yield fork(externalProcSaga.ipfsGetStatus);

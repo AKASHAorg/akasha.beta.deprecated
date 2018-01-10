@@ -303,9 +303,8 @@ class ProfileCompleteForm extends Component {
 
 
     render () {
-        const { intl, isUpdate, tempProfile, loggedEthAddress } = this.props;
-        const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
-            baseUrl } = tempProfile;
+        const { baseUrl, intl, isUpdate, tempProfile, loggedEthAddress } = this.props;
+        const { akashaId, firstName, lastName, about, links, avatar, backgroundImage } = tempProfile;
         const { formatMessage } = intl;
 
         return (
@@ -575,6 +574,7 @@ class ProfileCompleteForm extends Component {
 ProfileCompleteForm.propTypes = {
     actionAdd: PropTypes.func,
     balance: PropTypes.shape(),
+    baseUrl: PropTypes.string.isRequired,
     getValidationMessages: PropTypes.func,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),

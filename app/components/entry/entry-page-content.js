@@ -92,7 +92,7 @@ class EntryPageContent extends Component {
         toggleOutsideNavigation(url);
     }
     render () {
-        const { commentEditor, containerRef, entry, licenses, intl } = this.props;
+        const { baseUrl, commentEditor, containerRef, entry, licenses, intl } = this.props;
         const license = licenses.get(entry.content.licence.id);
         let licenseLabel = intl.formatMessage(entryMessages.cannotRetrieveLicense);
         if (license) {
@@ -111,7 +111,7 @@ class EntryPageContent extends Component {
               {entry.content.entryType === 1 &&
                 <WebsiteInfoCard
                   cardInfo={entry.content.cardInfo}
-                  baseUrl={entry.baseUrl}
+                  baseUrl={baseUrl}
                   hasCard={
                       !!entry.content.cardInfo.title ||
                       !!entry.content.cardInfo.description
@@ -123,7 +123,7 @@ class EntryPageContent extends Component {
               }
               <div className="entry-page-content__content">
                 <SelectableEditor
-                  baseUrl={entry.get('baseUrl')}
+                  baseUrl={baseUrl}
                   draft={entry.getIn(['content', 'draft'])}
                   highlightSave={this.highlightSave}
                   startComment={commentEditor && commentEditor.insertHighlight}
@@ -157,6 +157,7 @@ class EntryPageContent extends Component {
 }
 
 EntryPageContent.propTypes = {
+    baseUrl: PropTypes.string.isRequired,
     commentEditor: PropTypes.shape(),
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
