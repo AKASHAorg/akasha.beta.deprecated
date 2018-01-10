@@ -41,7 +41,7 @@ const TopBarRight = (props) => {
             />
           </Tooltip>
           {hasPendingActions &&
-            <div className="top-bar-right__pending-indicator" />
+            <div className="top-bar-right__pending-indicator" onClick={showTransactionsLog} />
           }
         </div>
         <div className={ethClass} onClick={toggleEthWallet}>
