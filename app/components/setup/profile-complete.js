@@ -8,10 +8,10 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileExists } from '../../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileUpdate,
     tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
-import ProfileForm from '../forms/profile-complete-form';
 import { selectBalance, selectLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { setupMessages } from '../../locale-data/messages';
 import * as actionTypes from '../../constants/action-types';
+import { ProfileCompleteForm } from '../';
 
 class ProfileComplete extends Component {
     state = {
@@ -64,7 +64,7 @@ class ProfileComplete extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { faucet, intl, history, tempProfile, loggedProfileData,
+        const { faucet, intl, history, tempProfile, ipfsBaseUrl, loggedProfileData,
             loggedEthAddress, profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
@@ -129,9 +129,10 @@ class ProfileComplete extends Component {
               </div>
               <div className="profile-complete__right">
                 <div className={`profile-complete__header ${withShadow}`} />
-                <ProfileForm
+                <ProfileCompleteForm
                   actionAdd={this.props.actionAdd}
                   balance={this.props.balance}
+                  baseUrl={ipfsBaseUrl}
                   intl={intl}
                   history={history}
                   isUpdate={isUpdate}

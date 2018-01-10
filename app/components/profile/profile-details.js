@@ -9,7 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
-import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
+import { selectBaseUrl, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
@@ -79,7 +79,7 @@ class ProfileDetails extends Component {
         if (!this.props.profileData) {
             console.error('no profile data');
         }
-        const { ethAddress, followPending, intl, isFollower, loggedEthAddress, profileData,
+        const { baseUrl, ethAddress, followPending, intl, isFollower, loggedEthAddress, profileData,
             tipPending } = this.props;
         const { about, akashaId, avatar, backgroundImage, links, firstName, lastName,
             followersCount, followingCount } = profileData.toJS();
@@ -89,7 +89,7 @@ class ProfileDetails extends Component {
             `${firstName} ${lastName}` :
             <DisplayName akashaId={akashaId} ethAddress={ethAddress} />;
         const imageUrl = backgroundImage[bestMatch] ?
-            imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
+            imageCreator(backgroundImage[bestMatch].src, baseUrl) :
             '';
         const supportButtonClass = classNames('profile-details__button profile-details__support-button', {
             'profile-details__support-button_disabled': tipPending
@@ -215,6 +215,7 @@ class ProfileDetails extends Component {
 
 ProfileDetails.propTypes = {
     actionAdd: PropTypes.func.isRequired,
+    baseUrl: PropTypes.string.isRequired,
     ethAddress: PropTypes.string.isRequired,
     followPending: PropTypes.bool,
     intl: PropTypes.shape(),
@@ -228,6 +229,7 @@ ProfileDetails.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
+        baseUrl: selectBaseUrl(state),
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),

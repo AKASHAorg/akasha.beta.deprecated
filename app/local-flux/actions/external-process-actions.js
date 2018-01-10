@@ -93,7 +93,7 @@ export const ipfsGetStatusSuccess = (data, services) =>
     action(types.IPFS_GET_STATUS_SUCCESS, { data, services });
 export const ipfsResetBusy = () => action(types.IPFS_RESET_BUSY);
 export const ipfsResetPorts = () => action(types.IPFS_RESET_PORTS);
-export const ipfsSetPorts = ports => action(types.IPFS_SET_PORTS, { ports });
+export const ipfsSetPorts = (ports, restart) => action(types.IPFS_SET_PORTS, { ports, restart });
 
 export const ipfsSetPortsError = (error) => {
     error.code = 'ISPE01';

@@ -273,15 +273,15 @@ class ProfileEditForm extends Component {
 
     /* eslint-disable complexity */
     render () {
-        const { intl, isUpdate, pendingActions, tempProfile } = this.props;
-        const { akashaId, firstName, lastName, about, links, avatar, backgroundImage,
-            baseUrl } = tempProfile;
+        const { baseUrl, intl, isUpdate, pendingActions, tempProfile } = this.props;
+        const { akashaId, firstName, lastName, about, links, avatar, backgroundImage } = tempProfile;
         const { formatMessage } = intl;
         const actionType = isUpdate ?
             actionTypes.profileUpdate :
             actionTypes.profileRegister;
         const updatePending = pendingActions.get(actionType);
-        const disableSubmit = !tempProfile.get('akashaId') || !this.formChanged || this.emptyLinks || updatePending;
+        const disableSubmit = !tempProfile.get('akashaId') || !this.formChanged || this.emptyLinks
+            || updatePending;
         const disableAkashaIdInput = isUpdate || updatePending;
 
         return (
@@ -419,7 +419,10 @@ class ProfileEditForm extends Component {
                       {links.map((link, index) => (
                         <div className="profile-edit-form__link" key={`${index + 1}`}>
                           <FormItem
-                            validateStatus={this._getErrorMessages('links', index, 'url') ? 'error' : 'success'}
+                            validateStatus={this._getErrorMessages('links', index, 'url') ?
+                                'error' :
+                                'success'
+                            }
                             help={this._getErrorMessages('links', index, 'url')}
                           >
                             <Input
@@ -520,6 +523,7 @@ class ProfileEditForm extends Component {
 
 ProfileEditForm.propTypes = {
     actionAdd: PropTypes.func,
+    baseUrl: PropTypes.string.isRequired,
     form: PropTypes.shape(),
     getFormContainerRef: PropTypes.func,
     getValidationMessages: PropTypes.func,

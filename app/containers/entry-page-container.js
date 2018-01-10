@@ -7,11 +7,12 @@ import { entryCleanFull, entryGetFull,
     entryGetLatestVersion } from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
+import { selectBaseUrl, selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');
     return {
+        baseUrl: selectBaseUrl(state),
         entry,
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         latestVersion: state.entryState.get('fullEntryLatestVersion'),
