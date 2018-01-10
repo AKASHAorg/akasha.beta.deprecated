@@ -29,7 +29,7 @@ const execute = Promise.coroutine(function* (data: {
     const address = yield profileAddress(data);
 
     const fetchedFollow = yield contracts.fromEvent(contracts.instance.Feed.Follow,
-        { follower: address }, data.toBlock, 100, { lastIndex: data.lastIndex, reversed: data.reversed || false });
+        { follower: address }, 0, 1000, { reversed: true });
 
     const followList = fetchedFollow.results.map((res) => {
         return res.args.followed;
@@ -41,7 +41,7 @@ const execute = Promise.coroutine(function* (data: {
     const maxResults = data.limit || 5;
     const fetched = yield contracts
         .fromEventFilter(contracts.instance.Entries.Publish, {}, data.toBlock,
-            maxResults, { lastIndex: data.lastIndex }, aditionalFilter);
+            maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false  }, aditionalFilter);
     for (let event of fetched.results) {
 
         const captureIndex = yield contracts
