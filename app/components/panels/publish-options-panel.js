@@ -73,40 +73,6 @@ class PublishOptionsPanel extends Component {
               className={`publish-options-panel__content publish-options-panel__content${scrolled ? '_scrolled' : ''}`}
               onScroll={this._handleContentScroll}
             >
-              <div className="publish-options-panel__licence-container">
-                <h4 className="publish-options-panel__container-title">
-                  {intl.formatMessage(entryMessages.license)}
-                </h4>
-                <Select
-                  defaultValue={selectedLicence.get('parent')}
-                  style={{ width: '100%' }}
-                  className="publish-options-panel__licence-select"
-                  onChange={this._handleLicenceChange('parent')}
-                  value={selectedLicence.get('parent')}
-                >
-                  {licences.filter(lic => !lic.parent).map(parentLicence =>
-                    <Option key={parentLicence.get('id')}>{parentLicence.get('label')}</Option>
-                  ).toIndexedSeq()}
-                </Select>
-                {(licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
-                  <RadioGroup
-                    className="publish-options-panel__licence-radio-group"
-                    onChange={this._handleLicenceChange('id')}
-                    value={selectedLicence.id}
-                  >
-                      {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
-                        .map(childLic => (
-                          <Radio
-                            className="publish-options-panel__licence-radio"
-                            key={childLic.id}
-                            value={childLic.id}
-                          >
-                            {childLic.label}
-                          </Radio>
-                        )).toIndexedSeq()}
-                  </RadioGroup>
-                }
-              </div>
               {!linkEntry &&
                 <div
                   className="publish-options-panel__featured-image-container"
@@ -125,9 +91,43 @@ class PublishOptionsPanel extends Component {
                     useIpfs
                   />
                   <small>{intl.formatMessage(entryMessages.allowedImageTypes)}</small>
+                  <div> &nbsp; </div>
                 </div>
               }
-
+              <div className="publish-options-panel__licence-container">
+                <h4 className="publish-options-panel__container-title">
+                  {intl.formatMessage(entryMessages.license)}
+                </h4>
+                <Select
+                  defaultValue={selectedLicence.get('parent')}
+                  style={{ width: '100%' }}
+                  className="publish-options-panel__licence-select"
+                  onChange={this._handleLicenceChange('parent')}
+                  value={selectedLicence.get('parent')}
+                >
+                  {licences.filter(lic => !lic.parent).map(parentLicence =>
+                    <Option key={parentLicence.get('id')}>{parentLicence.get('label')}</Option>
+                        ).toIndexedSeq()}
+                </Select>
+                {(licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
+                <RadioGroup
+                  className="publish-options-panel__licence-radio-group"
+                  onChange={this._handleLicenceChange('id')}
+                  value={selectedLicence.id}
+                >
+                  {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
+                            .map(childLic => (
+                              <Radio
+                                className="publish-options-panel__licence-radio"
+                                key={childLic.id}
+                                value={childLic.id}
+                              >
+                                {childLic.label}
+                              </Radio>
+                            )).toIndexedSeq()}
+                </RadioGroup>
+                    }
+              </div>
               <div
                 className="publish-options-panel__excerpt-container"
               >

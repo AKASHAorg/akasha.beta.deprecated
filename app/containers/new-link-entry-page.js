@@ -291,10 +291,10 @@ class NewLinkEntryPage extends Component {
         });
     }
 
-    _togglePublishPanel = state =>
+    _togglePublishPanel = () =>
         () => {
             this.setState({
-                showPublishPanel: state
+                showPublishPanel: !this.state.showPublishPanel
             });
         }
 
@@ -387,13 +387,6 @@ class NewLinkEntryPage extends Component {
           <div
             className="edit-entry-page link-page"
           >
-            <div
-              className="flex-center-y edit-entry-page__publish-options"
-              onClick={this._togglePublishPanel(true)}
-            >
-              <Icon className="edit-entry-page__more-icon" type="more" />
-              {intl.formatMessage(entryMessages.publishOptions)}
-            </div>
             <Row
               type="flex"
               className="edit-entry-page__content"
@@ -483,7 +476,7 @@ class NewLinkEntryPage extends Component {
                   errors={errors}
                   baseUrl={baseUrl}
                   intl={intl}
-                  onClose={this._togglePublishPanel(false)}
+                  onClose={this._togglePublishPanel()}
                   onLicenceChange={this._handleDraftLicenceChange}
                   onExcerptChange={this._handleExcerptChange}
                   title={title}
@@ -515,6 +508,13 @@ class NewLinkEntryPage extends Component {
                     }
                   </div>
                   <div className="edit-entry-page__footer-actions">
+                    <Button
+                      size="large"
+                      onClick={this._togglePublishPanel()}
+                      className={'edit-entry-page__options-button'}
+                    >
+                      {intl.formatMessage(entryMessages.publishOptions)}
+                    </Button>
                     <Button
                       size="large"
                       type="primary"
