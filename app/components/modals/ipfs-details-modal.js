@@ -96,13 +96,13 @@ class IpfsDetailsModal extends Component {
         const api = ipfsStatus.get('api');
         const ports = {};
         if (api && Number(apiPort) && apiPort !== ipfsSettings.getIn(['ports', 'apiPort'])) {
-            ports.apiPort = Number(apiPort);
+            ports.api = Number(apiPort);
         }
         if (Number(gatewayPort) && gatewayPort !== ipfsSettings.getIn(['ports', 'gatewayPort'])) {
-            ports.gatewayPort = Number(gatewayPort);
+            ports.gateway = Number(gatewayPort);
         }
         if (api && Number(swarmPort) && swarmPort !== ipfsSettings.getIn(['ports', 'swarmPort'])) {
-            ports.swarmPort = Number(swarmPort);
+            ports.swarm = Number(swarmPort);
         }
         if (storagePath !== ipfsSettings.get('storagePath')) {
             this.props.ipfsSaveSettings({ storagePath }, true);
