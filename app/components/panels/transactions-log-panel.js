@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Icon, Tabs, Timeline } from 'antd';
+import classNames from 'classnames';
 import { DataLoader, TransactionLog } from '../';
 import { actionClearHistory, actionGetAllHistory } from '../../local-flux/actions/action-actions';
 import { hideTransactionsLog } from '../../local-flux/actions/app-actions';
@@ -37,7 +38,10 @@ class TransactionsLogPanel extends Component {
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
     renderHistoryActions = () => {
-        const { fetchingHistory, historyActions, loggedEthAddress } = this.props;
+        const { darkTheme, fetchingHistory, historyActions, intl, loggedEthAddress } = this.props;
+        const imgClass = classNames('transactions-log-panel__placeholder', {
+            'transactions-log-panel__placeholder_dark': darkTheme
+        });
 
         return (
           <div className="transactions-log-panel__timeline-wrapper">
@@ -67,13 +71,24 @@ class TransactionsLogPanel extends Component {
                     );
                 })}
               </Timeline>
+              {!historyActions.size &&
+                <div className="flex-center transactions-log-panel__placeholder-wrapper">
+                  <div className={imgClass} />
+                  <div className="transactions-log-panel__placeholder-message">
+                    {intl.formatMessage(profileMessages.noTransactions)}
+                  </div>
+                </div>
+              }
             </DataLoader>
           </div>
         );
     }
 
     renderPendingActions = () => {
-        const { loggedEthAddress, pendingActions } = this.props;
+        const { darkTheme, intl, loggedEthAddress, pendingActions } = this.props;
+        const imgClass = classNames('transactions-log-panel__placeholder', {
+            'transactions-log-panel__placeholder_dark': darkTheme
+        });
         return (
           <div className="transactions-log-panel__timeline-wrapper">
             <Timeline>
@@ -90,6 +105,14 @@ class TransactionsLogPanel extends Component {
                 </Item>
               ))}
             </Timeline>
+            {!pendingActions.size &&
+              <div className="flex-center transactions-log-panel__placeholder-wrapper">
+                <div className={imgClass} />
+                <div className="transactions-log-panel__placeholder-message">
+                  {intl.formatMessage(profileMessages.noPendingTransactions)}
+                </div>
+              </div>
+            }
           </div>
         );
     };
@@ -135,6 +158,7 @@ class TransactionsLogPanel extends Component {
 TransactionsLogPanel.propTypes = {
     actionClearHistory: PropTypes.func.isRequired,
     actionGetAllHistory: PropTypes.func.isRequired,
+    darkTheme: PropTypes.bool,
     fetchingHistory: PropTypes.bool,
     hideTransactionsLog: PropTypes.func.isRequired,
     historyActions: PropTypes.shape().isRequired,
@@ -145,6 +169,7 @@ TransactionsLogPanel.propTypes = {
 
 function mapStateToProps (state) {
     return {
+        darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
         fetchingHistory: selectFetchingHistory(state),
         historyActions: selectActionsHistory(state),
         loggedEthAddress: selectLoggedEthAddress(state),

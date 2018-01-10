@@ -280,6 +280,11 @@ const generalMessages = defineMessages({
         description: 'karma total score',
         defaultMessage: 'Karma total score'
     },
+    learnMore: {
+        id: 'app.general.learnMore',
+        description: '',
+        defaultMessage: 'Learn More'
+    },
     leave: {
         id: 'app.general.leave',
         description: 'leave button label',
@@ -320,11 +325,6 @@ const generalMessages = defineMessages({
         description: 'short form of minutes count',
         defaultMessage: '{minutes, number} min'
     },
-    learnMore: {
-        id: 'app.general.learnMore',
-        description: '',
-        defaultMessage: 'Learn More'
-    },
     next: {
         id: 'app.general.next',
         description: 'Label for Next button',
@@ -349,6 +349,11 @@ const generalMessages = defineMessages({
         id: 'app.general.notFound',
         description: 'not found',
         defaultMessage: 'Not found'
+    },
+    notifications: {
+        id: 'app.general.notifications',
+        description: 'notifications',
+        defaultMessage: 'Notifications'
     },
     ok: {
         id: 'app.general.ok',

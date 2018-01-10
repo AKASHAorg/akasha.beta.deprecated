@@ -8,7 +8,8 @@ import classNames from 'classnames';
 import { DashboardTopBar, Navigation, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
 import { showTransactionsLog, toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
-    selectLoggedProfileData, selectShowWallet } from '../../local-flux/selectors';
+    selectLoggedProfileData, selectPublishingActions, selectShowWallet,
+    selectTransactionsLog } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -24,7 +25,8 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, fullEntry, showSecondarySidebar, showWallet } = this.props;
+        const { balance, fullEntry, hasPendingActions, showSecondarySidebar, showWallet,
+            transactionsLogOpen } = this.props;
         const className = classNames('flex-center-y top-bar', {
             'top-bar_full': !showSecondarySidebar || fullEntry,
             'top-bar_default': !fullEntry
@@ -50,10 +52,12 @@ class TopBar extends PureComponent {
             </div>
             <TopBarRight
               balance={balance}
+              hasPendingActions={hasPendingActions}
               showTransactionsLog={this.props.showTransactionsLog}
               showWallet={showWallet}
               toggleAethWallet={this.props.toggleAethWallet}
               toggleEthWallet={this.props.toggleEthWallet}
+              transactionsLogOpen={transactionsLogOpen}
             />
           </div>
         );
@@ -63,6 +67,7 @@ class TopBar extends PureComponent {
 TopBar.propTypes = {
     balance: PropTypes.shape().isRequired,
     fullEntry: PropTypes.bool,
+    hasPendingActions: PropTypes.bool,
     history: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
@@ -71,14 +76,17 @@ TopBar.propTypes = {
     showWallet: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
+    transactionsLogOpen: PropTypes.bool,
 };
 
 const mapStateToProps = state => ({
     balance: selectBalance(state),
     fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
+    hasPendingActions: !!selectPublishingActions(state).size,
     loggedProfile: selectLoggedProfile(state),
     loggedProfileData: selectLoggedProfileData(state),
-    showWallet: selectShowWallet(state)
+    showWallet: selectShowWallet(state),
+    transactionsLogOpen: selectTransactionsLog(state)
 });
 
 export default connect(

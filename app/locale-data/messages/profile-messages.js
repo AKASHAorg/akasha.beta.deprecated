@@ -197,10 +197,20 @@ export const profileMessages = defineMessages({
         description: 'Title for profile overview sidebar',
         defaultMessage: 'My profile'
     },
+    noPendingTransactions: {
+        id: 'app.profile.noPendingTransactions',
+        description: 'placeholder message for empty pending transactions log',
+        defaultMessage: 'You have no pending transactions'
+    },
     noProfiles: {
         id: 'app.entry.noProfiles',
         description: 'placeholder for empty profiles list',
         defaultMessage: 'No profiles'
+    },
+    noTransactions: {
+        id: 'app.profile.noTransactions',
+        description: 'placeholder message for empty transactions history log',
+        defaultMessage: 'You have no transactions'
     },
     overview: {
         id: 'app.profile.overview',
