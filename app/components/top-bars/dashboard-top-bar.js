@@ -28,7 +28,7 @@ const removeClass = (id) => {
 };
 
 const DashboardTopBar = (props) => {
-    const { activeDashboard, columns, intl } = props;
+    const { activeDashboard, columns, intl, lists } = props;
     const addColumnTooltip = activeDashboard ?
         intl.formatMessage(dashboardMessages.addColumn) :
         intl.formatMessage(dashboardMessages.createDashboardFirst);
@@ -48,6 +48,8 @@ const DashboardTopBar = (props) => {
         switch (type) {
             case columnTypes.latest:
                 return intl.formatMessage(dashboardMessages.latest);
+            case columnTypes.list:
+                return lists.getIn([value, 'name']);
             case columnTypes.profile:
                 return isEthAddress(value) ? getDisplayAddress(value) : `@${value}`;
             case columnTypes.stream:
@@ -84,13 +86,15 @@ DashboardTopBar.propTypes = {
     activeDashboard: PropTypes.shape(),
     columns: PropTypes.shape().isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
-    intl: PropTypes.shape().isRequired
+    intl: PropTypes.shape().isRequired,
+    lists: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
-        columns: selectActiveDashboardColumns(state)
+        columns: selectActiveDashboardColumns(state),
+        lists: state.listState.get('byId')
     };
 }
 
