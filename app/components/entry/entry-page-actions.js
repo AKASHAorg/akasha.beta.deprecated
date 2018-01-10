@@ -271,8 +271,8 @@ class EntryPageAction extends Component {
         }
 
         const votePercentTooltip = intl.formatMessage(entryMessages.votePercentage, {
-            downvote: downvotePercent,
-            upvote: upvotePercent
+            downvote: downvotePercent && downvotePercent.toFixed(0),
+            upvote: upvotePercent && upvotePercent.toFixed(0)
         });
 
         return (
