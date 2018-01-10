@@ -1,5 +1,5 @@
 import Pica from 'pica/dist/pica';
-import { is } from 'ramda';
+import { is, isEmpty } from 'ramda';
 import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
@@ -73,21 +73,28 @@ function imageCreator (arrayBuffer, baseUrl) {
  * @returns {array} image Array of versions of an image;
  */
 function extractImageFromContent (content) {
-    const { entityMap } = content;
-    if (!entityMap) {
-        console.error(`entityMap not found inside content param.
-            Make sure you have passed the right content!`
-        );
+    const { blocks } = content;
+    if (!blocks) {
+        console.error('no blocks not found inside content param');
         return null;
     }
-    if (entityMap.length === 0) {
+    if (blocks.length === 0) {
         return null;
     }
-    const imageEntity = entityMap.filter(entity => entity.type === 'image');
-    if (imageEntity.length > 0) {
-        return imageEntity[0].data;
+    let firstImage;
+    for (let i = 0; i < blocks.length; i++) {
+        if (
+            blocks[i].type === 'atomic' &&
+            blocks[i].data.type &&
+            blocks[i].data.type === 'image' &&
+            blocks[i].data.files &&
+            !isEmpty(blocks[i].data.files)
+        ) {
+            firstImage = blocks[i].data.files;
+            break;
+        }
     }
-    return null;
+    return firstImage;
 }
 /**
  * @TODO Move this to a config file

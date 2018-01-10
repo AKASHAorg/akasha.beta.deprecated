@@ -1,5 +1,5 @@
 import XRegExp from 'xregexp';
-
+import { isEmpty } from 'ramda';
 /* eslint-disable no-bitwise */
 export const genId = () => {
     const chars = '0123456789abcdef'.split('');
@@ -113,4 +113,29 @@ export function getUrl (url) {
         return url;
     }
     return `http://${url}`;
+}
+
+export function extractExcerpt (data) {
+    const { blocks } = data;
+    if (!blocks) {
+        console.error('no blocks not found inside content param');
+        return null;
+    }
+    if (blocks.length === 0) {
+        return null;
+    }
+    let extractedText = '';
+    for (let i = 0; i < blocks.length; i++) {
+        if (
+            blocks[i].type === 'unstyled' &&
+            blocks[i].text &&
+            !isEmpty(blocks[i].text)
+        ) {
+            extractedText += blocks[i].text;
+            if (extractedText.length > 120) {
+                break;
+            }
+        }
+    }
+    return extractedText.substr(0, 120);
 }
