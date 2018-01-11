@@ -26,7 +26,7 @@ const TopBarRight = (props) => {
         <div className="flex-center-y top-bar-right__icon-wrapper">
           <Tooltip title={intl.formatMessage(generalMessages.notifications)}>
             <Icon
-              className="content-link top-bar-right__notifications-icon"
+              className="top-bar-right__notifications-icon"
               onClick={() => {}}
               type="notifications"
             />
