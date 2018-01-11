@@ -53,6 +53,7 @@ export ImageUploader from './image-uploader/image-uploader';
 export Input from './common/input.js';
 export InputNumber from './common/input-number.js';
 export IpfsDetailsModal from './modals/ipfs-details-modal';
+export KarmaPopover from './popovers/karma-popover';
 export LatestColumn from './columns/latest-column';
 export Lists from './profile-overview/lists';
 export ListEntries from './profile-overview/list-entries';

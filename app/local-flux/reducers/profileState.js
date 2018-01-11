@@ -64,6 +64,9 @@ const profileState = createReducer(initialState, {
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
         state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
 
+    [types.PROFILE_ALL_FOLLOWING]: (state, { following }) =>
+        state.set('allFollowing', following),
+
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
             localProfiles: new List()
@@ -365,6 +368,25 @@ const profileState = createReducer(initialState, {
             isFollower = isFollower.set(addressFollowing, result);
         });
         return state.set('isFollower', isFollower);
+    },
+
+    [types.PROFILE_KARMA_RANKING]: state =>
+        state.setIn(['flags', 'karmaRankingPending'], true),
+
+    [types.PROFILE_KARMA_RANKING_SUCCESS]: (state, { data }) => {
+        const above = (data.myRanking !== 0) ?
+            data.collection.slice(data.myRanking - 2, data.myRanking) : [];
+        const below = (data.myRanking !== data.collection.length - 1) ?
+            data.collection.slice(data.myRanking + 1, data.myRanking + 3) : [];
+        return state.merge({
+            flags: state.get('flags').set('karmaRankingPending', false),
+            karmaRanking: state.get('karmaRanking').merge({
+                collection: data.collection,
+                myRanking: data.myRanking,
+                above,
+                below
+            })
+        });
     },
 
     [types.PROFILE_LOGIN]: state =>

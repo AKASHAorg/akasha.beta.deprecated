@@ -275,6 +275,26 @@ const generalMessages = defineMessages({
         description: 'karma',
         defaultMessage: 'Karma'
     },
+    karmaLeaderboard: {
+        id: 'app.general.karmaLeaderboard',
+        description: 'karma leaderboard title',
+        defaultMessage: 'Leaderboard Position'
+    },
+    karmaLevel: {
+        id: 'app.general.karmaLevel',
+        description: 'karma level',
+        defaultMessage: 'Level {karmaLevel}'
+    },
+    karmaLevelInfo: {
+        id: 'app.general.karmaLevelInfo',
+        description: 'karma level info',
+        defaultMessage: 'At your current level you can:'
+    },
+    karmaScore: {
+        id: 'app.general.karmaScore',
+        description: 'karma score',
+        defaultMessage: '{profileKarmaScore} Karma'
+    },
     karmaTotalScore: {
         id: 'app.general.karmaTotalScore',
         description: 'karma total score',
@@ -549,6 +569,11 @@ const generalMessages = defineMessages({
         id: 'app.general.shift',
         description: 'convert tokens',
         defaultMessage: 'Shift'
+    },
+    showMore: {
+        id: 'app.general.showMore',
+        description: 'button label',
+        defaultMessage: 'Show more'
     },
     skipStep: {
         id: 'app.general.skipStep',
