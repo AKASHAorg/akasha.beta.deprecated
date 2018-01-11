@@ -353,7 +353,7 @@ const generalMessages = defineMessages({
     notifications: {
         id: 'app.general.notifications',
         description: 'notifications',
-        defaultMessage: 'Notifications'
+        defaultMessage: 'Notifications (coming soon)'
     },
     ok: {
         id: 'app.general.ok',
