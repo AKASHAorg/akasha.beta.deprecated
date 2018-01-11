@@ -18,8 +18,19 @@
     }
 
     &__button {
+        position: relative;
         width: 24px;
         height: 24px;
         margin-right: 8px;
+    }
+
+    &__dot {
+        position: absolute;
+        top: 2px;
+        right: 0px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: @error-color;
     }
 }

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import serviceState from '../constants/serviceState';
-import { generalMessages, settingsMessages } from '../locale-data/messages';
+import { generalMessages } from '../locale-data/messages';
 import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 import { Icon } from './';
@@ -79,8 +79,10 @@ class ServiceStatusBar extends Component {
         const { toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
-        const gethIcon = withCircles ? `geth${this.getCircleColor(gethState)}` : 'geth';
-        const ipfsIcon = withCircles ? `ipfs${this.getCircleColor(ipfsState)}` : 'ipfs';
+        const gethColor = this.getCircleColor(gethState);
+        const ipfsColor = this.getCircleColor(ipfsState);
+        const gethIcon = withCircles ? `geth${gethColor}` : 'geth';
+        const ipfsIcon = withCircles ? `ipfs${ipfsColor}` : 'ipfs';
 
         return (
           <div className="service-status-bar">
@@ -90,6 +92,9 @@ class ServiceStatusBar extends Component {
                 onClick={toggleGethDetails}
               >
                 <Icon className="service-status-bar__geth-icon" type={gethIcon} />
+                {!withCircles && gethColor === 'Red' &&
+                  <div className="service-status-bar__dot" />
+                }
               </div>
             </Tooltip>
             <Tooltip title={this.getTooltip(ipfsState)}>
@@ -98,6 +103,9 @@ class ServiceStatusBar extends Component {
                 onClick={toggleIpfsDetails}
               >
                 <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
+                {!withCircles && ipfsColor === 'Red' &&
+                  <div className="service-status-bar__dot" />
+                }
               </div>
             </Tooltip>
           </div>
