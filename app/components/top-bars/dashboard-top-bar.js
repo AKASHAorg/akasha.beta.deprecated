@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn } from '../../local-flux/actions/dashboard-actions';
 import { selectActiveDashboard, selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { Icon, Navigation, PlusSquareIcon } from '../';
+import { Icon, Navigation, PlusSquareIcon } from '../index';
+import TopBarIcon from './dashboard-top-bar-icon';
 
 const iconsTypes = {
     [columnTypes.latest]: 'entries',
@@ -65,13 +68,13 @@ const DashboardTopBar = (props) => {
       <div className="flex-center-y dashboard-top-bar">
         <Navigation />
         {columns.map(column => (
-          <Tooltip key={column.get('id')} title={() => getTooltip(column)}>
-            <Icon
-              className="content-link dashboard-top-bar__column-icon"
-              onClick={() => scrollColumnIntoView(column.get('id'))}
-              type={iconsTypes[column.get('type')]}
-            />
-          </Tooltip>
+          <TopBarIcon
+              key={column.get('id')}
+            id={column.get('id')}
+            title={() => getTooltip(column)}
+            iconType={iconsTypes[column.get('type')]}
+            scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
+          />
         ))}
         <Tooltip title={addColumnTooltip}>
           <div onClick={activeDashboard ? props.dashboardAddNewColumn : undefined}>
@@ -98,9 +101,9 @@ function mapStateToProps (state) {
     };
 }
 
-export default connect(
+export default DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
         dashboardAddNewColumn
     }
-)(injectIntl(DashboardTopBar));
+)(injectIntl(DashboardTopBar)));
