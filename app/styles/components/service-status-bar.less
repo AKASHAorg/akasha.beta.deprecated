@@ -33,4 +33,36 @@
         border-radius: 50%;
         background-color: @error-color;
     }
+
+    &__select {
+        width: 85px;
+    }
+
+    &__select-dropdown {
+        font-size: 12px;
+
+        li.ant-select-dropdown-menu-item {
+            color: @heading-color;
+        }
+    }
+
+    &__translate-option {
+        background-color: @primary-color;
+        color: white !important;
+
+        &.ant-select-dropdown-menu-item-active {
+            background-color: @primary-color;
+        }
+    }
+
+    &__link-icon {
+        width: 10px;
+        height: 10px;
+        margin-left: 5px;
+        stroke: white;
+    }
+
+    .ant-select-selection-selected-value {
+        font-size: 12px;
+    }
 }

@@ -615,8 +615,13 @@ const generalMessages = defineMessages({
     },
     transformAethers: {
         id: 'app.general.transformAethers',
-        description: '',
+        description: 'manafy/lock aeth',
         defaultMessage: 'Manafy AETH'
+    },
+    translate: {
+        id: 'app.general.translate',
+        description: 'translate',
+        defaultMessage: 'Translate'
     },
     usernameFirst: {
         id: 'app.general.usernameFirst',
