@@ -639,6 +639,7 @@
   "app.setup.gethNetworkId": "Geth network id",
   "app.setup.importKeys": "Import keys",
   "app.setup.ipfsStoragePath": "IPFS storage path",
+  "app.setup.ipfsStoragePathInfo": "Changing this will reset your configuration and your local IPFS content",
   "app.setup.ipfsApiPort": "IPFS API port",
   "app.setup.ipfsGatewayPort": "IPFS gateway port",
   "app.setup.ipfsSwarmPort": "IPFS swarm port",
