@@ -533,7 +533,7 @@ const generalMessages = defineMessages({
     sidebarTooltipChat: {
         id: 'app.general.sidebarTooltipChat',
         description: 'tooltip text for sidebar chat button',
-        defaultMessage: 'Chat: coming soon'
+        defaultMessage: 'Chat (coming soon)'
     },
     sidebarTooltipDraftText: {
         id: 'app.general.sidebarTooltipDraftText',

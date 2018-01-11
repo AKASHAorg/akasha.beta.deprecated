@@ -3,6 +3,7 @@ import startScreen from "./setup/start-screen";
 /* eslint-disable import/no-named-as-default */
 export AddImage from './comment/add-image';
 export AddToBoard from './popovers/add-to-board';
+export AddToBoardPopover from './popovers/add-to-board-popover';
 export AethWallet from './wallets/aeth-wallet';
 export AppSettings from './app-settings';
 export Auth from './setup/auth';
