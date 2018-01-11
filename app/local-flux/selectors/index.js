@@ -43,6 +43,8 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 export const selectAllDashboards = state =>
     state.dashboardState.get('allDashboards').map(id => selectDashboard(state, id));
 
+export const selectAllFollowing = state => state.profileState.get('allFollowing');
+
 export const selectAllLicenses = state => state.licenseState.get('byId');
 
 export const selectAllPendingClaims = state => state.actionState.getIn(['pending', 'claim']);

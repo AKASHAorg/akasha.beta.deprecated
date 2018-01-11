@@ -11,7 +11,7 @@ import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
-    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken
+    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowing
 } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -136,13 +136,13 @@ function* profileFollowersIterator ({ context, ethAddress }) {
     yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
 }
 
-function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, entrySync }) {
+function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowing }) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(
         channel,
         channel.send,
-        [{ context, ethAddress, limit, entrySync }]
+        [{ context, ethAddress, limit, allFollowing }]
     );
 }
 
@@ -256,6 +256,13 @@ function* profileLogin ({ data }) {
 function* profileLogout () {
     const channel = Channel.server.auth.logout;
     yield apply(channel, channel.send, [{}]);
+}
+
+function* profileKarmaRanking () {
+    const channel = Channel.server.profile.karmaRanking;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const following = yield select(selectAllFollowing);
+    yield apply(channel, channel.send, [{ following }]);
 }
 
 function* profileManaBurned () {
@@ -650,8 +657,9 @@ function* watchProfileFollowingsIteratorChannel () {
             } else {
                 yield put(actions.profileFollowingsIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.entrySync) {
+        } else if (resp.request.allFollowing) {
             const followings = resp.data.collection.map(profile => profile.ethAddress);
+            yield put(actions.profileAllFollowing(followings));
             yield put(searchActions.searchSyncEntries(followings));
         } else {
             yield call(profileGetExtraOfList, resp.data.collection, resp.request.context);
@@ -779,6 +787,17 @@ function* watchProfileIsFollowerChannel () {
             yield put(actions.profileIsFollowerError(resp.error, resp.request));
         } else {
             yield put(actions.profileIsFollowerSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileKarmaRankingChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.karmaRanking);
+        if (resp.error) {
+            yield put(actions.profileKarmaRankingError(resp.error, resp.request));
+        } else {
+            yield put(actions.profileKarmaRankingSuccess(resp.data));
         }
     }
 }
@@ -1014,6 +1033,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileGetListChannel);
     yield fork(watchProfileGetPublishingCostChannel);
     yield fork(watchProfileIsFollowerChannel);
+    yield fork(watchProfileKarmaRankingChannel);
     yield fork(watchProfileLogoutChannel);
     yield fork(watchProfileManaBurnedChannel);
     yield fork(watchProfileFaucetChannel);
@@ -1054,6 +1074,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_GET_LOGGED_SUCCESS, profileGetPublishingCost);
     yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
     yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
+    yield takeEvery(types.PROFILE_KARMA_RANKING, profileKarmaRanking);
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
     yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);

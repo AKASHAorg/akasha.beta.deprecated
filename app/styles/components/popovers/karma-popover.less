@@ -1,0 +1,112 @@
+.karma-popover {
+    width: 320px;
+
+    &__back {
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    &__back-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    &__card-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        color: @heading-color;
+    }
+
+    &__card-rank {
+        margin-right: 5px;
+        &_blue {
+            color: @primary-color;
+        }
+    }
+
+    &__card-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    &__card-name {
+        margin-left: 5px;
+    }
+
+    &__content {
+        height: 330px;
+        position: relative;
+    }
+
+    &__title-wrap {
+        font-size: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    &__wrap {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &__title {
+        color: @text-color;
+    }
+
+    &__show-more {
+        cursor: pointer;
+        color: @primary-color;
+    }
+
+    &__progress {
+        .ant-progress-bg {
+            background-color: @karma-color;
+        }
+    }
+
+    &__karma-score {
+        margin-left: 5px;
+        color: @heading-color;
+    }
+
+    &__karma-level {
+        font-size: 15px;
+        color: @text-color;
+        padding: 30px 0 10px 0;
+    }
+
+    &__info-icon {
+        width: 20px;
+        height: 20px;
+        stroke: initial !important;
+    }
+
+    &__leaderboard-title-wrap {
+        padding-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    &__leaderboard-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: @heading-color;
+    }
+
+    &__profile-card {
+        margin: 5px;
+        border-radius: 5px;
+        .ant-card-body {
+            padding: 7px;
+        }
+    }
+
+    &__spin {
+        margin-top: 40px;
+    }
+}
