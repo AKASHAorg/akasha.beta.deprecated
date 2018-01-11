@@ -7,7 +7,7 @@ import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { searchProfiles } from '../../local-flux/actions/search-actions';
+import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectProfileExists,
     selectProfileSearchResults } from '../../local-flux/selectors';
 
@@ -40,6 +40,7 @@ class ProfileColumn extends Component {
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
+        this.props.searchResetResults();
     }
 
     firstLoad = () => {
@@ -125,6 +126,7 @@ ProfileColumn.propTypes = {
     profileExists: PropTypes.shape().isRequired,
     profileResults: PropTypes.shape().isRequired,
     searchProfiles: PropTypes.func.isRequired,
+    searchResetResults: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -140,6 +142,7 @@ export default connect(
     {
         entryMoreProfileIterator,
         entryProfileIterator,
-        searchProfiles
+        searchProfiles,
+        searchResetResults
     }
 )(injectIntl(ProfileColumn));

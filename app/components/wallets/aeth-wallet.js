@@ -8,8 +8,9 @@ import * as actionTypes from '../../constants/action-types';
 import { toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { profileAethTransfersIterator, profileCyclingStates } from '../../local-flux/actions/profile-actions';
+import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectActionsHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
-    selectPendingActionByType } from '../../local-flux/selectors';
+    selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
@@ -41,6 +42,7 @@ class AethWallet extends Component {
 
     componentWillUnmount () {
         this.props.actionClearHistory();
+        this.props.searchResetResults();
     }
 
     componentClickAway = () => {
@@ -183,7 +185,7 @@ class AethWallet extends Component {
 
     render () {
         const { balance, cyclingStates, intl, loggedEthAddress, pendingBondAeth, pendingCycleAeth,
-            pendingFreeAeth, pendingTransfer, pendingTransformEssence } = this.props;
+            pendingFreeAeth, pendingTransfer, pendingTransformEssence, profileResults } = this.props;
         const { activeTab } = this.state;
         const aethBalance = balance.get('aeth').toJS();
         const cyclingPending = cyclingStates.getIn(['pending', 'collection']);
@@ -244,11 +246,13 @@ class AethWallet extends Component {
             >
               <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
                 <TransferForm
-                  ethAddress={loggedEthAddress}
                   balance={balance.getIn(['aeth', 'free'])}
+                  dataSource={profileResults}
+                  ethAddress={loggedEthAddress}
                   onCancel={this.props.toggleAethWallet}
                   onSubmit={this.onTransfer}
                   pendingTransfer={pendingTransfer}
+                  searchProfiles={this.props.searchProfiles}
                   type="aeth"
                 />
               </TabPane>
@@ -295,6 +299,9 @@ AethWallet.propTypes = {
     pendingTransformEssence: PropTypes.bool,
     profileAethTransfersIterator: PropTypes.func.isRequired,
     profileCyclingStates: PropTypes.func.isRequired,
+    profileResults: PropTypes.shape().isRequired,
+    searchProfiles: PropTypes.func.isRequired,
+    searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     toggleAethWallet: PropTypes.func.isRequired,
 };
@@ -309,6 +316,7 @@ function mapStateToProps (state) {
         pendingFreeAeth: selectPendingActionByType(state, actionTypes.freeAeth),
         pendingTransfer: selectPendingActionByType(state, actionTypes.transferAeth),
         pendingTransformEssence: selectPendingActionByType(state, actionTypes.transformEssence),
+        profileResults: selectProfileSearchResults(state),
         sentTransactions: selectActionsHistory(state)
     };
 }
@@ -321,6 +329,8 @@ export default connect(
         actionGetHistory,
         profileAethTransfersIterator,
         profileCyclingStates,
+        searchProfiles,
+        searchResetResults,
         toggleAethWallet
     }
 )(injectIntl(clickAway(AethWallet)));

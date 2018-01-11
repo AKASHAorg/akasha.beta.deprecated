@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Input, InputNumber } from 'antd';
+import { AutoComplete, Button, Form, Input, InputNumber } from 'antd';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 
@@ -19,6 +19,10 @@ class TransferForm extends Component {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
+    };
+
+    onSearch = (value) => {
+        this.props.searchProfiles(value, true);
     };
 
     onSubmit = (ev) => {
@@ -40,7 +44,8 @@ class TransferForm extends Component {
     };
 
     render () {
-        const { ethAddress, balance, form, intl, onCancel, pendingTransfer, type } = this.props;
+        const { balance, dataSource, ethAddress, form, intl, onCancel, pendingTransfer, searchProfiles,
+            type } = this.props;
         const { getFieldDecorator, getFieldError } = form;
         const { amount, receiver } = form.getFieldsValue();
         const amountError = getFieldError('amount');
@@ -75,10 +80,15 @@ class TransferForm extends Component {
                       message: intl.formatMessage(formMessages.addressRequired)
                   }]
               })(
-                <Input
-                  className="transfer-form__input"
-                  placeholder={intl.formatMessage(profileMessages.receiverPlaceholder)}
-                />
+                <AutoComplete
+                  dataSource={dataSource}
+                  onSearch={this.onSearch}
+                >
+                  <Input
+                    className="transfer-form__input"
+                    placeholder={intl.formatMessage(profileMessages.receiverPlaceholder)}
+                  />
+                </AutoComplete>
               )}
             </FormItem>
             <FormItem
@@ -125,13 +135,15 @@ class TransferForm extends Component {
 }
 
 TransferForm.propTypes = {
-    ethAddress: PropTypes.string.isRequired,
     balance: PropTypes.string.isRequired,
+    dataSource: PropTypes.shape().isRequired,
+    ethAddress: PropTypes.string.isRequired,
     form: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     onCancel: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     pendingTransfer: PropTypes.bool,
+    searchProfiles: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
 };
 

@@ -9,7 +9,7 @@ import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
     dashboardResetNewColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
 import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
     entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { searchProfiles, searchTags } from '../../local-flux/actions/search-actions';
+import { searchProfiles, searchResetResults, searchTags } from '../../local-flux/actions/search-actions';
 import { selectColumn, selectColumnEntries, selectListsAll, selectNewColumn, selectProfileSearchResults,
     selectTagSearchResults } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
@@ -37,6 +37,10 @@ class NewColumn extends Component {
         if (!newColumn && this.props.newColumn) {
             this.setState({ selectedColumn: null });
         }
+    }
+    
+    componentWillUnmount () {
+        this.props.searchResetResults();
     }
 
     isDisabled = () => {
@@ -261,6 +265,7 @@ NewColumn.propTypes = {
     previewEntries: PropTypes.shape().isRequired,
     profileResults: PropTypes.shape().isRequired,
     searchProfiles: PropTypes.func.isRequired,
+    searchResetResults: PropTypes.func.isRequired,
     searchTags: PropTypes.func.isRequired,
     tagResults: PropTypes.shape().isRequired,
 };
@@ -291,6 +296,7 @@ export default connect(
         entryProfileIterator,
         entryTagIterator,
         searchProfiles,
+        searchResetResults,
         searchTags
     }
 )(injectIntl(NewColumn));
