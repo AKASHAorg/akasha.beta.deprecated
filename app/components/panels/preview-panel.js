@@ -2,17 +2,23 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { EntryList, Icon } from '../';
+import { Button } from 'antd';
+import { AddToBoardPopover, EntryList } from '../';
 import { hidePreview } from '../../local-flux/actions/app-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumn, selectColumnEntries } from '../../local-flux/selectors';
-import { dashboardMessages } from '../../locale-data/messages';
+import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import clickAway from '../../utils/clickAway';
 
 class PreviewPanel extends Component {
     componentDidMount () {
         const { preview } = this.props;
         this.props.entryTagIterator({ columnId: 'previewColumn', value: preview.get('value') });
     }
+
+    componentClickAway = () => {
+        this.props.hidePreview();
+    };
 
     loadMoreEntries = () => {
         const { preview } = this.props;
@@ -25,14 +31,14 @@ class PreviewPanel extends Component {
         return (
           <div className="preview-panel">
             <div className="preview-panel__header">
-              <div className="preview-panel__title">
+              <div className="overflow-ellipsis preview-panel__title">
                 {intl.formatMessage(dashboardMessages.previewTag, { tagName: preview.get('value') })}
               </div>
-              <Icon
-                className="content-link preview-panel__icon"
-                onClick={this.props.hidePreview}
-                type="close"
-              />
+              <AddToBoardPopover tag={preview.get('value')} >
+                <Button className="preview-panel__add-to-board" size="small">
+                  {intl.formatMessage(generalMessages.add)}
+                </Button>
+              </AddToBoardPopover>
             </div>
             <div className="preview-panel__list-wrapper">
               <EntryList
@@ -74,4 +80,4 @@ export default connect(
         entryTagIterator,
         hidePreview
     }
-)(injectIntl(PreviewPanel));
+)(injectIntl(clickAway(PreviewPanel)));
