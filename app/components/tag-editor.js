@@ -163,6 +163,7 @@ class TagEditor extends Component {
         if (this.channelCb) {
             this.removeExistsListener();
         }
+        this.props.searchResetResults();
     }
 
     _addNewTag = (tagName, existent) => {
