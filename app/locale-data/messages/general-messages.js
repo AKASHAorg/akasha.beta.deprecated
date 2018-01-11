@@ -533,7 +533,7 @@ const generalMessages = defineMessages({
     sidebarTooltipChat: {
         id: 'app.general.sidebarTooltipChat',
         description: 'tooltip text for sidebar chat button',
-        defaultMessage: 'Chat: coming soon'
+        defaultMessage: 'Chat (coming soon)'
     },
     sidebarTooltipDraftText: {
         id: 'app.general.sidebarTooltipDraftText',
@@ -615,8 +615,13 @@ const generalMessages = defineMessages({
     },
     transformAethers: {
         id: 'app.general.transformAethers',
-        description: '',
+        description: 'manafy/lock aeth',
         defaultMessage: 'Manafy AETH'
+    },
+    translate: {
+        id: 'app.general.translate',
+        description: 'translate',
+        defaultMessage: 'Translate'
     },
     usernameFirst: {
         id: 'app.general.usernameFirst',
