@@ -2,12 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Tooltip } from 'antd';
+import { Select, Tooltip } from 'antd';
 import serviceState from '../constants/serviceState';
-import { generalMessages } from '../locale-data/messages';
+import { generalMessages, settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
+import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
+import { selectGeneralSettings } from '../local-flux/selectors';
 import { Icon } from './';
+
+const { Option } = Select;
 
 class ServiceStatusBar extends Component {
     getCircleColor = (state) => {
@@ -75,8 +79,16 @@ class ServiceStatusBar extends Component {
         }
     }
 
+    handleChange = (value) => {
+        if (value !== 'translate') {
+            this.props.saveGeneralSettings({
+                locale: value
+            });
+        }
+    };
+
     render () {
-        const { toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
+        const { generalSettings, intl, toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
         const gethColor = this.getCircleColor(gethState);
@@ -108,17 +120,37 @@ class ServiceStatusBar extends Component {
                 }
               </div>
             </Tooltip>
+            {withCircles &&
+              <Select
+                className="service-status-bar__select"
+                dropdownClassName="service-status-bar__select-dropdown"
+                onChange={this.handleChange}
+                size="small"
+                value={generalSettings.get('locale')}
+              >
+                <Option value="en">{intl.formatMessage(settingsMessages.english)}</Option>
+                <Option value="es">{intl.formatMessage(settingsMessages.spanish)}</Option>
+                <Option className="flex-center-y service-status-bar__translate-option" value="translate">
+                  <a className="unstyled-link" href="https://crowdin.com/project/akasha" >
+                    {intl.formatMessage(generalMessages.translate)}
+                  </a>
+                  <Icon className="service-status-bar__link-icon" type="link" />
+                </Option>
+              </Select>
+            }
           </div>
         );
     }
 }
 
 ServiceStatusBar.propTypes = {
+    generalSettings: PropTypes.shape().isRequired,
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsStarting: PropTypes.bool,
     ipfsStatus: PropTypes.shape().isRequired,
+    saveGeneralSettings: PropTypes.func.isRequired,
     toggleGethDetails: PropTypes.func.isRequired,
     toggleIpfsDetails: PropTypes.func.isRequired,
     withCircles: PropTypes.bool
@@ -126,6 +158,7 @@ ServiceStatusBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
+        generalSettings: selectGeneralSettings(state),
         gethStarting: state.externalProcState.getIn(['geth', 'flags', 'gethStarting']),
         gethStatus: state.externalProcState.getIn(['geth', 'status']),
         ipfsStarting: state.externalProcState.getIn(['ipfs', 'flags', 'ipfsStarting']),
@@ -138,6 +171,7 @@ export default connect(
     mapStateToProps,
     {
         appSettingsToggle,
+        saveGeneralSettings,
         toggleGethDetails: toggleGethDetailsModal,
         toggleIpfsDetails: toggleIpfsDetailsModal
     },

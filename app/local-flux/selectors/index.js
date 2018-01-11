@@ -185,6 +185,8 @@ export const selectFollowings = (state, ethAddress) => {
 export const selectFullEntry = state =>
     state.entryState.get('fullEntry');
 
+export const selectGeneralSettings = state => state.settingsState.get('general');
+
 export const selectGethStatus = state => state.externalProcState.getIn(['geth', 'status']);
 
 export const selectGethSyncStatus = state => state.externalProcState.getIn(['geth', 'syncStatus']);
