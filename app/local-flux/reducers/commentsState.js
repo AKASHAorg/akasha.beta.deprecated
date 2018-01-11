@@ -30,7 +30,7 @@ const createCommentWithAuthor = (comment) => {
 //     return { byId, firstComm, lastComm };
 // };
 
-const sortByScore = (byId, list) => {
+const sortByScore = (byId, list = new List()) => {
     return list.sort((a, b) => {
         const commA = byId.get(a);
         const commB = byId.get(b);
