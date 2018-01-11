@@ -216,6 +216,7 @@ function* watchIpfsSetPortsChannel () {
             yield put(actions.ipfsSetPortsError(resp.error));
         } else {
             yield put(actions.ipfsSetPortsSuccess(resp.data));
+            yield fork(ipfsGetPorts);
             yield put(appActions.showNotification({
                 id: 'setIpfsPortsSuccess',
                 duration: 4,

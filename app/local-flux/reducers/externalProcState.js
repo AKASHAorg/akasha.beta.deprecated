@@ -165,6 +165,7 @@ const eProcState = createReducer(initialState, {
             flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false),
             status: state.getIn(['ipfs', 'status']).merge({
                 api: services.ipfs.api,
+                baseUrl: services.ipfs.baseUrl,
                 process: services.ipfs.process
             })
         }),

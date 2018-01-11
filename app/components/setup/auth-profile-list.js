@@ -162,29 +162,18 @@ class AuthProfileList extends Component {
     };
 
     render () {
-        const { fetchingProfiles, profiles, gethStatus, intl, ipfsStatus } = this.props;
-        let placeholderMessage;
+        const { fetchingProfiles, profiles, intl } = this.props;
 
-        if (!gethStatus.get('process')) {
-            placeholderMessage = intl.formatMessage(setupMessages.gethStopped);
-        } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
-            placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
-        } else if (profiles.size === 0 && !fetchingProfiles) {
-            placeholderMessage = (
-              <div className="content-link auth-profile-list__placeholder-link">
-                <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
-                  {intl.formatMessage(setupMessages.noProfilesFound)}
-                </a>
-              </div>
-            );
-        }
-
-        if (placeholderMessage) {
+        if (profiles.size === 0 && !fetchingProfiles) {
             this.getContainerRef(null);
             return (
               <div className="auth-profile-list__root">
                 <div className="auth-profile-list__placeholder">
-                  {placeholderMessage}
+                  <div className="content-link auth-profile-list__placeholder-link">
+                    <a href="http://akasha.helpscoutdocs.com/article/16-how-to-migrate-accounts">
+                      {intl.formatMessage(setupMessages.noProfilesFound)}
+                    </a>
+                  </div>
                 </div>
               </div>
             );
@@ -208,10 +197,8 @@ class AuthProfileList extends Component {
 
 AuthProfileList.propTypes = {
     fetchingProfiles: PropTypes.bool,
-    gethStatus: PropTypes.shape().isRequired,
     getListContainerRef: PropTypes.func,
     intl: PropTypes.shape().isRequired,
-    ipfsStatus: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
 };
 
