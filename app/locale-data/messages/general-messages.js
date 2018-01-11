@@ -37,6 +37,11 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar add entry button',
         defaultMessage: 'Add new entry'
     },
+    addTo: {
+        id: 'app.general.addTo',
+        description: 'add to',
+        defaultMessage: 'Add To'
+    },
     aeth: {
         id: 'app.general.aeth',
         description: 'aeth token',

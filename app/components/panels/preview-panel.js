@@ -36,7 +36,7 @@ class PreviewPanel extends Component {
               </div>
               <AddToBoardPopover tag={preview.get('value')} >
                 <Button className="preview-panel__add-to-board" size="small">
-                  {intl.formatMessage(generalMessages.add)}
+                  {intl.formatMessage(generalMessages.addTo)}
                 </Button>
               </AddToBoardPopover>
             </div>
