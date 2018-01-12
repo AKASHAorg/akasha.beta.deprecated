@@ -166,6 +166,11 @@ function* dashboardUpdateColumn ({ id, changes }) {
     }
 }
 
+function* reorderColumns ({ data }) {
+    const columns = yield select(state => state.dashboardState.getIn(['byId', data.dashboardId, 'columns']));
+    yield apply(dashboardService, dashboardService.setColumns, [{ dashboardId: data.dashboardId, columns: columns.toJS() }]);
+}
+
 export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_ADD, dashboardAdd);
     yield takeEvery(types.DASHBOARD_ADD_COLUMN, dashboardAddColumn);
@@ -177,4 +182,5 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_TOGGLE_PROFILE_COLUMN, dashboardToggleProfileColumn);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
+    yield takeEvery(types.DASHBOARD_REORDER_COLUMN, reorderColumns);
 }
