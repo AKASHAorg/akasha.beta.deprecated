@@ -7,11 +7,11 @@ import {
     ImageSizeMedium,
     ImageSizeXL } from '../../../../components/svg';
 import { SvgIcon, Icon } from '../../../../components';
-import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
+import { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
 
-const { EditorState, SelectionState } = DraftJS;
+const { EditorState } = DraftJS;
 
 const { TextArea } = Input;
 

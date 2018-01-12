@@ -56,6 +56,11 @@ const setupMessages = defineMessages({
         description: 'IPFS input field label',
         defaultMessage: 'IPFS storage path'
     },
+    ipfsStoragePathInfo: {
+        id: 'app.setup.ipfsStoragePathInfo',
+        description: 'tooltip with extra information about the IPFS storage path',
+        defaultMessage: 'Changing this will reset your configuration and your local IPFS content'
+    },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
         description: 'IPFS API port input field label',

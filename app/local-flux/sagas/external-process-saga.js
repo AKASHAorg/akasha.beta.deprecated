@@ -54,17 +54,17 @@ export function* ipfsGetConfig () {
     yield apply(channel, channel.send, [{}]);
 }
 
-function* ipfsGetPorts () {
+export function* ipfsGetPorts () {
     const channel = Channel.server.ipfs.getPorts;
     yield put(actions.ipfsGetPorts());
     yield call(enableChannel, channel, Channel.client.ipfs.manager);
     yield apply(channel, channel.send, [{}]);
 }
 
-function* ipfsSetPorts (ports) {
+function* ipfsSetPorts ({ ports, restart }) {
     const channel = Channel.server.ipfs.setPorts;
     yield call(enableChannel, channel, Channel.client.ipfs.manager);
-    yield apply(channel, channel.send, [{ ports }]);
+    yield apply(channel, channel.send, [{ ports, restart }]);
 }
 
 function* gethStart () {
@@ -148,16 +148,14 @@ function* watchIpfsStopChannel () {
             yield put(actions.ipfsStopError(resp.error));
         } else {
             yield put(actions.ipfsStopSuccess(resp.data, resp.services));
-            yield put(actions.ipfsResetPorts());
+            // yield put(actions.ipfsResetPorts());
         }
         yield fork(ipfsResetBusyState);
     }
 }
 
-function filterLogs (logs, timestamp) {
-    // filter out older logs and sort the remaining ones
-    const filtered = logs.filter(log => new Date(log.timestamp).getTime() >= timestamp);
-    const sortedLogs = filtered
+function filterLogs (logs) {
+    const sortedLogs = logs
         .sort((first, second) => {
             const firstTimestamp = new Date(first.timestamp).getTime();
             const secondTimestamp = new Date(second.timestamp).getTime();
@@ -218,6 +216,7 @@ function* watchIpfsSetPortsChannel () {
             yield put(actions.ipfsSetPortsError(resp.error));
         } else {
             yield put(actions.ipfsSetPortsSuccess(resp.data));
+            yield fork(ipfsGetPorts);
             yield put(appActions.showNotification({
                 id: 'setIpfsPortsSuccess',
                 duration: 4,
@@ -265,9 +264,9 @@ function* watchIpfsStartChannel () {
             yield put(actions.ipfsStartError(resp.data, resp.error));
         } else {
             yield put(actions.ipfsStartSuccess(resp.data, resp.services));
-            if ((resp.data.started || resp.services.ipfs.process) && !resp.data.upgrading) {
-                yield call(ipfsGetPorts);
-            }
+            // if ((resp.data.started || resp.services.ipfs.process) && !resp.data.upgrading) {
+            //     yield call(ipfsGetPorts);
+            // }
         }
         yield fork(ipfsResetBusyState);
     }
@@ -285,18 +284,18 @@ function* watchGethGetStatusChannel () {
 }
 
 function* watchIpfsStatusChannel () {
-    let isFirstResponse = true;
+    // let isFirstResponse = true;
     while (true) {
         const resp = yield take(actionChannels.ipfs.status);
         if (resp.error) {
             yield put(actions.ipfsGetStatusError(resp.error));
         } else {
             yield put(actions.ipfsGetStatusSuccess(resp.data, resp.services));
-            if (isFirstResponse && (resp.data.started || resp.services.ipfs.process)) {
-                yield call(ipfsGetPorts);
-            }
+            // if (isFirstResponse && (resp.data.started || resp.services.ipfs.process)) {
+            //     yield call(ipfsGetPorts);
+            // }
         }
-        isFirstResponse = false;
+        // isFirstResponse = false;
     }
 }
 
@@ -381,7 +380,7 @@ function* watchIpfsToggleLogger () {
 function* watchIpfsSetPorts () {
     while (true) {
         const action = yield take(types.IPFS_SET_PORTS);
-        yield call(ipfsSetPorts, action.ports);
+        yield call(ipfsSetPorts, action);
     }
 }
 

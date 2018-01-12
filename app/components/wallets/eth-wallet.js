@@ -7,8 +7,9 @@ import { HistoryTable, Icon, TransferForm } from '../';
 import { sendTip, transferEth } from '../../constants/action-types';
 import { toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
+import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
-    selectPendingActionByType } from '../../local-flux/selectors';
+    selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 
@@ -27,6 +28,7 @@ class EthWallet extends Component {
 
     componentWillUnmount () {
         this.props.actionClearHistory();
+        this.props.searchResetResults();
     }
 
     componentClickAway = () => {
@@ -65,7 +67,7 @@ class EthWallet extends Component {
     };
 
     render () {
-        const { balance, intl, loggedEthAddress, pendingTransfer } = this.props;
+        const { balance, intl, loggedEthAddress, pendingTransfer, profileResults } = this.props;
         const { activeTab } = this.state;
         return (
           <div className="eth-wallet">
@@ -84,11 +86,13 @@ class EthWallet extends Component {
             >
               <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
                 <TransferForm
-                  ethAddress={loggedEthAddress}
                   balance={balance.get('eth')}
+                  dataSource={profileResults}
+                  ethAddress={loggedEthAddress}
                   onCancel={this.props.toggleEthWallet}
                   onSubmit={this.onSubmit}
                   pendingTransfer={pendingTransfer}
+                  searchProfiles={this.props.searchProfiles}
                   type="eth"
                 />
               </TabPane>
@@ -109,6 +113,9 @@ EthWallet.propTypes = {
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string.isRequired,
     pendingTransfer: PropTypes.bool,
+    profileResults: PropTypes.shape().isRequired,
+    searchProfiles: PropTypes.func.isRequired,
+    searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
 };
@@ -118,6 +125,7 @@ function mapStateToProps (state) {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingTransfer: selectPendingActionByType(state, transferEth),
+        profileResults: selectProfileSearchResults(state),
         sentTransactions: selectActionsHistory(state)
     };
 }
@@ -128,6 +136,8 @@ export default connect(
         actionAdd,
         actionClearHistory,
         actionGetHistory,
-        toggleEthWallet
+        searchProfiles,
+        searchResetResults,
+        toggleEthWallet,
     }
 )(injectIntl(clickAway(EthWallet)));

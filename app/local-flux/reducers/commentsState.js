@@ -30,7 +30,7 @@ const createCommentWithAuthor = (comment) => {
 //     return { byId, firstComm, lastComm };
 // };
 
-const sortByScore = (byId, list) => {
+const sortByScore = (byId, list = new List()) => {
     return list.sort((a, b) => {
         const commA = byId.get(a);
         const commB = byId.get(b);
@@ -158,7 +158,7 @@ const commentsState = createReducer(initialState, {
             const comment = state.getIn(['byId', id]);
             const parent = comment.get('parent') || '0';
             const list = sortByScore(byId, byParent.get(parent).push(id));
-            byParent = byParent.set(parent, list.push(id));
+            byParent = byParent.set(parent, list);
             newestCommentBlock = newestCommentBlock.set(parent, state.getIn(['newComments', 'lastBlock']));
         });
         return state.merge({

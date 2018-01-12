@@ -24,17 +24,13 @@ class Auth extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { gethStatus, ipfsStatus, profileGetLocal } = nextProps;
-        const oldIpfsStatus = this.props.ipfsStatus;
-        const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
-            || (ipfsStatus.get('process') && !oldIpfsStatus.get('process'));
+        const { gethStatus } = nextProps;
         const gethStatusChanged = gethStatus.get('process') && !this.props.gethStatus.get('process');
 
-        if (gethStatusChanged || ipfsStatusChanged) {
-            profileGetLocal();
-            if (!this.interval) {
-                this.interval = setInterval(this.getLocalIdentities, 10000, true);
-            }
+        if (gethStatusChanged && this.interval) {
+            console.log('reset interval');
+            clearInterval(this.interval);
+            this.interval = setInterval(this.getLocalIdentities, 10000, true);
         }
     }
 
@@ -86,8 +82,8 @@ class Auth extends Component {
     };
 
     render () {
-        const { backupKeysRequest, backupPending, gethStatus, intl, ipfsStatus, localProfiles,
-            localProfilesFetched, pendingListProfiles } = this.props;
+        const { backupKeysRequest, backupPending, intl, localProfiles, localProfilesFetched,
+            pendingListProfiles } = this.props;
         const { isScrolled } = this.state;
         const withShadow = this.listContainer && isScrolled && 'auth__title-wrapper_with-shadow';
         const backupButtonClass = classNames('auth__button auth__button_no-border', {
@@ -113,10 +109,8 @@ class Auth extends Component {
                     <AuthProfileList
                       displayShadow={this.displayShadow}
                       fetchingProfiles={!localProfilesFetched}
-                      gethStatus={gethStatus}
                       getListContainerRef={this.getListContainerRef}
                       intl={intl}
-                      ipfsStatus={ipfsStatus}
                       pendingListProfiles={pendingListProfiles}
                       profiles={localProfiles}
                     />
@@ -173,7 +167,6 @@ Auth.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
-    ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,
     localProfilesFetched: PropTypes.bool,
     navBackCounterReset: PropTypes.func,

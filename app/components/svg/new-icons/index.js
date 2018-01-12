@@ -1,3 +1,4 @@
+export activity from './activity';
 export arrowDown from './arrow-down';
 export arrowDropdownClose from './arrow-dropdown-close';
 export arrowDropdownOpen from './arrow-dropdown-open';
@@ -36,6 +37,7 @@ export ipfsRed from './ipfs-red';
 export ipfs from './ipfs';
 export italic from './italic';
 export karma from './karma';
+export link from './link';
 export linkEntry from './link-entry';
 export lists from './lists';
 export lock from './lock';

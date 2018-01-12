@@ -253,8 +253,8 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_PAGE_SHOW]: (state, { entryId, version = null }) =>
         state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
 
-    [types.ENTRY_PROFILE_ITERATOR]: (state, { value }) => {
-        if (isEthAddress(value)) {
+    [types.ENTRY_PROFILE_ITERATOR]: (state, { value, asDrafts }) => {
+        if (isEthAddress(value) && !asDrafts) {
             return state.setIn(['profileEntries', value], new ProfileEntries({ fetchingEntries: true }));
         }
         return state;

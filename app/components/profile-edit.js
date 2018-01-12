@@ -5,13 +5,12 @@ import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { profileExists } from '../local-flux/actions/profile-actions';
-import { setTempProfile, tempProfileGet,
-    tempProfileUpdate, tempProfileCreate, tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
+import { setTempProfile, tempProfileGet, tempProfileUpdate, tempProfileCreate,
+    tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
-import ProfileForm from './forms/profile-edit-form';
 import { profileMessages } from '../locale-data/messages';
-import { selectActionPendingAll, selectLoggedProfileData } from '../local-flux/selectors';
-import { Icon } from './';
+import { selectActionPendingAll, selectBaseUrl, selectLoggedProfileData } from '../local-flux/selectors';
+import { Icon, ProfileEditForm } from './';
 
 class ProfileEdit extends Component {
     state = {
@@ -70,7 +69,8 @@ class ProfileEdit extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { intl, tempProfile, loggedProfileData, pendingActions, profileExistsData } = this.props;
+        const { intl, ipfsBaseUrl, tempProfile, loggedProfileData, pendingActions,
+            profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withBorder = isScrolled && 'profile-edit__title_with-border';
@@ -86,8 +86,9 @@ class ProfileEdit extends Component {
                   onClick={this.props.profileEditToggle}
                 />
               </div>
-              <ProfileForm
+              <ProfileEditForm
                 actionAdd={this.props.actionAdd}
+                baseUrl={ipfsBaseUrl}
                 intl={intl}
                 isUpdate={isUpdate}
                 getFormContainerRef={this.getFormContainerRef}
@@ -129,7 +130,7 @@ ProfileEdit.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+    ipfsBaseUrl: selectBaseUrl(state),
     loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),
     pendingActions: selectActionPendingAll(state),
