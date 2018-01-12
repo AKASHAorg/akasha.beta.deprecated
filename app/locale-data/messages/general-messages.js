@@ -275,26 +275,6 @@ const generalMessages = defineMessages({
         description: 'karma',
         defaultMessage: 'Karma'
     },
-    karmaLeaderboard: {
-        id: 'app.general.karmaLeaderboard',
-        description: 'karma leaderboard title',
-        defaultMessage: 'Leaderboard Position'
-    },
-    karmaLevel: {
-        id: 'app.general.karmaLevel',
-        description: 'karma level',
-        defaultMessage: 'Level {karmaLevel}'
-    },
-    karmaLevelInfo: {
-        id: 'app.general.karmaLevelInfo',
-        description: 'karma level info',
-        defaultMessage: 'At your current level you can:'
-    },
-    karmaScore: {
-        id: 'app.general.karmaScore',
-        description: 'karma score',
-        defaultMessage: '{profileKarmaScore} Karma'
-    },
     karmaTotalScore: {
         id: 'app.general.karmaTotalScore',
         description: 'karma total score',
@@ -570,11 +550,6 @@ const generalMessages = defineMessages({
         description: 'convert tokens',
         defaultMessage: 'Shift'
     },
-    showMore: {
-        id: 'app.general.showMore',
-        description: 'button label',
-        defaultMessage: 'Show more'
-    },
     skipStep: {
         id: 'app.general.skipStep',
         description: 'label for skip button',
@@ -692,6 +667,56 @@ const generalMessages = defineMessages({
         id: 'app.general.yes',
         description: 'yes (as a confirmation)',
         defaultMessage: 'Yes',
-    }
+    },
+    comment: {
+        id: 'app.general.comment',
+        description: 'entry comment',
+        defaultMessage: 'Comment'
+    },
+    publishEntries: {
+        id: 'app.general.publishEntries',
+        description: 'action title',
+        defaultMessage: 'Publish Entries'
+    },
+    karmaPopoverTooltip: {
+        id: 'app.general.karmaPopoverTooltip',
+        description: 'karmaPopoverTooltip',
+        defaultMessage: 'Your Karma will increase whenever you collect Essence.'
+    },
+    createTags: {
+        id: 'app.general.createTags',
+        description: 'Create tags action title',
+        defaultMessage: 'Create Tags'
+    },
+    karmaLeaderboard: {
+        id: 'app.general.karmaLeaderboard',
+        description: 'karma leaderboard title',
+        defaultMessage: 'Leaderboard Position'
+    },
+    karmaLevel: {
+        id: 'app.general.karmaLevel',
+        description: 'karma level',
+        defaultMessage: 'Level {karmaLevel}'
+    },
+    karmaLevelInfo: {
+        id: 'app.general.karmaLevelInfo',
+        description: 'karma level info',
+        defaultMessage: 'At your current level you can:'
+    },
+    karmaScore: {
+        id: 'app.general.karmaScore',
+        description: 'karma score',
+        defaultMessage: '{profileKarmaScore} Karma'
+    },
+    showMore: {
+        id: 'app.general.showMore',
+        description: 'button label',
+        defaultMessage: 'Show more'
+    },
+    noFollowings: {
+        id: 'app.general.noFollowings',
+        description: 'info when user is not following anyone',
+        defaultMessage: 'You are not following anyone.'
+    },
 });
 export { generalMessages };

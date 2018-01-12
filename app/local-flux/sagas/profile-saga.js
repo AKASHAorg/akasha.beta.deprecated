@@ -11,7 +11,7 @@ import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
-    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowing
+    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowings
 } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -136,13 +136,13 @@ function* profileFollowersIterator ({ context, ethAddress }) {
     yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
 }
 
-function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowing }) {
+function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings }) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(
         channel,
         channel.send,
-        [{ context, ethAddress, limit, allFollowing }]
+        [{ context, ethAddress, limit, allFollowings }]
     );
 }
 
@@ -261,7 +261,7 @@ function* profileLogout () {
 function* profileKarmaRanking () {
     const channel = Channel.server.profile.karmaRanking;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    const following = yield select(selectAllFollowing);
+    const following = yield select(selectAllFollowings);
     yield apply(channel, channel.send, [{ following }]);
 }
 
@@ -657,9 +657,9 @@ function* watchProfileFollowingsIteratorChannel () {
             } else {
                 yield put(actions.profileFollowingsIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.allFollowing) {
+        } else if (resp.request.allFollowings) {
             const followings = resp.data.collection.map(profile => profile.ethAddress);
-            yield put(actions.profileAllFollowing(followings));
+            yield put(actions.profileAllFollowings(followings));
             yield put(searchActions.searchSyncEntries(followings));
         } else {
             yield call(profileGetExtraOfList, resp.data.collection, resp.request.context);

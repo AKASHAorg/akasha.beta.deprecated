@@ -104,7 +104,7 @@ export const ProfileExistsRecord = Record({
 });
 
 export const ProfileState = Record({
-    allFollowing: new List(),
+    allFollowings: new List(),
     balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
