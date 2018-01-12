@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
+import { DragDropContext } from 'react-dnd';
+import { symmetricDifference, pick } from 'ramda';
+import HTML5Backend from 'react-dnd-html5-backend';
 import * as columnTypes from '../../constants/columns';
-import { dashboardAddNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectActiveDashboard, selectActiveDashboardColumns } from '../../local-flux/selectors';
+import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
+import { selectActiveDashboard, selectActiveDashboardId, selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { Icon, Navigation, PlusSquareIcon } from '../';
+import { Icon, Navigation, PlusSquareIcon } from '../index';
+import TopBarIcon from './dashboard-top-bar-icon';
 
 const iconsTypes = {
     [columnTypes.latest]: 'entries',
@@ -27,65 +31,78 @@ const removeClass = (id) => {
     }
 };
 
-const DashboardTopBar = (props) => {
-    const { activeDashboard, columns, intl, lists } = props;
-    const addColumnTooltip = activeDashboard ?
-        intl.formatMessage(dashboardMessages.addColumn) :
-        intl.formatMessage(dashboardMessages.createDashboardFirst);
-    const scrollColumnIntoView = (id) => {
-        const dashboard = document.getElementById('dashboard-container');
-        const column = document.getElementById(id);
-        const className = column.getAttribute('class');
-        column.setAttribute('class', `${className} column_focused`);
-        setTimeout(() => removeClass(id), 500);
-        const columnLeftOffset = column.offsetLeft;
-        const scrollLeft = (columnLeftOffset - (dashboard.clientWidth / 2)) + (column.clientWidth / 2);
-        dashboard.scrollLeft = scrollLeft;
-    };
-    const getTooltip = (column) => {
-        const type = column.get('type');
-        const value = column.get('value');
-        switch (type) {
-            case columnTypes.latest:
-                return intl.formatMessage(dashboardMessages.latest);
-            case columnTypes.list:
-                return lists.getIn([value, 'name']);
-            case columnTypes.profile:
-                return isEthAddress(value) ? getDisplayAddress(value) : `@${value}`;
-            case columnTypes.stream:
-                return intl.formatMessage(dashboardMessages.stream);
-            case columnTypes.tag:
-                return `#${value}`;
-            default:
-                return '';
-        }
-    };
+class DashboardTopBar extends Component {
+    shouldComponentUpdate (nextProps) {
+        return !!(symmetricDifference([this.props], [pick(Object.keys(this.props), nextProps)])).length;
+    }
 
-    return (
-      <div className="flex-center-y dashboard-top-bar">
-        <Navigation />
-        {columns.map(column => (
-          <Tooltip key={column.get('id')} title={() => getTooltip(column)}>
-            <Icon
-              className="content-link dashboard-top-bar__column-icon"
-              onClick={() => scrollColumnIntoView(column.get('id'))}
-              type={iconsTypes[column.get('type')]}
-            />
-          </Tooltip>
-        ))}
-        <Tooltip title={addColumnTooltip}>
-          <div onClick={activeDashboard ? props.dashboardAddNewColumn : undefined}>
-            <PlusSquareIcon disabled={!activeDashboard} />
-          </div>
-        </Tooltip>
-      </div>
-    );
-};
+    render () {
+        const { activeDashboard, columns, intl, lists } = this.props;
+        const addColumnTooltip = activeDashboard ?
+            intl.formatMessage(dashboardMessages.addColumn) :
+            intl.formatMessage(dashboardMessages.createDashboardFirst);
+        const scrollColumnIntoView = (id) => {
+            const dashboard = document.getElementById('dashboard-container');
+            const column = document.getElementById(id);
+            const className = column.getAttribute('class');
+            column.setAttribute('class', `${className} column_focused`);
+            setTimeout(() => removeClass(id), 500);
+            const columnLeftOffset = column.offsetLeft;
+            const scrollLeft = (columnLeftOffset - (dashboard.clientWidth / 2)) + (column.clientWidth / 2);
+            dashboard.scrollLeft = scrollLeft;
+        };
+        const getTooltip = (column) => {
+            const type = column.get('type');
+            const value = column.get('value');
+            switch (type) {
+                case columnTypes.latest:
+                    return intl.formatMessage(dashboardMessages.latest);
+                case columnTypes.list:
+                    return lists.getIn([value, 'name']);
+                case columnTypes.profile:
+                    return isEthAddress(value) ? getDisplayAddress(value) : `@${value}`;
+                case columnTypes.stream:
+                    return intl.formatMessage(dashboardMessages.stream);
+                case columnTypes.tag:
+                    return `#${value}`;
+                default:
+                    return '';
+            }
+        };
+
+        return (
+            <div className="flex-center-y dashboard-top-bar">
+                <Navigation/>
+                {columns.map((column, i) => (
+                    <TopBarIcon
+                        key={column.get('id')}
+                        id={column.get('id')}
+                        index={i}
+                        title={() => getTooltip(column)}
+                        iconType={iconsTypes[column.get('type')]}
+                        scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
+                        dashboardReorderColumn={
+                            (source, target) =>
+                                this.props.dashboardReorderColumn(this.props.activeDashboardId, source, target)
+                        }
+                    />
+                ))}
+                <Tooltip title={addColumnTooltip}>
+                    <div onClick={activeDashboard ? this.props.dashboardAddNewColumn : undefined}>
+                        <PlusSquareIcon disabled={!activeDashboard}/>
+                    </div>
+                </Tooltip>
+            </div>
+        );
+    };
+}
 
 DashboardTopBar.propTypes = {
     activeDashboard: PropTypes.shape(),
+    activeDashboardId: PropTypes.string.isRequired,
     columns: PropTypes.shape().isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
+    dashboardReorderColumn: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     lists: PropTypes.shape().isRequired,
 };
@@ -93,14 +110,16 @@ DashboardTopBar.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
+        activeDashboardId: selectActiveDashboardId(state),
         columns: selectActiveDashboardColumns(state),
         lists: state.listState.get('byId')
     };
 }
 
-export default connect(
+export default DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
-        dashboardAddNewColumn
+        dashboardAddNewColumn,
+        dashboardReorderColumn
     }
-)(injectIntl(DashboardTopBar));
+)(injectIntl(DashboardTopBar)));
