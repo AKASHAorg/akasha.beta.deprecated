@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
 import { Tooltip } from 'antd';
 import { DragSource, DropTarget } from 'react-dnd';
 import { Icon } from '../index';
@@ -10,51 +9,21 @@ const dragSource = {
         return {
             id: props.id,
             index: props.index,
-        }
+        };
     }
 };
 const cardTarget = {
-    hover(props, monitor, component) {
-        const dragIndex = monitor.getItem().index
-        const hoverIndex = props.index
-
-        // Don't replace items with themselves
+    drop (props, monitor) {
+        const dragIndex = monitor.getItem().index;
+        const hoverIndex = props.index;
         if (dragIndex === hoverIndex) {
-            return
+            return;
         }
+        props.dashboardReorderColumn(dragIndex, hoverIndex);
+    }
+};
 
-        // Determine rectangle on screen
-        const hoverBoundingRect = findDOMNode(component).getBoundingClientRect()
-
-        // Get vertical middle
-        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-
-        // Determine mouse position
-        const clientOffset = monitor.getClientOffset()
-
-        // Get pixels to the top
-        const hoverClientY = clientOffset.y - hoverBoundingRect.top
-
-        // Only perform the move when the mouse has crossed half of the items height
-        // When dragging downwards, only move when the cursor is below 50%
-        // When dragging upwards, only move when the cursor is above 50%
-
-        // Dragging downwards
-        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-            return
-        }
-
-        // Dragging upwards
-        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-            return
-        }
-
-        console.log(dragIndex, hoverIndex);
-
-    },
-}
-
-function collect(connect, monitor) {
+function collect (connect, monitor) {
     return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging()
@@ -72,10 +41,13 @@ class DashboardTopBarIcon extends Component {
         const { connectDragSource, connectDropTarget, isDragging, id, title, scrollIntoView, iconType } = this.props;
         return connectDragSource(connectDropTarget(
             <div style={{
-                opacity: isDragging ? 0.5 : 1,
+                opacity: isDragging ? 0.2 : 1,
                 fontSize: 25,
                 fontWeight: 'bold',
-                cursor: 'move'
+                cursor: 'move',
+                lineHeight: 0,
+                width: '16px',
+                marginRight: '8px'
             }}
             >
                 <Tooltip key={id} title={title}>
@@ -92,12 +64,14 @@ class DashboardTopBarIcon extends Component {
 
 DashboardTopBarIcon.propTypes = {
     id: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
     iconType: PropTypes.string.isRequired,
     scrollIntoView: PropTypes.func.isRequired,
     title: PropTypes.func.isRequired,
     connectDragSource: PropTypes.func.isRequired,
     isDragging: PropTypes.bool.isRequired,
-    connectDropTarget: PropTypes.func.isRequired
+    connectDropTarget: PropTypes.func.isRequired,
+    dashboardReorderColumn: PropTypes.func.isRequired
 };
 
 export default DropTarget('dragElement', cardTarget, collectDrop)(DragSource('dragElement', dragSource, collect)(DashboardTopBarIcon));
