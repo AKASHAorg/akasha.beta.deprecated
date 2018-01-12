@@ -1,0 +1,144 @@
+.karma-popover {
+    width: 320px;
+
+    &__back {
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    &__back-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    &__card-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        color: @heading-color;
+    }
+
+    &__card-rank {
+        width: 18px;
+        text-align: center;
+        margin-right: 5px;
+        &_blue {
+            color: @primary-color;
+        }
+    }
+
+    &__card-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    &__card-name {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+
+    &__content {
+        height: 330px;
+        position: relative;
+    }
+
+    &__title-wrap {
+        font-size: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    &__wrap {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &__title {
+        color: @heading-color;
+    }
+
+    &__show-more {
+        cursor: pointer;
+        color: @primary-color;
+    }
+
+    &__possible-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        color: @heading-color;
+        height: 42px;
+    }
+
+    &__progress {
+        .ant-progress-bg {
+            background-color: @karma-color;
+        }
+    }
+
+    &__karma-score {
+        margin-left: 5px;
+        color: @text-color;
+    }
+
+    &__karma-level {
+        font-size: 15px;
+        color: @text-color;
+        padding: 13px 0 7px 0;
+    }
+
+    &__info-icon {
+        width: 20px;
+        height: 20px;
+        stroke: initial !important;
+    }
+
+    &__leaderboard-title-wrap {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    &__leaderboard-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: @heading-color;
+    }
+
+    &__leaderboard-wrap {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    &__leaderboard-content {
+        margin-top: 10px;
+        height: 290px;
+    }
+
+    &__leaderboard-small-wrap {
+        margin-top: 10px;
+    }
+
+    &__profile-card {
+        background-color: @karma-card-bg;
+        margin: 5px 0;
+        border-radius: 5px;
+        .ant-card-body {
+            padding: 5px;
+        }
+        .ant-card-bordered {
+            border: 1px solid @border-color;
+        }
+    }
+
+    &__margin {
+        margin-right: 4px;
+    }
+
+    &__spin {
+        margin: 60px;
+    }
+}

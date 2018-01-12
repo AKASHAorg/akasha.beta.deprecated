@@ -84,6 +84,7 @@ const Flags = Record({
     fetchingMoreFollowers: new Map(),
     fetchingMoreFollowings: new Map(),
     fetchingProfileList: false,
+    karmaRankingPending: false,
     localProfilesFetched: false,
     loginPending: false,
     pendingListProfiles: new Map(),
@@ -103,6 +104,7 @@ export const ProfileExistsRecord = Record({
 });
 
 export const ProfileState = Record({
+    allFollowings: new List(),
     balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
@@ -120,6 +122,7 @@ export const ProfileState = Record({
     followingsList: new List(), // to be removed
     interests: new Interests(),
     isFollower: new Map(),
+    karmaRanking: new Map(),
     lastFollower: new Map(),
     lastFollowing: new Map(),
     localProfiles: new List(),
