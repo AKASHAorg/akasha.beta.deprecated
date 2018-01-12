@@ -11,6 +11,9 @@ export const profileAethTransfersIteratorError = (error) => {
 
 export const profileAethTransfersIteratorSuccess = data =>
     action(types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS, { data });
+
+export const profileAllFollowings = following => action(types.PROFILE_ALL_FOLLOWINGS, { following });
+
 export const profileBondAeth = ({ actionId, amount }) =>
     action(types.PROFILE_BOND_AETH, { actionId, amount });
 
@@ -93,8 +96,8 @@ export const profileFollowersIteratorError = (error, request) => {
 
 export const profileFollowersIteratorSuccess = (data, request) =>
     action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
-export const profileFollowingsIterator = ({ context, ethAddress, limit, entrySync }) =>
-    action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress, limit, entrySync });
+export const profileFollowingsIterator = ({ context, ethAddress, limit, allFollowings }) =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress, limit, allFollowings });
 
 export const profileFollowingsIteratorError = (error, request) => {
     error.code = 'PFIE02';
@@ -198,6 +201,16 @@ export const profileIsFollowerError = (error, request) => {
 
 export const profileIsFollowerSuccess = data =>
     action(types.PROFILE_IS_FOLLOWER_SUCCESS, { data });
+
+export const profileKarmaRanking = () => action(types.PROFILE_KARMA_RANKING);
+export const profileKarmaRankingError = (error) => {
+    error.code = 'PKRE01';
+    // error.messageId = 'profileKarmaRankingError';
+    return action(types.PROFILE_KARMA_RANKING_ERROR);
+};
+export const profileKarmaRankingSuccess = data => action(types.PROFILE_KARMA_RANKING_SUCCESS, { data });
+export const profileKarmaRankingLoadMore = data => action(types.PROFILE_KARMA_RANKING_LOAD_MORE, { data });
+
 export const profileLogin = data => action(types.PROFILE_LOGIN, { data });
 
 export const profileLoginError = (error) => {

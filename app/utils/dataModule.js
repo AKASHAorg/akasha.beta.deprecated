@@ -58,6 +58,16 @@ export const getDisplayName = ({ akashaId, ethAddress, long }) => {
     return getDisplayAddress(ethAddress);
 };
 
+export const getShortDisplayName = ({ akashaId, ethAddress }) => {
+    if (akashaId) {
+        if (akashaId.length > 9) {
+            return `@${akashaId.slice(0, 9)}...`;
+        }
+        return `@${akashaId}`;
+    }
+    return getDisplayAddress(ethAddress);
+};
+
 export const getWordCount = (content) => {
     const plainText = content.getPlainText('');
     const matchWords = plainText.match(/[^~`!¡@#$%^&*()_\-+={}\[\]|\\:;"'<,>.?¿\/\s]+/g);

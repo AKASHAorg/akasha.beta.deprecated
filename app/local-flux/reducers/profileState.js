@@ -39,6 +39,23 @@ const addProfileData = (byEthAddress, { ...profileData }, full) => {
     return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
 
+const getKarmaPopoverDefaultState = (collection, myRanking) => {
+    let defaultState = [];
+    if (collection.length < 4) {
+        return collection;
+    }
+    if (collection.length) {
+        if (myRanking === 0) {
+            defaultState = collection.slice(myRanking, myRanking + 3);
+        } else if (myRanking === collection.length - 1) {
+            defaultState = collection.slice(myRanking - 2);
+        } else {
+            defaultState = collection.slice(myRanking - 1, myRanking + 2);
+        }
+    }
+    return defaultState;
+};
+
 // const commentsIteratorHandler = (state, { data }) => {
 //     let byId = state.get('byId');
 //     data.collection.forEach((comm) => {
@@ -63,6 +80,9 @@ const profileState = createReducer(initialState, {
     },
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
         state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
+
+    [types.PROFILE_ALL_FOLLOWINGS]: (state, { following }) =>
+        state.set('allFollowings', following),
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
@@ -157,7 +177,12 @@ const profileState = createReducer(initialState, {
         const followings = followingsList ?
             oldFollowings.set(loggedEthAddress, followingsList.unshift(ethAddress)) :
             oldFollowings;
+        const allFollowings = state.get('allFollowings');
+        if (allFollowings.indexOf(ethAddress) === -1) {
+            allFollowings.push(ethAddress);
+        }
         return state.merge({
+            allFollowings,
             byEthAddress: state.get('byEthAddress').merge({
                 [ethAddress]: profile ?
                     profile.set('followersCount', +profile.get('followersCount') + 1) :
@@ -367,6 +392,55 @@ const profileState = createReducer(initialState, {
         return state.set('isFollower', isFollower);
     },
 
+    [types.PROFILE_KARMA_RANKING]: state =>
+        state.merge({
+            flags: state.get('flags').set('karmaRankingPending', true),
+            karmaRanking: new Map()
+        }),
+
+    [types.PROFILE_KARMA_RANKING_LOAD_MORE]: (state, { data }) => {
+        const collection = state.getIn(['karmaRanking', 'collection']);
+        let above = state.getIn(['karmaRanking', 'above']);
+        const below = state.getIn(['karmaRanking', 'below']);
+        if (data === 'above') {
+            const first = (above[0] && (above[0].rank - 3) > -1) ?
+                above[0].rank - 3 :
+                collection[0].rank;
+            const newAbove = collection.slice(first, first + 1);
+            if (above[0] && above[0].rank !== newAbove[0].rank) {
+                above = newAbove.concat(above);
+            }
+            return state.setIn(['karmaRanking', 'above'], above);
+        }
+        if (data === 'below' && below.length) {
+            const last = below[below.length - 1].rank;
+            const newBelow = (last && last === collection[collection.length - 1].rank) ?
+                below : below.concat(collection.slice(last + 1, last + 5));
+            return state.setIn(['karmaRanking', 'below'], newBelow);
+        }
+        return state;
+    },
+
+    [types.PROFILE_KARMA_RANKING_SUCCESS]: (state, { data }) => {
+        const defaultState = getKarmaPopoverDefaultState(data.collection, data.myRanking);
+        const first = ((defaultState[0].rank - 3) > -1) ? defaultState[0].rank - 3 : 0;
+        const above = data.collection.slice(first, defaultState[0].rank);
+        const below = (defaultState[defaultState.length - 1].rank === data.collection.length - 1) ?
+            [] :
+            data.collection.slice(defaultState[defaultState.length - 1].rank + 1,
+                defaultState[defaultState.length - 1].rank + 4);
+        return state.merge({
+            flags: state.get('flags').set('karmaRankingPending', false),
+            karmaRanking: state.get('karmaRanking').merge({
+                collection: data.collection,
+                myRanking: data.myRanking,
+                above,
+                below,
+                defaultState
+            })
+        });
+    },
+
     [types.PROFILE_LOGIN]: state =>
         state.setIn(['flags', 'loginPending'], true),
 
@@ -490,7 +564,12 @@ const profileState = createReducer(initialState, {
         const followings = followingsList ?
             oldFollowings.set(loggedEthAddress, followingsList.filter(id => id !== ethAddress)) :
             oldFollowings;
+        const allFollowings = state.get('allFollowings');
+        if (allFollowings.indexOf(ethAddress) > -1) {
+            allFollowings.splice(allFollowings.indexOf(ethAddress), 1);
+        }
         return state.merge({
+            allFollowings,
             byEthAddress: state.get('byEthAddress').merge({
                 [ethAddress]: profile ?
                     profile.set('followersCount', +profile.get('followersCount') - 1) :
