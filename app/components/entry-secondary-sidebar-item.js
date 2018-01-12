@@ -4,14 +4,16 @@ import { Popover, Icon } from 'antd';
 import { Icon as SvgIcon } from './';
 import { entryMessages } from '../locale-data/messages';
 
-const getIconType = (localChanges, published, unresolved) => {
+const getIconType = (localChanges, published, unresolved, entryType) => {
     switch (true) {
         case unresolved:
             return <Icon type="dot red-dot" />;
         case (localChanges && published):
-            return <Icon type="dot" />;
+            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon_yellow" />;
         case (!localChanges && published):
-            return <Icon type="check" />;
+            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon" />;
+        case !published:
+            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon" />;
         default:
             return <SvgIcon type="draft" />;
     }
@@ -32,7 +34,7 @@ const EntrySecondarySidebarItem = ({
     {/* eslint-disable react/no-danger */}
     {matchString &&
     <div>
-        {getIconType(localChanges, published, unresolved)}
+        {getIconType(localChanges, published, unresolved, draft.content.entryType)}
       <a
         href="/"
         dangerouslySetInnerHTML={{ __html: matchString }}
@@ -43,7 +45,7 @@ const EntrySecondarySidebarItem = ({
     }
     {!matchString &&
     <div>
-      {getIconType(localChanges, published, unresolved)}
+      {getIconType(localChanges, published, unresolved, draft.content.entryType)}
       <a
         href="/"
         className="draft-list-item__link"

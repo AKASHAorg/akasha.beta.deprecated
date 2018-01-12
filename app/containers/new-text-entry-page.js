@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Row, Col, Button, Steps, Modal } from 'antd';
-import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline,
+import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
     DataLoader, Icon } from '../components';
 import { genId } from '../utils/dataModule';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
@@ -479,6 +479,7 @@ class NewEntryPage extends Component {
                 }
               >
                 <div className="edit-entry-page__footer">
+                  <NewEntryTopBar />
                   <div className="edit-entry-page__footer-timeline-wrapper">
                     {onChain && (localChanges || latestVersion > 0) &&
                       <div

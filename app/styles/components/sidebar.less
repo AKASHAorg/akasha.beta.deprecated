@@ -62,34 +62,44 @@
     }
 
     &__entry-menu {
-        position: absolute;
-        left: 0;
-        display: none;
-        padding: 0 14px;
-        z-index: 10;
         &-buttons {
             display: flex;
             list-style: none;
             padding-left: 0;
-        }
-        &_active {
-            left: @sidebar-width;
-            display: block;
-        }
-    }
-
-    &__overlay {
-        position: fixed;
-        top: 0;
-        left: @sidebar-width;
-        bottom: 0;
-        right: 100%;
-        background: @overlay-color;
-        transition: right 0.15s ease-in-out;
-        cursor: pointer;
-        &_visible {
-            right: 0;
-            transition: right 0.15 s ease-in-out;
+            &_wrapper {
+                padding: 8px 24px;
+                color: @grey;
+                user-select: none;
+                cursor: pointer;
+                &:hover {
+                    color: @text-color;
+                   .ant-btn-entry-menu-button {
+                       &:extend(.ant-btn-entry-menu-button:hover);
+                   }
+                }
+                &-disabled {
+                    cursor: not-allowed;
+                    &:hover {
+                        color: @grey;
+                    }
+                }
+            }
+            &_text {
+                text-align: center;
+            }
+            &_draft-button {
+                padding: 4px 8px;
+                background: @background;
+                cursor: pointer;
+                &-icon {
+                    vertical-align: middle;
+                    margin-right: 8px;
+                }
+                &-label {
+                    vertical-align: middle;
+                    font-size: 12px;
+                }
+            }
         }
     }
 
@@ -120,5 +130,29 @@
     &__karma-icon {
         stroke: initial !important;
         fill: @karma-icon-color;
+    }
+}
+
+.ant-btn-entry-menu-button {
+    color: @grey;
+    background-color: @light-background !important;
+    font-size: 1.4em;
+    height: 42px;
+    width: 42px;
+    opacity: 1;
+    display: block;
+    margin: 0 auto;
+    &-disabled {
+        font-size: 1.4em;
+        height: 42px;
+        width: 42px;
+        margin: 0 auto;
+        &:hover {
+            color: initial;
+        }
+    }
+    &:hover {
+        color: @text-color-dark;
+        background: @blue !important;
     }
 }

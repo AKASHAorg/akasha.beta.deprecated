@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Col, Row, Button, Modal } from 'antd';
 import { DraftJS } from 'megadraft';
 import { fromJS } from 'immutable';
-import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline,
+import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline, NewEntryTopBar,
     TagEditor, WebsiteInfoCard, DataLoader, Icon } from '../components';
 import { genId } from '../utils/dataModule';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
@@ -499,6 +499,7 @@ class NewLinkEntryPage extends Component {
                 }
               >
                 <div className="edit-entry-page__footer">
+                  <NewEntryTopBar />
                   <div className="edit-entry-page__footer-timeline-wrapper">
                     {onChain && (localChanges || latestVersion > 0) &&
                       <div

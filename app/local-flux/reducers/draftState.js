@@ -35,7 +35,11 @@ const draftState = createReducer(initialState, {
             stateMap.merge({ drafts: stateMap.get('drafts').merge(data.drafts) })
                 .set('draftsFetched', true)
                 .set('draftsCount', data.drafts.size)
+                .set('fetchingDrafts', false),
         ),
+
+    [types.DRAFTS_GET]: state =>
+        state.set('fetchingDrafts', true),
 
     [types.DRAFT_AUTOSAVE]: (state, { data }) =>
         state.updateIn(['drafts', data.id], draft =>

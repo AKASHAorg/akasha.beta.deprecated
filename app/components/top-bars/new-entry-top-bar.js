@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
-import { selectBalance, selectLoggedProfileData } from '../../local-flux/selectors';
 import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
 
 const NewEntryTopBar = props => (
@@ -23,9 +22,6 @@ NewEntryTopBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
-        loggedProfileData: selectLoggedProfileData(state),
-        loggedProfile: state.profileState.get('loggedProfile'),
         showSecondarySidebar: state.appState.get('showSecondarySidebar'),
     };
 }

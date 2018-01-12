@@ -525,15 +525,20 @@ const generalMessages = defineMessages({
         description: 'tooltip text for sidebar chat button',
         defaultMessage: 'Chat: coming soon'
     },
-    sidebarTooltipDraftText: {
-        id: 'app.general.sidebarTooltipDraftText',
+    sidebarEntryTypeArticle: {
+        id: 'app.general.sidebarEntryTypeArticle',
         description: 'tooltip text for sidebar draft text entry button',
-        defaultMessage: 'Text Entry'
+        defaultMessage: 'Article'
     },
-    sidebarTooltipDraftLink: {
-        id: 'app.general.sidebarTooltipDraftLink',
+    sidebarEntryTypeLink: {
+        id: 'app.general.sidebarEntryTypeLink',
         description: 'tooltip text for sidebar draft link entry button',
-        defaultMessage: 'Link Entry'
+        defaultMessage: 'Link'
+    },
+    sidebarEntryTypeImage: {
+        id: 'app.general.sidebarEntryTypeImage',
+        description: '',
+        defaultMessage: 'Image'
     },
     shift: {
         id: 'app.general.shift',
