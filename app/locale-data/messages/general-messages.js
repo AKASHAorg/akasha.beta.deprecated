@@ -37,10 +37,20 @@ const generalMessages = defineMessages({
         description: 'tooltip for sidebar add entry button',
         defaultMessage: 'Add new entry'
     },
+    addTo: {
+        id: 'app.general.addTo',
+        description: 'add to',
+        defaultMessage: 'Add To'
+    },
     aeth: {
         id: 'app.general.aeth',
         description: 'aeth token',
         defaultMessage: 'AETH'
+    },
+    akasha: {
+        id: 'app.general.akasha',
+        description: 'AKASHA',
+        defaultMessage: 'AKASHA'
     },
     amount: {
         id: 'app.general.amount',
@@ -57,10 +67,10 @@ const generalMessages = defineMessages({
         description: 'an entry vote',
         defaultMessage: 'an entry vote'
     },
-    akasha: {
-        id: 'app.general.akasha',
-        description: 'AKASHA',
-        defaultMessage: 'AKASHA'
+    appPreferences: {
+        id: 'app.general.appPreferences',
+        description: 'application settings/preferences',
+        defaultMessage: 'App preferences'
     },
     back: {
         id: 'app.general.back',
@@ -275,6 +285,11 @@ const generalMessages = defineMessages({
         description: 'karma total score',
         defaultMessage: 'Karma total score'
     },
+    learnMore: {
+        id: 'app.general.learnMore',
+        description: '',
+        defaultMessage: 'Learn More'
+    },
     leave: {
         id: 'app.general.leave',
         description: 'leave button label',
@@ -315,11 +330,6 @@ const generalMessages = defineMessages({
         description: 'short form of minutes count',
         defaultMessage: '{minutes, number} min'
     },
-    learnMore: {
-        id: 'app.general.learnMore',
-        description: '',
-        defaultMessage: 'Learn More'
-    },
     next: {
         id: 'app.general.next',
         description: 'Label for Next button',
@@ -344,6 +354,11 @@ const generalMessages = defineMessages({
         id: 'app.general.notFound',
         description: 'not found',
         defaultMessage: 'Not found'
+    },
+    notifications: {
+        id: 'app.general.notifications',
+        description: 'notifications',
+        defaultMessage: 'Notifications (coming soon)'
     },
     ok: {
         id: 'app.general.ok',
@@ -523,7 +538,7 @@ const generalMessages = defineMessages({
     sidebarTooltipChat: {
         id: 'app.general.sidebarTooltipChat',
         description: 'tooltip text for sidebar chat button',
-        defaultMessage: 'Chat: coming soon'
+        defaultMessage: 'Chat (coming soon)'
     },
     sidebarEntryTypeArticle: {
         id: 'app.general.sidebarEntryTypeArticle',
@@ -610,13 +625,23 @@ const generalMessages = defineMessages({
     },
     transformAethers: {
         id: 'app.general.transformAethers',
-        description: '',
+        description: 'manafy/lock aeth',
         defaultMessage: 'Manafy AETH'
+    },
+    translate: {
+        id: 'app.general.translate',
+        description: 'translate',
+        defaultMessage: 'Translate'
     },
     usernameFirst: {
         id: 'app.general.usernameFirst',
         description: 'tooltip title for profile complete submit button',
         defaultMessage: 'Please choose your username first!'
+    },
+    userSettings: {
+        id: 'app.general.userSettings',
+        description: 'user settings menu item',
+        defaultMessage: 'User settings'
     },
     update: {
         id: 'app.general.update',

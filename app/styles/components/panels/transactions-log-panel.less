@@ -56,6 +56,26 @@
         color: @error-color;
     }
 
+    &__placeholder-wrapper {
+        height: 100%;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    &__placeholder {
+        height: 92px;
+        width: 139px;
+        background: url('../../../images/placeholders/NoTransactionLogs.png') top center no-repeat;
+
+        &_dark {
+            background: url('../../../images/placeholders/NoTransactionLogs-DarkTheme.png') top center no-repeat;            
+        }
+    }
+
+    &__placeholder-message {
+        margin-top: 24px;
+    }
+
     .ant-tabs-nav {
         width: 100%;
     }

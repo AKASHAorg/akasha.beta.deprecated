@@ -185,6 +185,8 @@ export const selectFollowings = (state, ethAddress) => {
 export const selectFullEntry = state =>
     state.entryState.get('fullEntry');
 
+export const selectGeneralSettings = state => state.settingsState.get('general');
+
 export const selectGethStatus = state => state.externalProcState.getIn(['geth', 'status']);
 
 export const selectGethSyncStatus = state => state.externalProcState.getIn(['geth', 'syncStatus']);
@@ -419,6 +421,8 @@ export const selectTagSearchResults = state => state.searchState.get('tags');
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 
 export const selectTokenExpiration = state => state.profileState.getIn(['loggedProfile', 'expiration']);
+
+export const selectTransactionsLog = state => state.appState.get('showTransactionsLog');
 
 export const selectVoteCost = state => state.entryState.get('voteCostByWeight');
 

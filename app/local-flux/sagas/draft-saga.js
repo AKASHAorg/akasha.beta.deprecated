@@ -1,11 +1,13 @@
 import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map } from 'immutable';
+import { isEmpty } from 'ramda';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
-import { getWordCount } from '../../utils/dataModule';
+import { getWordCount, extractExcerpt } from '../../utils/dataModule';
+import { extractImageFromContent } from '../../utils/imageUtils';
 import * as types from '../constants';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
@@ -145,6 +147,18 @@ function* draftPublish ({ actionId, draft }) {
             draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
         }
         yield call(enableChannel, channel, Channel.client.entry.manager);
+        if (
+            draftToPublish.content.entryType === 'article' &&
+            isEmpty(draftToPublish.content.featuredImage)
+        ) {
+            draftToPublish.content.featuredImage = extractImageFromContent(draftToPublish.content.draft);
+        }
+        if (
+            draftToPublish.content.entryType === 'article' &&
+            isEmpty(draftToPublish.content.excerpt)
+        ) {
+            draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
+        }
         yield call([channel, channel.send], {
             actionId,
             id,

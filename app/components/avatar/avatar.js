@@ -71,9 +71,9 @@ AvatarPresenter.defaultProps = {
 };
 
 function mapStateToProps (state) {
-  return {
-      baseUrl: selectBaseUrl(state)
-  };
+    return {
+        baseUrl: selectBaseUrl(state)
+    };
 }
 
 export default connect(mapStateToProps)(AvatarPresenter);

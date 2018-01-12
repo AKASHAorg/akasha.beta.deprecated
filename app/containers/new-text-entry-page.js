@@ -71,7 +71,7 @@ class NewEntryPage extends Component {
     }
     _showPublishOptionsPanel = () => {
         this.setState({
-            showPublishPanel: true
+            showPublishPanel: !this.state.showPublishPanel
         });
     }
 
@@ -376,13 +376,6 @@ class NewEntryPage extends Component {
         }
         return (
           <div className="edit-entry-page article-page">
-            <div
-              className="flex-center-y edit-entry-page__publish-options"
-              onClick={this._showPublishOptionsPanel}
-            >
-              <Icon className="edit-entry-page__more-icon" type="more" />
-              {intl.formatMessage(entryMessages.publishOptions)}
-            </div>
             <Row
               type="flex"
               className="edit-entry-page__content"
@@ -496,6 +489,13 @@ class NewEntryPage extends Component {
                     }
                   </div>
                   <div className="edit-entry-page__footer-actions">
+                    <Button
+                      size="large"
+                      onClick={this._showPublishOptionsPanel}
+                      className={'edit-entry-page__options-button'}
+                    >
+                      {intl.formatMessage(entryMessages.publishOptions)}
+                    </Button>
                     <Button
                       size="large"
                       type="primary"

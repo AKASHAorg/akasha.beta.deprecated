@@ -19,6 +19,7 @@ import * as searchSaga from './search-saga';
 import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
+import * as transactionSaga from './transaction-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
 
@@ -30,6 +31,7 @@ function* registerListeners () {
     yield fork(profileSaga.registerProfileListeners);
     yield fork(searchSaga.registerSearchListeners);
     yield fork(tagSaga.registerTagListeners);
+    yield fork(transactionSaga.registerTransactionListeners);
     yield fork(utilsSaga.registerUtilsListeners);
 }
 
@@ -43,6 +45,7 @@ function* launchActions () {
     yield fork(externalProcSaga.gethGetOptions);
     // from ipfs.getConfig channel
     yield fork(externalProcSaga.ipfsGetConfig);
+    yield fork(externalProcSaga.ipfsGetPorts);
 
     yield fork(externalProcSaga.gethGetStatus);
     yield fork(externalProcSaga.ipfsGetStatus);
@@ -100,6 +103,7 @@ export default function* rootSaga () {
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);
+    yield fork(transactionSaga.watchTransactionActions);
     yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
     yield fork(watchBootstrapHome);

@@ -9,6 +9,7 @@ import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Icon } from './';
 
 const RadioGroup = Radio.Group;
+const Option = Select.Option;
 
 class AppSettings extends Component {
     constructor (props) {
@@ -38,7 +39,6 @@ class AppSettings extends Component {
         this.setState({ isDirty: false });
     }
 
-
     handleSelector = (value) => {
         const { darkTheme, initLocale, initTheme } = this.state;
         this.setState({
@@ -64,7 +64,6 @@ class AppSettings extends Component {
     render () {
         const { generalSettings, intl, sidebar } = this.props;
         const { isDirty } = this.state;
-        const Option = Select.Option;
         return (
           <div className={`app-settings ${sidebar ? 'app-settings_sidebar' : ''}`}>
             <div className="app-settings__close-wrapper">

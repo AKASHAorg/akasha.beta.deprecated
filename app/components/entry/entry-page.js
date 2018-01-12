@@ -135,8 +135,8 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { actionAdd, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl, latestVersion,
-            licenses, loggedProfileData, newComments, toggleOutsideNavigation } = this.props;
+        const { actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl,
+            latestVersion, licenses, loggedProfileData, newComments, toggleOutsideNavigation } = this.props;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -154,6 +154,7 @@ class EntryPage extends Component {
                 />
                 {entry.content &&
                   <EntryPageContent
+                    baseUrl={baseUrl}
                     commentEditor={this.commentEditor}
                     containerRef={this.container}
                     entry={entry}
@@ -246,6 +247,7 @@ class EntryPage extends Component {
 
 EntryPage.propTypes = {
     actionAdd: PropTypes.func.isRequired,
+    baseUrl: PropTypes.string.isRequired,
     commentsCheckNew: PropTypes.func.isRequired,
     commentsClean: PropTypes.func.isRequired,
     commentsIterator: PropTypes.func.isRequired,

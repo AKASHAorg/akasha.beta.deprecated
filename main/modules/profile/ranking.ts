@@ -38,11 +38,15 @@ const execute = Promise.coroutine(function* (data: { following: string[] }) {
        return second.karma - first.karma;
     });
 
+    const rankedCollection = collection.map((v, i) => {
+       return Object.assign({}, v, { rank: i });
+    });
+
     const myRanking = collection.findIndex((profile) => {
       return profile.ethAddress === GethConnector.getInstance().web3.eth.defaultAccount;
     });
 
-    return { collection, myRanking };
+    return { collection: rankedCollection, myRanking };
 });
 
 export default { execute, name: 'karmaRanking'};

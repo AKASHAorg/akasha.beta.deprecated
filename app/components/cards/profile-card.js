@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Card, Popover, Tooltip } from 'antd';
-import { AddToBoard, FollowButton, Icon, NewDashboardForm, ProfileCardHeader } from '../';
+import { Button, Card, Tooltip } from 'antd';
+import { AddToBoardPopover, FollowButton, Icon, ProfileCardHeader } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
@@ -12,70 +12,7 @@ import { selectIsFollower, selectPendingFollow, selectPendingTip,
 import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { formatBalance } from '../../utils/number-formatter';
 
-const DASHBOARDS = 'DASHBOARDS';
-const NEW_DASHBOARD = 'NEW_DASHBOARD';
-
 class ProfileCard extends Component {
-    state = {
-        content: null,
-        popoverVisible: false
-    };
-    wasVisible = false;
-
-    componentWillUnmount () {
-        if (this.resetTimeout) {
-            clearTimeout(this.resetTimeout);
-        }
-        if (this.focusTimeout) {
-            clearTimeout(this.focusTimeout);
-        }
-    }
-
-    closePopover = () => this.onVisibleChange(false);
-
-    onAddToDashboard = () => {
-        this.setInputFocusAsync();
-        this.setState({
-            content: DASHBOARDS
-        });
-    };
-
-    onNewDashboard = () => {
-        this.setState({
-            content: NEW_DASHBOARD
-        });
-    };
-
-    onVisibleChange = (popoverVisible) => {
-        this.wasVisible = true;
-        this.setState({
-            content: popoverVisible ? DASHBOARDS : this.state.content,
-            popoverVisible
-        });
-        // Delay state reset until popover animation is finished
-        if (!popoverVisible) {
-            this.resetTimeout = setTimeout(() => {
-                this.resetTimeout = null;
-                // this.props.dashboardSearch('');
-                this.setState({
-                    content: null
-                });
-            }, 100);
-        } else {
-            this.setInputFocusAsync();
-        }
-    };
-
-    setInputFocusAsync = () => {
-        this.focusTimeout = setTimeout(() => {
-            this.focusTimeout = null;
-            const input = document.getElementById('add-to-board-search');
-            if (input) {
-                input.focus();
-            }
-        }, 100);
-    };
-
     onFollow = () => {
         const { isFollower, loggedEthAddress, profile } = this.props;
         const akashaId = profile.get('akashaId');
@@ -85,31 +22,6 @@ class ProfileCard extends Component {
             this.props.actionAdd(loggedEthAddress, actionTypes.unfollow, { akashaId, ethAddress });
         } else {
             this.props.actionAdd(loggedEthAddress, actionTypes.follow, { akashaId, ethAddress });
-        }
-    };
-
-    renderContent = () => {
-        const { profile } = this.props;
-        const { content } = this.state;
-
-        switch (content) {
-            case DASHBOARDS:
-                return (
-                  <AddToBoard
-                    closePopover={this.closePopover}
-                    onNewDashboard={this.onNewDashboard}
-                    profile={profile}
-                  />
-                );
-            case NEW_DASHBOARD:
-                return (
-                  <NewDashboardForm
-                    ethAddress={profile.ethAddress}
-                    onCancel={this.onAddToDashboard}
-                  />
-                );
-            default:
-                return null;
         }
     };
 
@@ -203,19 +115,14 @@ class ProfileCard extends Component {
                 />
               }
               {!isOwnProfile &&
-                <Popover
-                  content={this.wasVisible ? this.renderContent() : null}
-                  getPopupContainer={getPopupContainer}
-                  onVisibleChange={this.onVisibleChange}
-                  overlayClassName="profile-popover"
-                  placement="bottomLeft"
-                  trigger="click"
-                  visible={this.state.popoverVisible}
+                <AddToBoardPopover
+                  containerRef={containerRef}
+                  profile={profile}
                 >
                   <Button className="profile-popover__button">
                     {intl.formatMessage(dashboardMessages.addToBoard)}
                   </Button>
-                </Popover>
+                </AddToBoardPopover>
               }
               {isOwnProfile &&
                 <Button

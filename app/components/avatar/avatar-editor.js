@@ -273,6 +273,6 @@ function mapStateToProps (state) {
     return {
         baseUrl: selectBaseUrl(state)
     };
-  }
+}
 
 export default connect(mapStateToProps, null, null, { withRef: true })(injectIntl(AvatarEditr, { withRef: true }));
