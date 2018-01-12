@@ -9,11 +9,12 @@ import { genId } from '../utils/dataModule';
 import { balanceToNumber } from '../utils/number-formatter';
 import { Avatar, EssencePopover, Icon, ManaPopover, SidebarIcon } from './';
 import { generalMessages, profileMessages } from '../locale-data/messages';
-import { draftCreate } from '../local-flux/actions/draft-actions';
+import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { selectLoggedProfileData, selectLoggedProfile,
     selectProfileEditToggle } from '../local-flux/selectors';
+import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class Sidebar extends Component {
     state = {
@@ -22,7 +23,14 @@ class Sidebar extends Component {
         visible: false
     };
     wasVisible = false;
-
+    componentWillReceiveProps (nextProps) {
+        const { loggedProfile, draftsFetched, fetchingDrafts } = nextProps;
+        if (loggedProfile.get('ethAddress') && !draftsFetched && !fetchingDrafts) {
+            this.props.draftsGet({
+                ethAddress: loggedProfile.get('ethAddress')
+            });
+        }
+    }
     hide = () => {
         this.setState({
             visible: false,
@@ -36,12 +44,10 @@ class Sidebar extends Component {
 
     handleSearch = () => this.handlePanelShow(panels.search);
 
-    _toggleEntryMenu = (ev) => {
-        ev.preventDefault();
-        this.setState(prevState => ({
-            overlayVisible: !prevState.overlayVisible,
-            showEntryMenu: !prevState.showEntryMenu
-        }));
+    _toggleEntryMenu = (visible) => {
+        this.setState({
+            showEntryMenu: visible
+        });
     }
 
     _isSidebarVisible = (location) => {
@@ -56,7 +62,6 @@ class Sidebar extends Component {
         const { history, userSelectedLicense, loggedProfile } = this.props;
         return () => {
             this.setState({
-                overlayVisible: false,
                 showEntryMenu: false,
             }, () => {
                 const draftId = genId();
@@ -95,25 +100,101 @@ class Sidebar extends Component {
         return location.pathname.includes(name);
     }
 
-    _toggleOverlay = () => {
-        this.setState({
-            overlayVisible: false,
-            showEntryMenu: false,
-        });
-    }
-
     _handleLogout = () => {
         if (this.props.isProfileEditToggled) {
             this.props.profileEditToggle();
         }
         this.props.profileLogout();
     }
-
+    _handleMyDraftsClick = (ev) => {
+        ev.preventDefault();
+        const { drafts } = this.props;
+        if (drafts.size > 0) {
+            const draft = drafts.first();
+            const draftId = draft.get('id');
+            const draftType = draft.getIn(['content', 'entryType']);
+            const navigate = this._navigateTo(`/draft/${draftType}/${draftId}`);
+            return navigate();
+        }
+        const navigate = this._navigateTo('/draft/article/all');
+        return navigate();
+    }
     navigateToProfile = () => {
         const { history, loggedProfileData } = this.props;
         history.push(`/${loggedProfileData.ethAddress}`);
     };
-
+    _getEntryMenu = () => {
+        const { intl } = this.props;
+        return (
+          <div
+            className="sidebar__entry-menu"
+          >
+            <ul className="sidebar__entry-menu-buttons">
+              <li
+                className="sidebar__entry-menu-buttons_wrapper"
+              >
+                <Button
+                  type="entry-menu-button"
+                  size="large"
+                  className="borderless"
+                  icon="file"
+                  ghost
+                  onClick={this._navigateTo('/draft/article/new')}
+                />
+                <div
+                  className="sidebar__entry-menu-buttons_text"
+                >
+                  {intl.formatMessage(generalMessages.sidebarEntryTypeArticle)}
+                </div>
+              </li>
+              <li
+                className="sidebar__entry-menu-buttons_wrapper"
+              >
+                <Button
+                  type="entry-menu-button"
+                  size="large"
+                  className="borderless"
+                  icon="link"
+                  ghost
+                  onClick={this._navigateTo('/draft/link/new')}
+                />
+                <div
+                  className="sidebar__entry-menu-buttons_text"
+                >
+                  {intl.formatMessage(generalMessages.sidebarEntryTypeLink)}
+                </div>
+              </li>
+              <li
+                className="sidebar__entry-menu-buttons_wrapper sidebar__entry-menu-buttons_wrapper-disabled"
+              >
+                <Button
+                  type="entry-menu-button-disabled"
+                  size="large"
+                  className="borderless"
+                  icon="picture"
+                  ghost
+                  disabled
+                  onClick={() => {}}
+                />
+                <div
+                  className="sidebar__entry-menu-buttons_text"
+                >
+                  {intl.formatMessage(generalMessages.sidebarEntryTypeImage)}
+                </div>
+              </li>
+            </ul>
+            <div>
+              <div
+                className="sidebar__entry-menu-buttons_draft-button"
+                onClick={this._handleMyDraftsClick}
+              >
+                <Icon type="draft" className="sidebar__entry-menu-buttons_draft-button-icon" />
+                <span className="sidebar__entry-menu-buttons_draft-button-label">{intl.formatMessage(entryMessages.gotoMyDrafts)}</span>
+              </div>
+            </div>
+          </div>
+        );
+    }
     render () {
         const { activeDashboard, intl, location, loggedProfileData } = this.props;
         const karmaScore = balanceToNumber(loggedProfileData.get('karma'));
@@ -155,50 +236,21 @@ class Sidebar extends Component {
             <div className="sidebar__top-icons">
               <div className="flex-center-x sidebar__new-entry">
                 <div className="content-link flex-center sidebar__new-entry-wrapper">
-                  <Icon
-                    className="sidebar__new-entry-icon"
-                    onClick={this._toggleEntryMenu}
-                    type="newEntry"
-                  />
-                </div>
-                <div
-                  className={
-                    `sidebar__entry-menu
-                    sidebar__entry-menu${this.state.showEntryMenu ? '_active' : ''}`
-                  }
-                >
-                  <ul className="sidebar__entry-menu-buttons">
-                    <li>
-                      <Tooltip
-                        title={intl.formatMessage(generalMessages.sidebarTooltipDraftText)}
-                        placement="bottom"
-                      >
-                        <Button
-                          type="entry-menu-button"
-                          size="large"
-                          className="borderless"
-                          icon="file"
-                          ghost
-                          onClick={this._navigateTo('/draft/article/new')}
-                        />
-                      </Tooltip>
-                    </li>
-                    <li>
-                      <Tooltip
-                        title={intl.formatMessage(generalMessages.sidebarTooltipDraftLink)}
-                        placement="bottom"
-                      >
-                        <Button
-                          type="entry-menu-button"
-                          size="large"
-                          className="borderless"
-                          icon="link"
-                          ghost
-                          onClick={this._navigateTo('/draft/link/new')}
-                        />
-                      </Tooltip>
-                    </li>
-                  </ul>
+                  <Popover
+                    arrowPointAtCenter
+                    placement="rightTop"
+                    content={this._getEntryMenu()}
+                    trigger="click"
+                    overlayClassName="popover-menu"
+                    visible={this.state.showEntryMenu}
+                    onVisibleChange={this._toggleEntryMenu}
+                  >
+                    <Icon
+                      className="sidebar__new-entry-icon"
+                      // onClick={this._toggleEntryMenu}
+                      type="newEntry"
+                    />
+                  </Popover>
                 </div>
               </div>
               <SidebarIcon
@@ -275,13 +327,6 @@ class Sidebar extends Component {
                 />
               </Popover>
             </div>
-            <div
-              className={
-                  `sidebar__overlay
-                  sidebar__overlay${this.state.overlayVisible ? '_visible' : ''}`
-              }
-              onClick={this._toggleOverlay}
-            />
           </div>
         );
     }
@@ -289,7 +334,11 @@ class Sidebar extends Component {
 
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
+    drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
+    draftsGet: PropTypes.func,
+    draftsFetched: PropTypes.bool,
+    fetchingDrafts: PropTypes.bool,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     isProfileEditToggled: PropTypes.bool,
@@ -306,6 +355,9 @@ function mapStateToProps (state) {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         balance: state.profileState.get('balance'),
         draftsCount: state.draftState.get('draftsCount'),
+        drafts: state.draftState.get('drafts'),
+        draftsFetched: state.draftState.get('draftsFetched'),
+        fetchingDrafts: state.draftState.get('fetchingDrafts'),
         hasFeed: state.notificationsState.get('hasFeed'),
         isProfileEditToggled: selectProfileEditToggle(state),
         loggedProfile: selectLoggedProfile(state),
@@ -321,7 +373,8 @@ export default connect(
     {
         draftCreate,
         profileEditToggle,
-        profileLogout
+        profileLogout,
+        draftsGet,
     },
     null,
     {

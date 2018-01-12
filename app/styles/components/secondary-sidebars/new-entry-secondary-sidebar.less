@@ -2,6 +2,11 @@
     font-size: 0.86em;
     overflow: hidden;
     height: 100%;
+    &__icon {
+        &_yellow {
+            stroke: @warning-color;
+        }
+    }
     &__entry-type-list {
         width: 100%;
         font-size: 13px;
@@ -42,12 +47,9 @@
         }
         &_dropdown-container {
             width: 70%;
-            cursor: pointer;
             user-select: none;
             transition: width 0.218s @ease-in-out;
-            &:hover {
-                color: @text-color-secondary;
-            }
+            cursor: default;
             &-hidden {
                 width: 0;
                 overflow: hidden;
@@ -69,11 +71,13 @@
         font-weight: 500;
         color: @heading-color;
         display: flex;
-        justify-content: space-between;
         align-items: center;
         i {
             cursor: pointer;
         }
+    }
+    &__draft-list-title-text {
+        margin-right: 8px;
     }
     &__search-container {
         width: 0;
@@ -153,7 +157,6 @@
         padding-bottom: @top-bar-height;
     }
     &__draft-type-popover {
-        left: 67px !important;
         .ant-popover-inner-content {
             padding: 8px;
         }

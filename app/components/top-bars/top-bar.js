@@ -38,13 +38,6 @@ class TopBar extends PureComponent {
                   path="/dashboard/:dashboardId?"
                 />
                 <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
-                <Route
-                  path="/draft/:type/:draftId"
-                  render={this._renderComponent(NewEntryTopBar, {
-                      onPanelNavigate: this._navigateToPanel,
-                      onNotificationPanelOpen: this._handleNotificationOpen
-                  })}
-                />
                 <Route component={Navigation} />
               </Switch>
             </div>

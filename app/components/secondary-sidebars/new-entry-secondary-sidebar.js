@@ -17,8 +17,11 @@ class NewEntrySecondarySidebar extends Component {
     state = {
         searchString: '',
         draftTypeVisible: false,
+        entryTypeVisible: false,
         searchBarVisible: false,
         searching: false,
+        selectedDraftFilter: 'all',
+        selectedEntryFilter: 'all',
     };
     wasVisible = false;
 
@@ -50,16 +53,12 @@ class NewEntrySecondarySidebar extends Component {
             (nextState.searchString !== this.state.searchString) ||
             (nextState.searching !== this.state.searching) ||
             (nextState.draftTypeVisible !== this.state.draftTypeVisible) ||
-            (nextState.searchBarVisible !== this.state.searchBarVisible);
+            (nextState.entryTypeVisible !== this.state.entryTypeVisible) ||
+            (nextState.searchBarVisible !== this.state.searchBarVisible) ||
+            (nextState.selectedDraftFilter !== this.state.selectedDraftFilter) ||
+            (nextState.selectedEntryFilter !== this.state.selectedEntryFilter);
     }
     /* eslint-enable complexity */
-    componentWillReceiveProps (nextProps) {
-        const { draftsFetched, draftsCount } = nextProps;
-        const { ethAddress } = this.props;
-        if (!draftsFetched && (draftsCount > 0)) {
-            this.props.draftsGet({ ethAddress });
-        }
-    }
 
     createNewDraft = (id, entryType) => {
         const { ethAddress, userSelectedLicence } = this.props;
@@ -135,29 +134,19 @@ class NewEntrySecondarySidebar extends Component {
         });
     }
 
-    _handleTypeChange = type =>
+    _handleTypeChange = (type, category) =>
         (ev) => {
-            const { drafts, history } = this.props;
-            const draftToPush = drafts.filter(draft => draft.content.entryType === type).first();
-            let draftId;
-            /**
-             * Push to first draft of the selected type!
-             */
-            if (draftToPush) {
-                draftId = draftToPush.id;
-            } else {
-                /**
-                 * create a new draft and push to it
-                 */
-                draftId = genId();
-                this.createNewDraft(draftId, type);
-            }
-            this.setState({
-                draftTypeVisible: false
-            }, () => {
-                history.push(`/draft/${type}/${draftId}`);
-            });
             ev.preventDefault();
+            if (category === 'draft') {
+                return this.setState({
+                    selectedDraftFilter: type,
+                    draftTypeVisible: false,
+                });
+            }
+            return this.setState({
+                selectedEntryFilter: type,
+                entryTypeVisible: false
+            });
         }
 
     _handleDraftCreate = () => {
@@ -166,39 +155,69 @@ class NewEntrySecondarySidebar extends Component {
         this.createNewDraft(draftId, entryType);
         this.props.history.push(`/draft/${entryType}/${draftId}`);
     }
-
-    _getEntryTypePopover = () => {
-        const { intl, match } = this.props;
-        const currentType = match.params.draftType;
+    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, indent */
+    _getEntryTypePopover = (category) => {
+        const { intl } = this.props;
+        const { selectedDraftFilter, selectedEntryFilter } = this.state;
+        const currentType = category === 'published' ? selectedEntryFilter : selectedDraftFilter;
+        const entries = entryTypes.map(type => (
+          <li
+            key={type}
+            className={
+              `new-entry-secondary-sidebar__entry-type
+              new-entry-secondary-sidebar__entry-type${type === currentType ? '_active' : ''}`
+            }
+            onClick={this._handleTypeChange(type, category)}
+          >
+            <Icon
+              type={(type !== 'all') && entryTypesIcons[type]}
+            />
+            {
+                intl.formatMessage(entryMessages[`${type}EntryType`])
+            } {
+                intl.formatMessage(entryMessages[`${category}EntryCategory`])
+            }
+          </li>
+        ));
+        entries.unshift(
+          <li
+            key="all"
+            className={
+                `new-entry-secondary-sidebar__entry-type
+                new-entry-secondary-sidebar__entry-type${currentType === 'all' ? '_active' : ''}`
+            }
+            onClick={this._handleTypeChange('all', category)}
+          >
+            <Icon
+              type="entries"
+            />
+            {intl.formatMessage(entryMessages[`${category}All`])}
+          </li>
+        );
+        //   console.log(entries, 'the entries');
         return (
           <div>
             <ul className="new-entry-secondary-sidebar__entry-type-list">
               {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
-              {entryTypes.map(type => (
-                <li
-                  key={type}
-                  className={
-                    `new-entry-secondary-sidebar__entry-type
-                    new-entry-secondary-sidebar__entry-type${type === currentType ? '_active' : ''}`
-                  }
-                  onClick={this._handleTypeChange(type)}
-                >
-                  <Icon
-                    type={entryTypesIcons[type]}
-                  />
-                  {intl.formatMessage(entryMessages[`${type}EntryType`])}
-                </li>
-                ))}
+              {entries}
             </ul>
           </div>
         );
     }
 
-    _handleDraftTypeVisibility = () => {
-        this.setState(prevState => ({
-            draftTypeVisible: !prevState.draftTypeVisible
-        }));
-    }
+    _handleTypeVisibility = type =>
+        () => {
+            this.setState((prevState) => {
+                if (type === 'draft') {
+                    return {
+                        draftTypeVisible: !prevState.draftTypeVisible
+                    };
+                }
+                return {
+                    entryTypeVisible: !prevState.entryTypeVisible
+                };
+            });
+        }
 
     _createDraftPreviewLink = (ev, draftId) => {
         // prevent default just in case some other dev decides to
@@ -212,6 +231,9 @@ class NewEntrySecondarySidebar extends Component {
 
     _getFilteredDrafts = (drafts, resolvingEntries, draftType) =>
         drafts.filter((draft) => {
+            if (draftType === 'all') {
+                return draft;
+            }
             if (draftType === 'link') {
                 return draft.content && draft.content.entryType === draftType && draft.content.cardInfo.title;
             }
@@ -251,8 +273,8 @@ class NewEntrySecondarySidebar extends Component {
             },
         };
         if (this.state.searching) {
-            const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
-            return fuzzy.filter(this.state.searchString, allDrafts.toList().toJS(), searchOptions);
+            // const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
+            return fuzzy.filter(this.state.searchString, drafts.toList().toJS(), searchOptions);
         }
         return null;
     }
@@ -269,28 +291,46 @@ class NewEntrySecondarySidebar extends Component {
     /**
      * for events like clicking outside of the popover component
      */
-    _forceDraftTypeVisibility = (visible) => {
-        this.wasVisible = true;
-        this.setState({
-            draftTypeVisible: visible
-        });
-    }
+    _forceTypeVisibility = type =>
+        (visible) => {
+            this.wasVisible = true;
+            this.setState(() => {
+                if (type === 'draft') {
+                    return {
+                        draftTypeVisible: visible
+                    };
+                }
+                return {
+                    entryTypeVisible: visible
+                };
+            });
+        }
 
     render () {
         const { drafts, intl, match, resolvingEntries } = this.props;
         const { searchBarVisible, searching, searchString } = this.state;
         const currentDraftId = match.params.draftId;
-        const { draftType } = match.params;
+        const draftType = this.state.selectedDraftFilter;
+        const entryType = this.state.selectedEntryFilter;
+
         const localDraftsByType = drafts
-            .filter(drft =>
-                (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType))
+            .filter((drft) => {
+                if (draftType === 'all') {
+                    return !drft.get('onChain');
+                }
+                return (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
+            })
             .sort((a, b) =>
                 new Date(a.get('created_at')) > new Date(b.get('created_at'))
             );
-        const publishedDraftsByType = drafts.filter(drft =>
-            drft.get('id') && drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
-        const searchResults = this._getSearchResults(drafts, resolvingEntries, match.params.draftType);
-
+        const publishedDraftsByType = drafts.filter((drft) => {
+            if (entryType === 'all') {
+                return drft.get('id') && drft.get('onChain');
+            }
+            return (drft.get('id') && drft.get('onChain') &&
+                drft.getIn(['content', 'entryType']) === entryType);
+        });
+        const searchResults = this._getSearchResults(drafts, resolvingEntries, 'all');
         return (
           <div
             className="new-entry-secondary-sidebar"
@@ -306,24 +346,7 @@ class NewEntrySecondarySidebar extends Component {
                   }`
                 }
               >
-                <Popover
-                  arrowPointAtCenter
-                  content={this.wasVisible ? this._getEntryTypePopover() : null}
-                  trigger="click"
-                  placement="bottomLeft"
-                  overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
-                  overlayStyle={{ width: 193 }}
-                  visible={this.state.draftTypeVisible}
-                  onVisibleChange={this._forceDraftTypeVisibility}
-                >
-                  <div
-                    className="flex-center-y content-link"
-                    onClick={this._handleDraftTypeVisibility}
-                  >
-                    <span>{intl.formatMessage(entryMessages[`${draftType}EntryType`])}</span>
-                    <Icon className="new-entry-secondary-sidebar__dropdown-icon" type="arrowDropdownOpen" />
-                  </div>
-                </Popover>
+                <div>{intl.formatMessage(entryMessages.myEntries)}</div>
               </div>
               <div
                 className={
@@ -357,8 +380,37 @@ class NewEntrySecondarySidebar extends Component {
                 className="new-entry-secondary-sidebar__draft-list-container"
               >
                 <div className="new-entry-secondary-sidebar__draft-list-title">
-                  <div>{intl.formatMessage(entryMessages.drafts)}</div>
-                  <Icon className="content-link" type="plus" onClick={this._handleDraftCreate} />
+                  <span
+                    className="content-link new-entry-secondary-sidebar__draft-list-title-text"
+                    onClick={this._handleTypeVisibility('draft')}
+                  >
+                    {draftType === 'all' && intl.formatMessage(entryMessages.draftAll)}
+                    {
+                        (draftType !== 'all') && intl.formatMessage(entryMessages[`${draftType}EntryType`])
+                    } {
+                       intl.formatMessage(entryMessages.draftEntryCategory)
+                    }
+                  </span>
+                  <Popover
+                    arrowPointAtCenter
+                    content={this.wasVisible ? this._getEntryTypePopover('draft') : null}
+                    trigger="click"
+                    placement="bottomLeft"
+                    overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
+                    overlayStyle={{ width: 190 }}
+                    visible={this.state.draftTypeVisible}
+                    onVisibleChange={this._forceTypeVisibility('draft')}
+                  >
+                    <div
+                      className="flex-center-y content-link"
+                      onClick={this._handleTypeVisibility('draft')}
+                    >
+                      <Icon
+                        className="content-link"
+                        type="arrowDropdownOpen"
+                      />
+                    </div>
+                  </Popover>
                 </div>
                 {searching && (searchResults.length > 0) &&
                     searchResults
@@ -395,7 +447,37 @@ class NewEntrySecondarySidebar extends Component {
                     )).toList()}
                 <div>
                   <div className="new-entry-secondary-sidebar__draft-list-title">
-                    {intl.formatMessage(entryMessages.published)}
+                    <span
+                      className="content-link new-entry-secondary-sidebar__draft-list-title-text"
+                      onClick={this._handleTypeVisibility('published')}
+                    >
+                      {entryType === 'all' && intl.formatMessage(entryMessages.entriesAll)}
+                      {
+                          entryType !== 'all' && intl.formatMessage(entryMessages[`${entryType}EntryType`])
+                      } {
+                        intl.formatMessage(entryMessages.publishedEntryCategory)
+                      }
+                    </span>
+                    <Popover
+                      arrowPointAtCenter
+                      content={this.wasVisible ? this._getEntryTypePopover('published') : null}
+                      trigger="click"
+                      placement="bottomLeft"
+                      overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
+                      overlayStyle={{ width: 190 }}
+                      visible={this.state.entryTypeVisible}
+                      onVisibleChange={this._forceTypeVisibility('published')}
+                    >
+                      <div
+                        className="flex-center-y content-link"
+                        onClick={this._handleTypeVisibility('published')}
+                      >
+                        <Icon
+                          className="content-link"
+                          type="arrowDropdownOpen"
+                        />
+                      </div>
+                    </Popover>
                   </div>
                   {!searching && publishedDraftsByType.map(draft => (
                     <div key={`${draft.get('id')}`}>
@@ -415,7 +497,7 @@ class NewEntrySecondarySidebar extends Component {
                     </div>
                   )).toList()}
                   {searching && searchResults.filter(drft =>
-                      drft.original.onChain && drft.original.content.entryType === draftType)
+                      drft.original.onChain)
                       .map(draft => (
                         <EntrySecondarySidebarItem
                           active={(draft.original.id === currentDraftId)}

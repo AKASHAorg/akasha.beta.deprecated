@@ -8,6 +8,7 @@ const DraftModelRecord = Record({
     selection: new Map(),
     draftsFetched: false,
     entriesFetched: false,
+    fetchingDrafts: false,
     resolvingEntries: new List(),
 });
 
