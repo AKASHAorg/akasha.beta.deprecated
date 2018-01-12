@@ -20,6 +20,8 @@
     }
 
     &__card-rank {
+        width: 18px;
+        text-align: center;
         margin-right: 5px;
         &_blue {
             color: @primary-color;
@@ -62,6 +64,14 @@
         color: @primary-color;
     }
 
+    &__possible-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        color: @heading-color;
+        height: 42px;
+    }
+
     &__progress {
         .ant-progress-bg {
             background-color: @karma-color;
@@ -76,7 +86,7 @@
     &__karma-level {
         font-size: 15px;
         color: @text-color;
-        padding: 30px 0 10px 0;
+        padding: 13px 0 7px 0;
     }
 
     &__info-icon {
@@ -86,7 +96,6 @@
     }
 
     &__leaderboard-title-wrap {
-        padding-top: 20px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -98,15 +107,30 @@
         color: @heading-color;
     }
 
+    &__leaderboard-wrap {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    &__leaderboard-content {
+        margin-top: 10px;
+        height: 290px;
+        // overflow-y: auto;
+    }
+
+    &__leaderboard-small-wrap {
+        margin-top: 10px;
+    }
+
     &__profile-card {
         margin: 5px;
         border-radius: 5px;
         .ant-card-body {
-            padding: 7px;
+            padding: 5px;
         }
     }
 
     &__spin {
-        margin-top: 40px;
+        margin: 60px;
     }
 }

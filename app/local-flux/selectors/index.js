@@ -43,7 +43,7 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 export const selectAllDashboards = state =>
     state.dashboardState.get('allDashboards').map(id => selectDashboard(state, id));
 
-export const selectAllFollowing = state => state.profileState.get('allFollowing');
+export const selectAllFollowings = state => state.profileState.get('allFollowings');
 
 export const selectAllLicenses = state => state.licenseState.get('byId');
 
