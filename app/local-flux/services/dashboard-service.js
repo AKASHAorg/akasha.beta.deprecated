@@ -112,6 +112,31 @@ export const getAll = ethAddress =>
             .catch(reject);
     });
 
+export const getColumns = ({ dashboardId }) =>
+    dashboardDB.dashboards
+        .where('id')
+        .equals(dashboardId)
+        .first()
+        .then((dashboard) => {
+            if (!dashboard) {
+                throw new Error('Cannot find dashboard');
+            }
+            return dashboard.columns;
+        });
+export const setColumns = ({dashboardId, columns}) =>
+    dashboardDB.dashboards
+        .where('id')
+        .equals(dashboardId)
+        .first()
+        .then((dashboard) => {
+            if (!dashboard) {
+                throw new Error('Cannot find dashboard');
+            }
+            dashboard.columns = columns.map(columnId => dashboard.columns.find(el => el.id === columnId));
+            return dashboardDB.dashboards
+                .put(dashboard);
+        });
+
 export const renameDashboard = ({ dashboardId, ethAddress, newName }) =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboards
