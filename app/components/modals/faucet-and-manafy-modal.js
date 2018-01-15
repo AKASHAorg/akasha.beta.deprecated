@@ -48,7 +48,7 @@ class FaucetAndManafyModal extends Component {
             loggedEthAddress } = this.props;
         if ((needMana && needAeth) || needEth) {
             if (!faucetPending && !faucetRequested) {
-                return this.props.actionAdd(loggedEthAddress, actionTypes.faucet);
+                return this.props.actionAdd(loggedEthAddress, actionTypes.faucet, { withNotification: true });
             }
             if (faucetRequested === 'success') {
                 this.props.actionResetFundingRequirements();
@@ -75,7 +75,6 @@ class FaucetAndManafyModal extends Component {
     }
     render () {
         const { needAeth, needEth, needMana, faucetRequested, faucetPending, intl } = this.props;
-        console.log(needAeth, needEth, needMana, 'asd');
         return (
           <div>
             <Modal

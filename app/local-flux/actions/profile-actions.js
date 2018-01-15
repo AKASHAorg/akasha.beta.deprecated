@@ -261,8 +261,23 @@ export const profileMoreFollowingsIteratorError = (error, request) => {
 export const profileMoreFollowingsIteratorSuccess = (data, request) =>
     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request });
 
-export const profileRegister = ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress }) =>
-    action(types.PROFILE_REGISTER, { actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled, firstName, lastName, links, ethAddress });
+export const profileRegister = ({
+    actionId, akashaId, address, about, avatar, backgroundImage,
+    donationsEnabled, firstName, lastName, links, ethAddress
+}) =>
+    action(types.PROFILE_REGISTER, {
+        actionId,
+        akashaId,
+        address,
+        about,
+        avatar,
+        backgroundImage,
+        donationsEnabled,
+        firstName,
+        lastName,
+        links,
+        ethAddress
+    });
 
 export const profileRegisterError = (error, request) => {
     error.code = 'PRE01';
@@ -273,8 +288,8 @@ export const profileRegisterError = (error, request) => {
 export const profileRegisterSuccess = (data, request) =>
     action(types.PROFILE_REGISTER_SUCCESS, { data, request });
 
-export const profileFaucet = ({ actionId, ethAddress }) =>
-    action(types.PROFILE_FAUCET, { actionId, ethAddress });
+export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
+    action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
 
 export const profileFaucetError = (error, request) =>
     action(types.PROFILE_FAUCET_ERROR, { error, request });

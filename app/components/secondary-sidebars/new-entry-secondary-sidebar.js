@@ -386,7 +386,7 @@ class NewEntrySecondarySidebar extends Component {
                     {draftType === 'all' && intl.formatMessage(entryMessages.draftAll)}
                     {
                         (draftType !== 'all') && intl.formatMessage(entryMessages[`${draftType}EntryType`])
-                    } {
+                    } {(draftType !== 'all') &&
                        intl.formatMessage(entryMessages.draftEntryCategory)
                     }
                   </span>
@@ -453,7 +453,7 @@ class NewEntrySecondarySidebar extends Component {
                       {entryType === 'all' && intl.formatMessage(entryMessages.entriesAll)}
                       {
                           entryType !== 'all' && intl.formatMessage(entryMessages[`${entryType}EntryType`])
-                      } {
+                      } {(entryType !== 'all') &&
                         intl.formatMessage(entryMessages.publishedEntryCategory)
                       }
                     </span>
@@ -525,12 +525,10 @@ class NewEntrySecondarySidebar extends Component {
 }
 NewEntrySecondarySidebar.propTypes = {
     ethAddress: PropTypes.string,
-    draftsCount: PropTypes.number,
     draftCreate: PropTypes.func,
     draftDelete: PropTypes.func,
     draftsFetched: PropTypes.bool,
     drafts: PropTypes.shape(),
-    draftsGet: PropTypes.func,
     draftsGetCount: PropTypes.func,
     entryProfileIterator: PropTypes.func,
     history: PropTypes.shape(),

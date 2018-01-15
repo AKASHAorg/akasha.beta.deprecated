@@ -187,7 +187,6 @@
     "react-router": "4.2.0",
     "react-router-dom": "4.2.2",
     "react-router-redux": "5.0.0-alpha.6",
-    "react-scroll": "^1.7.5",
     "react-tap-event-plugin": "3.0.2",
     "react-validation-mixin": "5.4.0",
     "react-waypoint": "8.0.0",
