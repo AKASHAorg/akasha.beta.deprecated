@@ -37,6 +37,28 @@ class TagEditor extends Component {
         if (tags && tags.size > 0) {
             this._checkTagExistence(tags);
         }
+        this._addChannelListener();
+    }
+    _addChannelListener = () => {
+        const { onTagError } = this.props;
+        const clientChannel = self.Channel.client.tags.canCreate;
+        const manager = self.Channel.client.tags.manager;
+        const serverChannel = self.Channel.server.tags.canCreate;
+        this.openChannel(serverChannel, manager, () => {
+            clientChannel.on((ev, res) => {
+                this.setState({
+                    canCreateTags: res.data.can
+                }, () => {
+                    this.setState({
+                        editorBusy: false
+                    }, () => {
+                        if (!res.data.can) {
+                            onTagError(true);
+                        }
+                    });
+                });
+            });
+        });
     }
     getIsBusy = () => this.state.editorBusy;
     componentWillReceiveProps (nextProps) {
@@ -110,26 +132,9 @@ class TagEditor extends Component {
     }
 
     _checkTagCreationAllowance = () => {
-        const { ethAddress, onTagError } = this.props;
+        const { ethAddress } = this.props;
         const serverChannel = self.Channel.server.tags.canCreate;
-        const clientChannel = self.Channel.client.tags.canCreate;
-        const manager = self.Channel.client.tags.manager;
-        this.openChannel(serverChannel, manager, () => {
-            clientChannel.on((ev, data) => {
-                this.setState({
-                    canCreateTags: data.can
-                }, () => {
-                    this.setState({
-                        editorBusy: false
-                    }, () => {
-                        if (!data.can) {
-                            onTagError(true);
-                        }
-                    });
-                });
-            });
-            serverChannel.send({ ethAddress });
-        });
+        serverChannel.send({ ethAddress });
     }
 
     _checkTagExistence = (tagList) => {
@@ -156,13 +161,11 @@ class TagEditor extends Component {
     }
 
     removeExistsListener = () => {
-        window.Channel.client.tags.exists.removeListener(this.channelCb);
+        self.Channel.client.tags.exists.removeAllListeners();
     }
 
     componentWillUnmount () {
-        if (this.channelCb) {
-            this.removeExistsListener();
-        }
+        this.removeExistsListener();
         this.props.searchResetResults();
     }
 
@@ -227,8 +230,17 @@ class TagEditor extends Component {
         return res;
     }
 
-    _getTagSuggestions = () => {
-        const { tagSuggestions, tags } = this.props;
+    _getTagInputPopoverContent = () => {
+        const { tagSuggestions, tags, tagErrors } = this.props;
+        if (tagErrors) {
+            return (
+              <div className="tag-editor__error-popover">
+                <div className="tag-editor__error-popover-text">
+                  {tagErrors}
+                </div>
+              </div>
+            );
+        }
         let selectionIndex = this.state.selectedSuggestionIndex;
         if (selectionIndex > tagSuggestions.length) {
             selectionIndex = tagSuggestions.length - 1;
@@ -262,6 +274,7 @@ class TagEditor extends Component {
             } else {
                 this.props.searchResetResults();
             }
+            this.props.onChange();
             return true;
         });
     }
@@ -324,7 +337,7 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth, inputHasFocus, existentTags, tagError } = this.state;
-        const { tagSuggestionsCount, intl, tags, inputDisabled, tagSuggestions } = this.props;
+        const { tagSuggestionsCount, intl, tags, inputDisabled, tagSuggestions, tagErrors } = this.props;
         const suggestionsPopoverVisible = (tagSuggestionsCount > 0 &&
             inputHasFocus && tagSuggestions.filter(tag => !tags.contains(tag)).size > 0);
         return (
@@ -367,9 +380,9 @@ class TagEditor extends Component {
             ))}
             { /* eslint-enable react/no-array-index-key */ }
             <Popover
-              content={this._getTagSuggestions()}
+              content={this._getTagInputPopoverContent()}
               placement="topLeft"
-              visible={suggestionsPopoverVisible}
+              visible={(tagErrors && tagErrors.length > 0) || suggestionsPopoverVisible}
               overlayClassName="tag-editor__suggestions-container"
             >
               <input
@@ -409,9 +422,11 @@ TagEditor.propTypes = {
     searchTags: PropTypes.func,
     tagSuggestions: PropTypes.shape(),
     tagSuggestionsCount: PropTypes.number,
+    tagErrors: PropTypes.string,
     tags: PropTypes.shape(),
     searchResetResults: PropTypes.func,
     onTagError: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
 export default TagEditor;
