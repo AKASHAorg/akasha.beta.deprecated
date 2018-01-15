@@ -6,7 +6,7 @@ import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
-    DataLoader, Icon } from '../components';
+    DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
@@ -14,7 +14,7 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile, selectPendingActionByType } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -28,7 +28,7 @@ class NewEntryPage extends Component {
         shouldResetCaret: false,
     }
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, resolvingEntries, drafts,
+        const { match, draftObj, drafts,
             selectionState } = nextProps;
         const { loggedProfile, history } = this.props;
         const ethAddress = loggedProfile.get('ethAddress');
@@ -45,7 +45,8 @@ class NewEntryPage extends Component {
             }
         }
 
-        if (draftObj && match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
+        if (draftObj && match.params.draftId &&
+                match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true
@@ -285,6 +286,14 @@ class NewEntryPage extends Component {
             tagError: hasError
         });
     }
+    _handleTagInputChange = () => {
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                tags: null
+            }
+        }));
+    }
     _createTimeline = (draftObj) => {
         const { content, localChanges } = draftObj;
         const { latestVersion, version } = content;
@@ -438,6 +447,7 @@ class NewEntryPage extends Component {
                     intl={intl}
                     ethAddress={loggedProfile.get('ethAddress')}
                     onTagUpdate={this._handleTagUpdate}
+                    onChange={this._handleTagInputChange}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
                     searchTags={this.props.searchTags}
@@ -446,10 +456,8 @@ class NewEntryPage extends Component {
                     searchResetResults={this.props.searchResetResults}
                     inputDisabled={onChain}
                     onTagError={this._handleInternalTagError}
+                    tagErrors={errors.tags}
                   />
-                  {errors.tags &&
-                    <small className="edit-entry-page__error-text">{errors.tags}</small>
-                  }
                 </div>
               </Col>
               <Col

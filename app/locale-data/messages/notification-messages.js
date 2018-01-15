@@ -239,5 +239,10 @@ const notificationMessages = defineMessages({
         description: 'User settings successfully saved',
         defaultMessage: 'You have successfully saved your personal settings'
     },
+    faucetRequestSuccess: {
+        id: 'app.notificaiton.faucetRequestSuccess',
+        description: 'message to show when faucet tx successful',
+        defaultMessage: 'You have successfully received test ETH and some AETH'
+    },
 });
 export { notificationMessages };

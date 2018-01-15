@@ -318,6 +318,14 @@ class NewLinkEntryPage extends Component {
             tagError: hasError
         });
     }
+    _handleTagInputChange = () => {
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                tags: null
+            }
+        }));
+    }
     _checkIfDisabled = () => {
         const { pendingFaucetTx } = this.props;
         if (this.state.tagError) {
@@ -448,6 +456,7 @@ class NewLinkEntryPage extends Component {
                         intl={intl}
                         ethAddress={loggedProfile.get('ethAddress')}
                         onTagUpdate={this._handleTagUpdate}
+                        onChange={this._handleTagInputChange}
                         tags={tags}
                         actionAdd={this.props.actionAdd}
                         searchTags={this.props.searchTags}
@@ -456,10 +465,8 @@ class NewLinkEntryPage extends Component {
                         searchResetResults={this.props.searchResetResults}
                         inputDisabled={onChain}
                         onTagError={this._handleInternalTagError}
+                        tagErrors={errors.tags}
                       />
-                      {errors.tags &&
-                        <small className="edit-entry-page__error-text">{errors.tags}</small>
-                      }
                     </div>
                   }
                 </div>

@@ -540,20 +540,15 @@ const generalMessages = defineMessages({
         description: 'tooltip text for sidebar chat button',
         defaultMessage: 'Chat (coming soon)'
     },
-    sidebarEntryTypeArticle: {
-        id: 'app.general.sidebarEntryTypeArticle',
+    sidebarTooltipDraftText: {
+        id: 'app.general.sidebarTooltipDraftText',
         description: 'tooltip text for sidebar draft text entry button',
-        defaultMessage: 'Article'
+        defaultMessage: 'Text Entry'
     },
-    sidebarEntryTypeLink: {
-        id: 'app.general.sidebarEntryTypeLink',
+    sidebarTooltipDraftLink: {
+        id: 'app.general.sidebarTooltipDraftLink',
         description: 'tooltip text for sidebar draft link entry button',
-        defaultMessage: 'Link'
-    },
-    sidebarEntryTypeImage: {
-        id: 'app.general.sidebarEntryTypeImage',
-        description: '',
-        defaultMessage: 'Image'
+        defaultMessage: 'Link Entry'
     },
     shift: {
         id: 'app.general.shift',
@@ -732,6 +727,21 @@ const generalMessages = defineMessages({
         id: 'app.general.noFollowings',
         description: 'info when user is not following anyone',
         defaultMessage: 'You are not following anyone.'
+    },
+    sidebarEntryTypeArticle: {
+        id: 'app.general.sidebarEntryTypeArticle',
+        description: 'tooltip text for sidebar draft text entry button',
+        defaultMessage: 'Article'
+    },
+    sidebarEntryTypeLink: {
+        id: 'app.general.sidebarEntryTypeLink',
+        description: 'tooltip text for sidebar draft link entry button',
+        defaultMessage: 'Link'
+    },
+    sidebarEntryTypeImage: {
+        id: 'app.general.sidebarEntryTypeImage',
+        description: '',
+        defaultMessage: 'Image'
     },
 });
 export { generalMessages };

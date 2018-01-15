@@ -80,7 +80,7 @@ class ProfileComplete extends Component {
                     <div className="profile-complete__faucet-icon">
                       <Icon type="check" style={{ fontSize: 30 }} />
                     </div>
-                    <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div>
+                    {/* <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div> */}
                     <div>{intl.formatMessage(setupMessages.faucetSuccess1)}</div>
                   </Card>
                 );
