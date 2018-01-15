@@ -37,6 +37,29 @@ class TagEditor extends Component {
         if (tags && tags.size > 0) {
             this._checkTagExistence(tags);
         }
+        this._addChannelListener();
+    }
+    _addChannelListener = () => {
+        const { onTagError } = this.props;
+        const clientChannel = self.Channel.client.tags.canCreate;
+        const manager = self.Channel.client.tags.manager;
+        const serverChannel = self.Channel.server.tags.canCreate;
+
+        this.openChannel(serverChannel, manager, () => {
+            clientChannel.on((ev, res) => {
+                this.setState({
+                    canCreateTags: res.data.can
+                }, () => {
+                    this.setState({
+                        editorBusy: false
+                    }, () => {
+                        if (!res.data.can) {
+                            onTagError(true);
+                        }
+                    });
+                });
+            });
+        });
     }
     getIsBusy = () => this.state.editorBusy;
     componentWillReceiveProps (nextProps) {
@@ -110,26 +133,9 @@ class TagEditor extends Component {
     }
 
     _checkTagCreationAllowance = () => {
-        const { ethAddress, onTagError } = this.props;
+        const { ethAddress } = this.props;
         const serverChannel = self.Channel.server.tags.canCreate;
-        const clientChannel = self.Channel.client.tags.canCreate;
-        const manager = self.Channel.client.tags.manager;
-        this.openChannel(serverChannel, manager, () => {
-            clientChannel.on((ev, data) => {
-                this.setState({
-                    canCreateTags: data.can
-                }, () => {
-                    this.setState({
-                        editorBusy: false
-                    }, () => {
-                        if (!data.can) {
-                            onTagError(true);
-                        }
-                    });
-                });
-            });
-            serverChannel.send({ ethAddress });
-        });
+        serverChannel.send({ ethAddress });
     }
 
     _checkTagExistence = (tagList) => {
