@@ -299,7 +299,7 @@ class NewEntrySecondarySidebar extends Component {
             pre: '<b>',
             post: '</b>',
             extract: (el) => {
-                if (draftType === 'link') {
+                if (el.content.entryType === 'link') {
                     return el.content.cardInfo.title;
                 }
                 return el.content.title;
