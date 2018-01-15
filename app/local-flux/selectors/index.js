@@ -389,7 +389,7 @@ export const selectProfileExists = state => state.profileState.get('exists');
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
-export const selectProfileSearchResults = state => state.searchState.get('profiles');
+export const selectProfileSearchResults = state => state.searchState.get('profilesAutocomplete');
 
 export const selectPublishingActions = state =>
     state.actionState.get('publishing').map(id => selectAction(state, id));
@@ -406,6 +406,8 @@ export const selectSearchProfiles = state =>
     state.searchState.profiles.map(ethAddress => state.profileState.getIn(['byEthAddress', ethAddress]));
 
 export const selectSearchQuery = state => state.searchState.get('query');
+
+export const selectSearchQueryAutocomplete = state => state.searchState.get('queryAutocomplete');
 
 export const selectSearchTags = state => state.searchState.get('tags');
 

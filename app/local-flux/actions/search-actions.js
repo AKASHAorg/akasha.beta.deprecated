@@ -8,12 +8,13 @@ export const searchMoreQuerySuccess = data => action(types.SEARCH_MORE_QUERY_SUC
 export const searchMoreQueryError = error => action(types.SEARCH_MORE_QUERY_ERROR, { error });
 
 export const searchProfiles = (query, autocomplete) => action(types.SEARCH_PROFILES, { query, autocomplete });
-export const searchProfilesError = (error) => {
+export const searchProfilesError = (error, request) => {
     error.code = 'SPE01';
     error.messageId = 'searchProfiles';
-    return action(types.SEARCH_PROFILES_ERROR, { error });
+    return action(types.SEARCH_PROFILES_ERROR, { error, request });
 };
-export const searchProfilesSuccess = data => action(types.SEARCH_PROFILES_SUCCESS, { data });
+export const searchProfilesSuccess = (data, request) =>
+    action(types.SEARCH_PROFILES_SUCCESS, { data, request });
 
 export const searchQuery = text => action(types.SEARCH_QUERY, { text });
 export const searchQuerySuccess = data => action(types.SEARCH_QUERY_SUCCESS, { data });
