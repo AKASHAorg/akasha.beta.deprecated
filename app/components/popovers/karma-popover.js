@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
-import * as Scroll from 'react-scroll';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
 import { Avatar, Icon, ProfilePopover } from '../';
 import { getShortDisplayName } from '../../utils/dataModule';
@@ -15,9 +14,6 @@ import { balanceToNumber } from '../../utils/number-formatter';
 
 const DEFAULT = 'default';
 const LEADERBOARD = 'leaderboard';
-
-const Element = Scroll.Element;
-const scroller = Scroll.scroller;
 
 class KarmaPopover extends Component {
     state = {
@@ -79,7 +75,6 @@ class KarmaPopover extends Component {
     onShowMore = () => {
         if (!this.props.karmaRankingPending) {
             this.setState({ page: LEADERBOARD });
-            scroller.scrollTo('myScrollToElement');
         }
     };
 
@@ -102,7 +97,6 @@ class KarmaPopover extends Component {
             hoverable={false}
             className="karma-popover__profile-card"
           >
-            {isOwnprofile && <Element name="myScrollToElement" />}
             <div className="karma-popover__card-content">
               <div className="karma-popover__card-left">
                 <div className={`karma-popover__card-rank ${isOwnprofile && 'karma-popover__card-rank_blue'}`}>
@@ -276,12 +270,12 @@ class KarmaPopover extends Component {
                 {!allFollowings.length &&
                   intl.formatMessage(generalMessages.noFollowings)
                 }
-                {allFollowings.length && karmaRankingPending &&
+                {(!!allFollowings.length && karmaRankingPending) &&
                   <div className="flex-center-x karma-popover__spin">
                     <Spin />
                   </div>
                 }
-                {allFollowings.length && !karmaRankingPending &&
+                {(!!allFollowings.length && !karmaRankingPending) &&
                   profileDefaultList
                 }
               </div>
