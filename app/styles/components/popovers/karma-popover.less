@@ -1,5 +1,8 @@
 .karma-popover {
     width: 320px;
+    .ant-popover-inner-content {
+        padding: 0;
+    }
 
     &__back {
         margin-right: 10px;
@@ -37,11 +40,15 @@
     &__card-name {
         margin-left: 5px;
         cursor: pointer;
+        width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__content {
-        height: 330px;
+        height: 354px;
         position: relative;
+        padding: 12px 16px;
     }
 
     &__title-wrap {
@@ -115,7 +122,13 @@
 
     &__leaderboard-content {
         margin-top: 10px;
-        height: 290px;
+        height: 306px;
+    }
+
+    &__leaderboard-page-content {
+        height: 354px;
+        position: relative;
+        padding: 12px 4px 0 16px;
     }
 
     &__leaderboard-small-wrap {
@@ -135,7 +148,7 @@
     }
 
     &__margin {
-        margin-right: 4px;
+        margin-right: 6px;
     }
 
     &__spin {
