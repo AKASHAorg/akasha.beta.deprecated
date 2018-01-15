@@ -386,7 +386,7 @@ class NewEntrySecondarySidebar extends Component {
                     {draftType === 'all' && intl.formatMessage(entryMessages.draftAll)}
                     {
                         (draftType !== 'all') && intl.formatMessage(entryMessages[`${draftType}EntryType`])
-                    } {
+                    } {(draftType !== 'all') &&
                        intl.formatMessage(entryMessages.draftEntryCategory)
                     }
                   </span>
@@ -453,7 +453,7 @@ class NewEntrySecondarySidebar extends Component {
                       {entryType === 'all' && intl.formatMessage(entryMessages.entriesAll)}
                       {
                           entryType !== 'all' && intl.formatMessage(entryMessages[`${entryType}EntryType`])
-                      } {
+                      } {(entryType !== 'all') &&
                         intl.formatMessage(entryMessages.publishedEntryCategory)
                       }
                     </span>
