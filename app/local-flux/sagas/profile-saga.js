@@ -9,6 +9,7 @@ import * as searchActions from '../actions/search-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
+
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
     selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowings
@@ -105,13 +106,13 @@ function* profileExists ({ akashaId }) {
     }
 }
 
-function* profileFaucet ({ actionId, ethAddress }) {
+function* profileFaucet ({ actionId, ethAddress, withNotification }) {
     const channel = Channel.server.auth.requestEther;
     if (!ethAddress) {
         ethAddress = yield select(selectLoggedEthAddress);
     }
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield apply(channel, channel.send, [{ address: ethAddress, actionId }]);
+    yield apply(channel, channel.send, [{ address: ethAddress, actionId, withNotification }]);
 }
 
 function* profileFollow ({ actionId, ethAddress }) {
@@ -136,7 +137,9 @@ function* profileFollowersIterator ({ context, ethAddress }) {
     yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
 }
 
-function* profileFollowingsIterator ({ context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings }) {
+function* profileFollowingsIterator ({
+    context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings
+}) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(
@@ -598,8 +601,15 @@ function* watchProfileFaucetChannel () {
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFaucetError({}));
             } else {
+                console.log(resp, 'the resp');
                 yield put(actionActions.actionPublished(resp.data.receipt));
                 yield put(actions.profileFaucetSuccess());
+                if (resp.request.withNotification) {
+                    yield put(appActions.showNotification({
+                        id: 'faucetRequestSuccess',
+                        duration: 4,
+                    }));
+                }
                 yield put(actions.profileGetBalance());
             }
         } else {
