@@ -8,7 +8,8 @@ import { SEARCH } from '../../constants/context-types';
 import { entrySearchLimit, autocompleteLimit,
     profileSearchLimit, tagSearchLimit } from '../../constants/iterator-limits';
 import { entryGetExtraOfList } from './entry-saga';
-import { selectSearchEntryOffset, selectSearchQuery, selectLoggedEthAddress } from '../selectors';
+import { selectSearchEntryOffset, selectSearchQuery, selectSearchQueryAutocomplete,
+    selectLoggedEthAddress } from '../selectors';
 import * as searchService from '../services/search-service';
 
 const Channel = global.Channel;
@@ -59,9 +60,9 @@ function* searchSyncTags () {
     yield apply(channel, channel.send, [{ fromBlock }]);
 }
 
-function* searchTags ({ query, automplete }) {
+function* searchTags ({ query, autocomplete }) {
     const channel = Channel.server.search.findTags;
-    const limit = automplete ? autocompleteLimit : tagSearchLimit;
+    const limit = autocomplete ? autocompleteLimit : tagSearchLimit;
     yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit }]);
 }
 
@@ -88,19 +89,23 @@ function* watchSearchProfilesChannel () {
         const resp = yield take(actionChannels.search.findProfiles);
         const { collection } = resp.data;
         const query = yield select(selectSearchQuery);
+        const queryAutocomplete = yield select(selectSearchQueryAutocomplete);
+        const isValidResp = resp.request.autocomplete ?
+            queryAutocomplete === resp.request.text :
+            query === resp.request.text;
         if (resp.error) {
-            yield put(actions.searchProfilesError(resp.error));
-        } else if (collection && query === resp.request.text) {
+            yield put(actions.searchProfilesError(resp.error, resp.request));
+        } else if (collection && isValidResp) {
             if (!resp.request.autocomplete) {
                 const ethAddresses = collection.map(res => res.ethAddress);
                 for (let i = 0; i < collection.length; i++) {
                     const { ethAddress } = collection[i];
                     yield put(profileActions.profileGetData({ ethAddress, context: SEARCH }));
                 }
-                yield put(actions.searchProfilesSuccess(ethAddresses));
+                yield put(actions.searchProfilesSuccess(ethAddresses, resp.request));
             } else {
                 const akashaIds = collection.map(profile => profile.akashaId);
-                yield put(actions.searchProfilesSuccess(akashaIds));
+                yield put(actions.searchProfilesSuccess(akashaIds, resp.request));
             }
         }
     }
