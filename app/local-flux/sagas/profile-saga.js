@@ -601,7 +601,6 @@ function* watchProfileFaucetChannel () {
             if (!resp.data.receipt.success) {
                 yield put(actions.profileFaucetError({}));
             } else {
-                console.log(resp, 'the resp');
                 yield put(actionActions.actionPublished(resp.data.receipt));
                 yield put(actions.profileFaucetSuccess());
                 if (resp.request.withNotification) {
@@ -717,6 +716,7 @@ function* watchProfileGetBalanceChannel () {
             }
         } catch (ex) {
             console.error(ex, 'error');
+            yield put(actions.profileGetBalanceError(ex));
         }
     }
 }
