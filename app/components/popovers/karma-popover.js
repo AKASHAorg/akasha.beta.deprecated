@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
 import { Avatar, Icon, ProfilePopover } from '../';
-import { getShortDisplayName } from '../../utils/dataModule';
+import { getDisplayName } from '../../utils/dataModule';
 import { profileKarmaRanking, profileKarmaRankingLoadMore,
     profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
 import { selectLoggedProfileData } from '../../local-flux/selectors';
@@ -85,7 +85,7 @@ class KarmaPopover extends Component {
         const akashaId = profiles.get(ethAddress) ?
             profiles.getIn([ethAddress, 'akashaId']) :
             null;
-        return getShortDisplayName({ akashaId, ethAddress });
+        return getDisplayName({ akashaId, ethAddress });
     }
 
     renderCard = (profile, profiles, intl, loggedProfileData) => {
@@ -170,7 +170,7 @@ class KarmaPopover extends Component {
 
         if (page === LEADERBOARD) {
             return (
-              <div className="karma-popover__content">
+              <div className="karma-popover__leaderboard-page-content">
                 <div className="karma-popover__wrap">
                   <div
                     className="karma-popover__back"

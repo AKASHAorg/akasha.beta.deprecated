@@ -98,6 +98,7 @@ function* watchSearchProfilesChannel () {
         } else if (collection && isValidResp) {
             if (!resp.request.autocomplete) {
                 const ethAddresses = collection.map(res => res.ethAddress);
+                yield put(profileActions.profileIsFollower(ethAddresses));
                 for (let i = 0; i < collection.length; i++) {
                     const { ethAddress } = collection[i];
                     yield put(profileActions.profileGetData({ ethAddress, context: SEARCH }));
