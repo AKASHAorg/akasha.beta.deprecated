@@ -16,6 +16,11 @@ const entryMessages = defineMessages({
         description: 'tooltip for vote buttons when the entry/comment was already upvoted',
         defaultMessage: 'You upvoted with weight {weight}'
     },
+    articleEntryType: {
+        id: 'app.entry.articleEntryType',
+        description: 'entry of type article',
+        defaultMessage: 'Article'
+    },
     cannotClaimEntry: {
         id: 'app.entry.cannotClaimEntry',
         description: 'tooltip for collect button for the situation when a user cannot collect Essence for his entry',
@@ -438,11 +443,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.youHaveNoDrafts',
         description: 'Message shown when all drafts are deleted',
         defaultMessage: 'You have no drafts.'
-    },
-    articleEntryType: {
-        id: 'app.entry.articleEntryType',
-        description: 'entry of type article',
-        defaultMessage: 'Article'
     },
     draftAll: {
         id: 'app.entry.draftAll',
