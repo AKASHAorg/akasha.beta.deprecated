@@ -156,6 +156,7 @@ class NewEntrySecondarySidebar extends Component {
         this.createNewDraft(draftId, entryType);
         this.props.history.push(`/draft/${entryType}/${draftId}`);
     }
+
     _handleVersionRevert = (draftId, version) => {
         const { ethAddress } = this.props;
         this.props.draftRevertToVersion({
@@ -170,6 +171,7 @@ class NewEntrySecondarySidebar extends Component {
             ethAddress,
         });
     }
+
     _handleDraftRevert = (ev, draftId) => {
         const { drafts, intl } = this.props;
         const draftObj = drafts.get(draftId);
