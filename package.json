@@ -293,7 +293,8 @@
       "category": "Network",
       "target": [
         "deb",
-        "zip"
+        "zip",
+        "AppImage"
       ],
       "icon": "resources/icons/"
     },
