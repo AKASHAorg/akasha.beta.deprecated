@@ -558,6 +558,7 @@
   "app.notification.transferAethSuccess": "You successfully transfered {tokenAmount} AETH to {displayName}",
   "app.notification.transferEthSuccess": "You successfully transfered {value} ETH to {displayName}",
   "app.notification.userSettingsSaveSuccess": "You have successfully saved your personal settings",
+  "app.notificaiton.faucetRequestSuccess": "You have successfully received test ETH and some AETH",
   "app.profile.amountPlaceholder": "Type an amount",
   "app.profile.avatarTitle": "PROFILE PICTURE",
   "app.profile.backgroundImageTitle": "COVER PHOTO",
