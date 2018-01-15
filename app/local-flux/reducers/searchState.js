@@ -28,21 +28,40 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').merge({ moreQueryPending: false })
         }),
 
-    [types.SEARCH_PROFILES]: (state, { query }) =>
-        state.merge({
-            flags: state.get('flags').merge({ queryPending: true }),
+    [types.SEARCH_PROFILES]: (state, { query, autocomplete }) => {
+        if (autocomplete) {
+            return state.merge({
+                flags: state.get('flags').set('autocompletePending', true),
+                profilesAutocomplete: new List(),
+                queryAutocomplete: query.toLowerCase(),
+            });
+        }
+        return state.merge({
+            flags: state.get('flags').set('queryPending', true),
             profiles: new List(),
             query: query.toLowerCase(),
-        }),
+        });
+    },
 
-    [types.SEARCH_PROFILES_ERROR]: state =>
-        state.setIn(['flags', 'queryPending'], false),
+    [types.SEARCH_PROFILES_ERROR]: (state, { request }) => {
+        if (request.autocomplete) {
+            return state.setIn(['flags', 'autocompletePending'], false);
+        }
+        return state.setIn(['flags', 'queryPending'], false);
+    },
 
-    [types.SEARCH_PROFILES_SUCCESS]: (state, { data }) =>
-        state.merge({
-            flags: state.get('flags').merge({ queryPending: false }),
+    [types.SEARCH_PROFILES_SUCCESS]: (state, { data, request }) => {
+        if (request.autocomplete) {
+            return state.merge({
+                flags: state.get('flags').set('autocompletePending', false),
+                profilesAutocomplete: new List(data)
+            });
+        }
+        return state.merge({
+            flags: state.get('flags').set('queryPending', false),
             profiles: new List(data)
-        }),
+        });
+    },
 
     [types.SEARCH_QUERY]: (state, { text }) =>
         state.merge({
