@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { List } from 'immutable';
 import { Checkbox, Input, Popover, Tooltip } from 'antd';
+import classNames from 'classnames';
 import { Icon, NewListForm } from '../';
 import { listMessages } from '../../locale-data/messages';
 
@@ -197,7 +198,11 @@ class ListPopover extends Component {
     };
 
     render () {
-        const { containerRef, intl } = this.props;
+        const { containerRef, listsAll, intl } = this.props;
+        const isSaved = listsAll.find(list => this.isSaved(list));
+        const className = classNames('content-link list-popover__list-icon', {
+            'list-popover__list-icon_highlighted': isSaved
+        });
 
         return (
           <Popover
@@ -216,7 +221,7 @@ class ListPopover extends Component {
               placement="topRight"
               title={intl.formatMessage(listMessages.addToList)}
             >
-              <Icon className="content-link list-popover__list-icon" type="bookmark" />
+              <Icon className={className} type="bookmark" />
             </Tooltip>
           </Popover>
         );
