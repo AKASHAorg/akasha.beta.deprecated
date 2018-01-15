@@ -28,13 +28,22 @@ class NewEntryPage extends Component {
         shouldResetCaret: false,
     }
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, resolvingEntries,
+        const { match, draftObj, resolvingEntries, drafts,
             selectionState } = nextProps;
-        const { loggedProfile } = this.props;
+        const { loggedProfile, history } = this.props;
         const ethAddress = loggedProfile.get('ethAddress');
         const currentSelection = selectionState.getIn([match.params.draftId, ethAddress]);
-        const draftIsPublished = resolvingEntries.includes(match.params.draftId);
-        const onChain = match.params.draftId.startsWith('0x');
+
+        /** handle just published draft! */
+        if (!draftObj && this.props.draftObj) {
+            if (drafts.size > 0) {
+                const draftId = drafts.first().get('id');
+                const draftType = drafts.first().getIn(['content', 'entryType']);
+                if (draftId) {
+                    history.push(`/draft/${draftType}/${draftId}`);
+                }
+            }
+        }
 
         if (draftObj && match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {

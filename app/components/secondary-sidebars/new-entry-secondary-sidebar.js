@@ -194,7 +194,6 @@ class NewEntrySecondarySidebar extends Component {
             {intl.formatMessage(entryMessages[`${category}All`])}
           </li>
         );
-        //   console.log(entries, 'the entries');
         return (
           <div>
             <ul className="new-entry-secondary-sidebar__entry-type-list">

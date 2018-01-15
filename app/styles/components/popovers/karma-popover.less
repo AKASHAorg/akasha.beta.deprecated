@@ -36,6 +36,7 @@
 
     &__card-name {
         margin-left: 5px;
+        cursor: pointer;
     }
 
     &__content {
@@ -56,7 +57,7 @@
     }
 
     &__title {
-        color: @text-color;
+        color: @heading-color;
     }
 
     &__show-more {
@@ -80,7 +81,7 @@
 
     &__karma-score {
         margin-left: 5px;
-        color: @heading-color;
+        color: @text-color;
     }
 
     &__karma-level {
@@ -115,7 +116,6 @@
     &__leaderboard-content {
         margin-top: 10px;
         height: 290px;
-        // overflow-y: auto;
     }
 
     &__leaderboard-small-wrap {
@@ -123,11 +123,19 @@
     }
 
     &__profile-card {
-        margin: 5px;
+        background-color: @karma-card-bg;
+        margin: 5px 0;
         border-radius: 5px;
         .ant-card-body {
             padding: 5px;
         }
+        .ant-card-bordered {
+            border: 1px solid @border-color;
+        }
+    }
+
+    &__margin {
+        margin-right: 4px;
     }
 
     &__spin {
