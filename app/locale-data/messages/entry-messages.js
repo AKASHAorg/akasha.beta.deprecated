@@ -472,12 +472,17 @@ const entryMessages = defineMessages({
     gotoMyDrafts: {
         id: 'app.entry.gotoMyDrafts',
         description: 'go to my drafts button label',
-        defaultMessage: 'Got to my drafts'
+        defaultMessage: 'Go to my drafts'
     },
     myEntries: {
         id: 'app.entry.myEntries',
         description: 'my entries label title',
         defaultMessage: 'My Entries'
+    },
+    draftRevert: {
+        id: 'app.entry.draftRevert',
+        description: 'button label to revert changes',
+        defaultMessage: 'Revert changes'
     },
 });
 export { entryMessages };

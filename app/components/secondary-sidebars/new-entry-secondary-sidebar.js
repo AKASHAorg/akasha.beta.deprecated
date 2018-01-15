@@ -8,8 +8,9 @@ import { EntrySecondarySidebarItem, Icon } from '../';
 import { entryMessages, searchMessages } from '../../locale-data/messages';
 import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
-import { draftsGetCount, draftsGet, draftDelete, draftCreate } from '../../local-flux/actions/draft-actions';
-import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
+import { draftsGetCount, draftsGet, draftDelete, draftCreate,
+    draftRevertToVersion } from '../../local-flux/actions/draft-actions';
+import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { generalMessages } from '../../locale-data/messages/general-messages';
 
 const { confirm } = Modal;
@@ -154,6 +155,37 @@ class NewEntrySecondarySidebar extends Component {
         const entryType = this.props.match.params.draftType;
         this.createNewDraft(draftId, entryType);
         this.props.history.push(`/draft/${entryType}/${draftId}`);
+    }
+    _handleVersionRevert = (draftId, version) => {
+        const { ethAddress } = this.props;
+        this.props.draftRevertToVersion({
+            version,
+            id: draftId
+        });
+        this.props.entryGetFull({
+            entryId: draftId,
+            version,
+            asDraft: true,
+            revert: true,
+            ethAddress,
+        });
+    }
+    _handleDraftRevert = (ev, draftId) => {
+        const { drafts, intl } = this.props;
+        const draftObj = drafts.get(draftId);
+        const draftVersion = draftObj.getIn(['content', 'latestVersion']);
+        if (draftObj.localChanges) {
+            confirm({
+                content: intl.formatMessage(entryMessages.revertConfirmTitle),
+                okText: intl.formatMessage(generalMessages.yes),
+                okType: 'danger',
+                cancelText: intl.formatMessage(generalMessages.no),
+                onOk: () => this._handleVersionRevert(draftId, draftVersion),
+                onCancel () {}
+            });
+        } else {
+            this._handleVersionRevert(draftId, draftVersion);
+        }
     }
     /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, indent */
     _getEntryTypePopover = (category) => {
@@ -425,6 +457,7 @@ class NewEntrySecondarySidebar extends Component {
                             onDraftDelete={this._showDraftDeleteConfirm}
                             showDraftMenuDropdown={this._showDraftMenuDropdown}
                             onPreviewCreate={this._createDraftPreviewLink}
+                            onDraftRevert={this._handleDraftRevert}
                           />
                         ))
                 }
@@ -442,6 +475,7 @@ class NewEntrySecondarySidebar extends Component {
                         onDraftDelete={this._showDraftDeleteConfirm}
                         showDraftMenuDropdown={this._showDraftMenuDropdown}
                         onPreviewCreate={this._createDraftPreviewLink}
+                        onDraftRevert={this._handleDraftRevert}
                       />
                     )).toList()}
                 <div>
@@ -492,6 +526,7 @@ class NewEntrySecondarySidebar extends Component {
                         published={draft.get('onChain')}
                         localChanges={draft.get('localChanges')}
                         unresolved={resolvingEntries.includes(draft.get('id'))}
+                        onDraftRevert={this._handleDraftRevert}
                       />
                     </div>
                   )).toList()}
@@ -511,6 +546,7 @@ class NewEntrySecondarySidebar extends Component {
                           published={draft.original.onChain}
                           localChanges={draft.original.localChanges}
                           unresolved={resolvingEntries.includes(draft.original.id)}
+                          onDraftRevert={this._handleDraftRevert}
                         />
                   ))}
                   {searching && searchResults.length === 0 &&
@@ -536,6 +572,8 @@ NewEntrySecondarySidebar.propTypes = {
     match: PropTypes.shape(),
     resolvingEntries: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
+    draftRevertToVersion: PropTypes.func,
+    entryGetFull: PropTypes.func,
 };
 const mapStateToProps = state => ({
     draftsCount: state.draftState.get('draftsCount'),
@@ -553,6 +591,8 @@ export default connect(
         draftDelete,
         draftsGetCount,
         draftsGet,
+        draftRevertToVersion,
+        entryGetFull,
         entryProfileIterator,
     }
 )(injectIntl(NewEntrySecondarySidebar));

@@ -21,7 +21,7 @@ const getIconType = (localChanges, published, unresolved, entryType) => {
 
 const EntrySecondarySidebarItem = ({
     draft, active, intl, matchString, onItemClick, showDraftMenuDrowpdown, onDraftDelete, onPreviewCreate,
-    published, localChanges, unresolved
+    published, localChanges, unresolved, onDraftRevert
 }) => (
   <div
     className={
@@ -91,6 +91,14 @@ const EntrySecondarySidebarItem = ({
                 <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
               </div>
             }
+            {published && localChanges &&
+              <div
+                className="draft-list-item__popover-button"
+                onClick={ev => onDraftRevert(ev, draft.id)}
+              >
+                <b>{intl.formatMessage(entryMessages.draftRevert)}</b>
+              </div>
+            }
           </div>
         }
         trigger="click"
@@ -117,6 +125,7 @@ EntrySecondarySidebarItem.propTypes = {
     localChanges: PropTypes.bool,
     showDraftMenuDrowpdown: PropTypes.func,
     unresolved: PropTypes.bool,
+    onDraftRevert: PropTypes.func,
 };
 
 export default EntrySecondarySidebarItem;
