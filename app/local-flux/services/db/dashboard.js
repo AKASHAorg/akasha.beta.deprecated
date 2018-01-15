@@ -7,4 +7,10 @@ dashboardDB.version(1).stores({
     dashboards: '&id, ethAddress, name, columns',
 });
 
+dashboardDB.version(2).stores({
+    activeDashboard: '&ethAddress',
+    dashboards: '&id, ethAddress, name, columns',
+    dashboardOrdering: '&ethAddress, order'
+});
+
 export default dashboardDB;

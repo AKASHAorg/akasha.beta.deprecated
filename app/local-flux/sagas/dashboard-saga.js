@@ -6,6 +6,12 @@ import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboards,
     selectLoggedEthAddress } from '../selectors';
 
+function* reorderDashboards () {
+    const ethAddress = yield select(selectLoggedEthAddress);
+    const ordering = yield select(state => state.dashboardState.get('allDashboards'));
+    yield apply(dashboardService, dashboardService.setDashboardOrder, [{ ethAddress, order: ordering.toJS() }]);
+}
+
 function* dashboardAdd ({ name, columns = [] }) {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
@@ -15,6 +21,7 @@ function* dashboardAdd ({ name, columns = [] }) {
             [{ ethAddress, columns, name }]
         );
         yield put(actions.dashboardAddSuccess(dashboard));
+        yield reorderDashboards();
     } catch (error) {
         yield put(actions.dashboardAddError(error));
     }
@@ -47,6 +54,7 @@ function* dashboardDelete ({ id }) {
         yield apply(dashboardService, dashboardService.deleteDashboard, [id]);
         yield fork(dashboardSetNextActive, id); // eslint-disable-line
         yield put(actions.dashboardDeleteSuccess({ id }));
+        yield reorderDashboards();
     } catch (error) {
         yield put(actions.dashboardDeleteError(error));
     }
@@ -79,7 +87,11 @@ export function* dashboardGetActive () {
 export function* dashboardGetAll () {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
-        const data = yield apply(dashboardService, dashboardService.getAll, [ethAddress]);
+        let data = yield apply(dashboardService, dashboardService.getAll, [ethAddress]);
+        const orderedData = yield apply(dashboardService, dashboardService.getDashboardOrder, [ethAddress]);
+        if (orderedData.length) {
+            data = orderedData.map(dashId => data.find(el => el.id === dashId));
+        }
         yield put(actions.dashboardGetAllSuccess(data));
     } catch (error) {
         yield put(actions.dashboardGetAllError(error));
@@ -183,4 +195,5 @@ export function* watchDashboardActions () {
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
     yield takeEvery(types.DASHBOARD_REORDER_COLUMN, reorderColumns);
+    yield takeEvery(types.DASHBOARD_REORDER, reorderDashboards);
 }

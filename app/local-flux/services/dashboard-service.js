@@ -112,6 +112,18 @@ export const getAll = ethAddress =>
             .catch(reject);
     });
 
+export const getDashboardOrder = ethAddress =>
+    dashboardDB.dashboardOrdering
+        .where('ethAddress')
+        .equals(ethAddress)
+        .first()
+        .then((rec) => {
+            return (rec) ? rec.order : [];
+        });
+
+export const setDashboardOrder = ({ ethAddress, order }) =>
+    dashboardDB.dashboardOrdering.put({ ethAddress, order });
+
 export const getColumns = ({ dashboardId }) =>
     dashboardDB.dashboards
         .where('id')
