@@ -216,6 +216,7 @@
     "webpack-merge": "4.1.1",
     "webpack-node-externals": "1.6.0",
     "webpack-sources": "1.1.0",
+    "why-did-you-update": "^0.1.0",
     "xregexp": "4.0.0"
   },
   "dependencies": {

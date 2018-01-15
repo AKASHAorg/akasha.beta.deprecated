@@ -18,6 +18,12 @@ if (process.env.DARK_THEME) {
     require('./styles/ant-vars/extract-default-theme.less');
 }
 
+if (process.env.NODE_ENV !== 'production') {
+    const { whyDidYouUpdate } = require('why-did-you-update');
+    // uncomment this for fun :D
+    // whyDidYouUpdate(React, { groupByComponent: true, collapseComponentGroups: false });
+}
+
 const history = createHashHistory();
 const store = configureStore();
 sagaMiddleware.run(rootSaga);

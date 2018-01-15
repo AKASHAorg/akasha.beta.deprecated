@@ -137,6 +137,15 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
+    [types.DASHBOARD_REORDER]: (state, { data }) => {
+        const columns = state.get(['allDashboards']);
+        const first = columns.splice(data.sourceIndex, 1);
+        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
+        return state.merge({
+            allDashboards: second
+        });
+    },
+
     [types.DASHBOARD_CREATE_NEW]: state => state.set('newDashboard', true),
 
     [types.DASHBOARD_DELETE_NEW]: state => state.set('newDashboard', false),

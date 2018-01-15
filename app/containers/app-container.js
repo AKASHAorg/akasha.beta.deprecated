@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
     toggleEthWallet, navForwardCounterReset, navCounterIncrement } from '../local-flux/actions/app-actions';
@@ -253,7 +255,7 @@ function mapStateToProps (state) {
 }
 
 export { AppContainer };
-export default connect(
+export default DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
         bootstrapHome,
@@ -268,4 +270,4 @@ export default connect(
         navCounterIncrement,
         navForwardCounterReset
     }
-)(injectIntl(AppContainer));
+)(injectIntl(AppContainer)));
