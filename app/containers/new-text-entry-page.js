@@ -28,7 +28,7 @@ class NewEntryPage extends Component {
         shouldResetCaret: false,
     }
     componentWillReceiveProps (nextProps) {
-        const { match, draftObj, resolvingEntries, drafts,
+        const { match, draftObj, drafts,
             selectionState } = nextProps;
         const { loggedProfile, history } = this.props;
         const ethAddress = loggedProfile.get('ethAddress');
@@ -285,6 +285,14 @@ class NewEntryPage extends Component {
             tagError: hasError
         });
     }
+    _handleTagInputChange = () => {
+        this.setState(prevState => ({
+            errors: {
+                ...prevState.errors,
+                tags: null
+            }
+        }));
+    }
     _createTimeline = (draftObj) => {
         const { content, localChanges } = draftObj;
         const { latestVersion, version } = content;
@@ -438,6 +446,7 @@ class NewEntryPage extends Component {
                     intl={intl}
                     ethAddress={loggedProfile.get('ethAddress')}
                     onTagUpdate={this._handleTagUpdate}
+                    onChange={this._handleTagInputChange}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
                     searchTags={this.props.searchTags}
@@ -446,10 +455,8 @@ class NewEntryPage extends Component {
                     searchResetResults={this.props.searchResetResults}
                     inputDisabled={onChain}
                     onTagError={this._handleInternalTagError}
+                    tagErrors={errors.tags}
                   />
-                  {errors.tags &&
-                    <small className="edit-entry-page__error-text">{errors.tags}</small>
-                  }
                 </div>
               </Col>
               <Col
