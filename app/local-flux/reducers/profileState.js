@@ -403,11 +403,13 @@ const profileState = createReducer(initialState, {
         let above = state.getIn(['karmaRanking', 'above']);
         const below = state.getIn(['karmaRanking', 'below']);
         if (data === 'above') {
-            const first = (above[0] && (above[0].rank - 3) > -1) ?
-                above[0].rank - 3 :
-                collection[0].rank;
-            const newAbove = collection.slice(first, first + 1);
-            if (above[0] && above[0].rank !== newAbove[0].rank) {
+            const newAbove = [];
+            for (let i = 4; i > 0; i--) {
+                if (above[0] && collection[above[0].rank - i]) {
+                    newAbove.push(collection[above[0].rank - i]);
+                }
+            }
+            if (above[0] && newAbove[0] && above[0].rank !== newAbove[0].rank) {
                 above = newAbove.concat(above);
             }
             return state.setIn(['karmaRanking', 'above'], above);
