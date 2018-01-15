@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
+import * as Scroll from 'react-scroll';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
 import { Avatar, Icon, ProfilePopover } from '../';
 import { getShortDisplayName } from '../../utils/dataModule';
@@ -14,6 +15,9 @@ import { balanceToNumber } from '../../utils/number-formatter';
 
 const DEFAULT = 'default';
 const LEADERBOARD = 'leaderboard';
+
+const Element = Scroll.Element;
+const scroller = Scroll.scroller;
 
 class KarmaPopover extends Component {
     state = {
@@ -75,8 +79,7 @@ class KarmaPopover extends Component {
     onShowMore = () => {
         if (!this.props.karmaRankingPending) {
             this.setState({ page: LEADERBOARD });
-            const myProfile = document.getElementById('myProfile');
-            myProfile.scrollIntoView();
+            scroller.scrollTo('myScrollToElement');
         }
     };
 
@@ -98,13 +101,8 @@ class KarmaPopover extends Component {
             key={profile.ethAddress}
             hoverable={false}
             className="karma-popover__profile-card"
-            id={`${isOwnprofile && 'myProfile'}`}
-            ref={(c) => {
-              if (isOwnprofile) {
-                this.myProfile = c;
-              }
-            }}
           >
+            {isOwnprofile && <Element name="myScrollToElement" />}
             <div className="karma-popover__card-content">
               <div className="karma-popover__card-left">
                 <div className={`karma-popover__card-rank ${isOwnprofile && 'karma-popover__card-rank_blue'}`}>
@@ -123,7 +121,9 @@ class KarmaPopover extends Component {
                   />
                 </ProfilePopover>
                 <div className="karma-popover__card-name">
-                  {this.getName(profile.ethAddress)}
+                  <ProfilePopover ethAddress={profile.ethAddress}>
+                    {this.getName(profile.ethAddress)}
+                  </ProfilePopover>
                 </div>
               </div>
               <div className="karma-popover__card-score">
@@ -196,14 +196,16 @@ class KarmaPopover extends Component {
                     <div>
                       <Waypoint onEnter={() => this.props.profileKarmaRankingLoadMore('above')} />
                     </div>
-                    {karmaRankingPending &&
-                      <div className="flex-center-x karma-popover__spin">
-                        <Spin />
-                      </div>
-                    }
-                    {!karmaRankingPending &&
-                      profileLeaderboardList
-                    }
+                    <div className="karma-popover__margin">
+                      {karmaRankingPending &&
+                        <div className="flex-center-x karma-popover__spin">
+                          <Spin />
+                        </div>
+                      }
+                      {!karmaRankingPending &&
+                        profileLeaderboardList
+                      }
+                    </div>
                     <div>
                       <Waypoint onEnter={() => this.props.profileKarmaRankingLoadMore('below')} />
                     </div>
