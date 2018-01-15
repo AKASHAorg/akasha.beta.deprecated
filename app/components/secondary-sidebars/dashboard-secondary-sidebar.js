@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
+import { equals } from 'ramda';
 import { dashboardMessages } from '../../locale-data/messages';
 import { dashboardAdd, dashboardDelete, dashboardDeleteNew,
-    dashboardRename } from '../../local-flux/actions/dashboard-actions';
-import { selectAllDashboards } from '../../local-flux/selectors';
-import { DashboardSidebarRow, PlusSquareIcon } from '../';
+    dashboardRename, dashboardReorder } from '../../local-flux/actions/dashboard-actions';
+import { selectActiveDashboardId, selectAllDashboards } from '../../local-flux/selectors';
+import { DashboardSidebarRow, PlusSquareIcon } from '../index';
 
 class DashboardSecondarySidebar extends Component {
     state = {
@@ -40,7 +41,7 @@ class DashboardSecondarySidebar extends Component {
         const { activeDashboard, dashboards, renamingDashboard } = this.props;
         const { newDashboard, renameDashboard, renameValue } = this.state;
         if (activeDashboard !== nextProps.activeDashboard ||
-            !dashboards.equals(nextProps.dashboards) ||
+            !equals(dashboards, nextProps.dashboards) ||
             renamingDashboard !== nextProps.renamingDashboard ||
             this.props.newDashboard !== nextProps.newDashboard ||
             newDashboard !== nextState.newDashboard ||
@@ -133,7 +134,7 @@ class DashboardSecondarySidebar extends Component {
               </Tooltip>
             </div>
             <div className="dashboard-secondary-sidebar__list">
-              {dashboards.toList().map((dashboard) => {
+              {dashboards.toList().map((dashboard, i) => {
                   const isRenamed = this.state.renameDashboard === dashboard.get('id');
                   if (isRenamed) {
                       return this.renderEditRow();
@@ -146,8 +147,13 @@ class DashboardSecondarySidebar extends Component {
                       dashboardDelete={this.props.dashboardDelete}
                       isRenamed={isRenamed}
                       key={dashboard.get('id')}
+                      index={i}
                       newDashboard={this.state.newDashboard}
                       onRename={this.onRename}
+                      reorder={
+                          (source, target) =>
+                              this.props.dashboardReorder(this.props.activeDashboardId, source, target)
+                      }
                     />
                   );
               })}
@@ -163,6 +169,8 @@ DashboardSecondarySidebar.propTypes = {
     dashboardAdd: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
     dashboardDeleteNew: PropTypes.func.isRequired,
+    activeDashboardId: PropTypes.string.isRequired,
+    dashboardReorder: PropTypes.func.isRequired,
     dashboardRename: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
@@ -176,6 +184,7 @@ function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
         dashboards: selectAllDashboards(state),
+        activeDashboardId: selectActiveDashboardId(state),
         lists: state.listState.get('byName'),
         newDashboard: state.dashboardState.get('newDashboard'),
         renamingDashboard: state.dashboardState.getIn(['flags', 'renamingDashboard'])
@@ -189,5 +198,6 @@ export default connect(
         dashboardDelete,
         dashboardDeleteNew,
         dashboardRename,
+        dashboardReorder
     }
 )(injectIntl(DashboardSecondarySidebar));

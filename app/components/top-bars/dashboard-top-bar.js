@@ -3,15 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
-import { DragDropContext } from 'react-dnd';
 import { symmetricDifference, pick } from 'ramda';
-import HTML5Backend from 'react-dnd-html5-backend';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
 import { selectActiveDashboard, selectActiveDashboardId, selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { Icon, Navigation, PlusSquareIcon } from '../index';
+import { Navigation, PlusSquareIcon } from '../index';
 import TopBarIcon from './dashboard-top-bar-icon';
 
 const iconsTypes = {
@@ -116,10 +114,10 @@ function mapStateToProps (state) {
     };
 }
 
-export default DragDropContext(HTML5Backend)(connect(
+export default connect(
     mapStateToProps,
     {
         dashboardAddNewColumn,
         dashboardReorderColumn
     }
-)(injectIntl(DashboardTopBar)));
+)(injectIntl(DashboardTopBar));

@@ -13,13 +13,14 @@ const dragSource = {
     }
 };
 const cardTarget = {
-    drop (props, monitor) {
+    hover (props, monitor) {
         const dragIndex = monitor.getItem().index;
         const hoverIndex = props.index;
         if (dragIndex === hoverIndex) {
             return;
         }
         props.dashboardReorderColumn(dragIndex, hoverIndex);
+        monitor.getItem().index = hoverIndex;
     }
 };
 
