@@ -525,12 +525,10 @@ class NewEntrySecondarySidebar extends Component {
 }
 NewEntrySecondarySidebar.propTypes = {
     ethAddress: PropTypes.string,
-    draftsCount: PropTypes.number,
     draftCreate: PropTypes.func,
     draftDelete: PropTypes.func,
     draftsFetched: PropTypes.bool,
     drafts: PropTypes.shape(),
-    draftsGet: PropTypes.func,
     draftsGetCount: PropTypes.func,
     entryProfileIterator: PropTypes.func,
     history: PropTypes.shape(),
