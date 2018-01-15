@@ -16,6 +16,10 @@ import StreamReader from './stream-reader';
  */
 function findClosestMatch (width, obj, initialKey) {
     let imageKey = initialKey || '';
+    const pixelRatio = window.devicePixelRatio;
+    if (pixelRatio) {
+        width *= pixelRatio;
+    }
     const sortedKeys = Object.keys(obj).sort((a, b) => obj[a].width > obj[b].width);
     for (let i = sortedKeys.length - 1; i >= 0; i -= 1) {
         const key = sortedKeys[i];
