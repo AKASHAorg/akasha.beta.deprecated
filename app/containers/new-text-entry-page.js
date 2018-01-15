@@ -6,7 +6,7 @@ import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
-    DataLoader, Icon } from '../components';
+    DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
 import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
@@ -14,7 +14,7 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile, selectPendingActionByType } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -45,7 +45,8 @@ class NewEntryPage extends Component {
             }
         }
 
-        if (draftObj && match.params.draftId && match.params.draftId !== this.props.match.params.draftId && this.editor) {
+        if (draftObj && match.params.draftId &&
+                match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
                 this.setState({
                     shouldResetCaret: true

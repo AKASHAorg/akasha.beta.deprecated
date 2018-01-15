@@ -16,11 +16,6 @@ const entryMessages = defineMessages({
         description: 'tooltip for vote buttons when the entry/comment was already upvoted',
         defaultMessage: 'You upvoted with weight {weight}'
     },
-    articleEntryType: {
-        id: 'app.entry.articleEntryType',
-        description: 'entry of type article',
-        defaultMessage: 'Article'
-    },
     cannotClaimEntry: {
         id: 'app.entry.cannotClaimEntry',
         description: 'tooltip for collect button for the situation when a user cannot collect Essence for his entry',
@@ -80,31 +75,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.draft',
         description: 'a draft is an entry that wasn\'t published yet (the data is only kept locally)',
         defaultMessage: 'Draft'
-    },
-    draftAll: {
-        id: 'app.entry.draftAll',
-        description: 'all drafts',
-        defaultMessage: 'All Drafts'
-    },
-    entriesAll: {
-        id: 'app.entry.entriesAll',
-        description: '',
-        defaultMessage: 'All Entries'
-    },
-    publishedAll: {
-        id: 'app.entry.publishedAll',
-        description: 'all published entries',
-        defaultMessage: 'All entries'
-    },
-    draftEntryCategory: {
-        id: 'app.entry.draftEntryCategory',
-        description: 'entry type suffix by category',
-        defaultMessage: 'drafts'
-    },
-    publishedEntryCategory: {
-        id: 'app.entry.publishedEntryCategory',
-        description: 'entry type suffix by category',
-        defaultMessage: 'entries'
     },
     drafts: {
         id: 'app.entry.drafts',
@@ -199,11 +169,6 @@ const entryMessages = defineMessages({
         description: 'featured image section title',
         defaultMessage: 'Featured image'
     },
-    gotoMyDrafts: {
-        id: 'app.entry.gotoMyDrafts',
-        description: 'go to my drafts button label',
-        defaultMessage: 'Got to my drafts'
-    },
     hiddenContent: {
         id: 'app.entry.hiddenContent',
         description: 'message for hidden content due to score lower than user\'s preferences',
@@ -248,11 +213,6 @@ const entryMessages = defineMessages({
         id: 'app.entry.makeSureToOpenDApp',
         description: 'Message',
         defaultMessage: 'Make sure to open AKASHA dApp on the computer you have published from.'
-    },
-    myEntries: {
-        id: 'app.entry.myEntries',
-        description: 'my entries label title',
-        defaultMessage: 'My Entries'
     },
     newComments: {
         id: 'app.entry.newComments',
@@ -478,6 +438,46 @@ const entryMessages = defineMessages({
         id: 'app.entry.youHaveNoDrafts',
         description: 'Message shown when all drafts are deleted',
         defaultMessage: 'You have no drafts.'
+    },
+    articleEntryType: {
+        id: 'app.entry.articleEntryType',
+        description: 'entry of type article',
+        defaultMessage: 'Article'
+    },
+    draftAll: {
+        id: 'app.entry.draftAll',
+        description: 'all drafts',
+        defaultMessage: 'All Drafts'
+    },
+    entriesAll: {
+        id: 'app.entry.entriesAll',
+        description: '',
+        defaultMessage: 'All Entries'
+    },
+    publishedAll: {
+        id: 'app.entry.publishedAll',
+        description: 'all published entries',
+        defaultMessage: 'All entries'
+    },
+    draftEntryCategory: {
+        id: 'app.entry.draftEntryCategory',
+        description: 'entry type suffix by category',
+        defaultMessage: 'drafts'
+    },
+    publishedEntryCategory: {
+        id: 'app.entry.publishedEntryCategory',
+        description: 'entry type suffix by category',
+        defaultMessage: 'entries'
+    },
+    gotoMyDrafts: {
+        id: 'app.entry.gotoMyDrafts',
+        description: 'go to my drafts button label',
+        defaultMessage: 'Got to my drafts'
+    },
+    myEntries: {
+        id: 'app.entry.myEntries',
+        description: 'my entries label title',
+        defaultMessage: 'My Entries'
     },
 });
 export { entryMessages };
