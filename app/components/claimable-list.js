@@ -62,9 +62,6 @@ class ClaimableList extends Component {
             const balance = ownEntry ?
                 balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
                 balanceToNumber(vote && vote.get('essence'));
-            if (!balance) {
-                return null;
-            }
             const endPeriod = entry.get('endPeriod');
             let timeDiff;
             const isActive = endPeriod > Date.now() / 1000;
@@ -129,7 +126,14 @@ class ClaimableList extends Component {
             );
         };
 
-        const filteredEntries = entries.filter(entry => !isClaimed(entry));
+        const filteredEntries = entries.filter((entry) => {
+            const ownEntry = isOwnEntry(entry);
+            const vote = entryVotes.get(entry.entryId);
+            const balance = ownEntry ?
+                balanceToNumber(entryBalance.getIn([entry.entryId, 'totalKarma'])) :
+                balanceToNumber(vote && vote.get('essence'));
+            return !isClaimed(entry) && !!balance;
+        });
 
         return (
           <div className="claimable-list">
