@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
+import { Link } from 'react-router-dom';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
-import { Avatar, Icon, ProfilePopover } from '../';
+import { Avatar, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 import { profileKarmaRanking, profileKarmaRankingLoadMore,
     profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
@@ -91,18 +92,24 @@ class KarmaPopover extends Component {
     renderCard = (profile, profiles, intl, loggedProfileData) => {
         const profileKarmaScore = profile.karma;
         const isOwnprofile = profile.ethAddress === loggedProfileData.get('ethAddress');
+        const userName = isOwnprofile ? intl.formatMessage(generalMessages.you) :
+            this.getName(profile.ethAddress);
         return (
           <Card
             key={profile.ethAddress}
             hoverable={false}
-            className="karma-popover__profile-card"
+            className={`karma-popover__profile-card ${isOwnprofile && 'karma-popover__profile-card_self'}`}
           >
             <div className="karma-popover__card-content">
               <div className="karma-popover__card-left">
                 <div className={`karma-popover__card-rank ${isOwnprofile && 'karma-popover__card-rank_blue'}`}>
                   {profile.rank + 1}
                 </div>
-                <ProfilePopover ethAddress={profile.ethAddress}>
+                <Link
+                  className="karma-popover__avatar-link"
+                  onClick={() => this.onVisibleChange(false)}
+                  to={`/${profile.ethAddress}`}
+                >
                   <Avatar
                     className="karma-popover__avatar"
                     firstName={profiles.get(profile.ethAddress)
@@ -113,11 +120,15 @@ class KarmaPopover extends Component {
                       && profiles.getIn([profile.ethAddress, 'lastName'])}
                     size="small"
                   />
-                </ProfilePopover>
+                </Link>
                 <div className="karma-popover__card-name">
-                  <ProfilePopover ethAddress={profile.ethAddress}>
-                    {this.getName(profile.ethAddress)}
-                  </ProfilePopover>
+                  <Link
+                    className="unstyled-link"
+                    onClick={() => this.onVisibleChange(false)}
+                    to={`/${profile.ethAddress}`}
+                  >
+                    {userName}
+                  </Link>
                 </div>
               </div>
               <div className="karma-popover__card-score">
