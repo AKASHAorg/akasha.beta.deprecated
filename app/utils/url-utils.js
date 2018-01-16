@@ -1,24 +1,15 @@
-export const getBreadcrumbs = (pathname, panelBreadcrumbs) => {
-    const withoutQuery = pathname.split('?')[0];
-    const route = panelBreadcrumbs ?
-        withoutQuery.split('/panel/')[1] :
-        withoutQuery.split('/panel/')[0];
-    const parts = route.split('/').filter(p => !!p);
-    let base = '';
-    const routes = parts.map((part) => {
-        if (panelBreadcrumbs && !base) {
-            base = part;
-        } else {
-            base = `${base}/${part}`;
-        }
-        return base;
-    });
+const prefix = 'akasha.world';
 
-    // prefix with uprofile breadcrumb
-    if (panelBreadcrumbs && !parts.includes('uprofile')) {
-        parts.unshift('uprofile');
-        routes.unshift('uprofile');
+export const addPrefix = str => `${prefix}${str}`;
+
+export const isAbsolute = route => !route.startsWith('/');
+
+export const isInternalLink = value =>
+    value.startsWith(`${prefix}/`) || value.startsWith(`/${prefix}/`);
+
+export const removePrefix = (value) => {
+    if (isAbsolute(value)) {
+        return value.replace(prefix, '');
     }
-
-    return { parts, routes };
+    return value.replace(`/${prefix}`, '');
 };
