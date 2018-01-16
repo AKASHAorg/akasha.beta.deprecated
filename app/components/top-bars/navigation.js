@@ -5,7 +5,8 @@ import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
-import { navCounterDecrement, navCounterIncrement } from '../../local-flux/actions/app-actions';
+import { navCounterDecrement, navCounterIncrement,
+    toggleNavigationModal } from '../../local-flux/actions/app-actions';
 import { Icon } from '../';
 
 class Navigation extends Component {
@@ -48,6 +49,13 @@ class Navigation extends Component {
                 type="forward"
               />
             </Tooltip>
+            <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.navigateToLink)}>
+              <Icon
+                className="content-link navigation__icon navigation__link-icon"
+                onClick={this.props.toggleNavigationModal}
+                type="linkEntry"
+              />
+            </Tooltip>
           </div>
         );
     }
@@ -58,8 +66,9 @@ Navigation.propTypes = {
     intl: PropTypes.shape().isRequired,
     navigationBackCounter: PropTypes.number,
     navigationForwardCounter: PropTypes.number,
-    navCounterDecrement: PropTypes.func,
-    navCounterIncrement: PropTypes.func,
+    navCounterDecrement: PropTypes.func.isRequired,
+    navCounterIncrement: PropTypes.func.isRequired,
+    toggleNavigationModal: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -72,5 +81,6 @@ export default connect(
     {
         navCounterDecrement,
         navCounterIncrement,
+        toggleNavigationModal,
     }
 )(withRouter(injectIntl(Navigation)));
