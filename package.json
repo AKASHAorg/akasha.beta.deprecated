@@ -294,6 +294,7 @@
       "target": [
         "deb",
         "zip",
+        "snap",
         "AppImage"
       ],
       "icon": "resources/icons/"
