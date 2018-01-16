@@ -95,6 +95,29 @@ class PublishOptionsPanel extends Component {
                   <div> &nbsp; </div>
                 </div>
               }
+              <div
+                className="publish-options-panel__excerpt-container"
+              >
+                <h4
+                  className="publish-options-panel__container-title"
+                >
+                  {intl.formatMessage(entryMessages.excerpt)}
+                </h4>
+                <TextArea
+                  ref={(node) => { this.textareaNode = node; }}
+                  className="publish-options-panel__excerpt-textarea"
+                  placeholder="Write a short summary"
+                  autosize={{ minRows: 3 }}
+                  onChange={this._handleExcerptChange}
+                  value={excerpt}
+                />
+                {errors.excerpt &&
+                  <small className="edit-entry-page__error-text">{errors.excerpt}</small>
+                }
+                {!errors.excerpt &&
+                  <small>{intl.formatMessage(validationMessages.maxExcerptLength)}</small>
+                }
+              </div>
               <div className="publish-options-panel__licence-container">
                 <h4 className="publish-options-panel__container-title">
                   {intl.formatMessage(entryMessages.license)}
@@ -128,29 +151,6 @@ class PublishOptionsPanel extends Component {
                             )).toIndexedSeq()}
                 </RadioGroup>
                     }
-              </div>
-              <div
-                className="publish-options-panel__excerpt-container"
-              >
-                <h4
-                  className="publish-options-panel__container-title"
-                >
-                  {intl.formatMessage(entryMessages.excerpt)}
-                </h4>
-                <TextArea
-                  ref={(node) => { this.textareaNode = node; }}
-                  className="publish-options-panel__excerpt-textarea"
-                  placeholder="Write a short summary"
-                  autosize={{ minRows: 3 }}
-                  onChange={this._handleExcerptChange}
-                  value={excerpt}
-                />
-                {errors.excerpt &&
-                  <small className="edit-entry-page__error-text">{errors.excerpt}</small>
-                }
-                {!errors.excerpt &&
-                  <small>{intl.formatMessage(validationMessages.maxExcerptLength)}</small>
-                }
               </div>
             </div>
           </div>
