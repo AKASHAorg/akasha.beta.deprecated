@@ -9,6 +9,8 @@ apps:
   akasha:
     command: env TMPDIR=$XDG_RUNTIME_DIR desktop-launch $SNAP/akasha
     plugs:
+      - desktop
+      - desktop-legacy
       - home
       - x11
       - unity7
@@ -21,15 +23,15 @@ parts:
   app:
     plugin: dump
     stage-packages:
-      - libnotify4
-      - libappindicator1
-      - libxtst6
-      - libnss3
-      - libxss1
-      - fontconfig-config
-      - gconf2
       - libasound2
-      - pulseaudio
+      - libgconf2-4
+      - libnotify4
+      - libnspr4
+      - libnss3
+      - libpcre3
+      - libpulse0
+      - libxss1
+      - libxtst6
     source: linux-unpacked
     after:
-      - desktop-glib-only
+      - desktop-gtk2
