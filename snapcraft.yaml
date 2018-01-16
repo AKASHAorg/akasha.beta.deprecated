@@ -1,10 +1,10 @@
 name: akasha
-version: 0.6.0
+version: 0.6.1
 summary: AKASHA
 description: Akasha platform
 confinement: strict
-grade: devel
-icon: gui/icon.png
+grade: stable
+icon: snap/gui/icon.png
 apps:
   akasha:
     command: env TMPDIR=$XDG_RUNTIME_DIR desktop-launch $SNAP/akasha
