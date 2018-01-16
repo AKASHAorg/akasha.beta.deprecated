@@ -136,7 +136,7 @@ class ProfileDetails extends Component {
               <div>
                 {intl.formatMessage(generalMessages.essenceTotalScore)}
                 <span className="profile-details__score">
-                  {balanceToNumber(profileData.essence, 1)}
+                  {formatBalance(profileData.essence)}
                 </span>
               </div>
             </div>
