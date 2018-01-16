@@ -14,6 +14,14 @@ class PublishOptionsPanel extends Component {
         this.state = {};
     }
 
+    componentDidUpdate (previousProps) {
+        if (this.props.selectedLicence.parent !== previousProps.selectedLicence.parent) {
+            const licenseEl = document.getElementById('publish-options-panel-license');
+            const container = document.getElementById('publish-options-panel-content');
+            container.scrollTop = licenseEl.offsetTop;
+        }
+    }
+
     shouldComponentUpdate (nextProps, nextState) {
         return nextProps.excerpt !== this.props.excerpt ||
             (!nextProps.linkEntry && !nextProps.featuredImage.equals(this.props.featuredImage)) ||
@@ -71,6 +79,7 @@ class PublishOptionsPanel extends Component {
             </div>
             <div
               className={`publish-options-panel__content publish-options-panel__content${scrolled ? '_scrolled' : ''}`}
+              id="publish-options-panel-content"
               onScroll={this._handleContentScroll}
             >
               {!linkEntry &&
@@ -118,7 +127,7 @@ class PublishOptionsPanel extends Component {
                   <small>{intl.formatMessage(validationMessages.maxExcerptLength)}</small>
                 }
               </div>
-              <div className="publish-options-panel__licence-container">
+              <div className="publish-options-panel__licence-container" id="publish-options-panel-license">
                 <h4 className="publish-options-panel__container-title">
                   {intl.formatMessage(entryMessages.license)}
                 </h4>

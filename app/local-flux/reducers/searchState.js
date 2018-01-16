@@ -1,7 +1,7 @@
 import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { entrySearchLimit, profileSearchLimit } from '../../constants/iterator-limits';
+import { entrySearchLimit } from '../../constants/iterator-limits';
 import { SearchRecord } from './records/search-record';
 
 const initialState = new SearchRecord();
@@ -14,14 +14,21 @@ const searchState = createReducer(initialState, {
     [types.SEARCH_MORE_QUERY]: state =>
         state.setIn(['flags', 'moreQueryPending'], true),
 
-    [types.SEARCH_MORE_QUERY_SUCCESS]: (state, { data }) =>
-        state.merge({
+    [types.SEARCH_MORE_QUERY_SUCCESS]: (state, { data }) => {
+        let entryIds = state.get('entryIds');
+        data.collection.forEach((entry) => {
+            if (!entryIds.includes(entry.entryId)) {
+                entryIds = entryIds.push(entry.entryId);
+            }
+        });
+        return state.merge({
             currentPage: state.get('currentPage') + 1,
-            entryIds: state.get('entryIds').concat(getEntryIds(data.collection)),
+            entryIds,
             flags: state.get('flags').merge({ moreQueryPending: false }),
             resultsCount: data.totalHits,
             totalPages: Math.ceil(data.totalHits / entrySearchLimit),
-        }),
+        });
+    },
 
     [types.SEARCH_MORE_QUERY_ERROR]: state =>
         state.merge({
