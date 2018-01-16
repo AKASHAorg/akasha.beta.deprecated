@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tabs, Tooltip } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
+import { ipfsGetPorts, ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
     ipfsStopLogger } from '../../local-flux/actions/external-process-actions';
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
@@ -23,6 +23,10 @@ class IpfsDetailsModal extends Component {
         storagePath: this.props.ipfsSettings.get('storagePath'),
         swarmPort: this.props.ipfsSettings.getIn(['ports', 'swarmPort']),
     };
+
+    componentDidMount () {
+        this.props.ipfsGetPorts();
+    }
 
     componentWillReceiveProps (nextProps) {
         if (!nextProps.ipfsSettings.get('ports').equals(this.props.ipfsSettings.get('ports'))) {
@@ -229,6 +233,7 @@ class IpfsDetailsModal extends Component {
 IpfsDetailsModal.propTypes = {
     intl: PropTypes.shape().isRequired,
     ipfsBusyState: PropTypes.bool,
+    ipfsGetPorts: PropTypes.func.isRequired,
     ipfsLogs: PropTypes.shape().isRequired,
     ipfsPortsRequested: PropTypes.bool,
     ipfsSaveSettings: PropTypes.func,
@@ -249,7 +254,7 @@ function mapStateToProps (state) {
         ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
         ipfsLogs: state.externalProcState.getIn(['ipfs', 'logs']),
         ipfsSettings: state.settingsState.get('ipfs'),
-        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'portsRequested']),
+        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'flags', 'portsRequested']),
         ipfsBusyState: state.externalProcState.getIn(['ipfs', 'flags', 'busyState']),
     };
 }
@@ -257,6 +262,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        ipfsGetPorts,
         ipfsSaveSettings,
         ipfsSetPorts,
         ipfsStart,

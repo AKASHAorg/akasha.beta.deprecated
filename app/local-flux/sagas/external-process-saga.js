@@ -1,5 +1,5 @@
 import * as reduxSaga from 'redux-saga';
-import { apply, call, cancel, fork, put, select, take } from 'redux-saga/effects';
+import { apply, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/external-process-actions';
 import * as appActions from '../actions/app-actions';
@@ -56,7 +56,6 @@ export function* ipfsGetConfig () {
 
 export function* ipfsGetPorts () {
     const channel = Channel.server.ipfs.getPorts;
-    yield put(actions.ipfsGetPorts());
     yield call(enableChannel, channel, Channel.client.ipfs.manager);
     yield apply(channel, channel.send, [{}]);
 }
@@ -216,7 +215,7 @@ function* watchIpfsSetPortsChannel () {
             yield put(actions.ipfsSetPortsError(resp.error));
         } else {
             yield put(actions.ipfsSetPortsSuccess(resp.data));
-            yield fork(ipfsGetPorts);
+            yield put(actions.ipfsGetPorts());
             yield put(appActions.showNotification({
                 id: 'setIpfsPortsSuccess',
                 duration: 4,
@@ -395,6 +394,7 @@ export function* watchEProcActions () {
     yield fork(watchGethToggleLogger);
     yield fork(watchIpfsToggleLogger);
     yield fork(watchIpfsSetPorts);
+    yield takeEvery(types.IPFS_GET_PORTS, ipfsGetPorts);
 }
 
 export function* registerEProcListeners () {

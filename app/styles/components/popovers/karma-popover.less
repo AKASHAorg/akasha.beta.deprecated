@@ -4,6 +4,14 @@
         padding: 0;
     }
 
+    &__avatar {
+        cursor: pointer !important;
+    }
+
+    &__avatar-link {
+        display: flex;
+    }
+
     &__back {
         margin-right: 10px;
         cursor: pointer;
@@ -19,7 +27,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        color: @heading-color;
+        color: @karma-card-content;
     }
 
     &__card-rank {
@@ -64,7 +72,7 @@
     }
 
     &__title {
-        color: @heading-color;
+        color: @text-color;
     }
 
     &__show-more {
@@ -76,7 +84,7 @@
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        color: @heading-color;
+        color: @text-color;
         height: 42px;
     }
 
@@ -88,13 +96,17 @@
 
     &__karma-score {
         margin-left: 5px;
-        color: @text-color;
+        color: @heading-color;
     }
 
     &__karma-level {
         font-size: 15px;
         color: @text-color;
         padding: 13px 0 7px 0;
+    }
+
+    &__karma-level-text {
+        color: @text-color-secondary;
     }
 
     &__info-icon {
@@ -107,12 +119,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        padding-bottom: 5px;
     }
 
     &__leaderboard-title {
         font-size: 15px;
         font-weight: 500;
-        color: @heading-color;
+        color: @karma-card-content;
     }
 
     &__leaderboard-wrap {
@@ -131,10 +144,6 @@
         padding: 12px 4px 0 16px;
     }
 
-    &__leaderboard-small-wrap {
-        margin-top: 10px;
-    }
-
     &__profile-card {
         background-color: @karma-card-bg;
         margin: 5px 0;
@@ -144,6 +153,9 @@
         }
         .ant-card-bordered {
             border: 1px solid @border-color;
+        }
+        &_self {
+            background-color: @karma-card-bg-reverse;
         }
     }
 

@@ -344,10 +344,10 @@ class NewLinkEntryPage extends Component {
 
         const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
             infoExtracted, urlInputHidden } = this.state;
-        const matchingDrafts = drafts.filter(draft =>
-            draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+        // const matchingDrafts = drafts.filter(draft =>
+        //     draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
 
-        if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
+        if (!draftObj && drafts.size === 0 && draftsFetched) {
             return (
               <div
                 className={
