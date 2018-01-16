@@ -86,6 +86,7 @@ class PublishOptionsPanel extends Component {
                     baseUrl={baseUrl}
                     initialImage={featuredImage}
                     intl={intl}
+                    minWidth={320}
                     onChange={this._handleFeaturedImageChange}
                     onImageClear={() => this._handleFeaturedImageChange({})}
                     useIpfs
