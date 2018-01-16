@@ -326,10 +326,10 @@ class NewEntryPage extends Component {
         const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
             draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
-        const matchingDrafts = drafts.filter(draft =>
-            draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+        // const matchingDrafts = drafts.filter(draft =>
+        //     draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
 
-        if (!draftObj && matchingDrafts.size === 0 && draftsFetched) {
+        if (!draftObj && drafts.size === 0 && draftsFetched) {
             return (
               <div
                 className={

@@ -64,6 +64,7 @@ class ImageUploader extends Component {
             progressHandler: this._handleResizeProgress,
             maxProgress: (100 - INITIAL_PROGRESS_VALUE)
         });
+        // only support single file for now! (notice the 0 index)
         filePromises[0].then((results) => {
             this.setState({
                 processingFinished: true,
@@ -74,10 +75,13 @@ class ImageUploader extends Component {
                     if (!this.props.useIpfs) {
                         return this.props.onChange(results);
                     }
-                    return uploadImage(results)
-                        .then(converted => this.props.onChange(converted));
+                    console.log('results', results);
+                    if (results) {
+                        return uploadImage(results)
+                            .then(converted => this.props.onChange(converted));
+                    }
                 }
-                return null;
+                return true;
             });
         }).catch((err) => {
             this.setState({
@@ -94,7 +98,8 @@ class ImageUploader extends Component {
         return this.setState({
             processingFinished: false,
             progress: INITIAL_PROGRESS_VALUE,
-            imageLoaded: false
+            imageLoaded: false,
+            error: null
         }, () => {
             this.forceUpdate();
             this._resizeImages(this.fileInput.files);
