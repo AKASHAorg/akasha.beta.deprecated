@@ -701,7 +701,7 @@ const generalMessages = defineMessages({
     karmaLeaderboard: {
         id: 'app.general.karmaLeaderboard',
         description: 'karma leaderboard title',
-        defaultMessage: 'Leaderboard Position'
+        defaultMessage: 'Proto-Reputation'
     },
     karmaLevel: {
         id: 'app.general.karmaLevel',
@@ -742,6 +742,11 @@ const generalMessages = defineMessages({
         id: 'app.general.sidebarEntryTypeImage',
         description: '',
         defaultMessage: 'Image'
+    },
+    you: {
+        id: 'app.general.you',
+        description: '',
+        defaultMessage: 'You'
     },
 });
 export { generalMessages };
