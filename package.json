@@ -259,7 +259,8 @@
           "y": 150,
           "type": "file"
         }
-      ]
+      ],
+      "icon": "icon.icns"
     },
     "files": [
       "dist",
@@ -305,7 +306,8 @@
       "category": "public.app-category.social-networking",
       "target": [
         "dmg",
-        "zip"
+        "zip",
+        "pkg"
       ],
       "icon": "icon.icns"
     },
