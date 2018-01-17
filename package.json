@@ -287,7 +287,7 @@
         "nsis",
         "zip"
       ],
-      "icon": "resources/icon.ico"
+      "icon": "icon.ico"
     },
     "linux": {
       "category": "Network",
@@ -296,7 +296,7 @@
         "zip",
         "AppImage"
       ],
-      "icon": "resources/icons/"
+      "icon": "icons"
     },
     "snap": {
       "grade": "devel"
@@ -307,7 +307,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "resources/icon.icns"
+      "icon": "icon.icns"
     },
     "nsis": {
       "oneClick": false,
