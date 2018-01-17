@@ -24,6 +24,13 @@ class Sync extends Component {
         }
     }
 
+    componentWillReceiveProps (nextProps) {
+        const { gethSyncStatus, ipfsGetPorts, ipfsStatus } = nextProps;
+        if (gethSyncStatus.get('synced') && ipfsStatus.get('process')) {
+            ipfsGetPorts();
+        }
+    }
+
     componentWillUnmount () {
         const { gethStopLogger } = this.props;
         gethStopLogger();
@@ -204,6 +211,7 @@ Sync.propTypes = {
     gethSyncStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsBusyState: PropTypes.bool,
+    ipfsGetPorts: PropTypes.func.isRequired,
     ipfsPortsRequested: PropTypes.bool,
     ipfsStart: PropTypes.func.isRequired,
     ipfsStatus: PropTypes.shape().isRequired,

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { clearSyncStatus, gethGetSyncStatus, gethPauseSync, gethResumeSync, gethStart,
-    gethStartLogger, gethStop, gethStopLogger, gethStopSync, ipfsStart,
+    gethStartLogger, gethStop, gethStopLogger, gethStopSync, ipfsGetPorts, ipfsStart,
     ipfsStop } from '../local-flux/actions/external-process-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Sync } from '../components';
@@ -31,6 +31,7 @@ export default connect(
         gethStop,
         gethStopLogger,
         gethStopSync,
+        ipfsGetPorts,
         ipfsStart,
         ipfsStop,
         saveGeneralSettings,
