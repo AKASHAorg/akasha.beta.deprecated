@@ -1,13 +1,10 @@
 import { app, dialog, autoUpdater } from 'electron';
-import Logger from './modules/Logger';
 
 export default function appUpdater() {
-
-    const log = Logger.getInstance().registerLogger('updater');
-    autoUpdater.on('error', err => log.err(err));
-    autoUpdater.on('checking-for-update', () => log.info('checking-for-update'));
-    autoUpdater.on('update-available', () => log.info('update-available'));
-    autoUpdater.on('update-not-available', () => log.info('update-not-available'));
+    autoUpdater.on('error', err => console.log(err));
+    autoUpdater.on('checking-for-update', () => console.log('checking-for-update'));
+    autoUpdater.on('update-available', () => console.log('update-available'));
+    autoUpdater.on('update-not-available', () => console.log('update-not-available'));
 
     autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
         let message = app.getName() + ' ' + releaseName + ' is now available. It will be installed the next time you restart the application.';
@@ -30,7 +27,6 @@ export default function appUpdater() {
             }
         });
     });
-    setInterval(() => {
-        autoUpdater.checkForUpdates();
-    }, 60000);
+
+    setTimeout(() => autoUpdater.checkForUpdates(), 200000);
 }

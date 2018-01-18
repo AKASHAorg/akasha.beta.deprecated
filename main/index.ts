@@ -13,10 +13,6 @@ import contracts from './contracts';
 
 const windowStateKeeper = require('electron-window-state');
 
-if (require('electron-squirrel-startup')) {
-    app.quit();
-}
-
 let modules;
 let mainWindow = null;
 const shutDown = Promise.coroutine(function* () {
@@ -46,7 +42,7 @@ const stopServices = () => {
         const server = 'https://hazel-server-gieqzdwjdf.now.sh';
         const feeds = `${server}/update/${process.platform}/${app.getVersion()}`;
         autoUpdater.setFeedURL(feeds);
-        setTimeout(() => checkVersion(), 20000);
+        checkVersion();
     }
 
     app.on('window-all-closed', () => {
