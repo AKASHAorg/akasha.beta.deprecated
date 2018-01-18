@@ -18,7 +18,7 @@ import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModa
     DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
     MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
-    Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel } from '../components';
+    Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer } from '../components';
 
 notification.config({
     top: 60,
@@ -196,6 +196,7 @@ class AppContainer extends Component {
                 <Sidebar />
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
+                <FullSizeImageViewer />
                 <ErrorNotification />
                 {appState.get('showAppSettings') &&
                   <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
