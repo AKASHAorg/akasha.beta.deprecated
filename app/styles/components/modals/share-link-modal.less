@@ -1,0 +1,27 @@
+.share-link-modal {
+    margin-top: 12px;
+
+    &__container {
+        margin-left: 12px;        
+        height: 19px;
+        cursor: pointer;
+
+        &:hover {
+            .share-link-modal__share-icon {
+                stroke: @primary-color;                
+            }
+            color: @primary-color;
+        }
+    }
+
+    &__title {
+        font-size: 17px;
+        font-weight: 500px;
+        color: @heading-color;
+    }
+
+    &__share-text {
+        margin-left: 5px;
+        font-size: 13px;
+    }
+}

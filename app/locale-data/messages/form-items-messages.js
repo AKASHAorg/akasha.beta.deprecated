@@ -186,6 +186,21 @@ const formMessages = defineMessages({
         description: 'Placeholder for name input field',
         defaultMessage: 'Name'
     },
+    navigationError: {
+        id: 'app.form.navigationError',
+        description: 'error message for invalid Akasha link',
+        defaultMessage: 'This is not a valid AKASHA link'
+    },
+    navigateTitle: {
+        id: 'app.form.navigateTitle',
+        description: 'title for the navigation modal',
+        defaultMessage: 'Paste an AKASHA link here'
+    },
+    navigateSubtitle: {
+        id: 'app.form.navigateSubtitle',
+        description: 'subtitle for the navigation modal',
+        defaultMessage: 'Insert a link to navigate to an entry or a profile page'
+    },
     passphraseConfirmError: {
         id: 'app.form.passphraseConfirmError',
         description: 'Error message displayed when the given passphrases don\'t match',
@@ -200,6 +215,16 @@ const formMessages = defineMessages({
         id: 'app.form.requiredError',
         description: 'error message for required fields',
         defaultMessage: 'This field is required'
+    },
+    shareLinkTitle: {
+        id: 'app.form.shareLinkTitle',
+        description: 'title for the share link modal',
+        defaultMessage: 'Share link'
+    },
+    shareLinkSubtitle: {
+        id: 'app.form.shareLinkSubtitle',
+        description: 'subtitle for the share link modal',
+        defaultMessage: 'This is an internal link that can only be used inside the Akasha app'
     },
     shiftDown: {
         id: 'app.form.shiftDown',

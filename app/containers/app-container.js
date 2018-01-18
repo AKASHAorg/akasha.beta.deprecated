@@ -6,8 +6,9 @@ import { notification, Modal } from 'antd';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { bootstrapHome, hideTerms, toggleAethWallet, toggleOutsideNavigation,
-    toggleEthWallet, navForwardCounterReset, navCounterIncrement } from '../local-flux/actions/app-actions';
+import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
+    toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
+    navCounterIncrement } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
@@ -16,9 +17,10 @@ import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal, DashboardSecondarySidebar,
     DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
-    MyEntries, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel, ProfileOverview,
-    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
-    Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel } from '../components';
+    MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel,
+    ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages,
+    Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel } from '../components';
+import { isInternalLink, removePrefix } from '../utils/url-utils';
 
 notification.config({
     top: 60,
@@ -48,8 +50,12 @@ class AppContainer extends Component {
         // on app refresh counters get reset
         // we also reset the back navigation counter whenever user logs out in auth.js
         // or when a new profile is created, in new-identity-interests
-        history.listen((historyLocation, action) => {
-            if (action === 'PUSH') {
+        history.listen((location, action) => {
+            const isInternal = isInternalLink(location.pathname);
+            if (isInternal) {
+                location.pathname = removePrefix(location.pathname);
+            }
+            if (action === 'PUSH' || isInternal) {
                 this.props.navCounterIncrement('back');
                 this.props.navForwardCounterReset();
             }
@@ -136,6 +142,7 @@ class AppContainer extends Component {
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
+                {isInternalLink(location.pathname) && <Redirect to={removePrefix(location.pathname)} />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size="large" style={{ paddingTop: '100px' }}>
                     <div>
@@ -207,6 +214,9 @@ class AppContainer extends Component {
                 {needFunds && <FaucetAndManafyModal />}
                 {showGethDetailsModal && <GethDetailsModal />}
                 {showIpfsDetailsModal && <IpfsDetailsModal />}
+                {appState.get('showNavigationModal') &&
+                  <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
+                }
                 {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                 {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
                 {appState.get('showProfileEditor') && <ProfileEdit />}
@@ -236,6 +246,7 @@ AppContainer.propTypes = {
     needMana: PropTypes.bool,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
+    toggleNavigationModal: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
     navForwardCounterReset: PropTypes.func,
     navCounterIncrement: PropTypes.func
@@ -266,6 +277,7 @@ export default DragDropContext(HTML5Backend)(connect(
         licenseGetAll,
         toggleAethWallet,
         toggleEthWallet,
+        toggleNavigationModal,
         toggleOutsideNavigation,
         navCounterIncrement,
         navForwardCounterReset

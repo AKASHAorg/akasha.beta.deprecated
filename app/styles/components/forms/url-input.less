@@ -1,0 +1,47 @@
+.url-input {
+    position: relative;
+    padding: 24px 0px;
+
+    &__input {
+        color: @input-color;
+        border-radius: 0;
+        width: ~'calc(100% - 78px)';
+    }
+
+    &__link-icon-wrapper {
+        border-top: 1px solid @input-border-color;
+        border-left: 1px solid @input-border-color;
+        border-bottom: 1px solid @input-border-color;
+        background-color: @background;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__link-icon {
+        stroke: @text-color-secondary !important;
+    }
+
+    &__button {
+        color: @primary-color;
+        border-top: 1px solid @input-border-color;
+        border-right: 1px solid @input-border-color;
+        border-bottom: 1px solid @input-border-color;
+        width: 46px;
+        height: 32px;
+        font-size: 13px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    &__error {
+        position: absolute;
+        bottom: 2px;
+        font-size: 13px;
+        color: @error-color;
+    }
+}
