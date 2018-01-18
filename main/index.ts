@@ -13,6 +13,10 @@ import contracts from './contracts';
 
 const windowStateKeeper = require('electron-window-state');
 
+if (require('electron-squirrel-startup')) {
+    app.quit();
+}
+
 let modules;
 let mainWindow = null;
 const shutDown = Promise.coroutine(function* () {
