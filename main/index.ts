@@ -7,7 +7,7 @@ import { initModules } from './init-modules';
 import feed from './modules/notifications/feed';
 import { roomFactory } from './modules/chat/join';
 import { initMenu } from './menu';
-import updater from './check-version';
+import checkVersion from './check-version';
 import * as Promise from 'bluebird';
 import contracts from './contracts';
 
@@ -38,10 +38,11 @@ const stopServices = () => {
 
     if (process.env.NODE_ENV === 'development') {
         require('electron-debug')({ showDevTools: true });
-    } else {
+    } else if (process.platform === 'darwin' || process.platform === 'win32') {
         const server = 'https://hazel-server-gieqzdwjdf.now.sh';
         const feeds = `${server}/update/${process.platform}/${app.getVersion()}`;
         autoUpdater.setFeedURL(feeds);
+        checkVersion();
     }
 
     app.on('window-all-closed', () => {
@@ -98,7 +99,6 @@ const stopServices = () => {
             initMenu(mainWindow);
             mainWindow.webContents.once('did-finish-load', () => {
                 modules.logger.registerLogger('APP');
-                updater.setWindow(mainWindow);
             });
             mainWindow.once('ready-to-show', () => {
                 mainWindow.show();
