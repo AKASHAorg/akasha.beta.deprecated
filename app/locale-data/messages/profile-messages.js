@@ -31,10 +31,10 @@ export const profileMessages = defineMessages({
         description: 'About Me section title',
         defaultMessage: 'About me'
     },
-    collectEssence: {
-        id: 'app.profile.collectEssence',
-        description: 'collect essence from entries and votes (button label)',
-        defaultMessage: 'Collect Essence'
+    essenceReady: {
+        id: 'app.profile.essenceReady',
+        description: 'title for Essence popover',
+        defaultMessage: 'Essence ready to collect'
     },
     contacts: {
         id: 'app.profile.contacts',
