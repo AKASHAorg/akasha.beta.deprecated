@@ -46,7 +46,7 @@ const stopServices = () => {
         const server = 'https://hazel-server-gieqzdwjdf.now.sh';
         const feeds = `${server}/update/${process.platform}/${app.getVersion()}`;
         autoUpdater.setFeedURL(feeds);
-        checkVersion();
+        setTimeout(() => checkVersion(), 20000);
     }
 
     app.on('window-all-closed', () => {
