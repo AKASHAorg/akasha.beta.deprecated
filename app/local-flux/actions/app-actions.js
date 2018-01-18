@@ -8,6 +8,9 @@ export const appSettingsToggle = () => action(types.APP_SETTINGS_TOGGLE);
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 
+export const fullSizeImageAdd = data => action(types.FULL_SIZE_IMAGE_ADD, { data });
+export const fullSizeImageDelete = data => action(types.FULL_SIZE_IMAGE_DELETE, { data });
+
 export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hidePreview = () => action(types.HIDE_PREVIEW);

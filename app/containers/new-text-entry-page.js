@@ -42,6 +42,8 @@ class NewEntryPage extends Component {
                 if (draftId) {
                     history.push(`/draft/${draftType}/${draftId}`);
                 }
+            } else {
+                history.push('/draft/article/noDraft');
             }
         }
 
@@ -324,12 +326,12 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
         const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
-            draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
+            draftsFetched, entriesFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
             selectionState } = this.props;
-        // const matchingDrafts = drafts.filter(draft =>
-        //     draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+        const draftId = match.params.draftId;
+        const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
 
-        if (!draftObj && drafts.size === 0 && draftsFetched) {
+        if (!draftObj && unpublishedDrafts.size === 0 && !draftId.startsWith('0x') && draftsFetched) {
             return (
               <div
                 className={
@@ -351,7 +353,7 @@ class NewEntryPage extends Component {
               </div>
             );
         }
-        if (!draftObj || !draftObj.get('content')) {
+        if ((!draftObj || !draftObj.get('content'))) {
             return (
               <DataLoader
                 flag

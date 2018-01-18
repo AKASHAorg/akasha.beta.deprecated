@@ -6,7 +6,7 @@ import { Col, Row, Button, Modal } from 'antd';
 import { DraftJS } from 'megadraft';
 import { fromJS } from 'immutable';
 import { PublishOptionsPanel, TextEntryEditor, EntryVersionTimeline, NewEntryTopBar,
-    TagEditor, WebsiteInfoCard, DataLoader, Icon } from '../components';
+    TagEditor, WebsiteInfoCard, DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
@@ -344,10 +344,10 @@ class NewLinkEntryPage extends Component {
 
         const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
             infoExtracted, urlInputHidden } = this.state;
-        // const matchingDrafts = drafts.filter(draft =>
-        //     draft.getIn(['content', 'entryType']) === match.params.draftType && !draft.get('onChain'));
+        const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
+        const draftId = match.params.draftId;
 
-        if (!draftObj && drafts.size === 0 && draftsFetched) {
+        if (!draftObj && unpublishedDrafts.size === 0 && !draftId.startsWith('0x') && draftsFetched) {
             return (
               <div
                 className={
@@ -369,7 +369,7 @@ class NewLinkEntryPage extends Component {
               </div>
             );
         }
-        if (!draftObj || !draftObj.get('content')) {
+        if ((!draftObj || !draftObj.get('content'))) {
             return (
               <DataLoader
                 flag

@@ -6,7 +6,7 @@ import { commentsCheckNew, commentsClean, commentsIterator, commentsLoadNew,
 import { entryCleanFull, entryGetFull,
     entryGetLatestVersion } from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
-import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
+import { toggleOutsideNavigation, fullSizeImageAdd } from '../local-flux/actions/app-actions';
 import { selectBaseUrl, selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
@@ -35,6 +35,7 @@ export default connect(
         entryCleanFull,
         entryGetFull,
         entryGetLatestVersion,
+        fullSizeImageAdd,
         highlightSave,
         toggleOutsideNavigation,
     }
