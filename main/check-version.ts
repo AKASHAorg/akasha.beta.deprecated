@@ -27,6 +27,4 @@ export default function appUpdater() {
             }
         });
     });
-
-    setTimeout(() => autoUpdater.checkForUpdates(), 200000);
 }
