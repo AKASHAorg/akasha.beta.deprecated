@@ -6,7 +6,8 @@ import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
-import { Avatar, Icon, TipPopover } from '../';
+import { addPrefix } from '../../utils/url-utils';
+import { Avatar, Icon, ShareLinkModal, TipPopover } from '../';
 
 const getSubtitle = (profile) => {
     const { akashaId, ethAddress, firstName, lastName } = profile.toJS();
@@ -43,6 +44,7 @@ const ProfileCardHeader = (props) => {
     const tipTooltip = tipPending ?
         intl.formatMessage(profileMessages.sendingTip) :
         intl.formatMessage(profileMessages.sendTip);
+    const url = addPrefix(`/${ethAddress}`);
     const tipIconClass = classNames('profile-card-header__tip-icon', {
         'content-link': !tipPending,
         'profile-card-header__tip-icon_disabled': tipPending
@@ -78,8 +80,8 @@ const ProfileCardHeader = (props) => {
             </div>
           }
         </div>
-        {!isOwnProfile &&
-          <div className="hidden-action">
+        <div className="flex-center-y">
+          {!isOwnProfile &&
             <TipPopover disabled={tipPending} profile={profile}>
               <Tooltip title={tipTooltip}>
                 <Icon
@@ -88,8 +90,9 @@ const ProfileCardHeader = (props) => {
                 />
               </Tooltip>
             </TipPopover>
-          </div>
-        }
+          }
+          <ShareLinkModal url={url} />
+        </div>
       </div>
     );
 };

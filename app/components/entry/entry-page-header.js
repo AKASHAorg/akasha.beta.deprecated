@@ -5,12 +5,13 @@ import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import { Tooltip, Popover } from 'antd';
-import { Avatar, Icon, ProfilePopover } from '../';
+import { Avatar, Icon, ProfilePopover, ShareLinkModal } from '../';
+import { entryTypes } from '../../constants/entry-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
-import { entryTypes } from '../../constants/entry-types';
+import { addPrefix } from '../../utils/url-utils';
 
 class EntryPageHeader extends Component {
     state = {
@@ -170,6 +171,7 @@ class EntryPageHeader extends Component {
         const ethAddress = entry.getIn(['author', 'ethAddress']);
         const akashaId = author.get('akashaId');
         const isOwnEntry = loggedEthAddress === ethAddress;
+        const url = addPrefix(`/${ethAddress}/${entry.entryId}`);
 
         return (
           <div className="entry-page-header">
@@ -205,6 +207,7 @@ class EntryPageHeader extends Component {
                     />
                   </Tooltip>
                 }
+                <ShareLinkModal url={url} withLabel />
               </div>
             </div>
           </div>
