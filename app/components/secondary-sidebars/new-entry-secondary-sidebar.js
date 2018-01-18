@@ -92,8 +92,9 @@ class NewEntrySecondarySidebar extends Component {
         const { ethAddress, drafts, match, history } = this.props;
         const { draftType, draftId } = match.params;
 
-        const nextDraft = drafts.filter(draft => !draft.get('onChain') &&
-            draft.getIn(['content', 'entryType']) === draftType && draft.get('id') !== draftId).first();
+        const nextDraft = drafts.filter(draft => !draft.get('onChain') && draft.get('id') !== draftId)
+            .sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')))
+            .first();
 
         this.props.draftDelete({
             draftId: draftIdToDelete,
@@ -353,16 +354,16 @@ class NewEntrySecondarySidebar extends Component {
                 }
                 return (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
             })
-            .sort((a, b) =>
-                new Date(a.get('created_at')) > new Date(b.get('created_at'))
-            );
+            .sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')));
+
         const publishedDraftsByType = drafts.filter((drft) => {
             if (entryType === 'all') {
                 return drft.get('id') && drft.get('onChain');
             }
             return (drft.get('id') && drft.get('onChain') &&
                 drft.getIn(['content', 'entryType']) === entryType);
-        });
+        }).sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')));
+
         const searchResults = this._getSearchResults(drafts, resolvingEntries, 'all');
         return (
           <div

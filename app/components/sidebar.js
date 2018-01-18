@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Popover } from 'antd';
+import { Button, Popover, Tooltip } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { Avatar, EssencePopover, Icon, KarmaPopover, ManaPopover, SidebarIcon } from './';
@@ -240,14 +240,10 @@ class Sidebar extends Component {
                     arrowPointAtCenter
                     placement="rightTop"
                     content={this._getEntryMenu()}
-                    trigger="click"
-                    overlayClassName="popover-menu"
-                    visible={this.state.showEntryMenu}
-                    onVisibleChange={this._toggleEntryMenu}
+                    overlayClassName="entry-menu-popover"
                   >
                     <Icon
                       className="sidebar__new-entry-icon"
-                      // onClick={this._toggleEntryMenu}
                       type="newEntry"
                     />
                   </Popover>

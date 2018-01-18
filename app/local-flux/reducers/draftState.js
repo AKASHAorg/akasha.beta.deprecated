@@ -132,7 +132,7 @@ const draftState = createReducer(initialState, {
             mState.set('entriesFetched', true);
         }),
     [types.ENTRY_GET_FULL_AS_DRAFT_SUCCESS]: (state, { data }) => {
-        const { entryId, content } = data;
+        const { entryId, content, publishDate } = data;
         const existingDraft = state.getIn(['drafts', entryId]);
         return state.withMutations((mState) => {
             if (existingDraft && existingDraft.get('localChanges')) {
@@ -160,7 +160,8 @@ const draftState = createReducer(initialState, {
                     saved: false,
                     localChanges: false,
                     tags,
-                    id: entryId
+                    id: entryId,
+                    created_at: new Date(publishDate * 1000)
                 }));
             }
             mState.set('resolvingEntries',

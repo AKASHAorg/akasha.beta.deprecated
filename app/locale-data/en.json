@@ -567,7 +567,7 @@
   "app.profile.backgroundImageTooltip": "Please upload a picture with a ratio of 2:1",
   "app.profile.aboutMeCharCount": "Characters left:",
   "app.profile.aboutMeTitle": "About me",
-  "app.profile.collectEssence": "Collect Essence",
+  "app.profile.essenceReady": "Essence ready to collect",
   "app.profile.contacts": "Contacts",
   "app.profile.cycledAmountAvailable": "Amount available {amount} AETH",
   "app.profile.cyclingComplete": "Cycling complete",
