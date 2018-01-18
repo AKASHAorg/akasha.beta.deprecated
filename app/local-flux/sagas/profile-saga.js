@@ -204,7 +204,9 @@ function* profileGetList ({ ethAddresses }) {
 
 function* profileGetLocal ({ polling }) {
     const channel = Channel.server.auth.getLocalIdentities;
+    const checkUpdate = Channel.server.utils.checkUpdate;
     yield call(enableChannel, channel, Channel.client.auth.manager);
+    yield apply(checkUpdate, checkUpdate.send, [{}]);
     yield apply(channel, channel.send, [{ polling }]);
 }
 

@@ -13,7 +13,9 @@ import { selectIsFollower, selectLoggedEthAddress, selectPendingFollow,
 import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { formatBalance } from '../../utils/number-formatter';
-import { AddToBoard, Avatar, FollowButton, Icon, NewDashboardForm, SendTipForm } from '../';
+import { addPrefix } from '../../utils/url-utils';
+import { AddToBoard, Avatar, FollowButton, Icon, NewDashboardForm, SendTipForm,
+    ShareLinkModal } from '../';
 
 const DEFAULT = 'DEFAULT';
 const DASHBOARDS = 'DASHBOARDS';
@@ -120,6 +122,10 @@ class ProfilePopover extends Component {
         const tipTooltip = tipPending ?
             intl.formatMessage(profileMessages.sendingTip) :
             intl.formatMessage(profileMessages.sendTip);
+        const url = addPrefix(`/${ethAddress}`);
+        const textClassName = classNames('profile-popover__header-text-wrapper', {
+            'profile-popover__header-text-wrapper_own-profile': isOwnProfile
+        });
         const tipIconClass = classNames('profile-popover__tip-icon', {
             'content-link': !tipPending,
             'profile-popover__tip-icon_disabled': tipPending
@@ -139,7 +145,7 @@ class ProfilePopover extends Component {
                   size="small"
                 />
               </div>
-              <div className="profile-popover__header-text-wrapper">
+              <div className={textClassName}>
                 <div className="overflow-ellipsis profile-popover__name-wrapper">
                   <Link
                     className="unstyled-link"
@@ -157,17 +163,20 @@ class ProfilePopover extends Component {
                   </div>
                 }
               </div>
-              {!isOwnProfile &&
-                <div className="flex-center profile-popover__tip-icon-wrapper">
-                  <Tooltip title={tipTooltip}>
-                    <Icon
-                      className={tipIconClass}
-                      onClick={tipPending ? undefined : this.onSendTip}
-                      type="wallet"
-                    />
-                  </Tooltip>
-                </div>
-              }
+              <div className="flex-center-y">
+                {!isOwnProfile &&
+                  <div className="flex-center profile-popover__tip-icon-wrapper">
+                    <Tooltip title={tipTooltip}>
+                      <Icon
+                        className={tipIconClass}
+                        onClick={tipPending ? undefined : this.onSendTip}
+                        type="wallet"
+                      />
+                    </Tooltip>
+                  </div>
+                }
+                <ShareLinkModal url={url} />
+              </div>
             </div>
             <div className="profile-popover__details">
               <div className="flex-center-y">

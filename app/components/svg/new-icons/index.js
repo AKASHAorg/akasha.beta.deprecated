@@ -61,6 +61,7 @@ export reply from './reply';
 export search from './search';
 export settings from './settings';
 export share from './share';
+export shareLarge from './share-large';
 export stats from './stats';
 export tag from './tag';
 export textEntry from './text-entry';

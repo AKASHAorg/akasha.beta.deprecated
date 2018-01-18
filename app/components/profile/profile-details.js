@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
 import classNames from 'classnames';
-import { Avatar, DisplayName, FollowButton, Icon, TipPopover } from '../';
+import { Avatar, DisplayName, FollowButton, Icon, ShareLinkModal, TipPopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
@@ -12,7 +12,8 @@ import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectBaseUrl, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
-import { balanceToNumber, formatBalance } from '../../utils/number-formatter';
+import { formatBalance } from '../../utils/number-formatter';
+import { addPrefix } from '../../utils/url-utils';
 
 class ProfileDetails extends Component {
     state = {
@@ -91,6 +92,7 @@ class ProfileDetails extends Component {
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, baseUrl) :
             '';
+        const url = addPrefix(`/${ethAddress}`);
         const supportButtonClass = classNames('profile-details__button profile-details__support-button', {
             'profile-details__support-button_disabled': tipPending
         });
@@ -118,8 +120,11 @@ class ProfileDetails extends Component {
                 />
               </div>
               <div className="profile-details__heading">
-                <div className="overflow-ellipsis profile-details__name">
-                  {displayName}
+                <div className="flex-center-y">
+                  <div className="overflow-ellipsis profile-details__name">
+                    {displayName}
+                  </div>
+                  <ShareLinkModal url={url} />
                 </div>
                 <div>
                   {(firstName || lastName) && `@${akashaId}`}

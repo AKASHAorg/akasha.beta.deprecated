@@ -242,6 +242,11 @@ const generalMessages = defineMessages({
         description: 'geth service is started',
         defaultMessage: 'Geth service ON'
     },
+    go: {
+        id: 'app.general.go',
+        description: 'go',
+        defaultMessage: 'Go'
+    },
     help: {
         id: 'app.general.help',
         description: 'Help button label',
@@ -329,6 +334,11 @@ const generalMessages = defineMessages({
         id: 'app.general.minutesCount',
         description: 'short form of minutes count',
         defaultMessage: '{minutes, number} min'
+    },
+    navigateToLink: {
+        id: 'app.general.navigateToLink',
+        description: 'tooltip for navigate to link button',
+        defaultMessage: 'Navigate to link'
     },
     next: {
         id: 'app.general.next',
@@ -514,6 +524,11 @@ const generalMessages = defineMessages({
         id: 'app.general.settings',
         description: 'settings button label',
         defaultMessage: 'Settings'
+    },
+    share: {
+        id: 'app.general.share',
+        description: 'share',
+        defaultMessage: 'Share'
     },
     sidebarTooltipDashboard: {
         id: 'app.general.sidebarTooltipDashboard',

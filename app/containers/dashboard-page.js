@@ -43,7 +43,7 @@ class DashboardPage extends Component {
         this.props.dashboardHideTutorial();
     }
 
-    handleCarouselChange = (old, newIndex) => {
+    handleCarouselChange = (newIndex) => {
         if (newIndex === 2) {
             this.setState({ carouselEnd: true });
         }
@@ -74,7 +74,7 @@ class DashboardPage extends Component {
             >
               <Carousel
                 ref={(c) => { this.slider = c; }}
-                beforeChange={this.handleCarouselChange}
+                afterChange={this.handleCarouselChange}
               >
                 <div className="tutorial-modal__page">
                   <div className="tutorial-modal__test-img" />

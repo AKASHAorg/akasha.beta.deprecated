@@ -45,4 +45,5 @@ export const toggleAethWallet = () => action(types.TOGGLE_AETH_WALLET);
 export const toggleEthWallet = () => action(types.TOGGLE_ETH_WALLET);
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
+export const toggleNavigationModal = () => action(types.TOGGLE_NAVIGATION_MODAL);
 export const toggleOutsideNavigation = url => action(types.TOGGLE_OUTSIDE_NAVIGATION_MODAL, { url });

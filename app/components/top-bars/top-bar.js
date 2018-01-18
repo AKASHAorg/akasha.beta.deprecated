@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import { DashboardTopBar, Navigation, NewEntryTopBar, ProfilePageTopBar, TopBarRight } from '../';
+import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
 import { showTransactionsLog, toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
     selectLoggedProfileData, selectPublishingActions, selectShowWallet,
@@ -87,7 +87,7 @@ export default connect(
     {
         showTransactionsLog,
         toggleAethWallet,
-        toggleEthWallet
+        toggleEthWallet,
     },
     null,
     { pure: false }
