@@ -139,7 +139,7 @@ function* actionAdd ({ ethAddress, payload, actionType }) {
     const balance = yield select(state => state.profileState.get('balance'));
     const publishingCost = yield select(state => state.profileState.get('publishingCost'));
     const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload ? payload.weight : null);
-    if ((hasBalance.eth && hasBalance.aeth && hasBalance.mana) || !balanceRequired(actionType)) {
+    if ((hasBalance.eth && hasBalance.mana) || !balanceRequired(actionType)) {
         /**
          * continue to publishing
          */
