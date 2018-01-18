@@ -47,7 +47,7 @@ class ProfileCard extends Component {
 
         return (
           <Card
-            className="profile-card has-hidden-action"
+            className="profile-card"
             title={
               <ProfileCardHeader
                 isOwnProfile={isOwnProfile}

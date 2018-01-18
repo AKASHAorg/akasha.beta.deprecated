@@ -101,13 +101,19 @@ const appState = createReducer(initialState, {
 
     [types.TOGGLE_ETH_WALLET]: state =>
         state.set('showWallet', state.get('showWallet') === 'ETH' ? null : 'ETH'),
+
     [types.TOGGLE_LIGHT_SYNC_MODE]: (state, { lightSync }) =>
         state.set('isLightSync', lightSync),
+
     [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
         state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),
 
     [types.TOGGLE_IPFS_DETAILS_MODAL]: state =>
         state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
+
+    [types.TOGGLE_NAVIGATION_MODAL]: state =>
+        state.set('showNavigationModal', !state.get('showNavigationModal')),
+
     [types.TOGGLE_OUTSIDE_NAVIGATION_MODAL]: (state, { url }) =>
         state.mergeIn(['outsideNavigation'], {
             isVisible: !!url,

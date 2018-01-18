@@ -29,6 +29,7 @@ export const AppRecord = Record({
     showAppSettings: false,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
+    showNavigationModal: false,
     showPreview: null,
     showProfileEditor: false,
     showReportModal: null,

@@ -1,45 +1,30 @@
-import { app, dialog, shell } from 'electron';
-import * as compareVersions from 'compare-versions';
-import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { app, dialog, autoUpdater } from 'electron';
 
-class UpdateChecker {
-    browserWindow: any;
-    currentVersion: string;
+export default function appUpdater() {
+    autoUpdater.on('error', err => console.log(err));
+    autoUpdater.on('checking-for-update', () => console.log('checking-for-update'));
+    autoUpdater.on('update-available', () => console.log('update-available'));
+    autoUpdater.on('update-not-available', () => console.log('update-not-available'));
 
-    public setWindow(activeWindow) {
-        this.browserWindow = activeWindow;
-        this.currentVersion = app.getVersion();
-    }
-
-    checkVersion(version: string, repo: string, changeLog: string) {
-        if (compareVersions(version, this.currentVersion) === 1) {
-            this.emitDialog(version, repo, changeLog);
-            return true;
-        }
-        return false;
-    }
-
-    private emitDialog(version, repo, changeLog) {
-        IpfsConnector.getInstance().api.get(changeLog).then((changeLogData) => {
-            dialog.showMessageBox(this.browserWindow, {
-                type: 'info',
-                title: 'AKASHA',
-                buttons: ['Cancel', 'Download'],
-                message: `A new version is available: ${version}`,
-                detail: `
-Changelog: 
-${changeLogData}
-
-Source: 
-${repo}
-`
-            }, (cb) => {
-                if (cb === 1) {
-                    shell.openExternal(repo);
-                }
+    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+        let message = app.getName() + ' ' + releaseName + ' is now available. It will be installed the next time you restart the application.';
+        if (releaseNotes) {
+            const splitNotes = releaseNotes.split(/[^\r]\n/);
+            message += '\n\nRelease notes:\n';
+            splitNotes.forEach(notes => {
+                message += notes + '\n\n';
             });
+        }
+        dialog.showMessageBox({
+            type: 'question',
+            buttons: ['Install and Relaunch', 'Later'],
+            defaultId: 0,
+            message: 'A new version of ' + app.getName() + ' has been downloaded',
+            detail: message
+        }, response => {
+            if (response === 0) {
+                setTimeout(() => autoUpdater.quitAndInstall(), 1);
+            }
         });
-    }
+    });
 }
-
-export default new UpdateChecker();

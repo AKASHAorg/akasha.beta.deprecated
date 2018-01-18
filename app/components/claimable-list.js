@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
+import { List } from 'immutable';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../constants/action-types';
 import { actionAdd, actionGetClaimable } from '../local-flux/actions/action-actions';
-import { selectClaimableEntries, selectClaimableEntryIds, selectLoggedEthAddress, selectPendingClaims,
+import { selectClaimableEntries, selectLoggedEthAddress, selectPendingClaims,
     selectPendingClaimVotes } from '../local-flux/selectors';
 import { generalMessages, profileMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
@@ -19,121 +20,137 @@ class ClaimableList extends Component {
         this.props.actionGetClaimable();
     }
 
-    render () {
-        const { canClaim, canClaimVote, entries, entryBalance, entryIds, entryVotes, fetchingClaimable, intl,
-            loggedEthAddress, onBack, pendingClaim, pendingClaimVote, pendingEntries } = this.props;
+    canCollect = (entry) => {
+        const { canClaim, canClaimVote } = this.props;
+        const entryId = entry.entryId;
+        return this.isOwnEntry(entry) ? canClaim.get(entryId) : canClaimVote.get(entryId);
+    };
 
-        const isOwnEntry = entry => entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
+    isClaimed = (entry) => {
+        const { entryBalance, entryVotes } = this.props;
+        const vote = entryVotes.get(entry.entryId);
+        return this.isOwnEntry(entry) ?
+            entryBalance.getIn([entry.entryId, 'claimed']) :
+            vote && vote.get('claimed');
+    };
 
-        const isClaimed = (entry) => {
-            const vote = entryVotes.get(entry.entryId);
-            return isOwnEntry(entry) ?
-                entryBalance.getIn([entry.entryId, 'claimed']) :
-                vote && vote.get('claimed');
-        };
+    isOwnEntry = entry => entry.getIn(['author', 'ethAddress']) === this.props.loggedEthAddress;
 
-        const renderRow = (entry, index) => { // eslint-disable-line
-            const entryId = entryIds.get(index);
-            const className = classNames('claimable-list__row', {
-                'claimable-list__row_last': index === (entries.size - 1)
-            });
-            if (pendingEntries && pendingEntries.get(entryId)) {
-                return (
-                  <div className={className} key={entryId}>
-                    <div className="claimable-list__entry-info">
-                      <div className="claimable-list__entry-title-placeholder" />
-                      <div className="claimable-list__balance-placeholder" />
-                    </div>
-                    <div className="flex-center claimable-list__button-wrapper">
-                      <div className="claimable-list__button-placeholder" />
-                    </div>
-                  </div>
-                );
-            }
-            const ownEntry = isOwnEntry(entry);
-            const vote = entryVotes.get(entryId);
-
-            const onCollect = () => {
-                const payload = { entryId, entryTitle: entry.getIn(['content', 'title']) };
-                const type = ownEntry ? actionTypes.claim : actionTypes.claimVote;
-                this.props.actionAdd(loggedEthAddress, type, payload);
-            };
-
-            const balance = ownEntry ?
-                balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
-                balanceToNumber(vote && vote.get('essence'));
-            const endPeriod = entry.get('endPeriod');
-            let timeDiff;
-            const isActive = endPeriod > Date.now() / 1000;
-            if (isActive) {
-                timeDiff = intl.formatRelative(new Date(endPeriod * 1000));
-            }
-            const canCollect = ownEntry ? canClaim.get(entryId) : canClaimVote.get(entryId);
-            const loading = ownEntry ? pendingClaim.get(entryId) : pendingClaimVote.get(entryId);
-            let buttonTooltip;
-            if (!canCollect) {
-                buttonTooltip = ownEntry ?
-                    intl.formatMessage(entryMessages.cannotClaimEntry) :
-                    intl.formatMessage(entryMessages.cannotClaimVote);
-            }
-
+    renderRow = (entry, index) => { // eslint-disable-line
+        const { entries, entryBalance, entryVotes, intl, loggedEthAddress, pendingClaim,
+            pendingClaimVote, pendingEntries } = this.props;
+        const entryId = entry.entryId;
+        const className = classNames('claimable-list__row', {
+            'claimable-list__row_last': index === (entries.size - 1)
+        });
+        if (pendingEntries && pendingEntries.get(entryId)) {
             return (
-              <div className={className} key={entry.get('entryId')}>
+              <div className={className} key={entryId}>
                 <div className="claimable-list__entry-info">
-                  <div>
-                    <Link
-                      className="unstyled-link"
-                      to={{
-                          pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
-                          state: { overlay: true }
-                      }}
-                    >
-                      <span className="content-link overflow-ellipsis claimable-list__entry-title">
-                        {entry.getIn(['content', 'title'])}
-                      </span>
-                    </Link>
-                  </div>
-                  <div>
-                    {balance} {intl.formatMessage(generalMessages.essence)}
-                  </div>
+                  <div className="claimable-list__entry-title-placeholder" />
+                  <div className="claimable-list__balance-placeholder" />
                 </div>
                 <div className="flex-center claimable-list__button-wrapper">
-                  {!isActive && !isClaimed(entry) &&
-                    <Tooltip arrowPointAtCenter title={buttonTooltip}>
-                      <Button
-                        disabled={loading || !canCollect}
-                        loading={loading}
-                        onClick={onCollect}
-                        size="small"
-                        type="primary"
-                      >
-                        {intl.formatMessage(generalMessages.collect)}
-                      </Button>
-                    </Tooltip>
-                  }
-                  {isClaimed(entry) &&
-                    <div className="claimable-list__collected">
-                      {intl.formatMessage(generalMessages.collected)}
-                    </div>
-                  }
-                  {isActive &&
-                    <div className="claimable-list__collect-in">
-                      {intl.formatMessage(generalMessages.collect)} {timeDiff}
-                    </div>
-                  }
+                  <div className="claimable-list__button-placeholder" />
                 </div>
               </div>
             );
+        }
+        const ownEntry = this.isOwnEntry(entry);
+        const vote = entryVotes.get(entryId);
+
+        const onCollect = () => {
+            const payload = { entryId, entryTitle: entry.getIn(['content', 'title']) };
+            const type = ownEntry ? actionTypes.claim : actionTypes.claimVote;
+            this.props.actionAdd(loggedEthAddress, type, payload);
         };
 
-        const filteredEntries = entries.filter((entry) => {
-            const ownEntry = isOwnEntry(entry);
-            const vote = entryVotes.get(entry.entryId);
-            const balance = ownEntry ?
-                balanceToNumber(entryBalance.getIn([entry.entryId, 'totalKarma'])) :
-                balanceToNumber(vote && vote.get('essence'));
-            return !isClaimed(entry) && !!balance;
-        });
+        const balance = ownEntry ?
+            balanceToNumber(entryBalance.getIn([entryId, 'totalKarma'])) :
+            balanceToNumber(vote && vote.get('essence'));
+        const endPeriod = entry.get('endPeriod');
+        let timeDiff;
+        const isActive = endPeriod > Date.now() / 1000;
+        if (isActive) {
+            timeDiff = intl.formatRelative(new Date(endPeriod * 1000));
+        }
+        const loading = ownEntry ? pendingClaim.get(entryId) : pendingClaimVote.get(entryId);
+        let buttonTooltip;
+        if (!this.canCollect(entry)) {
+            buttonTooltip = ownEntry ?
+                intl.formatMessage(entryMessages.cannotClaimEntry) :
+                intl.formatMessage(entryMessages.cannotClaimVote);
+        }
+
+        return (
+          <div className={className} key={entryId}>
+            <div className="claimable-list__entry-info">
+              <div>
+                <Link
+                  className="unstyled-link"
+                  to={{
+                      pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                      state: { overlay: true }
+                  }}
+                >
+                  <span className="content-link overflow-ellipsis claimable-list__entry-title">
+                    {entry.getIn(['content', 'title'])}
+                  </span>
+                </Link>
+              </div>
+              <div>
+                {balance} {intl.formatMessage(generalMessages.essence)}
+              </div>
+            </div>
+            <div className="flex-center claimable-list__button-wrapper">
+              {!isActive && !this.isClaimed(entry) &&
+                <Tooltip arrowPointAtCenter title={buttonTooltip}>
+                  <Button
+                    disabled={loading || !this.canCollect(entry)}
+                    loading={loading}
+                    onClick={onCollect}
+                    size="small"
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.collect)}
+                  </Button>
+                </Tooltip>
+              }
+              {this.isClaimed(entry) &&
+                <div className="claimable-list__collected">
+                  {intl.formatMessage(generalMessages.collected)}
+                </div>
+              }
+              {isActive &&
+                <div className="claimable-list__collect-in">
+                  {intl.formatMessage(generalMessages.collect)} {timeDiff}
+                </div>
+              }
+            </div>
+          </div>
+        );
+    };
+
+    render () {
+        const { entries, entryBalance, entryVotes, fetchingClaimable, intl, onBack } = this.props;
+        let collectableEntries = new List();
+        let nonCollectableEntries = new List();
+        entries
+            .filter((entry) => {
+                const ownEntry = this.isOwnEntry(entry);
+                const vote = entryVotes.get(entry.entryId);
+                const balance = ownEntry ?
+                    balanceToNumber(entryBalance.getIn([entry.entryId, 'totalKarma'])) :
+                    balanceToNumber(vote && vote.get('essence'));
+                return !this.isClaimed(entry) && !!balance;
+            })
+            .forEach((entry) => {
+                if (this.canCollect(entry)) {
+                    collectableEntries = collectableEntries.push(entry);
+                } else {
+                    nonCollectableEntries = nonCollectableEntries.push(entry);
+                }
+            });
 
         return (
           <div className="claimable-list">
@@ -144,13 +161,14 @@ class ClaimableList extends Component {
                   onClick={onBack}
                   type="arrowLeft"
                 />
-                {intl.formatMessage(profileMessages.collectEssence)}
-                <span className="flex-center claimable-list__counter">{filteredEntries.size}</span>
+                {intl.formatMessage(profileMessages.essenceReady)}
+                <span className="flex-center claimable-list__counter">{collectableEntries.size}</span>
               </div>
               <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
                 <div className="claimable-list__list-wrapper">
                   <div className="claimable-list__list">
-                    {filteredEntries.toList().map(renderRow)}
+                    {collectableEntries.toList().map(this.renderRow)}
+                    {nonCollectableEntries.toList().map(this.renderRow)}
                   </div>
                 </div>
               </DataLoader>
@@ -167,7 +185,6 @@ ClaimableList.propTypes = {
     canClaimVote: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
     entryBalance: PropTypes.shape().isRequired,
-    entryIds: PropTypes.shape().isRequired,
     entryVotes: PropTypes.shape().isRequired,
     fetchingClaimable: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
@@ -184,7 +201,6 @@ function mapStateToProps (state) {
         canClaimVote: state.entryState.get('canClaimVote'),
         entries: selectClaimableEntries(state),
         entryBalance: state.entryState.get('balance'),
-        entryIds: selectClaimableEntryIds(state),
         entryVotes: state.entryState.get('votes'),
         fetchingClaimable: state.actionState.getIn(['flags', 'fetchingClaimable']),
         loggedEthAddress: selectLoggedEthAddress(state),

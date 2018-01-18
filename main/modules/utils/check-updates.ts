@@ -1,17 +1,14 @@
-import contracts from '../../contracts/index';
-import { GethConnector } from '@akashaproject/geth-connector';
-import updater from '../../check-version';
 import * as Promise from 'bluebird';
+import { autoUpdater } from 'electron';
 
 const execute = Promise.coroutine(function* () {
-    return contracts
-        .instance
-        .feed
-        .contract
-        .getAppState((err, state) => {
-            const version = GethConnector.getInstance().web3.toUtf8(state[0]);
-            return updater.checkVersion(version, state[1], state[2]);
-        });
+    if (
+        process.env.NODE_ENV !== 'development' &&
+        (process.platform === 'darwin' || process.platform === 'win32')
+    ) {
+        autoUpdater.checkForUpdates();
+    }
+    return Promise.resolve({ done: true });
 });
 
 export default { execute, name: 'checkUpdate' };

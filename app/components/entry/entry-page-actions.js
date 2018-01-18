@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { Icon, ListPopover, VotesModal, VotePopover } from '../';
+import { Icon, ListPopover, ShareLinkModal, VotesModal, VotePopover } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
 import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryCanClaimVote, selectEntryVote,
@@ -14,6 +14,7 @@ import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntry
     selectPendingClaimVote, selectPendingVote, selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
+import { addPrefix } from '../../utils/url-utils';
 
 class EntryPageAction extends Component {
     state = {
@@ -71,6 +72,15 @@ class EntryPageAction extends Component {
         };
         this.props.actionAdd(loggedEthAddress, actionTypes.claimVote, payload);
     };
+
+    renderShareIcon = () => {
+        const { entry } = this.props;
+        const url = addPrefix(`/${entry.author.ethAddress}/${entry.entryId}`);
+
+        return (
+          <ShareLinkModal url={url} />
+        );
+    }
 
     renderVotesModal = () => {
         const { blockNr, entry } = this.props;
@@ -182,6 +192,7 @@ class EntryPageAction extends Component {
                 listToggleEntry={this.props.listToggleEntry}
                 search={listSearchKeyword}
               />
+              {this.renderShareIcon()}
             </div>
             {this.state.showVotes && this.renderVotesModal()}
           </div>
@@ -345,6 +356,7 @@ class EntryPageAction extends Component {
                   listToggleEntry={this.props.listToggleEntry}
                   search={listSearchKeyword}
                 />
+                {this.renderShareIcon()}
               </div>
             </div>
             {vote && vote.get('vote') !== '0' && this.renderCollectEntryVote()}
