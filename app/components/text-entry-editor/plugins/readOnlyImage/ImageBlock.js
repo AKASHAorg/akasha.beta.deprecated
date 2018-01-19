@@ -65,6 +65,10 @@ class ImageBlock extends Component {
         };
     };
 
+    _handleFullSizeSwitch = () => {
+        this.props.onImageClick();
+    }
+
     _handlePlaceholderLoad = (ev) => {
         const image = ev.target;
         this.setState((prevState) => {
@@ -113,6 +117,7 @@ class ImageBlock extends Component {
                 image-block__image-placeholder-wrapper${imageLoaded ? '_loaded' : ''}`
               }
               ref={(node) => { this.placeholderNodeRef = node; }}
+              onClick={this._handleFullSizeSwitch}
             >
               <div
                 className={
@@ -157,7 +162,8 @@ ImageBlock.propTypes = {
         media: PropTypes.string,
         licence: PropTypes.string,
         termsAccepted: PropTypes.bool
-    })
+    }),
+    onImageClick: PropTypes.func,
 };
 
 export default ImageBlock;

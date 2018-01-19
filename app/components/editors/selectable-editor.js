@@ -179,7 +179,25 @@ class SelectableEditor extends Component {
         });
         highlightSave(text);
     };
-
+    _handleImageFullScreenSwitch = () => {
+        const { editorState } = this.state;
+        const { baseUrl } = this.props;
+        const contentBlocks = editorState.getCurrentContent().getBlockMap();
+        const images = contentBlocks
+            .filter(block => block.getType() === 'atomic' && block.getData().get('type') === 'image')
+            .map((block) => {
+                const files = block.getData().get('files');
+                const caption = block.getData().get('caption');
+                return {
+                    src: `${baseUrl}/${files.xs.src}`,
+                    height: files.xs.height,
+                    width: files.xs.width,
+                    caption,
+                };
+            });
+        this.props.fullSizeImageAdd(images.toList());
+        // console.log(imageBlocks, 'the image blocks');
+    }
     startComment = () => {
         const { startComment } = this.props;
         const text = this.getHighlightText();
@@ -243,7 +261,12 @@ class SelectableEditor extends Component {
               <MegadraftEditor
                 editorState={editorState}
                 onChange={this.handleChange}
-                plugins={[readOnlyImagePlugin({ baseUrl })]}
+                plugins={[
+                    readOnlyImagePlugin({
+                        baseUrl,
+                        onImageClick: this._handleImageFullScreenSwitch
+                    })
+                ]}
                 readOnly
                 blockStyleFn={this.blockStyleFn}
               />
@@ -261,6 +284,7 @@ SelectableEditor.propTypes = {
     intl: PropTypes.shape(),
     startComment: PropTypes.func,
     onOutsideNavigation: PropTypes.func,
+    fullSizeImageAdd: PropTypes.func,
 };
 
 export default injectIntl(clickAway(SelectableEditor));

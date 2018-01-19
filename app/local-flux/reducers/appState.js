@@ -15,6 +15,10 @@ const appState = createReducer(initialState, {
     [types.BOOTSTRAP_HOME_SUCCESS]: state =>
         state.set('homeReady', true),
 
+    [types.FULL_SIZE_IMAGE_ADD]: (state, { data }) => state.set('fullSizeImages', data),
+
+    [types.FULL_SIZE_IMAGE_DELETE]: state => state.set('fullSizeImages', new List()),
+
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
         const indexToRemove = state.get('displayedNotifications').findIndex(displayId =>
             displayId === notification.displayId);
