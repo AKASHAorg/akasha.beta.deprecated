@@ -1,4 +1,4 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { apply, call, fork, put, select, take, takeEvery, takeLatest, actionChannel } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import { selectToken } from '../selectors';
 import * as actions from '../actions/tag-actions';
@@ -17,6 +17,13 @@ function* tagCreate ({ data }) {
         ...data,
         token,
     });
+}
+
+function* tagCanCreateCheck ({ data }) {
+    const channel = Channel.server.tags.canCreate;
+    const { ethAddress } = data;
+    yield call(enableChannel, channel, Channel.client.tags.manager);
+    yield call([channel, channel.send], { ethAddress });
 }
 
 function* tagExists ({ tagName }) {
@@ -48,6 +55,17 @@ function* watchTagCreateChannel () {
                 status: actionStatus.publishing,
                 tx: response.data.tx
             }));
+        }
+    }
+}
+
+function* watchTagCanCreateChannel () {
+    while (true) {
+        const response = yield take(actionChannels.tags.canCreate);
+        if (response.error) {
+            yield put(actions.tagCanCreateError(response.error));
+        } else {
+            yield put(actions.tagCanCreateSuccess(response.data));
         }
     }
 }
@@ -94,6 +112,7 @@ export function* registerTagListeners () {
     yield fork(watchTagExistsChannel);
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagSearchChannel);
+    yield fork(watchTagCanCreateChannel);
 }
 
 export function* watchTagActions () {
@@ -101,4 +120,5 @@ export function* watchTagActions () {
     yield takeEvery(types.TAG_EXISTS, tagExists);
     yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
     yield takeLatest(types.TAG_SEARCH, tagSearch);
+    yield takeLatest(types.TAG_CAN_CREATE, tagCanCreateCheck);
 }

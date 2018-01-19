@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -13,6 +14,7 @@ import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
+import { tagExists } from '../local-flux/actions/tag-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
@@ -326,8 +328,8 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
         const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
-            draftsFetched, entriesFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
-            selectionState } = this.props;
+            draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
+            selectionState, canCreateTags } = this.props;
         const draftId = match.params.draftId;
         const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
 
@@ -459,6 +461,8 @@ class NewEntryPage extends Component {
                     inputDisabled={onChain}
                     onTagError={this._handleInternalTagError}
                     tagErrors={errors.tags}
+                    tagExistsCheck={this.props.tagExists}
+                    canCreateTags={canCreateTags}
                   />
                 </div>
               </Col>
@@ -546,6 +550,7 @@ class NewEntryPage extends Component {
 NewEntryPage.propTypes = {
     actionAdd: PropTypes.func,
     baseUrl: PropTypes.string,
+    canCreateTags: PropTypes.bool,
     draftObj: PropTypes.shape(),
     drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
@@ -568,6 +573,7 @@ NewEntryPage.propTypes = {
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicence: PropTypes.shape(),
     pendingFaucetTx: PropTypes.bool,
+    tagExists: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -586,6 +592,7 @@ const mapStateToProps = (state, ownProps) => ({
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
     pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
+    canCreateTags: state.profileState.get('canCreateTags'),
 });
 
 export default connect(
@@ -600,5 +607,6 @@ export default connect(
         entryGetFull,
         searchTags,
         searchResetResults,
+        tagExists,
     }
 )(injectIntl(NewEntryPage));
