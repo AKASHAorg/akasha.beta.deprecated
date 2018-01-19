@@ -275,7 +275,7 @@ class TagEditor extends Component {
                 this.props.searchResetResults();
             }
             this.props.onChange();
-            return true;
+            // return true;
         });
     }
     _focusTagInput = () => {

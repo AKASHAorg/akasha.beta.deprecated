@@ -136,7 +136,8 @@ class EntryPage extends Component {
 
     render () {
         const { actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl,
-            latestVersion, licenses, loggedProfileData, newComments, toggleOutsideNavigation } = this.props;
+            latestVersion, licenses, loggedProfileData, newComments, toggleOutsideNavigation,
+            fullSizeImageAdd } = this.props;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -158,6 +159,7 @@ class EntryPage extends Component {
                     commentEditor={this.commentEditor}
                     containerRef={this.container}
                     entry={entry}
+                    fullSizeImageAdd={fullSizeImageAdd}
                     highlightSave={highlightSave}
                     intl={intl}
                     latestVersion={latestVersion}
@@ -257,6 +259,7 @@ EntryPage.propTypes = {
     entryCleanFull: PropTypes.func.isRequired,
     entryGetFull: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
+    fullSizeImageAdd: PropTypes.func,
     highlightSave: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     latestVersion: PropTypes.number,

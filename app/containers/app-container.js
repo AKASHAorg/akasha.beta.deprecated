@@ -19,7 +19,8 @@ import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModa
     DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
     MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel,
     ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages,
-    Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel } from '../components';
+    Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel,
+    FullSizeImageViewer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 
 notification.config({
@@ -203,6 +204,7 @@ class AppContainer extends Component {
                 <Sidebar />
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
+                <FullSizeImageViewer />
                 <ErrorNotification />
                 {appState.get('showAppSettings') &&
                   <AppSettings sidebar={!location.pathname.startsWith('/setup')} />

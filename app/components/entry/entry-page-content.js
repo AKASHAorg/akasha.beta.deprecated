@@ -92,7 +92,7 @@ class EntryPageContent extends Component {
         toggleOutsideNavigation(url);
     }
     render () {
-        const { baseUrl, commentEditor, containerRef, entry, licenses, intl } = this.props;
+        const { baseUrl, commentEditor, containerRef, entry, licenses, intl, fullSizeImageAdd } = this.props;
         const license = licenses.get(entry.content.licence.id);
         let licenseLabel = intl.formatMessage(entryMessages.cannotRetrieveLicense);
         if (license) {
@@ -128,6 +128,7 @@ class EntryPageContent extends Component {
                   highlightSave={this.highlightSave}
                   startComment={commentEditor && commentEditor.insertHighlight}
                   onOutsideNavigation={this._handleOutsideNavigation}
+                  fullSizeImageAdd={fullSizeImageAdd}
                 />
               </div>
             </div>
@@ -161,6 +162,7 @@ EntryPageContent.propTypes = {
     commentEditor: PropTypes.shape(),
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
+    fullSizeImageAdd: PropTypes.func,
     highlightSave: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
