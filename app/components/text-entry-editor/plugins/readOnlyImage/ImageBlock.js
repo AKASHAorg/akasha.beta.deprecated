@@ -66,7 +66,9 @@ class ImageBlock extends Component {
     };
 
     _handleFullSizeSwitch = () => {
-        this.props.onImageClick();
+        const { data } = this.props;
+        const { imgId } = data;
+        this.props.onImageClick(imgId);
     }
 
     _handlePlaceholderLoad = (ev) => {

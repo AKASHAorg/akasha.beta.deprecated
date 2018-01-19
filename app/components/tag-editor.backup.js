@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, Button } from 'antd';
+import * as actionTypes from '../constants/action-types';
 import { tagMessages, generalMessages } from '../locale-data/messages';
 import { Icon } from './';
 
@@ -343,11 +344,9 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth, inputHasFocus, existentTags, tagError } = this.state;
-        const { canCreateTags, tagSuggestionsCount, intl, tags,
-            inputDisabled, tagSuggestions, tagErrors } = this.props;
+        const { tagSuggestionsCount, intl, tags, inputDisabled, tagSuggestions, tagErrors } = this.props;
         const suggestionsPopoverVisible = (tagSuggestionsCount > 0 &&
             inputHasFocus && tagSuggestions.filter(tag => !tags.contains(tag)).size > 0);
-        console.log(canCreateTags, 'can create tags?');
         return (
           <div
             className={`tag-editor ${this.props.className}`}
@@ -367,7 +366,7 @@ class TagEditor extends Component {
                   className={
                     `flex-center-y tag-editor__tag-item
                     tag-editor__tag-item${existentTags.includes(tag) ? '' : '_should-register'}`
-                  }
+                    }
                 >
                   { tag }
                   {existentTags.includes(tag) && !tagError &&
@@ -421,7 +420,6 @@ class TagEditor extends Component {
 
 TagEditor.propTypes = {
     className: PropTypes.string,
-    canCreateTags: PropTypes.bool.isRequired,
     ethAddress: PropTypes.string,
     intl: PropTypes.shape(),
     inputDisabled: PropTypes.bool,

@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 import { AppRecord, NotificationRecord, PreviewRecord } from './records';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
@@ -15,9 +15,9 @@ const appState = createReducer(initialState, {
     [types.BOOTSTRAP_HOME_SUCCESS]: state =>
         state.set('homeReady', true),
 
-    [types.FULL_SIZE_IMAGE_ADD]: (state, { data }) => state.set('fullSizeImages', data),
+    [types.FULL_SIZE_IMAGE_ADD]: (state, { data }) => state.set('fullSizeImages', new Map(data)),
 
-    [types.FULL_SIZE_IMAGE_DELETE]: state => state.set('fullSizeImages', new List()),
+    [types.FULL_SIZE_IMAGE_DELETE]: state => state.set('fullSizeImages', new Map()),
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
         const indexToRemove = state.get('displayedNotifications').findIndex(displayId =>

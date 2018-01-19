@@ -9,6 +9,7 @@ import readOnlyImagePlugin from '../text-entry-editor/plugins/readOnlyImage/read
 import LinkDecorator from './decorators/link-decorator';
 import clickAway from '../../utils/clickAway';
 import { getContentStateFragment } from '../../utils/editorUtils';
+import { getBestAvailableImage } from '../../utils/imageUtils';
 import { Icon } from '../';
 
 const { ContentState, EditorState, CompositeDecorator } = DraftJS;
@@ -179,24 +180,30 @@ class SelectableEditor extends Component {
         });
         highlightSave(text);
     };
-    _handleImageFullScreenSwitch = () => {
+    _handleImageFullScreenSwitch = (startingImgId) => {
         const { editorState } = this.state;
         const { baseUrl } = this.props;
         const contentBlocks = editorState.getCurrentContent().getBlockMap();
         const images = contentBlocks
             .filter(block => block.getType() === 'atomic' && block.getData().get('type') === 'image')
             .map((block) => {
-                const files = block.getData().get('files');
-                const caption = block.getData().get('caption');
+                const blockData = block.getData();
+                const files = blockData.get('files');
+                const caption = blockData.get('caption');
+                const imgId = blockData.get('imgId');
+                const bestImage = getBestAvailableImage(files);
                 return {
-                    src: `${baseUrl}/${files.xs.src}`,
-                    height: files.xs.height,
-                    width: files.xs.width,
+                    src: `${baseUrl}/${bestImage.src}`,
+                    height: bestImage.height,
+                    width: bestImage.width,
+                    imgId,
                     caption,
                 };
             });
-        this.props.fullSizeImageAdd(images.toList());
-        // console.log(imageBlocks, 'the image blocks');
+        this.props.fullSizeImageAdd({
+            startId: startingImgId,
+            images: images.toList()
+        });
     }
     startComment = () => {
         const { startComment } = this.props;
