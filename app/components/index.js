@@ -5,7 +5,7 @@ export AddImage from './comment/add-image';
 export AddToBoard from './popovers/add-to-board';
 export AddToBoardPopover from './popovers/add-to-board-popover';
 export AethWallet from './wallets/aeth-wallet';
-export AppSettings from './app-settings';
+export AppPreferences from './profile-overview/app-preferences';
 export Auth from './setup/auth';
 export AuthProfileList from './setup/auth-profile-list';
 export Avatar from './avatar/avatar';

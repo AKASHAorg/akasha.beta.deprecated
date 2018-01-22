@@ -14,7 +14,7 @@ const getVersionsPopoverContent = (latestVersion, intl, entry, onEntryVersionNav
       <div
         key={`${index}`}
         className="popover-menu__item"
-        onClick={() => onEntryVersionNavigation(`/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}/${index}`)}
+        onClick={() => onEntryVersionNavigation(`/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}/${index}`)}
       >
         {intl.formatMessage(entryMessages.versionNumber, {
             index: index + 1
