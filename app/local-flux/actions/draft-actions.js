@@ -4,7 +4,7 @@ import * as types from '../constants';
 /**
  * Create a new draft in reducer only
  * Do not persist it in db because a user can discard it
- * by navigating away or switching to another draft
+ * by navigating away or switching to another draft without making any changes
  */
 
 export const draftCreate = data => action(types.DRAFT_CREATE, { data });
@@ -51,6 +51,22 @@ export const draftAutosaveError = (error, draftId, draftTitle) => {
     error.values = { draftTitle };
     return action(types.DRAFT_AUTOSAVE_ERROR, { error, draftId });
 };
+
+
+/**
+ * Add a tag to a draft after checking it if exists.
+ * @param data.draftId => draftId
+ * @param data.tag => tag name
+ */
+export const draftAddTag = data => action(types.DRAFT_ADD_TAG, { data });
+export const draftAddTagSuccess = data => action(types.DRAFT_ADD_TAG_SUCCESS, { data });
+export const draftAddTagError = data => action(types.DRAFT_ADD_TAG_ERROR, { data });
+
+/** action to remove a tag from a draft */
+export const draftRemoveTag = data => action(types.DRAFT_REMOVE_TAG, { data });
+export const draftRemoveTagSuccess = data => action(types.DRAFT_REMOVE_TAG_SUCCESS, { data });
+export const draftRemoveTagError = data => action(types.DRAFT_REMOVE_TAG_ERROR, { data });
+
 
 /**
  * Delete draft in db and reducer. We must check if the draft is in database

@@ -9,7 +9,7 @@ import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
     DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
-import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
+import { draftAddTag, draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
@@ -122,18 +122,27 @@ class NewEntryPage extends Component {
         }));
     }
 
-    _handleTagUpdate = (tagList) => {
-        const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
-            ethAddress: loggedProfile.get('ethAddress'),
-            tags: draftObj.get('tags').clear().concat(tagList),
-        }));
-        this.setState(prevState => ({
-            errors: {
-                ...prevState.errors,
-                tags: null,
-            }
-        }));
+    // _handleTagUpdate = (tagList) => {
+    //     const { draftObj, loggedProfile } = this.props;
+    //     this.props.draftUpdate(draftObj.merge({
+    //         ethAddress: loggedProfile.get('ethAddress'),
+    //         tags: draftObj.get('tags').clear().concat(tagList),
+    //     }));
+    //     this.setState(prevState => ({
+    //         errors: {
+    //             ...prevState.errors,
+    //             tags: null,
+    //         }
+    //     }));
+    // }
+
+    _handleTagAdd = (tagName) => {
+        const { draftObj } = this.props;
+        this.props.draftAddTag({ tagName, draftId: draftObj.get('id') });
+    }
+
+    _handleTagRemove = (tagName) => {
+        console.log('remove tag', tagName);
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
@@ -450,7 +459,8 @@ class NewEntryPage extends Component {
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
                     ethAddress={loggedProfile.get('ethAddress')}
-                    onTagUpdate={this._handleTagUpdate}
+                    onTagAdd={this._handleTagAdd}
+                    onTagRemove={this._handleTagRemove}
                     onChange={this._handleTagInputChange}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
@@ -552,6 +562,7 @@ NewEntryPage.propTypes = {
     baseUrl: PropTypes.string,
     canCreateTags: PropTypes.bool,
     draftObj: PropTypes.shape(),
+    draftAddTag: PropTypes.func,
     drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
@@ -599,6 +610,7 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
+        draftAddTag,
         draftCreate,
         draftsGet,
         draftUpdate,
