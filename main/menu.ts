@@ -111,13 +111,13 @@ export async function initMenu(mainWindow: any) {
                 {
                     label: 'Learn More',
                     click() {
-                        shell.openExternal('https://github.com/AkashaProject/Alpha/wiki/FAQ');
+                        shell.openExternal('http://akasha.helpscoutdocs.com/');
                     }
                 },
                 {
                     label: 'Report Issue',
                     click() {
-                        shell.openExternal('https://github.com/AkashaProject/Alpha/issues/new');
+                        shell.openExternal('https://github.com/AkashaProject/dapp/issues/new');
                     }
                 },
                 {
