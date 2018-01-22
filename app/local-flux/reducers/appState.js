@@ -9,9 +9,6 @@ const appState = createReducer(initialState, {
     [types.APP_READY]: state =>
         state.set('appReady', true),
 
-    [types.APP_SETTINGS_TOGGLE]: state =>
-        state.set('showAppSettings', !state.get('showAppSettings')),
-
     [types.BOOTSTRAP_HOME_SUCCESS]: state =>
         state.set('homeReady', true),
 
