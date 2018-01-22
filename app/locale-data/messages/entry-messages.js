@@ -484,5 +484,15 @@ const entryMessages = defineMessages({
         description: 'button label to revert changes',
         defaultMessage: 'Revert changes'
     },
+    linkDisabled: {
+        id: 'app.entry.linkDisabled',
+        description: 'tooltip for link button in comment editor',
+        defaultMessage: 'You must select some text first'
+    },
+    linkPlaceholder: {
+        id: 'app.entry.linkPlaceholder',
+        description: 'placeholder for the link input in editors',
+        defaultMessage: 'Type the link and press enter'
+    }
 });
 export { entryMessages };

@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Tabs } from 'antd';
 import { CyclingAeth, HistoryTable, Icon, PieChart, TransferForm, TransformForm } from '../';
 import * as actionTypes from '../../constants/action-types';
-import { toggleAethWallet } from '../../local-flux/actions/app-actions';
+import { showNotification, toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { profileAethTransfersIterator, profileCyclingStates } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
@@ -253,6 +253,7 @@ class AethWallet extends Component {
                   onSubmit={this.onTransfer}
                   pendingTransfer={pendingTransfer}
                   searchProfiles={this.props.searchProfiles}
+                  showNotification={this.props.showNotification}
                   type="aeth"
                 />
               </TabPane>
@@ -303,6 +304,7 @@ AethWallet.propTypes = {
     searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
+    showNotification: PropTypes.func.isRequired,
     toggleAethWallet: PropTypes.func.isRequired,
 };
 
@@ -331,6 +333,7 @@ export default connect(
         profileCyclingStates,
         searchProfiles,
         searchResetResults,
+        showNotification,
         toggleAethWallet
     }
 )(injectIntl(clickAway(AethWallet)));

@@ -57,6 +57,7 @@ export InputNumber from './common/input-number.js';
 export IpfsDetailsModal from './modals/ipfs-details-modal';
 export KarmaPopover from './popovers/karma-popover';
 export LatestColumn from './columns/latest-column';
+export LinkPopover from './popovers/link-popover';
 export Lists from './profile-overview/lists';
 export ListEntries from './profile-overview/list-entries';
 export ListCard from './cards/list-card';
