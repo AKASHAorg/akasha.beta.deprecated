@@ -75,7 +75,7 @@ class EntryPageAction extends Component {
 
     renderShareIcon = () => {
         const { entry } = this.props;
-        const url = addPrefix(`/${entry.author.ethAddress}/${entry.entryId}`);
+        const url = addPrefix(`/${entry.author.ethAddress || '0x0'}/${entry.entryId}`);
 
         return (
           <ShareLinkModal url={url} />
@@ -168,7 +168,7 @@ class EntryPageAction extends Component {
                   <Link
                     className="flex-center-y unstyled-link"
                     to={{
-                        pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                        pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
                         state: { overlay: true }
                     }}
                   >
@@ -330,7 +330,7 @@ class EntryPageAction extends Component {
                     <Link
                       className="unstyled-link"
                       to={{
-                          pathname: `/${entry.getIn(['author', 'ethAddress'])}/${entry.get('entryId')}`,
+                          pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
                           state: { overlay: true }
                       }}
                     >
