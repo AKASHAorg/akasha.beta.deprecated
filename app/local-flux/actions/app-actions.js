@@ -3,8 +3,6 @@ import { action } from './helpers';
 
 export const appReady = () => action(types.APP_READY);
 
-export const appSettingsToggle = () => action(types.APP_SETTINGS_TOGGLE);
-
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 
