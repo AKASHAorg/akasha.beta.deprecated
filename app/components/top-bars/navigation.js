@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
+import classNames from 'classnames';
 import { generalMessages } from '../../locale-data/messages';
 import { navCounterDecrement, navCounterIncrement,
     toggleNavigationModal } from '../../local-flux/actions/app-actions';
@@ -33,10 +34,15 @@ class Navigation extends Component {
         const { intl, navigationBackCounter, navigationForwardCounter } = this.props;
         const disableBack = navigationBackCounter < 1;
         const disableForward = navigationForwardCounter < 1;
-        const backBtnClassName =
-            `content-link navigation__icon ${disableBack && 'navigation__icon_disabled'}`;
-        const forwardBtnClassName =
-            `content-link navigation__icon ${disableForward && 'navigation__icon_disabled'}`;
+        const backBtnClassName = classNames('navigation__icon', {
+            navigation__icon_disabled: disableBack,
+            'content-link': !disableBack
+        });
+        const forwardBtnClassName = classNames('navigation__icon', {
+            navigation__icon_disabled: disableForward,
+            'content-link': !disableForward
+        });
+
         return (
           <div className="flex-center-y navigation">
             <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.back)}>

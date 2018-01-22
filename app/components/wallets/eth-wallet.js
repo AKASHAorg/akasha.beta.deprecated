@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Tabs } from 'antd';
 import { HistoryTable, Icon, TransferForm } from '../';
 import { sendTip, transferEth } from '../../constants/action-types';
-import { toggleEthWallet } from '../../local-flux/actions/app-actions';
+import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
@@ -93,6 +93,7 @@ class EthWallet extends Component {
                   onSubmit={this.onSubmit}
                   pendingTransfer={pendingTransfer}
                   searchProfiles={this.props.searchProfiles}
+                  showNotification={this.props.showNotification}
                   type="eth"
                 />
               </TabPane>
@@ -117,6 +118,7 @@ EthWallet.propTypes = {
     searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
+    showNotification: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
 };
 
@@ -138,6 +140,7 @@ export default connect(
         actionGetHistory,
         searchProfiles,
         searchResetResults,
+        showNotification,
         toggleEthWallet,
     }
 )(injectIntl(clickAway(EthWallet)));
