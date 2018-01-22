@@ -58,6 +58,14 @@ const draftState = createReducer(initialState, {
                     updated_at: data.updated_at
                 })).set('draftsCount', state.get('drafts').size)
         ),
+    [types.DRAFT_ADD_TAG_SUCCESS]: (state, { data }) =>
+        state.mergeIn(['drafts', data.draftId, 'tags'], {
+            name: data.tag,
+            exists: data.exists
+        }),
+
+    // [types.DRAFT_REMOVE_TAG]: (state, { data }) =>
+    //     state.mergeIn(['drafts', data.draftId, 'tags'], ),
 
     [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { data }) =>
         state.setIn(['drafts', data.draft.id], data.draft),

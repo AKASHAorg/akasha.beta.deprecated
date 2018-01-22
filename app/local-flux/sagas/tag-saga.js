@@ -1,10 +1,11 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest, actionChannel } from 'redux-saga/effects';
+import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import { selectToken } from '../selectors';
 import * as actions from '../actions/tag-actions';
 import * as actionActions from '../actions/action-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
+import * as draftActions from '../actions/draft-actions';
 
 const Channel = global.Channel;
 const TAG_SEARCH_LIMIT = 10;
@@ -26,9 +27,9 @@ function* tagCanCreateCheck ({ data }) {
     yield call([channel, channel.send], { ethAddress });
 }
 
-function* tagExists ({ tagName }) {
+function* tagExists ({ data }) {
     const channel = Channel.server.tags.exists;
-    yield apply(channel, channel.send, [{ tagName }]);
+    yield apply(channel, channel.send, [data]);
 }
 
 function* tagGetEntriesCount ({ tags }) {
@@ -76,7 +77,12 @@ function* watchTagExistsChannel () {
         if (resp.error) {
             yield put(actions.tagExistsError(resp.error, resp.request));
         } else {
-            yield put(actions.tagExistsSuccess(resp.data));
+            if (resp.request.addToDraft) {
+                yield put(draftActions.draftAddTagSuccess({ ...resp.data, draftId: resp.request.draftId }));
+            }
+            if (!resp.request.addToDraft) {
+                yield put(actions.tagExistsSuccess(resp.data));
+            }
         }
     }
 }

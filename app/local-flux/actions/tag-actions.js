@@ -9,7 +9,7 @@ export const tagCanCreate = data => action(types.TAG_CAN_CREATE, { data });
 export const tagCanCreateSuccess = data => action(types.TAG_CAN_CREATE_SUCCESS, { data });
 export const tagCanCreateError = data => action(types.TAG_CAN_CREATE_ERROR, { data });
 
-export const tagExists = tagName => action(types.TAG_EXISTS, { tagName });
+export const tagExists = data => action(types.TAG_EXISTS, { data });
 export const tagExistsError = (error, request) => {
     error.code = 'TEE01';
     error.messageId = 'tagExists';

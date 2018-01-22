@@ -16,6 +16,7 @@ import * as appActions from '../actions/app-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
 import * as eProcActions from '../actions/external-process-actions';
+import * as tagActions from '../actions/tag-actions';
 
 const { EditorState, SelectionState } = DraftJS;
 const { Channel } = self;
@@ -47,6 +48,10 @@ function* draftCreate ({ data }) {
         selectionState: newSelectionState,
         ...others
     }));
+}
+
+function* draftAddTag ({ data }) {
+    yield put(tagActions.tagExists({ tagName: data.tagName, addToDraft: true, draftId: data.draftId }));
 }
 
 /**
@@ -329,4 +334,5 @@ export function* watchDraftActions () {
     yield takeLatest(types.DRAFTS_GET, draftsGet);
     yield takeLatest(types.DRAFTS_GET_COUNT, draftsGetCount);
     yield takeEvery(types.DRAFT_DELETE, draftDelete);
+    yield takeLatest(types.DRAFT_ADD_TAG, draftAddTag);
 }
