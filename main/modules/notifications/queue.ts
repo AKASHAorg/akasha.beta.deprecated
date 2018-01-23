@@ -1,3 +1,5 @@
+import { contains } from 'ramda';
+
 class Notifications {
     public queue = [];
     private _timeout;
@@ -8,7 +10,7 @@ class Notifications {
         if (this._timeout) {
             clearTimeout(this._timeout);
         }
-        if (notification && this.queue.indexOf(notification) === -1) {
+        if (notification && !contains(notification, this.queue)) {
             this.queue.push(notification);
         }
         this._timeout = setTimeout(() => {
