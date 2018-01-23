@@ -9,7 +9,7 @@ import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
     DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
-import { draftAddTag, draftCreate, draftsGet, draftUpdate, draftsGetCount,
+import { draftAddTag, draftRemoveTag, draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
@@ -78,7 +78,7 @@ class NewEntryPage extends Component {
                 featuredImage: {},
                 entryType: 'article',
             },
-            tags: [],
+            tags: {},
         });
         history.push(`/draft/article/${draftId}`);
         ev.preventDefault();
@@ -122,27 +122,20 @@ class NewEntryPage extends Component {
         }));
     }
 
-    // _handleTagUpdate = (tagList) => {
-    //     const { draftObj, loggedProfile } = this.props;
-    //     this.props.draftUpdate(draftObj.merge({
-    //         ethAddress: loggedProfile.get('ethAddress'),
-    //         tags: draftObj.get('tags').clear().concat(tagList),
-    //     }));
-    //     this.setState(prevState => ({
-    //         errors: {
-    //             ...prevState.errors,
-    //             tags: null,
-    //         }
-    //     }));
-    // }
-
     _handleTagAdd = (tagName) => {
         const { draftObj } = this.props;
-        this.props.draftAddTag({ tagName, draftId: draftObj.get('id') });
+        this.props.draftAddTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
     }
 
     _handleTagRemove = (tagName) => {
-        console.log('remove tag', tagName);
+        const { draftObj } = this.props;
+        this.props.draftRemoveTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
@@ -563,6 +556,7 @@ NewEntryPage.propTypes = {
     canCreateTags: PropTypes.bool,
     draftObj: PropTypes.shape(),
     draftAddTag: PropTypes.func,
+    draftRemoveTag: PropTypes.func,
     drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
@@ -611,6 +605,7 @@ export default connect(
     {
         actionAdd,
         draftAddTag,
+        draftRemoveTag,
         draftCreate,
         draftsGet,
         draftUpdate,

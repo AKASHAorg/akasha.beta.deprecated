@@ -31,12 +31,14 @@ const draftState = createReducer(initialState, {
         }),
 
     [types.DRAFTS_GET_SUCCESS]: (state, { data }) =>
-        state.withMutations(stateMap =>
-            stateMap.merge({ drafts: stateMap.get('drafts').merge(data.drafts) })
-                .set('draftsFetched', true)
+        state.withMutations((stateMap) => {
+            data.drafts.forEach(draft =>
+                stateMap.setIn(['drafts', draft.id], DraftModel.createDraft(draft))
+            );
+            stateMap.set('draftsFetched', true)
                 .set('draftsCount', data.drafts.size)
-                .set('fetchingDrafts', false),
-        ),
+                .set('fetchingDrafts', false);
+        }),
 
     [types.DRAFTS_GET]: state =>
         state.set('fetchingDrafts', true),
@@ -58,14 +60,22 @@ const draftState = createReducer(initialState, {
                     updated_at: data.updated_at
                 })).set('draftsCount', state.get('drafts').size)
         ),
+    [types.DRAFT_ADD_TAG]: (state, { data }) =>
+        state.setIn(['drafts', data.draftId, 'tags', data.tagName], { checking: true }),
+
     [types.DRAFT_ADD_TAG_SUCCESS]: (state, { data }) =>
-        state.mergeIn(['drafts', data.draftId, 'tags'], {
-            name: data.tag,
+        state.mergeIn(['drafts', data.draftId, 'tags', data.tagName], {
+            checking: false,
             exists: data.exists
         }),
 
-    // [types.DRAFT_REMOVE_TAG]: (state, { data }) =>
-    //     state.mergeIn(['drafts', data.draftId, 'tags'], ),
+    // state.mergeIn(['drafts', data.draftId, 'tags'], {
+    //     name: data.tag,
+    //     exists: data.exists
+    // }),
+
+    [types.DRAFT_REMOVE_TAG]: (state, { data }) =>
+        state.deleteIn(['drafts', data.draftId, 'tags', data.tagName]),
 
     [types.DRAFT_GET_BY_ID_SUCCESS]: (state, { data }) =>
         state.setIn(['drafts', data.draft.id], data.draft),
@@ -122,6 +132,7 @@ const draftState = createReducer(initialState, {
                             ...entry.content,
                             entryType: entryTypes[entry.entryType],
                         },
+                        tags: DraftModel.addExistingTags(entry.tags),
                         onChain: true
                     }));
                 } else {
@@ -167,7 +178,7 @@ const draftState = createReducer(initialState, {
                     },
                     saved: false,
                     localChanges: false,
-                    tags,
+                    tags: DraftModel.addExistingTags(tags),
                     id: entryId,
                     created_at: new Date(publishDate * 1000)
                 }));
