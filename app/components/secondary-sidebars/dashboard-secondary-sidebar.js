@@ -169,7 +169,7 @@ DashboardSecondarySidebar.propTypes = {
     dashboardAdd: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
     dashboardDeleteNew: PropTypes.func.isRequired,
-    activeDashboardId: PropTypes.string.isRequired,
+    activeDashboardId: PropTypes.string,
     dashboardReorder: PropTypes.func.isRequired,
     dashboardRename: PropTypes.func.isRequired,
     dashboards: PropTypes.shape().isRequired,

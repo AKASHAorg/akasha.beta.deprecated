@@ -312,6 +312,12 @@ export const profileResolveIpfsHashError = (error, request) => {
 export const profileResolveIpfsHashSuccess = (data, request) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, request });
 
+export const profileSaveLastBlockNr = () => action(types.PROFILE_SAVE_LAST_BLOCK_NR);
+export const profileSaveLastBlockNrError = (error) => {
+    error.code = 'PSLBNE01';
+    return action(types.PROFILE_SAVE_LAST_BLOCK_NR_ERROR, { error });
+};
+
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';
     error.fatal = true;

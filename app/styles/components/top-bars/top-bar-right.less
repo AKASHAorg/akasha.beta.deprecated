@@ -25,7 +25,11 @@
     &__notifications-icon {
         height: 20px;
         width: 20px;
-        stroke: @text-color-secondary !important;
+        stroke: @text-color !important;
+
+        &_selected {
+            stroke: @heading-color !important;
+        }
     }
 
     &__activity-icon {
@@ -49,6 +53,19 @@
         height: 6px;
         border-radius: 50%;
         background-color: @primary-color;
+        cursor: pointer;
+    }
+
+    &__notifications-indicator {
+        position: absolute;
+        top: 8px;
+        right: 0;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background-color: @error-color;
+        color: @text-color-dark;
+        font-size: 9px;
         cursor: pointer;
     }
 

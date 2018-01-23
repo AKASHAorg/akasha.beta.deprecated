@@ -2,6 +2,7 @@ import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
+import * as notificationsActions from '../actions/notifications-actions';
 import * as profileActions from '../actions/profile-actions';
 import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
@@ -14,6 +15,7 @@ import * as externalProcSaga from './external-process-saga';
 import * as highlightSaga from './highlight-saga';
 import * as licenseSaga from './license-saga';
 import * as listSaga from './list-saga';
+import * as notificationsSaga from './notifications-saga';
 import * as profileSaga from './profile-saga';
 import * as searchSaga from './search-saga';
 import * as settingsSaga from './settings-saga';
@@ -28,6 +30,7 @@ function* registerListeners () {
     yield fork(licenseSaga.registerLicenseListeners);
     yield fork(entrySaga.registerEntryListeners);
     yield fork(externalProcSaga.registerEProcListeners);
+    yield fork(notificationsSaga.registerNotificationsListeners);
     yield fork(profileSaga.registerProfileListeners);
     yield fork(searchSaga.registerSearchListeners);
     yield fork(tagSaga.registerTagListeners);
@@ -50,13 +53,18 @@ function* launchActions () {
     yield fork(externalProcSaga.ipfsGetStatus);
 }
 
+function* getUserSettings () {
+    yield call(settingsSaga.userSettingsRequest);
+    yield put(notificationsActions.notificationsSubscribe());
+}
+
 function* launchHomeActions () {
     yield call(profileSaga.profileGetLogged);
     yield fork(dashboardSaga.dashboardGetActive);
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(highlightSaga.highlightGetAll);
     yield fork(listSaga.listGetAll);
-    yield fork(settingsSaga.userSettingsRequest);
+    yield fork(getUserSettings);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     if (loggedEthAddress) {
         yield put(actionActions.actionGetPending());
@@ -85,7 +93,7 @@ function* watchBootstrapHome () {
     yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
 }
 
-export default function* rootSaga () {
+export default function* rootSaga () { // eslint-disable-line max-statements
     createActionChannels();
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
@@ -97,6 +105,7 @@ export default function* rootSaga () {
     yield fork(highlightSaga.watchHighlightActions);
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(listSaga.watchListActions);
+    yield fork(notificationsSaga.watchNotificationsActions);
     yield fork(profileSaga.watchProfileActions);
     yield fork(searchSaga.watchSearchActions);
     yield fork(settingsSaga.watchSettingsActions);

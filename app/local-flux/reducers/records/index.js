@@ -12,10 +12,11 @@ export { IpfsRecord, IpfsStatus } from './ipfs-record';
 export { License, LicenseDescription, LicenseState } from './license-record';
 export { ListRecord, ListState } from './list-record';
 export { LogRecord } from './log-record';
+export { NotificationsState } from './notifications-record';
 export { AethBalance, Balance, EssenceBalance, LoggedProfile, ManaBalance, ProfileExistsRecord, ProfileRecord,
     ProfileState } from './profile-record';
-export { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, PasswordPreference,
-    PortsRecord, SettingsRecord, UserSettings } from './settings-record';
+export { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, NotificationsPreference,
+    PasswordPreference, PortsRecord, SettingsRecord, UserSettings } from './settings-record';
 export { TagRecord } from './tag-record';
 export { TempProfileRecord } from './temp-profile-record';
 export { UtilsState } from './utils-record';

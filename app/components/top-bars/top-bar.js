@@ -6,10 +6,11 @@ import { Route, Switch } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
-import { showTransactionsLog, toggleAethWallet, toggleEthWallet } from '../../local-flux/actions/app-actions';
+import { showNotificationsPanel, showTransactionsLog, toggleAethWallet,
+    toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
-    selectLoggedProfileData, selectPublishingActions, selectShowWallet,
-    selectTransactionsLog } from '../../local-flux/selectors';
+    selectLoggedProfileData, selectNotificationsPanel, selectPublishingActions, selectShowWallet,
+    selectTransactionsLog, selectUnreadNotifications } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -25,8 +26,8 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, fullEntry, hasPendingActions, showSecondarySidebar, showWallet,
-            transactionsLogOpen } = this.props;
+        const { balance, fullEntry, hasPendingActions, notificationsLoaded, notificationsPanelOpen,
+            showSecondarySidebar, showWallet, transactionsLogOpen, unreadNotifications } = this.props;
         const className = classNames('flex-center-y top-bar', {
             'top-bar_full': !showSecondarySidebar || fullEntry,
             'top-bar_default': !fullEntry
@@ -46,11 +47,15 @@ class TopBar extends PureComponent {
             <TopBarRight
               balance={balance}
               hasPendingActions={hasPendingActions}
+              notificationsLoaded={notificationsLoaded}
+              notificationsPanelOpen={notificationsPanelOpen}
+              showNotificationsPanel={this.props.showNotificationsPanel}
               showTransactionsLog={this.props.showTransactionsLog}
               showWallet={showWallet}
               toggleAethWallet={this.props.toggleAethWallet}
               toggleEthWallet={this.props.toggleEthWallet}
               transactionsLogOpen={transactionsLogOpen}
+              unreadNotifications={unreadNotifications}
             />
           </div>
         );
@@ -64,12 +69,16 @@ TopBar.propTypes = {
     history: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    notificationsLoaded: PropTypes.bool,
+    notificationsPanelOpen: PropTypes.bool,
+    showNotificationsPanel: PropTypes.func.isRequired,
     showSecondarySidebar: PropTypes.bool,
     showTransactionsLog: PropTypes.func.isRequired,
     showWallet: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     transactionsLogOpen: PropTypes.bool,
+    unreadNotifications: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -78,13 +87,17 @@ const mapStateToProps = state => ({
     hasPendingActions: !!selectPublishingActions(state).size,
     loggedProfile: selectLoggedProfile(state),
     loggedProfileData: selectLoggedProfileData(state),
+    notificationsLoaded: state.notificationsState.get('notificationsLoaded'),
+    notificationsPanelOpen: selectNotificationsPanel(state),
     showWallet: selectShowWallet(state),
-    transactionsLogOpen: selectTransactionsLog(state)
+    transactionsLogOpen: selectTransactionsLog(state),
+    unreadNotifications: selectUnreadNotifications(state)
 });
 
 export default connect(
     mapStateToProps,
     {
+        showNotificationsPanel,
         showTransactionsLog,
         toggleAethWallet,
         toggleEthWallet,

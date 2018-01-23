@@ -69,35 +69,35 @@ class DashboardTopBar extends Component {
         };
 
         return (
-            <div className="flex-center-y dashboard-top-bar">
-                <Navigation/>
-                {columns.map((column, i) => (
-                    <TopBarIcon
-                        key={column.get('id')}
-                        id={column.get('id')}
-                        index={i}
-                        title={() => getTooltip(column)}
-                        iconType={iconsTypes[column.get('type')]}
-                        scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
-                        dashboardReorderColumn={
-                            (source, target) =>
-                                this.props.dashboardReorderColumn(this.props.activeDashboardId, source, target)
-                        }
-                    />
-                ))}
-                <Tooltip title={addColumnTooltip}>
-                    <div onClick={activeDashboard ? this.props.dashboardAddNewColumn : undefined}>
-                        <PlusSquareIcon disabled={!activeDashboard}/>
-                    </div>
-                </Tooltip>
-            </div>
+          <div className="flex-center-y dashboard-top-bar">
+            <Navigation />
+            {columns.map((column, i) => (
+              <TopBarIcon
+                key={column.get('id')}
+                id={column.get('id')}
+                index={i}
+                title={() => getTooltip(column)}
+                iconType={iconsTypes[column.get('type')]}
+                scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
+                dashboardReorderColumn={
+                    (source, target) =>
+                        this.props.dashboardReorderColumn(this.props.activeDashboardId, source, target)
+                }
+              />
+            ))}
+            <Tooltip title={addColumnTooltip}>
+              <div onClick={activeDashboard ? this.props.dashboardAddNewColumn : undefined}>
+                <PlusSquareIcon disabled={!activeDashboard} />
+              </div>
+            </Tooltip>
+          </div>
         );
-    };
+    }
 }
 
 DashboardTopBar.propTypes = {
     activeDashboard: PropTypes.shape(),
-    activeDashboardId: PropTypes.string.isRequired,
+    activeDashboardId: PropTypes.string,
     columns: PropTypes.shape().isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
     dashboardReorderColumn: PropTypes.func.isRequired,

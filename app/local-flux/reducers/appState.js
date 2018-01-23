@@ -28,6 +28,8 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_TERMS]: state => state.set('showTerms', false),
 
+    [types.HIDE_NOTIFICATIONS_PANEL]: state => state.set('showNotificationsPanel', false),
+
     [types.HIDE_TRANSACTIONS_LOG]: state => state.set('showTransactionsLog', false),
 
     [types.NAV_COUNTER_INCREMENT]: (state, { navType }) => {
@@ -90,6 +92,8 @@ const appState = createReducer(initialState, {
         state.set('showPreview', new PreviewRecord({ columnType, value })),
 
     [types.SHOW_TERMS]: state => state.set('showTerms', true),
+
+    [types.SHOW_NOTIFICATIONS_PANEL]: state => state.set('showNotificationsPanel', true),
 
     [types.SHOW_TRANSACTIONS_LOG]: state => state.set('showTransactionsLog', true),
 
