@@ -8,7 +8,7 @@ import { Avatar, DisplayName, FollowButton, Icon, ShareLinkModal, TipPopover } f
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { profileEditToggle } from '../../local-flux/actions/app-actions';
+import { profileEditToggle, toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { selectBaseUrl, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
     selectProfile } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
@@ -206,6 +206,10 @@ class ProfileDetails extends Component {
                     key={link.id}
                     className="profile-details__link"
                     href={link.url}
+                    onClick={(ev) => {
+                        ev.preventDefault();
+                        this.props.toggleOutsideNavigation(link.url);
+                    }}
                   >
                     <div className="overflow-ellipsis" style={{ width: '100%' }}>
                       {link.url}
@@ -229,6 +233,7 @@ ProfileDetails.propTypes = {
     profileData: PropTypes.shape(),
     profileEditToggle: PropTypes.func.isRequired,
     tipPending: PropTypes.bool,
+    toggleOutsideNavigation: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -248,5 +253,6 @@ export default connect(
     {
         actionAdd,
         profileEditToggle,
+        toggleOutsideNavigation
     }
 )(injectIntl(ProfileDetails));
