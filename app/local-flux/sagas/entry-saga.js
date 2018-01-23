@@ -308,6 +308,16 @@ function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT,
     );
 }
 
+function* entryResolveIpfsHash ({ entryId, ipfsHash }) {
+    const channel = Channel.server.entry.resolveEntriesIpfsHash;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(
+        channel,
+        channel.send,
+        [{ ipfsHash: [ipfsHash], entryId, full: true }]
+    );
+}
+
 function* entryStreamIterator ({ columnId, reversed }) {
     const channel = Channel.server.entry.followingStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
@@ -642,6 +652,17 @@ function* handleEntryProfileIteratorResponse (resp) {
     }
 }
 
+function* watchEntryResolveIpfsHashChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
+        if (resp.error) {
+            yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+        } else {
+            yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
+        }
+    }
+}
+
 function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
@@ -743,6 +764,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);
+    yield fork(watchEntryResolveIpfsHashChannel);
     yield fork(watchEntryStreamIteratorChannel);
     yield fork(watchEntryTagIteratorChannel);
     yield fork(watchEntryUpvoteChannel);
@@ -772,6 +794,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
     yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
     yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
+    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
     yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
     yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
     yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);

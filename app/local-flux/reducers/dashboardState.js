@@ -128,23 +128,6 @@ const dashboardState = createReducer(initialState, {
             columnById,
         });
     },
-    [types.DASHBOARD_REORDER_COLUMN]: (state, { data }) => {
-        const columns = state.getIn(['byId', data.dashboardId, 'columns']);
-        const first = columns.splice(data.sourceIndex, 1);
-        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
-        return state.merge({
-            byId: state.get('byId').setIn([data.dashboardId, 'columns'], second)
-        });
-    },
-
-    [types.DASHBOARD_REORDER]: (state, { data }) => {
-        const columns = state.get(['allDashboards']);
-        const first = columns.splice(data.sourceIndex, 1);
-        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
-        return state.merge({
-            allDashboards: second
-        });
-    },
 
     [types.DASHBOARD_CREATE_NEW]: state => state.set('newDashboard', true),
 
@@ -197,6 +180,31 @@ const dashboardState = createReducer(initialState, {
             byId: state.get('byId').setIn([data.dashboardId, 'name'], data.newName),
             flags: state.get('flags').set('renamingDashboard', false)
         }),
+
+    [types.DASHBOARD_REORDER_COLUMN]: (state, { data }) => {
+        const columns = state.getIn(['byId', data.dashboardId, 'columns']);
+        const first = columns.splice(data.sourceIndex, 1);
+        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
+        return state.merge({
+            byId: state.get('byId').setIn([data.dashboardId, 'columns'], second)
+        });
+    },
+
+    [types.DASHBOARD_REORDER]: (state, { data }) => {
+        const columns = state.get(['allDashboards']);
+        const first = columns.splice(data.sourceIndex, 1);
+        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
+        return state.merge({
+            allDashboards: second
+        });
+    },
+
+    [types.DASHBOARD_RESET_COLUMN_ENTRIES]: (state, { columnId }) => {
+        if (state.getIn(['columnById', columnId])) {
+            return state.setIn(['columnById', columnId, 'entriesList'], new List());
+        }
+        return state;
+    },
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
         state.setIn(['columnById', 'newColumn'], new ColumnRecord()),
