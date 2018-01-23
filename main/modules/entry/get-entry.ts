@@ -48,8 +48,9 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
     }
 
     const [fn, digestSize, hash] = yield contracts.instance.Entries.getEntry(ethAddress, data.entryId);
+    let ipfsHash;
     if (!!unpad(hash)) {
-        const ipfsHash = encodeHash(fn, digestSize, hash);
+        ipfsHash = encodeHash(fn, digestSize, hash);
         entry = (data.full || data.version) ?
             yield getFullContent(ipfsHash, data.version).timeout(SHORT_WAIT_TIME).catch(() => null) :
             yield getShortContent(ipfsHash).timeout(SHORT_WAIT_TIME);
@@ -82,7 +83,8 @@ const execute = Promise.coroutine(function* (data: EntryGetRequest) {
         totalKarma: (GethConnector.getInstance().web3.fromWei(_totalKarma, 'ether')).toString(10),
         content: entry,
         claimed: _claimed,
-        commentsCount: cCount.collection.length ? cCount.collection[0].count : 0
+        commentsCount: cCount.collection.length ? cCount.collection[0].count : 0,
+        ipfsHash: ipfsHash
     };
 });
 
