@@ -451,7 +451,7 @@ CommentEditor.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     entryId: PropTypes.string.isRequired,
-    entryTitle: PropTypes.string.isRequired,
+    entryTitle: PropTypes.string,
     ethAddress: PropTypes.string.isRequired,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

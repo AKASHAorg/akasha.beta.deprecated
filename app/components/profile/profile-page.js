@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { profileGetData } from '../../local-flux/actions/profile-actions';
+import { profileGetData, profileResetColumns } from '../../local-flux/actions/profile-actions';
 import { selectProfile } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
 
@@ -24,6 +24,11 @@ class ProfilePage extends Component {
         if (ethAddress && ethAddress !== this.props.match.params.ethAddress) {
             this.props.profileGetData({ ethAddress: `0x${ethAddress}`, full: true });
         }
+    }
+
+    componentWillUnmount () {
+        const { ethAddress } = this.props.match.params;
+        this.props.profileResetColumns(`0x${ethAddress}`);
     }
 
     render () {
@@ -56,6 +61,7 @@ class ProfilePage extends Component {
 ProfilePage.propTypes = {
     profileData: PropTypes.shape(),
     profileGetData: PropTypes.func.isRequired,
+    profileResetColumns: PropTypes.func.isRequired,
     match: PropTypes.shape()
 };
 
@@ -71,5 +77,6 @@ export default connect(
     mapStateToProps,
     {
         profileGetData,
+        profileResetColumns,
     }
 )(ProfilePage);

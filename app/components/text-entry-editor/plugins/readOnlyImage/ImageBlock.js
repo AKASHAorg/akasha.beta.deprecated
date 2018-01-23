@@ -67,7 +67,7 @@ class ImageBlock extends Component {
 
     _handleFullSizeSwitch = () => {
         this.props.onImageClick();
-    }
+    };
 
     _handlePlaceholderLoad = (ev) => {
         const image = ev.target;
@@ -91,11 +91,30 @@ class ImageBlock extends Component {
         });
     };
 
+    renderImage = () => {
+        const { imageLoaded } = this.state;
+        const image = this._getImageSrc();
+        return (
+          <img
+            src={image.src}
+            alt=""
+            className="image-block__image"
+            onLoad={this._onLargeImageLoad}
+            style={{
+                opacity: imageLoaded ? 1 : 0,
+                display: imageLoaded ? 'block' : 'none',
+                width: image.width,
+                height: image.height,
+                maxWidth: '100%',
+            }}
+          />
+        );
+    };
+
     render () {
         const { data, baseUrl } = this.props;
         const { caption, files, media } = data;
         const { isPlaying, imageLoaded } = this.state;
-        const image = this._getImageSrc();
         const gifClass = classNames('image-block__gif-play-icon', {
             'image-block__gif-play-icon_is-playing': isPlaying
         });
@@ -132,18 +151,8 @@ class ImageBlock extends Component {
                   alt=""
                 />
               </div>
-              <img
-                src={image.src}
-                alt=""
-                className="image-block__image"
-                onLoad={this._onLargeImageLoad}
-                style={{
-                  opacity: imageLoaded ? 1 : 0,
-                  display: imageLoaded ? 'block' : 'none',
-                  width: image.width,
-                  maxWidth: '100%',
-                }}
-              />
+              {!isPlaying && this.renderImage()}
+              {isPlaying && this.renderImage()}
             </div>
             <div className="image-block__image-caption" >
               <small>{caption}</small>
