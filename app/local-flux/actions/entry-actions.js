@@ -197,8 +197,8 @@ export const entryProfileIteratorError = (error, request) => {
 export const entryProfileIteratorSuccess = (data, request) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-export const entryResolveIpfsHash = ({ ipfsHash, columnId, entryIds, asDrafts, full }) =>
-    action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds, asDrafts, full });
+export const entryResolveIpfsHash = ({ entryId, ipfsHash }) =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH, { entryId, ipfsHash });
 export const entryResolveIpfsHashError = (error, request) => {
     error.code = 'ERIHE01';
     error.messageId = 'entryResolveIpfsHash';

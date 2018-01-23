@@ -10,7 +10,7 @@ import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
 
-const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
+const CHECK_NEW_COMMENTS_INTERVAL = 15000; // in ms
 
 class EntryPage extends Component {
     state = {
@@ -23,7 +23,7 @@ class EntryPage extends Component {
         const { version } = parse(location.search);
         this.checkNewCommentsInterval = setInterval(
             this.checkNewComments,
-            CHECK_NEW_COMMENTS_INTERVAL * 1000
+            CHECK_NEW_COMMENTS_INTERVAL
         );
         if (!entry || entry.get('entryId') !== params.entryId ||
                 (version !== undefined && entry.getIn(['content', 'version']) !== version)) {
@@ -129,15 +129,17 @@ class EntryPage extends Component {
     throttledHandler = throttle(this.handleContentScroll, 300);
 
     onRetry = () => {
+        const { entry, entryResolveIpfsHash } = this.props;
         const { entryId } = this.props.match.params;
-        this.getFullEntry();
-        this.fetchComments(entryId);
+        // this.getFullEntry();
+        // this.fetchComments(entryId);
+        entryResolveIpfsHash({ entryId, ipfsHash: entry.get('ipfsHash') });
     };
 
     render () {
-        const { actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, highlightSave, intl,
-            latestVersion, licenses, loggedProfileData, newComments, toggleOutsideNavigation,
-            fullSizeImageAdd } = this.props;
+        const { actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, fullSizeImageAdd,
+            highlightSave, intl, latestVersion, licenses, loggedProfileData, newComments, resolvingIpfsHash,
+            toggleOutsideNavigation } = this.props;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -169,14 +171,16 @@ class EntryPage extends Component {
                 }
                 {!entry.content &&
                   <div className="entry-page__unresolved-placeholder">
-                    <div className="heading flex-center">
-                      {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
-                    </div>
-                    <div className="flex-center">
-                      <span className="content-link entry-page__retry-button" onClick={this.onRetry}>
-                        {this.props.intl.formatMessage(generalMessages.retry)}
-                      </span>
-                    </div>
+                    <DataLoader flag={resolvingIpfsHash}>
+                      <div className="heading flex-center">
+                        {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
+                      </div>
+                      <div className="flex-center">
+                        <span className="content-link entry-page__retry-button" onClick={this.onRetry}>
+                          {this.props.intl.formatMessage(generalMessages.retry)}
+                        </span>
+                      </div>
+                    </DataLoader>
                   </div>
                 }
                 {entry.content &&
@@ -258,6 +262,7 @@ EntryPage.propTypes = {
     entry: PropTypes.shape(),
     entryCleanFull: PropTypes.func.isRequired,
     entryGetFull: PropTypes.func.isRequired,
+    entryResolveIpfsHash: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
     fullSizeImageAdd: PropTypes.func,
     highlightSave: PropTypes.func.isRequired,
@@ -269,6 +274,7 @@ EntryPage.propTypes = {
     match: PropTypes.shape(),
     newComments: PropTypes.shape(),
     pendingComments: PropTypes.shape(),
+    resolvingIpfsHash: PropTypes.bool,
     toggleOutsideNavigation: PropTypes.func,
 };
 

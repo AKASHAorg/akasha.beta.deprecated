@@ -6,12 +6,26 @@ import classNames from 'classnames';
 import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages } from '../../locale-data/messages';
+import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries, selectListsAll } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages/dashboard-messages';
 
 class ListColumn extends Component {
     firstCallDone = false;
+
+    componentWillReceiveProps ({ column }) {
+        const value = column.get('value');
+        if (value !== this.props.column.get('value')) {
+            this.props.entryListIterator({ columnId: column.get('id'), value });
+        }
+    }
+
+    componentWillUnmount () {
+        const { column } = this.props;
+        this.props.dashboardResetColumnEntries(column.get('id'));
+    }
+
     firstLoad = () => {
         const { column } = this.props;
         const value = column.get('value');
@@ -20,13 +34,6 @@ class ListColumn extends Component {
             this.firstCallDone = true;
         }
     };
-
-    componentWillReceiveProps ({ column }) {
-        const value = column.get('value');
-        if (value !== this.props.column.get('value')) {
-            this.props.entryListIterator({ columnId: column.get('id'), value });
-        }
-    }
 
     entryMoreListIterator = () => {
         const { column } = this.props;
@@ -84,6 +91,7 @@ class ListColumn extends Component {
 
 ListColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardResetColumnEntries: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryListIterator: PropTypes.func.isRequired,
     entryMoreListIterator: PropTypes.func.isRequired,
@@ -102,6 +110,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        dashboardResetColumnEntries,
         entryListIterator,
         entryMoreListIterator,
     }
