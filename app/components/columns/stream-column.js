@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../index';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
+import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
@@ -25,12 +26,14 @@ class StreamColumn extends Component {
     }
 
     componentWillUnmount () {
+        const { column } = this.props;
         if (this.interval) {
             clearInterval(this.interval);
         }
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
+        this.props.dashboardResetColumnEntries(column.get('id'));
     }
 
     firstLoad = () => {
@@ -90,6 +93,7 @@ class StreamColumn extends Component {
 
 StreamColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
     entryMoreStreamIterator: PropTypes.func.isRequired,
     entryStreamIterator: PropTypes.func.isRequired,
@@ -105,6 +109,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        dashboardResetColumnEntries,
         entryMoreStreamIterator,
         entryStreamIterator,
     }
