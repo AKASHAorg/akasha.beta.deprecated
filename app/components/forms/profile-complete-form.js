@@ -45,7 +45,7 @@ class ProfileCompleteForm extends Component {
                 insufficientEthRenderFlag: false
             });
         }
-        if (profileExistsData !== this.props.profileExistsData) {
+        if (profileExistsData.get('data')) {
             const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
             this.setState({
                 akashaIdIsValid: idValid,
@@ -142,6 +142,10 @@ class ProfileCompleteForm extends Component {
         // validation passed
         if (field === 'akashaId') {
             this.props.profileExists(this.props.tempProfile.get('akashaId'));
+            this.setState({
+                akashaIdIsValid: true,
+                akashaIdExists: false
+            });
         }
 
         if (field === 'links') {
