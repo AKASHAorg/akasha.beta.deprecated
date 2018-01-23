@@ -288,8 +288,8 @@ class CommentEditor extends Component {
         const editorWrapperRect = this.editorWrapper.getBoundingClientRect();
         const selectionWidth = selectionRect.right - selectionRect.left;
         const offsetLeft = selectionRect.left - editorWrapperRect.left;
-        const top = selectionRect.bottom - editorWrapperRect.top - 12;
-        const left = (offsetLeft + (selectionWidth / 2)) - 150;
+        const top = selectionRect.top - editorWrapperRect.top;
+        const left = (offsetLeft + (selectionWidth / 2)) - 100;
         return { top, left };
     };
 
