@@ -17,10 +17,10 @@ import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
     DashboardSecondarySidebar, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
-    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, PageContent,
-    PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit,
-    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel,
-    FullSizeImageViewer } from '../components';
+    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
+    NotificationsPanel, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
+    ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
+    ProfileSettings, WalletPanel, FullSizeImageViewer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 
 notification.config({
@@ -198,6 +198,9 @@ class AppContainer extends Component {
                       }
                       {appState.get('showTransactionsLog') &&
                         <TransactionsLogPanel />
+                      }
+                      {appState.get('showNotificationsPanel') &&
+                        <NotificationsPanel />
                       }
                     </div>
                   </DataLoader>

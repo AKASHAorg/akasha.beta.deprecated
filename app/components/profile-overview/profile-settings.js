@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Checkbox, Form, InputNumber, Select, Tooltip, Radio } from 'antd';
+import { Button, Checkbox, Form, InputNumber, Select, Switch, Tooltip, Radio } from 'antd';
 import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { selectActionPending, selectAllLicenses, selectLoggedEthAddress,
     selectLoggedProfileData } from '../../local-flux/selectors';
-import { formMessages, settingsMessages } from '../../locale-data/messages';
+import { formMessages, settingsMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { Icon, RememberPassphraseSelect } from '../';
 
 const FormItem = Form.Item;
@@ -25,6 +25,7 @@ class ProfileSettings extends Component {
             true;
         const hideCommentContent = props.userSettings.get('hideCommentContent');
         const hideEntryContent = props.userSettings.get('hideEntryContent');
+        const notificationsPreference = props.userSettings.get('notificationsPreference');
         this.state = {
             defaultLicenseParent: license.parent || '2',
             defaultLicenseId: license.id || '4',
@@ -34,7 +35,11 @@ class ProfileSettings extends Component {
             hideEntriesValue: hideEntryContent.value,
             rememberTime: pref && pref.remember ? pref.remember : false,
             unlockTime: pref && pref.time ? pref.time : 5,
-            donationsValue: donations
+            donationsValue: donations,
+            notifFeed: notificationsPreference.feed,
+            notifComments: notificationsPreference.comments,
+            notifDonations: notificationsPreference.donations,
+            notifVotes: notificationsPreference.votes
         };
     }
 
@@ -102,12 +107,25 @@ class ProfileSettings extends Component {
     onSaveSettings = () => {
         const { loggedEthAddress, loggedProfileData } = this.props;
         const { defaultLicenseId, defaultLicenseParent, donationsValue, hideComments,
-            hideCommentsValue, hideEntries, hideEntriesValue, unlockTime, rememberTime } = this.state;
+            hideCommentsValue, hideEntries, hideEntriesValue, notifFeed, notifDonations,
+            notifComments, notifVotes, unlockTime, rememberTime } = this.state;
         const passwordPreference = { remember: rememberTime, time: unlockTime };
         const defaultLicense = { id: defaultLicenseId, parent: defaultLicenseParent };
         const hideCommentContent = { checked: hideComments, value: hideCommentsValue };
         const hideEntryContent = { checked: hideEntries, value: hideEntriesValue };
-        const payload = { defaultLicense, hideCommentContent, hideEntryContent, passwordPreference };
+        const notificationsPreference = {
+            feed: notifFeed,
+            donations: notifDonations,
+            comments: notifComments,
+            votes: notifVotes
+        };
+        const payload = {
+            defaultLicense,
+            hideCommentContent,
+            hideEntryContent,
+            passwordPreference,
+            notificationsPreference
+        };
         if (donationsValue !== loggedProfileData.get('donationsEnabled')) {
             this.props.actionAdd(loggedEthAddress, toggleDonations, { status: donationsValue });
         }
@@ -118,7 +136,8 @@ class ProfileSettings extends Component {
         const { intl, licenses, loggedProfileData, pendingToggleDonations, savingUserSettings,
             userSettings } = this.props;
         const { defaultLicenseId, defaultLicenseParent, hideComments, hideCommentsValue, hideEntries,
-            hideEntriesValue, unlockTime, rememberTime } = this.state;
+            hideEntriesValue, notifComments, notifDonations, notifFeed, notifVotes, unlockTime,
+            rememberTime, donationsValue } = this.state;
         const pref = userSettings.passwordPreference;
         const license = userSettings.get('defaultLicense');
         const hideCommentContent = userSettings.get('hideCommentContent');
@@ -127,17 +146,22 @@ class ProfileSettings extends Component {
             loggedProfileData.get('donationsEnabled') :
             true;
         const tipsDisabled = !loggedProfileData.get('akashaId');
+        const notifPref = userSettings.notificationsPreference;
 
         const formChanged = (
-            pref.remember !== this.state.rememberTime ||
-            pref.time !== this.state.unlockTime ||
-            license.id !== this.state.defaultLicenseId ||
-            license.parent !== this.state.defaultLicenseParent ||
-            donationsEnabled !== this.state.donationsValue ||
-            hideCommentContent.checked !== this.state.hideComments ||
-            hideCommentContent.value !== this.state.hideCommentsValue ||
-            hideEntryContent.checked !== this.state.hideEntries ||
-            hideEntryContent.value !== this.state.hideEntriesValue
+            pref.remember !== rememberTime ||
+            pref.time !== unlockTime ||
+            license.id !== defaultLicenseId ||
+            license.parent !== defaultLicenseParent ||
+            donationsEnabled !== donationsValue ||
+            hideCommentContent.checked !== hideComments ||
+            hideCommentContent.value !== hideCommentsValue ||
+            hideEntryContent.checked !== hideEntries ||
+            hideEntryContent.value !== hideEntriesValue ||
+            notifPref.feed !== notifFeed ||
+            notifPref.comments !== notifComments ||
+            notifPref.donations !== notifDonations ||
+            notifPref.votes !== notifVotes
         );
 
         return (
@@ -285,6 +309,68 @@ class ProfileSettings extends Component {
                       <Radio value>{intl.formatMessage(settingsMessages.tipsAccept)}</Radio>
                       <Radio value={false}>{intl.formatMessage(settingsMessages.tipsDoNotAccept)}</Radio>
                     </RadioGroup>
+                  </div>
+                </div>
+                <div>
+                  <div className="profile-settings__item-title">
+                    {intl.formatMessage(generalMessages.notifications)}
+                  </div>
+                  <div className="profile-settings__item-description">
+                    {intl.formatMessage(settingsMessages.notificationsInfo)}
+                  </div>
+                  <div className="profile-settings__notif-pref-list">
+                    <div className="profile-settings__notif-pref">
+                      {intl.formatMessage(profileMessages.followers)}
+                      <Switch
+                        size="small"
+                        checked={notifFeed}
+                        onChange={(checked) => {
+                          this.setState({
+                            notifFeed: checked
+                          });
+                          }
+                        }
+                      />
+                    </div>
+                    <div className="profile-settings__notif-pref">
+                      {intl.formatMessage(generalMessages.comments)}
+                      <Switch
+                        size="small"
+                        checked={notifComments}
+                        onChange={(checked) => {
+                          this.setState({
+                            notifComments: checked
+                          });
+                          }
+                        }
+                      />
+                    </div>
+                    <div className="profile-settings__notif-pref">
+                      {intl.formatMessage(settingsMessages.votes)}
+                      <Switch
+                        size="small"
+                        checked={notifVotes}
+                        onChange={(checked) => {
+                          this.setState({
+                            notifVotes: checked
+                          });
+                          }
+                        }
+                      />
+                    </div>
+                    <div className="profile-settings__notif-pref">
+                      {intl.formatMessage(settingsMessages.tips)}
+                      <Switch
+                        size="small"
+                        checked={notifDonations}
+                        onChange={(checked) => {
+                          this.setState({
+                            notifDonations: checked
+                          });
+                          }
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </Form>

@@ -9,6 +9,10 @@ profileDB.version(1).stores({
     tempProfile: '&ethAddress'
 });
 
+profileDB.version(2).stores({
+    lastBlockNrs: '&ethAddress'
+});
+
 profileDB.tempProfile.defineClass(tempProfileSchema);
 profileDB.tempProfile.defineClass(loggedProfileSchema);
 

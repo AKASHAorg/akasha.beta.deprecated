@@ -1,4 +1,4 @@
-// schema for tempProfile
+// schema for profile
 const LoggedProfileSchema = {
     account: String,
     token: String,
