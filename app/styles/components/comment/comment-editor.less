@@ -16,6 +16,8 @@
         flex: 1 1 auto;
         padding: 5px;
         color: @heading-color;
+        position: relative;        
+        word-break: break-word;
 
         .public-DraftEditorPlaceholder-root {
             position: absolute;
@@ -95,6 +97,15 @@
             svg {
                 stroke: @primary-color !important;
             }
+        }
+    }
+
+    &__link-icon {
+        &_disabled {
+            stroke: @text-color-secondary !important;
+        }
+        &_active {
+            stroke: @primary-color !important;
         }
     }
 

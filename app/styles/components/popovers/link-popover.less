@@ -1,0 +1,20 @@
+.link-popover {
+    width: 200px;
+
+    &__input {
+        border: none;
+        outline: none;
+        width: 100%;
+        background-color: @input-bg;
+        color: @input-color;
+
+        &_invalid {
+            color: @error-color;
+        }
+    }
+
+    .ant-popover-inner-content {
+        padding: 6px;
+        background-color: @input-bg;
+    }
+}

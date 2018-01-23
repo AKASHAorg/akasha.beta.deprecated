@@ -104,7 +104,7 @@ export const ipfsSetPortsError = (error) => {
 export const ipfsSetPortsSuccess = data => action(types.IPFS_SET_PORTS_SUCCESS, { data });
 export const ipfsStart = () => action(types.IPFS_START);
 
-export const ipfsStartError = (data, error) => {
+export const ipfsStartError = (data = {}, error) => {
     error.code = 'ISE01';
     error.messageId = 'ipfsStart';
     return action(types.IPFS_START_ERROR, { data, error });

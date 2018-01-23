@@ -4,6 +4,7 @@ import { injectIntl } from 'react-intl';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import classNames from 'classnames';
+import createLinkPlugin from 'draft-js-anchor-plugin';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import decorateComponentWithProps from 'decorate-component-with-props';
@@ -35,6 +36,7 @@ class OptimisticComment extends Component {
         this.emojiPlugin = createEmojiPlugin({ imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/', allowImageCache: true });
         this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
+        this.linkPlugin = createLinkPlugin();
     }
 
     componentDidMount () {
@@ -127,7 +129,7 @@ class OptimisticComment extends Component {
                     // This is needed because draft-js-plugin-editor applies decorators on onChange event
                     // https://github.com/draft-js-plugins/draft-js-plugins/issues/530
                     onChange={this.onChange}
-                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin]}
+                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin]}
                     readOnly
                   />
                 </div>

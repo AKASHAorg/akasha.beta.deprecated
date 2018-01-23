@@ -70,3 +70,24 @@ export function getContentStateFragment (contentState, selectionState) {
 
     return slice.toOrderedMap();
 }
+
+export const getCurrentEntityKey = (editorState) => {
+    const selection = editorState.getSelection();
+    const anchorKey = selection.getAnchorKey();
+    const contentState = editorState.getCurrentContent();
+    const anchorBlock = contentState.getBlockForKey(anchorKey);
+    const offset = selection.anchorOffset;
+    const index = selection.isBackward ? offset - 1 : offset;
+    return anchorBlock.getEntityAt(index);
+};
+
+export const getCurrentEntity = (editorState) => {
+    const contentState = editorState.getCurrentContent();
+    const entityKey = getCurrentEntityKey(editorState);
+    return entityKey ? contentState.getEntity(entityKey) : null;
+};
+
+export const hasEntity = (editorState, entityType) => {
+    const entity = getCurrentEntity(editorState);
+    return entity && entity.getType() === entityType;
+};

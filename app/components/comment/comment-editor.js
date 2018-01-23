@@ -2,15 +2,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
+import createLinkPlugin from 'draft-js-anchor-plugin';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
 import classNames from 'classnames';
 import decorateComponentWithProps from 'decorate-component-with-props';
-import { Avatar, Icon, ProfilePopover } from '../';
+import { Tooltip } from 'antd';
+import { Avatar, Icon, LinkPopover, ProfilePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
-import { getMentionsFromEditorState } from '../../utils/editorUtils';
+import { getMentionsFromEditorState, hasEntity } from '../../utils/editorUtils';
 import AddImage from './add-image';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
@@ -48,12 +50,16 @@ class CommentEditor extends Component {
         this.state = {
             editorFocused: props.parent !== '0',
             editorState: EditorState.createEmpty(),
+            left: null,
+            linkPopoverVisible: false,
+            top: null
         };
 
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
             removeImage: this.removeAtomicBlock
         });
 
+        this.linkPlugin = createLinkPlugin();
         this.emojiPlugin = createEmojiPlugin(config);
         this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
@@ -97,6 +103,12 @@ class CommentEditor extends Component {
 
     hasText = () => this.state.editorState.getCurrentContent().hasText();
 
+    textSelected = () => {
+        const selection = window.getSelection();
+        const range = selection.rangeCount > 0 && selection.getRangeAt(0);
+        return range.startOffset !== range.endOffset;
+    };
+
     insertHighlight = (highlight) => { // eslint-disable-line consistent-return
         if (this.hasText()) {
             return null;
@@ -117,6 +129,24 @@ class CommentEditor extends Component {
         newContent = newContent.merge({ blockMap });
         const editorWithoutBlock = EditorState.push(newEditorState, newContent);
         this.onChange(editorWithoutBlock, this.scrollIntoView);
+    };
+
+    onAddLink = (url) => {
+        const { editorState } = this.state;
+        const contentState = editorState.getCurrentContent()
+            .createEntity('LINK', 'MUTABLE', { url });
+        const entityKey = contentState.getLastCreatedEntityKey();
+        const withLink = RichUtils.toggleLink(
+            editorState,
+            editorState.getSelection(),
+            entityKey
+        );
+
+        setTimeout(this.editor.focus, 0);
+        this.setState({
+            editorState: withLink,
+            linkPopoverVisible: false
+        });
     };
 
     onWrapperClick = () => {
@@ -144,6 +174,15 @@ class CommentEditor extends Component {
                 editorState,
             }, callback);
         }
+    };
+
+    showLinkPopover = () => {
+        const { top, left } = this.getPopoverPosition();
+        this.setState({ linkPopoverVisible: true, top, left });
+    };
+
+    hideLinkPopover = () => {
+        this.setState({ linkPopoverVisible: false });
     };
 
     removeAtomicBlock = (blockKey) => {
@@ -240,6 +279,28 @@ class CommentEditor extends Component {
         }
     };
 
+    getPopoverPosition = () => {
+        if (!window.getSelection().rangeCount) {
+            return { top: 0, left: 0 };
+        }
+        const selection = window.getSelection().getRangeAt(0);
+        const selectionRect = selection.getBoundingClientRect();
+        const editorWrapperRect = this.editorWrapper.getBoundingClientRect();
+        const selectionWidth = selectionRect.right - selectionRect.left;
+        const offsetLeft = selectionRect.left - editorWrapperRect.left;
+        const top = selectionRect.bottom - editorWrapperRect.top - 12;
+        const left = (offsetLeft + (selectionWidth / 2)) - 150;
+        return { top, left };
+    };
+
+    removeLink = () => {
+        const { editorState } = this.state;
+        const selection = editorState.getSelection();
+        this.setState({
+            editorState: RichUtils.toggleLink(editorState, selection, null)
+        });
+    };
+
     renderAction = (action, index) => {
         const className = classNames('content-link comment-editor__toolbar-button', {
             'comment-editor__toolbar-button_active': this.isActionActive(action)
@@ -257,24 +318,51 @@ class CommentEditor extends Component {
         );
     };
 
-    renderToolbarActions = () => (
-      <div className="flex-center-y comment-editor__toolbar-actions">
-        {inlineStyleActions.map(this.renderAction)}
-        <div className="comment-editor__separator" />
-        <div className="comment-editor__toolbar-button">
-          <AddImage
-            editorState={this.state.editorState}
-            onChange={this.onChange}
-          />
-        </div>
-        {blockStyleActions.map(this.renderAction)}
-      </div>
-    );
+    renderToolbarActions = () => {
+        const { intl } = this.props;
+        const linkDisabled = !this.textSelected() && !this.state.linkPopoverVisible;
+        let isLinkSelected;
+        if (!linkDisabled) {
+            isLinkSelected = hasEntity(this.state.editorState, 'LINK');
+        }
+        const linkHandler = isLinkSelected ? this.removeLink : this.showLinkPopover;
+        const linkClassName = classNames('comment-editor__link-icon', {
+            'comment-editor__link-icon_disabled': linkDisabled,
+            'content-link': !linkDisabled
+        });
+        const buttonClass = classNames('comment-editor__toolbar-button', {
+            'comment-editor__toolbar-button_active': !linkDisabled && isLinkSelected
+        });
+
+        return (
+          <div className="flex-center-y comment-editor__toolbar-actions">
+            {inlineStyleActions.map(this.renderAction)}
+            <div className={buttonClass}>
+              <Tooltip title={!linkDisabled ? undefined : intl.formatMessage(entryMessages.linkDisabled)}>
+                <Icon
+                  className={linkClassName}
+                  onClick={!linkDisabled ? linkHandler : undefined}
+                  onMouseDown={(ev) => { ev.preventDefault(); }}
+                  type="linkEntry"
+                />
+              </Tooltip>
+            </div>
+            <div className="comment-editor__separator" />
+            <div className="comment-editor__toolbar-button">
+              <AddImage
+                editorState={this.state.editorState}
+                onChange={this.onChange}
+              />
+            </div>
+            {blockStyleActions.map(this.renderAction)}
+          </div>
+        );
+    };
 
     render () {
         const { containerRef, intl, loggedProfileData } = this.props;
         let { placeholder } = this.props;
-        const { editorFocused, editorState } = this.state;
+        const { editorFocused, editorState, left, linkPopoverVisible, top } = this.state;
         const { EmojiSuggestions, EmojiSelect } = this.emojiPlugin;
         const contentState = editorState.getCurrentContent();
         const hasText = contentState.hasText();
@@ -312,23 +400,36 @@ class CommentEditor extends Component {
             </div>
             <div
               className={boxClass}
-              onClick={this.onWrapperClick}
               ref={this.getContainerRef}
             >
-              <div className="comment-editor__editor-area">
-                <div className={wrapperClass}>
+              <div
+                className="comment-editor__editor-area"
+                onClick={this.onWrapperClick}
+              >
+                <div
+                  className={wrapperClass}
+                  ref={(el) => { this.editorWrapper = el; }}
+                >
                   <Editor
                     editorState={editorState}
                     handleKeyCommand={this.handleKeyCommand}
                     onChange={this.onChange}
                     placeholder={placeholder}
-                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin]}
+                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin]}
                     ref={this.getEditorRef}
                   />
                 </div>
                 <EmojiSelect />
                 <EmojiSuggestions />
               </div>
+              {linkPopoverVisible &&
+                <LinkPopover
+                  left={left}
+                  onClose={this.hideLinkPopover}
+                  onSubmit={this.onAddLink}
+                  top={top}
+                />
+              }
               {showToolbar &&
                 <div className="comment-editor__toolbar">
                   {this.renderToolbarActions()}

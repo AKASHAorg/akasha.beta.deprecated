@@ -58,7 +58,12 @@ class ProfileOverviewSecondarySidebar extends Component {
               </Link>
               <Link to="/profileoverview/settings" className="unstyled-link">
                 <div className={this.checkActiveRoute('profileoverview/settings')}>
-                  {intl.formatMessage(profileMessages.settings)}
+                  {intl.formatMessage(generalMessages.userSettings)}
+                </div>
+              </Link>
+              <Link to="/profileoverview/preferences" className="unstyled-link">
+                <div className={this.checkActiveRoute('profileoverview/preferences')}>
+                  {intl.formatMessage(generalMessages.appPreferences)}
                 </div>
               </Link>
             </div>

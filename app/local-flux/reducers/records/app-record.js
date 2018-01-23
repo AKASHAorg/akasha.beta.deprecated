@@ -26,7 +26,6 @@ export const AppRecord = Record({
         url: null,
         isVisible: false,
     }),
-    showAppSettings: false,
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
     showNavigationModal: false,

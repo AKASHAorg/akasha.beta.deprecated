@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, Popover, Tooltip } from 'antd';
+import { Button, Popover } from 'antd';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { Avatar, EssencePopover, Icon, KarmaPopover, ManaPopover, SidebarIcon } from './';
 import { generalMessages } from '../locale-data/messages';
 import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
-import { appSettingsToggle, profileEditToggle } from '../local-flux/actions/app-actions';
+import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { selectLoggedProfileData, selectLoggedProfile,
     selectProfileEditToggle } from '../local-flux/selectors';
@@ -216,11 +216,10 @@ class Sidebar extends Component {
                 {intl.formatMessage(generalMessages.userSettings)}
               </Link>
             </div>
-            <div
-              onClick={this.props.appSettingsToggle}
-              className="popover-menu__item"
-            >
-              {intl.formatMessage(generalMessages.appPreferences)}
+            <div className="popover-menu__item">
+              <Link className="unstyled-link" to="/profileoverview/preferences">
+                {intl.formatMessage(generalMessages.appPreferences)}
+              </Link>
             </div>
             <div
               onClick={this._handleLogout}
@@ -316,7 +315,6 @@ class Sidebar extends Component {
 }
 
 Sidebar.propTypes = {
-    appSettingsToggle: PropTypes.func.isRequired,
     activeDashboard: PropTypes.string,
     drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
@@ -355,7 +353,6 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        appSettingsToggle,
         draftCreate,
         profileEditToggle,
         profileLogout,
