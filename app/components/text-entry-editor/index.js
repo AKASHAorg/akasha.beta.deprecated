@@ -4,6 +4,7 @@ import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import EditorSidebar from './sidebar/editor-sidebar';
 import imagePlugin from './plugins/image/image-plugin';
+import { EditorLinkInput } from '../';
 
 const { CompositeDecorator, EditorState } = DraftJS;
 
@@ -106,6 +107,7 @@ class EntryEditor extends Component {
                 readOnly={readOnly}
                 sidebarRendererFn={this._renderSidebar}
                 editorState={editrState}
+                entityInputs={{ LINK: EditorLinkInput }}
                 onChange={this._handleEditorChange}
                 plugins={[
                     imagePlugin({
@@ -125,6 +127,7 @@ class EntryEditor extends Component {
         );
     }
 }
+
 EntryEditor.defaultProps = {
     onScrollBetween: () => {},
     onScrollBottom: () => {},
