@@ -763,5 +763,15 @@ const generalMessages = defineMessages({
         description: '',
         defaultMessage: 'You'
     },
+    waitASecond: {
+        id: 'app.general.waitASecond',
+        description: 'title for external navigation modal',
+        defaultMessage: 'Wait a second...'
+    },
+    externalNavigationWarning: {
+        id: 'app.general.externalNavigationWarning',
+        description: 'warning displayed when clicking an external link',
+        defaultMessage: 'You are about to navigate to an external URL'
+    }
 });
 export { generalMessages };
