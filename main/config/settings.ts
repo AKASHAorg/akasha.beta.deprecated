@@ -34,11 +34,21 @@ export const IPFS_LOGGER = 'ipfs';
 
 export const IPFS_PEER_ID = [
     '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh',
-    '/ip4/46.101.222.96/tcp/4001/ipfs/QmWfVX1MTacGQ1to1u17MtHPpgANR1UJk9h6JqtbYaRKre'
+    '/ip4/46.101.222.96/tcp/4001/ipfs/QmWfVX1MTacGQ1to1u17MtHPpgANR1UJk9h6JqtbYaRKre',
+    '/ip4/207.154.192.173/tcp/4001/ipfs/QmSgTsiHrubEkLKEvdEjNtWHRasU1dUSgPfMjJpkR8KkBU',
+    '/ip4/138.197.200.90/tcp/4001/ipfs/QmX9Nhr56k7K2JBQbu9JBpF2s1AQk8WpmZc6v4sqZERMRu',
+    '/ip4/159.89.168.113/tcp/4001/ipfs/QmTfTyKZXjzRo2C8NV6p21HCsxZF54Mm5cZ9GsfY3zpG3T',
+    '/ip4/138.197.108.157/tcp/4001/ipfs/QmTMSgsyw3zzVbcQnkoN5SRZk7WYUMorJ7EqkqVBLgn13i',
+    '/ip4/188.166.216.1/tcp/4001/ipfs/QmdACfcTWdhB1YCzmRoN2xqLrVL1s4fBCEU8bNQovpwAW5',
+    '/ip4/165.227.62.58/tcp/4001/ipfs/QmUjM53zcSRhsA8BCK28DchCdSJCNmEU6W6jPJHiSgxwTW'
 ];
 
 export const IPFS_CIRCUIT_RELAYS = [
-    '/p2p-circuit/ipfs/QmWfVX1MTacGQ1to1u17MtHPpgANR1UJk9h6JqtbYaRKre'
+    '/p2p-circuit/ipfs/QmWfVX1MTacGQ1to1u17MtHPpgANR1UJk9h6JqtbYaRKre',
+    '/p2p-circuit/ipfs/QmSgTsiHrubEkLKEvdEjNtWHRasU1dUSgPfMjJpkR8KkBU',
+    '/p2p-circuit/ipfs/QmUjM53zcSRhsA8BCK28DchCdSJCNmEU6W6jPJHiSgxwTW',
+    '/p2p-circuit/ipfs/QmTfTyKZXjzRo2C8NV6p21HCsxZF54Mm5cZ9GsfY3zpG3T',
+    '/p2p-circuit/ipfs/QmTMSgsyw3zzVbcQnkoN5SRZk7WYUMorJ7EqkqVBLgn13i'
 ];
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');

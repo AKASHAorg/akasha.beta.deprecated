@@ -9,7 +9,7 @@ const FormItem = Form.Item;
 
 class TransferForm extends Component {
     onCopy = () => {
-        const { ethAddress } = this.props;
+        const { ethAddress, showNotification } = this.props;
         const textArea = document.createElement('textarea');
         textArea.value = ethAddress;
         textArea.style.position = 'fixed';
@@ -19,6 +19,10 @@ class TransferForm extends Component {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
+        showNotification({
+            id: 'linkCopiedToClipboard',
+            duration: 2
+        });
     };
 
     onSearch = (value) => {
@@ -144,6 +148,7 @@ TransferForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     pendingTransfer: PropTypes.bool,
     searchProfiles: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
 };
 

@@ -15,11 +15,11 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
-import { AppSettings, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal, DashboardSecondarySidebar,
-    DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal, Lists, ListEntries,
-    MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, PageContent, PreviewPanel,
-    ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages,
-    Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel,
+import { AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
+    DashboardSecondarySidebar, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
+    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, PageContent,
+    PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit,
+    SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel,
     FullSizeImageViewer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 
@@ -164,6 +164,7 @@ class AppContainer extends Component {
                         <Route exact path="/profileoverview/lists" component={Lists} />
                         <Route path="/profileoverview/lists/:listId" component={ListEntries} />
                         <Route path="/profileoverview/settings" component={ProfileSettings} />
+                        <Route path="/profileoverview/preferences" component={AppPreferences} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                           <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
@@ -206,9 +207,6 @@ class AppContainer extends Component {
                 <Notification />
                 <FullSizeImageViewer />
                 <ErrorNotification />
-                {appState.get('showAppSettings') &&
-                  <AppSettings sidebar={!location.pathname.startsWith('/setup')} />
-                }
                 <NavigateAwayModal
                   navigation={appState.get('outsideNavigation')}
                   onClick={this.props.toggleOutsideNavigation}
