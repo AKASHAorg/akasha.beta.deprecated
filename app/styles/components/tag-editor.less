@@ -1,5 +1,6 @@
 // @tag-item-bg-color: #B4BCC8;
-@tag-item-bg-color-should-register: @error-color;
+@tag-item-bg-color-should-register: @warning-color;
+@tag-item-bg-color-cannot-create: @error-color;
 @tag-item-bg-color-registering: @yellow;
 
 .tag-editor {
@@ -43,6 +44,12 @@
             background-color: @tag-item-bg-color-should-register;
             &:hover {
                 background-color: lighten(@tag-item-bg-color-should-register, 5%);
+            }
+        }
+        &_cannot-add {
+            background-color: @tag-item-bg-color-cannot-create;
+            &:hover {
+                background-color: lighten(@tag-item-bg-color-cannot-create, 5%);
             }
         }
         &_registering {

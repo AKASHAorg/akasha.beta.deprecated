@@ -1,6 +1,6 @@
 import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
-import { Map } from 'immutable';
+import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
@@ -63,7 +63,14 @@ function* draftsGet ({ data }) {
         let drafts = new Map();
         if (response.length > 0) {
             response.forEach((draft) => {
+                let draftTags = new OrderedMap();
                 draft.content.draft = editorStateFromRaw(draft.content.draft);
+                if (Object.keys(draft.tags).length) {
+                    Object.keys(draft.tags).forEach((tagKey) => {
+                        draftTags = draftTags.set(tagKey, draft.tags[tagKey]);
+                    });
+                }
+                draft.tags = draftTags;
                 drafts = drafts.setIn([draft.id], DraftModel.createDraft(draft));
             });
         }

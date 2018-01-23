@@ -62,7 +62,7 @@ class NewLinkEntryPage extends Component {
                 featuredImage: {},
                 entryType: 'link',
             },
-            tags: [],
+            tags: {},
         });
         history.push(`/draft/link/${draftId}`);
         ev.preventDefault();

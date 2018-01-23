@@ -72,7 +72,7 @@ class NewEntrySecondarySidebar extends Component {
                 licence: userSelectedLicence,
                 entryType,
             },
-            tags: [],
+            tags: {},
         });
     }
 

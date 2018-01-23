@@ -28,7 +28,6 @@ class TagEditor extends Component {
             selectedSuggestionIndex: 0,
             canCreateTags: false,
         };
-        this._openedChannels = [];
     }
 
     // componentDidMount () {
@@ -229,36 +228,36 @@ class TagEditor extends Component {
         return res;
     }
 
-    // _getTagInputPopoverContent = () => {
-    //     const { tagSuggestions, tags, tagErrors } = this.props;
-    //     if (tagErrors) {
-    //         return (
-    //           <div className="tag-editor__error-popover">
-    //             <div className="tag-editor__error-popover-text">
-    //               {tagErrors}
-    //             </div>
-    //           </div>
-    //         );
-    //     }
-    //     let selectionIndex = this.state.selectedSuggestionIndex;
-    //     if (selectionIndex > tagSuggestions.length) {
-    //         selectionIndex = tagSuggestions.length - 1;
-    //     }
-    //     /* eslint-disable react/no-array-index-key */
-    //     return tagSuggestions.filter(tag => !tags.contains(tag)).map((tag, index) => (
-    //       <div
-    //         key={`suggested-${tag}-${index}`}
-    //         onClick={() => this._addNewTag(tag, tag)}
-    //         className={
-    //           `tag-editor__suggestion-item ${tag}
-    //            tag-editor__suggestion-item${selectionIndex === index ? '_selected' : ''}`
-    //         }
-    //       >
-    //         {tag}
-    //       </div>
-    //     ));
-    //     /* eslint-enable react/no-array-index-key */
-    // }
+    _getTagInputPopoverContent = () => {
+        const { tagSuggestions, tags, tagErrors } = this.props;
+        if (tagErrors) {
+            return (
+              <div className="tag-editor__error-popover">
+                <div className="tag-editor__error-popover-text">
+                  {tagErrors}
+                </div>
+              </div>
+            );
+        }
+        let selectionIndex = this.state.selectedSuggestionIndex;
+        if (selectionIndex > tagSuggestions.length) {
+            selectionIndex = tagSuggestions.length - 1;
+        }
+        /* eslint-disable react/no-array-index-key */
+        return tagSuggestions.filter(tag => !tags.keyOf(tag)).map((tag, index) => (
+          <div
+            key={`suggested-${tag}-${index}`}
+            onClick={() => this._addNewTag(tag, tag)}
+            className={
+              `tag-editor__suggestion-item ${tag}
+               tag-editor__suggestion-item${selectionIndex === index ? '_selected' : ''}`
+            }
+          >
+            {tag}
+          </div>
+        ));
+        /* eslint-enable react/no-array-index-key */
+    }
 
     // _handleTagChange = (ev) => {
     //     if (this.state.partialTag.length === 32 && ev.target.value.length > 32) {
@@ -308,28 +307,18 @@ class TagEditor extends Component {
     //         }
     //     }), 100);
 
-    _getTagPopoverContent = (tag) => {
+    _getTagCannotCreate = (tag) => {
         const { intl } = this.props;
-        const { canCreateTags } = this.state;
-
         return (
           <div
             className="tag-editor__tag-item-popover-content"
           >
             <p className="tag-editor__tag-item-popover-message">
-              {canCreateTags && intl.formatMessage(tagMessages.tagNotCreated)}
-              {!canCreateTags && intl.formatMessage(tagMessages.notEnoughKarma)}
+              {intl.formatMessage(tagMessages.notEnoughKarma)}
             </p>
             <div
               className="tag-editor__tag-item-popover-actions"
             >
-              {canCreateTags &&
-                <Button
-                  onClick={() => this._addNewTag(this.state.partialTag, this.state.partialTag)}
-                >
-                  {intl.formatMessage(generalMessages.ok)}
-                </Button>
-              }
               <Button
                 onClick={this._deleteTag(tag)}
                 size="small"
@@ -424,33 +413,44 @@ class TagEditor extends Component {
             this.tagInput.focus();
         });
     }
+
     _createTag = (tagName) => {
-        this.props.onTagAdd(tagName);
+        this.props.onTagAdd(tagName.toLowerCase().trim().replace('#', ''));
+        this.setState({
+            partialTag: ''
+        });
     }
+
+    _deleteTag = tagName =>
+        () => {
+            this.props.onTagRemove(tagName);
+        }
+
     /* eslint-disable no-fallthrough */
     _handleSpecialKeyPress = (ev) => {
         const pressedKey = ev.keyCode;
+        const { tags } = this.props;
         if (tagCreatorKeycodes.includes(pressedKey)) {
             this._createTag(this.state.partialTag);
-            return ev.preventDefault();
-        }
-        switch (pressedKey) {
-            case 38: // arrow up
-            case 40: // arrow down
-                console.log('navigate through suggestions');
-                break;
-            case 8: // backspace
-                if (this.state.partialTag.length === 0) {
-                    console.log('delete a tag!');
-                }
-                break;
-            default:
-                break;
+            ev.preventDefault();
+        } else {
+            switch (pressedKey) {
+                case 38: // arrow up
+                case 40: // arrow down
+                    console.log('navigate through suggestions');
+                    break;
+                case 8: // backspace
+                    if (this.state.partialTag.length === 0) {
+                        this._deleteTag(tags.takeLast(1).keySeq().first())();
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
     /* eslint-enable no-fallthrough */
     _handleTagInputChange = (ev) => {
-        console.log('input change event', ev.target.value);
         this.setState({
             partialTag: ev.target.value
         });
@@ -462,37 +462,91 @@ class TagEditor extends Component {
                 inputHasFocus: focusState
             });
         }
-
+    _handleCannotCreatePopoverVisibility = (visible) => {
+        const { tags } = this.props;
+        if (!visible) {
+            this._deleteTag(tags.findLastKey((val, key) => !val.exists))();
+        }
+    }
+    _getTagList = () => {
+        const { tags, canCreateTags } = this.props;
+        // return tags
+        return tags.map((status, tag) => (
+          <Popover
+            key={`${tag}`}
+            placement="topLeft"
+            content={
+                !canCreateTags &&
+                (!status.checking && !status.exists) &&
+                this._getTagCannotCreate(tag, status, canCreateTags)
+            }
+            overlayClassName="tag-editor__tag-item-popover"
+            visible={!canCreateTags && (!status.checking && !status.exists)}
+            onVisibleChange={this._handleCannotCreatePopoverVisibility}
+          >
+            <div
+              className={
+                `flex-center-y tag-editor__tag-item
+                tag-editor__tag-item${(canCreateTags && (!status.checking && !status.exists)) ? '_should-register' : ''}
+                tag-editor__tag-item${(!canCreateTags && (!status.checking && !status.exists)) ? '_cannot-add' : ''}`
+              }
+            >
+              { tag }
+              <span
+                className="tag-item__delete-button"
+                onClick={this._deleteTag(tag)}
+              >
+                <Icon type="close" />
+              </span>
+              {!canCreateTags && (!status.checking && !status.exists) &&
+                <span className="tag-item__info-button" >
+                  <Icon type="question" />
+                </span>
+              }
+            </div>
+          </Popover>
+        )).toIndexedSeq();
+    }
     render () {
-        const { tagInputWidth, inputHasFocus, existentTags, tagError } = this.state;
-        const { canCreateTags, tagSuggestionsCount, intl, tags,
+        const { tagInputWidth, inputHasFocus, tagError } = this.state;
+        const { tagSuggestionsCount, intl, tags,
             inputDisabled, tagSuggestions, tagErrors } = this.props;
-        // console.log(inputHasFocus, 'has focus');
+        const suggestionsPopoverVisible = (tagSuggestionsCount > 0 &&
+            inputHasFocus && tagSuggestions.filter(tag => !tags.keyOf(tag)));
+
         return (
           <div
             className={`tag-editor ${this.props.className}`}
             ref={this.props.nodeRef}
             onClick={this._forceTagInputFocus}
           >
-            <input
-              ref={(node) => { this.tagInput = node; }}
-              type="text"
-              className="tag-editor__input"
-              placeholder={intl.formatMessage(tagMessages.addTag)}
-              onKeyDown={this._handleSpecialKeyPress}
-              onChange={this._handleTagInputChange}
-              style={{
+            {this._getTagList()}
+            <Popover
+              content={this._getTagInputPopoverContent()}
+              placement="topLeft"
+              visible={(tagErrors && tagErrors.length > 0) || suggestionsPopoverVisible}
+              overlayClassName="tag-editor__suggestions-container"
+            >
+              <input
+                ref={(node) => { this.tagInput = node; }}
+                type="text"
+                className="tag-editor__input"
+                placeholder={intl.formatMessage(tagMessages.addTag)}
+                onKeyDown={this._handleSpecialKeyPress}
+                onChange={this._handleTagInputChange}
+                style={{
                   width: tagInputWidth,
-              }}
-              value={this.state.partialTag}
-              onFocus={this._changeInputFocus(true)}
-              onBlur={this._changeInputFocus(false)}
-              disabled={false
+                }}
+                value={this.state.partialTag}
+                onFocus={this._changeInputFocus(true)}
+                onBlur={this._changeInputFocus(false)}
+                disabled={false
             //   !tags.every(tag => existentTags.includes(tag)) ||
             //   (tags.size >= 10) ||
             //   inputDisabled
-              }
-            />
+                }
+              />
+            </Popover>
           </div>
         );
     }
@@ -515,6 +569,8 @@ TagEditor.propTypes = {
     searchResetResults: PropTypes.func,
     onTagError: PropTypes.func,
     onChange: PropTypes.func,
+    onTagAdd: PropTypes.func.isRequired,
+    onTagRemove: PropTypes.func.isRequired,
 };
 
 export default TagEditor;
