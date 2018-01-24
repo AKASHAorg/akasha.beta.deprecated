@@ -20,6 +20,7 @@ const Flags = Record({
 
 export const ActionState = Record({
     allActions: new List(),
+    batchActions: new List(),
     byId: new Map(),
     byType: new Map(),
     claimable: new List(),

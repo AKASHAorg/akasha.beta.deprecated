@@ -131,8 +131,15 @@ const entryState = createReducer(initialState, {
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
             version || null :
             Math.max(state.get('fullEntryLatestVersion'), version) || null;
-
+        let byId = state.get('byId');
+        if (byId.get(entryId)) {
+            byId = byId.mergeIn([entryId], {
+                commentsCount: data.commentsCount,
+                score: data.score
+            });
+        }
         return state.merge({
+            byId,
             flags: state.get('flags').set('fetchingFullEntry', false),
             fullEntry: createEntryRecord({ entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
