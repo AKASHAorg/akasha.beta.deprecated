@@ -32,10 +32,8 @@ const draftState = createReducer(initialState, {
 
     [types.DRAFTS_GET_SUCCESS]: (state, { data }) =>
         state.withMutations((stateMap) => {
-            data.drafts.forEach(draft =>
-                stateMap.setIn(['drafts', draft.id], DraftModel.createDraft(draft))
-            );
-            stateMap.set('draftsFetched', true)
+            stateMap.mergeIn(['drafts'], data.drafts)
+                .set('draftsFetched', true)
                 .set('draftsCount', data.drafts.size)
                 .set('fetchingDrafts', false);
         }),

@@ -209,9 +209,6 @@ class NewEntryPage extends Component {
             if (this.state.tagError) {
                 return reject({ tags: intl.formatMessage(entryMessages.oneOfTheTagsCannotBeUsed) });
             }
-            if (this.tagEditor.getIsBusy()) {
-                return reject({ tags: 'tag validation in progress... please wait' });
-            }
             if (draftObj.get('tags').size === 0) {
                 return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
@@ -250,6 +247,7 @@ class NewEntryPage extends Component {
                     { draft: publishPayload, entryId: draftObj.id }
                 );
             }).catch((errors) => {
+                console.log(errors, 'the errors');
                 this.setState({ errors });
             });
         }, 100);
