@@ -426,18 +426,51 @@ class TagEditor extends Component {
             this.props.onTagRemove(tagName);
         }
 
+    _incrementSuggestionSelectionIndex = () => {
+        const { tagSuggestions } = this.props;
+        const maxIncrement = tagSuggestions.size;
+        this.setState((prevState) => {
+            if (prevState.selectedSuggestionIndex === maxIncrement - 1) {
+                return {
+                    selectedSuggestionIndex: 0
+                };
+            }
+            return {
+                selectedSuggestionIndex: prevState.selectedSuggestionIndex + 1
+            };
+        });
+    }
+
+    _decrementSuggestionSelectionIndex = () => {
+        const { tagSuggestions } = this.props;
+        const { size } = tagSuggestions;
+        this.setState((prevState) => {
+            if (prevState.selectedSuggestionIndex === 0) {
+                return {
+                    selectedSuggestionIndex: size - 1
+                };
+            }
+            return {
+                selectedSuggestionIndex: prevState.selectedSuggestionIndex - 1
+            };
+        });
+    }
     /* eslint-disable no-fallthrough */
     _handleSpecialKeyPress = (ev) => {
         const pressedKey = ev.keyCode;
         const { tags } = this.props;
-        if (tagCreatorKeycodes.includes(pressedKey)) {
+        if (tagCreatorKeycodes.includes(pressedKey) && this.state.partialTag.length) {
             this._createTag(this.state.partialTag);
             ev.preventDefault();
         } else {
             switch (pressedKey) {
                 case 38: // arrow up
+                    this._decrementSuggestionSelectionIndex();
+                    ev.preventDefault();
+                    break;
                 case 40: // arrow down
-                    console.log('navigate through suggestions');
+                    this._incrementSuggestionSelectionIndex();
+                    ev.preventDefault();
                     break;
                 case 8: // backspace
                     if (this.state.partialTag.length === 0) {
@@ -451,8 +484,34 @@ class TagEditor extends Component {
     }
     /* eslint-enable no-fallthrough */
     _handleTagInputChange = (ev) => {
-        this.setState({
-            partialTag: ev.target.value
+        const tag = ev.target.value.trim().toLowerCase().replace('#', '');
+        const alphaValid = /[a-z0-9.-]+$/.test(tag);
+        const specialCharsValid = !tag.includes('.-') &&
+            !tag.includes('-.') &&
+            !tag.includes('--') &&
+            !tag.includes('..');
+        const isValid = specialCharsValid && alphaValid && !tag.startsWith('.') && !tag.startsWith('_');
+        if (this.state.partialTag.length === 32 && ev.target.value.length > 32) {
+            return;
+        }
+        this.setState((prevState) => {
+            if (isValid || tag.length === 0) {
+                return {
+                    partialTag: tag,
+                    tagInputWidth: this._getTextWidth(tag).width + 20,
+                };
+            }
+            return {
+                partialTag: prevState.partialTag,
+                tagInputWidth: this._getTextWidth(prevState.partialTag).width + 20,
+            };
+        }, () => {
+            if (this.state.partialTag.length >= 1) {
+                this.props.searchTags(this.state.partialTag.trim().toLowerCase().replace('#', ''));
+            } else {
+                this.props.searchResetResults();
+            }
+            this.props.onChange();
         });
     }
 
@@ -460,12 +519,20 @@ class TagEditor extends Component {
         () => {
             this.setState({
                 inputHasFocus: focusState
+            }, () => {
+                if (!this.state.inputHasFocus) {
+                    this.props.searchResetResults();
+                    if (this.state.partialTag.length >= 1) {
+                        this._createTag(this.state.partialTag);
+                        this.props.searchResetResults();
+                    }
+                }
             });
         }
     _handleCannotCreatePopoverVisibility = (visible) => {
         const { tags } = this.props;
         if (!visible) {
-            this._deleteTag(tags.findLastKey((val, key) => !val.exists))();
+            this._deleteTag(tags.findLastKey(val => !val.exists))();
         }
     }
     _getTagList = () => {
@@ -512,7 +579,7 @@ class TagEditor extends Component {
         const { tagSuggestionsCount, intl, tags,
             inputDisabled, tagSuggestions, tagErrors } = this.props;
         const suggestionsPopoverVisible = (tagSuggestionsCount > 0 &&
-            inputHasFocus && tagSuggestions.filter(tag => !tags.keyOf(tag)));
+            inputHasFocus && tagSuggestions.filter(tag => !tags.keyOf(tag)).size > 0);
 
         return (
           <div

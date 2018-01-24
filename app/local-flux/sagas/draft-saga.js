@@ -150,6 +150,7 @@ function* draftPublish ({ actionId, draft }) {
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
+    console.log('tags are', draft);
     try {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
@@ -171,15 +172,17 @@ function* draftPublish ({ actionId, draft }) {
         ) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
+        console.log(draftFromState.tags.keySeq().toJS(), 'tags to be published');
         yield call([channel, channel.send], {
             actionId,
             id,
             token,
-            tags: draftToPublish.tags,
+            tags: draftFromState.tags.keySeq().toJS(),
             content: draftToPublish.content,
             entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
         });
     } catch (ex) {
+        console.log(ex, 'the exception on publish!');
         yield put(draftActions.draftPublishError(ex));
     }
 }
@@ -244,6 +247,7 @@ function* watchDraftPublishChannel () {
         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
         if (shouldApplyChanges) {
             if (response.error) {
+                console.log(response.error, 'the error');
                 yield put(draftActions.draftPublishError(
                     response.error,
                     response.request.id
@@ -251,6 +255,7 @@ function* watchDraftPublishChannel () {
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
+                    console.log(response, 'an errored response');
                     yield put(draftActions.draftPublishError({}, response.request.id));
                 } else {
                     yield put(eProcActions.gethGetStatusSuccess({
@@ -292,7 +297,6 @@ function* watchDraftPublishUpdateChannel () {
                     response.error,
                     response.request.id
                 ));
-                console.log(response, 'errored update response');
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
