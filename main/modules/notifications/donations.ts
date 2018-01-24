@@ -42,5 +42,5 @@ export const execute = Promise.coroutine(function* (data: { ethAddress?: string,
         }
     });
 
-    return { watching: true };
+    return donateEvent;
 });
