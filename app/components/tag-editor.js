@@ -247,7 +247,7 @@ class TagEditor extends Component {
         return tagSuggestions.filter(tag => !tags.keyOf(tag)).map((tag, index) => (
           <div
             key={`suggested-${tag}-${index}`}
-            onClick={() => this._addNewTag(tag, tag)}
+            onClick={() => this._createTag(tag)}
             className={
               `tag-editor__suggestion-item ${tag}
                tag-editor__suggestion-item${selectionIndex === index ? '_selected' : ''}`
@@ -415,6 +415,7 @@ class TagEditor extends Component {
     }
 
     _createTag = (tagName) => {
+        console.log('create tag', tagName);
         this.props.onTagAdd(tagName.toLowerCase().trim().replace('#', ''));
         this.setState({
             partialTag: ''
@@ -522,10 +523,10 @@ class TagEditor extends Component {
             }, () => {
                 if (!this.state.inputHasFocus) {
                     this.props.searchResetResults();
-                    if (this.state.partialTag.length >= 1) {
-                        this._createTag(this.state.partialTag);
-                        this.props.searchResetResults();
-                    }
+                    // if (this.state.partialTag.length >= 1) {
+                    //     this._createTag(this.state.partialTag);
+                    //     this.props.searchResetResults();
+                    // }
                 }
             });
         }
