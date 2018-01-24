@@ -1,3 +1,5 @@
+import { contains, uniq } from 'ramda';
+
 class Notifications {
     public queue = [];
     private _timeout;
@@ -8,7 +10,7 @@ class Notifications {
         if (this._timeout) {
             clearTimeout(this._timeout);
         }
-        if (notification && this.queue.indexOf(notification) === -1) {
+        if (notification && !contains(notification, this.queue)) {
             this.queue.push(notification);
         }
         this._timeout = setTimeout(() => {
@@ -22,6 +24,7 @@ class Notifications {
     }
 
     private emit(cb) {
+        this.queue = uniq(this.queue);
         let count = (this.queue.length > this.BATCH_SIZE) ? this.BATCH_SIZE : this.queue.length;
         for (let i = 0; i < count; i++) {
             cb('', this.queue.shift());

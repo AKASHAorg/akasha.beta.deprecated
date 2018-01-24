@@ -26,6 +26,8 @@ class ClaimableList extends Component {
         return this.isOwnEntry(entry) ? canClaim.get(entryId) : canClaimVote.get(entryId);
     };
 
+    isActive = entry => entry.get('endPeriod') > Date.now() / 1000;
+
     isClaimed = (entry) => {
         const { entryBalance, entryVotes } = this.props;
         const vote = entryVotes.get(entry.entryId);
@@ -35,6 +37,20 @@ class ClaimableList extends Component {
     };
 
     isOwnEntry = entry => entry.getIn(['author', 'ethAddress']) === this.props.loggedEthAddress;
+
+    collectAll = (entries) => {
+        const { loggedEthAddress } = this.props;
+        const actions = [];
+        entries.forEach((entry) => {
+            const payload = {
+                entryId: entry.get('entryId'),
+                entryTitle: entry.getIn(['content', 'title'])
+            };
+            const type = this.isOwnEntry(entry) ? actionTypes.claim : actionTypes.claimVote;
+            actions.push({ ethAddress: loggedEthAddress, actionType: type, payload });
+        });
+        this.props.actionAdd(loggedEthAddress, actionTypes.batch, { actions });
+    };
 
     renderRow = (entry, index) => { // eslint-disable-line
         const { entries, entryBalance, entryVotes, intl, loggedEthAddress, pendingClaim,
@@ -70,7 +86,7 @@ class ClaimableList extends Component {
             balanceToNumber(vote && vote.get('essence'));
         const endPeriod = entry.get('endPeriod');
         let timeDiff;
-        const isActive = endPeriod > Date.now() / 1000;
+        const isActive = this.isActive(entry);
         if (isActive) {
             timeDiff = intl.formatRelative(new Date(endPeriod * 1000));
         }
@@ -132,17 +148,19 @@ class ClaimableList extends Component {
     };
 
     render () {
-        const { entries, entryBalance, entryVotes, fetchingClaimable, intl, onBack } = this.props;
+        const { entries, entryBalance, entryVotes, fetchingClaimable, intl, onBack,
+            pendingClaim, pendingClaimVote } = this.props;
         let collectableEntries = new List();
         let nonCollectableEntries = new List();
         entries
             .filter((entry) => {
                 const ownEntry = this.isOwnEntry(entry);
                 const vote = entryVotes.get(entry.entryId);
+                const cannotClaim = !this.isActive(entry) && !this.canCollect(entry);
                 const balance = ownEntry ?
                     balanceToNumber(entryBalance.getIn([entry.entryId, 'totalKarma'])) :
                     balanceToNumber(vote && vote.get('essence'));
-                return !this.isClaimed(entry) && !!balance;
+                return !this.isClaimed(entry) && !!balance && !cannotClaim;
             })
             .forEach((entry) => {
                 if (this.canCollect(entry)) {
@@ -151,6 +169,8 @@ class ClaimableList extends Component {
                     nonCollectableEntries = nonCollectableEntries.push(entry);
                 }
             });
+        const onCollectAll = () => this.collectAll(collectableEntries);
+        const collectAllDisabled = pendingClaim.size || pendingClaimVote.size || !collectableEntries.size;
 
         return (
           <div className="claimable-list">
@@ -163,6 +183,17 @@ class ClaimableList extends Component {
                 />
                 {intl.formatMessage(profileMessages.essenceReady)}
                 <span className="flex-center claimable-list__counter">{collectableEntries.size}</span>
+                <div className="claimable-list__collect-all-wrapper">
+                  <Button
+                    className="claimable-list__collect-all"
+                    disabled={collectAllDisabled}
+                    onClick={onCollectAll}
+                    size="small"
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.collectAll)}
+                  </Button>
+                </div>
               </div>
               <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
                 <div className="claimable-list__list-wrapper">

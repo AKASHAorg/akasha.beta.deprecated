@@ -1,5 +1,6 @@
 import actionDB from './db/action';
 import * as actionStatus from '../../constants/action-status';
+import * as actionTypes from '../../constants/action-types';
 
 export const deleteAction = id =>
     new Promise((resolve, reject) => {
@@ -52,7 +53,10 @@ export const getClaimable = request =>
             .where('[ethAddress+type]')
             .anyOf(request)
             .toArray()
-            .then(resolve)
+            .then((data) => {
+                const results = data.filter(action => !action.claimed);
+                resolve(results);
+            })
             .catch(reject);
     });
 
@@ -70,5 +74,35 @@ export const saveAction = action =>
     new Promise((resolve, reject) => {
         actionDB.actions.put(action)
             .then(resolve)
+            .catch(reject);
+    });
+
+export const updateClaimAction = (ethAddress, entryId) =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('[ethAddress+type]')
+            .equals([ethAddress, actionTypes.draftPublish])
+            .toArray()
+            .then((data) => {
+                const action = data.find(act => act.payload.entryId === entryId);
+                action.claimed = true;
+                actionDB.actions.put(action)
+                    .then(() => resolve(action.id));
+            })
+            .catch(reject);
+    });
+
+export const updateClaimVoteAction = (ethAddress, entryId) =>
+    new Promise((resolve, reject) => {
+        actionDB.actions
+            .where('[ethAddress+type]')
+            .anyOf([[ethAddress, actionTypes.entryDownvote], [ethAddress, actionTypes.entryUpvote]])
+            .toArray()
+            .then((data) => {
+                const action = data.find(act => act.payload.entryId === entryId);
+                action.claimed = true;
+                actionDB.actions.put(action)
+                    .then(() => resolve(action.id));
+            })
             .catch(reject);
     });

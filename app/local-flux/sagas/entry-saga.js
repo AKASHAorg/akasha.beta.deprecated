@@ -59,6 +59,7 @@ function* entryClaimSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(actionActions.actionUpdateClaim(data));
 }
 
 function* entryClaimVote ({ actionId, entryId, entryTitle }) {
@@ -77,6 +78,7 @@ function* entryClaimVoteSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(actionActions.actionUpdateClaimVote(data));
 }
 
 function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
@@ -305,6 +307,16 @@ function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT,
         channel,
         channel.send,
         [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
+    );
+}
+
+function* entryResolveIpfsHash ({ entryId, ipfsHash }) {
+    const channel = Channel.server.entry.resolveEntriesIpfsHash;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(
+        channel,
+        channel.send,
+        [{ ipfsHash: [ipfsHash], entryId, full: true }]
     );
 }
 
@@ -642,6 +654,17 @@ function* handleEntryProfileIteratorResponse (resp) {
     }
 }
 
+function* watchEntryResolveIpfsHashChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
+        if (resp.error) {
+            yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+        } else {
+            yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
+        }
+    }
+}
+
 function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
@@ -743,6 +766,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryListIteratorChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);
+    yield fork(watchEntryResolveIpfsHashChannel);
     yield fork(watchEntryStreamIteratorChannel);
     yield fork(watchEntryTagIteratorChannel);
     yield fork(watchEntryUpvoteChannel);
@@ -772,6 +796,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
     yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
     yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
+    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
     yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
     yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
     yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);

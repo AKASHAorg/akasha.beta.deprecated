@@ -34,7 +34,7 @@ export const profileMessages = defineMessages({
     essenceReady: {
         id: 'app.profile.essenceReady',
         description: 'title for Essence popover',
-        defaultMessage: 'Essence ready to collect'
+        defaultMessage: 'Ready to collect'
     },
     contacts: {
         id: 'app.profile.contacts',

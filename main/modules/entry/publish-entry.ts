@@ -3,6 +3,7 @@ import { decodeHash } from '../ipfs/helpers';
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
+import entriesCache from '../notifications/entries';
 import GethConnector from '@akashaproject/geth-connector/lib/GethConnector';
 
 const publish = {
@@ -71,6 +72,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
         );
 
     const entryId = (fetched.results.length) ? fetched.results[0].args.entryId : null;
+    yield entriesCache.push(entryId);
     return { tx: transaction.tx, receipt: transaction.receipt, entryId };
 });
 

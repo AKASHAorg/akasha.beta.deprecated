@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Popover } from 'antd';
 import classNames from 'classnames';
 import { entryMessages } from '../../locale-data/messages';
-import { prependHttp } from '../../utils/url-utils';
+import { isInternalLink, isValidLink, prependHttp } from '../../utils/url-utils';
 
 class LinkPopover extends Component {
     state = {
@@ -12,24 +12,21 @@ class LinkPopover extends Component {
         value: ''
     };
 
-    isLinkValid = (value, submitIfValid) => {
-        const expression = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-        const regex = new RegExp(expression);
-        const isValid = value.match(regex);
-        if (isValid && submitIfValid) {
-            this.props.onSubmit(prependHttp(value));
-            return;
-        }
-        if (!isValid) {
+    onAddLink = (value) => {
+        const isValid = isValidLink(value);
+        if (isValid) {
+            const url = isInternalLink(value) ? `#/${value}` : prependHttp(value);
+            this.props.onSubmit(url);
+        } else {
             this.setState({ invalidLink: true });
-        } else if (this.state.invalidLink) {
-            this.setState({ invalidLink: false });
         }
     };
 
     onChange = (ev) => {
         if (this.state.invalidLink) {
-            this.isLinkValid(ev.target.value);
+            this.setState({
+                invalidLink: !isValidLink(ev.target.value)
+            });
         }
         this.setState({
             value: ev.target.value
@@ -38,7 +35,7 @@ class LinkPopover extends Component {
 
     onKeyDown = (ev) => {
         if (ev.key === 'Enter') {
-            this.isLinkValid(ev.target.value, true);
+            this.onAddLink(ev.target.value);
         }
     };
 

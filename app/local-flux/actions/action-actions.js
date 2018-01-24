@@ -56,3 +56,15 @@ export const actionSaveError = (error) => {
 };
 
 export const actionUpdate = changes => action(types.ACTION_UPDATE, { changes });
+
+export const actionUpdateClaim = data => action(types.ACTION_UPDATE_CLAIM, { data });
+export const actionUpdateClaimError = (error) => {
+    error.code = 'AUCE01';
+    return action(types.ACTION_UPDATE_CLAIM_ERROR, { error });
+};
+
+export const actionUpdateClaimVote = data => action(types.ACTION_UPDATE_CLAIM_VOTE, { data });
+export const actionUpdateClaimVoteError = (error) => {
+    error.code = 'AUCVE01';
+    return action(types.ACTION_UPDATE_CLAIM_VOTE_ERROR, { error });
+};

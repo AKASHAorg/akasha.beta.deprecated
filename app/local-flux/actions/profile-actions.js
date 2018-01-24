@@ -76,6 +76,14 @@ export const profileExistsError = (error, request) => {
 };
 
 export const profileExistsSuccess = data => action(types.PROFILE_EXISTS_SUCCESS, { data });
+
+export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
+    action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
+export const profileFaucetError = (error, request) =>
+    action(types.PROFILE_FAUCET_ERROR, { error, request });
+export const profileFaucetSuccess = (data, request) =>
+    action(types.PROFILE_FAUCET_SUCCESS, { data, request });
+
 export const profileFollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_FOLLOW, { actionId, ethAddress });
 
@@ -288,16 +296,9 @@ export const profileRegisterError = (error, request) => {
 export const profileRegisterSuccess = (data, request) =>
     action(types.PROFILE_REGISTER_SUCCESS, { data, request });
 
-export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
-    action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
-
-export const profileFaucetError = (error, request) =>
-    action(types.PROFILE_FAUCET_ERROR, { error, request });
-
-export const profileFaucetSuccess = (data, request) =>
-    action(types.PROFILE_FAUCET_SUCCESS, { data, request });
-export const profileResetFaucet = () => action(types.PROFILE_RESET_FAUCET);
+export const profileResetColumns = ethAddress => action(types.PROFILE_RESET_COLUMNS, { ethAddress });
 export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENCE_EVENTS);
+export const profileResetFaucet = () => action(types.PROFILE_RESET_FAUCET);
 
 export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
