@@ -59,6 +59,7 @@ function* entryClaimSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(actionActions.actionUpdateClaim(data));
 }
 
 function* entryClaimVote ({ actionId, entryId, entryTitle }) {
@@ -77,6 +78,7 @@ function* entryClaimVoteSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(actionActions.actionUpdateClaimVote(data));
 }
 
 function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) {
