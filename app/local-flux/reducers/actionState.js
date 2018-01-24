@@ -123,7 +123,7 @@ const actionState = createReducer(initialState, {
     [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
         if (actionType === actionTypes.faucet) {
             const id = `${new Date().getTime()}-${actionType}`;
-            const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
+            const status = actionStatus.toPublish;
             const action = createAction({ id, ethAddress, payload, status, type: actionType });
             return state.merge({
                 byId: state.get('byId').set(id, action),
@@ -271,7 +271,30 @@ const actionState = createReducer(initialState, {
 
     [types.ACTION_PUBLISH]: (state, { id }) => {
         const action = state.getIn(['byId', id]);
-        const pending = state.get('pending');
+        let pending = state.get('pending');
+        if (action.type === actionTypes.batch) {
+            /* 
+             * for batch actions, this is where we should add the actions in state
+             */
+            let byId = state.get('byId');
+            let batchActions = new List();
+            action.getIn(['payload', 'actions']).forEach((actionData, index) => {
+                const { ethAddress, actionType, payload } = actionData.toJS();
+                const actionId = `${new Date().getTime()}-${actionType}-${index}`;
+                const status = actionStatus.publishing;
+                const newAction = createAction({
+                    id: actionId,
+                    ethAddress,
+                    payload,
+                    status,
+                    type: actionType
+                });
+                byId = byId.set(actionId, newAction);
+                pending = addPendingAction(pending, newAction.toJS());
+                batchActions = batchActions.push(actionId);
+            });
+            return state.merge({ batchActions, byId, needAuth: null, pending });
+        }
         return state.merge({
             needAuth: null,
             pending: addPendingAction(pending, action.toJS())

@@ -56,22 +56,8 @@ const getKarmaPopoverDefaultState = (collection, myRanking) => {
     return defaultState;
 };
 
-// const commentsIteratorHandler = (state, { data }) => {
-//     let byId = state.get('byId');
-//     data.collection.forEach((comm) => {
-//         const publisher = comm.data.profile;
-//         if (publisher && !byId.get(publisher.akashaId)) {
-//             byId = addProfileData(byId, publisher);
-//         }
-//     });
-//     return state.set('byId', byId);
-// };
-
 const profileState = createReducer(initialState, {
 
-    // [types.COMMENTS_ITERATOR_SUCCESS]: commentsIteratorHandler,
-
-    // [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
     [types.ACTION_ADD]: (state, { actionType }) => {
         if (actionType === actionTypes.faucet) {
             return state.set('faucet', 'requested');
@@ -518,6 +504,16 @@ const profileState = createReducer(initialState, {
             moreFollowings: state.get('moreFollowings').set(request.ethAddress, moreFollowings)
         });
     },
+
+    [types.PROFILE_RESET_COLUMNS]: (state, { ethAddress }) =>
+        state.merge({
+            followers: state.get('followers').set(ethAddress, new List()),
+            followings: state.get('followings').set(ethAddress, new List()),
+            lastFollower: state.get('lastFollower').set(ethAddress, new List()),
+            lastFollowing: state.get('lastFollowing').set(ethAddress, new List()),
+            moreFollowers: state.get('moreFollowers').set(ethAddress, false),
+            moreFollowings: state.get('moreFollowings').set(ethAddress, false),
+        }),
 
     [types.PROFILE_RESET_ESSENCE_EVENTS]: state => state.merge({
         essenceEvents: new Collection.Set([]),

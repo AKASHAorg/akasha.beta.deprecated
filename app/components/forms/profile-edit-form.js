@@ -44,7 +44,7 @@ class ProfileEditForm extends Component {
             !fromJS(tempProfile.get('links')).equals(fromJS(loggedProfileData.get('links')))
         );
         this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
-        if (profileExistsData !== this.props.profileExistsData) {
+        if (profileExistsData.get('data')) {
             const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
             this.setState({
                 akashaIdIsValid: idValid,
@@ -140,6 +140,10 @@ class ProfileEditForm extends Component {
         // validation passed
         if (field === 'akashaId') {
             this.props.profileExists(this.props.tempProfile.get('akashaId'));
+            this.setState({
+                akashaIdIsValid: true,
+                akashaIdExists: false
+            });
         }
 
         if (field === 'links') {
@@ -398,7 +402,7 @@ class ProfileEditForm extends Component {
                       >
                         <Input.TextArea
                           className="profile-edit-form__textarea"
-                          rows={5}
+                          rows={6}
                           placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
                           value={about}
                           onChange={this._handleFieldChange('about')}

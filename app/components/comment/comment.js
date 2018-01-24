@@ -13,6 +13,7 @@ import decorateComponentWithProps from 'decorate-component-with-props';
 import { Icon, ProfilePopover, VotesModal, VotePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
+import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
 import { selectBlockNumber, selectComment, selectCommentVote, selectHideCommentSettings,
     selectLoggedEthAddress, selectPendingCommentVote, selectProfile,
@@ -21,6 +22,7 @@ import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
+import LinkDecorator from './decorators/link-decorator';
 
 const { convertFromRaw, EditorState } = DraftJS;
 
@@ -43,7 +45,11 @@ class Comment extends Component {
         this.emojiPlugin = createEmojiPlugin({ imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/', allowImageCache: true });
         this.highlightPlugin = createHighlightPlugin();
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
-        this.linkPlugin = createLinkPlugin();
+        this.linkPlugin = createLinkPlugin({
+            Link: decorateComponentWithProps(LinkDecorator, {
+                onOutsideNavigation: this.props.toggleOutsideNavigation
+            })
+        });
     }
 
     componentWillReceiveProps (nextProps) {
@@ -392,6 +398,7 @@ Comment.propTypes = {
     onReply: PropTypes.func,
     resolvingComment: PropTypes.bool,
     showReplyButton: PropTypes.bool,
+    toggleOutsideNavigation: PropTypes.func.isRequired,
     vote: PropTypes.string,
     votePending: PropTypes.bool
 };
@@ -419,6 +426,7 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        commentsResolveIpfsHash
+        commentsResolveIpfsHash,
+        toggleOutsideNavigation,
     }
 )(injectIntl(Comment));

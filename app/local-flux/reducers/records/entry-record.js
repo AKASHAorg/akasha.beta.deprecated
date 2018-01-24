@@ -41,6 +41,7 @@ export const EntryRecord = Record({
     content: EntryContent(),
     endPeriod: null,
     entryId: null,
+    ipfsHash: null,
     publishDate: null,
     score: null,
     totalKarma: null,
@@ -53,6 +54,7 @@ const Flags = Record({
     fetchingEntryBalance: false,
     fetchingFullEntry: false,
     pendingEntries: new Map(),
+    resolvingFullEntryHash: false,
 });
 
 export const EntryPageOverlay = Record({

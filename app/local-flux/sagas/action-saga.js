@@ -1,3 +1,4 @@
+import * as reduxSaga from 'redux-saga';
 import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
 import * as commentsActions from '../actions/comments-actions';
@@ -7,7 +8,8 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectAction, selectLoggedEthAddress, selectActionToPublish } from '../selectors';
+import { selectAction, selectBatchActions, selectLoggedEthAddress,
+    selectActionToPublish } from '../selectors';
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -77,29 +79,23 @@ const publishSuccessActions = {
     [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
+
 function balanceRequired (actionType) {
-    const requireBalanceFor = [
-        actionTypes.comment,
-        actionTypes.commentUpvote,
-        actionTypes.commentDownvote,
-        actionTypes.draftPublish,
-        actionTypes.draftPublishUpdate,
-        actionTypes.entryUpvote,
-        actionTypes.entryDownvote,
-    ];
-    if (requireBalanceFor.includes(actionType)) {
-        return true;
+    const balanceNotRequired = [actionTypes.faucet];
+    if (balanceNotRequired.includes(actionType)) {
+        return false;
     }
-    return false;
+    return true;
 }
-function hasEnoughBalance (actionType, balance, publishingCost, weight) {
+
+function hasEnoughBalance (actionType, balance, publishingCost, payload) {
     const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
     const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);
     const commentPublishingCost = balanceToNumber(publishingCost.getIn(['comments', 'cost']), 5);
     let costByWeight = 0;
-    if (typeof weight === 'number') {
+    if (payload && typeof payload.weight === 'number') {
         costByWeight = balanceToNumber(
-            publishingCost.get('votes').find(vote => vote.get('weight') === weight).get('cost'),
+            publishingCost.get('votes').find(vote => vote.get('weight') === payload.weight).get('cost'),
             5
         );
     }
@@ -121,8 +117,11 @@ function hasEnoughBalance (actionType, balance, publishingCost, weight) {
             hasMana = true;
             break;
     }
+    const ethCost = actionType === actionTypes.batch && payload && payload.actions ?
+        0.005 * payload.actions.length :
+        0.01;
     return {
-        eth: balanceToNumber(balance.get('eth'), 2) > 0.12,
+        eth: balanceToNumber(balance.get('eth'), 2) > ethCost,
         aeth: balanceToNumber(balance.getIn(['aeth', 'free'])) > 0,
         mana: hasMana,
     };
@@ -138,7 +137,7 @@ function* actionAdd ({ ethAddress, payload, actionType }) {
      */
     const balance = yield select(state => state.profileState.get('balance'));
     const publishingCost = yield select(state => state.profileState.get('publishingCost'));
-    const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload ? payload.weight : null);
+    const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload || null);
     if ((hasBalance.eth && hasBalance.mana) || !balanceRequired(actionType)) {
         /**
          * continue to publishing
@@ -274,9 +273,21 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
     const action = yield select(state => selectAction(state, id));
     const actionId = action.get('id');
     const payload = action.get('payload').toJS();
-    const publishAction = publishActions[action.get('type')];
-    if (publishAction) {
-        yield put(publishAction({ actionId, ...payload }));
+    if (action.get('type') === actionTypes.batch) {
+        const batchActions = yield select(selectBatchActions);
+        for (let i = 0; i < batchActions.size; i++) {
+            const act = batchActions.get(i);
+            const publishAction = publishActions[act.get('type')];
+            if (publishAction) {
+                yield put(publishAction({ actionId: act.get('id'), ...act.get('payload').toJS() }));
+                yield apply(reduxSaga, reduxSaga.delay, [200]);
+            }
+        }
+    } else {
+        const publishAction = publishActions[action.get('type')];
+        if (publishAction) {
+            yield put(publishAction({ actionId, ...payload }));
+        }
     }
 }
 
@@ -339,6 +350,32 @@ function* actionUpdate ({ changes }) {
     }
 }
 
+function* actionUpdateClaim ({ data }) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    try {
+        yield apply(
+            actionService,
+            actionService.updateClaimAction,
+            [loggedEthAddress, data.entryId]
+        );
+    } catch (error) {
+        yield put(actions.actionUpdateClaimError(error));
+    }
+}
+
+function* actionUpdateClaimVote ({ data }) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    try {
+        yield apply(
+            actionService,
+            actionService.updateClaimVoteAction,
+            [loggedEthAddress, data.entryId]
+        );
+    } catch (error) {
+        yield put(actions.actionUpdateClaimVoteError(error));
+    }
+}
+
 // Action watchers
 
 export function* watchActionActions () {
@@ -351,4 +388,6 @@ export function* watchActionActions () {
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_PUBLISHED, actionPublished);
     yield takeEvery(types.ACTION_UPDATE, actionUpdate);
+    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim);
+    yield takeEvery(types.ACTION_UPDATE_CLAIM_VOTE, actionUpdateClaimVote);
 }

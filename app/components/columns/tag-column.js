@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, tagMessages } from '../../locale-data/messages';
+import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
@@ -33,12 +34,14 @@ class TagColumn extends Component {
     }
 
     componentWillUnmount () {
+        const { column } = this.props;
         if (this.interval) {
             clearInterval(this.interval);
         }
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
+        this.props.dashboardResetColumnEntries(column.get('id'));
     }
 
     firstLoad = () => {
@@ -116,6 +119,7 @@ class TagColumn extends Component {
 
 TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
@@ -137,6 +141,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        dashboardResetColumnEntries,
         entryMoreTagIterator,
         entryTagIterator,
         searchTags,

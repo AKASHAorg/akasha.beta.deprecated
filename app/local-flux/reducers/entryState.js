@@ -24,6 +24,20 @@ const createEntryRecord = entry =>
         }
     });
 
+const createEntryContent = (content) => {
+    let cardInfo = new CardInfo();
+    let title = content.title;
+    if (content.cardInfo) {
+        cardInfo = cardInfo.merge(fromJS(content.cardInfo));
+        title = title || content.cardInfo.title;
+    }
+    return new EntryContent({
+        ...content,
+        cardInfo,
+        title
+    });
+};
+
 const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
@@ -117,8 +131,15 @@ const entryState = createReducer(initialState, {
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
             version || null :
             Math.max(state.get('fullEntryLatestVersion'), version) || null;
-
+        let byId = state.get('byId');
+        if (byId.get(entryId)) {
+            byId = byId.mergeIn([entryId], {
+                commentsCount: data.commentsCount,
+                score: data.score
+            });
+        }
         return state.merge({
+            byId,
             flags: state.get('flags').set('fetchingFullEntry', false),
             fullEntry: createEntryRecord({ entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
@@ -276,22 +297,28 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
-        let newHashes = new Map();
-        ipfsHash.forEach((hash) => { newHashes = newHashes.set(hash, true); });
-        return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
+    [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { entryId }) => {
+        if (entryId === state.getIn(['fullEntry', 'entryId'])) {
+            return state.setIn(['flags', 'resolvingFullEntryHash'], true);
+        }
+        return state;
     },
 
-    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { error, request }) =>
-        state.setIn(['flags', 'resolvingIpfsHash', request.columnId, error.ipfsHash], false),
+    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { request }) => {
+        if (request.entryId === state.getIn(['fullEntry', 'entryId'])) {
+            return state.setIn(['flags', 'resolvingFullEntryHash'], false);
+        }
+        return state;
+    },
 
     [types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
-        const index = request.ipfsHash.indexOf(data.ipfsHash);
-        const entryId = request.entryIds[index];
-        return state.merge({
-            flags: state.get('flags').setIn(['resolvingIpfsHash', request.columnId, data.ipfsHash], false),
-            byId: state.get('byId').setIn([entryId, 'content'], new EntryContent(data.entry))
-        });
+        if (data.entry && request.entryId === state.getIn(['fullEntry', 'entryId'])) {
+            return state.merge({
+                flags: state.get('flags').set('resolvingFullEntryHash', false),
+                fullEntry: state.get('fullEntry').set('content', createEntryContent(data.entry))
+            });
+        }
+        return state;
     },
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
@@ -307,6 +334,9 @@ const entryState = createReducer(initialState, {
     },
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
+
+    [types.PROFILE_RESET_COLUMNS]: (state, { ethAddress }) =>
+        state.deleteIn(['profileEntries', ethAddress]),
 
     [types.SEARCH_MORE_QUERY_SUCCESS]: entrySearchIteratorHandler,
 

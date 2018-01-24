@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
+import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectColumnEntries, selectProfileExists,
@@ -34,6 +35,7 @@ class ProfileColumn extends Component {
     }
 
     componentWillUnmount () {
+        const { column } = this.props;
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -41,6 +43,7 @@ class ProfileColumn extends Component {
             clearTimeout(this.timeout);
         }
         this.props.searchResetResults();
+        this.props.dashboardResetColumnEntries(column.get('id'));
     }
 
     firstLoad = () => {
@@ -119,6 +122,7 @@ class ProfileColumn extends Component {
 
 ProfileColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
@@ -140,6 +144,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        dashboardResetColumnEntries,
         entryMoreProfileIterator,
         entryProfileIterator,
         searchProfiles,
