@@ -1,3 +1,4 @@
+export const batch = 'batch';
 export const bondAeth = 'bondAeth';
 export const claim = 'claim';
 export const claimVote = 'claimVote';

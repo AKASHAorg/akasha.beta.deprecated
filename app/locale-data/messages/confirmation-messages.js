@@ -226,5 +226,15 @@ const confirmationMessages = defineMessages({
         description: 'title for confirmation dialog for unfollowing a user',
         defaultMessage: 'Unfollow'
     },
+    batch: {
+        id: 'app.confirmations.batch',
+        description: 'confirmation message for a batch of transactions',
+        defaultMessage: 'Please confirm that you want to send {txCount} transactions.'
+    },
+    batchTitle: {
+        id: 'app.confirmations.batchTitle',
+        description: 'title for confirmation dialog for a batch of transations',
+        defaultMessage: 'Multiple transactions'
+    },
 });
 export { confirmationMessages };
