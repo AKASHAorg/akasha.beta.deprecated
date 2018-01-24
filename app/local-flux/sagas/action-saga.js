@@ -196,7 +196,6 @@ function* actionGetClaimableEntries (data) {
     const entries = [];
     const otherEntries = [];
     const ownEntries = [];
-    console.log('data', data);
     data.forEach((action) => {
         const { entryId, ethAddress } = action.payload;
         if (entryId && ethAddress) {
@@ -351,6 +350,32 @@ function* actionUpdate ({ changes }) {
     }
 }
 
+function* actionUpdateClaim ({ data }) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    try {
+        yield apply(
+            actionService,
+            actionService.updateClaimAction,
+            [loggedEthAddress, data.entryId]
+        );
+    } catch (error) {
+        yield put(actions.actionUpdateClaimError(error));
+    }
+}
+
+function* actionUpdateClaimVote ({ data }) {
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    try {
+        yield apply(
+            actionService,
+            actionService.updateClaimVoteAction,
+            [loggedEthAddress, data.entryId]
+        );
+    } catch (error) {
+        yield put(actions.actionUpdateClaimVoteError(error));
+    }
+}
+
 // Action watchers
 
 export function* watchActionActions () {
@@ -363,4 +388,6 @@ export function* watchActionActions () {
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);
     yield takeEvery(types.ACTION_PUBLISHED, actionPublished);
     yield takeEvery(types.ACTION_UPDATE, actionUpdate);
+    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim);
+    yield takeEvery(types.ACTION_UPDATE_CLAIM_VOTE, actionUpdateClaimVote);
 }

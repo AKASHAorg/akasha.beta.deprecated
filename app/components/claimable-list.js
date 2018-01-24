@@ -171,9 +171,7 @@ class ClaimableList extends Component {
             });
         const onCollectAll = () => this.collectAll(collectableEntries);
         const collectAllDisabled = pendingClaim.size || pendingClaimVote.size || !collectableEntries.size;
-        // console.log('entries', entries.size);
-        // console.log('non collectable entries', nonCollectableEntries.size);
-        // console.log('=====================================');
+
         return (
           <div className="claimable-list">
             <div style={{ height: '100%' }}>
