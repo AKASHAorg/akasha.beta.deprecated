@@ -29,5 +29,5 @@ export const execute = Promise.coroutine(function* (
        }
     });
 
-    return { watching: true };
+    return followEvent;
 });

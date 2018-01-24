@@ -1,4 +1,4 @@
-import { contains } from 'ramda';
+import { contains, uniq } from 'ramda';
 
 class Notifications {
     public queue = [];
@@ -24,6 +24,7 @@ class Notifications {
     }
 
     private emit(cb) {
+        this.queue = uniq(this.queue);
         let count = (this.queue.length > this.BATCH_SIZE) ? this.BATCH_SIZE : this.queue.length;
         for (let i = 0; i < count; i++) {
             cb('', this.queue.shift());
