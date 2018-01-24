@@ -772,6 +772,11 @@ const generalMessages = defineMessages({
         id: 'app.general.externalNavigationWarning',
         description: 'warning displayed when clicking an external link',
         defaultMessage: 'You are about to navigate to an external URL'
-    }
+    },
+    collectAll: {
+        id: 'app.general.collectAll',
+        description: 'collect all Essence',
+        defaultMessage: 'Collect all'
+    },
 });
 export { generalMessages };

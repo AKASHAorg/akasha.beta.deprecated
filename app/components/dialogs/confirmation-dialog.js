@@ -26,13 +26,6 @@ class ConfirmationDialog extends Component {
         };
     }
 
-    // componentWillReceiveProps (nextProps) {
-    //     const { action, faucet } = nextProps;
-    //     if (faucet === 'success' && this.props.faucet !== 'success') {
-    //         this.props.actionDelete(action.get('id'));
-    //     }
-    // }
-
     onRememberPasswordToggle = () => {
         this.setState({
             unlockIsChecked: !this.state.unlockIsChecked
@@ -93,23 +86,8 @@ class ConfirmationDialog extends Component {
         }
     }
 
-    _calculateMana = (actionType, balance, costs) => {
-        const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
-        const entryManaCost = parseFloat(costs.getIn(['entry', 'cost']));
-        const commentManaCost = parseFloat(costs.getIn(['comments', 'cost']));
-        switch (actionType) {
-            case (actionTypes.draftPublish || actionTypes.draftPublishUpdate):
-                return remainingMana >= entryManaCost;
-            case actionTypes.comment:
-                return remainingMana >= commentManaCost;
-            default:
-                return true;
-        }
-    }
-
     render () {
-        const { action, intl, loginErrors, loginPending, needAuth,
-            faucet } = this.props;
+        const { action, intl, loginErrors, loginPending, needAuth } = this.props;
         const actionType = needAuth.substring(needAuth.indexOf('-') + 1);
         const actionTypeTitle = `${actionType}Title`;
         const payload = action.get('payload') ? action.get('payload').toJS() : action.get('payload');
@@ -117,6 +95,9 @@ class ConfirmationDialog extends Component {
             actionTypes.transferEth, actionTypes.unfollow];
         if (types.includes(actionType)) {
             payload.displayName = getDisplayName(payload);
+        }
+        if (actionType === actionTypes.batch) {
+            payload.txCount = payload.actions.length;
         }
         return (
           <Modal
@@ -191,7 +172,6 @@ ConfirmationDialog.propTypes = {
     action: PropTypes.shape(),
     actionDelete: PropTypes.func.isRequired,
     actionPublish: PropTypes.func,
-    faucet: PropTypes.string,
     intl: PropTypes.shape(),
     loginPending: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
@@ -207,7 +187,6 @@ ConfirmationDialog.propTypes = {
 function mapStateToProps (state) {
     return {
         action: selectNeedAuthAction(state),
-        faucet: state.profileState.get('faucet'),
         loginPending: selectProfileFlag(state, 'loginPending'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('loginErrors'),

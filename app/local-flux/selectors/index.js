@@ -56,6 +56,9 @@ export const selectBalance = state => state.profileState.get('balance');
 export const selectBaseUrl = state =>
     state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
 
+export const selectBatchActions = state =>
+    state.actionState.get('batchActions').map(actionId => selectAction(state, actionId));
+
 export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
 
 export const selectClaimableEntryIds = state => state.actionState.get('claimable');
