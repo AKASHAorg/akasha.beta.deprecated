@@ -8,7 +8,7 @@ import { showPreview } from '../local-flux/actions/app-actions';
 import { dashboardSearch } from '../local-flux/actions/dashboard-actions';
 import { searchMoreQuery, searchProfiles, searchQuery, searchResetResults,
     searchTags } from '../local-flux/actions/search-actions';
-import { selectSearchEntries, selectSearchProfiles, selectSearchQuery,
+import { selectSearchEntries, selectSearchEntryOffset, selectSearchProfiles, selectSearchQuery,
     selectSearchTags, selectTagEntriesCount } from '../local-flux/selectors';
 import { generalMessages, searchMessages } from '../locale-data/messages';
 import { SEARCH } from '../constants/context-types';
@@ -51,8 +51,8 @@ class SearchPage extends Component {
     };
 
     renderEntryResults () {
-        const { entries, resultsCount, fetchingResults, fetchingMoreResults } = this.props;
-        const moreEntries = resultsCount > entries.size;
+        const { entries, resultsCount, fetchingResults, fetchingMoreResults, searchOffset } = this.props;
+        const moreEntries = resultsCount > searchOffset;
         return (
           <EntryList
             contextId={SEARCH}
@@ -160,6 +160,7 @@ function mapStateToProps (state) {
         profiles: selectSearchProfiles(state),
         query: selectSearchQuery(state),
         resultsCount: state.searchState.get('resultsCount'),
+        searchOffset: selectSearchEntryOffset(state),
         tagEntriesCount: selectTagEntriesCount(state),
         tags: selectSearchTags(state)
     };
