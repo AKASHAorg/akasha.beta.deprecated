@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -8,11 +9,12 @@ import { Row, Col, Button, Steps, Modal } from 'antd';
 import { PublishOptionsPanel, TextEntryEditor, TagEditor, EntryVersionTimeline, NewEntryTopBar,
     DataLoader } from '../components';
 import { genId } from '../utils/dataModule';
-import { draftCreate, draftsGet, draftUpdate, draftsGetCount,
+import { draftAddTag, draftRemoveTag, draftCreate, draftsGet, draftUpdate, draftsGetCount,
     draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
+import { tagExists } from '../local-flux/actions/tag-actions';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
@@ -76,7 +78,7 @@ class NewEntryPage extends Component {
                 featuredImage: {},
                 entryType: 'article',
             },
-            tags: [],
+            tags: {},
         });
         history.push(`/draft/article/${draftId}`);
         ev.preventDefault();
@@ -120,18 +122,20 @@ class NewEntryPage extends Component {
         }));
     }
 
-    _handleTagUpdate = (tagList) => {
-        const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge({
-            ethAddress: loggedProfile.get('ethAddress'),
-            tags: draftObj.get('tags').clear().concat(tagList),
-        }));
-        this.setState(prevState => ({
-            errors: {
-                ...prevState.errors,
-                tags: null,
-            }
-        }));
+    _handleTagAdd = (tagName) => {
+        const { draftObj } = this.props;
+        this.props.draftAddTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
+    }
+
+    _handleTagRemove = (tagName) => {
+        const { draftObj } = this.props;
+        this.props.draftRemoveTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
@@ -205,9 +209,6 @@ class NewEntryPage extends Component {
             if (this.state.tagError) {
                 return reject({ tags: intl.formatMessage(entryMessages.oneOfTheTagsCannotBeUsed) });
             }
-            if (this.tagEditor.getIsBusy()) {
-                return reject({ tags: 'tag validation in progress... please wait' });
-            }
             if (draftObj.get('tags').size === 0) {
                 return reject({ tags: intl.formatMessage(entryMessages.errorOneTagRequired) });
             }
@@ -246,6 +247,7 @@ class NewEntryPage extends Component {
                     { draft: publishPayload, entryId: draftObj.id }
                 );
             }).catch((errors) => {
+                console.log(errors, 'the errors');
                 this.setState({ errors });
             });
         }, 100);
@@ -326,8 +328,8 @@ class NewEntryPage extends Component {
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
         const { loggedProfile, baseUrl, drafts, darkTheme, showSecondarySidebar, intl, draftObj,
-            draftsFetched, entriesFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
-            selectionState } = this.props;
+            draftsFetched, tagSuggestions, tagSuggestionsCount, match, licences, resolvingEntries,
+            selectionState, canCreateTags } = this.props;
         const draftId = match.params.draftId;
         const unpublishedDrafts = drafts.filter(drft => !drft.get('onChain'));
 
@@ -448,7 +450,8 @@ class NewEntryPage extends Component {
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
                     ethAddress={loggedProfile.get('ethAddress')}
-                    onTagUpdate={this._handleTagUpdate}
+                    onTagAdd={this._handleTagAdd}
+                    onTagRemove={this._handleTagRemove}
                     onChange={this._handleTagInputChange}
                     tags={tags}
                     actionAdd={this.props.actionAdd}
@@ -459,6 +462,8 @@ class NewEntryPage extends Component {
                     inputDisabled={onChain}
                     onTagError={this._handleInternalTagError}
                     tagErrors={errors.tags}
+                    tagExistsCheck={this.props.tagExists}
+                    canCreateTags={canCreateTags}
                   />
                 </div>
               </Col>
@@ -546,7 +551,10 @@ class NewEntryPage extends Component {
 NewEntryPage.propTypes = {
     actionAdd: PropTypes.func,
     baseUrl: PropTypes.string,
+    canCreateTags: PropTypes.bool,
     draftObj: PropTypes.shape(),
+    draftAddTag: PropTypes.func,
+    draftRemoveTag: PropTypes.func,
     drafts: PropTypes.shape(),
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
@@ -568,6 +576,7 @@ NewEntryPage.propTypes = {
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicence: PropTypes.shape(),
     pendingFaucetTx: PropTypes.bool,
+    tagExists: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => ({
@@ -586,12 +595,15 @@ const mapStateToProps = (state, ownProps) => ({
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
     pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
+    canCreateTags: state.profileState.get('canCreateTags'),
 });
 
 export default connect(
     mapStateToProps,
     {
         actionAdd,
+        draftAddTag,
+        draftRemoveTag,
         draftCreate,
         draftsGet,
         draftUpdate,
@@ -600,5 +612,6 @@ export default connect(
         entryGetFull,
         searchTags,
         searchResetResults,
+        tagExists,
     }
 )(injectIntl(NewEntryPage));

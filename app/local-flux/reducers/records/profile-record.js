@@ -108,6 +108,7 @@ export const ProfileState = Record({
     balance: new Balance(),
     byEthAddress: new Map(),
     byId: new Map(),
+    canCreateTags: false,
     cyclingStates: new CyclingStates(),
     essenceEvents: new Collection.Set([]),
     essenceIterator: new EssenceIterator(),

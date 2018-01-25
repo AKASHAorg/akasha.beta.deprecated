@@ -1,4 +1,4 @@
-import { Record, List, Map } from 'immutable';
+import { Record, OrderedMap, Map } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { License } from './license-record';
 
@@ -51,6 +51,6 @@ export const Draft = Record({
     saved: false,
     saving: false,
     localChanges: false,
-    tags: new List(),
+    tags: new OrderedMap(),
     updated_at: null,
 });

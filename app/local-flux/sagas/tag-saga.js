@@ -5,6 +5,7 @@ import * as actions from '../actions/tag-actions';
 import * as actionActions from '../actions/action-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
+import * as draftActions from '../actions/draft-actions';
 
 const Channel = global.Channel;
 const TAG_SEARCH_LIMIT = 10;
@@ -19,9 +20,16 @@ function* tagCreate ({ data }) {
     });
 }
 
-function* tagExists ({ tagName }) {
+function* tagCanCreateCheck ({ data }) {
+    const channel = Channel.server.tags.canCreate;
+    const { ethAddress } = data;
+    yield call(enableChannel, channel, Channel.client.tags.manager);
+    yield call([channel, channel.send], { ethAddress });
+}
+
+function* tagExists ({ data }) {
     const channel = Channel.server.tags.exists;
-    yield apply(channel, channel.send, [{ tagName }]);
+    yield apply(channel, channel.send, [data]);
 }
 
 function* tagGetEntriesCount ({ tags }) {
@@ -52,13 +60,29 @@ function* watchTagCreateChannel () {
     }
 }
 
+function* watchTagCanCreateChannel () {
+    while (true) {
+        const response = yield take(actionChannels.tags.canCreate);
+        if (response.error) {
+            yield put(actions.tagCanCreateError(response.error));
+        } else {
+            yield put(actions.tagCanCreateSuccess(response.data));
+        }
+    }
+}
+
 function* watchTagExistsChannel () {
     while (true) {
         const resp = yield take(actionChannels.tags.exists);
         if (resp.error) {
             yield put(actions.tagExistsError(resp.error, resp.request));
         } else {
-            yield put(actions.tagExistsSuccess(resp.data));
+            if (resp.request.addToDraft) {
+                yield put(draftActions.draftAddTagSuccess({ ...resp.data, draftId: resp.request.draftId }));
+            }
+            if (!resp.request.addToDraft) {
+                yield put(actions.tagExistsSuccess(resp.data));
+            }
         }
     }
 }
@@ -94,6 +118,7 @@ export function* registerTagListeners () {
     yield fork(watchTagExistsChannel);
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagSearchChannel);
+    yield fork(watchTagCanCreateChannel);
 }
 
 export function* watchTagActions () {
@@ -101,4 +126,5 @@ export function* watchTagActions () {
     yield takeEvery(types.TAG_EXISTS, tagExists);
     yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
     yield takeLatest(types.TAG_SEARCH, tagSearch);
+    yield takeLatest(types.TAG_CAN_CREATE, tagCanCreateCheck);
 }

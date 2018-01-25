@@ -13,6 +13,39 @@
         top: 16px;
         z-index: 10;
     }
+    &__arrow {
+        z-index: 20;
+        cursor: pointer;
+        width: 30%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        opacity: 0.4;
+        transition: opacity 0.118s ease-in-out;
+        &_left {
+            left: 0;
+            text-align: left;
+            &:hover {
+                opacity: 1;
+                transition: opacity 0.118s ease-in-out;
+            }
+        }
+        &_right {
+            right: 0;
+            text-align: right;
+            &:hover {
+                opacity: 1;
+                transition: opacity 0.218s ease-in-out;
+            }
+        }
+        &_icon {
+            &.icon {
+                height: 100%;
+                width: 60px;
+                stroke: @light-grey;
+            }
+        }
+    }
     &__images {
         z-index: 5;
         display: flex;
@@ -23,6 +56,7 @@
         left: 0;
         bottom: 0;
         right: 0;
+        user-select: none;
     }
     &__image {
         z-index: 10;

@@ -21,7 +21,7 @@ export const AppRecord = Record({
     navigationBackCounter: 0,
     navigationForwardCounter: 0,
     displayedNotifications: new List(),
-    fullSizeImages: new List(),
+    fullSizeImages: new Map(),
     outsideNavigation: new Map({
         url: null,
         isVisible: false,

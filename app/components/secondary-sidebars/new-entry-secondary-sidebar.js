@@ -5,13 +5,13 @@ import { Popover, Modal } from 'antd';
 import fuzzy from 'fuzzy';
 import { injectIntl } from 'react-intl';
 import { EntrySecondarySidebarItem, Icon } from '../';
-import { entryMessages, searchMessages } from '../../locale-data/messages';
+import { entryMessages, searchMessages, generalMessages } from '../../locale-data/messages';
 import { genId } from '../../utils/dataModule';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate,
     draftRevertToVersion } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
-import { generalMessages } from '../../locale-data/messages/general-messages';
+import { tagCanCreate } from '../../local-flux/actions/tag-actions';
 
 const { confirm } = Modal;
 class NewEntrySecondarySidebar extends Component {
@@ -29,6 +29,7 @@ class NewEntrySecondarySidebar extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
         this.props.draftsGetCount({ ethAddress });
+        this.props.tagCanCreate({ ethAddress });
         this.props.entryProfileIterator({
             column: null,
             value: ethAddress,
@@ -71,7 +72,7 @@ class NewEntrySecondarySidebar extends Component {
                 licence: userSelectedLicence,
                 entryType,
             },
-            tags: [],
+            tags: {},
         });
     }
 
@@ -577,6 +578,7 @@ NewEntrySecondarySidebar.propTypes = {
     userSelectedLicence: PropTypes.shape(),
     draftRevertToVersion: PropTypes.func,
     entryGetFull: PropTypes.func,
+    tagCanCreate: PropTypes.func,
 };
 const mapStateToProps = state => ({
     draftsCount: state.draftState.get('draftsCount'),
@@ -597,5 +599,6 @@ export default connect(
         draftRevertToVersion,
         entryGetFull,
         entryProfileIterator,
+        tagCanCreate,
     }
 )(injectIntl(NewEntrySecondarySidebar));
