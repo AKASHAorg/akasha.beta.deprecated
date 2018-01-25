@@ -27,6 +27,7 @@ import resolveEntriesIpfsHash from './resolve-entries-ipfs-hash';
 import canClaimVote from './can-claim-vote';
 import claimVote from './claim-vote';
 import voteRatio from './vote-ratio';
+import getVoteEndPeriod from './vote-endperiod';
 
 export default [
     canClaimVote,
@@ -57,5 +58,6 @@ export default [
     getLatestEntryVersion,
     getEntryIpfsHash,
     resolveEntriesIpfsHash,
-    voteRatio
+    voteRatio,
+    getVoteEndPeriod
 ];
