@@ -48,7 +48,11 @@ class NewEntryPage extends Component {
                 history.push('/draft/article/noDraft');
             }
         }
-
+        if (draftObj && this.props.draftObj &&
+            (draftObj.get('tags').size !== this.props.draftObj.get('tags').size) &&
+            draftObj.get('localChanges')) {
+                this.props.draftUpdate(draftObj);
+        }
         if (draftObj && match.params.draftId &&
                 match.params.draftId !== this.props.match.params.draftId && this.editor) {
             if (currentSelection) {
@@ -446,7 +450,6 @@ class NewEntryPage extends Component {
                   <TagEditor
                     ref={this._createRef('tagEditor')}
                     className="edit-entry-page__tag-editor"
-                    match={match}
                     nodeRef={(node) => { this.tagsField = node; }}
                     intl={intl}
                     ethAddress={loggedProfile.get('ethAddress')}

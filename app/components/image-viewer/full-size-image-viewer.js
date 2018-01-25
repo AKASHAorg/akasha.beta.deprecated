@@ -75,8 +75,9 @@ class FullSizeImageViewer extends Component {
             className={
               `full-size-image-viewer full-size-image-viewer${showViewer ? '' : '__hidden'}`
             }
+            onClick={this._handleViewerClose}
           >
-            <div
+            {/* <div
               className="full-size-image-viewer__close-button"
             >
               <Button
@@ -85,7 +86,7 @@ class FullSizeImageViewer extends Component {
                 type="primary"
                 onClick={this._handleViewerClose}
               />
-            </div>
+            </div> */}
             <div
               className="full-size-image-viewer__images"
             >
@@ -94,7 +95,7 @@ class FullSizeImageViewer extends Component {
                     Loading
                 </div>
               }
-              {showViewer && fullSizeImages.get('images').size > 1 &&
+              {/* {showViewer && fullSizeImages.get('images').size > 1 &&
                 <div
                   onClick={this._incrementIndex}
                   className="full-size-image-viewer__arrow full-size-image-viewer__arrow_left"
@@ -104,7 +105,7 @@ class FullSizeImageViewer extends Component {
                     className="full-size-image-viewer__arrow_icon"
                   />
                 </div>
-              }
+              } */}
               {showViewer &&
                 <img
                   className="full-size-image-viewer__image"
@@ -113,7 +114,7 @@ class FullSizeImageViewer extends Component {
                   alt=""
                 />
               }
-              {showViewer && fullSizeImages.get('images').size > 1 &&
+              {/* {showViewer && fullSizeImages.get('images').size > 1 &&
                 <div
                   className="full-size-image-viewer__arrow full-size-image-viewer__arrow_right"
                   onClick={this._decrementIndex}
@@ -123,10 +124,10 @@ class FullSizeImageViewer extends Component {
                     className="full-size-image-viewer__arrow_icon"
                   />
                 </div>
-              }
+              } */}
               <div
                 className="full-size-image-viewer__bg-overlay"
-                onClick={this._handleViewerClose}
+                // onClick={this._handleViewerClose}
               />
             </div>
           </div>
