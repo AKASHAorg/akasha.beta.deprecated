@@ -51,6 +51,12 @@ function findBestMatch (width, obj, initialKey) {
     return imageKey;
 }
 
+function getBestAvailableImage (files) {
+    return Object.values(files)
+        .sort((a, b) => a.width < b.width)
+        .slice(0, 1)[0];
+}
+
 function imageCreator (arrayBuffer, baseUrl) {
     // if arrayBuffer is string it means that it comes from ipfs
     if (baseUrl && is(String, arrayBuffer)) {
@@ -359,4 +365,11 @@ const getResizedImages = (inputFiles, options) => {
 };
 
 export default imageCreator;
-export { getResizedImages, getImageSize, extractImageFromContent, findBestMatch, findClosestMatch };
+export {
+    getResizedImages,
+    getImageSize,
+    extractImageFromContent,
+    findBestMatch,
+    findClosestMatch,
+    getBestAvailableImage
+};

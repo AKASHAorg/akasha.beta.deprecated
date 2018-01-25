@@ -1,6 +1,6 @@
 import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
-import { Map } from 'immutable';
+import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
 import { DraftModel } from '../reducers/models';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
@@ -16,6 +16,7 @@ import * as appActions from '../actions/app-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
 import * as eProcActions from '../actions/external-process-actions';
+import * as tagActions from '../actions/tag-actions';
 
 const { EditorState, SelectionState } = DraftJS;
 const { Channel } = self;
@@ -49,6 +50,10 @@ function* draftCreate ({ data }) {
     }));
 }
 
+function* draftAddTag ({ data }) {
+    yield put(tagActions.tagExists({ tagName: data.tagName, addToDraft: true, draftId: data.draftId }));
+}
+
 /**
  * get all drafts.
  */
@@ -58,7 +63,14 @@ function* draftsGet ({ data }) {
         let drafts = new Map();
         if (response.length > 0) {
             response.forEach((draft) => {
+                let draftTags = new OrderedMap();
                 draft.content.draft = editorStateFromRaw(draft.content.draft);
+                if (Object.keys(draft.tags).length) {
+                    Object.keys(draft.tags).forEach((tagKey) => {
+                        draftTags = draftTags.set(tagKey, draft.tags[tagKey]);
+                    });
+                }
+                draft.tags = draftTags;
                 drafts = drafts.setIn([draft.id], DraftModel.createDraft(draft));
             });
         }
@@ -138,6 +150,7 @@ function* draftPublish ({ actionId, draft }) {
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
+    console.log('tags are', draft);
     try {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
@@ -159,15 +172,17 @@ function* draftPublish ({ actionId, draft }) {
         ) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
+        console.log(draftFromState.tags.keySeq().toJS(), 'tags to be published');
         yield call([channel, channel.send], {
             actionId,
             id,
             token,
-            tags: draftToPublish.tags,
+            tags: draftFromState.tags.keySeq().toJS(),
             content: draftToPublish.content,
             entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
         });
     } catch (ex) {
+        console.log(ex, 'the exception on publish!');
         yield put(draftActions.draftPublishError(ex));
     }
 }
@@ -232,6 +247,7 @@ function* watchDraftPublishChannel () {
         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
         if (shouldApplyChanges) {
             if (response.error) {
+                console.log(response.error, 'the error');
                 yield put(draftActions.draftPublishError(
                     response.error,
                     response.request.id
@@ -239,6 +255,7 @@ function* watchDraftPublishChannel () {
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
+                    console.log(response, 'an errored response');
                     yield put(draftActions.draftPublishError({}, response.request.id));
                 } else {
                     yield put(eProcActions.gethGetStatusSuccess({
@@ -280,7 +297,6 @@ function* watchDraftPublishUpdateChannel () {
                     response.error,
                     response.request.id
                 ));
-                console.log(response, 'errored update response');
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
@@ -329,4 +345,5 @@ export function* watchDraftActions () {
     yield takeLatest(types.DRAFTS_GET, draftsGet);
     yield takeLatest(types.DRAFTS_GET_COUNT, draftsGetCount);
     yield takeEvery(types.DRAFT_DELETE, draftDelete);
+    yield takeLatest(types.DRAFT_ADD_TAG, draftAddTag);
 }

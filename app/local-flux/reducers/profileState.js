@@ -579,7 +579,8 @@ const profileState = createReducer(initialState, {
             isFollower: state.get('isFollower').set(ethAddress, false)
         });
     },
-
+    [types.TAG_CAN_CREATE_SUCCESS]: (state, data) =>
+        state.set('canCreateTags', data.data.can),
 });
 
 export default profileState;

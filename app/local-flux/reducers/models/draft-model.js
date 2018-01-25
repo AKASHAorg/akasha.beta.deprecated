@@ -1,4 +1,4 @@
-import { Record, Map, List } from 'immutable';
+import { Record, Map, List, OrderedMap } from 'immutable';
 import { License, DraftContent, Draft } from '../records';
 
 const DraftModelRecord = Record({
@@ -17,7 +17,7 @@ export default class DraftModel extends DraftModelRecord {
         const { selectionState, ...others } = draftObj;
         let draftLicence = new License();
         let draftContent = new DraftContent();
-        let tags = new List();
+        let tags = new OrderedMap();
         if (draftObj.content) {
             draftLicence = draftLicence.merge(draftObj.content.licence);
             draftContent = draftContent.mergeDeep({
@@ -26,8 +26,8 @@ export default class DraftModel extends DraftModelRecord {
                 featuredImage: draftObj.content.featuredImage ? draftObj.content.featuredImage : new Map()
             });
         }
-        if (draftObj.tags && draftObj.tags.length) {
-            tags = tags.concat(draftObj.tags);
+        if (draftObj.tags && draftObj.tags.size) {
+            tags = tags.merge(draftObj.tags);
         }
         const draft = new Draft({
             ...others,
@@ -38,5 +38,12 @@ export default class DraftModel extends DraftModelRecord {
             tags,
         });
         return draft;
+    }
+    static addExistingTags (tags) {
+        let orderedTags = new OrderedMap();
+        tags.forEach((tag) => {
+            orderedTags = orderedTags.set(tag, { exists: true });
+        });
+        return orderedTags;
     }
 }
