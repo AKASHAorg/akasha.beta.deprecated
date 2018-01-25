@@ -4,6 +4,7 @@ export const SearchRecord = Record({
     currentPage: null,
     entryIds: new List(),
     flags: new Map(),
+    offset: null,
     profiles: new List(),
     profilesAutocomplete: new List(),
     query: '',

@@ -403,7 +403,7 @@ export const selectResolvingComment = (state, commentId) =>
 export const selectSearchEntries = state =>
     state.searchState.entryIds.map(entryId => state.entryState.getIn(['byId', entryId]));
 
-export const selectSearchEntryOffset = state => state.searchState.entryIds.size;
+export const selectSearchEntryOffset = state => state.searchState.offset;
 
 export const selectSearchProfiles = state =>
     state.searchState.profiles.map(ethAddress => state.profileState.getIn(['byEthAddress', ethAddress]));

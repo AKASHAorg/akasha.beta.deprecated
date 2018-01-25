@@ -25,6 +25,7 @@ const searchState = createReducer(initialState, {
             currentPage: state.get('currentPage') + 1,
             entryIds,
             flags: state.get('flags').merge({ moreQueryPending: false }),
+            offset: state.get('offset') + data.collection.length,
             resultsCount: data.totalHits,
             totalPages: Math.ceil(data.totalHits / entrySearchLimit),
         });
@@ -75,6 +76,7 @@ const searchState = createReducer(initialState, {
             currentPage: null,
             entryIds: new List(),
             flags: state.get('flags').merge({ queryPending: true }),
+            offset: null,
             query: text,
             resultsCount: null,
             totalPages: null,
@@ -83,10 +85,11 @@ const searchState = createReducer(initialState, {
     [types.SEARCH_QUERY_SUCCESS]: (state, { data }) =>
         state.merge({
             currentPage: 1,
-            totalPages: Math.ceil(data.totalHits / entrySearchLimit),
-            resultsCount: data.totalHits,
+            entryIds: new List(getEntryIds(data.collection)),
             flags: state.get('flags').merge({ queryPending: false }),
-            entryIds: new List(getEntryIds(data.collection))
+            offset: data.collection.length,
+            resultsCount: data.totalHits,
+            totalPages: Math.ceil(data.totalHits / entrySearchLimit),
         }),
 
     [types.SEARCH_QUERY_ERROR]: state =>

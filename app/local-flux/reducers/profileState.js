@@ -36,6 +36,14 @@ const addProfileData = (byEthAddress, { ...profileData }, full) => {
         profileData.backgroundImage = oldProfile.get('backgroundImage');
         profileData.links = oldProfile.get('links');
     }
+    if (oldProfile) {
+        /*
+        * Prevent data from being overwriten if the new response is an unresolved profile
+        */
+        profileData.avatar = profileData.avatar || oldProfile.get('avatar');
+        profileData.firstName = profileData.firstName || oldProfile.get('firstName');
+        profileData.lastName = profileData.lastName || oldProfile.get('lastName');
+    }
     return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
 };
 
