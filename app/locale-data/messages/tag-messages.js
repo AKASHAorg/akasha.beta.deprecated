@@ -21,6 +21,11 @@ const tagMessages = defineMessages({
         description: 'Message to display when the tag was not created before',
         defaultMessage: 'This is a new tag that wasn`t created by anyone before!'
     },
+    tagsLeft: {
+        id: 'app.tag.tagsLeft',
+        description: 'How many tags you can add',
+        defaultMessage: '({value} remaining)'
+    }
 });
 
 export { tagMessages };

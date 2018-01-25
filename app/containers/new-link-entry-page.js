@@ -11,7 +11,8 @@ import { genId } from '../utils/dataModule';
 import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
-import { draftCreate, draftUpdate, draftRevertToVersion } from '../local-flux/actions/draft-actions';
+import { draftAddTag, draftRemoveTag, draftCreate, draftUpdate,
+    draftRevertToVersion } from '../local-flux/actions/draft-actions';
 import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
@@ -151,18 +152,22 @@ class NewLinkEntryPage extends Component {
         })));
     }
 
-    _handleTagUpdate = (tagList) => {
-        const { draftObj, loggedProfile } = this.props;
-        this.props.draftUpdate(draftObj.merge(fromJS({
-            ethAddress: loggedProfile.get('ethAddress'),
-            tags: draftObj.get('tags').clear().concat(tagList),
-        })));
-        this.setState(prevState => ({
-            errors: {
-                ...prevState.errors,
-                tags: null,
-            }
-        }));
+    _handleTagAdd = (tagName) => {
+        const { draftObj } = this.props;
+        this.props.draftAddTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
+        this.props.draftUpdate(draftObj.setIn(['tags', tagName], { fetching: true }));
+    }
+
+    _handleTagRemove = (tagName) => {
+        const { draftObj } = this.props;
+        this.props.draftRemoveTag({
+            tagName,
+            draftId: draftObj.get('id')
+        });
+        this.props.draftUpdate(draftObj.deleteIn(['tags', tagName]));
     }
 
     _handleDraftLicenceChange = (licenceField, licence) => {
@@ -340,7 +345,7 @@ class NewLinkEntryPage extends Component {
     render () {
         const { intl, baseUrl, darkTheme, draftObj, drafts, draftsFetched, licences,
             match, tagSuggestions, tagSuggestionsCount, showSecondarySidebar,
-            loggedProfile, selectionState } = this.props;
+            loggedProfile, selectionState, canCreateTags } = this.props;
 
         const { showPublishPanel, errors, shouldResetCaret, parsingInfo,
             infoExtracted, urlInputHidden } = this.state;
@@ -451,11 +456,11 @@ class NewLinkEntryPage extends Component {
                       <TagEditor
                         className="edit-entry-page__tag-editor"
                         ref={this._createRef('tagEditor')}
-                        match={match}
                         nodeRef={(node) => { this.tagsField = node; }}
                         intl={intl}
                         ethAddress={loggedProfile.get('ethAddress')}
-                        onTagUpdate={this._handleTagUpdate}
+                        onTagAdd={this._handleTagAdd}
+                        onTagRemove={this._handleTagRemove}
                         onChange={this._handleTagInputChange}
                         tags={tags}
                         actionAdd={this.props.actionAdd}
@@ -466,6 +471,7 @@ class NewLinkEntryPage extends Component {
                         inputDisabled={onChain}
                         onTagError={this._handleInternalTagError}
                         tagErrors={errors.tags}
+                        canCreateTags={canCreateTags}
                       />
                     </div>
                   }
@@ -556,6 +562,8 @@ NewLinkEntryPage.propTypes = {
     history: PropTypes.shape(),
     darkTheme: PropTypes.bool,
     draftObj: PropTypes.shape(),
+    draftAddTag: PropTypes.func,
+    draftRemoveTag: PropTypes.func,
     draftCreate: PropTypes.func,
     draftUpdate: PropTypes.func,
     draftRevertToVersion: PropTypes.func,
@@ -574,12 +582,15 @@ NewLinkEntryPage.propTypes = {
     tagSuggestionsCount: PropTypes.number,
     userDefaultLicence: PropTypes.shape(),
     pendingFaucetTx: PropTypes.bool,
+    canCreateTags: PropTypes.bool,
 };
 const mapStateToProps = (state, ownProps) => ({
     loggedProfile: selectLoggedProfile(state),
     baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
     darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
+    draftAddTag: PropTypes.func,
+    draftRemoveTag: PropTypes.func,
     drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
     entriesFetched: state.draftState.get('entriesFetched'),
@@ -591,12 +602,15 @@ const mapStateToProps = (state, ownProps) => ({
     tagSuggestionsCount: state.searchState.get('tagResultsCount'),
     userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicense']),
     pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
+    canCreateTags: state.profileState.get('canCreateTags'),
 });
 
 export default connect(
     mapStateToProps,
     {
         actionAdd,
+        draftAddTag,
+        draftRemoveTag,
         entryGetFull,
         draftCreate,
         draftUpdate,

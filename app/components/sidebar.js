@@ -234,19 +234,19 @@ class Sidebar extends Component {
           <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
             <div className="sidebar__top-icons">
               <div className="flex-center-x sidebar__new-entry">
-                <div className="content-link flex-center sidebar__new-entry-wrapper">
-                  <Popover
-                    arrowPointAtCenter
-                    placement="rightTop"
-                    content={this._getEntryMenu()}
-                    overlayClassName="entry-menu-popover"
-                  >
+                <Popover
+                  arrowPointAtCenter
+                  placement="rightTop"
+                  content={this._getEntryMenu()}
+                  overlayClassName="entry-menu-popover"
+                >
+                  <div className="content-link flex-center sidebar__new-entry-wrapper">
                     <Icon
                       className="sidebar__new-entry-icon"
                       type="newEntry"
                     />
-                  </Popover>
-                </div>
+                  </div>
+                </Popover>
               </div>
               <SidebarIcon
                 activePath="/dashboard"
