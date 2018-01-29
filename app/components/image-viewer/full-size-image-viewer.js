@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
+import { injectIntl } from 'react-intl';
 import { Icon } from '../';
 import { fullSizeImageDelete } from '../../local-flux/actions/app-actions';
+import { entryMessages } from '../../locale-data/messages';
 
 class FullSizeImageViewer extends Component {
     constructor (props) {
@@ -23,11 +25,16 @@ class FullSizeImageViewer extends Component {
                 currentIndex: startIndex
             });
         }
+        if (this.props.fullSizeImages.size > 0 && fullSizeImages.size === 0) {
+            this.setState({
+                loadingImage: true,
+            });
+        }
     }
     _getImages = () => {}
     _handleViewerClose = () => {
         this.setState({
-            loadingImage: false,
+            loadingImage: true,
             currentIndex: 0,
         }, () => {
             this.props.fullSizeImageDelete();
@@ -67,9 +74,10 @@ class FullSizeImageViewer extends Component {
         });
     }
     render () {
-        const { fullSizeImages } = this.props;
+        const { fullSizeImages, intl } = this.props;
         const { currentIndex, loadingImage } = this.state;
         const showViewer = fullSizeImages.size > 0 && fullSizeImages.get('images').size > 0;
+        console.log(showViewer, fullSizeImages.getIn(['images', currentIndex]), 'src');
         return (
           <div
             className={
@@ -91,8 +99,13 @@ class FullSizeImageViewer extends Component {
               className="full-size-image-viewer__images"
             >
               {showViewer && loadingImage &&
-                <div>
-                    Loading
+                <div className="full-size-image-viewer__loading-wrapper">
+                  <div className="full-size-image-viewer__loading">
+                    <Spin
+                      size="large"
+                      tip={intl.formatMessage(entryMessages.loadingImage)}
+                    />
+                  </div>
                 </div>
               }
               {/* {showViewer && fullSizeImages.get('images').size > 1 &&
@@ -108,7 +121,10 @@ class FullSizeImageViewer extends Component {
               } */}
               {showViewer &&
                 <img
-                  className="full-size-image-viewer__image"
+                  className={
+                      `full-size-image-viewer__image
+                      full-size-image-viewer__image${loadingImage ? '_loading' : ''}`
+                  }
                   src={fullSizeImages.getIn(['images', currentIndex]).src}
                   onLoad={this._handleImageLoad}
                   alt=""
@@ -135,16 +151,19 @@ class FullSizeImageViewer extends Component {
     }
 }
 
-const mapStateToProps = state => ({
-    fullSizeImages: state.appState.get('fullSizeImages'),
-});
 FullSizeImageViewer.propTypes = {
     fullSizeImages: PropTypes.shape(),
     fullSizeImageDelete: PropTypes.func,
+    intl: PropTypes.shape(),
 };
+
+const mapStateToProps = state => ({
+    fullSizeImages: state.appState.get('fullSizeImages'),
+});
+
 export default connect(
     mapStateToProps,
     {
         fullSizeImageDelete,
     }
-)(FullSizeImageViewer);
+)(injectIntl(FullSizeImageViewer));

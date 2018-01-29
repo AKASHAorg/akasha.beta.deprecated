@@ -13,7 +13,7 @@ import decorateComponentWithProps from 'decorate-component-with-props';
 import { Icon, ProfilePopover, VotesModal, VotePopover } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
+import { toggleOutsideNavigation, fullSizeImageAdd } from '../../local-flux/actions/app-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
 import { selectBlockNumber, selectComment, selectCommentVote, selectHideCommentSettings,
     selectLoggedEthAddress, selectPendingCommentVote, selectProfile,
@@ -40,7 +40,8 @@ class Comment extends Component {
         };
 
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
-            readOnly: true
+            readOnly: true,
+            onImageClick: this.onImageClick
         });
         this.emojiPlugin = createEmojiPlugin({ imagePath: 'https://ipfs.io/ipfs/QmdEkyy4pmcmDhAe5XjsAokhXMFMvNTVzoELnxfpUGhmQv/emoji-svg/', allowImageCache: true });
         this.highlightPlugin = createHighlightPlugin();
@@ -72,7 +73,9 @@ class Comment extends Component {
             this.checkIfExpanded();
         }
     }
-
+    onImageClick = (image) => {
+        this.props.fullSizeImageAdd(image);
+    }
     checkIfExpanded = () => {
         const { comment } = this.props;
         let { isExpanded } = this.state;
@@ -400,7 +403,8 @@ Comment.propTypes = {
     showReplyButton: PropTypes.bool,
     toggleOutsideNavigation: PropTypes.func.isRequired,
     vote: PropTypes.string,
-    votePending: PropTypes.bool
+    votePending: PropTypes.bool,
+    fullSizeImageAdd: PropTypes.func,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -428,5 +432,6 @@ export default connect(
         actionAdd,
         commentsResolveIpfsHash,
         toggleOutsideNavigation,
+        fullSizeImageAdd,
     }
 )(injectIntl(Comment));

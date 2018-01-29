@@ -493,6 +493,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.linkPlaceholder',
         description: 'placeholder for the link input in editors',
         defaultMessage: 'Type the link and press enter'
+    },
+    loadingImage: {
+        id: 'app.entry.loadingImage',
+        description: 'placeholder when an image is loading',
+        defaultMessage: 'Loading image'
     }
 });
 export { entryMessages };
