@@ -4,6 +4,20 @@
     z-index: 150;
     position: relative;
     cursor: zoom-out;
+    &__loading-wrapper {
+        z-index: 5;
+        position: absolute;
+    }
+    &__loading {
+        .ant-spin-spinning {
+            color: @lighter-color;
+            .ant-spin-dot {
+                i {
+                    background-color: @lighter-color;
+                }
+            }
+        }
+    }
     &__hidden {
         display: none;
         visibility: hidden;
@@ -63,6 +77,9 @@
         z-index: 10;
         max-height: 100%;
         max-width: 100%;
+        &_loading {
+            visibility: hidden;
+        }
     }
     &__bg-overlay {
         position: absolute;
@@ -70,6 +87,6 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0,0,0,0.9);
+        background: rgba(0,0,0,0.8);
     }
 }
