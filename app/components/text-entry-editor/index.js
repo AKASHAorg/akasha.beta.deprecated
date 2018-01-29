@@ -29,7 +29,9 @@ class EntryEditor extends Component {
             targetNode.scrollIntoViewIfNeeded();
         }
     };
-
+    focus = () => {
+        this.editor.focus();
+    }
     _handleImageError = (err) => {
         this.setState({
             imageErr: err
