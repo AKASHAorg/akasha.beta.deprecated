@@ -1,0 +1,62 @@
+.essence-history {
+    height: 330px;
+    position: relative;
+
+    &__back-icon {
+        margin-right: 6px;
+    }
+
+    &__title {
+        height: 40px;
+        color: @heading-color;
+        width: 100%;
+        padding: 0px 12px;
+    }
+
+    &__essence-score {
+        color: @heading-color;
+        font-weight: 600;
+        padding-left: 6px;
+    }
+
+    &__logs-wrapper {
+        height: ~'calc(100% - 40px)';        
+        border-top: 1px solid @light-border;
+        padding: 0px 4px 0px 12px;
+    }
+
+    &__logs {
+        max-height: 100%;
+        overflow-y: auto;
+    }
+
+    &__log-row {
+        border-bottom: 1px solid @light-border;
+        padding: 8px 0px;
+        margin-right: 10px;
+
+        &_last {
+            border: none;
+        }
+    }
+
+    &__log-message {
+        margin-right: 5px;
+    }
+
+    &__log-placeholder {
+        height: 21px;
+        padding: 3px 0px;
+        width: 220px;
+
+        div {
+            width: 100%;
+            height: 100%;
+            background-color: @placeholder-color;            
+        }
+    }
+
+    &__spinner {
+        margin-top: 30px;
+    }
+}

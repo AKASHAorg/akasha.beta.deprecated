@@ -105,6 +105,14 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
+    [types.ENTRY_GET_END_PERIOD_SUCCESS]: (state, { data }) => {
+        let endPeriod = new Map();
+        data.collection.forEach((res) => {
+            endPeriod = endPeriod.set(res.entryId, res.endDate);
+        });
+        return state.set('endPeriod', endPeriod);
+    },
+
     [types.ENTRY_GET_FULL]: (state, { asDraft, publishedDateOnly }) => {
         if (!asDraft && !publishedDateOnly) {
             return state.setIn(['flags', 'fetchingFullEntry'], true);

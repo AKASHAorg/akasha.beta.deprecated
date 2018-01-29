@@ -76,6 +76,7 @@ export const EntryState = Record({
     byId: new Map(),
     canClaim: new Map(),
     canClaimVote: new Map(),
+    endPeriod: new Map(),
     entriesCount: 0, // entries published by a logged profile
     entryPageOverlay: new EntryPageOverlay(),
     flags: new Flags(),

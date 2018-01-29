@@ -143,6 +143,7 @@ SearchPage.propTypes = {
     query: PropTypes.string,
     resultsCount: PropTypes.number,
     searchMoreQuery: PropTypes.func.isRequired,
+    searchOffset: PropTypes.number,
     searchProfiles: PropTypes.func.isRequired,
     searchQuery: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
