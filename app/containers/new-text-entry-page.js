@@ -328,6 +328,11 @@ class NewEntryPage extends Component {
         }
         return false;
     }
+    _handleTitleKeyPress = (ev) => {
+        if (ev.keyCode === 13) {
+            this.editor.focus();
+        }
+    }
     /* eslint-disable complexity */
     render () {
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
@@ -426,6 +431,7 @@ class NewEntryPage extends Component {
                       }
                       placeholder={intl.formatMessage(entryMessages.title)}
                       onChange={this._handleTitleChange}
+                      onKeyDown={this._handleTitleKeyPress}
                       value={title}
                     />
                     {errors.title &&
