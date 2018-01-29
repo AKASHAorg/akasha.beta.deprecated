@@ -199,7 +199,7 @@ function* actionGetClaimableEntries (data) {
     data.forEach((action) => {
         const { entryId, ethAddress } = action.payload;
         if (entryId && ethAddress) {
-            entries.push({ entryId, ethAddress });
+            entries.push(entryId);
             if (ethAddress === loggedEthAddress) {
                 ownEntries.push(entryId);
             } else {
@@ -207,10 +207,7 @@ function* actionGetClaimableEntries (data) {
             }
         }
     });
-    for (let i = 0; i < entries.length; i++) {
-        const { entryId, ethAddress } = entries[i];
-        yield put(entryActions.entryGetShort({ context: 'claimableEntries', entryId, ethAddress }));
-    }
+    yield put(entryActions.entryGetEndPeriod(entries));
     if (ownEntries.length) {
         yield put(entryActions.entryCanClaim(ownEntries));
         yield put(entryActions.entryGetBalance(ownEntries));
