@@ -40,6 +40,7 @@ export EntryPageHeader from './entry/entry-page-header';
 export EntrySecondarySidebarItem from './entry-secondary-sidebar-item';
 export EntryVersionTimeline from './timelines/entry-version-timeline';
 export ErrorNotification from './notifications/error-notification';
+export EssenceHistory from './essence-history';
 export EssencePopover from './popovers/essence-popover';
 export EthWallet from './wallets/eth-wallet';
 export FaucetAndManafyModal from './modals/faucet-and-manafy-modal';

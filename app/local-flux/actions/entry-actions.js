@@ -59,6 +59,14 @@ export const entryGetBalanceError = (error) => {
 };
 export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
 
+export const entryGetEndPeriod = entryIds => action(types.ENTRY_GET_END_PERIOD, { entryIds });
+export const entryGetEndPeriodError = (error) => {
+    error.code = 'EGEPE01';
+    error.messageId = 'entryGetEndPeriod';
+    return action(types.ENTRY_GET_END_PERIOD_ERROR, { error });
+};
+export const entryGetEndPeriodSuccess = data => action(types.ENTRY_GET_END_PERIOD_SUCCESS, { data });
+
 export const entryGetFull = ({
     akashaId, entryId, ethAddress, version, asDraft,
     revert, publishedDateOnly, latestVersion
@@ -123,7 +131,6 @@ export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCC
 export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { data });
 export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });
 export const entryGetVoteRatioError = error => action(types.ENTRY_GET_VOTE_RATIO_ERROR, { error });
-
 
 export const entryListIterator = ({ columnId, value, limit }) =>
     action(types.ENTRY_LIST_ITERATOR, { columnId, value, limit });

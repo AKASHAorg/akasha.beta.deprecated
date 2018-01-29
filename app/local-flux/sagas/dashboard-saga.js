@@ -45,6 +45,7 @@ function* dashboardAddFirst ({ name, interests }) {
     const columns = interests ?
         interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) :
         [];
+    columns.unshift({ type: columnTypes.latest });
     yield call(dashboardAdd, { name, columns });
     yield put(actions.dashboardAddFirstSuccess());
 }

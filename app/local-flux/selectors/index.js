@@ -61,10 +61,8 @@ export const selectBatchActions = state =>
 
 export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
 
-export const selectClaimableEntryIds = state => state.actionState.get('claimable');
-
-export const selectClaimableEntries = state =>
-    state.actionState.get('claimable').map(entryId => selectEntry(state, entryId));
+export const selectClaimableActions = state =>
+    state.actionState.get('claimable').map(actionId => selectAction(state, actionId));
 
 export const selectColumn = (state, columnId) => state.dashboardState.getIn(['columnById', columnId]);
 
@@ -141,6 +139,8 @@ export const selectEntryBalance = (state, id) => state.entryState.getIn(['balanc
 export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canClaim', id]);
 
 export const selectEntryCanClaimVote = (state, id) => state.entryState.getIn(['canClaimVote', id]);
+
+export const selectEntryEndPeriod = state => state.entryState.get('endPeriod');
 
 export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags', flag]);
 

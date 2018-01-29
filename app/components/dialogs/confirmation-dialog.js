@@ -11,7 +11,6 @@ import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration } from '
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Input, RememberPassphrase } from '../';
 import { getDisplayName } from '../../utils/dataModule';
-import { balanceToNumber } from '../../utils/number-formatter';
 
 const FormItem = Form.Item;
 

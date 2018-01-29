@@ -109,6 +109,12 @@ function* entryGetBalance ({ entryIds }) {
     yield apply(channel, channel.send, [entryIds]);
 }
 
+function* entryGetEndPeriod ({ entryIds }) {
+    const channel = Channel.server.entry.getVoteEndPeriod;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [entryIds]);
+}
+
 function* entryGetExtraOfEntry (entryId, ethAddress) {
     const { canClaim, getEntryBalance, getVoteOf, getVoteRatio } = Channel.server.entry;
     yield call(enableExtraChannels);
@@ -531,6 +537,17 @@ function* watchEntryGetChannel () {
 /* eslint-enable complexity */
 /* eslint-enable max-statements */
 
+function* watchEntryGetEndPeriodChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.getVoteEndPeriod);
+        if (resp.error) {
+            yield put(actions.entryGetEndPeriodError(resp.error));
+        } else {
+            yield put(actions.entryGetEndPeriodSuccess(resp.data));
+        }
+    }
+}
+
 function* watchEntryGetScoreChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getScore);
@@ -760,6 +777,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryDownvoteChannel);
     yield fork(watchEntryGetBalanceChannel);
     yield fork(watchEntryGetChannel);
+    yield fork(watchEntryGetEndPeriodChannel);
     yield fork(watchEntryGetScoreChannel);
     yield fork(watchEntryGetVoteOfChannel);
     yield fork(watchEntryGetVoteRatioChannel);
@@ -783,6 +801,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
     yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
     yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);
+    yield takeEvery(types.ENTRY_GET_END_PERIOD, entryGetEndPeriod);
     yield takeEvery(types.ENTRY_GET_FULL, entryGetFull);
     yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
     yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);

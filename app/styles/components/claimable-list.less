@@ -5,12 +5,7 @@
         color: @heading-color;
         font-weight: 500;
         padding: 0px 16px;
-        border-bottom: 1px solid @light-border;
         height: 40px;
-    }
-
-    &__back-icon {
-        margin-right: 10px;
     }
 
     &__counter {
@@ -36,7 +31,9 @@
     }
 
     &__list-wrapper {
-        height: ~'calc(100% - 40px)';
+        height: ~'calc(100% - 40px - 56px)';
+        border-top: 1px solid @light-border;
+        border-bottom: 1px solid @light-border;
         margin-right: 4px;        
     }
 
@@ -105,6 +102,7 @@
     &__collect-in {
         font-size: 12px;
         color: @text-color-secondary;
+        text-align: center;
     }
 
     &__collected {
@@ -113,5 +111,18 @@
 
     &__check-icon {
         color: @success-color;
+    }
+
+    &__actions {
+        height: 56px;
+        padding: 12px 36px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__button {
+        width: ~'calc(50% - 6px)';
+        padding: 0px 8px;
     }
 }
