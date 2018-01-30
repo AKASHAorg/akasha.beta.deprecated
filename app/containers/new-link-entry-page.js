@@ -34,11 +34,24 @@ class NewLinkEntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { draftObj } = nextProps;
+        const { draftObj, drafts } = nextProps;
+        const { history } = this.props;
         const hasCardContent = draftObj &&
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
             draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
             draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
+        /** handle just published draft! */
+        if (!draftObj && this.props.draftObj) {
+            if (drafts.size > 0) {
+                const draftId = drafts.first().get('id');
+                const draftType = drafts.first().getIn(['content', 'entryType']);
+                if (draftId) {
+                    history.push(`/draft/${draftType}/${draftId}`);
+                }
+            } else {
+                history.push('/draft/article/noDraft');
+            }
+        }
         if (hasCardContent) {
             this.setState({
                 urlInputHidden: true,
