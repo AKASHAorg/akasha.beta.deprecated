@@ -77,7 +77,6 @@ class FullSizeImageViewer extends Component {
         const { fullSizeImages, intl } = this.props;
         const { currentIndex, loadingImage } = this.state;
         const showViewer = fullSizeImages.size > 0 && fullSizeImages.get('images').size > 0;
-        console.log(showViewer, fullSizeImages.getIn(['images', currentIndex]), 'src');
         return (
           <div
             className={
