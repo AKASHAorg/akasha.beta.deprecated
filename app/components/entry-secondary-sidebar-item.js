@@ -45,7 +45,7 @@ const EntrySecondarySidebarItem = ({
     }
     {!matchString &&
     <div>
-      {getIconType(localChanges, published, unresolved, draft.content.entryType)}
+      {/* {getIconType(localChanges, published, unresolved, draft.content.entryType)} */}
       <a
         href="/"
         className="draft-list-item__link"

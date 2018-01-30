@@ -42,10 +42,10 @@ class EntryPageContent extends Component {
 
     renderLicenseIcons = () => {
         const { entry, licenses } = this.props;
-        const licence = licenses.get(entry.content.licence.id);
+        let licence = licenses.get(entry.content.licence.id);
 
-        if (!licence) {
-            return null;
+        if (!licence && entry.content.licence.parent) {
+            licence = licenses.get(entry.content.licence.parent);
         }
 
         const licenseIcons = {
@@ -95,6 +95,9 @@ class EntryPageContent extends Component {
         const { baseUrl, commentEditor, containerRef, entry, licenses, intl, fullSizeImageAdd } = this.props;
         const license = licenses.get(entry.content.licence.id);
         let licenseLabel = intl.formatMessage(entryMessages.cannotRetrieveLicense);
+        if (!entry.content.licence.id) {
+            licenseLabel = licenses.get(entry.content.licence.parent).label;
+        }
         if (license) {
             if (license.parent) {
                 licenseLabel = licenses.get(license.parent).label;
@@ -133,7 +136,7 @@ class EntryPageContent extends Component {
               </div>
             </div>
             <div className="flex-center-y entry-page-content__info">
-              {!license &&
+              {!entry.content.licence.id && !entry.content.licence.parent &&
                 <Icon type="exclamation-circle-o" className="entry-page-content__licence-error-icon" />
               }
               <span style={{ paddingRight: '10px' }}>

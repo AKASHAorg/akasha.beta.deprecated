@@ -146,6 +146,7 @@ class NewEntryPage extends Component {
         const { draftObj, loggedProfile, licences } = this.props;
         if (licenceField === 'parent') {
             const childLicence = licences.find(lic => lic.get('parent') === licence);
+            console.log(childLicence, 'childs');
             if (childLicence) {
                 return this.props.draftUpdate(
                     draftObj.merge({
@@ -159,6 +160,17 @@ class NewEntryPage extends Component {
                     })
                 );
             }
+            return this.props.draftUpdate(
+                draftObj.merge({
+                    ethAddress: loggedProfile.get('ethAddress'),
+                        content: draftObj.get('content').merge({
+                            licence: draftObj.getIn(['content', 'licence']).merge({
+                                parent: licence,
+                                id: null,
+                            })
+                        })
+                })
+            );
         }
         return this.props.draftUpdate(
             draftObj.merge({

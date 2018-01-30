@@ -150,7 +150,6 @@ function* draftPublish ({ actionId, draft }) {
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
     const draftToPublish = draftFromState.toJS();
-    console.log('tags are', draft);
     try {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
@@ -172,7 +171,6 @@ function* draftPublish ({ actionId, draft }) {
         ) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
-        console.log(draftFromState.tags.keySeq().toJS(), 'tags to be published');
         yield call([channel, channel.send], {
             actionId,
             id,
@@ -221,7 +219,7 @@ function* draftPublishUpdate ({ actionId, draft }) {
             actionId,
             entryId: id,
             token,
-            tags: draftToPublish.tags,
+            tags: draftFromState.tags.keySeq().toJS(),
             content: draftToPublish.content,
             entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
         });

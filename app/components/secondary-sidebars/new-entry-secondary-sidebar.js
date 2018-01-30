@@ -347,7 +347,6 @@ class NewEntrySecondarySidebar extends Component {
         const currentDraftId = match.params.draftId;
         const draftType = this.state.selectedDraftFilter;
         const entryType = this.state.selectedEntryFilter;
-
         const localDraftsByType = drafts
             .filter((drft) => {
                 if (draftType === 'all') {

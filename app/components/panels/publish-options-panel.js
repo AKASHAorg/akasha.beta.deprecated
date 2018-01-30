@@ -39,6 +39,7 @@ class PublishOptionsPanel extends Component {
 
     _handleLicenceChange = licenceType =>
         (value) => {
+            console.log('change licence to', licenceType, value);
             if (licenceType === 'parent') {
                 this.props.onLicenceChange(licenceType, value);
             } else if (licenceType === 'id') {
@@ -143,12 +144,12 @@ class PublishOptionsPanel extends Component {
                         ).toIndexedSeq()}
                 </Select>
                 {(licences.filter(lic => lic.get('parent') === selectedLicence.parent).size > 0) &&
-                <RadioGroup
-                  className="publish-options-panel__licence-radio-group"
-                  onChange={this._handleLicenceChange('id')}
-                  value={selectedLicence.id}
-                >
-                  {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
+                  <RadioGroup
+                    className="publish-options-panel__licence-radio-group"
+                    onChange={this._handleLicenceChange('id')}
+                    value={selectedLicence.id}
+                  >
+                    {licences.filter(lic => lic.get('parent') === selectedLicence.get('parent'))
                             .map(childLic => (
                               <Radio
                                 className="publish-options-panel__licence-radio"
@@ -158,7 +159,7 @@ class PublishOptionsPanel extends Component {
                                 {childLic.label}
                               </Radio>
                             )).toIndexedSeq()}
-                </RadioGroup>
+                  </RadioGroup>
                     }
               </div>
             </div>

@@ -260,6 +260,7 @@
   "app.entry.draftRevert": "Revert changes",
   "app.entry.linkDisabled": "You must select some text first",
   "app.entry.linkPlaceholder": "Type the link and press enter",
+  "app.entry.loadingImage": "Loading image",
   "app.error.reportErrorTitle": "Report error",
   "app.error.thankYouForYourFeedback": "Thank you for your feedback!",
   "app.error.copyTheFollowingLines": "Please copy the following lines and create a new issue on {githubLink}.",
