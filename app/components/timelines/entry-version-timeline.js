@@ -1,91 +1,95 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Steps, Popover } from 'antd';
+import { entryMessages } from '../../locale-data/messages';
 
-const { Step } = Steps;
-
-const getProgressDot = (dot, { status, index }, onRevertConfirm) => {
-    switch (status) {
-        case 'draft':
-            return (
-              <span className="draft-dot">
-                {dot}
-              </span>
-            );
-        case 'published':
-            return (
-              <Popover content={`Status: ${status}`}>
-                <a
-                  href="##"
-                  className="published-dot"
-                  onClick={ev => onRevertConfirm(ev, index)}
-                >
-                  {dot}
-                </a>
-              </Popover>
-            );
-        case 'published-selected':
-            return (
-              <Popover
-                content={'Status: Published'}
-              >
-                <a
-                  href="##"
-                  className="published-dot published-dot-selected"
-                  onClick={ev => onRevertConfirm(ev, index)}
-                >
-                  {dot}
-                </a>
-              </Popover>
-            );
-        case 'none':
-            return null;
-        default:
-            return dot;
+class EntryVersionTimeline extends Component {
+    state = {
+        rootWidth: null
     }
-};
-
-const getTimelineSteps = (items, localChanges, selectedVersion) => {
+    componentDidMount () {
+        const rootNode = this.rootNode;
+        const rootNodeSize = rootNode.getBoundingClientRect();
+        window.addEventListener('resize', this._handleResize);
+        // necessary evil! we need to measure the root node to find
+        /* eslint-disable react/no-did-mount-set-state */
+        this.setState({
+            rootWidth: rootNodeSize.width
+        });
+        /* eslint-enable react/no-did-mount-set-state */
+    }
+    _handleResize = () => {
+        const rootNode = this.rootNode;
+        const rootNodeSize = rootNode.getBoundingClientRect();
+        this.setState({
+            rootWidth: rootNodeSize.width
+        });
+    }
     /* eslint-disable react/no-array-index-key */
-    const steps = items.map((item, index) => (
-      <Step
-        key={`${index}`}
-        title={`v${index + 1}`}
-        status={`published${(selectedVersion === index) ? '-selected' : ''}`}
-      />
-    ));
-    /* eslint-enable react/no-array-index-key */
-    if (localChanges) {
-        steps.push(
-          <Step key="$localVersion" title="Local Version" status="draft" />
+    render () {
+        const { draftObj, onRevertConfirm, intl } = this.props;
+        const { content, localChanges } = draftObj;
+        const { latestVersion, version } = content;
+        const { rootWidth } = this.state;
+        const timelineItems = [...Array(Number(latestVersion) + 1)];
+        return (
+          <div
+            className="edit-entry-page__timeline"
+            ref={(node) => { this.rootNode = node; }}
+          >
+            {rootWidth &&
+                timelineItems.map((item, index) => (
+                  <div
+                    key={`step-${index}`}
+                    className={
+                        `edit-entry-page__timeline-step
+                        edit-entry-page__timeline-step${(index === version) ? '_active' : ''}`
+                    }
+                    style={{
+                        width: rootWidth / timelineItems.length
+                    }}
+                    onClick={ev => onRevertConfirm(ev, index)}
+                  >
+                    <div className="timeline-step_left-arm" />
+                    <div className="timeline-content__bullet" />
+                    <div
+                      className={
+                        `timeline-step_right-arm
+                        timeline-step_right-arm${(index === timelineItems.length - 1) ? '_last' : ''}`
+                      }
+                    />
+                    <div
+                      className="timeline-content__text"
+                    >
+                      V{index + 1}
+                    </div>
+                  </div>
+                ))
+            }
+            {rootWidth && localChanges &&
+              <div
+                className="edit-entry-page__timeline-step edit-entry-page__timeline-step_local"
+                style={{
+                    width: rootWidth / timelineItems.length
+                }}
+              >
+                <div className="timeline-step_left-arm" />
+                <div className="timeline-content__bullet" />
+                <div className="timeline-step_right-arm" />
+                <div
+                  className="timeline-content__text"
+                >
+                  {intl.formatMessage(entryMessages.localVersion)}                </div>
+              </div>
+            }
+          </div>
         );
     }
-    return steps;
-};
-
-const EntryVersionTimeline = ({ draftObj, onRevertConfirm }) => {
-    const { content, localChanges } = draftObj;
-    const { latestVersion, version } = content;
-    const timelineItems = [...Array(Number(latestVersion) + 1)];
-    return (
-      <Steps
-        progressDot={(dot, details) => getProgressDot(dot, details, onRevertConfirm)}
-        current={latestVersion + 1}
-        className="edit-entry-page__timeline-steps"
-        direction="horizontal"
-        labelPlacement="horizontal"
-        // size="small"
-      >
-        {
-          getTimelineSteps(timelineItems, localChanges, version)
-        }
-      </Steps>
-    );
-};
+}
 
 EntryVersionTimeline.propTypes = {
     draftObj: PropTypes.shape().isRequired,
     onRevertConfirm: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
 };
 
 export default EntryVersionTimeline;

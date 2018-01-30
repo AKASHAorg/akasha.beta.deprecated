@@ -152,16 +152,6 @@ const draftState = createReducer(initialState, {
         const { entryId, content, publishDate } = data;
         const existingDraft = state.getIn(['drafts', entryId]);
         return state.withMutations((mState) => {
-            if (existingDraft && existingDraft.get('localChanges')) {
-                mState.mergeIn(['drafts', entryId], {
-                    content: mState.getIn(['drafts', entryId, 'content']).merge({
-                        latestVersion: Math.max(
-                            existingDraft.getIn(['content', 'latestVersion']), content.version
-                        ),
-                    })
-                });
-            }
-
             if ((existingDraft && !existingDraft.get('localChanges')) || data.revert) {
                 const { draftParts, tags, ...newDraftContent } = content;
                 mState.mergeIn(['drafts', entryId], DraftModel.createDraft({
@@ -169,7 +159,9 @@ const draftState = createReducer(initialState, {
                     content: {
                         ...newDraftContent,
                         draft: editorStateFromRaw(data.content.draft),
-                        latestVersion: content.version,
+                        latestVersion: data.revert ?
+                            existingDraft.getIn(['content', 'latestVersion']) :
+                            content.version,
                         entryType: content.entryType > -1 ?
                             entryTypes[content.entryType] :
                             determineEntryType(content),

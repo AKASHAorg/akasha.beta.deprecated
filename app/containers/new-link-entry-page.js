@@ -531,6 +531,7 @@ class NewLinkEntryPage extends Component {
                         <EntryVersionTimeline
                           draftObj={draftObj}
                           onRevertConfirm={this._showRevertConfirm}
+                          intl={intl}
                         />
                       </div>
                     }

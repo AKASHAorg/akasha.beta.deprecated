@@ -232,7 +232,7 @@ function* draftRevert ({ data }) {
     const { id } = data;
     try {
         const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
-        yield put(draftActions.draftRevertToVersionSuccess({ ...resp, id }));
+        yield put(draftActions.draftRevertToVersionSuccess({ id: resp }));
     } catch (ex) {
         yield put(draftActions.draftRevertToVersionError({ error: ex }));
     }
