@@ -40,6 +40,7 @@ class NewLinkEntryPage extends Component {
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
             draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
             draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
+
         /** handle just published draft! */
         if (!draftObj && this.props.draftObj) {
             if (drafts.size > 0) {
