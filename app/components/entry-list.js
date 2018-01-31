@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import Waypoint from 'react-waypoint';
-import { entryMessages } from '../locale-data/messages';
+import { entryMessages, generalMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
@@ -43,7 +43,7 @@ class EntryList extends Component {
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,
             loggedEthAddress, masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes,
-            placeholderMessage, profiles, style } = this.props;
+            placeholderMessage, profiles, style, searchQuery, searching } = this.props;
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
                 return null;
@@ -92,7 +92,23 @@ class EntryList extends Component {
               style={{ paddingTop: '80px' }}
             >
               <div style={{ width: '100%', height: '100%' }}>
-                {entries.size === 0 &&
+                {(entries.size === 0) && searching && (searchQuery.length > 2 || searchQuery.length === 0) &&
+                  <div className="entry-list__placeholder">
+                    <div
+                      className="entry-list__placeholder-inner"
+                    >
+                      <div className="entry-list__placeholder_image" />
+                      <div className="entry-list__placeholder_text">
+                        {(searchQuery.length === 0) && intl.formatMessage(generalMessages.startTypingToSearch)}
+                        {(searchQuery.length > 0) && (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
+                            searchTerm: searchQuery,
+                            resource: intl.formatMessage(entryMessages.entries)
+                        }))}
+                      </div>
+                    </div>
+                  </div>
+                }
+                {(entries.size === 0) && !searching &&
                   <div className="flex-center entry-list__placeholder">
                     {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
                   </div>
@@ -152,6 +168,8 @@ EntryList.propTypes = {
     profiles: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
+    searchQuery: PropTypes.string,
+    searching: PropTypes.bool,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -167,6 +185,7 @@ function mapStateToProps (state, ownProps) {
         pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
         pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byEthAddress'),
+        searchQuery: state.searchState.get('query'),
     };
 }
 

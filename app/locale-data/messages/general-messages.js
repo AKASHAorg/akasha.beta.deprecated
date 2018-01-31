@@ -807,6 +807,16 @@ const generalMessages = defineMessages({
         id: 'app.general.noEssenceWasCollectedDescription',
         description: '',
         defaultMessage: 'No transaction history'
-    }
+    },
+    startTypingToSearch: {
+        id: 'app.entry.startTypingToSearch',
+        description: 'start typing to search',
+        defaultMessage: 'Start typing to search'
+    },
+    searchingNoResults: {
+        id: 'app.entry.searchingNoResults',
+        description: 'searching for a term returned no results message',
+        defaultMessage: 'Searching for "{searchTerm}" returned 0 {resource}. Please try another word!'
+    },
 });
 export { generalMessages };

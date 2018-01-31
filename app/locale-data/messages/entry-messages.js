@@ -498,6 +498,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.loadingImage',
         description: 'placeholder when an image is loading',
         defaultMessage: 'Loading image'
+    },
+    entries: {
+        id: 'app.entry.entries',
+        description: 'plural form of entry! :)',
+        defaultMessage: 'entries'
     }
 });
 export { entryMessages };
