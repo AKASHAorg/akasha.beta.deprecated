@@ -1,0 +1,83 @@
+.notifications-panel {
+    position: fixed;
+    top: 40px;
+    bottom: 0px;
+    right: 0px;
+    width: 335px;
+    background-color: @light-background;
+    box-shadow: -2px 0px 15px -3px @shadow-color;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        padding: 24px;
+        height: 70px;
+        border-bottom: 1px solid @border-color;
+    }
+
+    &__title {
+        color: @heading-color;
+        font-weight: 500;
+        line-height: 20px;          
+    }
+
+    &__timeline-wrapper {
+        padding: 26px 26px 0px;
+        height: ~'calc(100% - 70px)';
+        overflow-y: auto;
+        margin-right: 4px;
+        position: relative;
+    }
+
+    &__placeholder-wrapper {
+        height: 100%;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    &__placeholder {
+        height: 92px;
+        width: 139px;
+        background: url('../../../images/placeholders/NoTransactionLogs.png') top center no-repeat;
+
+        &_dark {
+            background: url('../../../images/placeholders/NoTransactionLogs-DarkTheme.png') top center no-repeat;            
+        }
+    }
+
+    &__placeholder-message {
+        margin-top: 24px;
+    }
+
+    &__more-icon {
+        height: 16px;
+        width: 34px;
+        padding-right: 10px;
+        stroke: initial !important;
+    }
+
+    &__notif-pref {
+        width: 200px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid @border-color;
+        padding: 10px 0;
+        &_last {
+            border-bottom: none;
+        }
+    }
+
+    &__popover-title {
+        height: 100%;
+    }
+
+    &__settings-popover {
+        .ant-popover-title {
+            height: 41px;
+        }
+
+        .ant-popover-inner-content {
+            padding: 0px 16px;
+        }
+    }
+}
