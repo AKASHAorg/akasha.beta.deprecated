@@ -67,8 +67,6 @@ class ClaimableList extends Component {
         const actions = [];
         if (claimableActions.size === 1) {
             const { entryId, entryTitle, ethAddress } = this.getEntryInfo(claimableActions.first());
-            console.log('entry id', entryId);
-            console.log('entry title', entryTitle);
             const payload = { entryId, entryTitle };
             const type = this.isOwnEntry(ethAddress) ? actionTypes.claim : actionTypes.claimVote;
             this.props.actionAdd(loggedEthAddress, type, payload);
@@ -192,7 +190,6 @@ class ClaimableList extends Component {
         const claimPending = pendingClaim.find(claim => !!claim);
         const claimVotePending = pendingClaimVote.find(claim => !!claim);
         const collectAllDisabled = claimPending || claimVotePending || !collectableEntries.size;
-
         return (
           <div className="claimable-list">
             <div className="flex-center-y claimable-list__title">
@@ -211,12 +208,31 @@ class ClaimableList extends Component {
               </div>
             </div>
             <div className="claimable-list__list-wrapper">
-              <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
-                <div className="claimable-list__list">
-                  {collectableEntries.toList().map(this.renderRow)}
-                  {nonCollectableEntries.toList().map(this.renderRow)}
+              {(collectableEntries.size === 0 && nonCollectableEntries.size === 0) &&
+                <div
+                  className="claimable-list__list-placeholder-wrapper"
+                >
+                  <div
+                    className="claimable-list__list-placeholder"
+                  >
+                    <div className="claimable-list__list-placeholder_image" />
+                    <div
+                      className="claimable-list__list-placeholder_text"
+                    >
+                      <div>{intl.formatMessage(generalMessages.noEssenceToCollectTitle)}</div>
+                      <div>{intl.formatMessage(generalMessages.noEssenceToCollectDescription)}</div>
+                    </div>
+                  </div>
                 </div>
-              </DataLoader>
+              }
+              {(collectableEntries.size > 0 || nonCollectableEntries.size > 0) &&
+                <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
+                  <div className="claimable-list__list">
+                    {collectableEntries.toList().map(this.renderRow)}
+                    {nonCollectableEntries.toList().map(this.renderRow)}
+                  </div>
+                </DataLoader>
+              }
             </div>
             <div className="claimable-list__actions">
               <Button

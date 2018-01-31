@@ -45,8 +45,21 @@ class EssenceHistory extends Component {
               </span>
             </div>
             <div className="essence-history__logs-wrapper">
+              {!loadingLogs && essenceEvents.size === 0 &&
+                <div
+                  className="essence-history__placeholder"
+                >
+                  <div className="essence-history__placeholder-inner">
+                    <div className="essence-history__placeholder-image" />
+                    <div className="essence-history__placeholder-text">
+                      <div>{intl.formatMessage(generalMessages.noEssenceWasCollectedTitle)}</div>
+                      <div>{intl.formatMessage(generalMessages.noEssenceWasCollectedDescription)}</div>
+                    </div>
+                  </div>
+                </div>
+              }
               <div className="essence-history__logs">
-                {!loadingLogs && essenceEvents.map((ev) => {
+                {!loadingLogs && (essenceEvents.size > 0) && essenceEvents.map((ev) => {
                     const isLast = lastEvent.equals(ev);
                     const fromComment = ev.action === 'comment:vote';
                     const fromEntry = ev.action === 'entry:claim';

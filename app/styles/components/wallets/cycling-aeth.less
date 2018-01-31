@@ -44,7 +44,7 @@
         height: 36px;
         color: @heading-color;
         font-weight: 500;
-        border-top: 2px solid #eee;        
+        border-top: 2px solid #eee;
     }
 
     &__cell {
@@ -55,6 +55,19 @@
     &__placeholder {
         color: @text-color-secondary;
         height: 42px;
-        font-style: italic;
+        flex-wrap: wrap;
+        &-image {
+            background: @cycling-empty-state-bg top center no-repeat;
+            height: 88px;
+            min-width: 100%;
+            flex-grow: 1;
+        }
+        &-text {
+            flex-grow: 1;
+            min-width: 100%;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+        }
     }
 }
