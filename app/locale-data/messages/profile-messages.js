@@ -321,5 +321,10 @@ export const profileMessages = defineMessages({
         id: 'app.profile.yourEthAddress',
         description: 'label for ethereum address input',
         defaultMessage: 'Your ethereum address'
-    }
+    },
+    noNotifications: {
+        id: 'app.profile.noNotifications',
+        description: 'placeholder message for empty notifcations panel log',
+        defaultMessage: 'You have not received any new notifications'
+    },
 });

@@ -7,8 +7,9 @@ import { Balance, Icon, ServiceStatusBar } from '../';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 
 const TopBarRight = (props) => {
-    const { balance, hasPendingActions, intl, showTransactionsLog, showWallet, toggleAethWallet,
-        toggleEthWallet, transactionsLogOpen } = props;
+    const { balance, hasPendingActions, intl, notificationsLoaded, notificationsPanelOpen,
+        showNotificationsPanel, showTransactionsLog, showWallet, toggleAethWallet, toggleEthWallet,
+        transactionsLogOpen, unreadNotifications } = props;
     const ethClass = classNames('top-bar-right__balance', {
         'top-bar-right__balance_selected': showWallet === 'ETH'
     });
@@ -18,6 +19,9 @@ const TopBarRight = (props) => {
     const activityClass = classNames('content-link top-bar-right__activity-icon', {
         'top-bar-right__activity-icon_selected': transactionsLogOpen
     });
+    const notificationsClass = classNames('content-link top-bar-right__notifications-icon', {
+        'top-bar-right__notifications-icon_selected': notificationsPanelOpen
+    });
     return (
       <div className="top-bar-right">
         <div className="flex-center-y top-bar-right__services">
@@ -26,11 +30,19 @@ const TopBarRight = (props) => {
         <div className="flex-center-y top-bar-right__icon-wrapper">
           <Tooltip title={intl.formatMessage(generalMessages.notifications)}>
             <Icon
-              className="top-bar-right__notifications-icon"
-              onClick={() => {}}
+              className={notificationsClass}
+              onClick={showNotificationsPanel}
               type="notifications"
             />
           </Tooltip>
+          {notificationsLoaded && !!unreadNotifications &&
+            <div
+              className="flex-center top-bar-right__notifications-indicator"
+              onClick={showNotificationsPanel}
+            >
+              {unreadNotifications}
+            </div>
+          }
         </div>
         <div className="flex-center-y top-bar-right__icon-wrapper">
           <Tooltip title={intl.formatMessage(profileMessages.transactionsLog)}>
@@ -58,11 +70,15 @@ TopBarRight.propTypes = {
     balance: PropTypes.shape().isRequired,
     hasPendingActions: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
+    notificationsLoaded: PropTypes.bool,
+    notificationsPanelOpen: PropTypes.bool,
+    showNotificationsPanel: PropTypes.func.isRequired,
     showTransactionsLog: PropTypes.func.isRequired,
     showWallet: PropTypes.string,
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     transactionsLogOpen: PropTypes.bool,
+    unreadNotifications: PropTypes.number.isRequired,
 };
 
 export default injectIntl(TopBarRight);

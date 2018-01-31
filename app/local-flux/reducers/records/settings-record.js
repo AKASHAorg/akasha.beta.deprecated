@@ -29,8 +29,11 @@ export const HiddenContent = Record({
     value: -30
 });
 
-const Notifications = Record({
-    muted: []
+export const NotificationsPreference = Record({
+    feed: true,
+    donations: true,
+    comments: true,
+    votes: true
 });
 
 export const PasswordPreference = Record({
@@ -45,7 +48,7 @@ export const UserSettings = Record({
     defaultLicense: License(),
     hideCommentContent: new HiddenContent(),
     hideEntryContent: new HiddenContent(),
-    notifications: new Notifications(),
+    notificationsPreference: new NotificationsPreference(),
     passwordPreference: new PasswordPreference()
 });
 
