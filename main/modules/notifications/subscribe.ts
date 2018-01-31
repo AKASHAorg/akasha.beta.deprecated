@@ -5,6 +5,7 @@ import * as donations from './donations';
 import * as comments from './comments';
 import * as votes from './votes';
 import schema from '../utils/jsonschema';
+import entriesCache from './entries';
 
 const installedFilters = {
     feed: null,
@@ -47,12 +48,14 @@ const execute = Promise.coroutine(function* (data: {
     v.validate(data, subscribe, { throwError: true });
 
     const watchFilter = Object.assign({}, data.profile, { fromBlock: data.fromBlock });
-
     if (data.settings) {
         Object.keys(installedFilters).forEach((eventType) => {
             if (!data.settings[eventType] && installedFilters[eventType]) {
                 installedFilters[eventType].stopWatching(() => console.log('stopped watching event', eventType));
                 installedFilters[eventType] = null;
+                if (eventType === 'votes') {
+                    entriesCache.reset();
+                }
             }
         });
     }
