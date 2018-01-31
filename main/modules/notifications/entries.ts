@@ -25,6 +25,10 @@ class EntriesCache {
         return this.published;
     }
 
+    public reset() {
+        this.published.length = 0;
+    }
+
     public getOnlyVote() {
         return this.canVote;
     }
