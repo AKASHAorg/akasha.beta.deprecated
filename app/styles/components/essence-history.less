@@ -20,7 +20,7 @@
     }
 
     &__logs-wrapper {
-        height: ~'calc(100% - 40px)';        
+        height: ~'calc(100% - 40px)';
         border-top: 1px solid @light-border;
         padding: 0px 4px 0px 12px;
     }
@@ -52,7 +52,34 @@
         div {
             width: 100%;
             height: 100%;
-            background-color: @placeholder-color;            
+            background-color: @placeholder-color;
+        }
+    }
+
+    &__placeholder {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        &-inner {
+            width: 100%;
+        }
+        &-image {
+            background: @no-essence-collected-state-bg top center no-repeat;
+            height: 67px;
+            width: 100%;
+            flex-grow: 1;
+        }
+        &-text {
+            width: 100%;
+            text-align: center;
+            color: @text-color-secondary;
+            margin-top: 1.4em;
+            font-size: 0.86em;
+            div:first-child {
+                font-weight: 500;
+                color: @text-color;
+                font-size: 1.2em;
+            }
         }
     }
 

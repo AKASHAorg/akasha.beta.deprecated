@@ -778,5 +778,35 @@ const generalMessages = defineMessages({
         description: 'collect all Essence',
         defaultMessage: 'Collect all'
     },
+    noTransactionsTitle: {
+        id: 'app.general.noTransactionsTitle',
+        description: 'no transactions message title',
+        defaultMessage: 'No transactions'
+    },
+    noTransactionsDescription: {
+        id: 'app.general.noTransactionsDescription',
+        description: 'no transaction message description',
+        defaultMessage: 'There is no transaction history'
+    },
+    noEssenceToCollectTitle: {
+        id: 'app.general.noEssenceToCollectTitle',
+        description: 'message title when you don`t have any essence to collect',
+        defaultMessage: 'No essence to collect'
+    },
+    noEssenceToCollectDescription: {
+        id: 'app.general.noEssenceToCollectDescription',
+        description: 'message description when you don`t have any essence to collect',
+        defaultMessage: 'You don`t have any essence to collect'
+    },
+    noEssenceWasCollectedTitle: {
+        id: 'app.general.noEssenceWasCollectedTitle',
+        description: '',
+        defaultMessage: 'No essence was collected'
+    },
+    noEssenceWasCollectedDescription: {
+        id: 'app.general.noEssenceWasCollectedDescription',
+        description: '',
+        defaultMessage: 'No transaction history'
+    }
 });
 export { generalMessages };

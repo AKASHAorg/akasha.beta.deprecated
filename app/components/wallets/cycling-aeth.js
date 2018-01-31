@@ -40,7 +40,12 @@ const CyclingAeth = ({ cyclingStates, intl, onCollect, pendingCycleAeth, pending
           </div>
           {!pendingStates.length &&
             <div className="flex-center cycling-aeth__placeholder">
-              {intl.formatMessage(profileMessages.cyclingPlaceholder)}
+              <div className="cycling-aeth__placeholder-image" />
+              <div
+                className="cycling-aeth__placeholder-text"
+              >
+                {intl.formatMessage(profileMessages.cyclingPlaceholder)}
+              </div>
             </div>
           }
           {(!!pendingStates.length || !!pendingCycleAeth) &&
