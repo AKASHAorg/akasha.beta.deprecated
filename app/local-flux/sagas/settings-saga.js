@@ -109,7 +109,6 @@ function* userSettingsSave (ethAddress, payload) {
             settingsService, settingsService.userSettingsSave, [ethAddress, payload]
         );
         yield put(actions.userSettingsSaveSuccess(resp));
-        // yield put(appActions.showNotification({ id: 'userSettingsSaveSuccess' }));
     } catch (error) {
         yield put(actions.userSettingsSaveError(error));
     }

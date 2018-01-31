@@ -1,0 +1,55 @@
+.notification-log {
+    margin-left: 5px;
+    font-size: 13px;
+    display: flex;
+
+    &__avatar-wrapper {
+        flex: 0 0 auto;
+    }
+
+    &__text-wrapper {
+        flex: 1 1 auto;
+        margin-left: 8px;
+    }
+
+    &__description {
+        color: @heading-color;
+    }
+
+    &__message {
+        margin: 0px 5px;
+    }
+
+    &__link {
+        font-size: 11px;
+
+        &:hover {
+            color: @primary-color !important;
+        }
+    }
+
+    &__link-icon {
+        display: inline-block !important;
+        width: 10px;
+        height: 10px;
+        margin-left: 5px;
+        stroke: @primary-color;
+    }
+
+    &__avatar-placeholder {
+        width: 32px;
+        height: 32px;
+    }
+
+    &__text-placeholder {
+        width: 90%;
+        height: 15px;
+        margin: 0px 5px 4px;
+    }
+
+    &__text-placeholder-2 {
+        width: 50%;
+        height: 13px;
+        margin: 0px 5px;
+    }
+}

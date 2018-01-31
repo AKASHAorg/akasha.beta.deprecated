@@ -15,7 +15,7 @@ const settingsMessages = defineMessages({
     description: {
         id: 'app.settings.description',
         description: 'Description for app settings',
-        defaultMessage: 'Customize your app settings'
+        defaultMessage: 'Customize your app preferences'
     },
     english: {
         id: 'app.settings.english',
@@ -130,12 +130,32 @@ const settingsMessages = defineMessages({
     title: {
         id: 'app.settings.title',
         description: 'Title for app settings',
-        defaultMessage: 'App settings'
+        defaultMessage: 'App preferences'
     },
     update: {
         id: 'app.settings.update',
         description: 'description for update buton',
         defaultMessage: 'Update Settings'
+    },
+    notificationsPreference: {
+        id: 'app.settings.notificationsPreference',
+        description: 'title for notification settings',
+        defaultMessage: 'Notifications Settings'
+    },
+    tips: {
+        id: 'app.settings.tips',
+        description: 'Title for tips',
+        defaultMessage: 'Tips'
+    },
+    votes: {
+        id: 'app.settings.votes',
+        description: 'Title for votes',
+        defaultMessage: 'Votes'
+    },
+    notificationsInfo: {
+        id: 'app.settings.notificationsInfo',
+        description: 'description for notification preferences',
+        defaultMessage: 'Your notification preferences for Akasha'
     }
 });
 export { settingsMessages };

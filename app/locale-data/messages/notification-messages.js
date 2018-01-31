@@ -240,9 +240,44 @@ const notificationMessages = defineMessages({
         defaultMessage: 'You have successfully saved your personal settings'
     },
     faucetRequestSuccess: {
-        id: 'app.notificaiton.faucetRequestSuccess',
+        id: 'app.notification.faucetRequestSuccess',
         description: 'message to show when faucet tx successful',
         defaultMessage: 'You have successfully received test ETH and some AETH'
+    },
+    FOLLOWING_EVENT: {
+        id: 'app.settings.notifFollow',
+        description: 'text for notification',
+        defaultMessage: 'followed you'
+    },
+    COMMENT_EVENT: {
+        id: 'app.settings.notifComment',
+        description: 'text for notification',
+        defaultMessage: 'commented on'
+    },
+    DONATION_EVENT_AETH: {
+        id: 'app.settings.notifDonationAeth',
+        description: 'text for notification',
+        defaultMessage: 'tipped you {aeth} AETH'
+    },
+    DONATION_EVENT_BOTH: {
+        id: 'app.settings.notifDonationBoth',
+        description: 'text for notification',
+        defaultMessage: 'tipped you {eth} ETH and {aeth} AETH'
+    },
+    DONATION_EVENT_ETH: {
+        id: 'app.settings.notifDonationEth',
+        description: 'text for notification',
+        defaultMessage: 'tipped you {eth} ETH'
+    },
+    VOTE_EVENT: {
+        id: 'app.settings.notifVote',
+        description: 'text for notification',
+        defaultMessage: 'voted on'
+    },
+    notifBlockNr: {
+        id: 'app.settings.notifBlockNr',
+        description: 'text for notification block number',
+        defaultMessage: 'at block number {blockNr}'
     },
 });
 export { notificationMessages };
