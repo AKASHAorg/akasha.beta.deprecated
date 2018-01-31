@@ -17,7 +17,7 @@ const notificationsState = createReducer(initialState, {
         }
         const notifications = state.get('allNotifications').push(data);
         const sortedNotif = notifications.sort((a, b) => (b.blockNumber - a.blockNumber));
-        const unreadNotifications = isPanelOpen ?
+        const unreadNotifications = isPanelOpen && state.get('notificationsLoaded') ?
             state.get('unreadNotifications') :
             state.get('unreadNotifications') + 1;
         return state.merge({
@@ -29,10 +29,8 @@ const notificationsState = createReducer(initialState, {
 
     [types.SHOW_NOTIFICATIONS_PANEL]: (state) => {
         if (!state.get('notificationsLoaded')) {
-            console.log('do not reset unread notif');
             return state;
         }
-        console.log('reset unread notif');        
         return state.set('unreadNotifications', 0);
     },
 

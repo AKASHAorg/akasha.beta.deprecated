@@ -17,7 +17,8 @@ class Auth extends Component {
 
     componentDidMount () {
         const { profileDeleteLogged } = this.props;
-        this.getLocalIdentities();
+        // delay the request by 100 ms to initiate channels
+        setTimeout(this.getLocalIdentities, 100);
         this.interval = setInterval(this.getLocalIdentities, 10000, true);
         profileDeleteLogged();
         this.props.navBackCounterReset();
@@ -28,7 +29,6 @@ class Auth extends Component {
         const gethStatusChanged = gethStatus.get('process') && !this.props.gethStatus.get('process');
 
         if (gethStatusChanged && this.interval) {
-            console.log('reset interval');
             clearInterval(this.interval);
             this.interval = setInterval(this.getLocalIdentities, 10000, true);
         }

@@ -32,6 +32,19 @@ const getEthAddress = (notification) => {
 class NotificationLog extends Component {
     firstLoad = true;
 
+    shouldComponentUpdate (nextProps) {
+        const { entry, notification, pendingEntry, pendingProfile, profile } = nextProps;
+        if (
+            (notification.payload.entryId && entry && !entry.equals(this.props.entry)) ||
+            pendingEntry !== this.props.pendingEntry ||
+            pendingProfile !== this.props.pendingProfile ||
+            !profile.equals(this.props.profile)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     loadData = () => {
         if (!this.firstLoad) {
             return;

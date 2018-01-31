@@ -18,8 +18,7 @@ function* notificationsSubscribe ({ notificationsPreferences }) {
     const settings = notificationsPreferences || (yield select(selectNotificationsPreference)).toJS();
     const lastBlock = yield apply(profileService, profileService.profileGetLastBlockNr, [ethAddress]);
     const currentBlock = yield select(selectBlockNumber);
-    // const fromBlock = Math.max(lastBlock, currentBlock - ONE_WEEK);
-    const fromBlock = currentBlock - ONE_WEEK;
+    const fromBlock = Math.max(lastBlock, currentBlock - ONE_WEEK);
     const payload = { settings, profile: { ethAddress }, fromBlock };
     yield apply(
         channel,
