@@ -25,7 +25,12 @@ const tagMessages = defineMessages({
         id: 'app.tag.tagsLeft',
         description: 'How many tags you can add',
         defaultMessage: '({value} remaining)'
-    }
+    },
+    tags: {
+        id: 'app.tag.tags',
+        description: 'plural of tag',
+        defaultMessage: 'tags'
+    },
 });
 
 export { tagMessages };

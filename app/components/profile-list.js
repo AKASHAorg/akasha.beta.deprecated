@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import Waypoint from 'react-waypoint';
 import { selectPendingProfiles, selectLoggedEthAddress } from '../local-flux/selectors';
-import { profileMessages } from '../locale-data/messages';
+import { profileMessages, generalMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
@@ -14,7 +14,7 @@ class ProfileList extends Component {
 
     render () {
         const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, masonry, moreProfiles,
-            pendingProfiles, placeholderMessage, profiles, style } = this.props;
+            pendingProfiles, placeholderMessage, profiles, style, searchQuery, searching } = this.props;
         const profileRows = profiles && profiles.map((profile) => {
             if (!profile.ethAddress) {
                 console.error('invalid profile');
@@ -45,7 +45,29 @@ class ProfileList extends Component {
               style={{ paddingTop: '80px' }}
             >
               <div className="profile-list__inner">
-                {profiles.size === 0 &&
+                {profiles.size === 0 && searching && (searchQuery.length === 0 || searchQuery.length > 2) &&
+                  <div
+                    className="profile-list__placeholder"
+                  >
+                    <div
+                      className="profile-list__placeholder-inner"
+                    >
+                      <div className="profile-list__placeholder_image" />
+                      <div className="profile-list__placeholder_text">
+                        {(searchQuery.length === 0) &&
+                            intl.formatMessage(generalMessages.startTypingToSearch)
+                        }
+                        {(searchQuery.length > 0) &&
+                          (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
+                            searchTerm: searchQuery,
+                            resource: intl.formatMessage(profileMessages.profiles)
+                          }))
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+                {profiles.size === 0 && !searching &&
                   <div className="flex-center profile-list__placeholder">
                     {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
                   </div>
@@ -87,6 +109,8 @@ ProfileList.propTypes = {
     placeholderMessage: PropTypes.string,
     profiles: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
+    searchQuery: PropTypes.string,
+    searching: PropTypes.bool,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -94,6 +118,7 @@ function mapStateToProps (state, ownProps) {
     return {
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingProfiles: selectPendingProfiles(state, context),
+        searchQuery: state.searchState.get('query'),
     };
 }
 

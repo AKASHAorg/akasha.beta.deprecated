@@ -14,5 +14,22 @@
         height: 100%;
         padding-top: 10px;
         color: @text-color-secondary;
+        flex-wrap: wrap;
+        padding-top: 36px;
+        &-inner {
+            width: 100%;
+        }
+        &_image {
+            background: @search-entry-list-placeholder-bg top center no-repeat;
+            height: 153px;
+            width: 100%;
+            flex-grow: 1;
+        }
+        &_text {
+            width: 100%;
+            flex-grow: 1;
+            text-align: center;
+            margin-top: 1.2em
+        }
     }
 }

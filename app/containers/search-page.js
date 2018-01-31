@@ -61,6 +61,7 @@ class SearchPage extends Component {
             fetchingMoreEntries={fetchingMoreResults}
             fetchMoreEntries={this.props.searchMoreQuery}
             masonry
+            searching
             moreEntries={moreEntries}
             style={{ padding: '12px 0px' }}
           />
@@ -77,6 +78,7 @@ class SearchPage extends Component {
             fetchingMoreProfiles={false}
             fetchMoreProfiles={() => {}}
             masonry
+            searching
             moreProfiles={false}
             profiles={profiles}
             style={{ padding: '12px 0px' }}
@@ -85,7 +87,7 @@ class SearchPage extends Component {
     }
 
     renderTagResults () {
-        const { fetchingResults, tagEntriesCount, tags } = this.props;
+        const { fetchingResults, tagEntriesCount, tags, query } = this.props;
         return (
           <TagList
             dashboardSearch={this.props.dashboardSearch}
@@ -93,6 +95,8 @@ class SearchPage extends Component {
             fetchingTags={fetchingResults}
             showPreview={this.props.showPreview}
             tags={tags}
+            searching
+            searchQuery={query}
           />
         );
     }

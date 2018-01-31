@@ -327,4 +327,9 @@ export const profileMessages = defineMessages({
         description: 'placeholder message for empty notifcations panel log',
         defaultMessage: 'You have not received any new notifications'
     },
+    profiles: {
+        id: 'app.profile.profiles',
+        description: 'plural form of profile :)',
+        defaultMessage: 'profiles'
+    },
 });
