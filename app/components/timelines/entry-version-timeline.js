@@ -17,12 +17,21 @@ class EntryVersionTimeline extends Component {
         });
         /* eslint-enable react/no-did-mount-set-state */
     }
+    componentWillReceiveProps (nextProps) {
+        const { draftObj } = nextProps;
+        if (draftObj.get('id') !== this.props.draftObj.get('id')) {
+            this._handleResize();
+        }
+    }
     _handleResize = () => {
         const rootNode = this.rootNode;
         const rootNodeSize = rootNode.getBoundingClientRect();
         this.setState({
             rootWidth: rootNodeSize.width
         });
+    }
+    componentWillUnmount () {
+        window.removeEventListener('resize', this._handleResize);
     }
     /* eslint-disable react/no-array-index-key */
     render () {
