@@ -26,6 +26,22 @@ class NotificationsPanel extends Component {
             visibleSettings: false
         };
     }
+
+    shouldComponentUpdate (nextProps, nextState) {
+        const { darkTheme, notifications, notificationsLoaded } = nextProps;
+        const stateKeys = Object.keys(nextState);
+        const stateChanged = stateKeys.some(key => nextState[key] !== this.state[key]);
+        if (
+            stateChanged ||
+            darkTheme !== this.props.darkTheme ||
+            !notifications.equals(this.props.notifications) ||
+            notificationsLoaded !== this.props.notificationsLoaded
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     componentClickAway = () => {
         this.props.hideNotificationsPanel();
     };
