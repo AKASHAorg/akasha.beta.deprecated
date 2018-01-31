@@ -1,9 +1,11 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as entryActions from '../actions/entry-actions';
+import * as notificationsActions from '../actions/notifications-actions';
 import * as actions from '../actions/profile-actions';
 import * as searchActions from '../actions/search-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
@@ -305,6 +307,16 @@ function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) {
     const channel = Channel.server.profile.resolveProfileIpfsHash;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(channel, channel.send, [{ ipfsHash, columnId, akashaIds }]);
+}
+
+function* profileSaveLastBlockNr () {
+    const ethAddress = yield select(selectLoggedEthAddress);
+    const blockNr = yield select(selectBlockNumber);
+    try {
+        yield apply(profileService, profileService.profileSaveLastBlockNr, [{ ethAddress, blockNr }]);
+    } catch (error) {
+        yield put(actions.profileSaveLastBlockNrError(error));
+    }
 }
 
 function* profileSaveLogged (loggedProfile) {
@@ -1093,6 +1105,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
     yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
+    yield takeEvery(types.PROFILE_SAVE_LAST_BLOCK_NR, profileSaveLastBlockNr);
     yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
     yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
     yield takeEvery(types.PROFILE_TOGGLE_DONATIONS, profileToggleDonations);

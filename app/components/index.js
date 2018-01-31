@@ -86,6 +86,8 @@ export NewSearchColumn from './columns/new-search-column';
 export NewSelectColumn from './columns/new-select-column';
 export Notification from './notifications/notification';
 export NotificationHighlightNote from './notifications/notification-highlight-note';
+export NotificationLog from './panels/notification-log';
+export NotificationsPanel from './panels/notifications-panel';
 export NoMana from './modals/no-mana';
 export NoEth from './modals/no-eth';
 export OptimisticComment from './comment/optimistic-comment';

@@ -1,7 +1,7 @@
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, PasswordPreference,
-    PortsRecord, SettingsRecord, UserSettings } from './records';
+import { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, NotificationsPreference,
+    PasswordPreference, PortsRecord, SettingsRecord, UserSettings } from './records';
 
 const initialState = new SettingsRecord();
 
@@ -9,14 +9,33 @@ const getUserSettings = (state, data) => {
     const preference = new PasswordPreference(data.passwordPreference);
     const hideComment = new HiddenContent(data.hideCommentContent);
     const hideEntry = new HiddenContent(data.hideEntryContent);
+    const notifPreferences = new NotificationsPreference(data.notificationsPreference);
     if (!data.defaultLicense) {
         data.defaultLicense = state.getIn(['userSettings', 'defaultLicense']);
     }
     return new UserSettings(data).merge({
         hideCommentContent: hideComment,
         hideEntryContent: hideEntry,
+        notificationsPreference: notifPreferences,
         passwordPreference: preference
     });
+};
+
+const mergeUserSettings = (state, data) => {
+    const changes = {};
+    if (data.passwordPreference) {
+        changes.passwordPreference = new PasswordPreference(data.passwordPreference);
+    }
+    if (data.hideCommentContent) {
+        changes.hideCommentContent = new HiddenContent(data.hideCommentContent);
+    }
+    if (data.hideEntryContent) {
+        changes.hideEntryContent = new HiddenContent(data.hideEntryContent);
+    }
+    if (data.notificationsPreference) {
+        changes.notificationsPreference = new NotificationsPreference(data.notificationsPreference);
+    }
+    return state.get('userSettings').merge(data).merge(changes);
 };
 
 const settingsState = createReducer(initialState, {
@@ -192,7 +211,7 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('savingUserSettings', false),
-            userSettings: getUserSettings(state, data)
+            userSettings: mergeUserSettings(state, data)
         }),
 
     [types.CLEAN_STORE]: state =>

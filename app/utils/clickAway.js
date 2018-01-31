@@ -28,12 +28,15 @@ const canClickAway = (Component, props) => {
 
         _checkClickAway (ev) {
             const el = ReactDOM.findDOMNode(this);
+            const exceptionEl = document.getElementById('notifications-panel__settings-popover');
+            const isException = exceptionEl && isDescendant(exceptionEl, ev.target);
             const className = ev.target.getAttribute('class') || '';
             if (ev.target !== el &&
                 !isDescendant(el, ev.target) &&
                 document.documentElement.contains(ev.target) &&
                 // ugly hack
-                !className.includes('ant-select-dropdown-menu-item')
+                !className.includes('ant-select-dropdown-menu-item') &&
+                !isException
             ) {
                 if (this.refs.clickAwayableElement.componentClickAway) {
                     this.refs.clickAwayableElement.componentClickAway();
