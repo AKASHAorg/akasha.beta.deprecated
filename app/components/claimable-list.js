@@ -190,6 +190,7 @@ class ClaimableList extends Component {
         const claimPending = pendingClaim.find(claim => !!claim);
         const claimVotePending = pendingClaimVote.find(claim => !!claim);
         const collectAllDisabled = claimPending || claimVotePending || !collectableEntries.size;
+
         return (
           <div className="claimable-list">
             <div className="flex-center-y claimable-list__title">
@@ -228,8 +229,8 @@ class ClaimableList extends Component {
               {(collectableEntries.size > 0 || nonCollectableEntries.size > 0) &&
                 <DataLoader flag={fetchingClaimable} style={{ paddingTop: '40px' }}>
                   <div className="claimable-list__list">
-                    {collectableEntries.toList().map(this.renderRow)}
-                    {nonCollectableEntries.toList().map(this.renderRow)}
+                    {collectableEntries.map(this.renderRow)}
+                    {nonCollectableEntries.map(this.renderRow)}
                   </div>
                 </DataLoader>
               }

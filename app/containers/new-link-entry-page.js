@@ -17,6 +17,7 @@ import { entryGetFull } from '../local-flux/actions/entry-actions';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { searchResetResults, searchTags } from '../local-flux/actions/search-actions';
 import * as actionTypes from '../constants/action-types';
+import { entryTypes } from '../constants/entry-types';
 
 const { EditorState } = DraftJS;
 const { confirm } = Modal;
@@ -228,11 +229,11 @@ class NewLinkEntryPage extends Component {
 
     _handlePublish = (ev) => {
         ev.preventDefault();
-        const { draftObj, loggedProfile, match } = this.props;
+        const { draftObj, loggedProfile } = this.props;
         const publishPayload = {
             id: draftObj.id,
-            title: draftObj.getIn(['content', 'title']),
-            type: match.params.draftType
+            title: draftObj.getIn(['content', 'cardInfo', 'title']),
+            type: entryTypes.findIndex(type => type === draftObj.getIn(['content', 'entryType']))
         };
         this.validateData().then(() => {
             if (draftObj.onChain) {
