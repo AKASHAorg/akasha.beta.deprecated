@@ -38,6 +38,10 @@ class TransactionsLogPanel extends Component {
 
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
+    onEnter = () => {
+        this.props.actionGetAllHistory(true);
+    };
+
     renderHistoryActions = () => {
         const { darkTheme, fetchingHistory, fetchingMoreHistory, historyActions, intl,
             loggedEthAddress } = this.props;
@@ -83,7 +87,7 @@ class TransactionsLogPanel extends Component {
               }
               {!!historyActions.size &&
                 <DataLoader flag={fetchingMoreHistory} size="small">
-                  <Waypoint onEnter={() => { console.log('on enter'); this.props.actionGetAllHistory(true); }} />
+                  <Waypoint onEnter={this.onEnter} />
                 </DataLoader>
               }
             </DataLoader>
