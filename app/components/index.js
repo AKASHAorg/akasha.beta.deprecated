@@ -148,6 +148,7 @@ export Terms from './terms';
 export TextEntryEditor from './text-entry-editor';
 export TipPopover from './popovers/tip-popover';
 export TopBar from './top-bars/top-bar';
+export TopBarIcon from './top-bars/dashboard-top-bar-icon';
 export TopBarRight from './top-bars/top-bar-right';
 export TransactionLog from './panels/transaction-log';
 export TransactionsLogPanel from './panels/transactions-log-panel';

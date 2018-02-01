@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip } from 'antd';
+import classNames from 'classnames';
 import { DragSource, DropTarget } from 'react-dnd';
 import { Icon } from '../index';
 
 const dragSource = {
-    beginDrag(props) {
+    beginDrag (props) {
         return {
             id: props.id,
             index: props.index,
         };
     }
 };
+
 const cardTarget = {
     hover (props, monitor) {
         const dragIndex = monitor.getItem().index;
@@ -31,7 +33,7 @@ function collect (connect, monitor) {
     };
 }
 
-function collectDrop(connect) {
+function collectDrop (connect) {
     return {
         connectDropTarget: connect.dropTarget(),
     };
@@ -39,29 +41,25 @@ function collectDrop(connect) {
 
 class DashboardTopBarIcon extends Component {
     render () {
-        const { connectDragSource, connectDropTarget, isDragging, id, title, scrollIntoView, iconType } = this.props;
+        const { connectDragSource, connectDropTarget, isDragging, id, title, scrollIntoView,
+            iconType } = this.props;
         return connectDragSource(connectDropTarget(
-            <div style={{
-                opacity: isDragging ? 0.2 : 1,
-                fontSize: 25,
-                fontWeight: 'bold',
-                cursor: 'move',
-                lineHeight: 0,
-                width: '16px',
-                marginRight: '8px'
-            }}
-            >
-                <Tooltip key={id} title={title}>
-                    <Icon
-                      className="content-link dashboard-top-bar__column-icon"
-                      onClick={scrollIntoView}
-                      type={iconType}
-                    />
-                </Tooltip>
-            </div>
+          <div
+            className={classNames('flex-center dashboard-top-bar-icon', {
+                'dashboard-top-bar-icon_dragging': isDragging
+            })}
+            onClick={scrollIntoView}
+          >
+            <Tooltip key={id} title={title}>
+              <Icon
+                className="dashboard-top-bar__column-icon"
+                type={iconType}
+              />
+            </Tooltip>
+          </div>
         ));
     }
-};
+}
 
 DashboardTopBarIcon.propTypes = {
     id: PropTypes.string.isRequired,
