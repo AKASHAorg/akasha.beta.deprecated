@@ -247,6 +247,7 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
             return reject('Gif file not recognised!');
         }
         const frameCount = streamReader.getFrameNumber();
+        console.log(frameCount, 'the frame count');
         // resize 1 frame for presentation;
         return resizeImage(image, options).then((imageObj) => {
             if (frameCount > 0) {
@@ -257,6 +258,7 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
                     src: imageArray.value
                 };
             }
+            console.log(imageObj, 'the image obj');
             return resolve(imageObj);
         });
     });
@@ -343,6 +345,7 @@ const getResizedImages = (inputFiles, options) => {
         const fileName = file.name;
         const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
         // treat gif extention as it is animated gif to prevent double processing
+        console.log('ext', ext);
         if (ext === 'gif' && settings.animatedGifSupport) {
             gifPromises[index] = getRawDataUrl(file, options).then(imageDataUrl =>
                 // imageData should be the original animated gif Uint8Array
@@ -359,8 +362,9 @@ const getResizedImages = (inputFiles, options) => {
                 options.actualHeight = height;
                 return resizeImage(results.imageObj, options);
             });
+        } else {
+            imagePromises.push(Promise.reject(`.${ext} extension is not supported!`));
         }
-        return imagePromises.push(Promise.reject(`.${ext} extension is not supported!`));
     });
     return imagePromises.concat(gifPromises);
 };
