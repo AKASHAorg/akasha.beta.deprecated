@@ -6,11 +6,11 @@ import { Tooltip } from 'antd';
 import { symmetricDifference, pick } from 'ramda';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectActiveDashboard, selectActiveDashboardId, selectActiveDashboardColumns } from '../../local-flux/selectors';
+import { selectActiveDashboard, selectActiveDashboardId,
+    selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { Navigation, PlusSquareIcon } from '../index';
-import TopBarIcon from './dashboard-top-bar-icon';
+import { Navigation, PlusSquareIcon, TopBarIcon } from '../';
 
 const iconsTypes = {
     [columnTypes.latest]: 'entries',
@@ -87,7 +87,7 @@ class DashboardTopBar extends Component {
             ))}
             <Tooltip title={addColumnTooltip}>
               <div onClick={activeDashboard ? this.props.dashboardAddNewColumn : undefined}>
-                <PlusSquareIcon disabled={!activeDashboard} />
+                <PlusSquareIcon disabled={!activeDashboard} large />
               </div>
             </Tooltip>
           </div>

@@ -1,6 +1,23 @@
 .plus-square-icon {
     height: 18px;
     width: 18px;
-    background-color: darken(@background, 5%);
+    // background-color: darken(@background, 5%);
+    background-color: @dark-background;
     border-radius: 2px;
+
+    svg {
+        stroke: @text-color-secondary !important;
+        width: 12px;
+        height: 12px;
+    }
+
+    &_large {
+        width: 24px;
+        height: 24px;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
 }

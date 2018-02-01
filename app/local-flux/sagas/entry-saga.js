@@ -341,7 +341,7 @@ function* entryStreamIterator ({ columnId, reversed }) {
 }
 
 function* entryTagIterator ({ columnId, value, reversed }) {
-    yield put(tagActions.tagExists(value));
+    yield put(tagActions.tagExists({ tagName: value }));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = reversed ?
