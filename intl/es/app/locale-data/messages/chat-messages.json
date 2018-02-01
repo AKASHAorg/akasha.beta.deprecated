@@ -1,52 +1,52 @@
 [
-  {
-    "id": "app.chat.joinedChannels",
-    "description": "header for joined channels list",
-    "defaultMessage": "Starred channels"
-  },
-  {
-    "id": "app.chat.recentChannels",
-    "description": "header for recent channels list",
-    "defaultMessage": "Recent channels"
-  },
-  {
-    "id": "app.chat.joinChannel",
-    "description": "title for join channel dialog",
-    "defaultMessage": "Join channel"
-  },
-  {
-    "id": "app.chat.channelName",
-    "description": "label for channel input field",
-    "defaultMessage": "Channel name"
-  },
-  {
-    "id": "app.chat.inputPlaceholder",
-    "description": "placeholder for chat input",
-    "defaultMessage": "Write something nice and press \"Enter\" to send it"
-  },
-  {
-    "id": "app.chat.emptyChannelInputError",
-    "description": "error message displayed when the channel input field is empty",
-    "defaultMessage": "Channel name should not be empty"
-  },
-  {
-    "id": "app.chat.startWithAlphanumericError",
-    "description": "error message displayed when the channel name does not begin with alphanumeric character",
-    "defaultMessage": "Channel name must begin with lowercase alphanumeric character"
-  },
-  {
-    "id": "app.chat.illegalCharactersFormat",
-    "description": "error message displayed when the channel name does not respect the requested format",
-    "defaultMessage": "Only lowercase alphanumeric characters, dashes (-) and underscores (_) allowed"
-  },
-  {
-    "id": "app.chat.channelTooLongError",
-    "description": "error message displayed when the channel name is too long",
-    "defaultMessage": "Channel name must not have more than 32 characters"
-  },
-  {
-    "id": "app.chat.channelDisclaimer",
-    "description": "disclaimer for custom chat channels",
-    "defaultMessage": "This channel is ephemeral, messages will disappear in 24h since publishing"
-  }
+    {
+        "id": "app.chat.joinedChannels",
+        "description": "header for joined channels list",
+        "defaultMessage": "Canales preferidos"
+    },
+    {
+        "id": "app.chat.recentChannels",
+        "description": "header for recent channels list",
+        "defaultMessage": "Canales recientes"
+    },
+    {
+        "id": "app.chat.joinChannel",
+        "description": "title for join channel dialog",
+        "defaultMessage": "Unirse a un canal"
+    },
+    {
+        "id": "app.chat.channelName",
+        "description": "label for channel input field",
+        "defaultMessage": "Nombre del canal"
+    },
+    {
+        "id": "app.chat.inputPlaceholder",
+        "description": "placeholder for chat input",
+        "defaultMessage": "Escribe algo lindo y presiona \"Enter\" para enviarlo"
+    },
+    {
+        "id": "app.chat.emptyChannelInputError",
+        "description": "error message displayed when the channel input field is empty",
+        "defaultMessage": "El nombre del canal no debe de estar vacío"
+    },
+    {
+        "id": "app.chat.startWithAlphanumericError",
+        "description": "error message displayed when the channel name does not begin with alphanumeric character",
+        "defaultMessage": "El nombre del canal debe de empezar con un caracter alfanumérico en minúsculas"
+    },
+    {
+        "id": "app.chat.illegalCharactersFormat",
+        "description": "error message displayed when the channel name does not respect the requested format",
+        "defaultMessage": "Sólo se permiten caracteres alfanuméricos, incluyendo guiones (-) y guiones bajos (_)"
+    },
+    {
+        "id": "app.chat.channelTooLongError",
+        "description": "error message displayed when the channel name is too long",
+        "defaultMessage": "El nombre del canal no debe de tener más de 32 caracteres"
+    },
+    {
+        "id": "app.chat.channelDisclaimer",
+        "description": "disclaimer for custom chat channels",
+        "defaultMessage": "Este canal es efímero, los mensajes desaparecerán después de 24h desde su publicación"
+    }
 ]
