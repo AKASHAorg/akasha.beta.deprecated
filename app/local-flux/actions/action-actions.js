@@ -13,13 +13,14 @@ export const actionDelete = id => action(types.ACTION_DELETE, { id });
 
 export const actionDeleteError = error => action(types.ACTION_DELETE_ERROR, { error });
 
-export const actionGetAllHistory = () => action(types.ACTION_GET_ALL_HISTORY);
-export const actionGetAllHistoryError = (error) => {
+export const actionGetAllHistory = loadMore => action(types.ACTION_GET_ALL_HISTORY, { loadMore });
+export const actionGetAllHistoryError = (error, request) => {
     error.code = 'AGAHE01';
     error.messageId = 'actionGetAllHistory';
-    return action(types.ACTION_GET_ALL_HISTORY_ERROR, { error });
+    return action(types.ACTION_GET_ALL_HISTORY_ERROR, { error, request });
 };
-export const actionGetAllHistorySuccess = data => action(types.ACTION_GET_ALL_HISTORY_SUCCESS, { data });
+export const actionGetAllHistorySuccess = (data, request) =>
+    action(types.ACTION_GET_ALL_HISTORY_SUCCESS, { data, request });
 
 export const actionGetClaimable = () => action(types.ACTION_GET_CLAIMABLE);
 export const actionGetClaimableError = (error) => {

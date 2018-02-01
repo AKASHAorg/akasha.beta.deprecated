@@ -8,12 +8,14 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectAction, selectBatchActions, selectLoggedEthAddress,
+import { selectAction, selectActionsHistory, selectBatchActions, selectLoggedEthAddress,
     selectActionToPublish } from '../selectors';
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { balanceToNumber } from '../../utils/number-formatter';
+
+const ACTION_HISTORY_LIMIT = 20;
 
 /**
  * Mapping actionType to Action Creator (AC) that launches a "publishing" action
@@ -166,13 +168,18 @@ function* actionDelete ({ id }) {
     }
 }
 
-function* actionGetAllHistory () {
+function* actionGetAllHistory ({ loadMore }) {
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     try {
-        const resp = yield apply(actionService, actionService.getAllHistory, [loggedEthAddress]);
-        yield put(actions.actionGetAllHistorySuccess(resp));
+        const offset = (yield select(selectActionsHistory)).size;
+        const resp = yield apply(
+            actionService,
+            actionService.getAllHistory,
+            [loggedEthAddress, offset, ACTION_HISTORY_LIMIT]
+        );
+        yield put(actions.actionGetAllHistorySuccess(resp, { loadMore }));
     } catch (error) {
-        yield put(actions.actionGetAllHistoryError(error));
+        yield put(actions.actionGetAllHistoryError(error, { loadMore }));
     }
 }
 

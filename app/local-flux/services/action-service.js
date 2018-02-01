@@ -37,11 +37,14 @@ export const getActionsByType = request =>
             .catch(reject);
     });
 
-export const getAllHistory = ethAddress =>
+export const getAllHistory = (ethAddress, offset, limit) =>
     new Promise((resolve, reject) => {
         actionDB.actions
             .where('ethAddress')
             .equals(ethAddress)
+            .reverse()
+            .offset(offset)
+            .limit(limit)
             .toArray()
             .then(resolve)
             .catch(reject);
