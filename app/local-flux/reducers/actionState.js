@@ -180,22 +180,34 @@ const actionState = createReducer(initialState, {
         });
     },
 
-    [types.ACTION_GET_ALL_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),
+    [types.ACTION_GET_ALL_HISTORY]: (state, { loadMore }) => {
+        if (loadMore) {
+            return state.setIn(['flags', 'fetchingMoreHistory'], true);
+        }
+        return state.setIn(['flags', 'fetchingHistory'], true);
+    },
 
-    [types.ACTION_GET_ALL_HISTORY_ERROR]: state =>
-        state.setIn(['flags', 'fetchingHistory'], false),
+    [types.ACTION_GET_ALL_HISTORY_ERROR]: (state, { request }) => {
+        if (request.loadMore) {
+            return state.setIn(['flags', 'fetchingMoreHistory'], false);
+        }
+        return state.setIn(['flags', 'fetchingHistory'], false);
+    },
 
-    [types.ACTION_GET_ALL_HISTORY_SUCCESS]: (state, { data }) => {
+    [types.ACTION_GET_ALL_HISTORY_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
-        let list = new List();
+        let history = request.loadMore ? state.get('history') : new List();
         data.forEach((action) => {
             byId = byId.set(action.id, createAction(action));
-            list = list.push(action.id);
+            history = history.push(action.id);
         });
+        const flags = request.loadMore ?
+            state.get('flags').set('fetchingMoreHistory', false) :
+            state.get('flags').set('fetchingHistory', false);
         return state.merge({
             byId,
-            flags: state.get('flags').set('fetchingHistory', false),
-            history: sortByBlockNr(byId, list),
+            flags,
+            history,
         });
     },
 

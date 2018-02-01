@@ -2,13 +2,14 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import Waypoint from 'react-waypoint';
 import { Icon, Tabs, Timeline } from 'antd';
 import classNames from 'classnames';
 import { DataLoader, TransactionLog } from '../';
 import { actionClearHistory, actionGetAllHistory } from '../../local-flux/actions/action-actions';
 import { hideTransactionsLog } from '../../local-flux/actions/app-actions';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import { selectActionsHistory, selectFetchingHistory, selectLoggedEthAddress,
+import { selectActionsHistory, selectFetchingHistory, selectFetchingMoreHistory, selectLoggedEthAddress,
     selectPublishingActions } from '../../local-flux/selectors';
 import clickAway from '../../utils/clickAway';
 
@@ -38,7 +39,8 @@ class TransactionsLogPanel extends Component {
     selectTab = (activeTab) => { this.setState({ activeTab }); };
 
     renderHistoryActions = () => {
-        const { darkTheme, fetchingHistory, historyActions, intl, loggedEthAddress } = this.props;
+        const { darkTheme, fetchingHistory, fetchingMoreHistory, historyActions, intl,
+            loggedEthAddress } = this.props;
         const imgClass = classNames('transactions-log-panel__placeholder', {
             'transactions-log-panel__placeholder_dark': darkTheme
         });
@@ -78,6 +80,11 @@ class TransactionsLogPanel extends Component {
                     {intl.formatMessage(profileMessages.noTransactions)}
                   </div>
                 </div>
+              }
+              {!!historyActions.size &&
+                <DataLoader flag={fetchingMoreHistory} size="small">
+                  <Waypoint onEnter={() => { console.log('on enter'); this.props.actionGetAllHistory(true); }} />
+                </DataLoader>
               }
             </DataLoader>
           </div>
@@ -160,6 +167,7 @@ TransactionsLogPanel.propTypes = {
     actionGetAllHistory: PropTypes.func.isRequired,
     darkTheme: PropTypes.bool,
     fetchingHistory: PropTypes.bool,
+    fetchingMoreHistory: PropTypes.bool,
     hideTransactionsLog: PropTypes.func.isRequired,
     historyActions: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
@@ -171,6 +179,7 @@ function mapStateToProps (state) {
     return {
         darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
         fetchingHistory: selectFetchingHistory(state),
+        fetchingMoreHistory: selectFetchingMoreHistory(state),
         historyActions: selectActionsHistory(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingActions: selectPublishingActions(state),
