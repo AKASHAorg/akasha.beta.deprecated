@@ -188,7 +188,7 @@ class TagEditor extends Component {
         if (tagCreatorKeycodes.includes(pressedKey) && this.state.partialTag.length) {
             // if enter is pressed and suggestions are open,
             // create the selected tag instead partialTag
-            if (pressedKey === 13 && suggestionsVisible) {
+            if ((pressedKey === 13 || pressedKey === 9) && suggestionsVisible) {
                 const selectedTag = filteredSuggestions.get(selectedSuggestionIndex);
                 return this._createTag(selectedTag);
             }
