@@ -180,7 +180,6 @@ function* draftPublish ({ actionId, draft }) {
             entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
         });
     } catch (ex) {
-        console.log(ex, 'the exception on publish!');
         yield put(draftActions.draftPublishError(ex));
     }
 }
@@ -245,7 +244,6 @@ function* watchDraftPublishChannel () {
         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
         if (shouldApplyChanges) {
             if (response.error) {
-                console.log(response.error, 'the error');
                 yield put(draftActions.draftPublishError(
                     response.error,
                     response.request.id
@@ -253,7 +251,6 @@ function* watchDraftPublishChannel () {
             } else if (response.data.receipt) {
                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
                 if (!response.data.receipt.success) {
-                    console.log(response, 'an errored response');
                     yield put(draftActions.draftPublishError({}, response.request.id));
                 } else {
                     yield put(eProcActions.gethGetStatusSuccess({

@@ -435,7 +435,6 @@ class NewLinkEntryPage extends Component {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
         const editorMinHeight = this._calculateEditorMinHeight();
-        console.log(urlInputHidden, 'is hidden?');
         return (
           <div
             className="edit-entry-page link-page"
