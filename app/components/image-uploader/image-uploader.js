@@ -75,7 +75,6 @@ class ImageUploader extends Component {
                     if (!this.props.useIpfs) {
                         return this.props.onChange(results);
                     }
-                    console.log('results', results);
                     if (results) {
                         return uploadImage(results)
                             .then(converted => this.props.onChange(converted));
