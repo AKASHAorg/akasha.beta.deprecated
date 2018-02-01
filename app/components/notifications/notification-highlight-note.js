@@ -56,25 +56,25 @@ class NotificationHighlightNote extends Component {
               />
             </div>
             {hasText &&
-            <div className="notif-note__buttons">
-              <div className="notif-note__cancel">
-                <Button
-                  size="small"
-                  onClick={this.handleCancel}
-                >
-                  {intl.formatMessage(generalMessages.cancel)}
-                </Button>
+              <div className="notif-note__buttons">
+                <div className="notif-note__cancel">
+                  <Button
+                    size="small"
+                    onClick={this.handleCancel}
+                  >
+                    {intl.formatMessage(generalMessages.cancel)}
+                  </Button>
+                </div>
+                <div className="notif-note__save">
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={this.handleSave}
+                  >
+                    {intl.formatMessage(generalMessages.save)}
+                  </Button>
+                </div>
               </div>
-              <div className="notif-note__save">
-                <Button
-                  type="primary"
-                  size="small"
-                  onClick={this.handleSave}
-                >
-                  {intl.formatMessage(generalMessages.save)}
-                </Button>
-              </div>
-            </div>
             }
           </div>
         );

@@ -134,7 +134,7 @@ const profileState = createReducer(initialState, {
 
         const latestSet = Collection.Set(latestIterable);
         latestIterable = essenceEvents.concat(latestSet);
-        const flag = request.lastIndex ? 'fetchingMoreEssenceIterator' : 'fetchingEssenceIterator';
+        const flag = request.moreRequest ? 'fetchingMoreEssenceIterator' : 'fetchingEssenceIterator';
 
         return state.merge({
             essenceEvents: latestIterable,
