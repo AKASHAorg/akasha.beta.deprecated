@@ -169,6 +169,8 @@ export const selectFetchingMoreFollowers = (state, ethAddress) =>
 export const selectFetchingMoreFollowings = (state, ethAddress) =>
     state.profileState.getIn(['flags', 'fetchingMoreFollowings', ethAddress]);
 
+export const selectFetchingMoreHistory = state => state.actionState.getIn(['flags', 'fetchingMoreHistory']);
+
 export const selectFirstComment = state => state.commentsState.get('firstComm');
 
 export const selectFollowers = (state, ethAddress) => {
