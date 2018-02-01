@@ -89,8 +89,6 @@ class AvatarEditr extends Component {
             avatarImage: files,
             isNewAvatarLoaded: true,
             highlightDropZone: false,
-        }, () => {
-            console.log('files: ', this.state.avatarImage);
         });
     }
     _handleImageLoad = () => {

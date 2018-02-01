@@ -78,7 +78,7 @@ class HtmlParser extends ParserUtils {
         return Promise.all(props).then(val => val.reduce((prev, curr) => Object.assign({}, curr, prev)));
     }
     parseClassNames = () => {
-        console.log('not implemented yet!');
+        console.info('not implemented yet!');
     }
 }
 export default HtmlParser;
