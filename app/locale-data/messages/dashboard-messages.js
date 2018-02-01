@@ -109,7 +109,7 @@ const dashboardMessages = defineMessages({
     firstDashboard: {
         id: 'app.dashboard.firstDashboard',
         description: 'the name for the first board',
-        defaultMessage: 'My board'
+        defaultMessage: 'My first board'
     },
     large: {
         id: 'app.dashboard.large',
