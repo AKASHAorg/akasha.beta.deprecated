@@ -86,17 +86,12 @@ class VotePopover extends Component {
     };
 
     validateWeight = (rule, value, callback) => {
-        const { intl, mana, voteCost } = this.props;
+        const { intl } = this.props;
         if (!Number.isInteger(value)) {
             callback(intl.formatMessage(formMessages.voteWeightIntegerError, { min: MIN, max: MAX }));
         }
         if (value < MIN || value > MAX) {
             callback(intl.formatMessage(formMessages.voteWeightRangeError, { min: MIN, max: MAX }));
-            return;
-        }
-        const formatted = balanceToNumber(mana);
-        if (!formatted || formatted <= Number(voteCost.get(value.toString()))) {
-            callback(intl.formatMessage(formMessages.notEnoughMana));
             return;
         }
         callback();
