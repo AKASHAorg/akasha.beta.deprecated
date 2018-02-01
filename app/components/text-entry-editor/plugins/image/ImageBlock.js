@@ -127,9 +127,8 @@ class ImageBlock extends Component {
         );
     }
 
-    _getImageSource = (files) => {
-        const { media } = this.props.data;
-
+    _getImageSource = () => {
+        const { media, files } = this.props.data;
         switch (media) {
             case 'xs':
                 return files[findClosestMatch(320, files, 'xs')].src;

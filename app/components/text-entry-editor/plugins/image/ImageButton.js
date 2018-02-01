@@ -45,13 +45,16 @@ export default class BlockButton extends Component {
         });
         Promise.all(filePromises).then((results) => {
             let bestKey = findClosestMatch(768, results[0]);
-            if (bestKey === 'xl' || bestKey === 'xxl') {
-                bestKey = 'md';
-            }
             if (bestKey === 'gif' && results[0].gif) {
                 const res = Object.assign({}, results[0]);
                 delete res.gif;
                 bestKey = findClosestMatch(results[0].gif.width, res);
+            }
+            if (bestKey === 'xl' || bestKey === 'xxl') {
+                bestKey = 'md';
+            }
+            if (bestKey === 'sm') {
+                bestKey = 'xs';
             }
             return {
                 imgId: genId(),

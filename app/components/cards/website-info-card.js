@@ -36,6 +36,7 @@ class WebsiteInfoCard extends Component {
             bodyStyle.backgroundColor = bgColor;
             textColor = getTextColor(bgColor);
         }
+        console.log('card is loading', loading);
         return (
           <Card
             bodyStyle={bodyStyle}

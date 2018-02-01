@@ -33,10 +33,20 @@ class NewLinkEntryPage extends Component {
             infoExtracted: false,
         };
     }
-
+    componentWillMount () {
+        const { draftObj } = this.props;
+        const shouldProcessUrl = draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
+        if (shouldProcessUrl) {
+            this._processUrl();
+        }
+    }
     componentWillReceiveProps (nextProps) {
         const { draftObj, drafts } = nextProps;
         const { history } = this.props;
+        const isSameEntry = draftObj.get('id') === this.props.draftObj.get('id');
+        const isNewlyLoaded = draftObj && !this.props.draftObj;
+        const shouldProcessUrl = draftObj.getIn(['content', 'cardInfo', 'url']).length > 0 &&
+            (!isSameEntry || isNewlyLoaded);
         const hasCardContent = draftObj &&
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
             draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
@@ -54,16 +64,17 @@ class NewLinkEntryPage extends Component {
                 history.push('/draft/article/noDraft');
             }
         }
-        if (hasCardContent) {
+        if (hasCardContent && isSameEntry) {
             this.setState({
                 urlInputHidden: true,
                 infoExtracted: true
             });
-        } else {
+        } else if (shouldProcessUrl) {
             this.setState({
                 urlInputHidden: false,
                 infoExtracted: false
             });
+            this._processUrl(draftObj);
         }
     }
     _createNewDraft = (ev) => {
@@ -83,12 +94,16 @@ class NewLinkEntryPage extends Component {
         history.push(`/draft/link/${draftId}`);
         ev.preventDefault();
     }
-    _processUrl = () => {
+    _processUrl = (newerDraft) => {
         const { draftObj, loggedProfile, match, intl } = this.props;
-        const url = draftObj.getIn(['content', 'cardInfo', 'url']);
+        let url = draftObj.getIn(['content', 'cardInfo', 'url']);
+        if (newerDraft) {
+            url = newerDraft.getIn(['content', 'cardInfo', 'url']);
+        }
+
         this.setState({
             parsingInfo: true,
-            urlInputHidden: true
+            urlInputHidden: true,
         }, () => {
             const parser = new WebsiteParser({
                 url,
@@ -110,7 +125,8 @@ class NewLinkEntryPage extends Component {
                 })));
                 this.setState({
                     parsingInfo: false,
-                    infoExtracted: true
+                    infoExtracted: true,
+                    parsingUrl: false
                 });
             }).catch(() => {
                 this.setState({
@@ -118,7 +134,7 @@ class NewLinkEntryPage extends Component {
                         card: intl.formatMessage(entryMessages.websiteInfoFetchingError),
                     },
                     parsingInfo: false,
-                    infoExtracted: true
+                    infoExtracted: true,
                 });
             });
         });
@@ -127,22 +143,30 @@ class NewLinkEntryPage extends Component {
     _handleUrlBlur = () => {
         const { draftObj } = this.props;
         const { content } = draftObj;
-        if (content.getIn(['cardInfo', 'url']).length > 0) {
-            return this._processUrl();
-        }
-        return this.props.draftUpdate(draftObj);
+        this.setState({
+            errors: {}
+        }, () => {
+            if (content.getIn(['cardInfo', 'url']).length > 0) {
+                return this._processUrl();
+            }
+            return this.props.draftUpdate(draftObj);
+        });
     }
 
     _handleKeyPress = (ev) => {
         const { draftObj } = this.props;
         // handle enter key press
-        if (ev.which === 13) {
-            if (draftObj.getIn(['content', 'cardInfo', 'url']).length) {
-                this._processUrl();
-            }
-            if (!ev.defaultPrevented) {
-                ev.preventDefault();
-            }
+        if (ev.keyCode === 13) {
+            this.setState({
+                errors: {}
+            }, () => {
+                if (draftObj.getIn(['content', 'cardInfo', 'url']).length) {
+                    this._processUrl();
+                }
+                if (!ev.defaultPrevented) {
+                    ev.preventDefault();
+                }
+            });
         }
     }
 
@@ -411,6 +435,7 @@ class NewLinkEntryPage extends Component {
             draftWithSelection = EditorState.acceptSelection(draft, currentSelection);
         }
         const editorMinHeight = this._calculateEditorMinHeight();
+        console.log(urlInputHidden, 'is hidden?');
         return (
           <div
             className="edit-entry-page link-page"
@@ -434,7 +459,7 @@ class NewLinkEntryPage extends Component {
                       placeholder={intl.formatMessage(entryMessages.enterWebAddress)}
                       onChange={this._handleUrlChange}
                       onBlur={this._handleUrlBlur}
-                      onKeyPress={this._handleKeyPress}
+                      onKeyDown={this._handleKeyPress}
                       value={url}
                     />
                   }
