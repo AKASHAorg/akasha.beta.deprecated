@@ -41,9 +41,10 @@ function* profileEssenceIterator () {
     const lastBlock = (essenceStep.lastBlock === null) ?
         yield select(selectBlockNumber) :
         essenceStep.lastBlock;
+    const moreRequest = !!essenceStep.lastBlock;
     yield apply(channel,
         channel.send,
-        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 16 })]);
+        [reject(isNil, { ethAddress, lastBlock, lastIndex: essenceStep.lastIndex, limit: 16, moreRequest })]);
 }
 
 function* profileBondAeth ({ actionId, amount }) {
