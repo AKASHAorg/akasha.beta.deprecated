@@ -39,7 +39,6 @@ class PublishOptionsPanel extends Component {
 
     _handleLicenceChange = licenceType =>
         (value) => {
-            console.log('change licence to', licenceType, value);
             if (licenceType === 'parent') {
                 this.props.onLicenceChange(licenceType, value);
             } else if (licenceType === 'id') {
@@ -79,7 +78,10 @@ class PublishOptionsPanel extends Component {
               </div>
             </div>
             <div
-              className={`publish-options-panel__content publish-options-panel__content${scrolled ? '_scrolled' : ''}`}
+              className={
+                  `publish-options-panel__content
+                  publish-options-panel__content${scrolled ? '_scrolled' : ''}`
+              }
               id="publish-options-panel-content"
               onScroll={this._handleContentScroll}
             >
