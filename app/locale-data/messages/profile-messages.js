@@ -54,7 +54,7 @@ export const profileMessages = defineMessages({
     cyclingPlaceholder: {
         id: 'app.profile.cyclingPlaceholder',
         description: 'placeholder for empty cycling AETH table',
-        defaultMessage: 'No Cycling AETH pending'
+        defaultMessage: 'No AETH cycling in progress'
     },
     cyclingProcess: {
         id: 'app.profile.cyclingProcess',

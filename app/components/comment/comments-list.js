@@ -81,7 +81,9 @@ class CommentList extends Component {
             }
             {!fetchingComments && !comments.size && !optimisticComments.length &&
               <div className="comment-list__placeholder">
-                {intl.formatMessage(entryMessages.noCommentsFound)}
+                <div>{intl.formatMessage(entryMessages.noCommentsFound)}</div>
+                <br />
+                <div>{intl.formatMessage(entryMessages.leaveAComment)}</div>
               </div>
             }
             {moreComments &&

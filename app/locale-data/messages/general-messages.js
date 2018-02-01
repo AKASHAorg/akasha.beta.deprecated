@@ -318,7 +318,7 @@ const generalMessages = defineMessages({
     manaPool: {
         id: 'app.general.manaPool',
         description: 'mana pool',
-        defaultMessage: 'Mana Pool Info'
+        defaultMessage: 'Total Mana Consumed'
     },
     manafied: {
         id: 'app.general.manafied',
@@ -726,7 +726,7 @@ const generalMessages = defineMessages({
     noFollowings: {
         id: 'app.general.noFollowings',
         description: 'info when user is not following anyone',
-        defaultMessage: 'You are not following anyone.'
+        defaultMessage: 'Follow someone to see your proto-reputation network'
     },
     sidebarEntryTypeArticle: {
         id: 'app.general.sidebarEntryTypeArticle',
@@ -766,12 +766,12 @@ const generalMessages = defineMessages({
     noTransactionsTitle: {
         id: 'app.general.noTransactionsTitle',
         description: 'no transactions message title',
-        defaultMessage: 'No transactions'
+        defaultMessage: 'No transactions yet'
     },
     noTransactionsDescription: {
         id: 'app.general.noTransactionsDescription',
         description: 'no transaction message description',
-        defaultMessage: 'There is no transaction history'
+        defaultMessage: 'Your transactions will be displayed here'
     },
     noEssenceToCollectTitle: {
         id: 'app.general.noEssenceToCollectTitle',
@@ -781,17 +781,17 @@ const generalMessages = defineMessages({
     noEssenceToCollectDescription: {
         id: 'app.general.noEssenceToCollectDescription',
         description: 'message description when you don`t have any essence to collect',
-        defaultMessage: 'You don`t have any essence to collect'
+        defaultMessage: 'Generate Essence by posting and interacting'
     },
     noEssenceWasCollectedTitle: {
         id: 'app.general.noEssenceWasCollectedTitle',
-        description: '',
-        defaultMessage: 'No essence was collected'
+        description: 'message for essence history popover, when there is not transaction history',
+        defaultMessage: 'No essence collected'
     },
     noEssenceWasCollectedDescription: {
         id: 'app.general.noEssenceWasCollectedDescription',
-        description: '',
-        defaultMessage: 'No transaction history'
+        description: 'message for essence history popover, when there is not transaction history',
+        defaultMessage: 'Generate Essence by posting and interacting'
     },
     startTypingToSearch: {
         id: 'app.entry.startTypingToSearch',
