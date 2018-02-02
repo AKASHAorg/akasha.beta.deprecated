@@ -29,9 +29,11 @@ function injectApi() {
 
 window['Channel'] = injectApi();
 
+/*
 window['eval'] = global.eval = function () {
     throw new Error('eval disabled.');
 };
+*/
 
 // @TODO: uncomment this before production build
 /*

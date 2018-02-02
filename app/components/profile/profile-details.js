@@ -76,6 +76,27 @@ class ProfileDetails extends Component {
         });
     };
 
+    removeClass = (id) => {
+        const column = document.getElementById(id);
+        if (column) {
+            const className = column.getAttribute('class');
+            const newClassName = className.replace('column_focused', '');
+            column.setAttribute('class', newClassName);
+        }
+    };
+
+    scrollToColumn = (id) => {
+        const container = document.getElementById('profile-activity');
+        const column = document.getElementById(id);
+        const className = column.getAttribute('class');
+        column.setAttribute('class', `${className} column_focused`);
+        setTimeout(() => this.removeClass(id), 500);
+        const profileDetailsWidth = 352;
+        const columnLeftOffset = column.offsetLeft - profileDetailsWidth;
+        const scrollLeft = (columnLeftOffset - (container.clientWidth / 2)) + (column.clientWidth / 2);
+        container.scrollLeft = scrollLeft;
+    };
+
     render () {
         if (!this.props.profileData) {
             console.error('no profile data');
@@ -181,12 +202,26 @@ class ProfileDetails extends Component {
             </div>
             <div className="profile-details__counters-wrapper">
               <div style={{ marginRight: '12px' }}>
-                <div>{intl.formatMessage(profileMessages.followers)}</div>
-                <div className="profile-details__counter">{followersCount}</div>
+                <div className="content-link" onClick={() => this.scrollToColumn('profile-followers')}>
+                  {intl.formatMessage(profileMessages.followers)}
+                </div>
+                <div
+                  className="content-link profile-details__counter"
+                  onClick={() => this.scrollToColumn('profile-followers')}
+                >
+                  {followersCount}
+                </div>
               </div>
               <div>
-                <div>{intl.formatMessage(profileMessages.followings)}</div>
-                <div className="profile-details__counter">{followingCount}</div>
+                <div className="content-link" onClick={() => this.scrollToColumn('profile-followings')}>
+                  {intl.formatMessage(profileMessages.followings)}
+                </div>
+                <div
+                  className="content-link profile-details__counter"
+                  onClick={() => this.scrollToColumn('profile-followings')}
+                >
+                  {followingCount}
+                </div>
               </div>
             </div>
             {about &&
