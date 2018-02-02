@@ -103,7 +103,7 @@ const profileState = createReducer(initialState, {
         state.set('loggedProfile', new LoggedProfile()),
 
     [types.PROFILE_ESSENCE_ITERATOR]: (state) => {
-        const flag = state.getIn(['essenceIterator', 'lastIndex']) ?
+        const flag = state.getIn(['essenceIterator', 'lastBlock']) ?
             'fetchingMoreEssenceIterator' :
             'fetchingEssenceIterator';
         return state.setIn(['flags', flag], true);
