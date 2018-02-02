@@ -43,6 +43,7 @@ class WebsiteInfoCard extends Component {
             className={
                 `website-info-card
                 website-info-card${!infoExtracted && !error && !hasCard ? '_empty' : ''}
+                website-info-card${(!error && !hasCard) ? '_empty' : ''}
                 website-info-card${isEdit ? '_edit' : ''}`
             }
             loading={loading}
@@ -56,7 +57,7 @@ class WebsiteInfoCard extends Component {
                 {error}
               </div>
             }
-            {isEdit && infoExtracted &&
+            {isEdit && infoExtracted && (hasCard || error) &&
               <Icon
                 type="close-square"
                 className="website-info-card__close-button"
@@ -146,6 +147,7 @@ WebsiteInfoCard.propTypes = {
     onClose: PropTypes.func,
     isEdit: PropTypes.bool,
     loading: PropTypes.bool,
+    intl: PropTypes.shape(),
 };
 
 export default WebsiteInfoCard;

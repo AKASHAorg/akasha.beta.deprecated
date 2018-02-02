@@ -35,23 +35,25 @@ class NewLinkEntryPage extends Component {
     }
     componentWillMount () {
         const { draftObj } = this.props;
-        const shouldProcessUrl = draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
-        if (shouldProcessUrl) {
-            this._processUrl();
+        if (draftObj) {
+            const shouldProcessUrl = draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
+            if (shouldProcessUrl) {
+                this._processUrl();
+            }
         }
     }
     componentWillReceiveProps (nextProps) {
         const { draftObj, drafts } = nextProps;
         const { history } = this.props;
-        const isSameEntry = draftObj.get('id') === this.props.draftObj.get('id');
+        const isSameEntry = draftObj && this.props.draftObj &&
+            draftObj.get('id') === this.props.draftObj.get('id');
         const isNewlyLoaded = draftObj && !this.props.draftObj;
-        const shouldProcessUrl = draftObj.getIn(['content', 'cardInfo', 'url']).length > 0 &&
+        const shouldProcessUrl = draftObj && draftObj.getIn(['content', 'cardInfo', 'url']).length > 0 &&
             (!isSameEntry || isNewlyLoaded);
         const hasCardContent = draftObj &&
             (draftObj.getIn(['content', 'cardInfo', 'title']).length > 0 ||
             draftObj.getIn(['content', 'cardInfo', 'description']).length > 0) &&
             draftObj.getIn(['content', 'cardInfo', 'url']).length > 0;
-
         /** handle just published draft! */
         if (!draftObj && this.props.draftObj) {
             if (drafts.size > 0) {
@@ -75,6 +77,12 @@ class NewLinkEntryPage extends Component {
                 infoExtracted: false
             });
             this._processUrl(draftObj);
+        } else if (!isSameEntry) {
+            this.setState({
+                urlInputHidden: false,
+                infoExtracted: false,
+                parsingInfo: false
+            });
         }
     }
     _createNewDraft = (ev) => {
@@ -95,11 +103,13 @@ class NewLinkEntryPage extends Component {
         ev.preventDefault();
     }
     _processUrl = (newerDraft) => {
-        const { draftObj, loggedProfile, match, intl } = this.props;
-        let url = draftObj.getIn(['content', 'cardInfo', 'url']);
+        const { loggedProfile, intl } = this.props;
+        let { draftObj } = this.props;
         if (newerDraft) {
-            url = newerDraft.getIn(['content', 'cardInfo', 'url']);
+            draftObj = newerDraft;
         }
+        const url = draftObj.getIn(['content', 'cardInfo', 'url']);
+        const draftId = draftObj.get('id');
 
         this.setState({
             parsingInfo: true,
@@ -121,7 +131,7 @@ class NewLinkEntryPage extends Component {
                             url: data.url
                         })),
                     })),
-                    id: match.params.draftId,
+                    id: draftId,
                 })));
                 this.setState({
                     parsingInfo: false,
