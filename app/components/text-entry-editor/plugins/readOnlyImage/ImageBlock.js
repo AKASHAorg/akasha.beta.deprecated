@@ -106,7 +106,7 @@ class ImageBlock extends Component {
                 opacity: imageLoaded ? 1 : 0,
                 display: imageLoaded ? 'block' : 'none',
                 width: image.width,
-                height: image.height,
+                height: 'auto',
                 maxWidth: '100%',
             }}
           />
