@@ -41,6 +41,7 @@ jsconfig.json
 *.p12
 *.cer
 *.pfx
+dist
 main/**/*.js
 main/**/*.js.map
 package-lock.json

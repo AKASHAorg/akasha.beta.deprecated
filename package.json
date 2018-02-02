@@ -17,7 +17,7 @@
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build-renderer-dark": "cross-env NODE_ENV=production DARK_THEME=1 node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
-    "build": "tsc -p tsconfig.json && npm run build-lang && npm run build-renderer && npm run build-renderer-dark",
+    "build": "tsc -p tsconfig.json && npm run build-renderer && npm run build-renderer-dark",
     "build-lang": "babel ./app/utils/build-translations.js | node",
     "lang-diff": "babel ./app/utils/create-lang-diff.js | node",
     "start": "cross-env NODE_ENV=production electron ./main.js",
