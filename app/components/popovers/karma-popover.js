@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
 import { Avatar, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
@@ -98,11 +99,14 @@ class KarmaPopover extends Component {
           <Card
             key={profile.ethAddress}
             hoverable={false}
-            className={`karma-popover__profile-card ${isOwnprofile && 'karma-popover__profile-card_self'}`}
+            className={classNames('karma-popover__profile-card',
+              { 'karma-popover__profile-card_self': isOwnprofile })}
           >
             <div className="karma-popover__card-content">
               <div className="karma-popover__card-left">
-                <div className={`karma-popover__card-rank ${isOwnprofile && 'karma-popover__card-rank_blue'}`}>
+                <div className={classNames('karma-popover__card-rank',
+                  { 'karma-popover__card-rank_blue': isOwnprofile })}
+                >
                   {profile.rank + 1}
                 </div>
                 <Link

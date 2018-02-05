@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Input } from 'antd';
+import classNames from 'classnames';
 import * as R from 'ramda';
 import Masonry from 'react-masonry-component';
 import { HighlightCard, Icon } from '../';
@@ -40,13 +41,14 @@ class Highlights extends Component {
 
     render () {
         const { editing, intl, highlights, profiles, search } = this.props;
-        const searchClassName = `highlights__search ${!!editing && 'highlights__search_editing'}`;
 
         return (
           <div className="highlights__wrap">
             <div className="highlights">
               <div className="highlights__content" ref={this.getContainerRef}>
-                <div className={searchClassName}>
+                <div className={classNames('highlights__search',
+                    { highlights__search_editing: editing })}
+                >
                   <Input
                     onChange={this.onSearchChange}
                     value={search}

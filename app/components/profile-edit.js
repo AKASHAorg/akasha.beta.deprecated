@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
+import classNames from 'classnames';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { profileExists } from '../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet, tempProfileUpdate, tempProfileCreate,
@@ -73,12 +74,13 @@ class ProfileEdit extends Component {
             profileExistsData } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
-        const withBorder = isScrolled && 'profile-edit__title_with-border';
 
         return (
           <div className="profile-edit">
             <div className="profile-edit__wrapper">
-              <div className={`profile-edit__title ${withBorder}`}>
+              <div className={classNames('profile-edit__title',
+                { 'profile-edit__title_with-border': isScrolled })}
+              >
                 {intl.formatMessage(profileMessages.editProfileTitle)}
                 <Icon
                   className="content-link profile-edit__close-icon"
