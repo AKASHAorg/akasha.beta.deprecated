@@ -46,7 +46,8 @@ class Notification extends Component {
     btnClose={btnClose}
   />,
                         key,
-                        onClose: close
+                        onClose: close,
+                        className: 'notification-highlight'
                     });
                     this.props.notificationDisplay(notif);
                 }
