@@ -27,15 +27,13 @@ class ColumnManager extends Component {
     }
     componentDidMount () {
         this.containerSize = this._rootNodeRef.getBoundingClientRect();
-        const scrollHeight = this._rootNodeRef.scrollHeight;
-        // console.log(this.containerSize, scrollHeight, 'size, height');
+        // const scrollHeight = this._rootNodeRef.scrollHeight;
     }
     _handleColumnItemClick = (ev) => {
         console.log(ev.target, ev.target.getAttribute('data-action'), 'the target, action');
     }
     _createRootNodeRef = (node) => { this._rootNodeRef = node; }
     _handleContainerScroll = (ev) => {
-        // console.log(ev, 'the scroll ev');
         const scroll = this._rootNodeRef.scrollTop;
         let delta;
         if (ev.wheelDelta) {
@@ -126,14 +124,12 @@ class ColumnManager extends Component {
             measuredCells: prevState.measuredCells.setIn([cellId], cellSize.height)
         }));
     }
-    _handleCellLoad = () => console.log('a cell loaded!');
     render () {
         let items = this.state.items.slice();
         let heights = this.state.heights.slice();
         let topOffset = 0;
 
         if (this.state.frontIndex) {
-            console.log(this.state.frontIndex, 'slice from this index');
             items = items.slice(this.state.frontIndex);
             heights = heights.slice(this.state.frontIndex);
             topOffset = this.state.heights.slice(0, this.state.frontIndex + 1).reduce((prev, curr) => prev + curr);
@@ -170,7 +166,6 @@ class ColumnManager extends Component {
                       padding: '12px',
                       borderBottom: '1px solid #FFF',
                     }}
-                    onLoad={this._handleCellLoad}
                   >
                     <span
                       data-url={`someUrl-${i}`}
