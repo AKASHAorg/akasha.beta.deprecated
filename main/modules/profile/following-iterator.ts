@@ -18,10 +18,14 @@ const execute = Promise.coroutine(function* (data: {
     v.validate(data, followersIterator, { throwError: true });
 
     const collection = [];
-    const maxResults = data.limit || 5;
     const address = yield profileAddress(data);
     const lastBlock = yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
     const toBlock = (!data.lastBlock) ? lastBlock : data.lastBlock;
+    const totalFollowing = yield contracts.instance.Feed.totalFollowing(address);
+    let maxResults = totalFollowing.toString() === '0' ? 0 : data.limit || 5;
+    if (maxResults > totalFollowing.toNumber()) {
+        maxResults = totalFollowing.toNumber();
+    }
 
     const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { follower: address }, toBlock, maxResults, { lastIndex: data.lastIndex });
     for (let event of fetched.results) {
