@@ -75,7 +75,7 @@ export class Contracts {
     }
 
     public fromEvent(ethEvent: any, args: any, toBlock: number | string, limit: number,
-                     options: { lastIndex?: number, reversed?: boolean }) {
+                     options: { lastIndex?: number, reversed?: boolean, stopOnFirst?: boolean }) {
         const step = 5300;
         return new Promise((resolve, reject) => {
             let results = [];
@@ -101,7 +101,9 @@ export class Contracts {
 
                     results = uniq(results.concat(filteredData));
                     if (results.length < limit && fromBlock > 0 && !options.reversed) {
-                        return fetch(fromBlock);
+                        if (!options.stopOnFirst || !results.length) {
+                            return fetch(fromBlock);
+                        }
                     }
 
                     const sortedResults = take(limit,

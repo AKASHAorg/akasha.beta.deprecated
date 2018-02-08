@@ -29,7 +29,11 @@ const execute = Promise.coroutine(function* (data: {
     v.validate(data, commentsIterator, { throwError: true });
 
     const collection = [];
-    const maxResults = data.limit || 5;
+    const commentsCount = yield contracts.instance.Comments.totalComments(data.entryId);
+    let maxResults = commentsCount.toString() === '0' ? 0 : data.limit || 5;
+    if (maxResults > commentsCount.toNumber()) {
+        maxResults = commentsCount.toNumber();
+    }
     const fetched = yield contracts
         .fromEvent(contracts.instance.Comments.Publish, {
                 entryId: data.entryId,
