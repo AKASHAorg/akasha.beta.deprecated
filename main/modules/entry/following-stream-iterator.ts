@@ -46,7 +46,7 @@ const execute = Promise.coroutine(function* (data: {
 
         const captureIndex = yield contracts
             .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
-                data.toBlock, 10, {});
+                data.toBlock, 10, { stopOnFirst: true });
 
         const tags = captureIndex.results.map(function (ev) {
             return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);

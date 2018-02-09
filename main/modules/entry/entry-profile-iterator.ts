@@ -2,6 +2,7 @@ import * as Promise from 'bluebird';
 import schema from '../utils/jsonschema';
 import { fetchFromPublish } from './helpers';
 import { profileAddress } from '../profile/helpers';
+import contracts from '../../contracts';
 
 const entryProfileIterator = {
     'id': '/entryProfileIterator',
@@ -26,7 +27,11 @@ const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: nu
     v.validate(data, entryProfileIterator, { throwError: true });
 
     const address = yield profileAddress(data);
-    const maxResults = data.limit || 5;
+    const entryCount = yield contracts.instance.Entries.getEntryCount(address);
+    let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
+    if (maxResults > entryCount.toNumber()) {
+        maxResults = entryCount.toNumber();
+    }
     if (!address) {
         return { collection: [], lastBlock: 0 };
     }
