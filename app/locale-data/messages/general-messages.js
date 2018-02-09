@@ -818,5 +818,15 @@ const generalMessages = defineMessages({
         description: 'share',
         defaultMessage: 'Share'
     },
+    trustedDomain: {
+        id: 'app.general.trustedDomain',
+        description: 'title for external navigation modal checkbox for trusted domains',
+        defaultMessage: 'Trusted Domain'
+    },
+    viewAll: {
+        id: 'app.general.viewAll',
+        description: 'view all',
+        defaultMessage: 'View All'
+    }
 });
 export { generalMessages };

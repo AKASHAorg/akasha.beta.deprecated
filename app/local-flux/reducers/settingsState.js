@@ -35,6 +35,9 @@ const mergeUserSettings = (state, data) => {
     if (data.notificationsPreference) {
         changes.notificationsPreference = new NotificationsPreference(data.notificationsPreference);
     }
+    if (data.trustedDomains) {
+        changes.trustedDomains = data.trustedDomains;
+    }
     return state.get('userSettings').merge(data).merge(changes);
 };
 
@@ -211,6 +214,11 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('savingUserSettings', false),
+            userSettings: mergeUserSettings(state, data)
+        }),
+
+    [types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS]: (state, { data }) =>
+        state.merge({
             userSettings: mergeUserSettings(state, data)
         }),
 
