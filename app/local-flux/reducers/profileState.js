@@ -145,11 +145,9 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_EXISTS_SUCCESS]: (state, { data }) =>
         state.merge({
-            exists: state.get('exists').merge({
-                akashaId: data.akashaId,
-                data: new ProfileExistsRecord(data)
-            })
+            exists: state.get('exists').set(data.akashaId, new ProfileExistsRecord(data))
         }),
+
     [types.PROFILE_FAUCET]: state => state.set('faucet', 'requested'),
     [types.PROFILE_FAUCET_ERROR]: state => state.set('faucet', 'error'),
 

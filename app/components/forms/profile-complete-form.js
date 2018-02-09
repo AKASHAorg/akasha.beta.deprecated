@@ -34,6 +34,8 @@ class ProfileCompleteForm extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { balance, tempProfile, profileExistsData, loggedEthAddress, onProfileUpdate } = nextProps;
+        const id = tempProfile.get('akashaId');
+        const existsData = profileExistsData.toJS();
         if (loggedEthAddress && !tempProfile.get('ethAddress')) {
             onProfileUpdate(
                 tempProfile.set('ethAddress', loggedEthAddress)
@@ -45,13 +47,13 @@ class ProfileCompleteForm extends Component {
                 insufficientEthRenderFlag: false
             });
         }
-        if (profileExistsData.get('data')) {
-            const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
+        if (id && existsData[id]) {
+            const { idValid, exists, normalisedId } = existsData[id];
             this.setState({
                 akashaIdIsValid: idValid,
                 akashaIdExists: exists
             });
-            if (tempProfile.get('akashaId') !== normalisedId) {
+            if (id !== normalisedId) {
                 this.setState({ akashaIdIsValid: false });
             }
         }
@@ -184,8 +186,9 @@ class ProfileCompleteForm extends Component {
     _getAkashaIdErrors = () => {
         const { intl, tempProfile, profileExistsData } = this.props;
         const { akashaIdIsValid, akashaIdExists } = this.state;
-        if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
-            if (!akashaIdIsValid && tempProfile.get('akashaId').length > 1) {
+        const id = tempProfile.get('akashaId');
+        if (profileExistsData.has(id)) {
+            if (!akashaIdIsValid && id.length > 1) {
                 return intl.formatMessage(validationMessages.akashaIdNotValid);
             }
             if (akashaIdExists) {
