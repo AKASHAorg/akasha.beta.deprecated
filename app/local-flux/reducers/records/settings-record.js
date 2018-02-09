@@ -1,4 +1,4 @@
-import { Record } from 'immutable';
+import { List, Record } from 'immutable';
 import { License } from './license-record';
 
 export const GethSettings = Record({
@@ -49,7 +49,8 @@ export const UserSettings = Record({
     hideCommentContent: new HiddenContent(),
     hideEntryContent: new HiddenContent(),
     notificationsPreference: new NotificationsPreference(),
-    passwordPreference: new PasswordPreference()
+    passwordPreference: new PasswordPreference(),
+    trustedDomains: new List()
 });
 
 export const GeneralSettings = Record({

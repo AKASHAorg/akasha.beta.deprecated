@@ -1,4 +1,4 @@
-import { all, apply, call, fork, put, select, take } from 'redux-saga/effects';
+import { all, apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
@@ -114,6 +114,17 @@ function* userSettingsSave (ethAddress, payload) {
     }
 }
 
+function* userSettingsAddTrustedDomain ({ ethAddress, domain }) {
+    try {
+        const resp = yield apply(
+            settingsService, settingsService.userSettingsAddTrustedDomain, [ethAddress, domain]
+        );
+        yield put(actions.userSettingsAddTrustedDomainSuccess(resp));
+    } catch (error) {
+        yield put(actions.userSettingsAddTrustedDomainError(error));
+    }
+}
+
 // WATCHERS
 
 function* watchGeneralSettingsSave () {
@@ -165,4 +176,5 @@ export function* watchSettingsActions () {
     yield fork(watchIpfsSettingsSave);
     yield fork(watchUserSettingsRequest);
     yield fork(watchUserSettingsSave);
+    yield takeEvery(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN, userSettingsAddTrustedDomain);
 }
