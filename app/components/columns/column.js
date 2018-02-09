@@ -1,14 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import * as columnTypes from '../../constants/columns';
-import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
-    ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
-import ColumnManager from './column-manager';
+// import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
+//     ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
+import { entryMoreNewestIterator,
+    entryNewestIterator, entryPageShow } from '../../local-flux/actions/entry-actions';
+import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
+    selectLoggedEthAddress } from '../../local-flux/selectors';
+import ColManager from './col-manager';
 
-const Column = ({ column, baseWidth, ethAddress, type }) => {
+const Column = ({ column, baseWidth, ethAddress, type, entries, ...other }) => {
     let component;
-    const props = { column, baseWidth };
-    component = <ColumnManager {...props} />;
+    const props = {
+        column,
+        entries,
+        baseWidth,
+        onItemRequest: other.entryNewestIterator,
+        onItemMoreRequest: other.entryMoreNewestIterator,
+        onRetry: () => { console.error('implement retry'); },
+        ...other
+    };
+    component = <ColManager {...props} />;
     // switch (type) {
     //     case columnTypes.latest:
     //         component = <LatestColumn {...props} />;
@@ -50,6 +63,29 @@ Column.propTypes = {
     column: PropTypes.shape(),
     ethAddress: PropTypes.string,
     type: PropTypes.string,
+    entries: PropTypes.shape(),
 };
 
-export default Column;
+const mapStateToProps = (state, ownProps) => ({
+    baseUrl: selectBaseUrl(state),
+    blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
+    canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
+    drafts: state.draftState.get('drafts'),
+    fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
+    hideEntrySettings: selectHideEntrySettings(state),
+    loggedEthAddress: selectLoggedEthAddress(state),
+    pendingClaims: selectAllPendingClaims(state),
+    pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
+    pendingVotes: selectAllPendingVotes(state),
+    profiles: state.profileState.get('byEthAddress'),
+    searchQuery: state.searchState.get('query'),
+    entries: state.entryState.get('byId')
+});
+
+const mapDispatchToProps = {
+    entryNewestIterator,
+    entryMoreNewestIterator,
+    entryPageShow,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Column);

@@ -3,46 +3,41 @@ import PropTypes from 'prop-types';
 
 class CellManager extends Component {
     baseNodeSize = 0
+
     componentDidMount () {
-        const { onMount, id } = this.props;
-        onMount(id, this._baseNodeRef.getBoundingClientRect());
-        // this.observer = new MutationObserver(this._onNodeChange);
-        // this.observer.observe(this._baseNodeRef, { childList: true });
+        const { onMount } = this.props;
+        onMount(this._baseNodeRef.getBoundingClientRect());
     }
+
     componentWillUpdate () {
         this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
     }
+
     componentDidUpdate () {
-        const { id, onSizeChange } = this.props;
+        const { onSizeChange } = this.props;
         const newBaseNodeSize = this._baseNodeRef.getBoundingClientRect();
         if (newBaseNodeSize.height !== this.baseNodeSize.height) {
-            onSizeChange(id, this._baseNodeRef.getBoundingClientRect());
+            onSizeChange(this._baseNodeRef.getBoundingClientRect());
         }
     }
-    // _onNodeChange = () => {
-    //     const { id, onSizeChange } = this.props;
-    //     onSizeChange(id, this._baseNodeRef.getBoundingClientRect());
-    // }
-    // componentWillUnmount () {
-    //     this.observer.disconnect();
-    // }
+
     _createBaseNodeRef = (node) => {
         this._baseNodeRef = node;
     }
+
     render () {
         return (
           <div ref={this._createBaseNodeRef}>
-            {this.props.children}
+            {this.props.children()}
           </div>
         );
     }
 }
 
 CellManager.propTypes = {
-    id: PropTypes.number,
     onMount: PropTypes.func,
     onSizeChange: PropTypes.func,
-    children: PropTypes.node
+    children: PropTypes.func
 };
 
 export default CellManager;
