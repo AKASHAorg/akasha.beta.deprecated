@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class CellManager extends Component {
-    baseNodeSize = 0
+    baseNodeSize = {}
 
     componentDidMount () {
         const { onMount } = this.props;
-        onMount(this._baseNodeRef.getBoundingClientRect());
+        this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+        onMount(this.baseNodeSize);
     }
 
     componentWillUpdate () {
@@ -17,7 +18,7 @@ class CellManager extends Component {
         const { onSizeChange } = this.props;
         const newBaseNodeSize = this._baseNodeRef.getBoundingClientRect();
         if (newBaseNodeSize.height !== this.baseNodeSize.height) {
-            onSizeChange(this._baseNodeRef.getBoundingClientRect());
+            onSizeChange(newBaseNodeSize);
         }
     }
 

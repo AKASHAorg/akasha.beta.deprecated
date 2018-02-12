@@ -70,12 +70,12 @@ class EntryCard extends Component {
         history.push(href);
     };
 
-    getVersion = (version) => {
-        const { entry, loggedAkashaId, entryPageShow } = this.props;
-        // const query = version !== undefined ? `?version=${version}` : '';
-        // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
-        // entryPageShow(entry.get('entryId'));
-    };
+    // getVersion = (version) => {
+    //     const { entry, loggedAkashaId, entryPageShow } = this.props;
+    //     // const query = version !== undefined ? `?version=${version}` : '';
+    //     // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
+    //     // entryPageShow(entry.get('entryId'));
+    // };
 
     openVotesPanel = () => {
         this.setState({
@@ -316,7 +316,6 @@ EntryCard.propTypes = {
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
-    entryPageShow: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     hideEntrySettings: PropTypes.shape().isRequired,
