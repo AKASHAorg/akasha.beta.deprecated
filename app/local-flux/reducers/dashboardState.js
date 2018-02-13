@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, fromJS } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
@@ -78,7 +78,7 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
         !!data.lastBlock;
 
     return state.mergeIn(['columnById', request.columnId], {
-        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).push(...newIds),
+        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).concat(fromJS(newIds)),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingMoreEntries: false,
             moreEntries

@@ -16,6 +16,7 @@ import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 3;
+const ALL_STREAM_MORE_LIMIT = 5;
 const ENTRY_ITERATOR_LIMIT = 3;
 const ENTRY_LIST_ITERATOR_LIMIT = 3;
 
@@ -229,14 +230,12 @@ function* entryMoreListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_
     yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId, value, limit }));
 }
 
-function* entryMoreNewestIterator ({ columnId }) {
+function* entryMoreNewestIterator ({ columnId, toBlock, lastIndex }) {
     const channel = Channel.server.entry.allStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ALL_STREAM_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId, limit: ALL_STREAM_MORE_LIMIT, toBlock, lastIndex, more: true }]
     );
 }
 

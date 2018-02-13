@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { symmetricDifferenceWith, eqBy, prop, propEq, findIndex, update } from 'ramda';
+import throttle from 'lodash.throttle';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 
-const MORE_ITEMS_TRIGGER_SIZE = 10;
+const MORE_ITEMS_TRIGGER_SIZE = 3;
+const VIEWPORT_VISIBLE_BUFFER_SIZE = 3;
 
 class ColManager extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            bottomIndexFrom: -1,
             topIndexTo: 0
         };
         this.avgItemHeight = this.props.initialItemHeight;
@@ -19,6 +20,8 @@ class ColManager extends Component {
         this.items = [];
         this.itemCount = 0;
         this.lastScrollTop = 0;
+        this._debouncedScroll = throttle(this._handleScroll, 80, { trailing: true });
+        this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
     }
     componentWillMount = () => {
         const { column } = this.props;
@@ -28,12 +31,28 @@ class ColManager extends Component {
             this._mapItemsToState(column.get('entriesList'));
         }
     }
+    componentDidMount = () => {
+        const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
+        window.addEventListener('resize', this._debouncedResize);
+        if (newContainerHeight !== this.containerHeight) {
+            this.containerHeight = newContainerHeight;
+            this._updateOffsets(this.lastScrollTop);
+        }
+    }
+
     componentWillReceiveProps = (nextProps) => {
         const { column } = nextProps;
         const oldItems = this.props.column.get('entriesList');
         if (column.get('entriesList').size !== oldItems.size) {
             this._mapItemsToState(column.get('entriesList'));
             this.loadingMore = false;
+        }
+    }
+    _onResize = () => {
+        const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
+        if (newContainerHeight !== this.containerHeight) {
+            this.containerHeight = newContainerHeight;
+            this._updateOffsets(this.lastScrollTop);
         }
     }
     _mapItemsToState = (items) => {
@@ -46,79 +65,80 @@ class ColManager extends Component {
         }));
         this.items = mappedItems.concat(diff);
         this.itemCount = mappedItems.length + diff.length;
+        this._updateOffsets(this.lastScrollTop);
     }
 
-    // calculate average
+    // calculate an average of the cells height
     _calculateAverage = newSize =>
         ((this.avgItemHeight * (this.itemCount - 1)) + newSize) / this.itemCount;
 
+    // load more entries
     _loadMoreIfNeeded = () => {
         const { props } = this;
         const { onItemMoreRequest, column } = props;
-
         if (!this.loadingMore) {
+            onItemMoreRequest({
+                columnId: column.get('id'),
+                toBlock: column.get('lastBlock'),
+                lastIndex: column.get('lastIndex')
+            });
             this.loadingMore = true;
-            onItemMoreRequest(column.get('id'));
         }
     }
-    /* eslint-disable complexity, max-statements */
-    _updateOffsets = (scrollDirection, scrollTop) => {
+    /**
+     * this method slices the items based on the user's current scroll position
+     * it is called onScroll and on cellUpdate handler;
+     */
+    _updateOffsets = (scrollTop) => {
         const { items, state } = this;
-        const { topIndexTo, bottomIndexFrom } = state;
-        const lastRederedList = items.slice(topIndexTo);
+        const { topIndexTo } = state;
         let accHeight = 0;
         let topIndex = topIndexTo;
-        let bottomIndex = bottomIndexFrom;
-        let topFound = false;
-        if (scrollDirection === 'up') {
-            // is scrolling up
-            // show more items from top and slice at bottom
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                accHeight += item.height;
-                if ((accHeight >= scrollTop) && !topFound) {
-                    topIndex = i > 3 ? i - 3 : i;
-                    topFound = true;
-                }
-                if (accHeight > (scrollTop + this.containerHeight) && topFound) {
-                    bottomIndex = i + 3;
-                    topFound = false;
-                    accHeight = 0;
-                    break;
-                }
-            }
-        }
-        if (scrollDirection === 'down') {
-            // is scrolling down
-            // slice from top and show more on bottom
-            // if bottom index is equal to items.length - BUFFER_OFFSET
-            // load more entries
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                accHeight += item.height;
-                if ((accHeight >= scrollTop) && !topFound) {
-                    topIndex = i >= 3 ? i - 3 : i;
-                    topFound = true;
-                }
-                if (accHeight > (scrollTop + this.containerHeight) && topFound) {
-                    bottomIndex = i + 3;
-                    topFound = false;
-                    accHeight = 0;
-                    break;
-                }
-            }
-        }
-        this.setState({
-            topIndexTo: topIndex,
-            bottomIndexFrom: bottomIndex
-        }, () => {
-            if (this.state.bottomIndexFrom > (items.length - MORE_ITEMS_TRIGGER_SIZE)) {
-                this._loadMoreIfNeeded();
-            }
-        });
-    }
 
-    // update the height of the cell (called on cell`s didMount lifecycle)
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (accHeight >= scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE)) {
+                topIndex = i;
+                accHeight = 0;
+                break;
+            }
+            accHeight += item.height;
+        }
+
+        if (this.state.topIndexTo !== topIndex) {
+            this.setState(() => ({
+                topIndexTo: topIndex
+            }));
+        }
+
+        if (this._getBottomIndex(topIndexTo) >= (items.length - MORE_ITEMS_TRIGGER_SIZE)) {
+            this._loadMoreIfNeeded();
+        }
+    }
+    /**
+     * get the index of the last visible element based on top index;
+     *
+     */
+    _getBottomIndex = (topIndex) => {
+        const containerHeight = this.containerHeight;
+        const { items } = this;
+        let accHeight = this._getSliceMeasure(0, topIndex);
+        let bottomIndex = items.length - 1;
+        const bufferHeight = this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE;
+        for (let i = topIndex; i < items.length; i++) {
+            const item = items[i];
+            if (accHeight + item.height > (containerHeight + this.lastScrollTop + bufferHeight)) {
+                bottomIndex = i;
+                accHeight = 0;
+                break;
+            }
+            accHeight += item.height;
+        }
+        return bottomIndex;
+    }
+    /**
+     * update the height of the cell (called on cell`s didMount lifecycle)
+     */
     _handleCellMount = cellId =>
         (cellSize) => {
             const { items } = this;
@@ -129,6 +149,7 @@ class ColManager extends Component {
             if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items);
+                this._updateOffsets(this.lastScrollTop);
             }
         }
 
@@ -142,26 +163,30 @@ class ColManager extends Component {
         } else {
             delta = 'up';
         }
-        this.scrollTop = scrollTop;
         window.requestAnimationFrame(() => {
             this._onScrollMove(delta, scrollTop);
+            this.lastScrollTop = scrollTop;
         });
     }
     _onScrollMove = (delta, scrollTop) => {
-        this._updateOffsets(delta, scrollTop);
+        this._updateOffsets(scrollTop);
     }
     _createRootNodeRef = (node) => {
         this._rootNodeRef = node;
     }
+    _getSliceMeasure = (begin, end) => {
+        const { items } = this;
+        return items.slice(begin, end).reduce((prev, curr) => prev + curr.height, 0);
+    }
     render () {
         const { items, state, props } = this;
-        const { topIndexTo, bottomIndexFrom } = state;
+        const { topIndexTo } = state;
         const { column, baseWidth, onItemrequest, onItemMoreRequest, ...other } = props;
+        const bottomIndexFrom = this._getBottomIndex(topIndexTo);
 
         return (
           <div
-            onScroll={this._handleScroll}
-            // onScroll={this._handleScroll}
+            onScroll={this._debouncedScroll}
             ref={this._createRootNodeRef}
             style={{
                 height: '100%',
@@ -171,7 +196,7 @@ class ColManager extends Component {
             <div
               className="col-manager__top-offset"
               style={{
-                  height: items.slice(0, topIndexTo).reduce((prev, curr) => prev + curr.height, 0)
+                  height: this._getSliceMeasure(0, topIndexTo)
               }}
             />
             {items.slice(topIndexTo, bottomIndexFrom).map(item => (
@@ -191,8 +216,7 @@ class ColManager extends Component {
             <div
               className="col-manager__bottom-offset"
               style={{
-                height: items.slice(bottomIndexFrom, items.length)
-                    .reduce((prev, curr) => prev + curr.height, 0)
+                height: this._getSliceMeasure(bottomIndexFrom, items.length)
             }}
             />
           </div>

@@ -142,7 +142,7 @@ export const entryMoreListIterator = ({ columnId, value, limit }) =>
 export const entryMoreListIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreNewestIterator = columnId => action(types.ENTRY_MORE_NEWEST_ITERATOR, { columnId });
+export const entryMoreNewestIterator = data => action(types.ENTRY_MORE_NEWEST_ITERATOR, { ...data });
 export const entryMoreNewestIteratorError = (error, request) => {
     error.code = 'EMNIE01';
     error.messageId = 'entryMoreNewestIterator';
