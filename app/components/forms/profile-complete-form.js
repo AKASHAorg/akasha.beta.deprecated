@@ -41,6 +41,12 @@ class ProfileCompleteForm extends Component {
                 tempProfile.set('ethAddress', loggedEthAddress)
             );
         }
+        if (tempProfile.get('akashaId')) {
+            const trimmed = tempProfile.get('akashaId').trim();
+            onProfileUpdate(
+                tempProfile.set('akashaId', trimmed)
+            );
+        }
         if (balance.get('eth') >= 0.1) {
             this.setState({
                 insufficientEth: false,

@@ -159,7 +159,9 @@ class EntryPageHeader extends Component {
                     {intl.formatRelative(publishDate)}
                   </span>
                 }
-                <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
+                {latestVersion &&
+                  <Icon type="arrowDropdownOpen" style={{ paddingLeft: 5 }} />
+                }
               </span>
             </Popover>
           </div>
