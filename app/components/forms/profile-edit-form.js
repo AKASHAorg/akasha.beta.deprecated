@@ -33,7 +33,7 @@ class ProfileEditForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { loggedProfileData, tempProfile, profileExistsData } = nextProps;
+        const { loggedProfileData, tempProfile, profileExistsData, onProfileUpdate } = nextProps;
         const id = tempProfile.get('akashaId');
         const existsData = profileExistsData.toJS();
         this.formChanged = (
@@ -45,6 +45,12 @@ class ProfileEditForm extends Component {
             !fromJS(tempProfile.get('backgroundImage')).equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
             !fromJS(tempProfile.get('links')).equals(fromJS(loggedProfileData.get('links')))
         );
+        if (id) {
+            const trimmed = id.trim();
+            onProfileUpdate(
+                tempProfile.set('akashaId', trimmed)
+            );
+        }
         this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
         if (id && existsData[id]) {
             const { idValid, exists, normalisedId } = existsData[id];
