@@ -5,12 +5,13 @@
     width: 100%;
     overflow-x: auto;
     background-color: @light-background;
-    
+
     &__column {
         flex: 0 0 auto;
         border-radius: 4px;
         margin-right: 12px;
         background-color: @background;
+        transform: translate3d(0,0,0);
     }
 
     &__empty-placeholder {
@@ -27,7 +28,7 @@
         background: url('../../images/placeholders/NoBoards-EmptyState-LightTheme.png') top center no-repeat;
 
         &_dark {
-            background: url('../../images/placeholders/NoBoards-EmptyState-DarkTheme.png') top center no-repeat;            
+            background: url('../../images/placeholders/NoBoards-EmptyState-DarkTheme.png') top center no-repeat;
         }
     }
 

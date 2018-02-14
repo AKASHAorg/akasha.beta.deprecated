@@ -8,9 +8,9 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
-    selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
-    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
+import { selectBlockNumber, selectListEntries, selectListEntryType, selectIsFollower,
+    selectListNextEntries, selectLoggedEthAddress, selectProfileEntriesLastBlock,
+    selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
@@ -224,29 +224,35 @@ function* entryListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMI
     yield put(actions.entryListIteratorSuccess({ collection }, { columnId, value, limit }));
 }
 
-function* entryMoreListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+function* entryMoreListIterator ({ column, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+    const { value, id } = column;
     const collection = yield select(state => selectListNextEntries(state, value, limit));
-    yield call(entryGetExtraOfList, collection, columnId);
-    yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId, value, limit }));
+    yield call(entryGetExtraOfList, collection, id);
+    yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId: id, value, limit }));
 }
 
-function* entryMoreNewestIterator ({ columnId, toBlock, lastIndex }) {
+function* entryMoreNewestIterator ({ column }) {
     const channel = Channel.server.entry.allStreamIterator;
+    const id = column.get('id');
+    const toBlock = column.get('lastBlock');
+    const lastIndex = column.get('lastIndex');
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ALL_STREAM_MORE_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId: id, limit: ALL_STREAM_MORE_LIMIT, toBlock, lastIndex, more: true }]
     );
 }
 
-function* entryMoreProfileIterator ({ columnId, value }) {
+function* entryMoreProfileIterator ({ column }) {
     const channel = Channel.server.entry.entryProfileIterator;
+    const columnId = column.get('id');
+    const value = column.get('value');
+    const lastBlock = column.get('lastBlock');
+    const columnLastIndex = column.get('lastIndex');
     const isProfileEntries = columnId === 'profileEntries';
-    const toBlock = !isProfileEntries ?
-        yield select(state => selectColumnLastBlock(state, columnId)) :
+    const toBlock = !isProfileEntries ? lastBlock :
         yield select(state => selectProfileEntriesLastBlock(state, value));
-    const lastIndex = !isProfileEntries ?
-        yield select(state => selectColumnLastIndex(state, columnId)) :
+    const lastIndex = !isProfileEntries ? columnLastIndex :
         yield select(state => selectProfileEntriesLastIndex(state, value));
     let akashaId, ethAddress, totalLoaded; // eslint-disable-line
     if (isEthAddress(value)) {
@@ -258,14 +264,19 @@ function* entryMoreProfileIterator ({ columnId, value }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, totalLoaded, more: true }]
+        [{
+            columnId, ethAddress, akashaId,
+            limit: ENTRY_ITERATOR_LIMIT, toBlock,
+            lastIndex, totalLoaded, more: true
+        }]
     );
 }
 
-function* entryMoreStreamIterator ({ columnId }) {
+function* entryMoreStreamIterator ({ column }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const toBlock = column.get('lastBlock');
+    const lastIndex = column.get('lastIndex');
+    const columnId = column.get('id');
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
@@ -274,35 +285,37 @@ function* entryMoreStreamIterator ({ columnId }) {
     );
 }
 
-function* entryMoreTagIterator ({ columnId, value }) {
+function* entryMoreTagIterator ({ column }) {
     const channel = Channel.server.entry.entryTagIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const toBlock = column.get('lastBlock');
+    const lastIndex = column.get('lastIndex');
+    const { id, value } = column;
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
+        [{ columnId: id, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
     );
 }
 
-function* entryNewestIterator ({ columnId, reversed }) {
+function* entryNewestIterator ({ column, reversed }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const columnId = column.get('id');
+    const firstBlock = column.get('firstBlock');
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts, reversed }) {
+function* entryProfileIterator ({ column, limit = ENTRY_ITERATOR_LIMIT, asDrafts, reversed }) {
+    const value = column.get('value');
+    const columnId = column.get('id');
+    const firstBlock = column.get('firstBlock');
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     let akashaId, ethAddress; // eslint-disable-line
     if (isEthAddress(value)) {
         ethAddress = value;
@@ -326,12 +339,12 @@ function* entryResolveIpfsHash ({ entryId, ipfsHash }) {
     );
 }
 
-function* entryStreamIterator ({ columnId, reversed }) {
+function* entryStreamIterator ({ column, reversed }) {
     const channel = Channel.server.entry.followingStreamIterator;
+    const columnId = column.get('id');
+    const firstBlock = column.get('firstBlock');
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
@@ -340,13 +353,14 @@ function* entryStreamIterator ({ columnId, reversed }) {
     );
 }
 
-function* entryTagIterator ({ columnId, value, reversed }) {
+function* entryTagIterator ({ column, reversed }) {
+    const columnId = column.get('id');
+    const value = column.get('value');
+    const firstBlock = column.get('firstBlock');
     yield put(tagActions.tagExists({ tagName: value }));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     yield apply(
         channel,
         channel.send,
@@ -622,13 +636,13 @@ function* handleEntryNewestIteratorResponse (resp) {
         }
     } else {
         const { columnId, reversed } = resp.request;
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId);
-        }
         if (resp.request.more) {
             yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
         } else {
             yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
+        }
+        if (!reversed) {
+            yield call(entryGetExtraOfList, resp.data.collection, columnId);
         }
     }
 }

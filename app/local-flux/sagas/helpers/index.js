@@ -11,7 +11,7 @@ export const enabledChannels = [];
 export function createActionChannel (channel) {
     return eventChannel((emit) => {
         const handler = (ev, resp) => {
-            emit(resp);
+            tap(emit, resp);
         };
         channel.on(handler);
 

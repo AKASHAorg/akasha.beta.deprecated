@@ -16,9 +16,9 @@ class CellManager extends Component {
 
     componentDidUpdate () {
         const { onSizeChange } = this.props;
-        const newBaseNodeSize = this._baseNodeRef.getBoundingClientRect();
-        if (newBaseNodeSize.height !== this.baseNodeSize.height) {
-            onSizeChange(newBaseNodeSize);
+        if (this._baseNodeRef.getBoundingClientRect().height !== this.baseNodeSize.height) {
+            onSizeChange(this._baseNodeRef.getBoundingClientRect());
+            this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
         }
     }
 

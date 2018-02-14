@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { symmetricDifferenceWith, eqBy, prop, propEq, findIndex, update } from 'ramda';
+import { symmetricDifferenceWith, eqBy, prop, propEq, findIndex, update, indexOf, remove } from 'ramda';
 import throttle from 'lodash.throttle';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
@@ -15,7 +15,7 @@ class ColManager extends Component {
             topIndexTo: 0
         };
         this.avgItemHeight = this.props.initialItemHeight;
-        this.loadingMore = false;
+        this.loadingMore = [];
         this.containerHeight = this.props.columnHeight;
         this.items = [];
         this.itemCount = 0;
@@ -26,7 +26,7 @@ class ColManager extends Component {
     componentWillMount = () => {
         const { column } = this.props;
         if (column.entriesList.size === 0) {
-            this.props.onItemRequest(column.get('id'));
+            this.props.onItemRequest(column);
         } else {
             this._mapItemsToState(column.get('entriesList'));
         }
@@ -45,7 +45,7 @@ class ColManager extends Component {
         const oldItems = this.props.column.get('entriesList');
         if (column.get('entriesList').size !== oldItems.size) {
             this._mapItemsToState(column.get('entriesList'));
-            this.loadingMore = false;
+            this.loadingMore = remove(indexOf(column.get('id'), this.loadingMore), 1, this.loadingMore);
         }
     }
     _onResize = () => {
@@ -76,13 +76,9 @@ class ColManager extends Component {
     _loadMoreIfNeeded = () => {
         const { props } = this;
         const { onItemMoreRequest, column } = props;
-        if (!this.loadingMore) {
-            onItemMoreRequest({
-                columnId: column.get('id'),
-                toBlock: column.get('lastBlock'),
-                lastIndex: column.get('lastIndex')
-            });
-            this.loadingMore = true;
+        if (!this.loadingMore.includes(column.get('id'))) {
+            onItemMoreRequest(column);
+            this.loadingMore.push(column.get('id'));
         }
     }
     /**
@@ -106,12 +102,14 @@ class ColManager extends Component {
         }
 
         if (this.state.topIndexTo !== topIndex) {
-            this.setState(() => ({
-                topIndexTo: topIndex
-            }));
+            window.requestIdleCallback(() => {
+                this.setState(() => ({
+                    topIndexTo: topIndex
+                }));
+            }, { timeout: 500 });
         }
-
-        if (this._getBottomIndex(topIndexTo) >= (items.length - MORE_ITEMS_TRIGGER_SIZE)) {
+        const shouldLoadMore = this._getBottomIndex(topIndex) >= (items.length - MORE_ITEMS_TRIGGER_SIZE);
+        if (shouldLoadMore) {
             this._loadMoreIfNeeded();
         }
     }
@@ -163,10 +161,10 @@ class ColManager extends Component {
         } else {
             delta = 'up';
         }
-        window.requestAnimationFrame(() => {
+        window.requestIdleCallback(() => {
             this._onScrollMove(delta, scrollTop);
             this.lastScrollTop = scrollTop;
-        });
+        }, { timeout: 1000 });
     }
     _onScrollMove = (delta, scrollTop) => {
         this._updateOffsets(scrollTop);
@@ -183,7 +181,6 @@ class ColManager extends Component {
         const { topIndexTo } = state;
         const { column, baseWidth, onItemrequest, onItemMoreRequest, ...other } = props;
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
-
         return (
           <div
             onScroll={this._debouncedScroll}

@@ -4,56 +4,89 @@ import { connect } from 'react-redux';
 import * as columnTypes from '../../constants/columns';
 // import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
 //     ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
-import { entryMoreNewestIterator,
-    entryNewestIterator, entryPageShow } from '../../local-flux/actions/entry-actions';
+import { entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
+    entryMoreListIterator, entryNewestIterator, entryMoreTagIterator, entryTagIterator,
+    entryMoreStreamIterator, entryStreamIterator,
+    entryPageShow } from '../../local-flux/actions/entry-actions';
+import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowingsIterator,
+    profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
 import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress } from '../../local-flux/selectors';
 import ColManager from './col-manager';
+import ColumnHeader from './column-header';
 
 const Column = ({ column, baseWidth, ethAddress, type, entries, ...other }) => {
-    let component;
-    const props = {
+    let props = {
         column,
         entries,
         baseWidth,
-        onItemRequest: other.entryNewestIterator,
-        onItemMoreRequest: other.entryMoreNewestIterator,
         onRetry: () => { console.error('implement retry'); },
         ...other
     };
-    component = <ColManager {...props} />;
-    // switch (type) {
-    //     case columnTypes.latest:
-    //         component = <LatestColumn {...props} />;
-    //         break;
-    //     case columnTypes.list:
-    //         component = <ListColumn {...props} />;
-    //         break;
-    //     case columnTypes.tag:
-    //         component = <TagColumn {...props} />;
-    //         break;
-    //     case columnTypes.stream:
-    //         component = <StreamColumn {...props} />;
-    //         break;
-    //     case columnTypes.profile:
-    //         component = <ProfileColumn {...props} />;
-    //         break;
-    //     case columnTypes.profileEntries:
-    //         component = <ProfileEntriesColumn ethAddress={ethAddress} />;
-    //         break;
-    //     case columnTypes.profileFollowers:
-    //         component = <ProfileFollowersColumn ethAddress={ethAddress} />;
-    //         break;
-    //     case columnTypes.profileFollowings:
-    //         component = <ProfileFollowingsColumn ethAddress={ethAddress} />;
-    //         break;
-    //     default:
-    //         break;
-    // }
+    switch (type) {
+        case columnTypes.latest:
+            props = {
+                ...props,
+                onItemRequest: other.entryNewestIterator,
+                onItemMoreRequest: other.entryMoreNewestIterator,
+            };
+            break;
+        case columnTypes.list:
+            props = {
+                ...props,
+                onItemRequest: other.entryListIterator,
+                onItemMoreRequest: other.entryMoreListIterator,
+            };
+            break;
+        case columnTypes.tag:
+            props = {
+                ...props,
+                onItemRequest: other.entryTagIterator,
+                onItemMoreRequest: other.entryMoreTagIterator,
+            };
+            break;
+        case columnTypes.stream:
+            props = {
+                ...props,
+                onItemRequest: other.entryStreamIterator,
+                onItemMoreRequest: other.entryMoreStreamIterator,
+            };
+            break;
+        case columnTypes.profile:
+        case columnTypes.profileEntries:
+            props = {
+                ...props,
+                onItemRequest: other.entryProfileIterator,
+                onItemMoreRequest: other.entryMoreProfileIterator
+            };
+            break;
+        case columnTypes.profileFollowers:
+            props = {
+                ...props,
+                onItemRequest: other.profileFollowersIterator,
+                onItemMoreRequest: other.profileMoreFollowersIterator
+            };
+            break;
+        case columnTypes.profileFollowings:
+            props = {
+                ...props,
+                onItemRequest: other.profileFollowingsIterator,
+                onItemMoreRequest: other.profileMoreFollowingsIterator
+            };
+            break;
+        default:
+            break;
+    }
 
     return (
       <div className="column__wrapper">
-        {component}
+        <ColumnHeader
+          readonly
+          column={column}
+          title="placeholder title"
+          onRefresh={() => console.error('implement refresh')}
+        />
+        <ColManager {...props} />
       </div>
     );
 };
@@ -85,6 +118,18 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
     entryNewestIterator,
     entryMoreNewestIterator,
+    entryProfileIterator,
+    entryMoreProfileIterator,
+    entryListIterator,
+    entryMoreListIterator,
+    entryMoreTagIterator,
+    entryTagIterator,
+    entryMoreStreamIterator,
+    entryStreamIterator,
+    profileFollowersIterator,
+    profileMoreFollowersIterator,
+    profileFollowingsIterator,
+    profileMoreFollowingsIterator,
     entryPageShow,
 };
 
