@@ -67,6 +67,18 @@ export const userSettingsError = (error) => {
     return action(types.USER_SETTINGS_ERROR, { error });
 };
 
+export const userSettingsAddTrustedDomain = (ethAddress, domain) =>
+    action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN, { ethAddress, domain });
+
+export const userSettingsAddTrustedDomainError = (error) => {
+    error.code = 'USATDE01';
+    return action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_ERROR, { error });
+};
+
+export const userSettingsAddTrustedDomainSuccess = data =>
+    action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS, { data });
+
+
 export const userSettingsSave = (ethAddress, payload) =>
     action(types.USER_SETTINGS_SAVE, { ethAddress, payload });
 

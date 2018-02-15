@@ -12,6 +12,7 @@ import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
+import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
@@ -22,6 +23,7 @@ import { AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayM
     ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
     ProfileSettings, WalletPanel, FullSizeImageViewer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
+import { selectLoggedEthAddress } from '../local-flux/selectors/index';
 
 notification.config({
     top: 60,
@@ -130,7 +132,7 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, history, intl,
-            location, needAuth, needEth, needAeth, needMana } = this.props;
+            location, loggedEthAddress, needAuth, needEth, needAeth, needMana } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -211,6 +213,8 @@ class AppContainer extends Component {
                 <FullSizeImageViewer />
                 <ErrorNotification />
                 <NavigateAwayModal
+                  loggedEthAddress={loggedEthAddress}
+                  userSettingsAddTrustedDomain={this.props.userSettingsAddTrustedDomain}
                   navigation={appState.get('outsideNavigation')}
                   onClick={this.props.toggleOutsideNavigation}
                 />
@@ -232,6 +236,7 @@ class AppContainer extends Component {
 
 AppContainer.propTypes = {
     activeDashboard: PropTypes.string,
+    userSettingsAddTrustedDomain: PropTypes.func,
     appState: PropTypes.shape().isRequired,
     bootstrapHome: PropTypes.func,
     entryVoteCost: PropTypes.func,
@@ -243,6 +248,7 @@ AppContainer.propTypes = {
     intl: PropTypes.shape(),
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
+    loggedEthAddress: PropTypes.string,
     needAuth: PropTypes.string,
     needEth: PropTypes.bool,
     needAeth: PropTypes.bool,
@@ -261,6 +267,7 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         faucet: state.profileState.get('faucet'),
+        loggedEthAddress: selectLoggedEthAddress(state),
         needAuth: state.actionState.get('needAuth'),
         needEth: state.actionState.get('needEth'),
         needAeth: state.actionState.get('needAeth'),
@@ -272,6 +279,7 @@ export { AppContainer };
 export default DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
+        userSettingsAddTrustedDomain,
         bootstrapHome,
         entryVoteCost,
         errorDeleteFatal,

@@ -14,55 +14,39 @@ class AppPreferences extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            initLocale: this.props.generalSettings.get('locale'),
-            initTheme: this.props.generalSettings.get('darkTheme'),
             locale: this.props.generalSettings.get('locale'),
             darkTheme: this.props.generalSettings.get('darkTheme'),
-            isDirty: false,
             showThemeTip: false
         };
     }
 
     handleUpdate = () => {
-        const { initTheme, darkTheme } = this.state;
+        const { darkTheme } = this.state;
+        const { generalSettings } = this.props;
         this.props.saveGeneralSettings({
             locale: this.state.locale,
             darkTheme: this.state.darkTheme
         });
-        if (darkTheme !== initTheme) {
+        if (darkTheme !== generalSettings.darkTheme) {
             this.props.showNotification({
                 id: 'themeTips',
                 duration: 4
             });
         }
-        this.setState({ isDirty: false });
     }
 
     handleSelector = (value) => {
-        const { darkTheme, initLocale, initTheme } = this.state;
-        this.setState({
-            locale: value,
-            isDirty: true
-        });
-        if (initLocale === value && initTheme === darkTheme) {
-            this.setState({ isDirty: false });
-        }
+        this.setState({ locale: value });
     }
 
     handleThemeChange = (e) => {
-        const { initLocale, initTheme, locale } = this.state;
-        this.setState({
-            isDirty: true,
-            darkTheme: e.target.value,
-        });
-        if (initTheme === e.target.value && initLocale === locale) {
-            this.setState({ isDirty: false });
-        }
+        this.setState({ darkTheme: e.target.value });
     }
 
     render () {
         const { generalSettings, intl } = this.props;
-        const { isDirty } = this.state;
+        const { darkTheme, locale } = this.state;
+        const isFormChanged = generalSettings.darkTheme !== darkTheme || generalSettings.locale !== locale;
         return (
           <div className="app-preferences">
             <div className="app-preferences__main">
@@ -108,7 +92,7 @@ class AppPreferences extends Component {
             <div className="app-preferences__update">
               <div className="app-preferences__update-btn">
                 <Button
-                  disabled={!isDirty}
+                  disabled={!isFormChanged}
                   type="primary"
                   onClick={this.handleUpdate}
                 >

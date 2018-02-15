@@ -86,8 +86,9 @@ class ProfileColumn extends Component {
     render () {
         const { column, entriesList, intl, profileExists, profileResults } = this.props;
         let placeholderMessage;
-        if (column.get('value') && profileExists.get('akashaId') === column.get('value')) {
-            placeholderMessage = profileExists.getIn(['data', 'exists']) ?
+        const columnValue = column.get('value');
+        if (columnValue && profileExists.has(columnValue)) {
+            placeholderMessage = profileExists.getIn([columnValue, 'exists']) ?
                 intl.formatMessage(entryMessages.noEntries) :
                 intl.formatMessage(profileMessages.profileDoesntExist);
         } else {
