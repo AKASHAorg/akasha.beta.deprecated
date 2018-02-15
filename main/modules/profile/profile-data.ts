@@ -29,7 +29,7 @@ export const getProfileData1 = {
  * Get profile data for an akasha profile address
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
+const execute = Promise.coroutine(function* (data: ProfileDataRequest, cb) {
     const v = new schema.Validator();
     v.validate(data, getProfileData1, { throwError: true });
 
@@ -48,6 +48,19 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
     const entriesCount = yield entryCountProfile.execute({ ethAddress });
     const commentsCount = yield contracts.instance.Comments.totalCommentsOf(ethAddress);
     const [karma, essence] = yield contracts.instance.Essence.getCollected(ethAddress);
+    const partialProfile = {
+        akashaId: akashaId,
+        ethAddress: ethAddress,
+        donationsEnabled: donationsEnabled,
+        followingCount: foCount.count,
+        followersCount: fwCount.count,
+        entriesCount: entriesCount.count,
+        commentsCount: commentsCount.toString(10),
+        [BASE_URL]: generalSettings.get(BASE_URL),
+        karma: (GethConnector.getInstance().web3.fromWei(karma, 'ether')).toFormat(5),
+        essence: (GethConnector.getInstance().web3.fromWei(essence, 'ether')).toFormat(5)
+    };
+    cb('', partialProfile);
     if (!!unpad(hash)) {
         const ipfsHash = encodeHash(fn, digestSize, hash);
         if (data.short) {
@@ -69,22 +82,8 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest) {
         }], (err) => { if (err) { console.warn('error storing PROFILE index', err); } });
     }
 
-    return Object.assign(
-        {
-            akashaId: akashaId,
-            ethAddress: ethAddress,
-            donationsEnabled: donationsEnabled,
-            followingCount: foCount.count,
-            followersCount: fwCount.count,
-            entriesCount: entriesCount.count,
-            commentsCount: commentsCount.toString(10),
-            [BASE_URL]: generalSettings.get(BASE_URL),
-            profile: profileAddress,
-            karma: (GethConnector.getInstance().web3.fromWei(karma, 'ether')).toFormat(5),
-            essence: (GethConnector.getInstance().web3.fromWei(essence, 'ether')).toFormat(5)
-        },
-        profile);
+    return Object.assign({}, partialProfile, profile);
 
 });
 
-export default { execute, name: 'getProfileData' };
+export default { execute: execute, name: 'getProfileData', hasStream: true };
