@@ -52,3 +52,17 @@ export const userSettingsSave = (ethAddress, payload) =>
                 }
             });
     });
+export const userSettingsAddTrustedDomain = (ethAddress, domain) =>
+    new Promise((resolve, reject) => {
+        settingsDB.user.where('ethAddress').equals(ethAddress).toArray()
+            .then((data) => {
+                const user = data[0];
+                if (!user.trustedDomains) {
+                    user.trustedDomains = [];
+                }
+                user.trustedDomains.push(domain);
+                settingsDB.user.where('ethAddress').equals(ethAddress).modify(user)
+                    .then(() => resolve(data[0]))
+                    .catch(error => reject(error));
+            });
+    });

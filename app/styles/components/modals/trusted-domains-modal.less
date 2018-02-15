@@ -1,0 +1,45 @@
+.trusted-domains-modal {
+    top: 200px;
+
+    .ant-modal-content {
+        border-radius: 3px;
+    }
+
+    .ant-checkbox-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ant-checkbox-group-item {
+        width: 395px;
+        padding: 10px 0;
+        border-bottom: 1px solid @border-color;
+    }
+
+    &__search {
+        width: 400px;
+        .ant-input-prefix {
+            display: flex;
+            justify-content: center;
+            height: 32px;
+            width: 32px;
+            left: 0;
+            align-items: center;
+            border-right: 1px inset @input-border-color;
+        }
+
+        .ant-input-affix-wrapper .ant-input {
+            padding-left: 41px;
+        }
+    }
+
+    &__checkbox-wrap {
+        margin-top: 3px;
+        height: 150px;
+    }
+
+    &__overflow {
+        height: 100%;
+        overflow-x: auto;
+    }
+}

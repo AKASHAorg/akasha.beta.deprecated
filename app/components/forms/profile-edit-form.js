@@ -33,7 +33,9 @@ class ProfileEditForm extends Component {
     getValidatorData = () => this.props.tempProfile.toJS();
 
     componentWillReceiveProps (nextProps) {
-        const { loggedProfileData, tempProfile, profileExistsData } = nextProps;
+        const { loggedProfileData, tempProfile, profileExistsData, onProfileUpdate } = nextProps;
+        const id = tempProfile.get('akashaId');
+        const existsData = profileExistsData.toJS();
         this.formChanged = (
             tempProfile.get('akashaId') !== loggedProfileData.get('akashaId') ||
             tempProfile.get('firstName') !== loggedProfileData.get('firstName') ||
@@ -43,14 +45,20 @@ class ProfileEditForm extends Component {
             !fromJS(tempProfile.get('backgroundImage')).equals(fromJS(loggedProfileData.get('backgroundImage'))) ||
             !fromJS(tempProfile.get('links')).equals(fromJS(loggedProfileData.get('links')))
         );
+        if (id) {
+            const trimmed = id.trim();
+            onProfileUpdate(
+                tempProfile.set('akashaId', trimmed)
+            );
+        }
         this.emptyLinks = !!tempProfile.get('links').filter(link => !link.get('url')).size;
-        if (profileExistsData.get('data')) {
-            const { idValid, exists, normalisedId } = profileExistsData.get('data').toJS();
+        if (id && existsData[id]) {
+            const { idValid, exists, normalisedId } = existsData[id];
             this.setState({
                 akashaIdIsValid: idValid,
                 akashaIdExists: exists
             });
-            if (tempProfile.get('akashaId') !== normalisedId) {
+            if (id !== normalisedId) {
                 this.setState({ akashaIdIsValid: false });
             }
         }
@@ -182,8 +190,9 @@ class ProfileEditForm extends Component {
     _getAkashaIdErrors = () => {
         const { intl, tempProfile, profileExistsData } = this.props;
         const { akashaIdIsValid, akashaIdExists } = this.state;
-        if (tempProfile.get('akashaId') === profileExistsData.get('akashaId')) {
-            if (!akashaIdIsValid && tempProfile.get('akashaId').length > 1) {
+        const id = tempProfile.get('akashaId');
+        if (profileExistsData.has(id)) {
+            if (!akashaIdIsValid && id.length > 1) {
                 return intl.formatMessage(validationMessages.akashaIdNotValid);
             }
             if (akashaIdExists) {
@@ -256,7 +265,7 @@ class ProfileEditForm extends Component {
                 return;
             }
             this.isSubmitting = true;
-            if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
+            if (isUpdate || (this.state.akashaIdIsValid && !this.state.akashaIdExists)) {
                 const actionType = isUpdate ?
                     actionTypes.profileUpdate :
                     actionTypes.profileRegister;

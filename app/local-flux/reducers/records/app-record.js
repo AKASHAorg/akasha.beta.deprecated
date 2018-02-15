@@ -25,6 +25,7 @@ export const AppRecord = Record({
     outsideNavigation: new Map({
         url: null,
         isVisible: false,
+        isTrusted: false
     }),
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,

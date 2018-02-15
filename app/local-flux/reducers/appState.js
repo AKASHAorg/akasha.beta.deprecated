@@ -115,10 +115,17 @@ const appState = createReducer(initialState, {
     [types.TOGGLE_NAVIGATION_MODAL]: state =>
         state.set('showNavigationModal', !state.get('showNavigationModal')),
 
-    [types.TOGGLE_OUTSIDE_NAVIGATION_MODAL]: (state, { url }) =>
+    [types.TOGGLE_OUTSIDE_NAVIGATION_MODAL_SUCCESS]: (state, { url }) =>
         state.mergeIn(['outsideNavigation'], {
             isVisible: !!url,
             url,
+            isTrusted: false
+        }),
+    [types.TOGGLE_OUTSIDE_NAVIGATION_MODAL_REDIRECT]: (state, { url }) =>
+        state.mergeIn(['outsideNavigation'], {
+            isVisible: !!url,
+            url,
+            isTrusted: true
         }),
     '@@router/LOCATION_CHANGE': (state, { payload }) => {
         const { pathname } = payload;

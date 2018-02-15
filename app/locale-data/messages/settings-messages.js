@@ -156,6 +156,21 @@ const settingsMessages = defineMessages({
         id: 'app.settings.notificationsInfo',
         description: 'description for notification preferences',
         defaultMessage: 'Your notification preferences for Akasha'
-    }
+    },
+    trustedDomainsOptions: {
+        id: 'app.settings.trustedDomainsOptions',
+        description: 'Title for trusted domains user settings',
+        defaultMessage: 'Trusted Domains'
+    },
+    trustedDomainsManage: {
+        id: 'app.settings.trustedDomainsManage',
+        description: 'manage trusted domains',
+        defaultMessage: 'Manage your trusted domains here'
+    },
+    trustedDomainsOptionsDescription: {
+        id: 'app.settings.trustedDomainsOptionsDescription',
+        description: 'description for trusted domains user settings',
+        defaultMessage: 'External links to which you can navigate without being prompted'
+    },
 });
 export { settingsMessages };

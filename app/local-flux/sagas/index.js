@@ -7,6 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
+import * as appSaga from './app-saga';
 import * as commentsSaga from './comments-saga';
 import * as draftSaga from './draft-saga';
 import * as dashboardSaga from './dashboard-saga';
@@ -97,6 +98,7 @@ export default function* rootSaga () { // eslint-disable-line max-statements
     createActionChannels();
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
+    yield fork(appSaga.watchAppActions);
     yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(draftSaga.watchDraftActions);
