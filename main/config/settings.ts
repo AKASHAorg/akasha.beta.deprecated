@@ -1,10 +1,10 @@
 export const generalSettings = new Map();
 export const BASE_URL = 'baseUrl';
 
-export const INSTANT_WAIT_TIME = 300;
-export const SHORT_WAIT_TIME = 18000;
+export const OP_WAIT_TIME = 15000;
+export const SHORT_WAIT_TIME = 48000;
 export const MEDIUM_WAIT_TIME = 15000;
-export const FULL_WAIT_TIME = 36000;
+export const FULL_WAIT_TIME = 96000;
 
 export const FOLLOWING_LIST = 'followingList';
 export const BLOCK_INTERVAL = 5300;

@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest[], cb) {
     v.validate(data, getProfileList, { throwError: true });
 
     const pool = data.map((profile) => {
-        return getProfileData.execute(profile).then((profileData) => cb(null, profileData));
+        return getProfileData.execute(profile, cb).then((profileData) => cb(null, profileData));
     });
     yield Promise.all(pool);
     return { done: true };
