@@ -14,6 +14,7 @@ import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowi
     profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
 import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress } from '../../local-flux/selectors';
+import { dashboardMessages, profileMessages } from '../../locale-data/messages';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
 
@@ -21,25 +22,33 @@ const dropBox = {
     drop (props) {
         // console.log('dropped at', props.column);
     },
+    /* eslint-disable max-statements */
     hover (props, monitor) {
         // console.log('hovered', props, monitor.isOver({ shallow: true }));
         const draggedItem = monitor.getItem();
-        const hoveredColumn = document.getElementById(props.column.get('id'));
-        const colSize = hoveredColumn.getBoundingClientRect();
-        const hoverMiddleX = (colSize.right - colSize.left) / 2;
-        const clientOffset = monitor.getClientOffset();
-        const hoverClientX = clientOffset.x - colSize.left;
-        const dragIndex = draggedItem.columnIndex;
-        const hoverIndex = props.columnIndex;
-        // console.log(draggedItem, hoverIndex, 'dragged, hover');
-        if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
-            return;
+        const draggedItemId = draggedItem.columnId;
+        const hoverItemId = props.column.get('id');
+        if (draggedItemId !== hoverItemId) {
+            const hoveredColumn = document.getElementById(props.column.get('id'));
+            const colSize = hoveredColumn.getBoundingClientRect();
+            const hoverMiddleX = (colSize.right - colSize.left) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientX = clientOffset.x - colSize.left;
+            const dragIndex = draggedItem.columnIndex;
+            let hoverIndex = props.columnIndex;
+            if (dragIndex < hoverIndex) {
+                if (hoverClientX < hoverMiddleX) {
+                    hoverIndex -= 1;
+                }
+            }
+            if (dragIndex > hoverIndex) {
+                if (hoverClientX > hoverMiddleX) {
+                    hoverIndex += 1;
+                }
+            }
+            props.onNeighbourHover(dragIndex, hoverIndex);
+            // monitor.getItem().columnIndex = hoverIndex;
         }
-        if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
-            return;
-        }
-        props.onNeighbourHover(dragIndex, hoverIndex);
-        monitor.getItem().columnIndex = hoverIndex;
     }
 };
 
@@ -47,60 +56,72 @@ const Column = ({
     onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
     ethAddress, type, entries, ...other
 }) => {
-    let props = {
+    let passedProps = {
         column,
         entries,
         baseWidth,
         onRetry: () => { console.error('implement retry'); },
+        iconType: 'entries',
+        title: column.get('value'),
         ...other
     };
     switch (type) {
         case columnTypes.latest:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
+                title: other.intl.formatMessage(dashboardMessages.latest),
                 onItemRequest: other.entryNewestIterator,
                 onItemMoreRequest: other.entryMoreNewestIterator,
             };
             break;
         case columnTypes.list:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
                 onItemRequest: other.entryListIterator,
                 onItemMoreRequest: other.entryMoreListIterator,
             };
             break;
         case columnTypes.tag:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
+                iconType: 'tag',
                 onItemRequest: other.entryTagIterator,
                 onItemMoreRequest: other.entryMoreTagIterator,
             };
             break;
         case columnTypes.stream:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
                 onItemRequest: other.entryStreamIterator,
                 onItemMoreRequest: other.entryMoreStreamIterator,
             };
             break;
         case columnTypes.profile:
+            passedProps = {
+                title: other.intl.formatMessage(profileMessages.entries),
+                iconType: 'profile',
+                onItemRequest: other.entryProfileIterator,
+                onItemMoreRequest: other.entryMoreProfileIterator
+            };
+            break;
         case columnTypes.profileEntries:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
                 onItemRequest: other.entryProfileIterator,
                 onItemMoreRequest: other.entryMoreProfileIterator
             };
             break;
         case columnTypes.profileFollowers:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
+                title: other.intl.formatMessage(profileMessages.followers),
                 onItemRequest: other.profileFollowersIterator,
                 onItemMoreRequest: other.profileMoreFollowersIterator
             };
             break;
         case columnTypes.profileFollowings:
-            props = {
-                ...props,
+            passedProps = {
+                ...passedProps,
                 onItemRequest: other.profileFollowingsIterator,
                 onItemMoreRequest: other.profileMoreFollowingsIterator
             };
@@ -113,15 +134,16 @@ const Column = ({
       <ColumnHeader
         readonly
         column={column}
+        columnIndex={other.columnIndex}
         onRefresh={() => console.error('implement refresh')}
         onBeginDrag={onBeginDrag}
         onEndDrag={onEndDrag}
         isColumnDragging={isColumnDragging}
         connectDropTarget={other.connectDropTarget}
+        iconType={passedProps.iconType}
+        title={passedProps.title}
       >
-        {!other.inDragMode &&
-          <ColManager {...props} />
-        }
+        <ColManager {...passedProps} />
       </ColumnHeader>
     );
 };

@@ -12,7 +12,9 @@
         background-color: @background;
         transform: translate3d(0,0,0);
         &_dragging {
-            background-color: darken(@background, 30%);
+            .column-header {
+                opacity: 0;
+            }
         }
     }
 

@@ -36,10 +36,10 @@ class Dashboard extends Component {
                 id: null,
                 large: false
             },
-            columnPlaceholder: {
-                drag: null,
-                hover: null
-            }
+            // columnPlaceholder: {
+            //     drag: null,
+            //     hover: null
+            // }
         });
     }
     _handleDragHover = (column) => {
@@ -49,35 +49,20 @@ class Dashboard extends Component {
         // console.log('is dragging', column);
     }
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
-        // console.log('just entered', dragIndex, hoverIndex, 'with hover');
-        this.setState({
-            columnPlaceholder: {
-                drag: dragIndex,
-                hover: hoverIndex,
-            },
-        });
-        // const { match, dashboards } = this.props;
-        // const { draggingColumn } = this.state;
-        // const dashboardId = match.params.dashboardId;
-        // const activeDashboard = dashboards.get(dashboardId);
-        // const columns = activeDashboard.get('columns');
-        // const neighbourColumnId = neighbourColumn.get('id');
-        // const neighbourColumnIndex = columns.findIndex(colId => colId === neighbourColumnId);
-        // const currentColumnIndex = columns.findIndex(colId => colId === draggingColumn.id);
-        // const placeholderPosition = currentColumnIndex > neighbourColumnIndex ? 'before' : 'after';
-        // // console.log('insert placeholder', placeholderPosition, neighbourColumnIndex);
-        // this.setState({
-        //     columnPlaceholder: {
-        //         index: neighbourColumnIndex,
-        //         position: placeholderPosition
-        //     }
-        // });
+        if (dragIndex !== this.state.columnPlaceholder.dragIndex) {
+            this.setState({
+                columnPlaceholder: {
+                    drag: dragIndex,
+                    hover: hoverIndex,
+                },
+            });
+        }
     }
     _getColumns = (cols) => {
         const { columnPlaceholder } = this.state;
         const { drag, hover } = columnPlaceholder;
         const dragCard = cols.get(columnPlaceholder.drag);
-        return cols.splice(drag, 1, cols.splice(hover, 0, dragCard));
+        return cols.delete(drag).insert(hover, dragCard);
     }
     render () {
         const { columns, darkTheme, dashboardCreateNew, dashboards, getDashboardRef,
@@ -89,8 +74,7 @@ class Dashboard extends Component {
         const imgClass = classNames('dashboard__empty-placeholder-img', {
             'dashboard__empty-placeholder-img_dark': darkTheme
         });
-        console.log(this._getColumns(activeDashboardColumns));
-        if (activeDashboardColumns.size && columnPlaceholder.hoverIndex) {
+        if (activeDashboardColumns.size && columnPlaceholder.hover) {
             activeDashboardColumns = this._getColumns(activeDashboardColumns);
         }
         // console.log(activeDashboardColumns, 'adc');
@@ -125,6 +109,7 @@ class Dashboard extends Component {
                       onNeighbourHover={this._handleNeighbourHover}
                       inDragMode={isDragging}
                       columnIndex={index}
+                      intl={intl}
                     />
                   </div>
                 );

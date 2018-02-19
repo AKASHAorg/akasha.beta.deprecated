@@ -19,7 +19,6 @@ const { Option } = Select;
  */
 const cardSource = {
     beginDrag (props) {
-        // console.log(props, 'the props on drag begin');
         props.onBeginDrag(props.column);
         return {
             columnId: props.column.get('id'),
@@ -65,7 +64,6 @@ class ColumnHeader extends Component {
     }
     wasVisible = false;
     getInputRef = (el) => { this.input = el; };
-
     onBlur = () => {
         if (!this.selecting) {
             this.onCancel();
@@ -245,7 +243,7 @@ class ColumnHeader extends Component {
 
     render () {
         const { column, iconType, noMenu, readOnly, title, connectDragSource,
-            connectDragPreview, connectDropTarget } = this.props;
+            connectDropTarget, connectDragPreview } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header-wrapper__title-wrapper', {
             'column-header-wrapper__title-wrapper_no-icon': !iconType
@@ -253,72 +251,80 @@ class ColumnHeader extends Component {
         const titleClass = classNames('overflow-ellipsis column-header-wrapper__title', {
             'column-header-wrapper__title_large': column && column.get('large')
         });
-        return connectDragPreview(connectDropTarget(
-          <div className="column-header">
-            {connectDragSource(
-              <div
-                className="flex-center-y column-header-wrapper"
-              >
-                {/* <div className="column-header-wrapper_drag-zone" /> */}
-                {iconType &&
-                  <Icon
-                    className="dark-icon column-header__icon"
-                    type={iconType}
-                  />
-                }
-                {connectDragSource(<div className={titleWrapperClass}>
-                  {(readOnly || !editMode) &&
-                    <div
-                      className={titleClass}
-                      onDoubleClick={!readOnly ? this.editColumn : undefined}
-                      onMouseDown={this.onMouseDown}
-                    >
-                      {title || value}
-                    </div>
-                  }
-                  {!readOnly && editMode && this.renderEditMode()}
-                </div>)}
-                {this.showModal()}
-                {!editMode &&
-                  <div className="column-header__refresh-icon">
-                    <Icon
-                      className="content-link"
-                      onClick={this.onRefresh}
-                      type="refresh"
-                    />
-                    {column && column.get('hasNewEntries') &&
-                      <div className="column-header__new-entries" />
-                    }
+        return connectDropTarget(
+          <div className="column-header" ref={(node) => { this._rootNode = node; }}>
+            <div
+              className="flex-center-y column-header-wrapper"
+            >
+              {connectDragSource(
+                <div className="column-header-wrapper_drag-zone">
+                  <i className="drag-zone-bar" />
+                  <i className="drag-zone-bar" />
+                  <i className="drag-zone-bar" />
+                </div>
+              )}
+              {iconType &&
+                <Icon
+                  className="dark-icon column-header__icon"
+                  type={iconType}
+                />
+              }
+              <div className={titleWrapperClass}>
+                {(readOnly || !editMode) &&
+                  <div
+                    className={titleClass}
+                    onDoubleClick={!readOnly ? this.editColumn : undefined}
+                    onMouseDown={this.onMouseDown}
+                  >
+                    {title || value}
                   </div>
                 }
-                {!editMode && !noMenu &&
-                  <Popover
-                    content={this.wasVisible ? this.renderContent() : null}
-                    onVisibleChange={this.onVisibleChange}
-                    overlayClassName="popover-menu"
-                    placement="bottom"
-                    trigger="click"
-                    visible={this.state.popoverVisible}
-                  >
-                    <Icon className="content-link column-header__menu-icon" type="menu" />
-                  </Popover>
-                }
-                {editMode &&
+                {!readOnly && editMode && this.renderEditMode()}
+              </div>
+              {this.showModal()}
+              {!editMode &&
+                <div className="column-header__refresh-icon">
                   <Icon
-                    className="content-link column-header__reset-icon"
-                    onClick={this.onCancel}
-                    type="close"
+                    className="content-link"
+                    onClick={this.onRefresh}
+                    type="refresh"
                   />
+                  {column && column.get('hasNewEntries') &&
+                    <div className="column-header__new-entries" />
+                  }
+                </div>
+              }
+              {!editMode && !noMenu &&
+                <Popover
+                  content={this.wasVisible ? this.renderContent() : null}
+                  onVisibleChange={this.onVisibleChange}
+                  overlayClassName="popover-menu"
+                  placement="bottom"
+                  trigger="click"
+                  visible={this.state.popoverVisible}
+                >
+                  <Icon className="content-link column-header__menu-icon" type="menu" />
+                </Popover>
+              }
+              {editMode &&
+                <Icon
+                  className="content-link column-header__reset-icon"
+                  onClick={this.onCancel}
+                  type="close"
+                />
                 }
-              </div>)}
+            </div>
             {this.props.children}
           </div>
-        ));
+        );
     }
 }
 
 ColumnHeader.propTypes = {
     column: PropTypes.shape(),
+    connectDragPreview: PropTypes.func,
+    connectDragSource: PropTypes.func,
+    connectDropTarget: PropTypes.func,
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     dataSource: PropTypes.shape(),
