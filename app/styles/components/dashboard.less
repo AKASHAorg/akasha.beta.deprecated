@@ -5,13 +5,15 @@
     width: 100%;
     overflow-x: auto;
     background-color: @light-background;
-
     &__column {
         flex: 0 0 auto;
         border-radius: 4px;
         margin-right: 12px;
         background-color: @background;
         transform: translate3d(0,0,0);
+        &_dragging {
+            background-color: darken(@background, 30%);
+        }
     }
 
     &__empty-placeholder {

@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
+import { DropTarget } from 'react-dnd';
 import * as columnTypes from '../../constants/columns';
 // import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
 //     ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
@@ -15,7 +17,36 @@ import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHid
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
 
-const Column = ({ column, baseWidth, ethAddress, type, entries, ...other }) => {
+const dropBox = {
+    drop (props) {
+        // console.log('dropped at', props.column);
+    },
+    hover (props, monitor) {
+        // console.log('hovered', props, monitor.isOver({ shallow: true }));
+        const draggedItem = monitor.getItem();
+        const hoveredColumn = document.getElementById(props.column.get('id'));
+        const colSize = hoveredColumn.getBoundingClientRect();
+        const hoverMiddleX = (colSize.right - colSize.left) / 2;
+        const clientOffset = monitor.getClientOffset();
+        const hoverClientX = clientOffset.x - colSize.left;
+        const dragIndex = draggedItem.columnIndex;
+        const hoverIndex = props.columnIndex;
+        // console.log(draggedItem, hoverIndex, 'dragged, hover');
+        if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
+            return;
+        }
+        if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
+            return;
+        }
+        props.onNeighbourHover(dragIndex, hoverIndex);
+        monitor.getItem().columnIndex = hoverIndex;
+    }
+};
+
+const Column = ({
+    onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
+    ethAddress, type, entries, ...other
+}) => {
     let props = {
         column,
         entries,
@@ -79,15 +110,19 @@ const Column = ({ column, baseWidth, ethAddress, type, entries, ...other }) => {
     }
 
     return (
-      <div className="column__wrapper">
-        <ColumnHeader
-          readonly
-          column={column}
-          title="placeholder title"
-          onRefresh={() => console.error('implement refresh')}
-        />
-        <ColManager {...props} />
-      </div>
+      <ColumnHeader
+        readonly
+        column={column}
+        onRefresh={() => console.error('implement refresh')}
+        onBeginDrag={onBeginDrag}
+        onEndDrag={onEndDrag}
+        isColumnDragging={isColumnDragging}
+        connectDropTarget={other.connectDropTarget}
+      >
+        {!other.inDragMode &&
+          <ColManager {...props} />
+        }
+      </ColumnHeader>
     );
 };
 
@@ -133,4 +168,6 @@ const mapDispatchToProps = {
     entryPageShow,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Column);
+export default connect(mapStateToProps, mapDispatchToProps)(DropTarget('COLUMN', dropBox, connectR => ({
+    connectDropTarget: connectR.dropTarget(),
+}))(Column));

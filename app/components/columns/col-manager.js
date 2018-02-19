@@ -185,10 +185,7 @@ class ColManager extends Component {
           <div
             onScroll={this._debouncedScroll}
             ref={this._createRootNodeRef}
-            style={{
-                height: '100%',
-                overflowY: 'auto'
-            }}
+            className="column-manager"
           >
             <div
               className="col-manager__top-offset"
