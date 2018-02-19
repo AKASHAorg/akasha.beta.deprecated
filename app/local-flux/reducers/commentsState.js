@@ -1,4 +1,5 @@
 import { List, Map } from 'immutable';
+import { isEmpty } from 'ramda';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { CommentAuthor, CommentRecord, CommentsState } from './records';
@@ -211,10 +212,10 @@ const commentsState = createReducer(initialState, {
         state.setIn(['flags', 'resolvingComments', data], false),
 
     [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data }) => {
-        const commentId = state.getIn(['byHash', data.ipfsHash]);
-        if (!data.ipfsHash) {
+        if (!data.ipfsHash || isEmpty(data)) {
             return state;
         }
+        const commentId = state.getIn(['byHash', data.ipfsHash]);
         return state.merge({
             byId: state.get('byId').setIn([commentId, 'content'], data.content),
             flags: state.get('flags').setIn(['resolvingComments', data.ipfsHash], false)
