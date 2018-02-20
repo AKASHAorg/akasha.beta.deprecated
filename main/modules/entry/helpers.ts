@@ -2,6 +2,10 @@ import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
+import { mixed } from '../models/records';
+
+const cacheKey = 'ENTRY-TAG';
+const calcKey = (id) => `${cacheKey}-${id}`;
 
 export const fetchFromPublish = Promise.coroutine(function* (data: {
     toBlock: number, limit: number,
@@ -12,19 +16,25 @@ export const fetchFromPublish = Promise.coroutine(function* (data: {
         .fromEvent(contracts.instance.Entries.Publish, data.args, data.toBlock,
             data.limit, { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (let event of fetched.results) {
+        let tags, author, entryType;
+        const key = calcKey(event.args.entryId);
+        if (!mixed.hasFull(key)) {
+            const captureIndex = yield contracts
+                .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
+                    data.toBlock, 10, { stopOnFirst: true });
 
-        const captureIndex = yield contracts
-            .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
-                data.toBlock, 10, { stopOnFirst: true });
+            tags = captureIndex.results.map(function (ev) {
+                return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
+            });
 
-        const tags = captureIndex.results.map(function (ev) {
-            return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
-        });
-
-        const author = yield resolve.execute({ ethAddress: event.args.author });
-
+            author = yield resolve.execute({ ethAddress: event.args.author });
+            entryType = captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1;
+            mixed.setFull(key, { tags: tags, author: author, entryType: entryType });
+        } else {
+            ({ tags, author, entryType } = mixed.getFull(key));
+        }
         collection.push({
-            entryType: captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1,
+            entryType: entryType,
             entryId: event.args.entryId,
             blockNumber: event.blockNumber,
             tags,
@@ -47,23 +57,30 @@ export const fetchFromTagIndex = Promise.coroutine(function* (data: {
         data.args, data.toBlock, data.limit, { lastIndex: data.lastIndex, reversed: data.reversed || false });
 
     for (let event of fetched.results) {
-        const fetchedPublish = yield contracts
-            .fromEvent(contracts.instance.Entries.Publish, { entryId: event.args.entryId },
-                data.toBlock, 1, {});
+        let tags, author, entryType;
+        const key = calcKey(event.args.entryId);
+        if (!mixed.hasFull(key)) {
+            const fetchedPublish = yield contracts
+                .fromEvent(contracts.instance.Entries.Publish, { entryId: event.args.entryId },
+                    data.toBlock, 1, {});
 
-        const captureIndex = yield contracts
-            .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
-                data.toBlock, 10, { stopOnFirst: true });
+            const captureIndex = yield contracts
+                .fromEvent(contracts.instance.Entries.TagIndex, { entryId: event.args.entryId },
+                    data.toBlock, 10, { stopOnFirst: true });
 
-        const tags = captureIndex.results.map(function (ev) {
-            return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
-        });
+            tags = captureIndex.results.map(function (ev) {
+                return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
+            });
 
-        const author = fetchedPublish.results.length ?
-            yield resolve.execute({ ethAddress: fetchedPublish.results[0].args.author }) :
-            { ethAddress: null };
+            author = fetchedPublish.results.length ?
+                yield resolve.execute({ ethAddress: fetchedPublish.results[0].args.author }) :
+                { ethAddress: null };
+            entryType = event.args.entryType.toNumber();
+        } else {
+            ({ tags, author, entryType } = mixed.getFull(key));
+        }
         collection.push({
-            entryType: event.args.entryType.toNumber(),
+            entryType: entryType,
             entryId: event.args.entryId,
             blockNumber: event.blockNumber,
             tags,
