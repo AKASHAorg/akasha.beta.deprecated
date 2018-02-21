@@ -140,7 +140,14 @@ class EntryCard extends Component {
             {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
           </div>
           <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.props.onRetry}>
+            <span
+              className="content-link entry-card__retry-button"
+              onClick={() => this.props.onRetry({
+                  context: this.props.contextId,
+                  entryId: this.props.entry.get('entryId'),
+                  ethAddress: this.props.loggedEthAddress
+              })}
+            >
               {this.props.intl.formatMessage(generalMessages.retry)}
             </span>
           </div>
@@ -315,6 +322,7 @@ EntryCard.propTypes = {
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
+    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     entry: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,

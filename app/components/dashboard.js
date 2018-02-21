@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { List } from 'immutable';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
@@ -30,22 +31,27 @@ class Dashboard extends Component {
             }
         });
     }
-    _handleEndDrag = (column) => {
+    _handleEndDrag = () => {
+        const { dashboardReorderColumn, match, dashboards } = this.props;
+        const { columnPlaceholder } = this.state;
+        const dashboardId = match.params.dashboardId;
+        const activeDashboard = dashboards.get(dashboardId);
+        dashboardReorderColumn(activeDashboard.get('id'), columnPlaceholder.drag, columnPlaceholder.hover);
         this.setState({
             draggingColumn: {
                 id: null,
                 large: false
             },
-            // columnPlaceholder: {
-            //     drag: null,
-            //     hover: null
-            // }
+            columnPlaceholder: {
+                drag: null,
+                hover: null
+            }
         });
     }
-    _handleDragHover = (column) => {
+    _handleDragHover = () => {
         // console.log('hover over', column);
     }
-    _handleIsDragging = (column) => {
+    _handleIsDragging = () => {
         // console.log('is dragging', column);
     }
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
@@ -70,14 +76,16 @@ class Dashboard extends Component {
         const { draggingColumn, columnPlaceholder } = this.state;
         const dashboardId = match.params.dashboardId;
         const activeDashboard = dashboards.get(dashboardId);
-        let activeDashboardColumns = activeDashboard && activeDashboard.get('columns');
         const imgClass = classNames('dashboard__empty-placeholder-img', {
             'dashboard__empty-placeholder-img_dark': darkTheme
         });
-        if (activeDashboardColumns.size && columnPlaceholder.hover) {
+        let activeDashboardColumns = new List();
+        if (activeDashboard && activeDashboard.get('columns')) {
+            activeDashboardColumns = activeDashboard.get('columns');
+        }
+        if (activeDashboardColumns.size && columnPlaceholder.hover !== null) {
             activeDashboardColumns = this._getColumns(activeDashboardColumns);
         }
-        // console.log(activeDashboardColumns, 'adc');
         return connectDropTarget(
           <div className="dashboard" id="dashboard-container" ref={getDashboardRef}>
             {activeDashboardColumns.map((id, index) => {
@@ -110,6 +118,7 @@ class Dashboard extends Component {
                       inDragMode={isDragging}
                       columnIndex={index}
                       intl={intl}
+                      large={column.get('large')}
                     />
                   </div>
                 );
@@ -139,8 +148,10 @@ Dashboard.propTypes = {
     getDashboardRef: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     match: PropTypes.shape(),
+    connectDropTarget: PropTypes.func,
+    dashboardReorderColumn: PropTypes.func,
 };
 
-export default withRouter(injectIntl(DropTarget('COLUMN', {}, connect => ({
+export default withRouter(DropTarget('COLUMN', {}, connect => ({
     connectDropTarget: connect.dropTarget(),
-}))(Dashboard)));
+}))(injectIntl(Dashboard)));

@@ -1,30 +1,25 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import * as columnTypes from '../../constants/columns';
-// import { LatestColumn, ListColumn, ProfileColumn, ProfileEntriesColumn, ProfileFollowersColumn,
-//     ProfileFollowingsColumn, StreamColumn, TagColumn } from '../';
 import { entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
     entryMoreListIterator, entryNewestIterator, entryMoreTagIterator, entryTagIterator,
-    entryMoreStreamIterator, entryStreamIterator,
+    entryMoreStreamIterator, entryStreamIterator, entryGetShort,
     entryPageShow } from '../../local-flux/actions/entry-actions';
 import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowingsIterator,
     profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
 import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
-    selectLoggedEthAddress } from '../../local-flux/selectors';
+    selectLoggedEthAddress, selectProfileEntriesFlags, selectFetchingFollowers, selectFetchingMoreFollowers,
+    selectFollowers, selectProfileEntries, selectMoreFollowers, selectFetchingFollowings,
+    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings } from '../../local-flux/selectors';
 import { dashboardMessages, profileMessages } from '../../locale-data/messages';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
 
 const dropBox = {
-    drop (props) {
-        // console.log('dropped at', props.column);
-    },
     /* eslint-disable max-statements */
     hover (props, monitor) {
-        // console.log('hovered', props, monitor.isOver({ shallow: true }));
         const draggedItem = monitor.getItem();
         const draggedItemId = draggedItem.columnId;
         const hoverItemId = props.column.get('id');
@@ -47,22 +42,24 @@ const dropBox = {
                 }
             }
             props.onNeighbourHover(dragIndex, hoverIndex);
-            // monitor.getItem().columnIndex = hoverIndex;
         }
     }
 };
-
+/* eslint-disable complexity */
 const Column = ({
     onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
-    ethAddress, type, entries, ...other
+    type, entries, ...other
 }) => {
     let passedProps = {
         column,
         entries,
         baseWidth,
-        onRetry: () => { console.error('implement retry'); },
+        contextId: column ? column.id : '',
+        onRetry: (data) => {
+            other.entryGetShort({ ...data });
+        },
         iconType: 'entries',
-        title: column.get('value'),
+        title: column ? column.value : null,
         ...other
     };
     switch (type) {
@@ -98,6 +95,7 @@ const Column = ({
             break;
         case columnTypes.profile:
             passedProps = {
+                ...passedProps,
                 title: other.intl.formatMessage(profileMessages.entries),
                 iconType: 'profile',
                 onItemRequest: other.entryProfileIterator,
@@ -107,6 +105,12 @@ const Column = ({
         case columnTypes.profileEntries:
             passedProps = {
                 ...passedProps,
+                column: {
+                    id: 'profileEntries',
+                    entriesList: other.profileEntriesList
+                },
+                contextId: 'profileEntries',
+                title: other.intl.formatMessage(profileMessages.entries),
                 onItemRequest: other.entryProfileIterator,
                 onItemMoreRequest: other.entryMoreProfileIterator
             };
@@ -114,6 +118,10 @@ const Column = ({
         case columnTypes.profileFollowers:
             passedProps = {
                 ...passedProps,
+                column: {
+                    id: 'profileFollowers',
+                    entriesList: other.followers
+                },
                 title: other.intl.formatMessage(profileMessages.followers),
                 onItemRequest: other.profileFollowersIterator,
                 onItemMoreRequest: other.profileMoreFollowersIterator
@@ -122,6 +130,11 @@ const Column = ({
         case columnTypes.profileFollowings:
             passedProps = {
                 ...passedProps,
+                column: {
+                    id: 'profileFollowings',
+                    entriesList: other.followings
+                },
+                title: other.intl.formatMessage(profileMessages.followings),
                 onItemRequest: other.profileFollowingsIterator,
                 onItemMoreRequest: other.profileMoreFollowingsIterator
             };
@@ -154,23 +167,43 @@ Column.propTypes = {
     ethAddress: PropTypes.string,
     type: PropTypes.string,
     entries: PropTypes.shape(),
+    onBeginDrag: PropTypes.func,
+    onEndDrag: PropTypes.func,
+    isColumnDragging: PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => ({
-    baseUrl: selectBaseUrl(state),
-    blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
-    canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
-    drafts: state.draftState.get('drafts'),
-    fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-    hideEntrySettings: selectHideEntrySettings(state),
-    loggedEthAddress: selectLoggedEthAddress(state),
-    pendingClaims: selectAllPendingClaims(state),
-    pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
-    pendingVotes: selectAllPendingVotes(state),
-    profiles: state.profileState.get('byEthAddress'),
-    searchQuery: state.searchState.get('query'),
-    entries: state.entryState.get('byId')
-});
+const mapStateToProps = (state, ownProps) => {
+    const { ethAddress } = ownProps;
+    const { fetchingEntries, fetchingMoreEntries, moreEntries } =
+        selectProfileEntriesFlags(state, ethAddress);
+    return {
+        baseUrl: selectBaseUrl(state),
+        blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
+        canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
+        drafts: state.draftState.get('drafts'),
+        fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
+        hideEntrySettings: selectHideEntrySettings(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
+        pendingClaims: selectAllPendingClaims(state),
+        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
+        pendingVotes: selectAllPendingVotes(state),
+        profiles: state.profileState.get('byEthAddress'),
+        searchQuery: state.searchState.get('query'),
+        entries: state.entryState.get('byId'),
+        profileEntriesList: selectProfileEntries(state, ethAddress),
+        fetchingEntries,
+        fetchingMoreEntries,
+        moreEntries,
+        fetchingFollowers: selectFetchingFollowers(state, ethAddress),
+        fetchingMoreFollowers: selectFetchingMoreFollowers(state, ethAddress),
+        followers: selectFollowers(state, ethAddress),
+        moreFollowers: selectMoreFollowers(state, ethAddress),
+        fetchingFollowings: selectFetchingFollowings(state, ethAddress),
+        fetchingMoreFollowings: selectFetchingMoreFollowings(state, ethAddress),
+        followings: selectFollowings(state, ethAddress),
+        moreFollowings: selectMoreFollowings(state, ethAddress),
+    };
+};
 
 const mapDispatchToProps = {
     entryNewestIterator,
@@ -183,6 +216,7 @@ const mapDispatchToProps = {
     entryTagIterator,
     entryMoreStreamIterator,
     entryStreamIterator,
+    entryGetShort,
     profileFollowersIterator,
     profileMoreFollowersIterator,
     profileFollowingsIterator,

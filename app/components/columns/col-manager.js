@@ -42,10 +42,11 @@ class ColManager extends Component {
 
     componentWillReceiveProps = (nextProps) => {
         const { column } = nextProps;
-        const oldItems = this.props.column.get('entriesList');
-        if (column.get('entriesList').size !== oldItems.size) {
-            this._mapItemsToState(column.get('entriesList'));
-            this.loadingMore = remove(indexOf(column.get('id'), this.loadingMore), 1, this.loadingMore);
+        const { entriesList, id } = column;
+        const oldItems = this.props.column.entriesList;
+        if (entriesList.size !== oldItems.size) {
+            this._mapItemsToState(entriesList);
+            this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
     _onResize = () => {
@@ -76,9 +77,10 @@ class ColManager extends Component {
     _loadMoreIfNeeded = () => {
         const { props } = this;
         const { onItemMoreRequest, column } = props;
-        if (!this.loadingMore.includes(column.get('id'))) {
+        const { id } = column;
+        if (!this.loadingMore.includes(id)) {
             onItemMoreRequest(column);
-            this.loadingMore.push(column.get('id'));
+            this.loadingMore.push(id);
         }
     }
     /**

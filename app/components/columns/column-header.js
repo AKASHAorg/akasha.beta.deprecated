@@ -27,13 +27,14 @@ const cardSource = {
         };
     },
     endDrag (props) {
-        props.onEndDrag(props.column);
+        props.onEndDrag();
     },
     isDragging (props, monitor) {
-        if (props.column.get('id') === monitor.getItem().columnId) {
+        const isDragging = props.column.get('id') === monitor.getItem().columnId;
+        if (isDragging) {
             props.isColumnDragging(props.column);
         }
-        return props.column.get('id') === monitor.getItem().columnId;
+        return isDragging;
     }
 };
 
@@ -46,7 +47,6 @@ function collect (connectR, monitor) {
         connectDragPreview: connectR.dragPreview(),
         connectDragSource: connectR.dragSource(),
         didDrop: monitor.didDrop(),
-        offsetDifference: monitor.getDifferenceFromInitialOffset(),
     };
 }
 
@@ -70,7 +70,6 @@ class ColumnHeader extends Component {
         }
         this.selecting = false;
     };
-
     onCancel = () => {
         const { column } = this.props;
         this.setState({ editMode: false, value: column.get('value') });
@@ -171,7 +170,7 @@ class ColumnHeader extends Component {
         if (column.get('type') === columnTypes.list) {
             return (
               <Select
-                className="column-header__select"
+                className="column-header-wrapper__select"
                 filterOption
                 notFoundContent={intl.formatMessage(generalMessages.notFound)}
                 onChange={this.onChange}
@@ -190,7 +189,7 @@ class ColumnHeader extends Component {
         }
         return (
           <AutoComplete
-            className="column-header__auto-complete"
+            className="column-header-wrapper__auto-complete"
             dataSource={dataSource}
             onChange={this.onChange}
             onSearch={this.onSearch}
@@ -199,7 +198,7 @@ class ColumnHeader extends Component {
             value={value}
           >
             <input
-              className="column-header__input"
+              className="column-header-wrapper__input"
               onBlur={this.onBlur}
               onKeyDown={this.onKeyDown}
               ref={this.getInputRef}
@@ -251,7 +250,7 @@ class ColumnHeader extends Component {
         const titleClass = classNames('overflow-ellipsis column-header-wrapper__title', {
             'column-header-wrapper__title_large': column && column.get('large')
         });
-        return connectDropTarget(
+        return connectDropTarget(connectDragPreview(
           <div className="column-header" ref={(node) => { this._rootNode = node; }}>
             <div
               className="flex-center-y column-header-wrapper"
@@ -265,7 +264,7 @@ class ColumnHeader extends Component {
               )}
               {iconType &&
                 <Icon
-                  className="dark-icon column-header__icon"
+                  className="dark-icon column-header-wrapper__icon"
                   type={iconType}
                 />
               }
@@ -283,14 +282,14 @@ class ColumnHeader extends Component {
               </div>
               {this.showModal()}
               {!editMode &&
-                <div className="column-header__refresh-icon">
+                <div className="column-header-wrapper__refresh-icon">
                   <Icon
                     className="content-link"
                     onClick={this.onRefresh}
                     type="refresh"
                   />
                   {column && column.get('hasNewEntries') &&
-                    <div className="column-header__new-entries" />
+                    <div className="column-header-wrapper__new-entries" />
                   }
                 </div>
               }
@@ -303,12 +302,12 @@ class ColumnHeader extends Component {
                   trigger="click"
                   visible={this.state.popoverVisible}
                 >
-                  <Icon className="content-link column-header__menu-icon" type="menu" />
+                  <Icon className="content-link column-header-wrapper__menu-icon" type="menu" />
                 </Popover>
               }
               {editMode &&
                 <Icon
-                  className="content-link column-header__reset-icon"
+                  className="content-link column-header-wrapper__reset-icon"
                   onClick={this.onCancel}
                   type="close"
                 />
@@ -316,7 +315,7 @@ class ColumnHeader extends Component {
             </div>
             {this.props.children}
           </div>
-        );
+        ));
     }
 }
 

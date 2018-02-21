@@ -44,13 +44,13 @@ class NewSearchColumn extends Component {
     };
 
     onLoadMore = () => this.props.entryMoreIterator({
-        columnId: 'newColumn',
+        id: 'newColumn',
         value: this.props.column.get('value')
     });
 
     onSearchEntries = () => {
         const { entryIterator, newColumn } = this.props;
-        entryIterator({ columnId: 'newColumn', value: newColumn.get('value') });
+        entryIterator({ id: 'newColumn', value: newColumn.get('value') });
     };
 
     render () {
