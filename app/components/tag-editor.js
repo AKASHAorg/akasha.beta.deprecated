@@ -16,10 +16,10 @@ const tagCreatorKeycodes = [
 class TagEditor extends Component {
     constructor (props) {
         super(props);
-        const { intl, isUpdate } = this.props;
+        const { intl, isUpdate, tags } = this.props;
         let tagInputWidth = this._getTextWidth(
             `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
-                value: 10 - props.tags.size
+                value: 10 - tags.size
             })}`).width + 20;
 
         if (isUpdate) {
@@ -44,6 +44,7 @@ class TagEditor extends Component {
             this.props.searchResetResults();
         });
     }
+
     _getTextWidth = (text) => {
         let txtNode = document.createElement('div');
         document.body.appendChild(txtNode);
@@ -59,6 +60,15 @@ class TagEditor extends Component {
         document.body.removeChild(txtNode);
         txtNode = null;
         return res;
+    }
+
+    componentWillReceiveProps (nextProps) {
+        const { isUpdate, intl } = nextProps;
+        if (isUpdate) {
+            this.setState({
+                tagInputWidth: this._getTextWidth(`${intl.formatMessage(tagMessages.cannotEditTags)}`).width + 20
+            });
+        }
     }
 
     _getTagInputPopoverContent = () => {
@@ -337,7 +347,7 @@ class TagEditor extends Component {
             inputHasFocus && this._getFilteredSuggestions(tagSuggestions, tags).size > 0);
     }
     _getInputPlaceholder = () => {
-        const { isUpdate, intl } = this.props;
+        const { isUpdate, intl, tags } = this.props;
         if(!isUpdate) {
             return `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
                 value: 10 - tags.size
