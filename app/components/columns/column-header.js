@@ -242,7 +242,7 @@ class ColumnHeader extends Component {
 
     render () {
         const { column, iconType, noMenu, readOnly, title, connectDragSource,
-            connectDropTarget, connectDragPreview } = this.props;
+            connectDropTarget, connectDragPreview, draggable } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header-wrapper__title-wrapper', {
             'column-header-wrapper__title-wrapper_no-icon': !iconType
@@ -255,7 +255,7 @@ class ColumnHeader extends Component {
             <div
               className="flex-center-y column-header-wrapper"
             >
-              {connectDragSource(
+              {draggable && connectDragSource(
                 <div className="column-header-wrapper_drag-zone">
                   <i className="drag-zone-bar" />
                   <i className="drag-zone-bar" />
@@ -337,6 +337,7 @@ ColumnHeader.propTypes = {
     readOnly: PropTypes.bool,
     title: PropTypes.string,
     children: PropTypes.node,
+    draggable: PropTypes.bool,
 };
 
 export default connect(

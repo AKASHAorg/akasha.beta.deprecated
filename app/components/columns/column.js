@@ -107,7 +107,8 @@ const Column = ({
                 ...passedProps,
                 column: {
                     id: 'profileEntries',
-                    entriesList: other.profileEntriesList
+                    entriesList: other.profileEntriesList,
+                    ethAddress: other.ethAddress
                 },
                 contextId: 'profileEntries',
                 title: other.intl.formatMessage(profileMessages.entries),
@@ -120,7 +121,9 @@ const Column = ({
                 ...passedProps,
                 column: {
                     id: 'profileFollowers',
-                    entriesList: other.followers
+                    entriesList: other.followers,
+                    ethAddress: other.ethAddress,
+                    context: 'profilePageFollowers'
                 },
                 title: other.intl.formatMessage(profileMessages.followers),
                 onItemRequest: other.profileFollowersIterator,
@@ -132,7 +135,8 @@ const Column = ({
                 ...passedProps,
                 column: {
                     id: 'profileFollowings',
-                    entriesList: other.followings
+                    entriesList: other.followings,
+                    ethAddress: other.ethAddress
                 },
                 title: other.intl.formatMessage(profileMessages.followings),
                 onItemRequest: other.profileFollowingsIterator,
@@ -145,7 +149,7 @@ const Column = ({
 
     return (
       <ColumnHeader
-        readonly
+        readOnly={other.readOnly}
         column={column}
         columnIndex={other.columnIndex}
         onRefresh={() => console.error('implement refresh')}
@@ -155,6 +159,7 @@ const Column = ({
         connectDropTarget={other.connectDropTarget}
         iconType={passedProps.iconType}
         title={passedProps.title}
+        draggable={other.draggable}
       >
         <ColManager {...passedProps} />
       </ColumnHeader>

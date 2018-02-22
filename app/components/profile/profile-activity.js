@@ -7,14 +7,29 @@ import { Column } from '../';
 const ProfileActivity = ({ ethAddress, intl }) => (
   <div className="profile-activity" id="profile-activity">
     <div className="profile-activity__column" id="profile-entries">
-      <Column intl={intl} ethAddress={ethAddress} type={columnTypes.profileEntries} />
+      <Column
+        readOnly
+        intl={intl}
+        ethAddress={ethAddress}
+        type={columnTypes.profileEntries}
+      />
     </div>
     <div className="profile-activity__column" id="profile-followers">
-      <Column intl={intl} ethAddress={ethAddress} type={columnTypes.profileFollowers} />
+      <Column
+        readOnly
+        intl={intl}
+        ethAddress={ethAddress}
+        type={columnTypes.profileFollowers}
+      />
     </div>
     <div>
       <div className="profile-activity__column" id="profile-followings">
-        <Column intl={intl} ethAddress={ethAddress} type={columnTypes.profileFollowings} />
+        <Column
+          readOnly
+          intl={intl}
+          ethAddress={ethAddress}
+          type={columnTypes.profileFollowings}
+        />
       </div>
     </div>
   </div>

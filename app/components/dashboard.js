@@ -119,6 +119,7 @@ class Dashboard extends Component {
                       columnIndex={index}
                       intl={intl}
                       large={column.get('large')}
+                      draggable
                     />
                   </div>
                 );
