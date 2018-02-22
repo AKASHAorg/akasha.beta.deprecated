@@ -16,13 +16,19 @@ const tagCreatorKeycodes = [
 class TagEditor extends Component {
     constructor (props) {
         super(props);
-        const { intl } = this.props;
+        const { intl, isUpdate } = this.props;
+        let tagInputWidth = this._getTextWidth(
+            `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
+                value: 10 - props.tags.size
+            })}`).width + 20;
+
+        if (isUpdate) {
+            tagInputWidth = this._getTextWidth(`${intl.formatMessage(tagMessages.cannotEditTags)}`).width + 20;
+        }
+
         this.state = {
             partialTag: '',
-            tagInputWidth: this._getTextWidth(
-                `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
-                    value: 10 - props.tags.size
-                })}`).width + 20,
+            tagInputWidth,
             selectedSuggestionIndex: 0,
         };
     }
@@ -276,7 +282,7 @@ class TagEditor extends Component {
             }
     /* eslint-disable react/no-array-index-key */
     _getTagList = () => {
-        const { tags, canCreateTags } = this.props;
+        const { tags, canCreateTags, isUpdate } = this.props;
         // return tags
         return tags.map((status, tag) => {
             let popoverOpen = (!status.checking && !status.exists);
@@ -305,7 +311,7 @@ class TagEditor extends Component {
                   }
                 >
                   { tag }
-                  {(canCreateTags || status.exists) &&
+                  {(canCreateTags || status.exists) && !isUpdate &&
                     <span
                       className="tag-item__delete-button"
                       onClick={this._deleteTag(tag)}
@@ -329,6 +335,15 @@ class TagEditor extends Component {
 
         return (tagSuggestionsCount > 0 &&
             inputHasFocus && this._getFilteredSuggestions(tagSuggestions, tags).size > 0);
+    }
+    _getInputPlaceholder = () => {
+        const { isUpdate, intl } = this.props;
+        if(!isUpdate) {
+            return `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
+                value: 10 - tags.size
+            })}`;
+        }
+        return intl.formatMessage(tagMessages.cannotEditTags)
     }
     render () {
         const { tagInputWidth } = this.state;
@@ -360,11 +375,7 @@ class TagEditor extends Component {
                 ref={(node) => { this.tagInput = node; }}
                 type="text"
                 className="tag-editor__input"
-                placeholder={
-                    `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
-                        value: 10 - tags.size
-                    })}`
-                }
+                placeholder={this._getInputPlaceholder()}
                 onKeyDown={this._handleSpecialKeyPress}
                 onChange={this._handleTagInputChange}
                 style={{
