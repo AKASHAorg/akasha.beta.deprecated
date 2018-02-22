@@ -31,6 +31,11 @@ const tagMessages = defineMessages({
         description: 'plural of tag',
         defaultMessage: 'tags'
     },
+    cannotEditTags: {
+        id: 'app.tag.cannotEditTags',
+        description: '',
+        defaultMessage: 'Cannot edit tags when updating an entry'
+    }
 });
 
 export { tagMessages };

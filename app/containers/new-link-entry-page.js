@@ -518,6 +518,7 @@ class NewLinkEntryPage extends Component {
                         tagSuggestionsCount={tagSuggestionsCount}
                         searchResetResults={this.props.searchResetResults}
                         inputDisabled={onChain}
+                        isUpdate={onChain}
                         onTagError={this._handleInternalTagError}
                         tagErrors={errors.tags}
                         canCreateTags={canCreateTags}
