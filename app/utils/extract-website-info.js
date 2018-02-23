@@ -47,8 +47,7 @@ class WebsiteParser extends ParserUtils {
                     parsedUrl: this.parsedUrl
                 });
                 return parser.getInfo();
-            })
-        ).then(info =>
+            })).then(info =>
             this.resizeImage(this.getAbsoluteUrl(info.image, this.parsedUrl), {
                 ipfsFile: true
             }).then((image) => {
@@ -69,15 +68,13 @@ class WebsiteParser extends ParserUtils {
                     ...info,
                     image: {}
                 }
-            }))
-        );
+            })));
 
     matchParser = () =>
         new Promise((resolve) => {
-            const { hostname } = this.parsedUrl;
             Object.keys(parsers).forEach((parserKey) => {
                 const parser = parsers[parserKey];
-                if (parserKey !== 'default' && parser.match(hostname)) {
+                if (parserKey !== 'default' && parser.match(this.parsedUrl)) {
                     resolve(parser);
                 }
             });
