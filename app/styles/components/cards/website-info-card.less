@@ -3,12 +3,15 @@
     margin: 12px auto 0;
     display: block;
     background: @background;
+
     &_edit {
         background: lighten(@background, 5%);
     }
+
     &_empty:not(.ant-card-loading) {
         display: none;
     }
+
     &__close-button {
         position: absolute;
         right: 8px;
@@ -22,6 +25,7 @@
             color: lighten(@text-color, 45%);
         }
     }
+
     &__source-url {
         text-overflow: ellipsis;
         overflow: hidden;
@@ -35,6 +39,7 @@
             font-size: 12px;
         }
     }
+
     &__error {
         padding: 8px 12px;
         .anticon {
@@ -43,6 +48,7 @@
             font-size: 17px;
         }
     }
+
     &__card-cover-wrapper {
         height: 300px;
         overflow: hidden;
@@ -58,13 +64,17 @@
             z-index: 0;
         }
     }
+
     &__image-link {}
+
     &__title-wrapper {
         padding: 0 12px 16px;
     }
+
     &__title {
         word-break: break-word;
     }
+
     &__description {
         color: lighten(@text-color, 20%);
         font-size: 13px;

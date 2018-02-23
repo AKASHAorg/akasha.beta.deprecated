@@ -23,7 +23,9 @@ class TagEditor extends Component {
             })}`).width + 20;
 
         if (isUpdate) {
-            tagInputWidth = this._getTextWidth(`${intl.formatMessage(tagMessages.cannotEditTags)}`).width + 20;
+            tagInputWidth = this._getTextWidth(`
+                ${intl.formatMessage(tagMessages.cannotEditTags)}
+            `).width + 20;
         }
 
         this.state = {
@@ -34,7 +36,7 @@ class TagEditor extends Component {
     }
     componentClickAway = () => {
         const { partialTag } = this.state;
-        if (partialTag.length > 1) {
+        if (partialTag.length > 1 && partialTag.length <= 32) {
             this._createTag(this.state.partialTag);
             return this.tagInput.blur();
         }
@@ -66,7 +68,9 @@ class TagEditor extends Component {
         const { isUpdate, intl } = nextProps;
         if (isUpdate) {
             this.setState({
-                tagInputWidth: this._getTextWidth(`${intl.formatMessage(tagMessages.cannotEditTags)}`).width + 20
+                tagInputWidth: this._getTextWidth(`
+                    ${intl.formatMessage(tagMessages.cannotEditTags)}
+                `).width + 20
             });
         }
     }
@@ -99,9 +103,9 @@ class TagEditor extends Component {
         /* eslint-enable react/no-array-index-key */
     }
     _getFilteredSuggestions = (suggestions, tags) =>
-        suggestions.filter(tag => !tags.has(tag))
+        suggestions.filter(tag => !tags.has(tag) && !tag.includes(' '))
 
-    _getTagStatus = (tag) => {
+    _getTagStatus = (tag, status) => {
         const { intl, canCreateTags } = this.props;
         const cannotBeUsed = !canCreateTags && (!status.checking && !status.exists);
         const mustCreate = canCreateTags && (!status.checking && !status.exists);
@@ -146,21 +150,29 @@ class TagEditor extends Component {
             this.setState({
                 partialTag: '',
                 selectedSuggestionIndex: 0,
-                tagInputWidth: this._getTextWidth(
-                    `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
-                        value: 10 - tags.size
-                    })}`).width + 20
+                tagInputWidth: this._getTextWidth(`
+                ${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
+                    value: 10 - tags.size
+                })}`).width + 20
             }, () => {
                 this.props.searchResetResults();
                 this.props.onChange();
+                this.tagInput.scrollIntoViewIfNeeded();
             });
         }
     }
 
     _deleteTag = tagName =>
         () => {
+            const { intl, tags } = this.props;
             this.props.onTagRemove(tagName);
             this.props.onChange();
+            this.setState({
+                tagInputWidth: this._getTextWidth(`
+                ${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
+                    value: 10 - tags.size
+                })}`).width + 20
+            });
         }
 
     _incrementSuggestionSelectionIndex = () => {
@@ -230,8 +242,10 @@ class TagEditor extends Component {
     }
     /* eslint-enable no-fallthrough, consistent-return */
     _handleTagInputChange = (ev) => {
+        const { tags, intl } = this.props;
         const tag = ev.target.value.trim().toLowerCase().replace('#', '');
         const alphaValid = /[a-z0-9.-]+$/.test(tag);
+        console.log('change ev!');
         const specialCharsValid = !tag.includes('.-') &&
             !tag.includes('-.') &&
             !tag.includes('--') &&
@@ -241,10 +255,19 @@ class TagEditor extends Component {
             return;
         }
         this.setState((prevState) => {
-            if (isValid || tag.length === 0) {
+            if (isValid) {
                 return {
                     partialTag: tag,
                     tagInputWidth: this._getTextWidth(tag).width + 20,
+                };
+            }
+            if (tag.length === 0) {
+                return {
+                    partialTag: '',
+                    tagInputWidth: this._getTextWidth(`
+                    ${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
+                        value: 10 - tags.size
+                    })}`).width + 20
                 };
             }
             return {
@@ -260,7 +283,21 @@ class TagEditor extends Component {
             this.props.onChange();
         });
     }
-
+    _handleTagInputPaste = (ev) => {
+        const { partialTag } = this.state;
+        const text = ev.clipboardData.getData('text');
+        ev.preventDefault();
+        if (`${partialTag}${text}`.length <= 32) {
+            return this.setState({
+                partialTag: `${partialTag}${text}`,
+                tagInputWidth: this._getTextWidth(`${partialTag}${text}`).width + 20
+            });
+        }
+        return this.setState({
+            partialTag: `${partialTag}${text}`.slice(0, 32),
+            tagInputWidth: this._getTextWidth(`${partialTag}${text}`.slice(0, 32)).width + 20
+        });
+    }
     _changeInputFocus = focusState =>
         (ev) => {
             const suggestionsVisible = this._getSuggestionsPopoverVisibility();
@@ -271,25 +308,27 @@ class TagEditor extends Component {
                 inputHasFocus: focusState
             });
         }
-        _handleTagStatusPopover = (tag, status) =>
-            (visible) => {
-                const { tags, canCreateTags } = this.props;
-                const cannotBeUsed = !canCreateTags && (!status.checking && !status.exists);
-                const mustCreate = canCreateTags && (!status.checking && !status.exists);
-                if (!visible && cannotBeUsed) {
-                    return this._deleteTag(tags.findLastKey(val => !val.exists))();
-                }
-                if (!visible && mustCreate) {
-                    this.setState({
-                        tagStatusPopoverOpen: ''
-                    });
-                }
-                if (visible && mustCreate) {
-                    this.setState({
-                        tagStatusPopoverOpen: tag
-                    });
-                }
+    /* eslint-disable complexity */
+    _handleTagStatusPopover = (tag, status) =>
+        (visible) => {
+            const { tags, canCreateTags } = this.props;
+            const cannotBeUsed = !canCreateTags && (!status.checking && !status.exists);
+            const mustCreate = canCreateTags && (!status.checking && !status.exists);
+            if (!visible && cannotBeUsed) {
+                return this._deleteTag(tags.findLastKey(val => !val.exists))();
             }
+            if (!visible && mustCreate) {
+                return this.setState({
+                    tagStatusPopoverOpen: ''
+                });
+            }
+            if (visible && mustCreate) {
+                return this.setState({
+                    tagStatusPopoverOpen: tag
+                });
+            }
+            return null;
+        }
     /* eslint-disable react/no-array-index-key */
     _getTagList = () => {
         const { tags, canCreateTags, isUpdate } = this.props;
@@ -348,7 +387,7 @@ class TagEditor extends Component {
     }
     _getInputPlaceholder = () => {
         const { isUpdate, intl, tags } = this.props;
-        if(!isUpdate) {
+        if (!isUpdate) {
             return `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
                 value: 10 - tags.size
             })}`;
@@ -357,7 +396,7 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth } = this.state;
-        const { intl, tags, canCreateTags,
+        const { tags, canCreateTags,
             inputDisabled, tagErrors } = this.props;
         const suggestionsPopoverVisible = this._getSuggestionsPopoverVisibility();
 
@@ -388,6 +427,7 @@ class TagEditor extends Component {
                 placeholder={this._getInputPlaceholder()}
                 onKeyDown={this._handleSpecialKeyPress}
                 onChange={this._handleTagInputChange}
+                onPaste={this._handleTagInputPaste}
                 style={{
                   width: tagInputWidth,
                 }}
@@ -395,7 +435,8 @@ class TagEditor extends Component {
                 onFocus={this._changeInputFocus(true)}
 
                 disabled={
-                    (tags.size && (!tags.every(tStatus => tStatus.exists && !tStatus.checking) && !canCreateTags)) ||
+                    (tags.size &&
+                    (!tags.every(tStatus => tStatus.exists && !tStatus.checking) && !canCreateTags)) ||
                     (tags.size >= 10) ||
                     inputDisabled
                 }
@@ -421,6 +462,7 @@ TagEditor.propTypes = {
     onChange: PropTypes.func,
     onTagAdd: PropTypes.func.isRequired,
     onTagRemove: PropTypes.func.isRequired,
+    isUpdate: PropTypes.bool,
 };
 
 export default clickAway(TagEditor);
