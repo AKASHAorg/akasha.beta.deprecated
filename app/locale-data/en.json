@@ -794,6 +794,7 @@
   "app.tag.tagNotCreated": "This is a new tag that wasn`t created by anyone before!",
   "app.tag.tagsLeft": "({value} remaining)",
   "app.tag.tags": "tags",
+  "app.tag.cannotEditTags": "Cannot edit tags when updating an entry",
   "app.tutorial.akashaTitle": "The Language of Freedom",
   "app.tutorial.akashaContent": "With AKASHA your thoughts and ideas will echo throughout humanity's existence,\n                thanks to a planetary-scale network immune to censorship by design. The information\n                lives and spreads across the network without relying on a particular entity,\n                not even us.",
   "app.tutorial.ethereumTitle": "Powered By Ethereum",
