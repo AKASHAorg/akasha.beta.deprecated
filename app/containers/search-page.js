@@ -17,7 +17,7 @@ const { TabPane } = Tabs;
 
 class SearchPage extends Component {
     state = {
-        activeTab: 'entries'
+        activeTab: 'people'
     };
 
     componentWillUnmount () {
