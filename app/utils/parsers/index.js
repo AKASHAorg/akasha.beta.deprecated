@@ -1,11 +1,12 @@
 import htmlParser from './html-parser';
 import youtubeParser from './youtube-parser';
-
+import pdfParser from './pdf-parser';
 /**
  * Custom parsers.
  * Must implement a static `match` function which returns a boolean
  */
 export {
+    pdfParser,
     youtubeParser,
 };
 

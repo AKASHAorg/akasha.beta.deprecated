@@ -7,9 +7,9 @@ class YoutubeParser extends ParserUtils {
         this.parsedUrl = parsedUrl;
     }
 
-    static match = hostname =>
-        hostname.includes('youtube.com') ||
-            hostname.includes('youtu.be');
+    static match = parsedUrl =>
+        parsedUrl.hostname.includes('youtube.com') ||
+            parsedUrl.hostname.includes('youtu.be');
 
     getInfo = () => {
         const videoId = this.getUrlQueryParams(this.parsedUrl.search).get('v');
