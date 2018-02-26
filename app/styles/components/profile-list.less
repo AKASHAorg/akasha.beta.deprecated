@@ -12,12 +12,31 @@
         flex-direction: column;
         align-items: center;
     }
-
+    &__empty-placeholder,
     &__placeholder {
         height: 100%;
         padding-top: 10px;
         width: 100%;
         color: @text-color-secondary;
+    }
+    &__empty-placeholder {
+        width: 100%;
+        &-inner {
+            width: 100%;
+        }
+        &-image {
+            background: @entry-list-profile-placeholder-bg top center no-repeat;
+            height: 110px;
+            width: 100%;
+            flex-grow: 1;
+        }
+        &-text {
+            width: 100%;
+            flex-grow: 1;
+            text-align: center;
+        }
+    }
+    &__placeholder {
         &-inner {
             padding-top: 24px;
             width: 100%;
