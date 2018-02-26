@@ -27,6 +27,7 @@ class CommentList extends Component {
             nextProps.fetchingComments !== fetchingComments ||
             nextProps.fetchingMoreComments !== fetchingMoreComments ||
             !nextProps.pendingComments.equals(pendingComments) ||
+            nextProps.noCommentsPlaceholderVisible !== this.props.noCommentsPlaceholderVisible ||
             nextState.replyTo !== this.state.replyTo
         ) {
             return true;
@@ -39,7 +40,11 @@ class CommentList extends Component {
             replyTo: parentCommentId
         });
     };
-
+    _handleNewComment = () => {
+        if (this.props.onNewCommentButtonClick) {
+            this.props.onNewCommentButtonClick();
+        }
+    }
     resetReplies = () => {
         this.setState({
             replyTo: null
@@ -82,8 +87,14 @@ class CommentList extends Component {
             {!fetchingComments && !comments.size && !optimisticComments.length &&
               <div className="comment-list__placeholder">
                 <div>{intl.formatMessage(entryMessages.noCommentsFound)}</div>
-                <br />
-                <div>{intl.formatMessage(entryMessages.leaveAComment)}</div>
+                <div>
+                  <div
+                    className="comment-list__placeholder-link"
+                    onClick={this._handleNewComment}
+                  >
+                    {intl.formatMessage(entryMessages.leaveAComment)}
+                  </div>
+                </div>
               </div>
             }
             {moreComments &&
@@ -110,6 +121,7 @@ CommentList.propTypes = {
     loggedProfileData: PropTypes.shape().isRequired,
     moreComments: PropTypes.bool,
     pendingComments: PropTypes.shape(),
+    onNewCommentButtonClick: PropTypes.func,
 };
 
 function mapStateToProps (state) {

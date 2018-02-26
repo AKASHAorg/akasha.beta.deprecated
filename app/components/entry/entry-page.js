@@ -127,7 +127,16 @@ class EntryPage extends Component {
     };
 
     throttledHandler = throttle(this.handleContentScroll, 300);
-
+    _handleEditorEnableSwitch = (enabled) => {
+        this.setState({
+            editorEnabled: enabled
+        });
+    }
+    _handleEditorFocus = () => {
+        if (!this.state.editorEnabled) {
+            this.commentEditor.onWrapperClick(true);
+        }
+    }
     onRetry = () => {
         const { entry, entryResolveIpfsHash } = this.props;
         const { entryId } = this.props.match.params;
@@ -135,11 +144,13 @@ class EntryPage extends Component {
         // this.fetchComments(entryId);
         entryResolveIpfsHash({ entryId, ipfsHash: entry.get('ipfsHash') });
     };
-
+    /* eslint-disable complexity */
     render () {
-        const { actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, fullSizeImageAdd,
+        const {
+            actionAdd, baseUrl, commentsLoadNew, entry, fetchingFullEntry, fullSizeImageAdd,
             highlightSave, intl, latestVersion, licenses, loggedProfileData, newComments, resolvingIpfsHash,
-            toggleOutsideNavigation } = this.props;
+            toggleOutsideNavigation
+        } = this.props;
         const { showInHeader } = this.state;
         const buttonWrapperClass = classNames({
             'entry-page__button-wrapper_fixed': showInHeader,
@@ -214,6 +225,7 @@ class EntryPage extends Component {
                   loggedProfileData={loggedProfileData}
                   parent="0"
                   ref={this.getEditorRef}
+                  onEnable={this._handleEditorEnableSwitch}
                 />
                 <div
                   id="comments-section"
@@ -232,7 +244,11 @@ class EntryPage extends Component {
                       </div>
                     }
                   </div>
-                  <CommentsList containerRef={this.container} getTriggerRef={this.getTriggerRef} />
+                  <CommentsList
+                    containerRef={this.container}
+                    getTriggerRef={this.getTriggerRef}
+                    onNewCommentButtonClick={this._handleEditorFocus}
+                  />
                 </div>
               </div>
             </div>);

@@ -52,7 +52,8 @@ class CommentEditor extends Component {
             editorState: EditorState.createEmpty(),
             left: null,
             linkPopoverVisible: false,
-            top: null
+            top: null,
+            disableClickAway: 0
         };
 
         const wrappedComponent = decorateComponentWithProps(CommentImage, {
@@ -81,8 +82,13 @@ class CommentEditor extends Component {
 
     componentClickAway = () => {
         const { onClose, parent } = this.props;
-        const { editorFocused } = this.state;
-        if (!editorFocused) {
+        const { editorFocused, disableClickAway } = this.state;
+        if (!editorFocused || disableClickAway) {
+            if (disableClickAway) {
+                this.setState({
+                    disableClickAway: 0
+                });
+            }
             return;
         }
         const shouldCloseEditor = parent !== '0' && !this.hasText();
@@ -91,6 +97,10 @@ class CommentEditor extends Component {
         } else {
             this.setState({
                 editorFocused: false
+            }, () => {
+                if (this.props.onEnable) {
+                    this.props.onEnable(false);
+                }
             });
         }
     };
@@ -149,12 +159,17 @@ class CommentEditor extends Component {
         });
     };
 
-    onWrapperClick = () => {
+    onWrapperClick = (forced) => {
         if (this.editor) {
             setTimeout(this.editor.focus, 0);
         }
         this.setState({
-            editorFocused: true
+            editorFocused: true,
+            disableClickAway: typeof forced === 'boolean' ? 1 : 0
+        }, () => {
+            if (this.props.onEnable) {
+                this.props.onEnable(true);
+            }
         });
     };
 
@@ -382,7 +397,6 @@ class CommentEditor extends Component {
         if (!placeholder) {
             placeholder = `${intl.formatMessage(entryMessages.writeComment)}...`;
         }
-
         return (
           <div className="comment-editor" ref={this.getBaseNodeRef}>
             <div className="comment-editor__avatar">
@@ -458,7 +472,8 @@ CommentEditor.propTypes = {
     onClose: PropTypes.func,
     parent: PropTypes.string,
     placeholder: PropTypes.string,
-    replyTo: PropTypes.string
+    replyTo: PropTypes.string,
+    onEnable: PropTypes.func,
 };
 
 export default clickAway(CommentEditor);
