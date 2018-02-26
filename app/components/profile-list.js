@@ -68,8 +68,13 @@ class ProfileList extends Component {
                   </div>
                 }
                 {profiles.size === 0 && !searching &&
-                  <div className="flex-center profile-list__placeholder">
-                    {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
+                  <div className="flex-center profile-list__empty-placeholder">
+                    <div className="profile-list__empty-placeholder-inner">
+                      <div className="profile-list__empty-placeholder-image" />
+                      <div className="profile-list__empty-placeholder-text">
+                        {placeholderMessage || intl.formatMessage(profileMessages.noProfiles)}
+                      </div>
+                    </div>
                   </div>
                 }
                 {masonry ?

@@ -93,12 +93,12 @@ class EntryList extends Component {
             >
               <div style={{ width: '100%', height: '100%' }}>
                 {(entries.size === 0) && searching && (searchQuery.length > 2 || searchQuery.length === 0) &&
-                  <div className="entry-list__placeholder">
+                  <div className="entry-list__search-placeholder">
                     <div
-                      className="entry-list__placeholder-inner"
+                      className="entry-list__search-placeholder-inner"
                     >
-                      <div className="entry-list__placeholder_image" />
-                      <div className="entry-list__placeholder_text">
+                      <div className="entry-list__search-placeholder_image" />
+                      <div className="entry-list__search-placeholder_text">
                         {(searchQuery.length === 0) && intl.formatMessage(generalMessages.startTypingToSearch)}
                         {(searchQuery.length > 0) && (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
                             searchTerm: searchQuery,
@@ -109,8 +109,13 @@ class EntryList extends Component {
                   </div>
                 }
                 {(entries.size === 0) && !searching &&
-                  <div className="flex-center entry-list__placeholder">
-                    {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
+                  <div className="flex-center entry-list__empty-placeholder">
+                    <div className="entry-list__empty-placeholder-inner">
+                      <div className="entry-list__empty-placeholder-image" />
+                      <div className="entry-list__empty-placeholder-text">
+                        {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
+                      </div>
+                    </div>
                   </div>
                 }
                 {masonry ?
