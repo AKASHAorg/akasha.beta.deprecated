@@ -205,7 +205,7 @@ export const profileMessages = defineMessages({
     noProfiles: {
         id: 'app.entry.noProfiles',
         description: 'placeholder for empty profiles list',
-        defaultMessage: 'No profiles'
+        defaultMessage: 'No profiles yet'
     },
     noTransactions: {
         id: 'app.profile.noTransactions',
