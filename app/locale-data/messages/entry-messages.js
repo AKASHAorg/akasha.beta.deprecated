@@ -242,7 +242,7 @@ const entryMessages = defineMessages({
     noEntries: {
         id: 'app.entry.noEntries',
         description: 'placeholder for empty entry list',
-        defaultMessage: 'No entries'
+        defaultMessage: 'No entries yet'
     },
     noNewEntries: {
         id: 'app.entry.noNewEntries',
