@@ -19,44 +19,66 @@ class ColManager extends Component {
         this.containerHeight = this.props.columnHeight;
         this.items = [];
         this.itemCount = 0;
-        this.lastScrollTop = 0;
+        this.lastScrollTop = {};
         this._debouncedScroll = throttle(this._handleScroll, 80, { trailing: true });
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
     }
     componentWillMount = () => {
         const { column } = this.props;
-        if (column.entriesList.size === 0) {
+        const { id } = column;
+        this.lastScrollTop[id] = 0;
+        if (column.entriesList.size === 0 && !this.loadingMore.includes(column.id)) {
             this.props.onItemRequest(column);
+            this.loadingMore.push(column.id);
         } else {
             this._mapItemsToState(column.get('entriesList'));
         }
     }
     componentDidMount = () => {
+        const { id } = this.props.column;
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         window.addEventListener('resize', this._debouncedResize);
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
-            this._updateOffsets(this.lastScrollTop);
+            this._updateOffsets(this.lastScrollTop[id]);
         }
     }
-
-    componentWillReceiveProps = (nextProps) => {
+    shouldComponentUpdate (nextProps, nextState) {
+        return nextState.topIndexTo !== this.state.topIndexTo ||
+        !nextProps.column.equals(this.props.column);
+    }
+    componentWillReceiveProps = (nextProps, nextState) => {
         const { column } = nextProps;
         const { entriesList, id } = column;
         const oldItems = this.props.column.entriesList;
+        const hasColIndex = typeof this.props.columnIndex !== 'undefined' && this.props.columnIndex !== null;
+        const updatingIndex = hasColIndex && nextProps.columnIndex !== this.props.columnIndex;
+        if (updatingIndex || nextProps.inDragMode) {
+            this._restoreScrollPosition();
+        }
         if (entriesList.size !== oldItems.size) {
             this._mapItemsToState(entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
+    _restoreScrollPosition = () => {
+        const { _rootNodeRef, lastScrollTop, props } = this;
+        const { column } = props;
+        const { id } = column;
+        if (lastScrollTop[id] > 0 && lastScrollTop[id] >= _rootNodeRef.scrollTop) {
+            _rootNodeRef.scrollTop = lastScrollTop[id];
+        }
+    }
     _onResize = () => {
+        const { id } = this.props.column;
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
-            this._updateOffsets(this.lastScrollTop);
+            this._updateOffsets(this.lastScrollTop[id]);
         }
     }
     _mapItemsToState = (items) => {
+        const { id } = this.props.column;
         const mappedItems = this.items.slice();
         const jsItems = items.toJS().map(v => ({ id: v }));
         const eqKey = eqBy(prop('id'));
@@ -66,7 +88,7 @@ class ColManager extends Component {
         }));
         this.items = mappedItems.concat(diff);
         this.itemCount = mappedItems.length + diff.length;
-        this._updateOffsets(this.lastScrollTop);
+        this._updateOffsets(this.lastScrollTop[id]);
     }
 
     // calculate an average of the cells height
@@ -120,14 +142,15 @@ class ColManager extends Component {
      *
      */
     _getBottomIndex = (topIndex) => {
-        const containerHeight = this.containerHeight;
+        const { containerHeight } = this;
         const { items } = this;
+        const { id } = this.props.column;
         let accHeight = this._getSliceMeasure(0, topIndex);
         let bottomIndex = items.length - 1;
         const bufferHeight = this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE;
         for (let i = topIndex; i < items.length; i++) {
             const item = items[i];
-            if (accHeight + item.height > (containerHeight + this.lastScrollTop + bufferHeight)) {
+            if (accHeight + item.height > (containerHeight + this.lastScrollTop[id] + bufferHeight)) {
                 bottomIndex = i;
                 accHeight = 0;
                 break;
@@ -141,7 +164,8 @@ class ColManager extends Component {
      */
     _handleCellMount = cellId =>
         (cellSize) => {
-            const { items } = this;
+            const { items, props } = this;
+            const { id } = props.column;
             const cellHeight = cellSize.height;
             const propFind = propEq('id', cellId);
             const stateCellIdx = findIndex(propFind)(items);
@@ -149,7 +173,7 @@ class ColManager extends Component {
             if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items);
-                this._updateOffsets(this.lastScrollTop);
+                this._updateOffsets(this.lastScrollTop[id]);
             }
         }
 
@@ -157,15 +181,16 @@ class ColManager extends Component {
 
     _handleScroll = () => {
         let delta = null;
-        const scrollTop = this._rootNodeRef.scrollTop;
-        if (scrollTop > this.lastScrollTop) {
+        const { scrollTop } = this._rootNodeRef;
+        const { id } = this.props.column;
+        if (scrollTop > this.lastScrollTop[id]) {
             delta = 'down';
         } else {
             delta = 'up';
         }
         window.requestIdleCallback(() => {
             this._onScrollMove(delta, scrollTop);
-            this.lastScrollTop = scrollTop;
+            this.lastScrollTop[id] = scrollTop;
         }, { timeout: 1000 });
     }
     _onScrollMove = (delta, scrollTop) => {
@@ -181,7 +206,9 @@ class ColManager extends Component {
     render () {
         const { items, state, props } = this;
         const { topIndexTo } = state;
-        const { column, baseWidth, onItemrequest, onItemMoreRequest, ...other } = props;
+        const {
+            column, baseWidth, onItemrequest, onItemMoreRequest, ...other
+        } = props;
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
         return (
           <div
@@ -228,11 +255,13 @@ ColManager.defaultProps = {
 
 ColManager.propTypes = {
     column: PropTypes.shape(),
+    columnIndex: PropTypes.number,
     onItemRequest: PropTypes.func,
     onItemMoreRequest: PropTypes.func,
     initialItemHeight: PropTypes.number,
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,
+    inDragMode: PropTypes.bool,
 };
 
 export default ColManager;

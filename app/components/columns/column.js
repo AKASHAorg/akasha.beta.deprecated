@@ -3,17 +3,24 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import * as columnTypes from '../../constants/columns';
-import { entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
+import {
+    entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
     entryMoreListIterator, entryNewestIterator, entryMoreTagIterator, entryTagIterator,
     entryMoreStreamIterator, entryStreamIterator, entryGetShort,
-    entryPageShow } from '../../local-flux/actions/entry-actions';
-import { profileFollowersIterator, profileFollowingsIterator, profileMoreFollowingsIterator,
-    profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
-import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
+    entryPageShow
+} from '../../local-flux/actions/entry-actions';
+import {
+    profileFollowersIterator, profileFollowingsIterator, profileMoreFollowingsIterator,
+    profileMoreFollowersIterator
+} from '../../local-flux/actions/profile-actions';
+import {
+    selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress, selectProfileEntriesFlags, selectFetchingFollowers, selectFetchingMoreFollowers,
     selectFollowers, selectProfileEntries, selectMoreFollowers, selectFetchingFollowings,
-    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings } from '../../local-flux/selectors';
+    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings
+} from '../../local-flux/selectors';
 import { dashboardMessages, profileMessages } from '../../locale-data/messages';
+import * as dragItemTypes from '../../constants/drag-item-types';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
 
@@ -23,14 +30,14 @@ const dropBox = {
         const draggedItem = monitor.getItem();
         const draggedItemId = draggedItem.columnId;
         const hoverItemId = props.column.get('id');
-        if (draggedItemId !== hoverItemId) {
+        const dragIndex = draggedItem.columnIndex;
+        let hoverIndex = props.columnIndex;
+        if (hoverItemId && draggedItemId !== hoverItemId) {
             const hoveredColumn = document.getElementById(props.column.get('id'));
             const colSize = hoveredColumn.getBoundingClientRect();
             const hoverMiddleX = (colSize.right - colSize.left) / 2;
             const clientOffset = monitor.getClientOffset();
             const hoverClientX = clientOffset.x - colSize.left;
-            const dragIndex = draggedItem.columnIndex;
-            let hoverIndex = props.columnIndex;
             if (dragIndex < hoverIndex) {
                 if (hoverClientX < hoverMiddleX) {
                     hoverIndex -= 1;
@@ -41,7 +48,7 @@ const dropBox = {
                     hoverIndex += 1;
                 }
             }
-            props.onNeighbourHover(dragIndex, hoverIndex);
+            return props.onNeighbourHover(dragIndex, hoverIndex);
         }
     }
 };
@@ -96,8 +103,8 @@ const Column = ({
         case columnTypes.profile:
             passedProps = {
                 ...passedProps,
-                title: other.intl.formatMessage(profileMessages.entries),
-                iconType: 'profile',
+                title: column ? `@${column.value}` : other.intl.formatMessage(profileMessages.entries),
+                iconType: 'user',
                 onItemRequest: other.entryProfileIterator,
                 onItemMoreRequest: other.entryMoreProfileIterator
             };
@@ -229,6 +236,10 @@ const mapDispatchToProps = {
     entryPageShow,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DropTarget('COLUMN', dropBox, connectR => ({
-    connectDropTarget: connectR.dropTarget(),
-}))(Column));
+export default connect(mapStateToProps, mapDispatchToProps)(DropTarget(
+    dragItemTypes.COLUMN,
+    dropBox,
+    connectR => ({
+        connectDropTarget: connectR.dropTarget(),
+    })
+)(Column));

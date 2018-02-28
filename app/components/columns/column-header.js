@@ -5,12 +5,14 @@ import { injectIntl } from 'react-intl';
 import { AutoComplete, Modal, Popover, Select } from 'antd';
 import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import * as columnTypes from '../../constants/columns';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { Icon } from '../';
-
+import * as dragItemTypes from '../../constants/drag-item-types';
+import { smallColumnWidth, largeColumnWidth } from '../../constants/columns';
 
 const { Option } = Select;
 
@@ -24,6 +26,10 @@ const cardSource = {
             columnId: props.column.get('id'),
             type: props.column.get('type'),
             columnIndex: props.columnIndex,
+            title: props.title || props.column.get('value'),
+            children: props.children,
+            colWidth: props.column.get('large') ? largeColumnWidth : smallColumnWidth,
+            iconType: props.iconType
         };
     },
     endDrag (props) {
@@ -57,10 +63,14 @@ class ColumnHeader extends Component {
             editMode: false,
             modalVisible: false,
             popoverVisible: false,
-            value: props.column && props.column.get('value'),
-            scrolled: false,
-            dragStarted: false,
+            value: props.column && props.column.get('value')
         };
+    }
+    componentDidMount = () => {
+        const { connectDragPreview } = this.props;
+        connectDragPreview(getEmptyImage(), {
+            captureDraggingState: true
+        });
     }
     wasVisible = false;
     getInputRef = (el) => { this.input = el; };
@@ -87,7 +97,9 @@ class ColumnHeader extends Component {
         }
     };
 
-    onMouseDown = (ev) => { ev.preventDefault(); };
+    onMouseDown = (ev) => {
+        // ev.preventDefault();
+    };
 
     onRefresh = () => {
         this.props.onRefresh();
@@ -148,7 +160,7 @@ class ColumnHeader extends Component {
     };
 
     editColumn = (ev) => {
-        ev.preventDefault();
+        // ev.preventDefault();
         this.setState({ editMode: true, popoverVisible: false });
         setTimeout(() => {
             if (this.input) {
@@ -239,10 +251,10 @@ class ColumnHeader extends Component {
           </div>
         );
     };
-
+    /* eslint-disable complexity */
     render () {
         const { column, iconType, noMenu, readOnly, title, connectDragSource,
-            connectDropTarget, connectDragPreview, draggable } = this.props;
+            connectDropTarget, draggable } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header-wrapper__title-wrapper', {
             'column-header-wrapper__title-wrapper_no-icon': !iconType
@@ -250,18 +262,13 @@ class ColumnHeader extends Component {
         const titleClass = classNames('overflow-ellipsis column-header-wrapper__title', {
             'column-header-wrapper__title_large': column && column.get('large')
         });
-        return connectDropTarget(connectDragPreview(
+        const dragSourceConnect = draggable ? connectDragSource : nodes => nodes;
+        const dropTargetConnect = draggable ? connectDropTarget : nodes => nodes;
+        return dropTargetConnect(
           <div className="column-header" ref={(node) => { this._rootNode = node; }}>
-            <div
+            {dragSourceConnect(<div
               className="flex-center-y column-header-wrapper"
             >
-              {draggable && connectDragSource(
-                <div className="column-header-wrapper_drag-zone">
-                  <i className="drag-zone-bar" />
-                  <i className="drag-zone-bar" />
-                  <i className="drag-zone-bar" />
-                </div>
-              )}
               {iconType &&
                 <Icon
                   className="dark-icon column-header-wrapper__icon"
@@ -312,10 +319,9 @@ class ColumnHeader extends Component {
                   type="close"
                 />
                 }
-            </div>
+            </div>)}
             {this.props.children}
-          </div>
-        ));
+          </div>);
     }
 }
 
@@ -346,4 +352,4 @@ export default connect(
         dashboardDeleteColumn,
         dashboardUpdateColumn
     }
-)(injectIntl(DragSource('COLUMN', cardSource, collect)(ColumnHeader)));
+)(injectIntl(DragSource(dragItemTypes.COLUMN, cardSource, collect)(ColumnHeader)));

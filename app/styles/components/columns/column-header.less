@@ -7,18 +7,7 @@
         height: 50px;
         width: 100%;
         padding: 0px 6px;
-        &_drag-zone {
-            height: 35px;
-            width: 12px;
-            display: flex;
-            cursor: move;
-            .drag-zone-bar {
-                width: 1px;
-                height: 100%;
-                margin-right: 1px;
-                background-color: @border-color;
-            }
-        }
+        cursor: pointer;
         &__icon {
             flex: 0 0 auto;
             width: 16px;
@@ -66,8 +55,8 @@
         &__title {
             color: @heading-color;
             font-weight: 500;
-            cursor: default;
             max-width: 290px;
+            user-select: none;
             &_large {
                 max-width: 470px;
             }
