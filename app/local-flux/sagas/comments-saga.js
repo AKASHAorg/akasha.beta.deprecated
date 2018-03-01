@@ -7,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
 import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
-    selectNewCommentsBlock, selectNewestCommentBlock, selectToken } from '../selectors';
+    selectNewCommentsBlock, selectNewestCommentBlock, selectToken, selectFullEntry } from '../selectors';
 
 const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;
@@ -214,9 +214,13 @@ function* watchCommentsGetVoteOfChannel () {
     }
 }
 
-function* watchCommentsIteratorChannel () {
+function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements
     while (true) {
         const resp = yield take(actionChannels.comments.commentsIterator);
+        const fullEntry = yield select(selectFullEntry);
+        if (!fullEntry || resp.request.entryId !== fullEntry.entryId) {
+            continue; // eslint-disable-line no-continue
+        }
         if (resp.error) {
             if (resp.request.checkNew) {
                 yield put(actions.commentsCheckNewError(resp.error));

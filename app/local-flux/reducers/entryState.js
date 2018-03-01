@@ -113,9 +113,12 @@ const entryState = createReducer(initialState, {
         return state.set('endPeriod', endPeriod);
     },
 
-    [types.ENTRY_GET_FULL]: (state, { asDraft, publishedDateOnly }) => {
+    [types.ENTRY_GET_FULL]: (state, { asDraft, entryId, publishedDateOnly }) => {
         if (!asDraft && !publishedDateOnly) {
-            return state.setIn(['flags', 'fetchingFullEntry'], true);
+            return state.merge({
+                flags: state.get('flags').set('fetchingFullEntry', true),
+                fullEntry: createEntryRecord({ entryId })
+            });
         }
         return state;
     },
