@@ -153,7 +153,6 @@ const Column = ({
         default:
             break;
     }
-
     return (
       <ColumnHeader
         readOnly={other.readOnly}

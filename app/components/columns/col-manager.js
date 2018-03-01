@@ -23,6 +23,7 @@ class ColManager extends Component {
         this._debouncedScroll = throttle(this._handleScroll, 80, { trailing: true });
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
     }
+
     componentWillMount = () => {
         const { column } = this.props;
         const { id } = column;
@@ -43,32 +44,32 @@ class ColManager extends Component {
             this._updateOffsets(this.lastScrollTop[id]);
         }
     }
+
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.topIndexTo !== this.state.topIndexTo ||
         !nextProps.column.equals(this.props.column);
     }
-    componentWillReceiveProps = (nextProps, nextState) => {
+
+    componentWillReceiveProps = (nextProps) => {
         const { column } = nextProps;
         const { entriesList, id } = column;
         const oldItems = this.props.column.entriesList;
-        const hasColIndex = typeof this.props.columnIndex !== 'undefined' && this.props.columnIndex !== null;
-        const updatingIndex = hasColIndex && nextProps.columnIndex !== this.props.columnIndex;
-        if (updatingIndex || nextProps.inDragMode) {
-            this._restoreScrollPosition();
-        }
         if (entriesList.size !== oldItems.size) {
             this._mapItemsToState(entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
+        this._restoreScrollPosition();
     }
+
     _restoreScrollPosition = () => {
-        const { _rootNodeRef, lastScrollTop, props } = this;
+        const { lastScrollTop, props } = this;
         const { column } = props;
         const { id } = column;
-        if (lastScrollTop[id] > 0 && lastScrollTop[id] >= _rootNodeRef.scrollTop) {
-            _rootNodeRef.scrollTop = lastScrollTop[id];
+        if (lastScrollTop[id] > 0 && lastScrollTop[id] >= this._rootNodeRef.scrollTop) {
+            this._rootNodeRef.scrollTop = lastScrollTop[id];
         }
     }
+
     _onResize = () => {
         const { id } = this.props.column;
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
@@ -222,25 +223,30 @@ class ColManager extends Component {
                   height: this._getSliceMeasure(0, topIndexTo)
               }}
             />
-            {items.slice(topIndexTo, bottomIndexFrom).map(item => (
-              <CellManager
-                key={item.id}
-                id={item.id}
-                onMount={this._handleCellMount(item.id)}
-                onSizeChange={this._handleCellSizeChange(item.id)}
-              >
-                {cellProps => React.cloneElement(this.props.itemCard, {
-                    ...cellProps,
-                    ...other,
-                    entry: other.entries.get(item.id)
+            {items.slice(topIndexTo, bottomIndexFrom).map((item) => {
+                const entry = other.entries.get(item.id);
+                const author = other.profiles && other.profiles.get(entry.author.ethAddress);
+                return (
+                  <CellManager
+                    key={item.id}
+                    id={item.id}
+                    onMount={this._handleCellMount(item.id)}
+                    onSizeChange={this._handleCellSizeChange(item.id)}
+                  >
+                    {cellProps => React.cloneElement(this.props.itemCard, {
+                        ...cellProps,
+                        ...other,
+                        entry,
+                        author
+                    })}
+                  </CellManager>
+                );
                 })}
-              </CellManager>
-            ))}
             <div
               className="col-manager__bottom-offset"
               style={{
                 height: this._getSliceMeasure(bottomIndexFrom, items.length)
-            }}
+              }}
             />
           </div>
         );

@@ -79,7 +79,11 @@ class Dashboard extends Component {
         const { columnPlaceholder } = this.state;
         const { drag, hover } = columnPlaceholder;
         const dragCard = cols.get(columnPlaceholder.drag);
-        return cols.delete(drag).insert(hover, dragCard);
+        if (drag !== hover) {
+            console.info('please optimize this!!!!!');
+            return cols.delete(drag).insert(hover, dragCard);
+        }
+        return cols;
     }
     render () {
         const { columns, darkTheme, dashboardCreateNew, dashboards, getDashboardRef,
