@@ -5,12 +5,15 @@
     width: 100%;
     overflow-x: auto;
     background-color: @light-background;
+    position: relative;
     &__column {
         flex: 0 0 auto;
         border-radius: 4px;
         margin-right: 12px;
         background-color: @background;
-        transform: translate3d(0,0,0);
+        position: absolute;
+        top: 20px;
+        bottom: 0;
         &_dragging {
             .column-header {
                 opacity: 0;

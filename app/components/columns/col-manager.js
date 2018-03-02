@@ -5,8 +5,8 @@ import throttle from 'lodash.throttle';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 
-const MORE_ITEMS_TRIGGER_SIZE = 3;
-const VIEWPORT_VISIBLE_BUFFER_SIZE = 3;
+const MORE_ITEMS_TRIGGER_SIZE = 4;
+const VIEWPORT_VISIBLE_BUFFER_SIZE = 4;
 
 class ColManager extends Component {
     constructor (props) {
@@ -20,15 +20,15 @@ class ColManager extends Component {
         this.items = [];
         this.itemCount = 0;
         this.lastScrollTop = {};
-        this._debouncedScroll = throttle(this._handleScroll, 80, { trailing: true });
+        this._debouncedScroll = throttle(this._handleScroll, 150, { trailing: true });
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
     }
 
     componentWillMount = () => {
-        const { column } = this.props;
+        const { column, isVisible } = this.props;
         const { id } = column;
         this.lastScrollTop[id] = 0;
-        if (column.entriesList.size === 0 && !this.loadingMore.includes(column.id)) {
+        if (column.entriesList.size === 0 && !this.loadingMore.includes(column.id) && isVisible) {
             this.props.onItemRequest(column);
             this.loadingMore.push(column.id);
         } else {
@@ -51,22 +51,15 @@ class ColManager extends Component {
     }
 
     componentWillReceiveProps = (nextProps) => {
-        const { column } = nextProps;
+        const { column, isVisible } = nextProps;
         const { entriesList, id } = column;
         const oldItems = this.props.column.entriesList;
-        if (entriesList.size !== oldItems.size) {
+        if (entriesList.size === 0 && !this.loadingMore.includes(column.id) && isVisible) {
+            this.props.onItemRequest(column);
+            this.loadingMore.push(column.id);
+        } else if (entriesList.size !== oldItems.size) {
             this._mapItemsToState(entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
-        }
-        this._restoreScrollPosition();
-    }
-
-    _restoreScrollPosition = () => {
-        const { lastScrollTop, props } = this;
-        const { column } = props;
-        const { id } = column;
-        if (lastScrollTop[id] > 0 && lastScrollTop[id] >= this._rootNodeRef.scrollTop) {
-            this._rootNodeRef.scrollTop = lastScrollTop[id];
         }
     }
 
@@ -99,9 +92,9 @@ class ColManager extends Component {
     // load more entries
     _loadMoreIfNeeded = () => {
         const { props } = this;
-        const { onItemMoreRequest, column } = props;
+        const { onItemMoreRequest, column, isVisible } = props;
         const { id } = column;
-        if (!this.loadingMore.includes(id)) {
+        if (!this.loadingMore.includes(id) && isVisible) {
             onItemMoreRequest(column);
             this.loadingMore.push(id);
         }
@@ -207,9 +200,7 @@ class ColManager extends Component {
     render () {
         const { items, state, props } = this;
         const { topIndexTo } = state;
-        const {
-            column, baseWidth, onItemrequest, onItemMoreRequest, ...other
-        } = props;
+        const { column, baseWidth, ...other } = props;
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
         return (
           <div
@@ -261,13 +252,12 @@ ColManager.defaultProps = {
 
 ColManager.propTypes = {
     column: PropTypes.shape(),
-    columnIndex: PropTypes.number,
     onItemRequest: PropTypes.func,
-    onItemMoreRequest: PropTypes.func,
+    // onItemMoreRequest: PropTypes.func,
     initialItemHeight: PropTypes.number,
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,
-    inDragMode: PropTypes.bool,
+    isVisible: PropTypes.bool,
 };
 
 export default ColManager;

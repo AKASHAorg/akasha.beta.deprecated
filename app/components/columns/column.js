@@ -69,6 +69,7 @@ const Column = ({
         title: column ? column.value : null,
         ...other
     };
+    // console.log(other.isVisible, column.value);
     switch (type) {
         case columnTypes.latest:
             passedProps = {

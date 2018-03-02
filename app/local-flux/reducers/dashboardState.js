@@ -183,10 +183,14 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_REORDER_COLUMN]: (state, { data }) => {
         const columns = state.getIn(['byId', data.dashboardId, 'columns']);
-        const first = columns.splice(data.sourceIndex, 1);
-        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
         return state.merge({
-            byId: state.get('byId').setIn([data.dashboardId, 'columns'], second)
+            byId: state.get('byId')
+                .setIn(
+                    [data.dashboardId, 'columns'],
+                    columns
+                        .delete(data.sourceIndex)
+                        .insert(data.targetIndex, columns.get(data.sourceIndex))
+                )
         });
     },
 
