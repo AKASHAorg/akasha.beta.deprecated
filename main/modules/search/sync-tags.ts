@@ -19,9 +19,8 @@ const execute = Promise.coroutine(function* (data: { fromBlock: number }) {
     v.validate(data, syncTags, { throwError: true });
 
     const tagCreateEvent = contracts.createWatcher(contracts.instance.Tags.TagCreate, {}, data.fromBlock);
-    const toUtf8 = GethConnector.getInstance().web3.toUtf8;
     tagCreateEvent.watch((err, event) => {
-        const data = { id: event.args.tag, tagName: toUtf8(event.args.tag) };
+        const data = { id: event.args.tag, tagName: event.args.tag };
         dbs.tags
             .searchIndex
              .concurrentAdd({}, [data], (err) => { if (err) { console.log(err); } });
