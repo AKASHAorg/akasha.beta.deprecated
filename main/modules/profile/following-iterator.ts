@@ -12,47 +12,72 @@ import { uniq } from 'ramda';
  */
 const execute = Promise.coroutine(function* (data: {
     lastBlock?: number, limit?: number,
-    akashaId?: string, ethAddress?: string, lastIndex?: number
+    akashaId?: string, ethAddress?: string, lastIndex?: number, totalLoaded?: number
 }) {
     const v = new schema.Validator();
     v.validate(data, followersIterator, { throwError: true });
-
+    let lastFetchedBlock, remainingResults, fromIndex;
     const collection = [];
     const address = yield profileAddress(data);
     const lastBlock = yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
     const toBlock = (!data.lastBlock) ? lastBlock : data.lastBlock;
     const totalFollowing = yield contracts.instance.Feed.totalFollowing(address);
+    // If already loaded all results
+    if (totalFollowing <= data.totalLoaded) {
+        return {
+            collection: collection,
+            lastBlock: 0,
+            lastIndex: 0,
+            akashaId: data.akashaId,
+            limit: data.limit
+        };
+    }
+
     let maxResults = totalFollowing.toString() === '0' ? 0 : data.limit || 5;
     if (maxResults > totalFollowing.toNumber()) {
         maxResults = totalFollowing.toNumber();
     }
 
-    const fetched = yield contracts.fromEvent(contracts.instance.Feed.Follow, { follower: address }, toBlock, maxResults, { lastIndex: data.lastIndex });
-    for (let event of fetched.results) {
-        const follows = yield contracts.instance.Feed.follows(address, event.args.followed);
-        if (!follows) {
-            continue;
+    if (data.totalLoaded) {
+        const nextTotal = data.totalLoaded + maxResults;
+        if (nextTotal > totalFollowing) {
+            maxResults = totalFollowing - data.totalLoaded;
         }
-        const unFollowed = yield contracts.fromEvent(contracts.instance.Feed.UnFollow, {
-                followed: event.args.followed,
-                follower: address
-            },
-            lastBlock, 1, { lastIndex: 0 });
-
-        if (unFollowed.results && unFollowed.results.length && unFollowed.results[0].blockNumber > event.blockNumber) {
-            continue;
+    }
+    lastFetchedBlock = toBlock;
+    remainingResults = maxResults;
+    fromIndex = data.lastIndex;
+    while (collection.length < maxResults && lastFetchedBlock !== 0) {
+        const fetched = yield contracts.fromEvent(
+            contracts.instance.Feed.Follow,
+            { follower: address },
+            lastFetchedBlock,
+            remainingResults,
+            { lastIndex: fromIndex }
+        );
+        for (let event of fetched.results) {
+            const follows = yield contracts.instance.Feed.follows(address, event.args.followed);
+            if (!follows) {
+                continue;
+            }
+            collection.push({ ethAddress: event.args.followed });
+            if (collection.length === maxResults) {
+                break;
+            }
         }
-
-        collection.push({ ethAddress: event.args.followed });
+        lastFetchedBlock = fetched.fromBlock;
+        remainingResults = maxResults - collection.length;
+        fromIndex = fetched.lastIndex;
     }
     return {
         collection: uniq(collection),
-        lastBlock: fetched.fromBlock,
-        lastIndex: fetched.lastIndex,
+        lastBlock: lastFetchedBlock,
+        lastIndex: fromIndex,
         akashaId: data.akashaId,
         limit: maxResults
     };
 });
+
 
 export default { execute, name: 'followingIterator' };
 

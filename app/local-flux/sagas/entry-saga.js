@@ -10,7 +10,7 @@ import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
 import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
     selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
-    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken } from '../selectors';
+    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
@@ -249,16 +249,17 @@ function* entryMoreProfileIterator ({ columnId, value }) {
     const lastIndex = !isProfileEntries ?
         yield select(state => selectColumnLastIndex(state, columnId)) :
         yield select(state => selectProfileEntriesLastIndex(state, value));
-    let akashaId, ethAddress; // eslint-disable-line
+    let akashaId, ethAddress, totalLoaded; // eslint-disable-line
     if (isEthAddress(value)) {
         ethAddress = value;
+        totalLoaded = yield select(state => selectCurrentTotalProfileEntries(state, ethAddress));
     } else {
         akashaId = value;
     }
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, totalLoaded, more: true }]
     );
 }
 
