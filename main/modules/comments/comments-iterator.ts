@@ -21,23 +21,21 @@ const commentsIterator = {
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: {
-    toBlock: number,
+    toBlock: number, more?: boolean,
     limit?: number, entryId?: string, parent?: string, author?: string, lastIndex?: number, reversed?: boolean
 }) {
-
     const v = new schema.Validator();
     v.validate(data, commentsIterator, { throwError: true });
 
     const collection = [];
-    const commentsCount = yield contracts.instance.Comments.totalComments(data.entryId);
-    let maxResults = commentsCount.toString() === '0' ? 0 : data.limit || 5;
-    if (maxResults > commentsCount.toNumber()) {
-        maxResults = commentsCount.toNumber();
+    if (data.more) {
+        return { collection: collection, lastBlock: 0, lastIndex: 0 };
     }
+    const commentsCount = yield contracts.instance.Comments.totalComments(data.entryId);
+    const maxResults = commentsCount.toNumber();
     const fetched = yield contracts
         .fromEvent(contracts.instance.Comments.Publish, {
                 entryId: data.entryId,
-                parent: data.parent,
                 author: data.author
             },
             data.toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed });
@@ -47,7 +45,9 @@ const execute = Promise.coroutine(function* (data: {
             entryId: event.args.entryId,
             noResolve: true
         });
-        collection.push(Object.assign({}, comment, { commentId: event.args.id }));
+        collection.push(Object.assign({},
+            comment,
+            { commentId: event.args.id, parent: event.args.parent }));
     }
 
     return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };

@@ -64,9 +64,10 @@ function* commentsGetExtra (collection, request) {
     }
     const { entryId, parent } = request;
     if (parent === '0') {
-        for (let i = 0; i < commentIds.length; i++) {
-            yield put(actions.commentsIterator({ entryId, parent: commentIds[i] }));
-        }
+        // disabled for now
+        // for (let i = 0; i < commentIds.length; i++) {
+        //     yield put(actions.commentsIterator({ entryId, parent: commentIds[i] }));
+        // }
     }
 }
 

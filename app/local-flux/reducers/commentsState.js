@@ -1,8 +1,8 @@
-import { List, Map } from 'immutable';
-import { isEmpty } from 'ramda';
+import {List, Map} from 'immutable';
+import {isEmpty} from 'ramda';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
-import { CommentAuthor, CommentRecord, CommentsState } from './records';
+import {createReducer} from './create-reducer';
+import {CommentAuthor, CommentRecord, CommentsState} from './records';
 
 const initialState = new CommentsState();
 
@@ -55,8 +55,8 @@ const sortByScore = (byId, list = new List()) => {
 const commentsState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
-    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, { data, request }) => {
-        const { collection, lastBlock } = data;
+    [types.COMMENTS_CHECK_NEW_SUCCESS]: (state, {data, request}) => {
+        const {collection, lastBlock} = data;
         if (!collection.length) {
             return state.setIn(['newComments', 'lastBlock'], lastBlock);
         }
@@ -70,14 +70,14 @@ const commentsState = createReducer(initialState, {
         });
         return state.merge({
             byId,
-            newComments: state.get('newComments').merge({ lastBlock, comments })
+            newComments: state.get('newComments').merge({lastBlock, comments})
         });
     },
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
-    [types.COMMENTS_GET_SCORE_SUCCESS]: (state, { data }) => {
-        const { commentId, score } = data;
+    [types.COMMENTS_GET_SCORE_SUCCESS]: (state, {data}) => {
+        const {commentId, score} = data;
         if (score === state.getIn(['byId', commentId, 'score'])) {
             return state;
         }
@@ -90,7 +90,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
+    [types.COMMENTS_GET_VOTE_OF_SUCCESS]: (state, {data}) => {
         const votes = {};
         data.collection.forEach((res) => {
             votes[res.commentId] = res.vote;
@@ -98,27 +98,34 @@ const commentsState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [types.COMMENTS_ITERATOR]: (state, { parent }) =>
+    [types.COMMENTS_ITERATOR]: (state, {parent}) =>
         state.setIn(['flags', 'fetchingComments', parent], true),
 
-    [types.COMMENTS_ITERATOR_ERROR]: (state, { request }) =>
+    [types.COMMENTS_ITERATOR_ERROR]: (state, {request}) =>
         state.setIn(['flags', 'fetchingComments', request.parent], false),
 
-    [types.COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    [types.COMMENTS_ITERATOR_SUCCESS]: (state, {data, request}) => {
         let byId = state.get('byId');
         const parent = request.parent;
-        let list = state.getIn(['byParent', parent]) || new List();
+        let newState = state;
         data.collection.forEach((comm) => {
+            if (comm.parent === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+                comm.parent = '0';
+            }
+            let list = newState.getIn(['byParent', comm.parent]) || new List();
             comm.entryId = request.entryId;
             const comment = createCommentWithAuthor(comm);
-            byId = byId.set(comm.commentId, comment);
+            byId = newState.get('byId').set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
+            list = sortByScore(byId, list);
+            newState = newState.merge({
+                byId: byId,
+                byParent: newState.get('byParent').set(comm.parent, list)
+            });
         });
-        list = sortByScore(byId, list);
 
-        return state.merge({
-            byId,
-            byParent: state.get('byParent').set(parent, list),
+
+        return newState.merge({
             flags: state.get('flags').setIn(['fetchingComments', parent], false),
             lastBlock: state.get('lastBlock').set(parent, data.lastBlock),
             lastIndex: state.get('lastIndex').set(parent, data.lastIndex),
@@ -127,7 +134,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, { data, request }) => {
+    [types.COMMENTS_ITERATOR_REVERSED_SUCCESS]: (state, {data, request}) => {
         let byId = state.get('byId');
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
@@ -169,13 +176,13 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_MORE_ITERATOR]: (state, { parent }) =>
+    [types.COMMENTS_MORE_ITERATOR]: (state, {parent}) =>
         state.setIn(['flags', 'fetchingMoreComments', parent], true),
 
-    [types.COMMENTS_MORE_ITERATOR_ERROR]: (state, { request }) =>
+    [types.COMMENTS_MORE_ITERATOR_ERROR]: (state, {request}) =>
         state.setIn(['flags', 'fetchingMoreComments', request.parent], false),
 
-    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: (state, {data, request}) => {
         let byId = state.get('byId');
         const parent = request.parent;
         let list = state.getIn(['byParent', parent]) || new List();
@@ -195,7 +202,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH]: (state, { ipfsHashes, commentIds }) => {
+    [types.COMMENTS_RESOLVE_IPFS_HASH]: (state, {ipfsHashes, commentIds}) => {
         let byHash = state.get('byHash');
         let resolvingComments = state.getIn(['flags', 'resolvingComments']);
         ipfsHashes.forEach((hash, index) => {
@@ -208,10 +215,10 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH_ERROR]: (state, { data }) =>
+    [types.COMMENTS_RESOLVE_IPFS_HASH_ERROR]: (state, {data}) =>
         state.setIn(['flags', 'resolvingComments', data], false),
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data }) => {
+    [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, {data}) => {
         if (!data.ipfsHash || isEmpty(data)) {
             return state;
         }

@@ -14,8 +14,8 @@ import * as profileService from '../services/profile-service';
 
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
-    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowings
-} from '../selectors';
+    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowings,
+    selectCurrentTotalFollowing, selectCurrentTotalFollowers } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { getDisplayName } from '../../utils/dataModule';
@@ -283,11 +283,13 @@ function* profileManaBurned () {
 function* profileMoreFollowersIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followersIterator;
     const last = yield select(state => selectLastFollower(state, ethAddress));
+    const totalLoaded = yield select(state => selectCurrentTotalFollowers(state, ethAddress));
     const payload = {
         ethAddress,
         limit: FOLLOWERS_ITERATOR_LIMIT,
         lastBlock: last.lastBlock,
-        lastIndex: last.lastIndex
+        lastIndex: last.lastIndex,
+        totalLoaded
     };
     yield apply(channel, channel.send, [payload]);
 }
@@ -295,11 +297,13 @@ function* profileMoreFollowersIterator ({ ethAddress }) {
 function* profileMoreFollowingsIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followingIterator;
     const last = yield select(state => selectLastFollowing(state, ethAddress));
+    const totalLoaded = yield select(state => selectCurrentTotalFollowing(state, ethAddress));
     const payload = {
         ethAddress,
         limit: FOLLOWINGS_ITERATOR_LIMIT,
         lastBlock: last.lastBlock,
-        lastIndex: last.lastIndex
+        lastIndex: last.lastIndex,
+        totalLoaded
     };
     yield apply(channel, channel.send, [payload]);
 }

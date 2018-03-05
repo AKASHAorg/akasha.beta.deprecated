@@ -52,14 +52,16 @@ class EntryVotesModal extends Component {
                 serverChannel.send({
                     toBlock: this.state.lastBlock,
                     commentId: content.commentId,
-                    lastIndex: this.state.lastIndex
+                    lastIndex: this.state.lastIndex,
+                    totalLoaded: this.state.votes.length
                 });
                 return;
             }
             serverChannel.send({
                 toBlock: this.state.lastBlock,
                 entryId: content.entryId,
-                lastIndex: this.state.lastIndex
+                lastIndex: this.state.lastIndex,
+                totalLoaded: this.state.votes.length
             });
         }
     };
