@@ -1,4 +1,4 @@
-import LRU = require('lru-cache');
+const LRU = require('lru-cache');
 
 class Entries {
 

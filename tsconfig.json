@@ -1,20 +1,22 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es2017",
         "module": "commonjs",
+        "moduleResolution": "node",
+        "noEmitOnError": true,
         "noImplicitAny": false,
         "noUnusedLocals": true,
         "removeComments": true,
         "inlineSources": true,
         "sourceMap": true,
-        "moduleResolution": "node",
         "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "experimentalDecorators": true,
         "rootDir": "main",
         "emitDecoratorMetadata": true,
-        "typeRoots": ["node_modules/@types"]
+        "typeRoots": ["node_modules/@types"],
+        "outDir": "dist/main"
     },
     "exclude": ["node_modules"]
 }

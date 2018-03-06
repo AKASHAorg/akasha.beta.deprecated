@@ -1,12 +1,11 @@
 /// <reference path="typings/main.d.ts" />
-import { app, autoUpdater, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './init-modules';
 import { roomFactory } from './modules/chat/join';
 import { initMenu } from './menu';
-import checkVersion from './check-version';
 import * as Promise from 'bluebird';
 import contracts from './contracts';
 
@@ -31,15 +30,10 @@ const stopServices = () => {
 };
 
 (function bootstrapApp() {
-    const viewHtml = resolve(__dirname, '..');
+    const viewHtml = resolve(__dirname, '../..');
 
     if (process.env.NODE_ENV === 'development') {
         require('electron-debug')({ showDevTools: true });
-    } else if (process.platform === 'darwin' || process.platform === 'win32') {
-        const server = 'https://hazel-server-gieqzdwjdf.now.sh';
-        const feeds = `${server}/update/${process.platform}/${app.getVersion()}`;
-        autoUpdater.setFeedURL(feeds);
-        checkVersion();
     }
 
     app.on('window-all-closed', () => {
@@ -87,7 +81,7 @@ const stopServices = () => {
         modules.initListeners(mainWindow.webContents).then(() => {
             console.timeEnd('mainApi');
             mainWindow.loadURL(
-                process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/index.html`
+                process.env.HOT ? `http://localhost:3000/dist/index.html` : `file://${viewHtml}/dist/index.html`
             );
             mainWindow.once('close', (ev: Event) => {
                 ev.preventDefault();

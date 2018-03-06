@@ -36,3 +36,4 @@ declare module 'request';
 declare module 'winston';
 declare module 'ramda';
 declare module 'object-hash';
+declare module 'electron-updater';
