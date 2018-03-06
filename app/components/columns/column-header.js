@@ -102,7 +102,7 @@ class ColumnHeader extends Component {
     };
 
     onRefresh = () => {
-        this.props.onRefresh();
+        this.props.onRefresh(this.props.column);
         this.setState({ popoverVisible: false });
     };
 

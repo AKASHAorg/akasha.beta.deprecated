@@ -29,12 +29,11 @@ class Dashboard extends Component {
     }
     columnMarginLeft = 12;
 
-    shouldComponentUpdate = (nextProps, nextState) => {
-        return !equals(nextState.draggingColumn, this.state.draggingColumn) ||
+    shouldComponentUpdate = (nextProps, nextState) =>
+        !equals(nextState.draggingColumn, this.state.draggingColumn) ||
             !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
             !nextProps.dashboards.equals(this.props.dashboards) ||
             equals(nextProps.match.params, this.props.match.params);
-    }
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -200,7 +199,8 @@ class Dashboard extends Component {
             {activeDashboard &&
               <div
                 style={{
-                  left: this._calculatePosition(columns, activeDashboardColumns).left + (this.columnMarginLeft * 2),
+                  left: this._calculatePosition(columns, activeDashboardColumns).left +
+                    (this.columnMarginLeft * 2),
                   position: 'absolute',
                   top: 20,
                   bottom: 0

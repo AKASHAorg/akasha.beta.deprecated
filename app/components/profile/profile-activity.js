@@ -12,6 +12,8 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         intl={intl}
         ethAddress={ethAddress}
         type={columnTypes.profileEntries}
+        isVisible
+        noMenu
       />
     </div>
     <div className="profile-activity__column" id="profile-followers">
@@ -20,6 +22,8 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         intl={intl}
         ethAddress={ethAddress}
         type={columnTypes.profileFollowers}
+        isVisible
+        noMenu
       />
     </div>
     <div>
@@ -29,6 +33,8 @@ const ProfileActivity = ({ ethAddress, intl }) => (
           intl={intl}
           ethAddress={ethAddress}
           type={columnTypes.profileFollowings}
+          isVisible
+          noMenu
         />
       </div>
     </div>

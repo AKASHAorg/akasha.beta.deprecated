@@ -4,6 +4,7 @@ import { symmetricDifferenceWith, eqBy, prop, propEq, findIndex, update, indexOf
 import throttle from 'lodash.throttle';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
+import * as columnTypes from '../../constants/columns';
 
 const MORE_ITEMS_TRIGGER_SIZE = 4;
 const VIEWPORT_VISIBLE_BUFFER_SIZE = 4;
@@ -32,7 +33,7 @@ class ColManager extends Component {
             this.props.onItemRequest(column);
             this.loadingMore.push(column.id);
         } else {
-            this._mapItemsToState(column.get('entriesList'));
+            this._mapItemsToState(column.entriesList);
         }
     }
     componentDidMount = () => {
@@ -71,6 +72,7 @@ class ColManager extends Component {
             this._updateOffsets(this.lastScrollTop[id]);
         }
     }
+
     _mapItemsToState = (items) => {
         const { id } = this.props.column;
         const mappedItems = this.items.slice();
@@ -140,7 +142,7 @@ class ColManager extends Component {
         const { items } = this;
         const { id } = this.props.column;
         let accHeight = this._getSliceMeasure(0, topIndex);
-        let bottomIndex = items.length - 1;
+        let bottomIndex = items.length;
         const bufferHeight = this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE;
         for (let i = topIndex; i < items.length; i++) {
             const item = items[i];
@@ -200,7 +202,7 @@ class ColManager extends Component {
     render () {
         const { items, state, props } = this;
         const { topIndexTo } = state;
-        const { column, baseWidth, ...other } = props;
+        const { column, baseWidth, type, ...other } = props;
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
         return (
           <div
@@ -216,7 +218,13 @@ class ColManager extends Component {
             />
             {items.slice(topIndexTo, bottomIndexFrom).map((item) => {
                 const entry = other.entries.get(item.id);
-                const author = other.profiles && other.profiles.get(entry.author.ethAddress);
+                let author;
+                let profile;
+                if (type === columnTypes.profileFollowings || type === columnTypes.profileFollowers) {
+                    profile = other.profiles && other.profiles.get(entry.ethAddress);
+                } else {
+                    author = other.profiles && entry && other.profiles.get(entry.author.ethAddress);
+                }
                 return (
                   <CellManager
                     key={item.id}
@@ -228,7 +236,8 @@ class ColManager extends Component {
                         ...cellProps,
                         ...other,
                         entry,
-                        author
+                        author,
+                        profile,
                     })}
                   </CellManager>
                 );
@@ -253,7 +262,7 @@ ColManager.defaultProps = {
 ColManager.propTypes = {
     column: PropTypes.shape(),
     onItemRequest: PropTypes.func,
-    // onItemMoreRequest: PropTypes.func,
+    onItemMoreRequest: PropTypes.func,
     initialItemHeight: PropTypes.number,
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,

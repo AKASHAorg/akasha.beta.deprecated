@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { List } from 'immutable';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
@@ -19,14 +20,17 @@ class Highlights extends Component {
     };
 
     render () {
-        const { profileEntries, fetchingProfileEntries, moreProfileEntries,
+        const { profileEntries, fetchingProfileEntries, moreProfileEntries, entries,
             fetchingMoreProfileEntries } = this.props;
-
+        let entriesMap = new List();
+        if (profileEntries) {
+            entriesMap = profileEntries.map(profEthAddress => entries.get(profEthAddress))
+        }
         return (
           <div className="myentries">
             <EntryList
               contextId={ACTIVITY}
-              entries={profileEntries}
+              entries={entriesMap}
               fetchingEntries={fetchingProfileEntries}
               fetchingMoreEntries={fetchingMoreProfileEntries}
               fetchMoreEntries={this.fetchMoreProfileEntries}
@@ -58,6 +62,7 @@ function mapStateToProps (state) {
         profileEntries: selectProfileEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'moreEntries']),
+        entries: state.entryState.get('byId'),
     };
 }
 

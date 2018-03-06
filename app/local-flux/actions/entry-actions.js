@@ -132,13 +132,13 @@ export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { da
 export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });
 export const entryGetVoteRatioError = error => action(types.ENTRY_GET_VOTE_RATIO_ERROR, { error });
 
-export const entryListIterator = ({ columnId, value, limit }) =>
-    action(types.ENTRY_LIST_ITERATOR, { columnId, value, limit });
+export const entryListIterator = column =>
+    action(types.ENTRY_LIST_ITERATOR, { column });
 export const entryListIteratorSuccess = (data, request) =>
     action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreListIterator = ({ columnId, value, limit }) =>
-    action(types.ENTRY_MORE_LIST_ITERATOR, { columnId, value, limit });
+export const entryMoreListIterator = (column, limit) =>
+    action(types.ENTRY_MORE_LIST_ITERATOR, { column, limit });
 export const entryMoreListIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
 
@@ -161,7 +161,7 @@ export const entryMoreProfileIteratorError = (error, request) => {
 export const entryMoreProfileIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreStreamIterator = columnId => action(types.ENTRY_MORE_STREAM_ITERATOR, { columnId });
+export const entryMoreStreamIterator = column => action(types.ENTRY_MORE_STREAM_ITERATOR, { column });
 export const entryMoreStreamIteratorError = (error, request) => {
     error.code = 'EMSIE01';
     error.messageId = 'entryMoreStreamIterator';

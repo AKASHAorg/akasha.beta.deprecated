@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
-import * as columnTypes from '../../constants/columns';
 import {
     entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
     entryMoreListIterator, entryNewestIterator, entryMoreTagIterator, entryTagIterator,
@@ -17,50 +16,23 @@ import {
     selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress, selectProfileEntriesFlags, selectFetchingFollowers, selectFetchingMoreFollowers,
     selectFollowers, selectProfileEntries, selectMoreFollowers, selectFetchingFollowings,
-    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings
+    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings, selectListsAll
 } from '../../local-flux/selectors';
-import { dashboardMessages, profileMessages } from '../../locale-data/messages';
 import * as dragItemTypes from '../../constants/drag-item-types';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
+import dropBox from './column-dropBox';
+import getColumnPropsByType from './column-props-by-type';
 
-const dropBox = {
-    /* eslint-disable max-statements */
-    hover (props, monitor) {
-        const draggedItem = monitor.getItem();
-        const draggedItemId = draggedItem.columnId;
-        const hoverItemId = props.column.get('id');
-        const dragIndex = draggedItem.columnIndex;
-        let hoverIndex = props.columnIndex;
-        if (hoverItemId && draggedItemId !== hoverItemId) {
-            const hoveredColumn = document.getElementById(props.column.get('id'));
-            const colSize = hoveredColumn.getBoundingClientRect();
-            const hoverMiddleX = (colSize.right - colSize.left) / 2;
-            const clientOffset = monitor.getClientOffset();
-            const hoverClientX = clientOffset.x - colSize.left;
-            if (dragIndex < hoverIndex) {
-                if (hoverClientX < hoverMiddleX) {
-                    hoverIndex -= 1;
-                }
-            }
-            if (dragIndex > hoverIndex) {
-                if (hoverClientX > hoverMiddleX) {
-                    hoverIndex += 1;
-                }
-            }
-            return props.onNeighbourHover(dragIndex, hoverIndex);
-        }
-    }
-};
-/* eslint-disable complexity */
 const Column = ({
     onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
-    type, entries, ...other
+    type, entries, readOnly, ...other
 }) => {
-    let passedProps = {
+    const passedProps = getColumnPropsByType({
         column,
-        entries,
         baseWidth,
+        type,
+        entries,
         contextId: column ? column.id : '',
         onRetry: (data) => {
             other.entryGetShort({ ...data });
@@ -68,98 +40,13 @@ const Column = ({
         iconType: 'entries',
         title: column ? column.value : null,
         ...other
-    };
-    // console.log(other.isVisible, column.value);
-    switch (type) {
-        case columnTypes.latest:
-            passedProps = {
-                ...passedProps,
-                title: other.intl.formatMessage(dashboardMessages.latest),
-                onItemRequest: other.entryNewestIterator,
-                onItemMoreRequest: other.entryMoreNewestIterator,
-            };
-            break;
-        case columnTypes.list:
-            passedProps = {
-                ...passedProps,
-                onItemRequest: other.entryListIterator,
-                onItemMoreRequest: other.entryMoreListIterator,
-            };
-            break;
-        case columnTypes.tag:
-            passedProps = {
-                ...passedProps,
-                iconType: 'tag',
-                onItemRequest: other.entryTagIterator,
-                onItemMoreRequest: other.entryMoreTagIterator,
-            };
-            break;
-        case columnTypes.stream:
-            passedProps = {
-                ...passedProps,
-                onItemRequest: other.entryStreamIterator,
-                onItemMoreRequest: other.entryMoreStreamIterator,
-            };
-            break;
-        case columnTypes.profile:
-            passedProps = {
-                ...passedProps,
-                title: column ? `@${column.value}` : other.intl.formatMessage(profileMessages.entries),
-                iconType: 'user',
-                onItemRequest: other.entryProfileIterator,
-                onItemMoreRequest: other.entryMoreProfileIterator
-            };
-            break;
-        case columnTypes.profileEntries:
-            passedProps = {
-                ...passedProps,
-                column: {
-                    id: 'profileEntries',
-                    entriesList: other.profileEntriesList,
-                    ethAddress: other.ethAddress
-                },
-                contextId: 'profileEntries',
-                title: other.intl.formatMessage(profileMessages.entries),
-                onItemRequest: other.entryProfileIterator,
-                onItemMoreRequest: other.entryMoreProfileIterator
-            };
-            break;
-        case columnTypes.profileFollowers:
-            passedProps = {
-                ...passedProps,
-                column: {
-                    id: 'profileFollowers',
-                    entriesList: other.followers,
-                    ethAddress: other.ethAddress,
-                    context: 'profilePageFollowers'
-                },
-                title: other.intl.formatMessage(profileMessages.followers),
-                onItemRequest: other.profileFollowersIterator,
-                onItemMoreRequest: other.profileMoreFollowersIterator
-            };
-            break;
-        case columnTypes.profileFollowings:
-            passedProps = {
-                ...passedProps,
-                column: {
-                    id: 'profileFollowings',
-                    entriesList: other.followings,
-                    ethAddress: other.ethAddress
-                },
-                title: other.intl.formatMessage(profileMessages.followings),
-                onItemRequest: other.profileFollowingsIterator,
-                onItemMoreRequest: other.profileMoreFollowingsIterator
-            };
-            break;
-        default:
-            break;
-    }
+    });
     return (
       <ColumnHeader
-        readOnly={other.readOnly}
-        column={column}
+        readOnly={readOnly}
+        column={passedProps.column}
         columnIndex={other.columnIndex}
-        onRefresh={() => console.error('implement refresh')}
+        onRefresh={passedProps.onColumnRefresh}
         onBeginDrag={onBeginDrag}
         onEndDrag={onEndDrag}
         isColumnDragging={isColumnDragging}
@@ -167,6 +54,7 @@ const Column = ({
         iconType={passedProps.iconType}
         title={passedProps.title}
         draggable={other.draggable}
+        noMenu={passedProps.noMenu}
       >
         <ColManager {...passedProps} />
       </ColumnHeader>
@@ -182,6 +70,7 @@ Column.propTypes = {
     onBeginDrag: PropTypes.func,
     onEndDrag: PropTypes.func,
     isColumnDragging: PropTypes.func,
+    readOnly: PropTypes.bool,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -214,6 +103,7 @@ const mapStateToProps = (state, ownProps) => {
         fetchingMoreFollowings: selectFetchingMoreFollowings(state, ethAddress),
         followings: selectFollowings(state, ethAddress),
         moreFollowings: selectMoreFollowings(state, ethAddress),
+        lists: selectListsAll(state)
     };
 };
 
