@@ -10,7 +10,7 @@ import channels from '../channels';
 import { mainResponse } from '../event/responses';
 import * as throttle from 'lodash.throttle';
 
-const peers = require('../config/peers.json');
+const peers = require('../config/peers');
 
 class GethIPC extends ModuleEmitter {
 

@@ -3,13 +3,13 @@ import webpack from 'webpack';
 import merge from 'webpack-merge';
 import { spawn } from 'child_process';
 import baseConfig from './webpack.config.base';
-
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 const port = process.env.PORT || 3000;
 const publicPath = `http://localhost:${port}/dist`;
 
 export default merge(baseConfig, {
     devtool: 'eval-source-map',
-
+    mode: 'development',
     entry: [
         'react-hot-loader/patch',
         `webpack-dev-server/client?http://localhost:${port}/`,
@@ -158,11 +158,12 @@ export default merge(baseConfig, {
         new webpack.LoaderOptionsPlugin({
             debug: true
         }),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'app/hot-dev-app.html'
+        })
     ],
 
-    /**
-     * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-     */
     target: 'electron-renderer',
     devServer: {
         port,
