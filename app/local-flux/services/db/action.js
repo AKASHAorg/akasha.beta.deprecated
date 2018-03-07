@@ -1,9 +1,10 @@
-import Dexie from 'dexie';
+import { akashaDB } from './dbs';
 
-const dbName = `action-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`;
-const actionDB = new Dexie(dbName);
-actionDB.version(1).stores({
-    actions: '&id, ethAddress, status, tx, type, [ethAddress+status], [ethAddress+type]'
-});
+export const collectionName = `action-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`;
+export const options = {
+    indices: ['ethAddress', 'status', 'type', 'id', 'created', 'claimed'],
+    unique: ['tx', 'id']
+};
+const actionCollection = () => akashaDB.getCollection(collectionName);
 
-export default actionDB;
+export default actionCollection;
