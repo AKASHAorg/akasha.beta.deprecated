@@ -187,8 +187,7 @@ function* actionGetClaimable () {
     try {
         const loggedEthAddress = yield select(selectLoggedEthAddress);
         const claimable = ['draftPublish', 'entryDownvote', 'entryUpvote'];
-        const request = claimable.map(type => [loggedEthAddress, type]);
-        const data = yield apply(actionService, actionService.getClaimable, [request]);
+        const data = yield apply(actionService, actionService.getClaimable, [{ethAddress: loggedEthAddress, type: claimable}]);
         if (data.length) {
             yield call(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
         }
@@ -228,12 +227,10 @@ function* actionGetClaimableEntries (data) {
 function* actionGetHistory ({ request }) {
     try {
         const loggedEthAddress = yield select(selectLoggedEthAddress);
-        const input = [];
-        request.forEach(type => input.push([loggedEthAddress, type]));
         const data = yield apply(
             actionService,
             actionService.getActionsByType,
-            [input]
+            [{ethAddress: loggedEthAddress, type: request}]
         );
         yield put(actions.actionGetHistorySuccess(data, request));
     } catch (error) {
