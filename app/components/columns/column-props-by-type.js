@@ -12,6 +12,8 @@ const getColumnPropsByType = ({
         type,
         intl,
         noMenu: false,
+        fetching: false,
+        fetchingMore: false,
         ...other
     };
     const TempRec = Record({
@@ -28,7 +30,10 @@ const getColumnPropsByType = ({
                 title: intl.formatMessage(dashboardMessages.latest),
                 onItemRequest: other.entryNewestIterator,
                 onItemMoreRequest: other.entryMoreNewestIterator,
-                onColumnRefresh: col => other.entryNewestIterator(col, true),
+                onColumnRefresh: other.entryNewestIterator,
+                onItemPooling: col => other.entryNewestIterator({ ...col.toJS(), reversed: true }),
+                fetching: column.getIn(['flags', 'fetchingEntries']),
+                readOnly: true
             };
             break;
         case columnTypes.list:
@@ -46,7 +51,11 @@ const getColumnPropsByType = ({
                 iconType: 'tag',
                 onItemRequest: other.entryTagIterator,
                 onItemMoreRequest: other.entryMoreTagIterator,
-                onColumnRefresh: col => other.entryTagIterator(col, true),
+                onColumnRefresh: other.entryTagIterator,
+                onItemPooling: col => other.entryTagIterator({ ...col.toJS(), reversed: true }),
+                fetching: column.getIn(['flags', 'fetchingEntries']),
+                dataSource: other.tagSearchResults,
+                onSearch: other.searchTags
             };
             break;
         case columnTypes.stream:
@@ -55,7 +64,10 @@ const getColumnPropsByType = ({
                 onItemRequest: other.entryStreamIterator,
                 onItemMoreRequest: other.entryMoreStreamIterator,
                 title: intl.formatMessage(dashboardMessages.columnStream),
-                onColumnRefresh: col => other.entryStreamIterator(col, true),
+                onColumnRefresh: other.entryStreamIterator,
+                onItemPooling: col => other.entryStreamIterator({ ...col.toJS(), reversed: true }),
+                fetching: column.getIn(['flags', 'fetchingEntries']),
+                readOnly: true
             };
             break;
         case columnTypes.profile:
@@ -65,7 +77,11 @@ const getColumnPropsByType = ({
                 iconType: 'user',
                 onItemRequest: other.entryProfileIterator,
                 onItemMoreRequest: other.entryMoreProfileIterator,
-                onColumnRefresh: col => other.entryProfileIterator(col, null, null, true),
+                onColumnRefresh: other.entryProfileIterator,
+                onItemPooling: col => other.entryProfileIterator({ ...col.toJS(), reversed: true }),
+                fetching: column.getIn(['flags', 'fetchingEntries']),
+                dataSource: other.profileSearchResults,
+                onSearch: other.searchProfiles
             };
             break;
         case columnTypes.profileEntries:
@@ -75,14 +91,17 @@ const getColumnPropsByType = ({
                     id: 'profileEntries',
                     entriesList: other.profileEntriesList,
                     ethAddress: other.ethAddress,
-                    value: other.ethAddress
+                    value: other.ethAddress,
+                    context: 'profileEntries'
                 }),
-                contextId: 'profileEntries',
+                fetching: other.fetchingEntries,
+                fetchingMore: other.fetchingMoreEntries,
                 title: intl.formatMessage(profileMessages.entries),
                 onItemRequest: other.entryProfileIterator,
                 onItemMoreRequest: other.entryMoreProfileIterator,
-                onColumnRefresh: col => other.entryProfileIterator(col, null, null, true),
-                noMenu: true
+                onColumnRefresh: other.entryProfileIterator,
+                noMenu: true,
+                // onItemPooling: col => other.entryProfileIterator({ ...col.toJS(), reversed: true })
             };
             break;
         case columnTypes.profileFollowers:
@@ -95,6 +114,8 @@ const getColumnPropsByType = ({
                     context: 'profilePageFollowers'
                 }),
                 entries: other.profiles,
+                fetching: other.fetchingFollowers,
+                fetchingMore: other.fetchingMoreFollowers,
                 title: intl.formatMessage(profileMessages.followers),
                 onItemRequest: other.profileFollowersIterator,
                 onItemMoreRequest: other.profileMoreFollowersIterator,
@@ -112,6 +133,8 @@ const getColumnPropsByType = ({
                     context: 'profilePageFollowings',
                 }),
                 entries: other.profiles,
+                fetching: other.fetchingFollowings,
+                fetchingMore: other.fetchingMoreFollowings,
                 title: intl.formatMessage(profileMessages.followings),
                 onItemRequest: other.profileFollowingsIterator,
                 onItemMoreRequest: other.profileMoreFollowingsIterator,

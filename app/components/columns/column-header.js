@@ -6,13 +6,12 @@ import { AutoComplete, Modal, Popover, Select } from 'antd';
 import classNames from 'classnames';
 import { DragSource } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import * as columnTypes from '../../constants/columns';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { Icon } from '../';
 import * as dragItemTypes from '../../constants/drag-item-types';
-import { smallColumnWidth, largeColumnWidth } from '../../constants/columns';
+import { smallColumnWidth, largeColumnWidth, list as listColumnType } from '../../constants/columns';
 
 const { Option } = Select;
 
@@ -97,9 +96,9 @@ class ColumnHeader extends Component {
         }
     };
 
-    onMouseDown = (ev) => {
-        // ev.preventDefault();
-    };
+    // onMouseDown = (ev) => {
+    //     ev.preventDefault();
+    // };
 
     onRefresh = () => {
         this.props.onRefresh(this.props.column);
@@ -159,7 +158,7 @@ class ColumnHeader extends Component {
         );
     };
 
-    editColumn = (ev) => {
+    editColumn = () => {
         // ev.preventDefault();
         this.setState({ editMode: true, popoverVisible: false });
         setTimeout(() => {
@@ -179,7 +178,7 @@ class ColumnHeader extends Component {
     renderEditMode = () => {
         const { column, dataSource, intl } = this.props;
         const { value } = this.state;
-        if (column.get('type') === columnTypes.list) {
+        if (column.get('type') === listColumnType) {
             return (
               <Select
                 className="column-header-wrapper__select"
@@ -266,62 +265,69 @@ class ColumnHeader extends Component {
         const dropTargetConnect = draggable ? connectDropTarget : nodes => nodes;
         return dropTargetConnect(
           <div className="column-header" ref={(node) => { this._rootNode = node; }}>
-            {dragSourceConnect(<div
-              className="flex-center-y column-header-wrapper"
-            >
-              {iconType &&
-                <Icon
-                  className="dark-icon column-header-wrapper__icon"
-                  type={iconType}
-                />
-              }
-              <div className={titleWrapperClass}>
-                {(readOnly || !editMode) &&
-                  <div
-                    className={titleClass}
-                    onDoubleClick={!readOnly ? this.editColumn : undefined}
-                    onMouseDown={this.onMouseDown}
-                  >
-                    {title || value}
+            {dragSourceConnect(
+              <div
+                className={
+                    `flex-center-y
+                    column-header-wrapper
+                    column-header-wrapper${draggable ? '_draggable' : ''}`
+                }
+              >
+                {iconType &&
+                  <Icon
+                    className="dark-icon column-header-wrapper__icon"
+                    type={iconType}
+                  />
+                }
+                <div className={titleWrapperClass}>
+                  {(readOnly || !editMode) &&
+                    <div
+                      className={titleClass}
+                      onDoubleClick={!readOnly ? this.editColumn : undefined}
+                      onMouseDown={this.onMouseDown}
+                    >
+                        {title || value}
+                    </div>
+                  }
+                  {!readOnly && editMode && this.renderEditMode()}
+                </div>
+                {this.showModal()}
+                {!editMode &&
+                  <div className="column-header-wrapper__refresh-icon">
+                    <Icon
+                      className="content-link"
+                      onClick={this.onRefresh}
+                      type="refresh"
+                    />
+                    {column && column.get('hasNewEntries') &&
+                      <div className="column-header-wrapper__new-entries" />
+                    }
                   </div>
                 }
-                {!readOnly && editMode && this.renderEditMode()}
-              </div>
-              {this.showModal()}
-              {!editMode &&
-                <div className="column-header-wrapper__refresh-icon">
-                  <Icon
-                    className="content-link"
-                    onClick={this.onRefresh}
-                    type="refresh"
-                  />
-                  {column && column.get('hasNewEntries') &&
-                    <div className="column-header-wrapper__new-entries" />
-                  }
-                </div>
-              }
-              {!editMode && !noMenu &&
-                <Popover
-                  content={this.wasVisible ? this.renderContent() : null}
-                  onVisibleChange={this.onVisibleChange}
-                  overlayClassName="popover-menu"
-                  placement="bottom"
-                  trigger="click"
-                  visible={this.state.popoverVisible}
-                >
-                  <Icon className="content-link column-header-wrapper__menu-icon" type="menu" />
-                </Popover>
-              }
-              {editMode &&
-                <Icon
-                  className="content-link column-header-wrapper__reset-icon"
-                  onClick={this.onCancel}
-                  type="close"
-                />
+                {!editMode && !noMenu &&
+                  <Popover
+                    content={this.wasVisible ? this.renderContent() : null}
+                    onVisibleChange={this.onVisibleChange}
+                    overlayClassName="popover-menu"
+                    placement="bottom"
+                    trigger="click"
+                    visible={this.state.popoverVisible}
+                  >
+                    <Icon className="content-link column-header-wrapper__menu-icon" type="menu" />
+                  </Popover>
                 }
-            </div>)}
+                {editMode &&
+                  <Icon
+                    className="content-link column-header-wrapper__reset-icon"
+                    onClick={this.onCancel}
+                    type="close"
+                  />
+                    }
+              </div>
+            )}
             {this.props.children}
-          </div>);
+          </div>
+        );
     }
 }
 

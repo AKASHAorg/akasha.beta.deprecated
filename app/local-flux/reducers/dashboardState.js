@@ -5,18 +5,20 @@ import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from '
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { columnId, value, reversed }) => {
-    if (reversed || !columnId || !state.getIn(['columnById', columnId])) {
+const entryIterator = (state, { column }) => {
+    const { id, value, reversed } = column;
+    if (reversed || !id || !state.getIn(['columnById', id])) {
         return state;
     }
-    if (columnId === 'newColumn') {
-        return state.mergeIn(['columnById', columnId], {
-            flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
-            value
+    if (id === 'newColumn') {
+        return state.mergeIn(['columnById', id], {
+            flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
+            value,
+            id
         });
     }
-    return state.mergeIn(['columnById', columnId], {
-        flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
+    return state.mergeIn(['columnById', id], {
+        flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
         hasNewEntries: false
     });
 };
@@ -54,11 +56,12 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     });
 };
 
-const entryMoreIterator = (state, { columnId }) => {
-    if (!columnId || !state.getIn(['columnById', columnId])) {
+const entryMoreIterator = (state, { column }) => {
+    const { id } = column;
+    if (!id || !state.getIn(['columnById', id])) {
         return state;
     }
-    return state.mergeIn(['columnById', columnId, 'flags'], { fetchingMoreEntries: true });
+    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreEntries: true });
 };
 
 const entryMoreIteratorError = (state, { request }) => {

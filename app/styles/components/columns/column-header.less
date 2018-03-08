@@ -2,12 +2,15 @@
 
 .column-header {
     height: 100%;
+    position: relative;
     &-wrapper {
         flex: 0 0 auto;
         height: 50px;
         width: 100%;
         padding: 0px 6px;
-        cursor: pointer;
+        &_draggable {
+            cursor: pointer;
+        }
         &__icon {
             flex: 0 0 auto;
             width: 16px;

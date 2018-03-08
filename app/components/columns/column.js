@@ -12,17 +12,21 @@ import {
     profileFollowersIterator, profileFollowingsIterator, profileMoreFollowingsIterator,
     profileMoreFollowersIterator
 } from '../../local-flux/actions/profile-actions';
+import { searchProfiles, searchTags, searchResetResults } from '../../local-flux/actions/search-actions';
 import {
     selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
     selectLoggedEthAddress, selectProfileEntriesFlags, selectFetchingFollowers, selectFetchingMoreFollowers,
     selectFollowers, selectProfileEntries, selectMoreFollowers, selectFetchingFollowings,
-    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings, selectListsAll
+    selectFetchingMoreFollowings, selectFollowings, selectMoreFollowings, selectListsAll,
+    selectTagSearchResults, selectProfileSearchResults, selectProfileExists, selectTagExists,
 } from '../../local-flux/selectors';
 import * as dragItemTypes from '../../constants/drag-item-types';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
+import { DataLoader } from '../';
 import dropBox from './column-dropBox';
 import getColumnPropsByType from './column-props-by-type';
+import ColumnEmptyPlaceholder from './column-empty-placeholder';
 
 const Column = ({
     onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
@@ -39,11 +43,12 @@ const Column = ({
         },
         iconType: 'entries',
         title: column ? column.value : null,
+        readOnly,
         ...other
     });
     return (
       <ColumnHeader
-        readOnly={readOnly}
+        readOnly={passedProps.readOnly}
         column={passedProps.column}
         columnIndex={other.columnIndex}
         onRefresh={passedProps.onColumnRefresh}
@@ -55,7 +60,21 @@ const Column = ({
         title={passedProps.title}
         draggable={other.draggable}
         noMenu={passedProps.noMenu}
+        dataSource={passedProps.dataSource}
+        onSearch={passedProps.onSearch}
       >
+        {passedProps.fetching && passedProps.column.entriesList.size === 0 &&
+          <DataLoader
+            flag
+            timeout={500}
+          />
+        }
+        {(!passedProps.column || passedProps.column.entriesList.size === 0) && !passedProps.fetching &&
+          <ColumnEmptyPlaceholder
+            type={type}
+            intl={passedProps.intl}
+          />
+        }
         <ColManager {...passedProps} />
       </ColumnHeader>
     );
@@ -86,7 +105,7 @@ const mapStateToProps = (state, ownProps) => {
         hideEntrySettings: selectHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingClaims: selectAllPendingClaims(state),
-        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
+        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', (ownProps.column ? ownProps.column.id : ownProps.type)]),
         pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byEthAddress'),
         searchQuery: state.searchState.get('query'),
@@ -103,7 +122,11 @@ const mapStateToProps = (state, ownProps) => {
         fetchingMoreFollowings: selectFetchingMoreFollowings(state, ethAddress),
         followings: selectFollowings(state, ethAddress),
         moreFollowings: selectMoreFollowings(state, ethAddress),
-        lists: selectListsAll(state)
+        lists: selectListsAll(state),
+        tagSearchResults: selectTagSearchResults(state),
+        profileSearchResults: selectProfileSearchResults(state),
+        profileExists: selectProfileExists(state),
+        tagExists: selectTagExists(state)
     };
 };
 
@@ -124,6 +147,9 @@ const mapDispatchToProps = {
     profileFollowingsIterator,
     profileMoreFollowingsIterator,
     entryPageShow,
+    searchProfiles,
+    searchTags,
+    searchResetResults
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DropTarget(

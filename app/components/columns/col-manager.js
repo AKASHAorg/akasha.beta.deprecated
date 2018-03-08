@@ -23,44 +23,98 @@ class ColManager extends Component {
         this.lastScrollTop = {};
         this._debouncedScroll = throttle(this._handleScroll, 150, { trailing: true });
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
+        this.poolingInterval = null;
+        this.poolingTimeout = null;
+        this.poolingDelay = 60000;
     }
 
     componentWillMount = () => {
-        const { column, isVisible } = this.props;
+        const { column, isVisible, fetching } = this.props;
         const { id } = column;
         this.lastScrollTop[id] = 0;
-        if (column.entriesList.size === 0 && !this.loadingMore.includes(column.id) && isVisible) {
+        const shouldRequestItems = column.entriesList.size === 0 &&
+            !this.loadingMore.includes(column.id) && isVisible;
+        if (typeof onItemPooling === 'function' && !this.poolingInterval) {
+            this._createRequestPooling();
+        }
+        if (shouldRequestItems && !fetching) {
             this.props.onItemRequest(column);
             this.loadingMore.push(column.id);
         } else {
             this._mapItemsToState(column.entriesList);
         }
     }
+
     componentDidMount = () => {
-        const { id } = this.props.column;
+        const { column, onItemPooling } = this.props;
+        const { id } = column;
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         window.addEventListener('resize', this._debouncedResize);
+        if (typeof onItemPooling === 'function' && !this.poolingInterval) {
+            this._createRequestPooling();
+        }
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
             this._updateOffsets(this.lastScrollTop[id]);
         }
     }
 
+    _createRequestPooling = () => {
+        this.interval = setInterval(() => {
+            this.props.onItemPooling(this.props.column);
+        }, this.poolingDelay);
+    }
+
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.topIndexTo !== this.state.topIndexTo ||
-        !nextProps.column.equals(this.props.column);
+        !nextProps.column.equals(this.props.column) ||
+        nextProps.ethAddress !== this.props.ethAddress ||
+        !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
+    }
+
+    _clearIntervals = () => {
+        const { onItemPooling } = this.props;
+        if (typeof onItemPooling === 'function') {
+            if (this.poolingInterval) {
+                clearInterval(this.poolingInterval);
+            }
+            this.timeout = setTimeout(this._createRequestPooling, this.poolingDelay);
+        }
     }
 
     componentWillReceiveProps = (nextProps) => {
-        const { column, isVisible } = nextProps;
+        const { column, isVisible, ethAddress, fetching } = nextProps;
         const { entriesList, id } = column;
         const oldItems = this.props.column.entriesList;
-        if (entriesList.size === 0 && !this.loadingMore.includes(column.id) && isVisible) {
+        const oldEthAddress = this.props.ethAddress;
+        const isNewColumn = (ethAddress !== oldEthAddress) ||
+            (nextProps.column.value !== this.props.column.value);
+        const shouldRequestItems = entriesList.size === 0 &&
+            !this.loadingMore.includes(column.id) && isVisible && !this.props.fetching;
+        if (isNewColumn) {
+            this.items = [];
+            this.itemCount = 0;
+            this.lastScrollTop[id] = 0;
+            this.setState({
+                topIndexTo: 0
+            });
+        }
+        if ((isNewColumn || shouldRequestItems) && !fetching) {
             this.props.onItemRequest(column);
+            this._clearIntervals();
             this.loadingMore.push(column.id);
         } else if (entriesList.size !== oldItems.size) {
             this._mapItemsToState(entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
+        }
+    }
+
+    componentWillUnmount () {
+        if (this.poolingInterval) {
+            clearInterval(this.poolingInterval);
+        }
+        if (this.poolingTimeout) {
+            clearTimeout(this.poolingTimeout);
         }
     }
 
@@ -94,9 +148,9 @@ class ColManager extends Component {
     // load more entries
     _loadMoreIfNeeded = () => {
         const { props } = this;
-        const { onItemMoreRequest, column, isVisible } = props;
+        const { onItemMoreRequest, column, isVisible, fetchingMore } = props;
         const { id } = column;
-        if (!this.loadingMore.includes(id) && isVisible) {
+        if (!this.loadingMore.includes(id) && isVisible && !fetchingMore) {
             onItemMoreRequest(column);
             this.loadingMore.push(id);
         }
@@ -238,6 +292,7 @@ class ColManager extends Component {
                         entry,
                         author,
                         profile,
+                        isPending: other.pendingEntries && other.pendingEntries.get(item.id)
                     })}
                   </CellManager>
                 );
@@ -267,6 +322,11 @@ ColManager.propTypes = {
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,
     isVisible: PropTypes.bool,
+    ethAddress: PropTypes.string,
+    fetching: PropTypes.bool,
+    fetchingMore: PropTypes.bool,
+    onItemPooling: PropTypes.func,
+    pendingEntries: PropTypes.shape(),
 };
 
 export default ColManager;

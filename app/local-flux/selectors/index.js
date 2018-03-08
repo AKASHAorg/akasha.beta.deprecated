@@ -68,8 +68,7 @@ export const selectColumn = (state, columnId) => state.dashboardState.getIn(['co
 
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
-        .getIn(['columnById', columnId, 'entriesList'])
-        .map(id => selectEntry(state, id));
+        .getIn(['columnById', columnId, 'entriesList']);
 
 export const selectColumnFirstBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'firstBlock']);

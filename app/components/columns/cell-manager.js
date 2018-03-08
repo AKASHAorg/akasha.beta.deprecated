@@ -6,12 +6,16 @@ class CellManager extends Component {
 
     componentDidMount () {
         const { onMount } = this.props;
-        this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
-        onMount(this.baseNodeSize);
+        if (this._baseNodeRef) {
+            this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+            onMount(this.baseNodeSize);
+        }
     }
 
     componentWillUpdate () {
-        this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+        if (this._baseNodeRef) {
+            this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+        }
     }
 
     componentDidUpdate () {
