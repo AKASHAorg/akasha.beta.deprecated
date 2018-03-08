@@ -1,25 +1,10 @@
 import XRegExp from 'xregexp';
 import { isEmpty } from 'ramda';
 /* eslint-disable no-bitwise */
-export const genId = () => {
-    const chars = '0123456789abcdef'.split('');
-    const uuid = [];
-    const rnd = Math.random;
-    let r;
-    uuid[8] = '-';
-    uuid[13] = '-';
-    uuid[18] = '-';
-    uuid[23] = '-';
-    uuid[14] = '4'; // v4
-
-    for (let i = 0; i < 36; i++) {
-        if (!uuid[i]) {
-            r = 0 | rnd() * 16;
-            uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r & 0xf];
-        }
-    }
-    return uuid.join('');
-};
+export const genId = () =>
+    ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
 /* eslint-enable no-bitwise */
 
 export const calculateReadingTime = (wordCount = 0, options = {}) => {
