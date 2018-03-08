@@ -271,7 +271,7 @@
     "files": [
       "dist",
       "!main/",
-        "!main/**/*",
+      "!main/**/*",
       "!**/node_modules/babel-*",
       "!test${/*}*",
       "!app/**/*",
