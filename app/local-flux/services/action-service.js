@@ -1,11 +1,11 @@
-import actionCollection from './db/action';
+import { getActionCollection } from './db/dbs';
 import * as actionStatus from '../../constants/action-status';
+import * as actionTypes from '../../constants/action-types';
 
 export const deleteAction = id =>
     new Promise((resolve, reject) => {
         try {
-            console.log('deleteAction');
-            actionCollection.findAndRemove({id: id});
+            getActionCollection().findAndRemove({id: id});
             resolve();
         } catch (error) {
             reject(error);
@@ -15,8 +15,7 @@ export const deleteAction = id =>
 export const getActionByTx = tx =>
     new Promise((resolve, reject) => {
         try {
-            console.log('getActionByTx');
-            const record = actionCollection.findOne({tx: tx});
+            const record = getActionCollection().findOne({tx: tx});
             resolve(record.id);
         } catch (error) {
             reject(error);
@@ -26,13 +25,13 @@ export const getActionByTx = tx =>
 export const getActionsByType = request =>
     new Promise((resolve, reject) => {
         try {
-            console.log('getActionsByType');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     ethAddress: request.ethAddress,
                     type: {'$in': request.type}
                 })
-                .simplesort('created', false);
+                .simplesort('created', true);
             resolve(records.data());
         } catch (error) {
             reject(error);
@@ -42,12 +41,12 @@ export const getActionsByType = request =>
 export const getAllHistory = (ethAddress, offset, limit) =>
     new Promise((resolve, reject) => {
         try {
-            console.log('getAllHistory');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     ethAddress: ethAddress
                 })
-                .simplesort('created', false)
+                .simplesort('created', true)
                 .offset(offset)
                 .limit(limit);
             resolve(records.data());
@@ -59,8 +58,8 @@ export const getAllHistory = (ethAddress, offset, limit) =>
 export const getClaimable = request =>
     new Promise((resolve, reject) => {
         try {
-            console.log('getClaimable');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     ethAddress: request.ethAddress,
                     type: {'$in': request.type},
@@ -76,13 +75,13 @@ export const getClaimable = request =>
 export const getPendingActions = ethAddress =>
     new Promise((resolve, reject) => {
         try {
-            console.log('getPendingActions');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     ethAddress: ethAddress,
-                    type: actionStatus.publishing
+                    status: actionStatus.publishing
                 })
-                .simplesort('created', false);
+                .simplesort('created', true);
             resolve(records.data());
         } catch (error) {
             reject(error);
@@ -92,10 +91,16 @@ export const getPendingActions = ethAddress =>
 export const saveAction = action =>
     new Promise((resolve, reject) => {
         try {
-            console.log('saveAction');
-            actionCollection.insert(
-                Object.assign({}, { created: (new Date()).getTime() }, action)
-            );
+            const record = getActionCollection().findOne({id: action.id});
+            if(!record) {
+                getActionCollection().insert(
+                    Object.assign({}, { created: (new Date()).getTime() }, action)
+                );
+            }else {
+                getActionCollection().chain().find({id: action.id}).update(result => {
+                    Object.assign(result, action);
+                })
+            }
             resolve();
         } catch (error) {
             reject(error);
@@ -105,11 +110,11 @@ export const saveAction = action =>
 export const updateClaimAction = (ethAddress, entryId) =>
     new Promise((resolve, reject) => {
         try {
-            console.log('updateClaimAction');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     ethAddress: ethAddress,
-                    type: actionStatus.draftPublish
+                    type: actionTypes.draftPublish
                 })
                 .where(obj => obj.payload.entryId === entryId)
                 .update(action => action.claimed = true);
@@ -122,17 +127,17 @@ export const updateClaimAction = (ethAddress, entryId) =>
 export const updateClaimVoteAction = (ethAddress, entryId) =>
     new Promise((resolve, reject) => {
         try {
-            console.log('updateClaimVoteAction');
-            const records = actionCollection
+            const records = getActionCollection()
+                .chain()
                 .find({
                     '$or': [
                         {
                             ethAddress: ethAddress,
-                            type: actionStatus.entryDownvote
+                            type: actionTypes.entryDownvote
                         },
                         {
                             ethAddress: ethAddress,
-                            type: actionStatus.entryUpvote
+                            type: actionTypes.entryUpvote
                         }]
                 })
                 .where(obj => obj.payload.entryId === entryId)
