@@ -44,6 +44,7 @@ class EntryList extends Component {
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,
             loggedEthAddress, masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes,
             placeholderMessage, profiles, style, searchQuery, searching } = this.props;
+
         const entryCards = entries && entries.map((entry) => {
             if (!entry) {
                 return null;
@@ -97,13 +98,16 @@ class EntryList extends Component {
                     <div
                       className="entry-list__search-placeholder-inner"
                     >
-                      <div className="entry-list__search-placeholder_image" />
-                      <div className="entry-list__search-placeholder_text">
-                        {(searchQuery.length === 0) && intl.formatMessage(generalMessages.startTypingToSearch)}
-                        {(searchQuery.length > 0) && (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
-                            searchTerm: searchQuery,
-                            resource: intl.formatMessage(entryMessages.entries)
-                        }))}
+                      <div className="entry-list__placeholder_image" />
+                      <div className="entry-list__placeholder_text">
+                        {(searchQuery.length === 0) &&
+                            intl.formatMessage(generalMessages.startTypingToSearch)}
+                        {(searchQuery.length > 0) &&
+                            (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
+                                searchTerm: searchQuery,
+                                resource: intl.formatMessage(entryMessages.entries)
+                            }))
+                        }
                       </div>
                     </div>
                   </div>
