@@ -43,6 +43,8 @@ const getColumnPropsByType = ({
                 onItemMoreRequest: other.entryMoreListIterator,
                 title: other.lists.find(lst => lst.get('id') === column.get('value')).get('name') || ' ',
                 onColumnRefresh: other.entryMoreListIterator,
+                dataSource: other.lists,
+                entries: other.entries
             };
             break;
         case columnTypes.tag:

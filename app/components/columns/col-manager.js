@@ -103,7 +103,7 @@ class ColManager extends Component {
             this.props.onItemRequest(column);
             this._clearIntervals();
             this.loadingMore.push(column.id);
-        } else if (entriesList.size !== oldItems.size) {
+        } else if (!entriesList.equals(oldItems)) {
             this._mapItemsToState(entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
@@ -258,6 +258,7 @@ class ColManager extends Component {
         const { topIndexTo } = state;
         const { column, baseWidth, type, ...other } = props;
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
+        // console.log(items, 'the column');
         return (
           <div
             onScroll={this._debouncedScroll}
