@@ -4,17 +4,38 @@ import { injectIntl } from 'react-intl';
 import * as columnTypes from '../../constants/columns';
 import { Column } from '../';
 
-const ProfileActivity = ({ ethAddress }) => (
+const ProfileActivity = ({ ethAddress, intl }) => (
   <div className="profile-activity" id="profile-activity">
     <div className="profile-activity__column" id="profile-entries">
-      <Column ethAddress={ethAddress} type={columnTypes.profileEntries} />
+      <Column
+        readOnly
+        intl={intl}
+        ethAddress={ethAddress}
+        type={columnTypes.profileEntries}
+        isVisible
+        noMenu
+      />
     </div>
     <div className="profile-activity__column" id="profile-followers">
-      <Column ethAddress={ethAddress} type={columnTypes.profileFollowers} />
+      <Column
+        readOnly
+        intl={intl}
+        ethAddress={ethAddress}
+        type={columnTypes.profileFollowers}
+        isVisible
+        noMenu
+      />
     </div>
     <div>
       <div className="profile-activity__column" id="profile-followings">
-        <Column ethAddress={ethAddress} type={columnTypes.profileFollowings} />
+        <Column
+          readOnly
+          intl={intl}
+          ethAddress={ethAddress}
+          type={columnTypes.profileFollowings}
+          isVisible
+          noMenu
+        />
       </div>
     </div>
   </div>
@@ -22,6 +43,7 @@ const ProfileActivity = ({ ethAddress }) => (
 
 ProfileActivity.propTypes = {
     ethAddress: PropTypes.string,
+    intl: PropTypes.shape(),
 };
 
 export default injectIntl(ProfileActivity);

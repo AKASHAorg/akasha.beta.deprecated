@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Carousel, Modal } from 'antd';
 import { Dashboard, DataLoader } from '../components';
 import { dashboardCreateNew, dashboardHideTutorial, dashboardSetActive,
-    dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
+    dashboardUpdateNewColumn, dashboardReorderColumn } from '../local-flux/actions/dashboard-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
@@ -106,6 +106,7 @@ class DashboardPage extends Component {
                   getDashboardRef={this.getDashboardRef}
                   navigateRight={this.navigateRight}
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
+                  dashboardReorderColumn={this.props.dashboardReorderColumn}
                 />
               </div>
             </DataLoader>
@@ -129,6 +130,7 @@ DashboardPage.propTypes = {
     isHidden: PropTypes.bool,
     match: PropTypes.shape(),
     newColumn: PropTypes.shape(),
+    dashboardReorderColumn: PropTypes.func,
 };
 
 function mapStateToProps (state) {
@@ -152,5 +154,6 @@ export default connect(
         dashboardHideTutorial,
         dashboardSetActive,
         dashboardUpdateNewColumn,
+        dashboardReorderColumn,
     }
 )(injectIntl(DashboardPage));
