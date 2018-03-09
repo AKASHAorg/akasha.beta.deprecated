@@ -224,11 +224,7 @@
   "dependencies": {
     "@akashaproject/contracts.js": "1.3.11",
     "@akashaproject/geth-connector": "1.7.30",
-<<<<<<< HEAD
     "@akashaproject/ipfs-connector": "1.10.19",
-=======
-    "@akashaproject/ipfs-connector": "1.10.18",
->>>>>>> chore(sagas): updates
     "archiver": "2.1.1",
     "bluebird": "3.5.1",
     "bs58": "4.0.1",
