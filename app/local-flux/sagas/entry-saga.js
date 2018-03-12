@@ -8,14 +8,15 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
-    selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
-    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
+import { selectBlockNumber, selectListEntries, selectListEntryType, selectIsFollower,
+    selectListNextEntries, selectLoggedEthAddress, selectProfileEntriesLastBlock,
+    selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 3;
+const ALL_STREAM_MORE_LIMIT = 5;
 const ENTRY_ITERATOR_LIMIT = 3;
 const ENTRY_LIST_ITERATOR_LIMIT = 3;
 
@@ -217,37 +218,37 @@ function* entryGetVoteOf ({ entryIds }) {
     yield apply(channel, channel.send, [request]);
 }
 
-function* entryListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+function* entryListIterator ({ column }) {
+    const { id, value, limit = ENTRY_LIST_ITERATOR_LIMIT } = column;
     const collection = yield select(state => selectListEntries(state, value, limit));
-    yield call(entryGetExtraOfList, collection, columnId);
-    yield put(actions.entryListIteratorSuccess({ collection }, { columnId, value, limit }));
+    yield call(entryGetExtraOfList, collection, id);
+    yield put(actions.entryListIteratorSuccess({ collection }, { columnId: id, value, limit }));
 }
 
-function* entryMoreListIterator ({ columnId, value, limit = ENTRY_LIST_ITERATOR_LIMIT }) {
+function* entryMoreListIterator ({ column }) {
+    const { value, id, limit = ENTRY_LIST_ITERATOR_LIMIT } = column;
     const collection = yield select(state => selectListNextEntries(state, value, limit));
-    yield call(entryGetExtraOfList, collection, columnId);
-    yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId, value, limit }));
+    yield call(entryGetExtraOfList, collection, id);
+    yield put(actions.entryMoreListIteratorSuccess({ collection }, { columnId: id, value, limit }));
 }
 
-function* entryMoreNewestIterator ({ columnId }) {
+function* entryMoreNewestIterator ({ column }) {
     const channel = Channel.server.entry.allStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const { id, lastIndex, lastBlock } = column;
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ALL_STREAM_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId: id, limit: ALL_STREAM_MORE_LIMIT, toBlock: lastBlock, lastIndex, more: true }]
     );
 }
 
-function* entryMoreProfileIterator ({ columnId, value }) {
+function* entryMoreProfileIterator ({ column }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const isProfileEntries = columnId === 'profileEntries';
-    const toBlock = !isProfileEntries ?
-        yield select(state => selectColumnLastBlock(state, columnId)) :
+    const { id, value, lastBlock, lastIndex } = column;
+    const isProfileEntries = id === 'profileEntries';
+    const toBlock = !isProfileEntries ? lastBlock :
         yield select(state => selectProfileEntriesLastBlock(state, value));
-    const lastIndex = !isProfileEntries ?
-        yield select(state => selectColumnLastIndex(state, columnId)) :
+    const colLastIndex = !isProfileEntries ? lastIndex :
         yield select(state => selectProfileEntriesLastIndex(state, value));
     let akashaId, ethAddress, totalLoaded; // eslint-disable-line
     if (isEthAddress(value)) {
@@ -259,51 +260,59 @@ function* entryMoreProfileIterator ({ columnId, value }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, totalLoaded, more: true }]
+        [{
+            columnId: id, ethAddress,
+            akashaId, limit: ENTRY_ITERATOR_LIMIT,
+            toBlock, lastIndex: colLastIndex, totalLoaded,
+            more: true
+        }]
     );
 }
 
-function* entryMoreStreamIterator ({ columnId }) {
+function* entryMoreStreamIterator ({ column }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const { lastBlock, lastIndex, id } = column;
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId: id, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock: lastBlock, lastIndex, more: true }]
     );
 }
 
-function* entryMoreTagIterator ({ columnId, value }) {
+function* entryMoreTagIterator ({ column }) {
     const channel = Channel.server.entry.entryTagIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
-    const lastIndex = yield select(state => selectColumnLastIndex(state, columnId));
+    const { id, value, lastBlock, lastIndex } = column;
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
+        [{
+            columnId: id,
+            limit: ENTRY_ITERATOR_LIMIT,
+            toBlock: lastBlock,
+            lastIndex,
+            tagName: value,
+            more: true
+        }]
     );
 }
 
-function* entryNewestIterator ({ columnId, reversed }) {
+function* entryNewestIterator ({ column }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
-    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
+    const { id, firstBlock, reversed } = column;
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
+    yield apply(channel, channel.send, [{ columnId: id, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts, reversed }) {
+function* entryProfileIterator ({ column }) {
+    const { id, value, firstBlock, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     let akashaId, ethAddress; // eslint-disable-line
     if (isEthAddress(value)) {
         ethAddress = value;
@@ -313,7 +322,7 @@ function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT,
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
+        [{ columnId: id, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
     );
 }
 
@@ -327,31 +336,29 @@ function* entryResolveIpfsHash ({ entryId, ipfsHash }) {
     );
 }
 
-function* entryStreamIterator ({ columnId, reversed }) {
+function* entryStreamIterator ({ column }) {
     const channel = Channel.server.entry.followingStreamIterator;
+    const { id, firstBlock, reversed } = column;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, reversed }]
+        [{ columnId: id, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, reversed }]
     );
 }
 
-function* entryTagIterator ({ columnId, value, reversed }) {
+function* entryTagIterator ({ column }) {
+    const { id, value, firstBlock, reversed } = column;
     yield put(tagActions.tagExists({ tagName: value }));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock, reversed }]
+        [{ columnId: id, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock, reversed }]
     );
 }
 
@@ -623,13 +630,13 @@ function* handleEntryNewestIteratorResponse (resp) {
         }
     } else {
         const { columnId, reversed } = resp.request;
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId);
-        }
         if (resp.request.more) {
             yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
         } else {
             yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
+        }
+        if (!reversed) {
+            yield call(entryGetExtraOfList, resp.data.collection, columnId);
         }
     }
 }
