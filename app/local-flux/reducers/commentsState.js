@@ -5,9 +5,10 @@ import {createReducer} from './create-reducer';
 import {CommentAuthor, CommentRecord, CommentsState} from './records';
 
 const initialState = new CommentsState();
+const hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 const createCommentWithAuthor = (comment) => {
-    if (!comment.parent) {
+    if (!comment.parent || comment.parent === hexZero) {
         comment.parent = '0';
     }
     return new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
@@ -109,7 +110,7 @@ const commentsState = createReducer(initialState, {
         const parent = request.parent;
         let newState = state;
         data.collection.forEach((comm) => {
-            if (comm.parent === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+            if (!comm.parent || comm.parent === hexZero) {
                 comm.parent = '0';
             }
             let list = newState.getIn(['byParent', comm.parent]) || new List();
@@ -123,7 +124,6 @@ const commentsState = createReducer(initialState, {
                 byParent: newState.get('byParent').set(comm.parent, list)
             });
         });
-
 
         return newState.merge({
             flags: state.get('flags').setIn(['fetchingComments', parent], false),
@@ -164,7 +164,10 @@ const commentsState = createReducer(initialState, {
         let newestCommentBlock = state.get('newestCommentBlock');
         newComments.forEach((id) => {
             const comment = state.getIn(['byId', id]);
-            const parent = comment.get('parent') || '0';
+            let parent = comment.get('parent');
+            if (!parent || parent === hexZero) {
+                parent = '0';
+            }
             const list = sortByScore(byId, byParent.get(parent).push(id));
             byParent = byParent.set(parent, list);
             newestCommentBlock = newestCommentBlock.set(parent, state.getIn(['newComments', 'lastBlock']));
@@ -228,9 +231,6 @@ const commentsState = createReducer(initialState, {
             flags: state.get('flags').setIn(['resolvingComments', data.ipfsHash], false)
         });
     },
-
-    // when requesting a new entry, clear comments in the store
-    [types.ENTRY_GET_FULL]: () => initialState,
 });
 
 export default commentsState;

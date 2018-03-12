@@ -5,12 +5,30 @@
     width: 100%;
     overflow-x: auto;
     background-color: @light-background;
-    
+    position: relative;
     &__column {
         flex: 0 0 auto;
         border-radius: 4px;
         margin-right: 12px;
         background-color: @background;
+        position: absolute;
+        top: 20px;
+        bottom: 0;
+        &_dragging {
+            .column-header {
+                opacity: 0;
+            }
+            // &:after {
+            //     opacity: 1;
+            //     content: " ";
+            //     position: absolute;
+            //     height: 100%;
+            //     width: 100%;
+            //     top: 0;
+            //     left: 0;
+            //     background-color: @background;
+            // }
+        }
     }
 
     &__empty-placeholder {
@@ -27,7 +45,7 @@
         background: url('../../images/placeholders/NoBoards-EmptyState-LightTheme.png') top center no-repeat;
 
         &_dark {
-            background: url('../../images/placeholders/NoBoards-EmptyState-DarkTheme.png') top center no-repeat;            
+            background: url('../../images/placeholders/NoBoards-EmptyState-DarkTheme.png') top center no-repeat;
         }
     }
 
