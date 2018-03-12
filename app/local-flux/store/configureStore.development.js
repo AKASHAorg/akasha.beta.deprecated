@@ -1,10 +1,12 @@
 import { createStore, applyMiddleware, compose } from 'redux';
+import { persistState } from 'redux-devtools';
+import thunk from 'redux-thunk';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
 import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(
-    applyMiddleware(sagaMiddleware),
+    applyMiddleware(thunk, sagaMiddleware),
     global.devToolsExtension ?
         global.devToolsExtension({ actionCreators }) :
         noop => noop,

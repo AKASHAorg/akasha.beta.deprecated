@@ -1,109 +1,98 @@
-@column-header-height: 50px;
-
 .column-header {
-    height: 100%;
-    position: relative;
-    &-wrapper {
+    flex: 0 0 auto;
+    height: 50px;
+    width: 100%;
+    padding: 0px 6px;
+
+    &__icon {
         flex: 0 0 auto;
-        height: 50px;
-        width: 100%;
-        padding: 0px 6px;
-        &_draggable {
-            cursor: pointer;
-        }
-        &__icon {
-            flex: 0 0 auto;
-            width: 16px;
-            height: 16px;
-            margin-right: 10px;
-        }
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
 
-        &__refresh-icon {
-            position: relative;
-            flex: 0 0 auto;
-            margin-right: 5px;
-            width: 22px;
-            height: 22px;
-            padding: 3px;
-        }
+    &__refresh-icon {
+        position: relative;
+        flex: 0 0 auto;
+        margin-right: 5px;
+        width: 22px;
+        height: 22px;
+        padding: 3px;
+    }
 
-        &__new-entries {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 6px;
-            height: 6px;
-            background-color: @primary-color;
-            border-radius: 50%;
-        }
+    &__new-entries {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 6px;
+        height: 6px;
+        background-color: @primary-color;
+        border-radius: 50%;
+    }
 
-        &__menu-icon {
-            flex: 0 0 auto;
-            height: 18px;
-            width: 22px;
-            padding: 4px;
-            fill: @text-color;
-            stroke: initial !important;
-        }
+    &__menu-icon {
+        flex: 0 0 auto;
+        height: 18px;
+        width: 22px;
+        padding: 4px;
+        fill: @text-color;
+        stroke: initial !important;
+    }
 
-        &__title-wrapper {
-            flex: 1 1 auto;
-            max-width: ~'calc(100% - 68px)';
-            padding: 0 5px;
-            &_no-icon {
-                max-width: 100%;
-            }
-        }
+    &__title-wrapper {
+        flex: 1 1 auto;
+        max-width: ~'calc(100% - 79px)';
 
-        &__title {
-            color: @heading-color;
-            font-weight: 500;
-            max-width: 290px;
-            user-select: none;
-            &_large {
-                max-width: 470px;
-            }
-        }
-
-        &__auto-complete {
-            background-color: transparent;
-            width: 100%;
-
-            .ant-select-selection {
-                background-color: transparent;
-            }
-        }
-
-        &__select {
-            width: 100%;
-            background-color: transparent;
-            color: @heading-color;
-            font-weight: 500;
-
-            .ant-select-selection.ant-select-selection--single {
-                background-color: transparent;
-            }
-        }
-
-        &__input {
-            border: none;
-            outline: none;
-            background-color: transparent;
-            color: @heading-color;
-            font-weight: 500;
-            position: relative;
-            top: 1px;
-        }
-
-        &__reset-icon {
-            width: 22px;
-            height: 22px;
-            padding: 4px;
-            color: @heading-color;
+        &_no-icon {
+            max-width: 100%;
         }
     }
-    .column-manager {
-        height: ~"calc(100% - @{column-header-height})";
-        overflow-y: auto;
+
+    &__title {
+        color: @heading-color;
+        font-weight: 500;
+        cursor: default;
+        max-width: 290px;
+
+        &_large {
+            max-width: 470px;
+        }
+    }
+
+    &__auto-complete {
+        background-color: transparent;
+        width: 100%;
+
+        .ant-select-selection {
+            background-color: transparent;
+        }
+    }
+
+    &__select {
+        width: 100%;
+        background-color: transparent;
+        color: @heading-color;
+        font-weight: 500;
+        
+        .ant-select-selection.ant-select-selection--single {
+            background-color: transparent;
+        }
+    }
+
+    &__input {
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: @heading-color;
+        font-weight: 500;
+        position: relative;
+        top: 1px;
+    }
+
+    &__reset-icon {
+        width: 22px;
+        height: 22px;
+        padding: 4px;
+        color: @heading-color;
     }
 }

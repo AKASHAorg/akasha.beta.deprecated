@@ -227,7 +227,8 @@ class ProfileEditForm extends Component {
                 return onProfileUpdate(
                     tempProfile.set('avatar', avatarIpfs)
                 );
-            });
+            }
+            );
         });
     }
 

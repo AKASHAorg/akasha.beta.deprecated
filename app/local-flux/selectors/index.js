@@ -68,7 +68,8 @@ export const selectColumn = (state, columnId) => state.dashboardState.getIn(['co
 
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
-        .getIn(['columnById', columnId, 'entriesList']);
+        .getIn(['columnById', columnId, 'entriesList'])
+        .map(id => selectEntry(state, id));
 
 export const selectColumnFirstBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'firstBlock']);
@@ -173,19 +174,19 @@ export const selectFetchingMoreHistory = state => state.actionState.getIn(['flag
 export const selectFirstComment = state => state.commentsState.get('firstComm');
 
 export const selectFollowers = (state, ethAddress) => {
-    return state.profileState.getIn(['followers', ethAddress]);
-    // if (followers) {
-    //     return followers.map(ethAddr => selectProfile(state, ethAddr));
-    // }
-    // return new List();
+    const followers = state.profileState.getIn(['followers', ethAddress]);
+    if (followers) {
+        return followers.map(ethAddr => selectProfile(state, ethAddr));
+    }
+    return new List();
 };
 
 export const selectFollowings = (state, ethAddress) => {
-    return state.profileState.getIn(['followings', ethAddress]);
-    // if (followings) {
-    //     return followings.map(ethAddr => selectProfile(state, ethAddr));
-    // }
-    // return new List();
+    const followings = state.profileState.getIn(['followings', ethAddress]);
+    if (followings) {
+        return followings.map(ethAddr => selectProfile(state, ethAddr));
+    }
+    return new List();
 };
 
 export const selectFullEntry = state =>
@@ -385,7 +386,8 @@ export const selectProfileEditToggle = state =>
     state.appState.get('showProfileEditor');
 
 export const selectProfileEntries = (state, ethAddress) =>
-    state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']);
+    (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']) || new List())
+        .map(entryId => selectEntry(state, entryId));
 
 export const selectProfileEntriesFlags = (state, ethAddress) => {
     const profileEntries = state.entryState.getIn(['profileEntries', ethAddress]);
