@@ -1,5 +1,6 @@
 import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter';
+import * as Promise from 'bluebird';
 import actionCollection from './action';
 import dashboardCollection from './dashboard';
 import entriesCollection from './entry';

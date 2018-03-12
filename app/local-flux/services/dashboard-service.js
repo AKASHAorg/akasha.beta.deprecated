@@ -1,5 +1,6 @@
 import { getDashboardCollection } from './db/dbs';
 import {genId} from '../../utils/dataModule';
+import * as Promise from 'bluebird';
 
 export const addColumn = ({ dashboardId, type, value }) =>
     new Promise((resolve, reject) => {

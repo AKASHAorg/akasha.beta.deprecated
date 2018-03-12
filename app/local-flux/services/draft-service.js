@@ -1,40 +1,34 @@
-import entriesDB from './db/entry';
+import {getEntriesCollection} from './db/dbs';
+import {genId} from '../../utils/dataModule';
+import * as Promise from 'bluebird';
 
 export const draftModify = (draft) => {
-    const { id, ...changes } = draft;
-    return entriesDB.drafts
-        .where('id')
-        .equals(id)
-        .modify(changes)
-        .then(() => draft);
+    const {id, ...changes} = draft;
+    try {
+        const modified = getEntriesCollection()
+            .findAndUpdate({id: id}, (rec) => Object.assign(rec, changes));
+        return Promise.resolve(modified);
+    } catch (error) {
+        return Promise.reject(error);
+    }
 };
 
-export const draftCreate = draft =>
-    entriesDB.drafts
-        .add(draft)
-        .then((id) => {
-            draft.id = id;
-            return draft;
-        });
+export const draftCreate = (draft) => {
+    try {
+        const record = Object.assign({}, {id: genId()}, draft);
+        getEntriesCollection().insert(record);
+        return Promise.resolve(record);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const draftCreateOrUpdate = ({ draft }) => {
-    const { tags, id, ethAddress, content, localChanges, onChain } = draft;
-    return entriesDB.drafts
-        .where('id')
-        .equals(draft.id)
-        .first()
-        .then((draftObj) => {
-            if (!draftObj) {
-                return draftCreate({
-                    tags,
-                    id,
-                    ethAddress,
-                    content,
-                    localChanges,
-                    onChain,
-                });
-            }
-            return draftModify({
+export const draftCreateOrUpdate = ({draft}) => {
+    const {tags, id, ethAddress, content, localChanges, onChain} = draft;
+    try {
+        const draftObj = getEntriesCollection().findOne({id: draft.id});
+        if (!draftObj) {
+            return draftCreate({
                 tags,
                 id,
                 ethAddress,
@@ -42,37 +36,62 @@ export const draftCreateOrUpdate = ({ draft }) => {
                 localChanges,
                 onChain,
             });
-        })
-        .then(() => entriesDB.drafts.where('id').equals(draft.id).first())
-        .catch(ex => ex);
+        }
+        return draftModify({
+            tags,
+            id,
+            ethAddress,
+            content,
+            localChanges,
+            onChain,
+        });
+    } catch (error) {
+        return Promise.reject(error);
+    }
 };
 
-export const draftDelete = ({ draftId }) =>
-    entriesDB.drafts.where('id')
-        .equals(draftId)
-        .delete()
-        .then(() => draftId)
-        .catch(reason => reason);
+export const draftDelete = ({draftId}) => {
+    try {
+        getEntriesCollection().findAndRemove({id: draftId});
+        return Promise.resolve(draftId);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const draftsGet = ethAddress =>
-    entriesDB.drafts
-        .where('ethAddress')
-        .equals(ethAddress)
-        .toArray();
+export const draftsGet = (ethAddress) => {
+    try {
+        const records = getEntriesCollection().find({ethAddress: ethAddress});
+        return Promise.resolve(records);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const draftGetById = draftId =>
-    entriesDB.drafts
-        .where('id')
-        .equals(draftId)
-        .first();
+export const draftGetById = (draftId) => {
+    try {
+        const record = getEntriesCollection().findOne({id: draftId});
+        return Promise.resolve(record);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const draftSave = data =>
-    entriesDB.drafts.put(data.draft)
-        .then(() => data.draft);
+export const draftSave = (data) => {
+    try {
+        return draftCreate(data.draft);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const draftsGetCount = ({ ethAddress }) =>
-    entriesDB.drafts
-        .where('ethAddress')
-        .equals(ethAddress)
-        .count();
+export const draftsGetCount = ({ethAddress}) => {
+    try {
+        const count = getEntriesCollection()
+            .count({ethAddress: ethAddress});
+        return Promise.resolve(count);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
