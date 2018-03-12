@@ -1,5 +1,3 @@
-const Channel = global.Channel;
-
 // export const backupKeys = ({ target, onSuccess, onError }) => {
 //     const clientChannel = Channel.client.utils.backupKeys;
 //     const serverChannel = Channel.server.utils.backupKeys;

@@ -1,65 +1,59 @@
-import highlightDB from './db/highlight';
+import {getHighlightCollection} from './db/dbs';
+import * as Promise from 'bluebird';
 
-export const deleteHighlight = id =>
-    new Promise((resolve, reject) => {
-        highlightDB.highlights
-            .delete(id)
-            .then(resolve)
-            .catch(reject);
-    });
+export const deleteHighlight = (id) => {
+    try {
+        const removed = getHighlightCollection().findAndRemove({id: id});
+        return Promise.resolve(removed);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const editNotes = ({ id, notes }) =>
-    new Promise((resolve, reject) => {
-        highlightDB.highlights
-            .where('id')
-            .equals(id)
-            .toArray()
-            .then((data) => {
-                const highlight = data[0];
-                if (!highlight) {
-                    reject({});
-                }
-                highlight.notes = notes;
-                highlightDB.highlights
-                    .put(highlight)
-                    .then(() => resolve(highlight))
-                    .catch(resolve);
-            })
-            .catch(reject);
-    });
+export const editNotes = ({id, notes}) => {
+    try {
+        const record = getHighlightCollection()
+            .findAndUpdate({id: id}, rec => rec.notes = notes);
+        return Promise.resolve(record);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const getAll = ethAddress =>
-    new Promise((resolve, reject) => {
-        highlightDB.highlights
-            .where('ethAddress')
-            .equals(ethAddress)
-            .toArray()
-            .then(resolve)
-            .catch(reject);
-    });
+export const getAll = (ethAddress) => {
+    try {
+        const records = getHighlightCollection().find({ethAddress: ethAddress});
+        return Promise.resolve(records);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const saveHighlight = highlight =>
-    new Promise((resolve, reject) => {
-        const timestamp = new Date().getTime();
-        highlight.timestamp = timestamp;
-        highlight.id = `${timestamp}-${highlight.ethAddress}`;
-        highlightDB.highlights.put(highlight)
-            .then(() => resolve(highlight))
-            .catch(err => reject(err));
-    });
+export const saveHighlight = (highlight) => {
+    try {
+        const timestamp = (new Date()).getTime();
+        highlight['timestamp'] = timestamp;
+        highlight['id'] = `${timestamp}-${highlight.ethAddress}`;
+        getHighlightCollection().insert(highlight);
+        return Promise.resolve(highlight);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const searchHighlight = ({ ethAddress, search }) =>
-    new Promise((resolve, reject) => {
-        highlightDB.highlights
-            .where('ethAddress')
-            .equals(ethAddress)
-            .filter((highlight) => {
-                let { content = '', notes = '' } = highlight;
+export const searchHighlight = ({ethAddress, search}) => {
+    try {
+        const records = getHighlightCollection()
+            .chain()
+            .find({ethAddress: ethAddress})
+            .where(highlight => {
+                let {content = '', notes = ''} = highlight;
                 content = content.toLowerCase();
                 notes = notes.toLowerCase();
                 return content.includes(search) || notes.includes(search);
-            })
-            .toArray()
-            .then(data => resolve(data.map(highlight => highlight.id)))
-            .catch(reject);
-    });
+            }).data();
+        return Promise.resolve(records.map(highlight => highlight.id));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
