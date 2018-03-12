@@ -1,5 +1,11 @@
-import Dexie from 'dexie';
+export default {
+    collectionName : `settings-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`,
+    options : {
+        indices: ['ethAddress']
+    }
+};
 
+/**
 const dbName = `settings-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`;
 const settingsDB = new Dexie(dbName);
 settingsDB.version(1).stores({
@@ -10,3 +16,4 @@ settingsDB.version(1).stores({
 });
 
 export default settingsDB;
+**/
