@@ -1,3 +1,12 @@
+export default {
+    collectionName : `list-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`,
+    options : {
+        indices: ['ethAddress', 'date', 'id'],
+        unique: ['id']
+    }
+};
+
+/**
 import Dexie from 'dexie';
 
 const dbName = `list-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`;
@@ -7,3 +16,4 @@ listDB.version(1).stores({
 });
 
 export default listDB;
+**/

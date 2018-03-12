@@ -1,4 +1,3 @@
-import { delay } from 'redux-saga';
 import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
@@ -26,6 +25,7 @@ import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
+import { loadAkashaDB } from '../services/db/dbs';
 
 function* registerListeners () {
     yield fork(commentsSaga.registerCommentsListeners);
@@ -69,7 +69,6 @@ function* launchHomeActions () {
     yield fork(getUserSettings);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     if (loggedEthAddress) {
-        yield delay(1000);
         yield put(actionActions.actionGetPending());
         yield put(profileActions.profileFollowingsIterator({
             ethAddress: loggedEthAddress,
@@ -98,6 +97,7 @@ function* watchBootstrapHome () {
 
 export default function* rootSaga () { // eslint-disable-line max-statements
     createActionChannels();
+    yield call(loadAkashaDB);
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
