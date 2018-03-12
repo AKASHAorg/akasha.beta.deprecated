@@ -1,6 +1,7 @@
 import { getActionCollection } from './db/dbs';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
+import * as Promise from 'bluebird';
 
 export const deleteAction = id =>
     new Promise((resolve, reject) => {
