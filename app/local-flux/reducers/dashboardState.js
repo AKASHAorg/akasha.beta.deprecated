@@ -1,24 +1,22 @@
-import { List, fromJS } from 'immutable';
+import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
 
 const initialState = new DashboardState();
 
-const entryIterator = (state, { column }) => {
-    const { id, value, reversed } = column;
-    if (reversed || !id || !state.getIn(['columnById', id])) {
+const entryIterator = (state, { columnId, value, reversed }) => {
+    if (reversed || !columnId || !state.getIn(['columnById', columnId])) {
         return state;
     }
-    if (id === 'newColumn') {
-        return state.mergeIn(['columnById', id], {
-            flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
-            value,
-            id
+    if (columnId === 'newColumn') {
+        return state.mergeIn(['columnById', columnId], {
+            flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
+            value
         });
     }
-    return state.mergeIn(['columnById', id], {
-        flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
+    return state.mergeIn(['columnById', columnId], {
+        flags: state.getIn(['columnById', columnId, 'flags']).set('fetchingEntries', true),
         hasNewEntries: false
     });
 };
@@ -56,12 +54,11 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     });
 };
 
-const entryMoreIterator = (state, { column }) => {
-    const { id } = column;
-    if (!id || !state.getIn(['columnById', id])) {
+const entryMoreIterator = (state, { columnId }) => {
+    if (!columnId || !state.getIn(['columnById', columnId])) {
         return state;
     }
-    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreEntries: true });
+    return state.mergeIn(['columnById', columnId, 'flags'], { fetchingMoreEntries: true });
 };
 
 const entryMoreIteratorError = (state, { request }) => {
@@ -81,7 +78,7 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
         !!data.lastBlock;
 
     return state.mergeIn(['columnById', request.columnId], {
-        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).concat(fromJS(newIds)),
+        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).push(...newIds),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingMoreEntries: false,
             moreEntries
@@ -186,14 +183,10 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_REORDER_COLUMN]: (state, { data }) => {
         const columns = state.getIn(['byId', data.dashboardId, 'columns']);
+        const first = columns.splice(data.sourceIndex, 1);
+        const second = first.splice(data.targetIndex, 0, columns.get(data.sourceIndex));
         return state.merge({
-            byId: state.get('byId')
-                .setIn(
-                    [data.dashboardId, 'columns'],
-                    columns
-                        .delete(data.sourceIndex)
-                        .insert(data.targetIndex, columns.get(data.sourceIndex))
-                )
+            byId: state.get('byId').setIn([data.dashboardId, 'columns'], second)
         });
     },
 

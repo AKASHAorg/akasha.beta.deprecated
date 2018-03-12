@@ -17,13 +17,12 @@ import { reloadPage } from '../local-flux/actions/utils-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
-import { AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
+import { AppErrorBoundary, AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
     DashboardSecondarySidebar, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
     Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
     NotificationsPanel, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
-    ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar,
-    TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
-    AppErrorBoundary, CustomDragLayer } from '../components';
+    ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
+    ProfileSettings, WalletPanel, FullSizeImageViewer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 import { selectLoggedEthAddress } from '../local-flux/selectors/index';
 
@@ -66,6 +65,7 @@ class AppContainer extends Component {
             }
         });
     }
+
     componentWillReceiveProps (nextProps) {
         const { errorState, intl } = nextProps;
         this._bootstrapApp(nextProps);
@@ -129,11 +129,11 @@ class AppContainer extends Component {
             clearInterval(this.interval);
         }
     }
-    /* eslint-disable complexity */
-    render () {
+
+    render () { // eslint-disable-line complexity
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, history, intl,
-            location, needAuth, needEth, needAeth, needMana } = this.props;
+            location, loggedEthAddress, needAuth, needEth, needAeth, needMana } = this.props;
         /* eslint-enable no-shadow */
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
@@ -187,10 +187,7 @@ class AppContainer extends Component {
                           {isOverlay &&
                             <div>
                               <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
-                              <Route
-                                path="/0x:ethAddress/:entryId/:version?"
-                                component={EntryPageContainer}
-                              />
+                              <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
                             </div>
                           }
                         </PageContent>
@@ -219,26 +216,27 @@ class AppContainer extends Component {
                       </div>
                     </DataLoader>
                   }
-                  <Sidebar />
-                  <Route path="/setup" component={SetupPages} />
-                  <FullSizeImageViewer />
-                  <ErrorNotification />
-                  <NavigateAwayModal
-                    navigation={appState.get('outsideNavigation')}
-                    onClick={this.props.toggleOutsideNavigation}
-                  />
-                  {needFunds && <FaucetAndManafyModal />}
-                  {showGethDetailsModal && <GethDetailsModal />}
-                  {showIpfsDetailsModal && <IpfsDetailsModal />}
-                  {appState.get('showNavigationModal') &&
-                    <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
-                  }
-                  {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
-                  {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
-                  {appState.get('showProfileEditor') && <ProfileEdit />}
                 </AppErrorBoundary>
-                <CustomDragLayer />
-                <Notification />                
+                <Sidebar />
+                <Route path="/setup" component={SetupPages} />
+                <Notification />
+                <FullSizeImageViewer />
+                <ErrorNotification />
+                <NavigateAwayModal
+                  loggedEthAddress={loggedEthAddress}
+                  userSettingsAddTrustedDomain={this.props.userSettingsAddTrustedDomain}
+                  navigation={appState.get('outsideNavigation')}
+                  onClick={this.props.toggleOutsideNavigation}
+                />
+                {needFunds && <FaucetAndManafyModal />}
+                {showGethDetailsModal && <GethDetailsModal />}
+                {showIpfsDetailsModal && <IpfsDetailsModal />}
+                {appState.get('showNavigationModal') &&
+                  <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
+                }
+                {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
+                {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
+                {appState.get('showProfileEditor') && <ProfileEdit />}
               </div>
             </DataLoader>
           </div>

@@ -70,12 +70,12 @@ class EntryCard extends Component {
         history.push(href);
     };
 
-    // getVersion = (version) => {
-    //     const { entry, loggedAkashaId, entryPageShow } = this.props;
-    //     // const query = version !== undefined ? `?version=${version}` : '';
-    //     // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
-    //     // entryPageShow(entry.get('entryId'));
-    // };
+    getVersion = (version) => {
+        const { entry, loggedAkashaId, entryPageShow } = this.props;
+        // const query = version !== undefined ? `?version=${version}` : '';
+        // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
+        // entryPageShow(entry.get('entryId'));
+    };
 
     openVotesPanel = () => {
         this.setState({
@@ -140,14 +140,7 @@ class EntryCard extends Component {
             {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
           </div>
           <div className="flex-center">
-            <span
-              className="content-link entry-card__retry-button"
-              onClick={() => this.props.onRetry({
-                  context: this.props.contextId,
-                  entryId: this.props.entry.get('entryId'),
-                  ethAddress: this.props.loggedEthAddress
-              })}
-            >
+            <span className="content-link entry-card__retry-button" onClick={this.props.onRetry}>
               {this.props.intl.formatMessage(generalMessages.retry)}
             </span>
           </div>
@@ -322,8 +315,8 @@ EntryCard.propTypes = {
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
-    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     entry: PropTypes.shape(),
+    entryPageShow: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,
     handleEdit: PropTypes.func,
     hideEntrySettings: PropTypes.shape().isRequired,

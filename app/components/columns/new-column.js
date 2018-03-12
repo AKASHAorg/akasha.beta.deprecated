@@ -38,7 +38,7 @@ class NewColumn extends Component {
             this.setState({ selectedColumn: null });
         }
     }
-
+    
     componentWillUnmount () {
         this.props.searchResetResults();
     }
@@ -127,7 +127,7 @@ class NewColumn extends Component {
     };
 
     render () {
-        const { column, intl, lists, newColumn, previewEntries, profileResults, tagResults, entries } = this.props;
+        const { column, intl, lists, newColumn, previewEntries, profileResults, tagResults } = this.props;
         if (!newColumn) {
             return this.renderPlaceholder();
         }
@@ -143,8 +143,7 @@ class NewColumn extends Component {
             dashboardResetNewColumn: this.props.dashboardResetNewColumn,
             dashboardUpdateNewColumn: this.props.dashboardUpdateNewColumn,
             newColumn,
-            previewEntries,
-            entries
+            previewEntries
         };
         switch (newColumn.get('type')) {
             case columnTypes.profile:
@@ -175,7 +174,7 @@ class NewColumn extends Component {
                 previewMessage = intl.formatMessage(dashboardMessages.previewTag, { tagName: value });
                 component = (
                   <NewSearchColumn
-                    dataSource={tagResults.filter(t => !t.includes(' '))}
+                    dataSource={tagResults}
                     entryIterator={this.props.entryTagIterator}
                     entryMoreIterator={this.props.entryMoreTagIterator}
                     onSearch={this.props.searchTags}
@@ -277,7 +276,6 @@ function mapStateToProps (state) {
         lists: selectListsAll(state),
         newColumn: selectNewColumn(state),
         previewEntries: selectColumnEntries(state, 'newColumn'),
-        entries: state.entryState.get('byId'),
         profileResults: selectProfileSearchResults(state),
         tagResults: selectTagSearchResults(state)
     };
