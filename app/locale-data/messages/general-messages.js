@@ -827,6 +827,16 @@ const generalMessages = defineMessages({
         id: 'app.general.viewAll',
         description: 'view all',
         defaultMessage: 'View All'
+    },
+    reload: {
+        id: 'app.general.reload',
+        description: 'reload',
+        defaultMessage: 'Reload'
+    },
+    reportIssue: {
+        id: 'app.general.reportIssue',
+        description: 'report issue',
+        defaultMessage: 'Report issue'
     }
 });
 export { generalMessages };

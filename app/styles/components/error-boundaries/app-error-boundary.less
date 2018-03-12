@@ -1,0 +1,60 @@
+.app-error-boundary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 100px 40px;
+    background-color: @background;
+    height: 100%;
+
+    &__title {
+        font-size: 20px;
+        color: @heading-color;
+        font-weight: 400;
+        margin: 3px 0px;
+    }
+
+    &__subtitle {
+        font-size: 16px;
+        color: @text-color-secondary;
+        margin-bottom: 20px;
+    }
+
+    &__error-block-wrapper {
+        background-color: @light-background;
+        height: 350px;
+        width: 600px;
+        border: 2px solid @border-color;
+        border-radius: 2px;
+        padding: 0px 4px;
+    }
+
+    &__error-block {
+        height: 100%;
+        overflow-y: auto;
+        padding: 12px;
+        color: @heading-color;
+        font-size: 12px;
+    }
+
+    &__buttons-container {
+        width: 600px;
+        margin-top: 12px;
+        display: flex;
+        align-content: center;
+    }
+
+    &__copy-error {
+        flex: 1 1 auto;
+        display: flex;
+        align-content: center;
+    }
+
+    &__copy-error-text {
+        vertical-align: middle;
+    }
+
+    &__button {
+        margin-left: 6px;
+        flex: 0 0 auto;
+    }
+}
