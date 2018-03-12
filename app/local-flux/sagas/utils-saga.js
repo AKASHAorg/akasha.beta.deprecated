@@ -1,4 +1,4 @@
-import { apply, call, fork, put, take } from 'redux-saga/effects';
+import { apply, call, fork, put, take, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/utils-actions';
 import * as appActions from '../actions/app-actions';
@@ -12,12 +12,10 @@ function* backupKeysRequest () {
     yield apply(channel, channel.send, [{}]);
 }
 
-// Action watchers
-
-function* watchBackupKeysRequest () {
-    while (yield take(types.BACKUP_KEYS_REQUEST)) {
-        yield fork(backupKeysRequest);
-    }
+function* reloadPage () {
+    const channel = Channel.server.utils.reloadPage;
+    yield call(enableChannel, channel, Channel.client.utils.manager);
+    yield apply(channel, channel.send, [{}]);    
 }
 
 // Channel watchers
@@ -39,7 +37,8 @@ function* watchBackupChannel () {
 }
 
 export function* watchUtilsActions () {
-    yield fork(watchBackupKeysRequest);
+    yield takeEvery(types.BACKUP_KEYS_REQUEST, backupKeysRequest);
+    yield takeEvery(types.RELOAD_PAGE, reloadPage);    
 }
 
 export function* registerUtilsListeners () {
