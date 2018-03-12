@@ -8,11 +8,12 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
     toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
-    navCounterIncrement } from '../local-flux/actions/app-actions';
+    navCounterIncrement, showNotification } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
+import { reloadPage } from '../local-flux/actions/utils-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
@@ -144,7 +145,10 @@ class AppContainer extends Component {
           <div className="flex-center-x app-container__root">
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
-                <AppErrorBoundary>
+                <AppErrorBoundary
+                  reloadPage={this.props.reloadPage}
+                  showNotification={this.props.showNotification}
+                >
                   {location.pathname === '/' && <Redirect to="/setup/configuration" />}
                   {isInternalLink(location.pathname) && <Redirect to={removePrefix(location.pathname)} />}
                   {!location.pathname.startsWith('/setup') &&
@@ -217,7 +221,6 @@ class AppContainer extends Component {
                   }
                   <Sidebar />
                   <Route path="/setup" component={SetupPages} />
-                  <Notification />
                   <FullSizeImageViewer />
                   <ErrorNotification />
                   <NavigateAwayModal
@@ -235,6 +238,7 @@ class AppContainer extends Component {
                   {appState.get('showProfileEditor') && <ProfileEdit />}
                 </AppErrorBoundary>
                 <CustomDragLayer />
+                <Notification />                
               </div>
             </DataLoader>
           </div>
@@ -266,7 +270,9 @@ AppContainer.propTypes = {
     toggleNavigationModal: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
     navForwardCounterReset: PropTypes.func,
-    navCounterIncrement: PropTypes.func
+    navCounterIncrement: PropTypes.func,
+    reloadPage: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -299,6 +305,8 @@ export default DragDropContext(HTML5Backend)(connect(
         toggleNavigationModal,
         toggleOutsideNavigation,
         navCounterIncrement,
-        navForwardCounterReset
+        navForwardCounterReset,
+        reloadPage,
+        showNotification
     }
 )(injectIntl(AppContainer)));
