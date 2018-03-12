@@ -47,7 +47,7 @@ const channels = {
 
     search: ['query', 'flush', 'syncTags', 'findTags', 'syncEntries', 'findProfiles'],
 
-    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage', 'manaCosts']
+    utils: ['backupKeys', 'osInfo', 'checkUpdate', 'uploadImage', 'manaCosts', 'reloadPage']
 };
 
 const processes = ['server', 'client'];
