@@ -30,14 +30,14 @@ export const akashaDB = new Loki('akashaDB-beta', {
     autosaveInterval: 4000
 });
 
-export const loadAkashaDB  = () => new Promise(resolve =>
+export const loadAkashaDB  = () => Promise.fromCallback(cb =>
     akashaDB.loadDatabase({}, () => {
         collections.forEach(record => {
             if (!akashaDB.getCollection(record.collectionName)) {
                 akashaDB.addCollection(record.collectionName, record.options);
             }
         });
-        resolve();
+        cb();
     })
 );
 

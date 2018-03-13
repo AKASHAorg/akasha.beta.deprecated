@@ -5,9 +5,9 @@ import * as Promise from 'bluebird';
 export const draftModify = (draft) => {
     const {id, ...changes} = draft;
     try {
-        const modified = getEntriesCollection()
+        getEntriesCollection()
             .findAndUpdate({id: id}, (rec) => Object.assign(rec, changes));
-        return Promise.resolve(modified);
+        return Promise.resolve(true);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -17,7 +17,7 @@ export const draftCreate = (draft) => {
     try {
         const record = Object.assign({}, {id: genId()}, draft);
         getEntriesCollection().insert(record);
-        return Promise.resolve(record);
+        return Promise.resolve(Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -62,7 +62,7 @@ export const draftDelete = ({draftId}) => {
 export const draftsGet = (ethAddress) => {
     try {
         const records = getEntriesCollection().find({ethAddress: ethAddress});
-        return Promise.resolve(records);
+        return Promise.resolve(Array.from(records));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -71,7 +71,7 @@ export const draftsGet = (ethAddress) => {
 export const draftGetById = (draftId) => {
     try {
         const record = getEntriesCollection().findOne({id: draftId});
-        return Promise.resolve(record);
+        return Promise.resolve(Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -79,7 +79,7 @@ export const draftGetById = (draftId) => {
 
 export const draftSave = (data) => {
     try {
-        return draftCreate(data.draft);
+        return draftCreate(Object.assign({},data.draft));
     } catch (error) {
         return Promise.reject(error);
     }

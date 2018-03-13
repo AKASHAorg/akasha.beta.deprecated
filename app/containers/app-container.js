@@ -108,7 +108,7 @@ class AppContainer extends Component {
         }
 
         // check if we need to bootstrap home
-        if (shouldBootstrapHome && !this.bootstrappingHome && !appState.get('homeReady')) {
+        if (shouldBootstrapHome && appState.get('appReady') && !this.bootstrappingHome && !appState.get('homeReady')) {
             this.props.bootstrapHome();
             this.props.entryVoteCost();
             this.props.licenseGetAll();
