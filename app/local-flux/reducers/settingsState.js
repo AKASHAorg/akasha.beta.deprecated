@@ -1,3 +1,4 @@
+import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, NotificationsPreference,
@@ -12,6 +13,9 @@ const getUserSettings = (state, data) => {
     const notifPreferences = new NotificationsPreference(data.notificationsPreference);
     if (!data.defaultLicense) {
         data.defaultLicense = state.getIn(['userSettings', 'defaultLicense']);
+    }
+    if (data.trustedDomains) {
+        data.trustedDomains = new List(data.trustedDomains);
     }
     return new UserSettings(data).merge({
         hideCommentContent: hideComment,
@@ -36,7 +40,7 @@ const mergeUserSettings = (state, data) => {
         changes.notificationsPreference = new NotificationsPreference(data.notificationsPreference);
     }
     if (data.trustedDomains) {
-        changes.trustedDomains = data.trustedDomains;
+        changes.trustedDomains = new List(data.trustedDomains);
     }
     return state.get('userSettings').merge(data).merge(changes);
 };
