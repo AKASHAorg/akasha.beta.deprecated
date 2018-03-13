@@ -28,7 +28,7 @@ class ProfileSettings extends Component {
         const hideCommentContent = props.userSettings.get('hideCommentContent');
         const hideEntryContent = props.userSettings.get('hideEntryContent');
         const notificationsPreference = props.userSettings.get('notificationsPreference');
-        const trustedDomains = props.userSettings.get('trustedDomains');
+        const trustedDomains = props.userSettings.get('trustedDomains').toJS();
         this.state = {
             defaultLicenseParent: license.parent || '2',
             defaultLicenseId: license.id || '4',
@@ -117,7 +117,7 @@ class ProfileSettings extends Component {
 
     handleShowModal = () => {
         const { userSettings } = this.props;
-        const initialTrustedDomains = userSettings.get('trustedDomains');
+        const initialTrustedDomains = userSettings.get('trustedDomains').toJS();
         this.setState({
             filteredTrustedDomains: initialTrustedDomains,
             search: '',
@@ -136,7 +136,7 @@ class ProfileSettings extends Component {
 
     onSearchChange = (ev) => {
         const { userSettings } = this.props;
-        const initialTrustedDomains = userSettings.get('trustedDomains');
+        const initialTrustedDomains = userSettings.get('trustedDomains').toJS();
         this.setState({ search: ev.target.value }, () => {
             const filtered = initialTrustedDomains.filter(domain => domain.includes(this.state.search));
             this.setState({ filteredTrustedDomains: filtered });
@@ -236,7 +236,7 @@ class ProfileSettings extends Component {
             true;
         const tipsDisabled = !loggedProfileData.get('akashaId');
         const notifPref = userSettings.notificationsPreference;
-        const initialTrustedDomains = userSettings.get('trustedDomains');
+        const initialTrustedDomains = userSettings.get('trustedDomains').toJS();
 
         const formChanged = (
             pref.remember !== rememberTime ||
