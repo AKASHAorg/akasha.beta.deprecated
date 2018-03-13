@@ -7,7 +7,7 @@ export const addList = (payload) => {
         payload['timestamp'] = timestamp;
         payload['id'] = `${timestamp}-${payload.ethAddress}`;
         const record = getListCollection().insert(payload);
-        return Promise.resolve(record);
+        return Promise.resolve(Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -40,8 +40,8 @@ export const addList = (payload) => {
 
 export const deleteList = (listId) => {
     try {
-        const deleted = getListCollection().findAndRemove({id: listId});
-        return Promise.resolve(deleted);
+        getListCollection().findAndRemove({id: listId});
+        return Promise.resolve(true);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -49,12 +49,12 @@ export const deleteList = (listId) => {
 
 export const editList = ({id, name, description}) => {
     try {
-        const updated = getListCollection()
+        getListCollection()
             .findAndUpdate({id: id}, rec => {
                 rec.name = name;
                 rec.description = description;
             });
-        return Promise.resolve(updated);
+        return Promise.resolve(true);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -65,7 +65,7 @@ export const getAllLists = ethAddress => {
     try {
         const records = getListCollection()
             .find({ethAddress: ethAddress});
-        return Promise.resolve(records);
+        return Promise.resolve(records ? Array.from(records) : []);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -75,7 +75,7 @@ export const getList = ({ ethAddress, id }) => {
     try {
         const record = getListCollection()
             .findOne({ethAddress: ethAddress, id: id});
-        return Promise.resolve(record);
+        return Promise.resolve(record ? Object.assign({}, record) : {});
     } catch (error) {
         return Promise.reject(error);
     }
@@ -91,7 +91,7 @@ export const searchList = ({ethAddress, search}) => {
                 description = description.toLowerCase();
                 return name.includes(search) || description.includes(search);
             });
-        return Promise.resolve(records.map(list => list.id));
+        return Promise.resolve(records.data().map(list => list.id));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -145,7 +145,7 @@ export const toggleEntry = ({ethAddress, id, entryId, entryType, authorEthAddres
         }
         getListCollection()
             .findAndUpdate({ethAddress: ethAddress, id: id}, rec => Object.assign(rec, list));
-        return Promise.resolve(list);
+        return Promise.resolve(Object.assign({}, list));
     } catch (error) {
         return Promise.reject(error);
     }
