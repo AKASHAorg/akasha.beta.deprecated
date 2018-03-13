@@ -7,7 +7,7 @@ const LAST_TAG_TYPE = 'lastTag';
 export const getLastEntriesBlock = ethAddress => {
     try {
         const record = getSearchCollection().findOne({id: ethAddress, opType: LAST_ENTRY_TYPE});
-        return Promise.resolve(record.blockNr);
+        return Promise.resolve(record?  record.blockNr: 0);
     }catch (error) {
         return Promise.reject(error);
     }
@@ -16,7 +16,7 @@ export const getLastEntriesBlock = ethAddress => {
 export const getLastTagsBlock = type => {
     try {
         const record = getSearchCollection().findOne({opType: LAST_TAG_TYPE, id: type});
-        return Promise.resolve(record.blockNr);
+        return Promise.resolve(record ? record.blockNr: 0);
     }catch (error) {
         return Promise.reject(error);
     }

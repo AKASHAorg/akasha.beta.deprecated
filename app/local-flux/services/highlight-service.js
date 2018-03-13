@@ -12,9 +12,9 @@ export const deleteHighlight = (id) => {
 
 export const editNotes = ({id, notes}) => {
     try {
-        const record = getHighlightCollection()
+        getHighlightCollection()
             .findAndUpdate({id: id}, rec => rec.notes = notes);
-        return Promise.resolve(record);
+        return Promise.resolve(true);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -23,7 +23,7 @@ export const editNotes = ({id, notes}) => {
 export const getAll = (ethAddress) => {
     try {
         const records = getHighlightCollection().find({ethAddress: ethAddress});
-        return Promise.resolve(records);
+        return Promise.resolve(Array.from(records));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -35,7 +35,7 @@ export const saveHighlight = (highlight) => {
         highlight['timestamp'] = timestamp;
         highlight['id'] = `${timestamp}-${highlight.ethAddress}`;
         getHighlightCollection().insert(highlight);
-        return Promise.resolve(highlight);
+        return Promise.resolve(Object.assign({}, highlight));
     } catch (error) {
         return Promise.reject(error);
     }

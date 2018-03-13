@@ -6,8 +6,8 @@ const USER_TYPE = 'user';
 
 const getSettings = table => {
     try {
-        const settings = getSettingsCollection().find({opType: GLOBAL_TYPE, name: table});
-        return Promise.resolve(settings);
+        const settings = getSettingsCollection().findOne({opType: GLOBAL_TYPE, name: table});
+        return Promise.resolve(settings ? Object.assign({}, settings) : {});
     } catch (error) {
         return Promise.reject(error);
     }
@@ -23,7 +23,7 @@ const saveSettings = (table, payload) => {
         } else {
             getSettingsCollection().insert(Object.assign({opType: GLOBAL_TYPE, name: table}, payload));
         }
-        return Promise.resolve(payload);
+        return Promise.resolve(Object.assign({}, payload));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -35,7 +35,7 @@ export const ipfsSettingsRequest = () => getSettings('ipfs');
 export const userSettingsRequest = ethAddress => {
     try {
         const record = getSettingsCollection().findOne({opType: USER_TYPE, name: ethAddress});
-        return Promise.resolve(record);
+        return Promise.resolve( record ? Object.assign(record) : {});
     } catch (error) {
         return Promise.reject(error);
     }
@@ -60,14 +60,14 @@ export const userSettingsSave = (ethAddress, payload) => {
 };
 export const userSettingsAddTrustedDomain = (ethAddress, domain) => {
     try {
-        const record = getSettingsCollection()
+        getSettingsCollection()
             .findAndUpdate({opType: USER_TYPE, name: ethAddress}, user => {
                 if (!user.trustedDomains) {
                     user.trustedDomains = [];
                 }
                 user.trustedDomains.push(domain);
             });
-        return Promise.resolve(record);
+        return Promise.resolve(true);
     } catch (error) {
         return Promise.reject(error);
     }

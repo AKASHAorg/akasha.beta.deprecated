@@ -1,8 +1,17 @@
-import { List } from 'immutable';
+import {List} from 'immutable';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
-import { GeneralSettings, GethSettings, HiddenContent, IpfsSettings, NotificationsPreference,
-    PasswordPreference, PortsRecord, SettingsRecord, UserSettings } from './records';
+import {createReducer} from './create-reducer';
+import {
+    GeneralSettings,
+    GethSettings,
+    HiddenContent,
+    IpfsSettings,
+    NotificationsPreference,
+    PasswordPreference,
+    PortsRecord,
+    SettingsRecord,
+    UserSettings
+} from './records';
 
 const initialState = new SettingsRecord();
 
@@ -47,7 +56,7 @@ const mergeUserSettings = (state, data) => {
 
 const settingsState = createReducer(initialState, {
 
-    [types.GETH_SETTINGS_SUCCESS]: (state, { data }) => {
+    [types.GETH_SETTINGS_SUCCESS]: (state, {data}) => {
         const defaultSettings = new GethSettings().toJS();
         const newSettings = {};
         Object.keys(data).forEach((key) => {
@@ -61,7 +70,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_SETTINGS_SUCCESS]: (state, { data }) => {
+    [types.IPFS_SETTINGS_SUCCESS]: (state, {data}) => {
         const defaultSettings = new IpfsSettings().toJS();
         const newSettings = {};
         Object.keys(data).forEach((key) => {
@@ -77,34 +86,34 @@ const settingsState = createReducer(initialState, {
 
     [types.GETH_SAVE_SETTINGS]: state =>
         state.merge({
-            flags: state.get('flags').merge({ savingGethSettings: true })
+            flags: state.get('flags').merge({savingGethSettings: true})
         }),
 
-    [types.GETH_SAVE_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.GETH_SAVE_SETTINGS_SUCCESS]: (state, {data}) =>
         state.merge({
-            flags: state.get('flags').merge({ savingGethSettings: false }),
+            flags: state.get('flags').merge({savingGethSettings: false}),
             geth: state.get('geth').merge(data)
         }),
 
     [types.GETH_SAVE_SETTINGS_ERROR]: state =>
         state.merge({
-            flags: state.get('flags').merge({ savingGethSettings: false })
+            flags: state.get('flags').merge({savingGethSettings: false})
         }),
 
     [types.IPFS_SAVE_SETTINGS]: state =>
         state.merge({
-            flags: state.get('flags').merge({ savingIpfsSettings: true })
+            flags: state.get('flags').merge({savingIpfsSettings: true})
         }),
 
-    [types.IPFS_SAVE_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.IPFS_SAVE_SETTINGS_SUCCESS]: (state, {data}) =>
         state.merge({
-            flags: state.get('flags').merge({ savingIpfsSettings: false }),
+            flags: state.get('flags').merge({savingIpfsSettings: false}),
             ipfs: state.get('ipfs').merge(data)
         }),
 
     [types.IPFS_SAVE_SETTINGS_ERROR]: state =>
         state.merge({
-            flags: state.get('flags').merge({ savingIpfsSettings: false })
+            flags: state.get('flags').merge({savingIpfsSettings: false})
         }),
 
     // [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
@@ -124,7 +133,7 @@ const settingsState = createReducer(initialState, {
     [types.GENERAL_SETTINGS]: state =>
         state.setIn(['flags', 'generalSettingsPending'], true),
 
-    [types.GENERAL_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.GENERAL_SETTINGS_SUCCESS]: (state, {data}) =>
         state.merge({
             general: new GeneralSettings(data),
             flags: state.get('flags').set('generalSettingsPending', false)
@@ -133,7 +142,7 @@ const settingsState = createReducer(initialState, {
     [types.GENERAL_SETTINGS_ERROR]: state =>
         state.setIn(['flags', 'generalSettingsPending'], false),
 
-    [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
+    [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, {data}) =>
         state.merge({
             general: state.get('general').merge(data)
         }),
@@ -177,7 +186,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_GET_PORTS_SUCCESS]: (state, { data }) => {
+    [types.IPFS_GET_PORTS_SUCCESS]: (state, {data}) => {
         const ports = {
             apiPort: Number(data.apiPort),
             gatewayPort: Number(data.gatewayPort),
@@ -206,7 +215,7 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_REQUEST]: state =>
         state.set('userSettings', new UserSettings()),
 
-    [types.USER_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.USER_SETTINGS_SUCCESS]: (state, {data}) =>
         state.set('userSettings', getUserSettings(state, data)),
 
     [types.USER_SETTINGS_SAVE]: state =>
@@ -215,13 +224,13 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_SAVE_ERROR]: state =>
         state.setIn(['flags', 'savingUserSettings'], false),
 
-    [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
+    [types.USER_SETTINGS_SAVE_SUCCESS]: (state, {data}) =>
         state.merge({
             flags: state.get('flags').set('savingUserSettings', false),
             userSettings: mergeUserSettings(state, data)
         }),
 
-    [types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS]: (state, { data }) =>
+    [types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS]: (state, {data}) =>
         state.merge({
             userSettings: mergeUserSettings(state, data)
         }),
