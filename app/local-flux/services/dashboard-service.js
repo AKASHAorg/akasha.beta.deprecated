@@ -1,4 +1,4 @@
-import {getDashboardCollection} from './db/dbs';
+import {akashaDB, getDashboardCollection} from './db/dbs';
 import {genId} from '../../utils/dataModule';
 import * as Promise from 'bluebird';
 
@@ -17,7 +17,7 @@ export const addColumn = ({dashboardId, type, value}) => {
         if (!updated) {
             return Promise.reject(new Error(`There is no active dashboard ${dashboardId}.`));
         }
-        return Promise.resolve({dashboardId, id: id, column: recCol})
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => ({dashboardId, id: id, column: recCol}));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -55,7 +55,7 @@ export const addDashboard = payload => {
         }
         Object.assign(payload, {isActive: true, name: calculatedName, orderIndex: orderIndex});
         getDashboardCollection().insert(payload);
-        return Promise.resolve(payload);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => payload);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -64,7 +64,7 @@ export const addDashboard = payload => {
 export const deleteColumn = ({dashboardId, columnId}) => {
     let recCopy = null;
     try {
-        const updated = getDashboardCollection().chain()
+        getDashboardCollection().chain()
             .find({id: dashboardId, isActive: true})
             .update(record => {
                 const recRef = record.columns || [];
@@ -72,10 +72,7 @@ export const deleteColumn = ({dashboardId, columnId}) => {
                 recCopy = record;
             }).data();
 
-        if (!updated) {
-            return Promise.reject(new Error(`There is no active dashboard ${dashboardId}.`));
-        }
-        return Promise.resolve(recCopy);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => recCopy);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -83,7 +80,8 @@ export const deleteColumn = ({dashboardId, columnId}) => {
 
 export const deleteDashboard = id => {
     try {
-        return Promise.resolve(getDashboardCollection().findAndRemove({id: id}));
+        getDashboardCollection().findAndRemove({id: id});
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -92,7 +90,7 @@ export const deleteDashboard = id => {
 export const getActive = ethAddress => {
     try {
         const active = getDashboardCollection().findOne({ethAddress: ethAddress, isActive: true});
-        if(active && active.columns) {
+        if (active && active.columns) {
             active.columns.sort((a, b) => a.index - b.index);
         }
         return Promise.resolve(active);
@@ -104,7 +102,7 @@ export const getActive = ethAddress => {
 export const getAll = ethAddress => {
     try {
         const records = getDashboardCollection().chain().find({ethAddress: ethAddress}).simplesort('orderIndex');
-        return Promise.resolve(records.data());
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => records.data());
     } catch (error) {
         return Promise.reject(error);
     }
@@ -114,7 +112,7 @@ export const getDashboardOrder = ethAddress => {
     try {
         const records = getDashboardCollection().chain().find({ethAddress: ethAddress}).simplesort('orderIndex');
         const extractedList = (records) ? (records.data()).map(row => row.id) : [];
-        return Promise.resolve(extractedList);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => extractedList);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -128,7 +126,7 @@ export const setDashboardOrder = ({ethAddress, order}) => {
                 rec => {
                     rec.orderIndex = order.indexOf(rec.id);
                 });
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -156,7 +154,7 @@ export const setColumns = ({dashboardId, columns}) => {
                         Object.assign({}, col, {index: columns.indexOf(col.id)})
                     );
                 });
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -179,7 +177,7 @@ export const renameDashboard = ({dashboardId, ethAddress, newName}) => {
                 {id: dashboardId},
                 rec => rec.name = calculatedName
             );
-        return Promise.resolve({dashboardId, newName});
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => ({dashboardId, newName}));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -197,7 +195,7 @@ export const setActive = payload => {
                 {id: payload.id},
                 (rec) => rec.isActive = true
             );
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -226,7 +224,7 @@ export const toggleColumn = ({dashboardId, columnType, value}) => {
                         );
                     }
                 });
-        return Promise.resolve(record);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => record);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -248,7 +246,7 @@ export const updateColumn = ({dashboardId, id, changes}) => {
                     const column = dashboard.columns[index];
                     dashboard.columns[index] = Object.assign({}, column, changes);
                 });
-        return Promise.resolve(record);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => record);
     } catch (error) {
         return Promise.reject(error);
     }

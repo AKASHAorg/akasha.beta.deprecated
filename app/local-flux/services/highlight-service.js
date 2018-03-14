@@ -1,10 +1,10 @@
-import {getHighlightCollection} from './db/dbs';
+import {akashaDB, getHighlightCollection} from './db/dbs';
 import * as Promise from 'bluebird';
 
 export const deleteHighlight = (id) => {
     try {
         const removed = getHighlightCollection().findAndRemove({id: id});
-        return Promise.resolve(removed);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => removed);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -14,7 +14,7 @@ export const editNotes = ({id, notes}) => {
     try {
         getHighlightCollection()
             .findAndUpdate({id: id}, rec => rec.notes = notes);
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb))
     } catch (error) {
         return Promise.reject(error);
     }
@@ -35,7 +35,7 @@ export const saveHighlight = (highlight) => {
         highlight['timestamp'] = timestamp;
         highlight['id'] = `${timestamp}-${highlight.ethAddress}`;
         getHighlightCollection().insert(highlight);
-        return Promise.resolve(Object.assign({}, highlight));
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, highlight));
     } catch (error) {
         return Promise.reject(error);
     }

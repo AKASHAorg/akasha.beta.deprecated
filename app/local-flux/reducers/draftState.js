@@ -2,6 +2,7 @@ import { editorStateFromRaw } from 'megadraft';
 import { DraftModel } from './models';
 import { createReducer } from './create-reducer';
 import { entryTypes } from '../../constants/entry-types';
+import {MetaInfo} from './records/draft-record';
 import * as types from '../constants';
 
 const initialState = new DraftModel();
@@ -55,7 +56,6 @@ const draftState = createReducer(initialState, {
                     saved: true,
                     saving: false,
                     localChanges: true,
-                    updated_at: data.updated_at
                 })).set('draftsCount', state.get('drafts').size)
         ),
     [types.DRAFT_ADD_TAG]: (state, { data }) =>
@@ -170,7 +170,7 @@ const draftState = createReducer(initialState, {
                     localChanges: false,
                     tags: DraftModel.addExistingTags(tags),
                     id: entryId,
-                    created_at: new Date(publishDate * 1000)
+                    meta: new MetaInfo({created: new Date(publishDate * 1000)})
                 }));
             }
             mState.set('resolvingEntries',
