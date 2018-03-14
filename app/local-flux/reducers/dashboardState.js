@@ -2,6 +2,7 @@ import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
+import * as columnTypes from '../../constants/columns';
 
 const initialState = new DashboardState();
 
@@ -72,7 +73,10 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
-    const newIds = data.collection.map(entry => entry.entryId);
+    const entriesList = state.getIn(['columnById', request.columnId, 'entriesList']);
+    const newIds = data.collection
+        .map(entry => entry.entryId)
+        .filter(entryId => !entriesList.includes(entryId));
     const moreEntries = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
@@ -312,6 +316,27 @@ const dashboardState = createReducer(initialState, {
 
     [types.HIDE_PREVIEW]: state =>
         state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
+
+    [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data, request }) => {
+        const { entryId } = request;
+        const listColumn = state
+            .get('columnById')
+            .find(column => column.type === columnTypes.list && column.value === data.id);
+        if (listColumn) {
+            const hasEntryId = listColumn.entriesList.includes(entryId);
+            if (hasEntryId) {
+                return state.setIn(
+                    ['columnById', listColumn.id, 'entriesList'],
+                    listColumn.entriesList.filter(id => id !== entryId)
+                );
+            }
+            return state.setIn(
+                ['columnById', listColumn.id, 'entriesList'],
+                listColumn.entriesList.push(entryId)
+            );
+        }
+        return state;
+    },
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
