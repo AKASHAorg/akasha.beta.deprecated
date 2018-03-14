@@ -77,4 +77,5 @@ export const listToggleEntryError = (error) => {
     return action(types.LIST_TOGGLE_ENTRY_ERROR, { error });
 };
 
-export const listToggleEntrySuccess = data => action(types.LIST_TOGGLE_ENTRY_SUCCESS, { data });
+export const listToggleEntrySuccess = (data, request) =>
+    action(types.LIST_TOGGLE_ENTRY_SUCCESS, { data, request });
