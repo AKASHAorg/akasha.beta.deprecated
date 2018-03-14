@@ -6,7 +6,8 @@ import {CommentAuthor, CommentRecord, CommentsState} from './records';
 
 const initialState = new CommentsState();
 
-const createCommentWithAuthor = (comment) => {
+const createCommentWithAuthor = (record) => {
+    const comment = Object.assign({}, record);
     if (!comment.parent) {
         comment.parent = '0';
     }

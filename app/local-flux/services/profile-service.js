@@ -1,4 +1,4 @@
-import {getProfileCollection} from './db/dbs';
+import {akashaDB, getProfileCollection} from './db/dbs';
 import * as Promise from 'bluebird';
 
 export const IS_LOGGED_TYPE = 'loggedProfile';
@@ -7,7 +7,7 @@ export const LAST_BLOCK_TYPE = 'lastBlockNrs';
 export const profileDeleteLogged = () => {
     try {
         getProfileCollection().findAndRemove({opType: IS_LOGGED_TYPE});
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -33,7 +33,7 @@ export const profileSaveLogged = profile => {
             })
             .then(() => {
                 getProfileCollection().insert(Object.assign({opType: IS_LOGGED_TYPE}, profile));
-                return Promise.resolve(true);
+                return Promise.fromCallback(cb => akashaDB.save(cb));
             });
     } catch (error) {
         return Promise.reject(error);
@@ -55,7 +55,7 @@ export const profileSaveLastBlockNr = payload => {
                     (rec) => Object.assign(rec, payload, {opType: LAST_BLOCK_TYPE})
                 )
         }
-        return Promise.resolve(payload);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => payload);
     } catch (error) {
         return Promise.reject(error);
     }

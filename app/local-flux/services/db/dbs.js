@@ -26,8 +26,8 @@ const collections = [
 export const akashaDB = new Loki('akashaDB-beta', {
     adapter: pa,
     autoload: false,
-    autosave: true,
-    autosaveInterval: 4000
+    autosave: false,
+    env: 'BROWSER'
 });
 
 export const loadAkashaDB  = () => Promise.fromCallback(cb =>
