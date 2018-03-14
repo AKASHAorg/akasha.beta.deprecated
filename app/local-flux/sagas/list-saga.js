@@ -82,7 +82,8 @@ function* listToggleEntry ({ id, entryId, entryType, authorEthAddress }) {
             listService.toggleEntry,
             [{ ethAddress: loggedEthAddress, id, entryId, entryType, authorEthAddress }]
         );
-        yield put(actions.listToggleEntrySuccess(list));
+        const request = { entryId };
+        yield put(actions.listToggleEntrySuccess(list, request));
     } catch (error) {
         yield put(actions.listToggleEntryError(error));
     }

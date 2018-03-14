@@ -356,6 +356,27 @@ const dashboardState = createReducer(initialState, {
     [types.HIDE_PREVIEW]: state =>
         state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
 
+    [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data, request }) => {
+        const { entryId } = request;
+        const listColumn = state
+            .get('columnById')
+            .find(column => column.type === columnTypes.list && column.value === data.id);
+        if (listColumn) {
+            const hasEntryId = listColumn.entriesList.includes(entryId);
+            if (hasEntryId) {
+                return state.setIn(
+                    ['columnById', listColumn.id, 'entriesList'],
+                    listColumn.entriesList.filter(id => id !== entryId)
+                );
+            }
+            return state.setIn(
+                ['columnById', listColumn.id, 'entriesList'],
+                listColumn.entriesList.push(entryId)
+            );
+        }
+        return state;
+    },
+
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
     [types.SHOW_PREVIEW]: (state, { columnType, value }) =>
