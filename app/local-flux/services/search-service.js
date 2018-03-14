@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import {getSearchCollection} from './db/dbs';
+import {akashaDB, getSearchCollection} from './db/dbs';
 
 const LAST_ENTRY_TYPE = 'lastEntry';
 const LAST_TAG_TYPE = 'lastTag';
@@ -33,7 +33,7 @@ export const updateLastEntriesBlock = ({ ethAddress, blockNr }) => {
         } else {
             getSearchCollection().insert({id: ethAddress, opType: LAST_ENTRY_TYPE, blockNr: blockNr})
         }
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     }catch (error) {
         return Promise.reject(error);
     }
@@ -50,7 +50,7 @@ export const updateLastTagsBlock = ({ type, blockNr }) => {
         } else {
             getSearchCollection().insert({id: type, opType: LAST_TAG_TYPE, blockNr: blockNr})
         }
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb));
     }catch (error) {
         return Promise.reject(error);
     }

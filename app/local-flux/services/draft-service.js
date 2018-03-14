@@ -1,4 +1,4 @@
-import {getEntriesCollection} from './db/dbs';
+import {akashaDB, getEntriesCollection} from './db/dbs';
 import {genId} from '../../utils/dataModule';
 import * as Promise from 'bluebird';
 
@@ -7,7 +7,7 @@ export const draftModify = (draft) => {
     try {
         getEntriesCollection()
             .findAndUpdate({id: id}, (rec) => Object.assign(rec, changes));
-        return Promise.resolve(true);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => draftGetById(id));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -16,8 +16,8 @@ export const draftModify = (draft) => {
 export const draftCreate = (draft) => {
     try {
         const record = Object.assign({}, {id: genId()}, draft);
-        getEntriesCollection().insert(record);
-        return Promise.resolve(Object.assign({}, record));
+        const inserted = getEntriesCollection().insert(record);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, inserted));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -53,7 +53,7 @@ export const draftCreateOrUpdate = ({draft}) => {
 export const draftDelete = ({draftId}) => {
     try {
         getEntriesCollection().findAndRemove({id: draftId});
-        return Promise.resolve(draftId);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => draftId);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -62,7 +62,7 @@ export const draftDelete = ({draftId}) => {
 export const draftsGet = (ethAddress) => {
     try {
         const records = getEntriesCollection().find({ethAddress: ethAddress});
-        return Promise.resolve(Array.from(records));
+        return Promise.resolve(records.slice(0));
     } catch (error) {
         return Promise.reject(error);
     }
