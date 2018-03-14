@@ -15,9 +15,10 @@ class ListPopover extends Component {
     wasVisible = false;
 
     shouldComponentUpdate = (nextProps, nextState) => {
-        const { lists, search } = nextProps;
+        const { lists, listsAll, search } = nextProps;
         const { addNewList, popoverVisible } = nextState;
         if (!lists.equals(this.props.lists) ||
+            !listsAll.equals(this.props.listsAll) ||
             search !== this.props.search ||
             popoverVisible !== this.state.popoverVisible ||
             addNewList !== this.state.addNewList
