@@ -15,7 +15,8 @@ import {
 
 const initialState = new SettingsRecord();
 
-const getUserSettings = (state, data) => {
+const getUserSettings = (state, record) => {
+    const data = Object.assign({}, record);
     const preference = new PasswordPreference(data.passwordPreference);
     const hideComment = new HiddenContent(data.hideCommentContent);
     const hideEntry = new HiddenContent(data.hideEntryContent);
@@ -34,7 +35,8 @@ const getUserSettings = (state, data) => {
     });
 };
 
-const mergeUserSettings = (state, data) => {
+const mergeUserSettings = (state, record) => {
+    const data = Object.assign({}, record);
     const changes = {};
     if (data.passwordPreference) {
         changes.passwordPreference = new PasswordPreference(data.passwordPreference);

@@ -11,6 +11,11 @@ export const CardInfo = Record({
     bgColor: null,
     url: '',
 });
+
+export const MetaInfo = Record({
+    created: null,
+    updated: null
+});
 /**
  * Draft/Entry types => article, link, image, video, book, etc..
  * defaults to article
@@ -45,12 +50,11 @@ export const Draft = Record({
     hasCard: false,
     onChain: false,
     content: new DraftContent(),
-    created_at: null,
     id: null,
     publishing: false,
     saved: false,
     saving: false,
     localChanges: false,
     tags: new OrderedMap(),
-    updated_at: null,
+    meta: new MetaInfo()
 });

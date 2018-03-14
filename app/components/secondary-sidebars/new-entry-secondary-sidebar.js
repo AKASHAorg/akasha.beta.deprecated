@@ -14,6 +14,7 @@ import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/ent
 import { tagCanCreate } from '../../local-flux/actions/tag-actions';
 
 const { confirm } = Modal;
+const sortCreated = (a, b) => new Date(a.getIn(['meta', 'created'])) < new Date(b.getIn(['meta', 'created']));
 class NewEntrySecondarySidebar extends Component {
     state = {
         searchString: '',
@@ -94,7 +95,7 @@ class NewEntrySecondarySidebar extends Component {
         const { draftType, draftId } = match.params;
 
         const nextDraft = drafts.filter(draft => !draft.get('onChain') && draft.get('id') !== draftId)
-            .sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')))
+            .sort(sortCreated)
             .first();
 
         this.props.draftDelete({
@@ -354,7 +355,7 @@ class NewEntrySecondarySidebar extends Component {
                 }
                 return (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
             })
-            .sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')));
+            .sort(sortCreated);
 
         const publishedDraftsByType = drafts.filter((drft) => {
             if (entryType === 'all') {
@@ -362,7 +363,7 @@ class NewEntrySecondarySidebar extends Component {
             }
             return (drft.get('id') && drft.get('onChain') &&
                 drft.getIn(['content', 'entryType']) === entryType);
-        }).sort((a, b) => new Date(a.get('created_at')) < new Date(b.get('created_at')));
+        }).sort(sortCreated);
 
         const searchResults = this._getSearchResults(drafts, resolvingEntries, 'all');
         return (

@@ -290,7 +290,7 @@ const getImageSize = (imagePath, options) => {
             }
             return resolve({ width: imageWidth, height: imageHeight, imageObj: image });
         };
-        image.onerror = () => {
+        image.onerror = (e) => {
             const error = new Error('Image could not be loaded');
             reject(error);
         };
@@ -346,19 +346,20 @@ const getResizedImages = (inputFiles, options) => {
         if (ext === 'gif' && settings.animatedGifSupport) {
             gifPromises[index] = getRawDataUrl(file, options).then(imageDataUrl =>
                 // imageData should be the original animated gif Uint8Array
-                getImageSize(file.path, options).then((size) => {
+                getImageSize(imageDataUrl, options).then((size) => {
                     const { height, width } = size;
                     options.actualHeight = height;
                     options.actualWidth = width;
                     return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
                 }));
         } else if (settings.extensions.includes(ext)) {
-            imagePromises[index] = getImageSize(file.path, options).then((results) => {
-                const { height, width } = results;
-                options.actualWidth = width;
-                options.actualHeight = height;
-                return resizeImage(results.imageObj, options);
-            });
+            imagePromises[index] = getRawDataUrl(file, options).then(imageDataUrl =>
+                getImageSize(imageDataUrl, options).then((results) => {
+                    const { height, width } = results;
+                    options.actualWidth = width;
+                    options.actualHeight = height;
+                    return resizeImage(results.imageObj, options);
+                }));
         } else {
             imagePromises.push(Promise.reject(`.${ext} extension is not supported!`));
         }
