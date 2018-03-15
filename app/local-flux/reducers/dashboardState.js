@@ -45,7 +45,7 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
-        entriesList: new List(entryIds),
+        entriesList: List(entryIds),
         firstBlock: request.toBlock + 1,
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
             fetchingEntries: false,
@@ -95,7 +95,7 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
 
 const createDashboardRecord = (data) => {
     let dashboard = new DashboardRecord(data);
-    dashboard = dashboard.set('columns', new List(dashboard.columns.map(col => col.id)));
+    dashboard = dashboard.set('columns', List(dashboard.columns.map(col => col.id)));
     return dashboard;
 };
 
@@ -159,7 +159,7 @@ const dashboardState = createReducer(initialState, {
         state.set('activeDashboard', data),
 
     [types.DASHBOARD_GET_ALL_SUCCESS]: (state, { data }) => {
-        let allDashboards = new List();
+        let allDashboards = List();
         let byId = state.get('byId');
         let columnById = state.get('columnById');
         data.forEach((dashboard) => {
@@ -206,7 +206,7 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_RESET_COLUMN_ENTRIES]: (state, { columnId }) => {
         if (state.getIn(['columnById', columnId])) {
-            return state.setIn(['columnById', columnId, 'entriesList'], new List());
+            return state.setIn(['columnById', columnId, 'entriesList'], List());
         }
         return state;
     },
