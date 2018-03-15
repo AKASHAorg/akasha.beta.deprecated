@@ -279,5 +279,10 @@ const notificationMessages = defineMessages({
         description: 'text for notification block number',
         defaultMessage: 'at block number {blockNr}'
     },
+    errorCopiedToClipboard: {
+        id: 'app.notification.errorCopiedToClipboard',
+        description: 'notification to show when user copies error info',
+        defaultMessage: 'Error copied to clipboard'
+    },
 });
 export { notificationMessages };

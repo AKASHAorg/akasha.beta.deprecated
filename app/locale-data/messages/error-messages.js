@@ -276,6 +276,21 @@ const errorMessages = defineMessages({
         description: 'error message for saving general settings',
         defaultMessage: 'An error occurred while saving your settings'
     },
+    appErrorTitle: {
+        id: 'app.error.appErrorTitle',
+        description: 'Title message to display when the app crashes because of an unexpected error',
+        defaultMessage: 'Ah snap!'
+    },
+    appErrorSubtitle: {
+        id: 'app.error.appErrorSubtitle',
+        description: 'Subtitle message to display when the app crashes because of an unexpected error',
+        defaultMessage: 'Something went terribly wrong.'
+    },
+    copyError: {
+        id: 'app.error.copyError',
+        description: 'label for copy to clipboard button',
+        defaultMessage: 'Copy error to clipboard'
+    }
 });
 
 export { errorMessages };

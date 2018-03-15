@@ -194,6 +194,7 @@ class ProfileSettings extends Component {
 
     onSaveSettings = () => {
         const { loggedEthAddress, loggedProfileData } = this.props;
+        const akashaId = loggedProfileData.get('akashaId');
         const { defaultLicenseId, defaultLicenseParent, donationsValue, hideComments,
             hideCommentsValue, hideEntries, hideEntriesValue, notifFeed, notifDonations,
             notifComments, notifVotes, unlockTime, rememberTime, trustedDomains } = this.state;
@@ -215,7 +216,7 @@ class ProfileSettings extends Component {
             notificationsPreference,
             trustedDomains
         };
-        if (donationsValue !== loggedProfileData.get('donationsEnabled')) {
+        if (akashaId && donationsValue !== loggedProfileData.get('donationsEnabled')) {
             this.props.actionAdd(loggedEthAddress, toggleDonations, { status: donationsValue });
         }
         this.props.userSettingsSave(loggedEthAddress, payload);

@@ -8,3 +8,5 @@ export const backupKeysError = (error) => {
 };
 export const backupKeysRequest = () => action(types.BACKUP_KEYS_REQUEST);
 export const backupKeysSuccess = () => action(types.BACKUP_KEYS_SUCCESS);
+
+export const reloadPage = () => action(types.RELOAD_PAGE);
