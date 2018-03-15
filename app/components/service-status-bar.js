@@ -28,7 +28,14 @@ class ServiceStatusBar extends Component {
                 return '';
         }
     };
-
+    shouldComponentUpdate (nextProps) {
+        const props = this.props;
+        return !nextProps.generalSettings.equals(props.generalSettings) ||
+            nextProps.gethStarting !== props.gethStarting ||
+            !nextProps.gethStatus.equals(props.gethStatus) ||
+            nextProps.ipfsStarting !== props.ipfsStarting ||
+            !nextProps.ipfsStatus.equals(props.ipfsStatus);
+    }
     getIpfsState () {
         const { ipfsStarting, ipfsStatus } = this.props;
         let ipfsState = serviceState.stopped;

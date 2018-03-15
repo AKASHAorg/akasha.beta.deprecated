@@ -145,7 +145,7 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (!ethAddress) {
-            console.error('entry with no author found', collection);
+            console.error('entry with no author found', entry);
         }
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
@@ -154,23 +154,27 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
             ownEntries.push(entry.entryId);
         }
     });
+
     if (ethAddresses.length) {
         yield put(profileActions.profileIsFollower(ethAddresses));
     }
+
     if (allEntries.length) {
         yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     }
+
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
-    for (let i = 0; i < ethAddresses.length; i++) {
-        yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
-    }
-    for (let i = 0; i < collection.length; i++) {
-        const { author, entryId } = collection[i];
-        yield put(actions.entryGetShort({ entryId, ethAddress: author.ethAddress, context: columnId }));
-    }
+    yield all([
+        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress }))),
+        ...collection.map(collection => put(actions.entryGetShort({
+            entryId: collection.entryId,
+            ethAddress: collection.author.ethAddress,
+            context: columnId
+        })))
+    ]);
 }
 
 function* entryGetFull ({
@@ -664,13 +668,12 @@ function* handleEntryProfileIteratorResponse (resp) {
     } else if (resp.request.asDrafts) {
         yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
         const ethAddress = resp.request.ethAddress;
-        for (let i = resp.data.collection.length - 1; i >= 0; i--) {
-            yield put(actions.entryGetFull({
-                entryId: resp.data.collection[i].entryId,
-                ethAddress,
-                asDraft: true
-            }));
-        }
+        const drafts = resp.data.collection;
+        yield all(drafts.map(draft => put(actions.entryGetFull({
+            entryId: draft.entryId,
+            ethAddress,
+            asDraft: true
+        }))));
     } else {
         if (!reversed) {
             yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
