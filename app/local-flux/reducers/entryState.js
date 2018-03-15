@@ -24,7 +24,8 @@ const createEntryRecord = entry =>
         }
     });
 
-const createEntryContent = (content) => {
+const createEntryContent = (record) => {
+    const content = Object.assign({}, record);
     let cardInfo = new CardInfo();
     let title = content.title;
     if (content.cardInfo) {

@@ -7,7 +7,8 @@ import {CommentAuthor, CommentRecord, CommentsState} from './records';
 const initialState = new CommentsState();
 const hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-const createCommentWithAuthor = (comment) => {
+const createCommentWithAuthor = (record) => {
+    const comment = Object.assign({}, record);
     if (!comment.parent || comment.parent === hexZero) {
         comment.parent = '0';
     }

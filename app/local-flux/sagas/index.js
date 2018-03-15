@@ -25,6 +25,7 @@ import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
+import { loadAkashaDB } from '../services/db/dbs';
 
 function* registerListeners () {
     yield fork(commentsSaga.registerCommentsListeners);
@@ -96,6 +97,7 @@ function* watchBootstrapHome () {
 
 export default function* rootSaga () { // eslint-disable-line max-statements
     createActionChannels();
+    yield call(loadAkashaDB);
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
