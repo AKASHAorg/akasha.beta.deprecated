@@ -8,15 +8,16 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
     toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
-    navCounterIncrement } from '../local-flux/actions/app-actions';
+    navCounterIncrement, showNotification } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
+import { reloadPage } from '../local-flux/actions/utils-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
-import { AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
+import { AppErrorBoundary, AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
     DashboardSecondarySidebar, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
     Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
     NotificationsPanel, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
@@ -129,7 +130,7 @@ class AppContainer extends Component {
         }
     }
 
-    render () {
+    render () { // eslint-disable-line complexity
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, hideTerms, history, intl,
             location, loggedEthAddress, needAuth, needEth, needAeth, needMana } = this.props;
@@ -144,69 +145,78 @@ class AppContainer extends Component {
           <div className="flex-center-x app-container__root">
             <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
-                {location.pathname === '/' && <Redirect to="/setup/configuration" />}
-                {isInternalLink(location.pathname) && <Redirect to={removePrefix(location.pathname)} />}
-                {!location.pathname.startsWith('/setup') &&
-                  <DataLoader flag={!appState.get('homeReady')} size="large" style={{ paddingTop: '100px' }}>
-                    <div>
-                      {activeDashboard && location.pathname === '/dashboard' &&
-                        <Redirect to={`/dashboard/${activeDashboard}`} />
-                      }
-                      <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
-                        <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
-                        <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
-                        <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
-                      </SecondarySidebar>
-                      <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
-                        <Route exact path="/@:akashaId" component={ProfilePage} />
-                        <Route exact path="/0x:ethAddress" component={ProfilePage} />
-                        <Route path="/profileoverview/overview" component={ProfileOverview} />
-                        <Route path="/profileoverview/myentries" component={MyEntries} />
-                        <Route path="/profileoverview/highlights" component={Highlights} />
-                        <Route exact path="/profileoverview/lists" component={Lists} />
-                        <Route path="/profileoverview/lists/:listId" component={ListEntries} />
-                        <Route path="/profileoverview/settings" component={ProfileSettings} />
-                        <Route path="/profileoverview/preferences" component={AppPreferences} />
-                        <Switch location={isOverlay ? this.previousLocation : location}>
-                          <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
-                          <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
-                          <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
-                          <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
-                          <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
-                          <Route path="/search" component={SearchPage} />
-                        </Switch>
-                        {isOverlay &&
-                          <div>
+                <AppErrorBoundary
+                  reloadPage={this.props.reloadPage}
+                  showNotification={this.props.showNotification}
+                >
+                  {location.pathname === '/' && <Redirect to="/setup/configuration" />}
+                  {isInternalLink(location.pathname) && <Redirect to={removePrefix(location.pathname)} />}
+                  {!location.pathname.startsWith('/setup') &&
+                    <DataLoader
+                      flag={!appState.get('homeReady')}
+                      size="large"
+                      style={{ paddingTop: '100px' }}
+                    >
+                      <div>
+                        {activeDashboard && location.pathname === '/dashboard' &&
+                          <Redirect to={`/dashboard/${activeDashboard}`} />
+                        }
+                        <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
+                          <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
+                          <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
+                          <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
+                        </SecondarySidebar>
+                        <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
+                          <Route exact path="/@:akashaId" component={ProfilePage} />
+                          <Route exact path="/0x:ethAddress" component={ProfilePage} />
+                          <Route path="/profileoverview/overview" component={ProfileOverview} />
+                          <Route path="/profileoverview/myentries" component={MyEntries} />
+                          <Route path="/profileoverview/highlights" component={Highlights} />
+                          <Route exact path="/profileoverview/lists" component={Lists} />
+                          <Route path="/profileoverview/lists/:listId" component={ListEntries} />
+                          <Route path="/profileoverview/settings" component={ProfileSettings} />
+                          <Route path="/profileoverview/preferences" component={AppPreferences} />
+                          <Switch location={isOverlay ? this.previousLocation : location}>
+                            <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
+                            <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
+                            <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                             <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
                             <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
-                          </div>
-                        }
-                      </PageContent>
-                      <TopBar
-                        history={history}
-                        intl={intl}
-                        location={location}
-                        showSecondarySidebar={appState.get('showSecondarySidebar')}
-                      />
-                      {!!showWallet &&
-                        <WalletPanel
-                          showWallet={showWallet}
-                          toggleAethWallet={this.props.toggleAethWallet}
-                          toggleEthWallet={this.props.toggleEthWallet}
+                            <Route path="/search" component={SearchPage} />
+                          </Switch>
+                          {isOverlay &&
+                            <div>
+                              <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
+                              <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
+                            </div>
+                          }
+                        </PageContent>
+                        <TopBar
+                          history={history}
+                          intl={intl}
+                          location={location}
+                          showSecondarySidebar={appState.get('showSecondarySidebar')}
                         />
-                      }
-                      {!!appState.get('showPreview') &&
-                        <PreviewPanel />
-                      }
-                      {appState.get('showTransactionsLog') &&
-                        <TransactionsLogPanel />
-                      }
-                      {appState.get('showNotificationsPanel') &&
-                        <NotificationsPanel />
-                      }
-                    </div>
-                  </DataLoader>
-                }
+                        {!!showWallet &&
+                          <WalletPanel
+                            showWallet={showWallet}
+                            toggleAethWallet={this.props.toggleAethWallet}
+                            toggleEthWallet={this.props.toggleEthWallet}
+                          />
+                        }
+                        {!!appState.get('showPreview') &&
+                          <PreviewPanel />
+                        }
+                        {appState.get('showTransactionsLog') &&
+                          <TransactionsLogPanel />
+                        }
+                        {appState.get('showNotificationsPanel') &&
+                          <NotificationsPanel />
+                        }
+                      </div>
+                    </DataLoader>
+                  }
+                </AppErrorBoundary>
                 <Sidebar />
                 <Route path="/setup" component={SetupPages} />
                 <Notification />
@@ -258,7 +268,9 @@ AppContainer.propTypes = {
     toggleNavigationModal: PropTypes.func.isRequired,
     toggleOutsideNavigation: PropTypes.func,
     navForwardCounterReset: PropTypes.func,
-    navCounterIncrement: PropTypes.func
+    navCounterIncrement: PropTypes.func,
+    reloadPage: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -291,6 +303,8 @@ export default DragDropContext(HTML5Backend)(connect(
         toggleNavigationModal,
         toggleOutsideNavigation,
         navCounterIncrement,
-        navForwardCounterReset
+        navForwardCounterReset,
+        reloadPage,
+        showNotification
     }
 )(injectIntl(AppContainer)));

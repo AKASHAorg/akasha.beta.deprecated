@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { settingsMessages } from '../../locale-data/messages';
 import { showNotification } from '../../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../../local-flux/actions/settings-actions';
+import { reloadPage } from '../../local-flux/actions/utils-actions';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -28,10 +29,7 @@ class AppPreferences extends Component {
             darkTheme: this.state.darkTheme
         });
         if (darkTheme !== generalSettings.darkTheme) {
-            this.props.showNotification({
-                id: 'themeTips',
-                duration: 4
-            });
+            this.props.reloadPage();
         }
     }
 
@@ -109,6 +107,7 @@ AppPreferences.propTypes = {
     saveGeneralSettings: PropTypes.func,
     generalSettings: PropTypes.shape(),
     intl: PropTypes.shape(),
+    reloadPage: PropTypes.func.isRequired,
     showNotification: PropTypes.func,
 };
 
@@ -121,6 +120,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        reloadPage,
         showNotification,
         saveGeneralSettings
     }
