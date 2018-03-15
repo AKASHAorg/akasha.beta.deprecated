@@ -1,18 +1,16 @@
 import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
-import resolve from '../registry/resolve-ethaddress';
+import { GethConnector } from '@akashaproject/geth-connector';
 
-const votesIterator = {
-    'id': '/votesIterator',
+const myVotesIterator = {
+    'id': '/myVotesIterator',
     'type': 'object',
     'properties': {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
         'lastIndex': {'type': 'number'},
-        'entryId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
-        'akashaId': { 'type': 'string' },
         'reversed': { 'type': 'boolean' },
         'totalLoaded': { 'type': 'number' }
     },
@@ -24,37 +22,36 @@ const votesIterator = {
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: {
-    toBlock?: number, limit?: number,
-    entryId?: string, commentId?: string, lastIndex?: number, reversed?: boolean,
-    totalLoaded?: number
+    toBlock?: number, limit?: number, lastIndex?: number, reversed?: boolean,
+    totalLoaded?: number, ethAddress?: string
 }) {
 
     const v = new schema.Validator();
-    v.validate(data, votesIterator, { throwError: true });
+    v.validate(data, myVotesIterator, { throwError: true });
+    const etherBase = (data.ethAddress) ? data.ethAddress : GethConnector.getInstance().web3.eth.defaultAccount;
+
     const collection = [];
-    const sourceId = data.entryId || data.commentId;
-    const record = yield contracts.instance.Votes.getRecord(sourceId);
-    let maxResults = record[0].toString() === '0' ? 0 : data.limit || 5;
-    if (maxResults > record[0].toNumber()) {
-        maxResults = record[0].toNumber();
+    const record = yield contracts.instance.Votes.totalVotesOf(etherBase);
+    let maxResults = record[1].toString() === '0' ? 0 : data.limit || 5;
+    if (maxResults > record[1].toNumber()) {
+        maxResults = record[1].toNumber();
     }
     if (record[0].toNumber() <= data.totalLoaded) {
         return { collection: [], lastBlock: 0 };
     }
     if (data.totalLoaded) {
         const nextTotal = data.totalLoaded + maxResults;
-        if (nextTotal > record[0].toNumber()) {
-            maxResults = record[0].toNumber() - data.totalLoaded;
+        if (nextTotal > record[1].toNumber()) {
+            maxResults = record[1].toNumber() - data.totalLoaded;
         }
     }
-    const filter = { target: data.entryId || data.commentId, voteType: data.entryId ? 0 : 1 };
+    const filter = { voter: etherBase, voteType: 0 };
     const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
         { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (let event of fetched.results) {
         const weight = (event.args.weight).toString(10);
-        const author = yield resolve.execute({ ethAddress: event.args.voter });
 
-        collection.push(Object.assign({ weight: event.args.negative ? '-' + weight : weight }, author));
+        collection.push({ weight: event.args.negative ? '-' + weight : weight, entryId: event.args.target });
         if (collection.length === maxResults) {
             break;
         }
@@ -64,5 +61,5 @@ const execute = Promise.coroutine(function* (data: {
 });
 
 
-export default { execute, name: 'votesIterator' };
+export default { execute, name: 'myVotesIterator' };
 
