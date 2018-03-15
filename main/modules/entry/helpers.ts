@@ -3,13 +3,14 @@ import contracts from '../../contracts/index';
 import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
 import { mixed } from '../models/records';
+import { isNil } from 'ramda';
 
 const cacheKey = 'ENTRY-TAG';
 const calcKey = (id) => `${cacheKey}-${id}`;
 
 export const fetchFromPublish = Promise.coroutine(function* (data: {
     toBlock: number, limit: number,
-    lastIndex?: number, args: any, reversed?: boolean
+    lastIndex?: number, args: any, reversed?: boolean, entryType?: number
 }) {
     const collection = [];
     const fetched = yield contracts
@@ -33,6 +34,7 @@ export const fetchFromPublish = Promise.coroutine(function* (data: {
         } else {
             ({ tags, author, entryType } = mixed.getFull(key));
         }
+        if (!isNil(data.entryType) && entryType !== data.entryType) continue;
         collection.push({
             entryType: entryType,
             entryId: event.args.entryId,
@@ -50,7 +52,7 @@ export const fetchFromPublish = Promise.coroutine(function* (data: {
 
 export const fetchFromTagIndex = Promise.coroutine(function* (data: {
     toBlock: number, limit: number,
-    lastIndex?: number, args: any, reversed?: boolean
+    lastIndex?: number, args: any, reversed?: boolean, entryType?: number
 }) {
     const collection = [];
     const fetched = yield contracts.fromEvent(contracts.instance.Entries.TagIndex,
@@ -79,6 +81,7 @@ export const fetchFromTagIndex = Promise.coroutine(function* (data: {
         } else {
             ({ tags, author, entryType } = mixed.getFull(key));
         }
+        if (!isNil(data.entryType) && entryType !== data.entryType) continue;
         collection.push({
             entryType: entryType,
             entryId: event.args.entryId,

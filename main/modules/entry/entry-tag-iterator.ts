@@ -10,7 +10,8 @@ const entryTagIterator = {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
         'tagName': { 'type': 'string', 'minLength': 1, 'maxLength': 32 },
-        'reversed': { 'type': 'boolean' }
+        'reversed': { 'type': 'boolean' },
+        'entryType': {'type': 'number'}
     },
     'required': ['toBlock', 'tagName']
 };
@@ -21,7 +22,7 @@ const entryTagIterator = {
  */
 const execute = Promise.coroutine(function* (data: {
     toBlock: number, limit?: number,
-    tagName: string, lastIndex?: number, reversed?: boolean, totalLoaded?: number
+    tagName: string, lastIndex?: number, reversed?: boolean, totalLoaded?: number, entryType?: number
 }) {
     const v = new schema.Validator();
     v.validate(data, entryTagIterator, { throwError: true });
