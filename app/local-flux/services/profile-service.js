@@ -1,57 +1,72 @@
-import profileDB from './db/profile';
+import {akashaDB, getProfileCollection} from './db/dbs';
+import * as Promise from 'bluebird';
 
-export const profileDeleteLogged = () =>
-    new Promise((resolve, reject) =>
-        profileDB.loggedProfile
-            .clear()
-            .then(() => resolve())
-            .catch(error => reject(error))
-    );
+export const IS_LOGGED_TYPE = 'loggedProfile';
+export const LAST_BLOCK_TYPE = 'lastBlockNrs';
 
-export const profileGetLogged = () =>
-    new Promise((resolve, reject) =>
-        profileDB.loggedProfile
-            .toArray()
-            .then(data => resolve(data[0] || {}))
-            .catch(error => reject(error))
-    );
+export const profileDeleteLogged = () => {
+    try {
+        getProfileCollection().findAndRemove({opType: IS_LOGGED_TYPE});
+        return Promise.fromCallback(cb => akashaDB.save(cb));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const profileGetSuggestions = akashaId =>
-    new Promise((resolve, reject) =>
-        profileDB.knownAkashaIds
-            .filter(item => item.akashaId.includes(akashaId))
-            .toArray()
-            .then(data => resolve(data.slice(0, 5).map(item => item.akashaId)))
-            .catch(err => reject(err))
-    );
+export const profileGetLogged = () => {
+    try {
+        const record = getProfileCollection().findOne({opType: IS_LOGGED_TYPE});
+        return Promise.resolve(Object.assign({}, record));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const profileSaveLogged = profile =>
-    profileDB.loggedProfile.clear()
-        .then(() => profileDB.loggedProfile.put(profile));
+export const profileSaveLogged = profile => {
+    try {
+        return profileGetLogged()
+            .then(d => {
+                if (d) {
+                    return profileDeleteLogged();
+                }
+                return Promise.resolve(true);
+            })
+            .then(() => {
+                getProfileCollection().insert(Object.assign({opType: IS_LOGGED_TYPE}, profile));
+                return Promise.fromCallback(cb => akashaDB.save(cb));
+            });
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
 export const profileUpdateLogged = profile =>
-    new Promise((resolve, reject) =>
-        profileDB.loggedProfile
-            .put(profile)
-            .then(resolve)
-            .catch(reject)
-    );
+    profileSaveLogged(profile);
 
-export const profileSaveLastBlockNr = payload =>
-    new Promise((resolve, reject) => {
-        profileDB.lastBlockNrs.put({ ...payload })
-            .then(ethAddress => resolve({ ethAddress }))
-            .catch(err => reject(err));
-    });
-export const profileGetLastBlockNr = ethAddress =>
-    new Promise((resolve, reject) => {
-        profileDB.lastBlockNrs
-            .where('ethAddress')
-            .equals(ethAddress)
-            .toArray()
-            .then((data) => {
-                const blockNr = data[0] ? data[0].blockNr : 0;
-                resolve(blockNr);
-            })
-            .catch(reject);
-    });
+export const profileSaveLastBlockNr = payload => {
+    try {
+        const record = getProfileCollection().findOne({opType: LAST_BLOCK_TYPE, ethAddress: payload.ethAddress});
+        if (!record) {
+            getProfileCollection().insert(Object.assign({opType: LAST_BLOCK_TYPE}, payload));
+        } else {
+            getProfileCollection()
+                .findAndUpdate(
+                    {opType: LAST_BLOCK_TYPE, ethAddress: payload.ethAddress},
+                    (rec) => Object.assign(rec, payload, {opType: LAST_BLOCK_TYPE})
+                )
+        }
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => payload);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const profileGetLastBlockNr = ethAddress => {
+    try {
+        const record = getProfileCollection().findOne({opType: LAST_BLOCK_TYPE, ethAddress: ethAddress});
+        return Promise.resolve(record? record.blockNr :0);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+

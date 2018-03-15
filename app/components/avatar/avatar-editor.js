@@ -75,12 +75,19 @@ class AvatarEditr extends Component {
         });
     }
     _handleImageAdd = () => {
-        const files = this.fileInput.files[0].path;
-        this.setState({
-            avatarImage: files,
-            isNewAvatarLoaded: true,
-            highlightDropZone: false,
-        });
+        if (!this.fileInput.files || !this.fileInput.files.length) {
+            return;
+        }
+        const files = this.fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.setState({
+                avatarImage: e.target.result,
+                isNewAvatarLoaded: true,
+                highlightDropZone: false,
+            });
+        };
+        reader.readAsDataURL(files);
     }
     _handleImageDrop = (ev) => {
         this._handleAvatarClear();

@@ -1,8 +1,14 @@
-import Dexie from 'dexie';
+export default {
+    collectionName : `entries-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`,
+    options : {
+        indices: ['ethAddress', 'id'],
+        unique: ['id']
+    }
+};
+
+/**
 import draftSchema from './schema/draft';
 
-const dbName = `entries-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`;
-const entriesDB = new Dexie(dbName);
 entriesDB.version(1).stores({
     drafts: '++id,ethAddress',
     entries: '&ipfsHash',
@@ -23,3 +29,4 @@ entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => ({
 
 
 export default entriesDB;
+**/

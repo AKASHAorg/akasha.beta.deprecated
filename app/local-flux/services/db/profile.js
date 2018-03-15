@@ -1,3 +1,12 @@
+export default {
+    collectionName : `profiles-akasha-${process.env.AKASHA_VERSION}-${process.env.NODE_ENV}`,
+    options : {
+        indices: ['ethAddress', 'akashaId']
+    }
+};
+
+
+/**
 import Dexie from 'dexie';
 import tempProfileSchema from './schema/temp-profile';
 import loggedProfileSchema from './schema/logged-profile';
@@ -17,3 +26,4 @@ profileDB.tempProfile.defineClass(tempProfileSchema);
 profileDB.tempProfile.defineClass(loggedProfileSchema);
 
 export default profileDB;
+**/

@@ -5,7 +5,8 @@ import { ListRecord, ListState } from './records';
 
 const initialState = new ListState();
 
-const createListRecord = (list) => {
+const createListRecord = (record) => {
+    const list = Object.assign({}, record);
     if (list.entryIds && !List.isList(list.entryIds)) {
         list.entryIds = new List(list.entryIds);
     }

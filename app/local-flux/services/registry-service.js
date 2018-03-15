@@ -1,5 +1,7 @@
-import profileDB from './db/profile';
+import {akashaDB, getProfileCollection} from './db/dbs';
+import * as Promise from 'bluebird';
 
+export const TMP_PROFILE_TYPE = 'tempProfile';
 /**
  * Create a temporary profile in indexedDB
  * Notice: use `Table.add()` to prevent accidental update of the publishing temp profile
@@ -7,30 +9,15 @@ import profileDB from './db/profile';
  * @param {object} profileData - Data of the profile created
  * @param {object} currentStatus - Current status of the profile creation process
  */
-export const createTempProfile = profileData =>
-    profileDB.tempProfile
-        .where('ethAddress')
-        .equals(profileData.ethAddress)
-        .first()
-        .then((profile) => {
-            if (profile) {
-                profileDB.tempProfile.delete(profileData.ethAddress);
-            }
-            return profileDB.tempProfile.add({
-                ...profileData
-            })
-                .then(ethAddress =>
-                // return newly created temp profile
-                    profileDB.tempProfile.where('ethAddress').equals(ethAddress).first()
-                ).catch('ConstraintError', () =>
-                // key already exists in the object store
-                    profileDB.tempProfile.where('ethAddress').equals(profileData.ethAddress).first()
-                );
-        })
-        .catch((err) => {
-            console.error(err, 'db error!');
-            return err;
-        });
+export const createTempProfile = profileData => {
+    try {
+        getProfileCollection().findAndRemove({ethAddress: profileData.ethAddress, opType: TMP_PROFILE_TYPE});
+        const record = getProfileCollection().insert(Object.assign({opType: TMP_PROFILE_TYPE}, profileData));
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, record));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 /**
  * update temp profile
  * handles temp profile nested updates
@@ -39,55 +26,46 @@ export const createTempProfile = profileData =>
  * @return Promise => when resolved => profileData
  */
 
-export const updateTempProfile = (tempProfile, status) =>
-    profileDB.tempProfile
-        .where('ethAddress')
-        .equals(tempProfile.ethAddress)
-        .modify((tmpProf) => {
-            Object.keys(tempProfile).forEach((key) => {
-                tmpProf[key] = tempProfile[key];
-            });
-            if (status && typeof status === 'object') {
-                if (!tmpProf.status) tmpProf.status = {};
-                Object.keys(status).forEach((key) => {
-                    tmpProf.status[key] = status[key];
+export const updateTempProfile = (tempProfile, status) => {
+    try {
+        const record = getProfileCollection()
+            .findAndUpdate({ethAddress: tempProfile.ethAddress, opType: TMP_PROFILE_TYPE},
+                (rec) => {
+                    Object.assign(rec, tempProfile);
+                    if (status && typeof status === 'object') {
+                        if (!rec.status) rec['status'] = {};
+                        Object.assign(rec.status, status);
+                    }
                 });
-            }
-        })
-        .then((updated) => {
-            if (updated) {
-                return profileDB.tempProfile
-                    .where('ethAddress')
-                    .equals(tempProfile.ethAddress)
-                    .first();
-            }
-            return tempProfile;
-        })
-        .catch(err => err);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, record));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 /**
  * Delete temporary profile. Called after profile was successfully created
  */
-export const deleteTempProfile = ethAddress =>
-    profileDB.tempProfile
-        .delete(ethAddress)
-        .catch(err => err);
+export const deleteTempProfile = ethAddress => {
+    try {
+        getProfileCollection().findAndRemove({ethAddress: ethAddress, opType: TMP_PROFILE_TYPE});
+        return Promise.fromCallback(cb => akashaDB.save(cb));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
 /**
  * Get all available temporary profiles
  * @return promise
  */
-export const getTempProfile = ethAddress =>
-    profileDB.tempProfile
-        .where('ethAddress')
-        .equals(ethAddress)
-        .first()
-        .then(profile =>
-            profile
-        )
-        .catch((err) => {
-            console.error(err, 'db error!');
-            return err;
-        });
+export const getTempProfile = ethAddress => {
+    try {
+        const record = getProfileCollection().findOne({ethAddress: ethAddress, opType: TMP_PROFILE_TYPE});
+        return Promise.resolve(record? Object.assign({}, record): null);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 /**
  * Registry Service.
  * default open channels => ['getCurrentProfile', 'getByAddress']

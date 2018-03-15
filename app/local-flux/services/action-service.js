@@ -1,111 +1,142 @@
-import actionDB from './db/action';
+import {akashaDB, getActionCollection} from './db/dbs';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
+import * as Promise from 'bluebird';
 
-export const deleteAction = id =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .delete(id)
-            .then(resolve)
-            .catch(reject);
-    });
+export const deleteAction = id => {
+    try {
+        getActionCollection().findAndRemove({id: id});
+        return Promise.fromCallback(cb => akashaDB.save(cb));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const getActionByTx = tx =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('tx')
-            .equals(tx)
-            .toArray()
-            .then((data) => {
-                if (data[0]) {
-                    resolve(data[0].id);
-                } else {
-                    reject({});
-                }
+export const getActionByTx = tx => {
+    try {
+        const record = getActionCollection().findOne({tx: tx});
+        return Promise.resolve(record.id);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getActionsByType = request => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                ethAddress: request.ethAddress,
+                type: {'$in': request.type}
             })
-            .catch(reject);
-    });
+            .simplesort('created', true);
+        return Promise.resolve(Array.from(records.data()));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const getActionsByType = request =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('[ethAddress+type]')
-            .anyOf(request)
-            .reverse()
-            .toArray()
-            .then(resolve)
-            .catch(reject);
-    });
-
-export const getAllHistory = (ethAddress, offset, limit) =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('ethAddress')
-            .equals(ethAddress)
-            .reverse()
+export const getAllHistory = (ethAddress, offset, limit) => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                ethAddress: ethAddress
+            })
+            .simplesort('created', true)
             .offset(offset)
-            .limit(limit)
-            .toArray()
-            .then(resolve)
-            .catch(reject);
-    });
+            .limit(limit);
+        return Promise.resolve(Array.from(records.data()));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const getClaimable = request =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('[ethAddress+type]')
-            .anyOf(request)
-            .toArray()
-            .then((data) => {
-                const results = data.filter(action => !action.claimed);
-                resolve(results);
+export const getClaimable = request => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                ethAddress: request.ethAddress,
+                type: {'$in': request.type}
             })
-            .catch(reject);
-    });
+            .where(rec => !rec.claimed)
+            .simplesort('created', false)
+            .data();
+        return Promise.resolve(Array.from(records));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const getPendingActions = ethAddress =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('[ethAddress+status]')
-            .equals([ethAddress, actionStatus.publishing])
-            .toArray()
-            .then(resolve)
-            .catch(reject);
-    });
-
-export const saveAction = action =>
-    new Promise((resolve, reject) => {
-        actionDB.actions.put(action)
-            .then(resolve)
-            .catch(reject);
-    });
-
-export const updateClaimAction = (ethAddress, entryId) =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('[ethAddress+type]')
-            .equals([ethAddress, actionTypes.draftPublish])
-            .toArray()
-            .then((data) => {
-                const action = data.find(act => act.payload.entryId === entryId);
-                action.claimed = true;
-                actionDB.actions.put(action)
-                    .then(() => resolve(action.id));
+export const getPendingActions = ethAddress => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                ethAddress: ethAddress,
+                status: actionStatus.publishing
             })
-            .catch(reject);
-    });
+            .simplesort('created', true);
+        return Promise.resolve(Array.from(records.data()));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 
-export const updateClaimVoteAction = (ethAddress, entryId) =>
-    new Promise((resolve, reject) => {
-        actionDB.actions
-            .where('[ethAddress+type]')
-            .anyOf([[ethAddress, actionTypes.entryDownvote], [ethAddress, actionTypes.entryUpvote]])
-            .toArray()
-            .then((data) => {
-                const action = data.find(act => act.payload.entryId === entryId);
-                action.claimed = true;
-                actionDB.actions.put(action)
-                    .then(() => resolve(action.id));
+export const saveAction = action => {
+    try {
+        const record = getActionCollection().findOne({id: action.id});
+        if (!record) {
+            getActionCollection().insert(
+                Object.assign({}, {created: (new Date()).getTime()}, action)
+            );
+        } else {
+            getActionCollection().chain().find({id: action.id}).update(result => {
+                Object.assign(result, action);
             })
-            .catch(reject);
-    });
+        }
+        return Promise.fromCallback(cb => akashaDB.save(cb));
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const updateClaimAction = (ethAddress, entryId) => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                ethAddress: ethAddress,
+                type: actionTypes.draftPublish
+            })
+            .where(obj => obj.payload.entryId === entryId)
+            .update(action => action.claimed = true);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => records.data().id);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const updateClaimVoteAction = (ethAddress, entryId) => {
+    try {
+        const records = getActionCollection()
+            .chain()
+            .find({
+                '$or': [
+                    {
+                        ethAddress: ethAddress,
+                        type: actionTypes.entryDownvote
+                    },
+                    {
+                        ethAddress: ethAddress,
+                        type: actionTypes.entryUpvote
+                    }]
+            })
+            .where(obj => obj.payload.entryId === entryId)
+            .update(action => action.claimed = true);
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => records.data().id);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

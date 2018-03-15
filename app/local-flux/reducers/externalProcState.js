@@ -29,7 +29,8 @@ const computeGethStatus = (status) => {
     return newStatus;
 };
 
-const computeIpfsStatus = (newStatus) => {
+const computeIpfsStatus = (record) => {
+    const newStatus = Object.assign({}, record);
     if (newStatus.started || newStatus.process) {
         newStatus.downloading = null;
         newStatus.starting = false;
