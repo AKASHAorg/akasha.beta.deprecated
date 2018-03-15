@@ -8,6 +8,9 @@ const initialState = new TempProfileModel();
 const tempProfileState = createReducer(initialState, {
     [types.TEMP_PROFILE_GET_SUCCESS]: (state, { data }) => {
         const { ...tempProfile } = data;
+        if (!tempProfile) {
+            return state;
+        }
         return state.merge({
             tempProfile: state.get('tempProfile').merge(TempProfileModel.createTempProfile(tempProfile))
         });
