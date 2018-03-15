@@ -1,3 +1,4 @@
+// @flow
 import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
