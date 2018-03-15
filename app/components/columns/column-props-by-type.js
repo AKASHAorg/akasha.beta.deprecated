@@ -3,151 +3,136 @@ import { Record, List } from 'immutable';
 import * as columnTypes from '../../constants/columns';
 import { dashboardMessages, profileMessages } from '../../locale-data/messages';
 import { ProfileCard } from '../';
-/* eslint-disable complexity */
-const getColumnPropsByType = ({
-    type, intl, column, ...other
-}) => {
-    let passedProps = {
-        column,
-        type,
-        intl,
-        noMenu: false,
-        fetching: false,
-        fetchingMore: false,
-        ...other
-    };
-    const TempRec = Record({
-        id: '',
-        entriesList: List(),
-        ethAddress: '',
-        context: '',
-        value: ''
-    });
-    switch (type) {
-        case columnTypes.latest:
-            passedProps = {
-                ...passedProps,
-                title: intl.formatMessage(dashboardMessages.latest),
-                onItemRequest: other.entryNewestIterator,
-                onItemMoreRequest: other.entryMoreNewestIterator,
-                onColumnRefresh: other.entryNewestIterator,
-                onItemPooling: col => other.entryNewestIterator({ ...col.toJS(), reversed: true }),
-                fetching: column.getIn(['flags', 'fetchingEntries']),
-                readOnly: true
-            };
-            break;
-        case columnTypes.list:
-            passedProps = {
-                ...passedProps,
-                onItemRequest: other.entryListIterator,
-                onItemMoreRequest: other.entryMoreListIterator,
-                title: other.lists.find(lst => lst.get('id') === column.get('value')).get('name') || ' ',
-                onColumnRefresh: other.entryMoreListIterator,
-                dataSource: other.lists,
-                entries: other.entries
-            };
-            break;
-        case columnTypes.tag:
-            passedProps = {
-                ...passedProps,
-                iconType: 'tag',
-                onItemRequest: other.entryTagIterator,
-                onItemMoreRequest: other.entryMoreTagIterator,
-                onColumnRefresh: other.entryTagIterator,
-                onItemPooling: col => other.entryTagIterator({ ...col.toJS(), reversed: true }),
-                fetching: column.getIn(['flags', 'fetchingEntries']),
-                dataSource: other.tagSearchResults,
-                onSearch: other.searchTags
-            };
-            break;
-        case columnTypes.stream:
-            passedProps = {
-                ...passedProps,
-                onItemRequest: other.entryStreamIterator,
-                onItemMoreRequest: other.entryMoreStreamIterator,
-                title: intl.formatMessage(dashboardMessages.columnStream),
-                onColumnRefresh: other.entryStreamIterator,
-                onItemPooling: col => other.entryStreamIterator({ ...col.toJS(), reversed: true }),
-                fetching: column.getIn(['flags', 'fetchingEntries']),
-                readOnly: true
-            };
-            break;
-        case columnTypes.profile:
-            passedProps = {
-                ...passedProps,
-                title: column ? `@${column.value}` : intl.formatMessage(profileMessages.entries),
-                iconType: 'user',
-                onItemRequest: other.entryProfileIterator,
-                onItemMoreRequest: other.entryMoreProfileIterator,
-                onColumnRefresh: other.entryProfileIterator,
-                onItemPooling: col => other.entryProfileIterator({ ...col.toJS(), reversed: true }),
-                fetching: column.getIn(['flags', 'fetchingEntries']),
-                dataSource: other.profileSearchResults,
-                onSearch: other.searchProfiles
-            };
-            break;
-        case columnTypes.profileEntries:
-            passedProps = {
-                ...passedProps,
-                column: new TempRec({
-                    id: 'profileEntries',
-                    entriesList: other.profileEntriesList,
-                    ethAddress: other.ethAddress,
-                    value: other.ethAddress,
-                    context: 'profileEntries'
-                }),
-                fetching: other.fetchingEntries,
-                fetchingMore: other.fetchingMoreEntries,
-                title: intl.formatMessage(profileMessages.entries),
-                onItemRequest: other.entryProfileIterator,
-                onItemMoreRequest: other.entryMoreProfileIterator,
-                onColumnRefresh: other.entryProfileIterator,
-                noMenu: true,
-                // onItemPooling: col => other.entryProfileIterator({ ...col.toJS(), reversed: true })
-            };
-            break;
-        case columnTypes.profileFollowers:
-            passedProps = {
-                ...passedProps,
-                column: new TempRec({
-                    id: 'profileFollowers',
-                    entriesList: other.followers,
-                    ethAddress: other.ethAddress,
-                    context: 'profilePageFollowers'
-                }),
-                entries: other.profiles,
-                fetching: other.fetchingFollowers,
-                fetchingMore: other.fetchingMoreFollowers,
-                title: intl.formatMessage(profileMessages.followers),
-                onItemRequest: other.profileFollowersIterator,
-                onItemMoreRequest: other.profileMoreFollowersIterator,
-                onColumnRefresh: other.profileFollowersIterator,
-                itemCard: <ProfileCard />,
-            };
-            break;
-        case columnTypes.profileFollowings:
-            passedProps = {
-                ...passedProps,
-                column: new TempRec({
-                    id: 'profileFollowings',
-                    entriesList: other.followings,
-                    ethAddress: other.ethAddress,
-                    context: 'profilePageFollowings',
-                }),
-                entries: other.profiles,
-                fetching: other.fetchingFollowings,
-                fetchingMore: other.fetchingMoreFollowings,
-                title: intl.formatMessage(profileMessages.followings),
-                onItemRequest: other.profileFollowingsIterator,
-                onItemMoreRequest: other.profileMoreFollowingsIterator,
-                onColumnRefresh: other.profileFollowingsIterator,
-                itemCard: <ProfileCard />
-            };
-            break;
-        default:
-            break;
-    }
-    return passedProps;
+
+const TempRec = Record({
+    id: '',
+    entriesList: List(),
+    ethAddress: '',
+    context: '',
+    value: ''
+});
+
+const getLatestColumnProps = props => ({
+    ...props,
+    title: props.intl.formatMessage(dashboardMessages.latest),
+    onItemRequest: props.entryNewestIterator,
+    onItemMoreRequest: props.entryMoreNewestIterator,
+    onColumnRefresh: props.entryNewestIterator,
+    onItemPooling: col => props.entryNewestIterator({ ...col.toJS(), reversed: true }),
+    fetching: props.column.getIn(['flags', 'fetchingEntries']),
+    readOnly: true,
+    noMenu: false,
+});
+
+const getListColumnProps = props => ({
+    ...props,
+    onItemRequest: props.entryListIterator,
+    onItemMoreRequest: props.entryMoreListIterator,
+    title: props.lists.find(lst => lst.get('id') === props.column.get('value')).get('name') || ' ',
+    onColumnRefresh: props.entryMoreListIterator,
+    dataSource: props.lists,
+    entries: props.entries
+});
+
+const getTagColumnProps = props => ({
+    ...props,
+    iconType: 'tag',
+    onItemRequest: props.entryTagIterator,
+    onItemMoreRequest: props.entryMoreTagIterator,
+    onColumnRefresh: props.entryTagIterator,
+    onItemPooling: col => props.entryTagIterator({ ...col.toJS(), reversed: true }),
+    fetching: props.column.getIn(['flags', 'fetchingEntries']),
+    dataSource: props.tagSearchResults,
+    onSearch: props.searchTags
+});
+
+const getStreamColumnProps = props => ({
+    ...props,
+    onItemRequest: props.entryStreamIterator,
+    onItemMoreRequest: props.entryMoreStreamIterator,
+    title: props.intl.formatMessage(dashboardMessages.columnStream),
+    onColumnRefresh: props.entryStreamIterator,
+    onItemPooling: col => props.entryStreamIterator({ ...col.toJS(), reversed: true }),
+    fetching: props.column.getIn(['flags', 'fetchingEntries']),
+    readOnly: true
+});
+
+const getProfileColumnProps = props => ({
+    ...props,
+    title: props.column ? `@${props.column.value}` : props.intl.formatMessage(profileMessages.entries),
+    iconType: 'user',
+    onItemRequest: props.entryProfileIterator,
+    onItemMoreRequest: props.entryMoreProfileIterator,
+    onColumnRefresh: props.entryProfileIterator,
+    onItemPooling: col => props.entryProfileIterator({ ...col.toJS(), reversed: true }),
+    fetching: props.column.getIn(['flags', 'fetchingEntries']),
+    dataSource: props.profileSearchResults,
+    onSearch: props.searchProfiles
+});
+
+const getProfileEntriesColumnProps = props => ({
+    ...props,
+    column: new TempRec({
+        id: 'profileEntries',
+        entriesList: props.profileEntriesList,
+        ethAddress: props.ethAddress,
+        value: props.ethAddress,
+        context: 'profileEntries'
+    }),
+    fetching: props.fetchingEntries,
+    fetchingMore: props.fetchingMoreEntries,
+    title: props.intl.formatMessage(profileMessages.entries),
+    onItemRequest: props.entryProfileIterator,
+    onItemMoreRequest: props.entryMoreProfileIterator,
+    onColumnRefresh: props.entryProfileIterator,
+    noMenu: true,
+});
+
+const getProfileFollowersColumnProps = props => ({
+    ...props,
+    column: new TempRec({
+        id: 'profileFollowers',
+        entriesList: props.followers,
+        ethAddress: props.ethAddress,
+        context: 'profilePageFollowers'
+    }),
+    entries: props.profiles,
+    fetching: props.fetchingFollowers,
+    fetchingMore: props.fetchingMoreFollowers,
+    title: props.intl.formatMessage(profileMessages.followers),
+    onItemRequest: props.profileFollowersIterator,
+    onItemMoreRequest: props.profileMoreFollowersIterator,
+    onColumnRefresh: props.profileFollowersIterator,
+    itemCard: <ProfileCard />,
+});
+
+const getProfileFollowingsColumnProps = props => ({
+    ...props,
+    column: new TempRec({
+        id: 'profileFollowings',
+        entriesList: props.followings,
+        ethAddress: props.ethAddress,
+        context: 'profilePageFollowings',
+    }),
+    entries: props.profiles,
+    fetching: props.fetchingFollowings,
+    fetchingMore: props.fetchingMoreFollowings,
+    title: props.intl.formatMessage(profileMessages.followings),
+    onItemRequest: props.profileFollowingsIterator,
+    onItemMoreRequest: props.profileMoreFollowingsIterator,
+    onColumnRefresh: props.profileFollowingsIterator,
+    itemCard: <ProfileCard />
+});
+
+
+export default {
+    [columnTypes.latest]: getLatestColumnProps,
+    [columnTypes.list]: getListColumnProps,
+    [columnTypes.tag]: getTagColumnProps,
+    [columnTypes.stream]: getStreamColumnProps,
+    [columnTypes.profile]: getProfileColumnProps,
+    [columnTypes.profileEntries]: getProfileEntriesColumnProps,
+    [columnTypes.profileFollowers]: getProfileFollowersColumnProps,
+    [columnTypes.profileFollowings]: getProfileFollowingsColumnProps,
 };
 
-export default getColumnPropsByType;

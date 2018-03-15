@@ -25,40 +25,32 @@ import ColManager from './col-manager';
 import ColumnHeader from './column-header';
 import { DataLoader } from '../';
 import dropBox from './column-dropBox';
-import getColumnPropsByType from './column-props-by-type';
+import columnProps from './column-props-by-type';
 import ColumnEmptyPlaceholder from './column-empty-placeholder';
 
-const Column = ({
-    onBeginDrag, onEndDrag, isColumnDragging, column, baseWidth,
-    type, entries, readOnly, ...other
-}) => {
-    const passedProps = getColumnPropsByType({
-        column,
+const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, baseWidth, type, ...other }) => {
+    const passedProps = columnProps[type]({
         baseWidth,
         type,
-        entries,
-        contextId: column ? column.id : '',
         onRetry: (data) => {
             other.entryGetShort({ ...data });
         },
         iconType: 'entries',
-        title: column ? column.value : null,
-        readOnly,
         ...other
     });
     return (
       <ColumnHeader
         readOnly={passedProps.readOnly}
         column={passedProps.column}
-        columnIndex={other.columnIndex}
+        columnIndex={passedProps.columnIndex}
         onRefresh={passedProps.onColumnRefresh}
         onBeginDrag={onBeginDrag}
         onEndDrag={onEndDrag}
         isColumnDragging={isColumnDragging}
-        connectDropTarget={other.connectDropTarget}
+        connectDropTarget={passedProps.connectDropTarget}
         iconType={passedProps.iconType}
         title={passedProps.title}
-        draggable={other.draggable}
+        draggable={passedProps.draggable}
         noMenu={passedProps.noMenu}
         dataSource={passedProps.dataSource}
         onSearch={passedProps.onSearch}
@@ -100,12 +92,16 @@ const mapStateToProps = (state, ownProps) => {
         baseUrl: selectBaseUrl(state),
         blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
+        column: state.dashboardState.getIn(['columnById', ownProps.columnId]),
         drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         hideEntrySettings: selectHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingClaims: selectAllPendingClaims(state),
-        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', (ownProps.column ? ownProps.column.id : ownProps.type)]),
+        pendingEntries: state.entryState
+            .getIn(['flags', 'pendingEntries', (ownProps.column ?
+                ownProps.column.id : ownProps.type)]
+            ),
         pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byEthAddress'),
         searchQuery: state.searchState.get('query'),

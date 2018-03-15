@@ -233,7 +233,7 @@ export const selectCurrentTotalFollowing = (state, ethAddress) =>
     (state.profileState.getIn(['followings', ethAddress])).size;
 
 export const selectCurrentTotalFollowers = (state, ethAddress) =>
-     (state.profileState.getIn(['followers', ethAddress])).size;
+    (state.profileState.getIn(['followers', ethAddress])).size;
 
 export const selectCurrentTotalProfileEntries = (state, ethAddress) =>
     (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds'])).size;

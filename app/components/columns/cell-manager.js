@@ -5,24 +5,34 @@ class CellManager extends Component {
     baseNodeSize = {}
 
     componentDidMount () {
-        const { onMount } = this.props;
-        if (this._baseNodeRef) {
+        const { onMount, isPending } = this.props;
+        // if the card is in pending state don`t bother to update
+        // it`s height
+        if (this._baseNodeRef && !isPending) {
             this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
             onMount(this.baseNodeSize);
         }
     }
 
-    componentWillUpdate () {
-        if (this._baseNodeRef) {
-            this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
-        }
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isPending !== this.props.isPending;
     }
 
-    componentDidUpdate () {
-        const { onSizeChange } = this.props;
-        if (this._baseNodeRef.getBoundingClientRect().height !== this.baseNodeSize.height) {
-            onSizeChange(this._baseNodeRef.getBoundingClientRect());
-            this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+    // componentWillUpdate (nextProps) {
+    //     const { isPending } = nextProps;
+    //     if (this._baseNodeRef && !isPending) {
+    //         this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
+    //     }
+    // }
+
+    componentDidUpdate (prevProps) {
+        const { onSizeChange, isPending } = this.props;
+        if(isPending !== prevProps.isPending) {
+            const refSize = this._baseNodeRef.getBoundingClientRect();
+            if ( refSize.height !== this.baseNodeSize.height) {
+                onSizeChange(refSize);
+                this.baseNodeSize = refSize;
+            }
         }
     }
 
@@ -42,7 +52,8 @@ class CellManager extends Component {
 CellManager.propTypes = {
     onMount: PropTypes.func,
     onSizeChange: PropTypes.func,
-    children: PropTypes.func
+    children: PropTypes.func,
+    isPending: PropTypes.bool,
 };
 
 export default CellManager;

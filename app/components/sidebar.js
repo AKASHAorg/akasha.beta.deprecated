@@ -31,6 +31,17 @@ class Sidebar extends Component {
             });
         }
     }
+    shouldComponentUpdate (nextProps, nextState) {
+        const props = this.props;
+        return nextState.visible !== this.state.visible ||
+            nextProps.activeDashboard !== props.activeDashboard ||
+            !nextProps.drafts.equals(props.drafts) ||
+            nextProps.draftsFetched !== props.draftsFetched ||
+            nextProps.fetchingDrafts !== props.fetchingDrafts ||
+            nextProps.isProfileEditToggled !== props.isProfileEditToggled ||
+            !nextProps.loggedProfileData.equals(props.loggedProfileData) ||
+            !nextProps.loggedProfile.equals(props.loggedProfile)
+    }
     hide = () => {
         this.setState({
             visible: false,
@@ -43,12 +54,6 @@ class Sidebar extends Component {
     }
 
     handleSearch = () => this.handlePanelShow(panels.search);
-
-    _toggleEntryMenu = (visible) => {
-        this.setState({
-            showEntryMenu: visible
-        });
-    }
 
     _isSidebarVisible = (location) => {
         /**
@@ -335,17 +340,13 @@ Sidebar.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
-        balance: state.profileState.get('balance'),
         draftsCount: state.draftState.get('draftsCount'),
         drafts: state.draftState.get('drafts'),
         draftsFetched: state.draftState.get('draftsFetched'),
         fetchingDrafts: state.draftState.get('fetchingDrafts'),
-        hasFeed: state.notificationsState.get('hasFeed'),
         isProfileEditToggled: selectProfileEditToggle(state),
         loggedProfile: selectLoggedProfile(state),
         loggedProfileData: selectLoggedProfileData(state),
-        notificationsCount: state.notificationsState.get('youNrFeed'),
-        searchQuery: state.searchState.get('query'),
         userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
     };
 }
