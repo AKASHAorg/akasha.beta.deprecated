@@ -1,3 +1,4 @@
+// @flow
 import { List, fromJS } from 'immutable';
 import { differenceWith } from 'ramda';
 import * as types from '../constants';

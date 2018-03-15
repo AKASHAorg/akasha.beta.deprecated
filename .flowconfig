@@ -1,6 +1,6 @@
 [ignore]
-.*/node_modules/*
-.*/main/*
+.*/node_modules/.*/test/.*
+.*/main/.*
 
 [include]
 
