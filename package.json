@@ -253,8 +253,8 @@
     "winston": "2.4.1"
   },
   "devEngines": {
-    "node": ">=6.x",
-    "npm": ">=3.x"
+    "node": ">=8.3.x",
+    "npm": ">=5.x"
   },
   "build": {
     "appId": "com.electron.akasha",

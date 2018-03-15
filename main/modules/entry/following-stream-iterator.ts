@@ -4,6 +4,7 @@ import contracts from '../../contracts/index';
 import { profileAddress } from '../profile/helpers';
 import { GethConnector } from '@akashaproject/geth-connector';
 import resolve from '../registry/resolve-ethaddress';
+import { isNil } from 'ramda';
 
 const followingStreamIterator = {
     'id': '/followingStreamIterator',
@@ -14,14 +15,16 @@ const followingStreamIterator = {
         'akashaId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
         'lastIndex': { 'type': 'number' },
-        'reversed' : {'type': 'boolean'}
+        'reversed' : {'type': 'boolean'},
+        'entryType': {'type': 'number'}
     },
     'required': ['toBlock']
 };
 
 const execute = Promise.coroutine(function* (data: {
     toBlock: number, limit?: number,
-    lastIndex?: number, ethAddress?: string, akashaId?: string, reversed?: boolean
+    lastIndex?: number, ethAddress?: string, akashaId?: string, reversed?: boolean,
+    entryType?: number
 }) {
     const v = new schema.Validator();
     v.validate(data, followingStreamIterator, { throwError: true });
@@ -52,9 +55,10 @@ const execute = Promise.coroutine(function* (data: {
             return GethConnector.getInstance().web3.toUtf8(ev.args.tagName);
         });
         const author = yield resolve.execute({ ethAddress: event.args.author });
-
+        const entryType = captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1;
+        if (!isNil(data.entryType) && entryType !== data.entryType) continue;
         collection.push({
-            entryType: captureIndex.results.length ? captureIndex.results[0].args.entryType.toNumber() : -1,
+            entryType: entryType,
             entryId: event.args.entryId,
             tags,
             author
