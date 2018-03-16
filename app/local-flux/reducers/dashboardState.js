@@ -93,7 +93,13 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
 
 const createDashboardRecord = (data) => {
     let dashboard = new DashboardRecord(data);
-    dashboard = dashboard.set('columns', new List(dashboard.columns.map(col => col.id)));
+    dashboard = dashboard.set('columns', new List(
+        dashboard.columns
+            .filter(col =>
+                col && col.id
+            )
+            .map(col => col.id)
+    ));
     return dashboard;
 };
 
@@ -162,7 +168,10 @@ const dashboardState = createReducer(initialState, {
         let columnById = state.get('columnById');
         data.forEach((dashboard) => {
             dashboard.columns.forEach((column) => {
-                columnById = columnById.set(column.id, new ColumnRecord(column));
+                // if a column is broken (aka wrongly saved in db) just skip it
+                if (column && column.id) {
+                    columnById = columnById.set(column.id, new ColumnRecord(column));
+                }
             });
             byId = byId.set(dashboard.id, createDashboardRecord(dashboard));
             allDashboards = allDashboards.push(dashboard.id);
