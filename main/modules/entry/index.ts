@@ -28,6 +28,7 @@ import canClaimVote from './can-claim-vote';
 import claimVote from './claim-vote';
 import voteRatio from './vote-ratio';
 import getVoteEndPeriod from './vote-endperiod';
+import myVotesIterator from './my-votes-iterator';
 
 export default [
     canClaimVote,
@@ -59,5 +60,6 @@ export default [
     getEntryIpfsHash,
     resolveEntriesIpfsHash,
     voteRatio,
-    getVoteEndPeriod
+    getVoteEndPeriod,
+    myVotesIterator
 ];

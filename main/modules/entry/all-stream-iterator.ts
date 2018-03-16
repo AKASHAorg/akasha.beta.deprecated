@@ -9,7 +9,8 @@ const allStreamIterator = {
         'limit': { 'type': 'number' },
         'toBlock': { 'type': 'number' },
         'lastIndex': {'type': 'number'},
-        'reversed': {'type': 'boolean'}
+        'reversed': {'type': 'boolean'},
+        'entryType': {'type': 'number'}
     },
     'required': ['toBlock']
 };
@@ -18,7 +19,8 @@ const allStreamIterator = {
  * Get a tags created
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number, lastIndex?: number, reversed?: boolean }) {
+const execute = Promise.coroutine(function* (data: { toBlock: number,
+    limit?: number, lastIndex?: number, reversed?: boolean, entryType?: number }) {
     const v = new schema.Validator();
     v.validate(data, allStreamIterator, { throwError: true });
 
