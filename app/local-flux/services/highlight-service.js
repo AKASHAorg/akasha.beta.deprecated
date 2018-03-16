@@ -14,7 +14,8 @@ export const editNotes = ({id, notes}) => {
     try {
         getHighlightCollection()
             .findAndUpdate({id: id}, rec => rec.notes = notes);
-        return Promise.fromCallback(cb => akashaDB.save(cb))
+        const highlight = getHighlightCollection().findOne({id: id});
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, highlight));
     } catch (error) {
         return Promise.reject(error);
     }
