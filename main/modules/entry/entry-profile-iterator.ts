@@ -13,7 +13,8 @@ const entryProfileIterator = {
         'akashaId': { 'type': 'string' },
         'ethAddress': { 'type': 'string', 'format': 'address' },
         'reversed': {'type': 'boolean'},
-        'totalLoaded': { 'type': 'number' }
+        'totalLoaded': { 'type': 'number' },
+        'entryType': {'type': 'number'}
     },
     'required': ['toBlock']
 };
@@ -22,7 +23,8 @@ const entryProfileIterator = {
  * @type {Function}
  */
 const execute = Promise.coroutine(function* (data: { toBlock: number, limit?: number,
-    lastIndex?: number, ethAddress?: string, akashaId?: string, reversed?: boolean, totalLoaded?: number }) {
+    lastIndex?: number, ethAddress?: string, akashaId?: string,
+    reversed?: boolean, totalLoaded?: number, entryType?: number }) {
 
     const v = new schema.Validator();
     v.validate(data, entryProfileIterator, { throwError: true });
