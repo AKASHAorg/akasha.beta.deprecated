@@ -1,15 +1,16 @@
 import { Record, Map, List, OrderedMap } from 'immutable';
-import { License, DraftContent, Draft } from '../records';
+import { License, DraftContent, Draft, DraftsIterator } from '../records';
 
 const DraftModelRecord = Record({
+    draftList: List(),
     drafts: new Map(),
     draftsCount: 0,
-    publishedEntries: new Map(),
-    selection: new Map(),
     draftsFetched: false,
-    entriesFetched: false,
     fetchingDrafts: false,
-    resolvingEntries: new List(),
+    iterator: new DraftsIterator(),
+    publishedEntries: new Map(),
+    resolvingEntries: List(),
+    selection: new Map(),
 });
 
 export default class DraftModel extends DraftModelRecord {

@@ -606,7 +606,6 @@ const mapStateToProps = (state, ownProps) => ({
     drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
     darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
-    entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     loggedProfile: selectLoggedProfile(state),
     selectionState: state.draftState.get('selection'),
