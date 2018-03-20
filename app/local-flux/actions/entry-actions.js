@@ -194,8 +194,8 @@ export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
 
-export const entryProfileIterator = ({ columnId, value, limit, asDrafts, reversed }) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { columnId, value, limit, asDrafts, reversed });
+export const entryProfileIterator = ({ columnId, value, limit, asDrafts, reversed, entryType }) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { columnId, value, limit, asDrafts, reversed, entryType });
 export const entryProfileIteratorError = (error, request) => {
     error.code = 'EPIE01';
     error.messageId = 'entryProfileIterator';

@@ -2,7 +2,7 @@ export { ActionRecord, ActionState } from './action-record';
 export { AppRecord, NotificationRecord, PreviewRecord } from './app-record';
 export { CommentAuthor, CommentData, CommentRecord, CommentsState } from './comments-record';
 export { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
-export { DraftContent, Draft, CardInfo } from './draft-record';
+export { DraftContent, Draft, DraftsIterator, CardInfo } from './draft-record';
 export { EntryAuthor, EntryBalance, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState, EntryVote, ProfileEntries } from './entry-record';
 export { ErrorRecord, ErrorState } from './error-record';

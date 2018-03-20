@@ -10,13 +10,15 @@ import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
 import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
     selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
-    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
+    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken,
+    selectCurrentTotalProfileEntries, selectDrafts, selectDraftsLastBlock,
+    selectDraftsLastIndex } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 3;
-const ENTRY_ITERATOR_LIMIT = 3;
+const ITERATOR_LIMIT = 3;
 const ENTRY_LIST_ITERATOR_LIMIT = 3;
 
 /* eslint-disable no-use-before-define */
@@ -259,7 +261,7 @@ function* entryMoreProfileIterator ({ columnId, value }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, akashaId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, totalLoaded, more: true }]
+        [{ columnId, ethAddress, akashaId, limit: ITERATOR_LIMIT, toBlock, lastIndex, totalLoaded, more: true }]
     );
 }
 
@@ -271,7 +273,7 @@ function* entryMoreStreamIterator ({ columnId }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
+        [{ columnId, ethAddress, limit: ITERATOR_LIMIT, toBlock, lastIndex, more: true }]
     );
 }
 
@@ -282,7 +284,7 @@ function* entryMoreTagIterator ({ columnId, value }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
+        [{ columnId, limit: ITERATOR_LIMIT, toBlock, lastIndex, tagName: value, more: true }]
     );
 }
 
@@ -295,16 +297,21 @@ function* entryNewestIterator ({ columnId, reversed }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT, asDrafts, reversed }) {
+function* entryProfileIterator ({ columnId, value, limit = ITERATOR_LIMIT, asDrafts, reversed, entryType }) {
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, columnId)) :
-        yield select(selectBlockNumber);
-    let akashaId, ethAddress; // eslint-disable-line
+    let akashaId, ethAddress, lastIndex, toBlock; // eslint-disable-line
+    if (asDrafts) {
+        toBlock = (yield select(selectDraftsLastBlock)) || (yield select(selectBlockNumber));
+        lastIndex = yield select(selectDraftsLastIndex);
+    } else {
+        toBlock = reversed ?
+            yield select(state => selectColumnFirstBlock(state, columnId)) :
+            yield select(selectBlockNumber);
+    }
     if (isEthAddress(value)) {
         ethAddress = value;
     } else {
@@ -313,7 +320,7 @@ function* entryProfileIterator ({ columnId, value, limit = ENTRY_ITERATOR_LIMIT,
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
+        [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed, lastIndex, entryType }]
     );
 }
 
@@ -337,7 +344,7 @@ function* entryStreamIterator ({ columnId, reversed }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, ethAddress, limit: ENTRY_ITERATOR_LIMIT, toBlock, reversed }]
+        [{ columnId, ethAddress, limit: ITERATOR_LIMIT, toBlock, reversed }]
     );
 }
 
@@ -351,7 +358,7 @@ function* entryTagIterator ({ columnId, value, reversed }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName: value, toBlock, reversed }]
+        [{ columnId, limit: ITERATOR_LIMIT, tagName: value, toBlock, reversed }]
     );
 }
 
@@ -641,7 +648,7 @@ function* watchEntryProfileIteratorChannel () {
     }
 }
 
-function* handleEntryProfileIteratorResponse (resp) {
+function* handleEntryProfileIteratorResponse (resp) { // eslint-disable-line max-statements, complexity
     const { columnId, asDrafts, reversed } = resp.request;
     if (resp.error) {
         if (resp.request.more) {
@@ -655,6 +662,10 @@ function* handleEntryProfileIteratorResponse (resp) {
         yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
         yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
     } else if (resp.request.asDrafts) {
+        const drafts = yield select(selectDrafts);
+        const noResults = !resp.data.collection.length;
+        const duplicatedResults = !noResults &&
+            resp.data.collection.every(entry => !!drafts.get(entry.entryId));
         yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
         const ethAddress = resp.request.ethAddress;
         for (let i = resp.data.collection.length - 1; i >= 0; i--) {
@@ -663,6 +674,13 @@ function* handleEntryProfileIteratorResponse (resp) {
                 ethAddress,
                 asDraft: true
             }));
+        }
+        /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
+         * continue to iterate until at least one entry is found or the end of the chain is reached
+         */
+        if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
+            const args = { ...resp.request, value: resp.request.ethAddress };
+            yield fork(entryProfileIterator, args);
         }
     } else {
         if (!reversed) {

@@ -644,7 +644,6 @@ const mapStateToProps = (state, ownProps) => ({
     draftRemoveTag: PropTypes.func,
     drafts: state.draftState.get('drafts'),
     draftsFetched: state.draftState.get('draftsFetched'),
-    entriesFetched: state.draftState.get('entriesFetched'),
     licences: state.licenseState.get('byId'),
     resolvingEntries: state.draftState.get('resolvingEntries'),
     selectionState: state.draftState.get('selection'),

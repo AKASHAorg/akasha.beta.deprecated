@@ -67,6 +67,7 @@ export const draftRemoveTag = data => action(types.DRAFT_REMOVE_TAG, { data });
 export const draftRemoveTagSuccess = data => action(types.DRAFT_REMOVE_TAG_SUCCESS, { data });
 export const draftRemoveTagError = data => action(types.DRAFT_REMOVE_TAG_ERROR, { data });
 
+export const draftResetIterator = () => action(types.DRAFT_RESET_ITERATOR);
 
 /**
  * Delete draft in db and reducer. We must check if the draft is in database
