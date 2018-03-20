@@ -64,14 +64,18 @@ function* draftsGet ({ data }) {
         if (response.length > 0) {
             response.forEach((draft) => {
                 let draftTags = new OrderedMap();
-                draft.content.draft = editorStateFromRaw(draft.content.draft);
+                let draftRecord = DraftModel.createDraft(draft);
+                draftRecord = draftRecord.setIn(
+                    ['content', 'draft'],
+                    editorStateFromRaw(draft.content.draft)
+                );
                 if (Object.keys(draft.tags).length) {
                     Object.keys(draft.tags).forEach((tagKey) => {
                         draftTags = draftTags.set(tagKey, draft.tags[tagKey]);
                     });
                 }
-                draft.tags = draftTags;
-                drafts = drafts.setIn([draft.id], DraftModel.createDraft(draft));
+                draftRecord = draftRecord.set('tags', draftTags);
+                drafts = drafts.set(draft.id, draftRecord);
             });
         }
         yield put(draftActions.draftsGetSuccess({ drafts }));

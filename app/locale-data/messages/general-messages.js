@@ -837,6 +837,11 @@ const generalMessages = defineMessages({
         id: 'app.general.reportIssue',
         description: 'report issue',
         defaultMessage: 'Report issue'
+    },
+    loadMore: {
+        id: 'app.general.loadMore',
+        description: 'load more',
+        defaultMessage: 'Load more'
     }
 });
 export { generalMessages };

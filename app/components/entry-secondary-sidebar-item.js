@@ -5,23 +5,39 @@ import { Icon as SvgIcon } from './';
 import { entryMessages } from '../locale-data/messages';
 
 const getIconType = (localChanges, published, unresolved, entryType) => {
+    const type = (entryType === 'article') ? 'textEntry' : 'linkEntry';
     switch (true) {
         case unresolved:
             return <Icon type="dot red-dot" />;
         case (localChanges && published):
-            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon_yellow" />;
+            return (
+              <SvgIcon
+                type={type}
+                className="new-entry-secondary-sidebar__icon_yellow"
+              />
+            );
         case (!localChanges && published):
-            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon" />;
+            return (
+              <SvgIcon
+                type={type}
+                className="new-entry-secondary-sidebar__icon"
+              />
+            );
         case !published:
-            return <SvgIcon type={(entryType === 'article') ? 'textEntry' : 'linkEntry'} className="new-entry-secondary-sidebar__icon" />;
+            return (
+              <SvgIcon
+                type={type}
+                className="new-entry-secondary-sidebar__icon"
+              />
+            );
         default:
             return <SvgIcon type="draft" />;
     }
 };
 
-const EntrySecondarySidebarItem = ({
+const EntrySecondarySidebarItem = ({ // eslint-disable-line complexity
     draft, active, intl, matchString, onItemClick, showDraftMenuDrowpdown, onDraftDelete, onPreviewCreate,
-    published, localChanges, unresolved, onDraftRevert
+    unresolved, onDraftRevert
 }) => (
   <div
     className={
@@ -34,7 +50,7 @@ const EntrySecondarySidebarItem = ({
     {/* eslint-disable react/no-danger */}
     {matchString &&
     <div>
-        {getIconType(localChanges, published, unresolved, draft.content.entryType)}
+        {getIconType(draft.localChanges, draft.onChain, unresolved, draft.content.entryType)}
       <a
         href="/"
         dangerouslySetInnerHTML={{ __html: matchString }}
@@ -45,7 +61,7 @@ const EntrySecondarySidebarItem = ({
     }
     {!matchString &&
     <div>
-      {getIconType(localChanges, published, unresolved, draft.content.entryType)}
+      {getIconType(draft.localChanges, draft.onChain, unresolved, draft.content.entryType)}
       <a
         href="/"
         className="draft-list-item__link"
@@ -83,7 +99,7 @@ const EntrySecondarySidebarItem = ({
             >
               <b>{intl.formatMessage(entryMessages.draftSharePreview)}</b>
             </div>
-            {!published &&
+            {!draft.onChain &&
               <div
                 className="draft-list-item__popover-button"
                 onClick={ev => onDraftDelete(ev, draft.id)}
@@ -91,7 +107,7 @@ const EntrySecondarySidebarItem = ({
                 <b>{intl.formatMessage(entryMessages.draftDelete)}</b>
               </div>
             }
-            {published && localChanges &&
+            {draft.onChain && draft.localChanges &&
               <div
                 className="draft-list-item__popover-button"
                 onClick={ev => onDraftRevert(ev, draft.id)}
@@ -117,15 +133,14 @@ EntrySecondarySidebarItem.propTypes = {
     active: PropTypes.bool,
     draft: PropTypes.shape(),
     intl: PropTypes.shape(),
-    matchString: PropTypes.string,
-    onItemClick: PropTypes.func,
-    onDraftDelete: PropTypes.func,
-    onPreviewCreate: PropTypes.func,
-    published: PropTypes.bool,
     localChanges: PropTypes.bool,
+    matchString: PropTypes.string,
+    onDraftDelete: PropTypes.func,
+    onDraftRevert: PropTypes.func,
+    onItemClick: PropTypes.func,
+    onPreviewCreate: PropTypes.func,
     showDraftMenuDrowpdown: PropTypes.func,
     unresolved: PropTypes.bool,
-    onDraftRevert: PropTypes.func,
 };
 
 export default EntrySecondarySidebarItem;
