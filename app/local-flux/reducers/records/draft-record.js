@@ -34,6 +34,12 @@ export const DraftContent = Record({
     latestVersion: -1,
 });
 
+export const DraftsIterator = Record({
+    lastBlock: undefined,
+    lastIndex: undefined,
+    moreEntries: null,
+});
+
 export const Draft = Record({
     /**
      * published entry fields

@@ -8,9 +8,11 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectListEntries, selectListEntryType, selectIsFollower,
-    selectListNextEntries, selectLoggedEthAddress, selectProfileEntriesLastBlock,
-    selectProfileEntriesLastIndex, selectToken, selectCurrentTotalProfileEntries } from '../selectors';
+import { selectBlockNumber, selectColumnFirstBlock,
+    selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
+    selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken,
+    selectCurrentTotalProfileEntries, selectDrafts, selectDraftsLastBlock,
+    selectDraftsLastIndex } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import { isEthAddress } from '../../utils/dataModule';
 
@@ -145,7 +147,7 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (!ethAddress) {
-            console.error('entry with no author found', entry);
+            console.error('entry with no author found', entry); //eslint-disable-line
         }
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
@@ -310,15 +312,22 @@ function* entryNewestIterator ({ column }) {
     yield apply(channel, channel.send, [{ columnId: id, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ column }) {
-    const { id, value, firstBlock, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT } = column;
+function* entryProfileIterator ({ column, entryType }) {
+    const { id, value, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
-    let akashaId, ethAddress; // eslint-disable-line
+    let akashaId, ethAddress, lastIndex, toBlock; // eslint-disable-line
+    if (asDrafts) {
+        toBlock = (yield select(selectDraftsLastBlock)) || (yield select(selectBlockNumber));
+        lastIndex = yield select(selectDraftsLastIndex);
+    } else {
+        toBlock = reversed ?
+            yield select(state => selectColumnFirstBlock(state, id)) :
+            yield select(selectBlockNumber);
+    }
     if (isEthAddress(value)) {
         ethAddress = value;
     } else {
@@ -327,7 +336,7 @@ function* entryProfileIterator ({ column }) {
     yield apply(
         channel,
         channel.send,
-        [{ columnId: id, limit, akashaId, ethAddress, asDrafts, toBlock, reversed }]
+        [{ columnId: id, limit, akashaId, ethAddress, asDrafts, toBlock, reversed, lastIndex, entryType }]
     );
 }
 
@@ -653,7 +662,7 @@ function* watchEntryProfileIteratorChannel () {
     }
 }
 
-function* handleEntryProfileIteratorResponse (resp) {
+function* handleEntryProfileIteratorResponse (resp) { // eslint-disable-line max-statements, complexity
     const { columnId, asDrafts, reversed } = resp.request;
     if (resp.error) {
         if (resp.request.more) {
@@ -667,14 +676,25 @@ function* handleEntryProfileIteratorResponse (resp) {
         yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
         yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
     } else if (resp.request.asDrafts) {
+        const drafts = yield select(selectDrafts);
+        const noResults = !resp.data.collection.length;
+        const duplicatedResults = !noResults &&
+            resp.data.collection.every(entry => !!drafts.get(entry.entryId));
         yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
         const ethAddress = resp.request.ethAddress;
-        const drafts = resp.data.collection;
-        yield all(drafts.map(draft => put(actions.entryGetFull({
+        const incomingDrafts = resp.data.collection;
+        yield all(incomingDrafts.map(draft => put(actions.entryGetFull({
             entryId: draft.entryId,
             ethAddress,
             asDraft: true
         }))));
+        /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
+         * continue to iterate until at least one entry is found or the end of the chain is reached
+         */
+        if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
+            const args = { ...resp.request, value: resp.request.ethAddress };
+            yield fork(entryProfileIterator, args);
+        }
     } else {
         if (!reversed) {
             yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);

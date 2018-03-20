@@ -5,16 +5,16 @@ import { Popover, Modal } from 'antd';
 import fuzzy from 'fuzzy';
 import { injectIntl } from 'react-intl';
 import { EntrySecondarySidebarItem, Icon } from '../';
-import { entryMessages, searchMessages, generalMessages } from '../../locale-data/messages';
-import { genId } from '../../utils/dataModule';
+import { entryMessages, generalMessages, searchMessages } from '../../locale-data/messages';
 import { entryTypes, entryTypesIcons } from '../../constants/entry-types';
 import { draftsGetCount, draftsGet, draftDelete, draftCreate,
-    draftRevertToVersion } from '../../local-flux/actions/draft-actions';
+    draftResetIterator, draftRevertToVersion } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { tagCanCreate } from '../../local-flux/actions/tag-actions';
 
 const { confirm } = Modal;
-const sortCreated = (a, b) => new Date(a.getIn(['meta', 'created'])) < new Date(b.getIn(['meta', 'created']));
+const shallowEquals = (a, b) => Object.keys(a).every(key => a[key] === b[key]);
+
 class NewEntrySecondarySidebar extends Component {
     state = {
         searchString: '',
@@ -31,12 +31,7 @@ class NewEntrySecondarySidebar extends Component {
         const { ethAddress } = this.props;
         this.props.draftsGetCount({ ethAddress });
         this.props.tagCanCreate({ ethAddress });
-        this.props.entryProfileIterator({
-            column: null,
-            value: ethAddress,
-            limit: 1000000,
-            asDrafts: true
-        });
+        this.entryProfileIterator();
     }
     /* eslint-disable complexity */
     shouldComponentUpdate (nextProps, nextState) {
@@ -45,7 +40,9 @@ class NewEntrySecondarySidebar extends Component {
         const draftCardTitle = nextProps.drafts.getIn([draftId, 'content', 'cardInfo', 'title']);
 
         return (nextProps.draftsFetched !== this.props.draftsFetched) ||
-            (nextProps.drafts.size !== this.props.drafts.size) ||
+            !nextProps.draftList.equals(this.props.draftList) || 
+            !nextProps.drafts.equals(this.props.drafts) ||
+            nextProps.moreEntries !== this.props.moreEntries ||
             (nextProps.match.params.draftType !== this.props.match.params.draftType) ||
             (draftId !== this.props.match.params.draftId) ||
             (draftTitle !== this.props.drafts.getIn([draftId, 'content', 'title'])) ||
@@ -53,29 +50,24 @@ class NewEntrySecondarySidebar extends Component {
             nextProps.drafts.getIn([nextProps.match.params.draftId, 'localChanges']) !==
                 this.props.drafts.getIn([this.props.match.params.draftId, 'localChanges']) ||
             !nextProps.resolvingEntries.equals(this.props.resolvingEntries) ||
-            (nextState.searchString !== this.state.searchString) ||
-            (nextState.searching !== this.state.searching) ||
-            (nextState.draftTypeVisible !== this.state.draftTypeVisible) ||
-            (nextState.entryTypeVisible !== this.state.entryTypeVisible) ||
-            (nextState.searchBarVisible !== this.state.searchBarVisible) ||
-            (nextState.selectedDraftFilter !== this.state.selectedDraftFilter) ||
-            (nextState.selectedEntryFilter !== this.state.selectedEntryFilter);
+            !shallowEquals(nextState, this.state);
     }
     /* eslint-enable complexity */
 
-    createNewDraft = (id, entryType) => {
-        const { ethAddress, userSelectedLicence } = this.props;
-        this.props.draftCreate({
-            id,
-            ethAddress,
-            content: {
-                featuredImage: {},
-                licence: userSelectedLicence,
-                entryType,
-            },
-            tags: {},
+    entryProfileIterator = () => {
+        const { ethAddress } = this.props;
+        const { selectedEntryFilter } = this.state;
+        const entryType = selectedEntryFilter === 'all' ?
+            undefined :
+            entryTypes.indexOf(selectedEntryFilter);
+        this.props.entryProfileIterator({
+            column: null,
+            value: ethAddress,
+            limit: 5,
+            asDrafts: true,
+            entryType
         });
-    }
+    };
 
     _onDraftItemClick = (ev, draftPath) => {
         ev.preventDefault();
@@ -88,26 +80,24 @@ class NewEntrySecondarySidebar extends Component {
         }, () => {
             history.push(draftPath);
         });
-    }
+    };
 
     _handleDraftDelete = (draftIdToDelete) => {
-        const { ethAddress, drafts, match, history } = this.props;
+        const { ethAddress, draftList, drafts, match, history } = this.props;
         const { draftType, draftId } = match.params;
 
-        const nextDraft = drafts.filter(draft => !draft.get('onChain') && draft.get('id') !== draftId)
-            .sort(sortCreated)
-            .first();
+        const nextDraftId = draftList.filter(id => !drafts.getIn([id, 'onChain']) && id !== draftId).first();
 
         this.props.draftDelete({
             draftId: draftIdToDelete,
             ethAddress
         });
-        if (nextDraft && draftIdToDelete === draftId) {
-            history.push(`/draft/${draftType}/${nextDraft.get('id')}`);
-        } else if (!nextDraft) {
+        if (nextDraftId && draftIdToDelete === draftId) {
+            history.push(`/draft/${draftType}/${nextDraftId}`);
+        } else if (!nextDraftId) {
             history.push(`/draft/${draftType}/nodraft`);
         }
-    }
+    };
 
     _showDraftDeleteConfirm = (ev, draftId) => {
         const { intl } = this.props;
@@ -121,7 +111,7 @@ class NewEntrySecondarySidebar extends Component {
             onCancel () {}
         });
         ev.preventDefault();
-    }
+    };
 
     _handleDraftSearch = (ev) => {
         ev.preventDefault();
@@ -136,7 +126,7 @@ class NewEntrySecondarySidebar extends Component {
             searchString,
             searching: false
         });
-    }
+    };
 
     _handleTypeChange = (type, category) =>
         (ev) => {
@@ -147,18 +137,14 @@ class NewEntrySecondarySidebar extends Component {
                     draftTypeVisible: false,
                 });
             }
+            const callback = type === 'all' ?
+                undefined :
+                () => { this.entryProfileIterator(); this.props.draftResetIterator(); };
             return this.setState({
                 selectedEntryFilter: type,
                 entryTypeVisible: false
-            });
-        }
-
-    _handleDraftCreate = () => {
-        const draftId = genId();
-        const entryType = this.props.match.params.draftType;
-        this.createNewDraft(draftId, entryType);
-        this.props.history.push(`/draft/${entryType}/${draftId}`);
-    }
+            }, callback);
+        };
 
     _handleVersionRevert = (draftId, version) => {
         const { ethAddress } = this.props;
@@ -173,7 +159,7 @@ class NewEntrySecondarySidebar extends Component {
             revert: true,
             ethAddress,
         });
-    }
+    };
 
     _handleDraftRevert = (ev, draftId) => {
         const { drafts, intl } = this.props;
@@ -191,8 +177,8 @@ class NewEntrySecondarySidebar extends Component {
         } else {
             this._handleVersionRevert(draftId, draftVersion);
         }
-    }
-    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, indent */
+    };
+
     _getEntryTypePopover = (category) => {
         const { intl } = this.props;
         const { selectedDraftFilter, selectedEntryFilter } = this.state;
@@ -206,9 +192,7 @@ class NewEntrySecondarySidebar extends Component {
             }
             onClick={this._handleTypeChange(type, category)}
           >
-            <Icon
-              type={(type !== 'all') && entryTypesIcons[type]}
-            />
+            <Icon type={(type !== 'all') && entryTypesIcons[type]} />
             {
                 intl.formatMessage(entryMessages[`${type}EntryType`])
             } {
@@ -225,21 +209,18 @@ class NewEntrySecondarySidebar extends Component {
             }
             onClick={this._handleTypeChange('all', category)}
           >
-            <Icon
-              type="entries"
-            />
+            <Icon type="entries" />
             {intl.formatMessage(entryMessages[`${category}All`])}
           </li>
         );
         return (
           <div>
             <ul className="new-entry-secondary-sidebar__entry-type-list">
-              {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
               {entries}
             </ul>
           </div>
         );
-    }
+    };
 
     _handleTypeVisibility = type =>
         () => {
@@ -253,7 +234,7 @@ class NewEntrySecondarySidebar extends Component {
                     entryTypeVisible: !prevState.entryTypeVisible
                 };
             });
-        }
+        };
 
     _createDraftPreviewLink = (ev, draftId) => {
         // prevent default just in case some other dev decides to
@@ -263,18 +244,7 @@ class NewEntrySecondarySidebar extends Component {
         // @TODO this feature is not planned for 0.6 release;
         console.log('create an ipfs preview link for draft', draftId);
         // this.props.createDraftPreviewLink()
-    }
-
-    _getFilteredDrafts = (drafts, resolvingEntries, draftType) =>
-        drafts.filter((draft) => {
-            if (draftType === 'all') {
-                return draft;
-            }
-            if (draftType === 'link') {
-                return draft.content && draft.content.entryType === draftType && draft.content.cardInfo.title;
-            }
-            return draft.content && draft.content.entryType === draftType && draft.content.title;
-        })
+    };
 
     _toggleSearchBarVisibility = (ev) => {
         ev.preventDefault();
@@ -297,7 +267,8 @@ class NewEntrySecondarySidebar extends Component {
         });
     };
 
-    _getSearchResults = (drafts, resolvingEntries, draftType) => {
+    _getSearchResults = () => {
+        const { drafts } = this.props;
         const searchOptions = {
             pre: '<b>',
             post: '</b>',
@@ -309,21 +280,20 @@ class NewEntrySecondarySidebar extends Component {
             },
         };
         if (this.state.searching) {
-            // const allDrafts = this._getFilteredDrafts(drafts, resolvingEntries, draftType);
             return fuzzy.filter(this.state.searchString, drafts.toList().toJS(), searchOptions);
         }
         return null;
-    }
+    };
 
     _handleSearchBarShortcuts = (ev) => {
-        if (ev.which === 27) {
+        if (ev.key === 'Escape') {
             this.setState({
                 searchString: '',
                 searching: false,
                 searchBarVisible: false
             });
         }
-    }
+    };
     /**
      * for events like clicking outside of the popover component
      */
@@ -340,39 +310,80 @@ class NewEntrySecondarySidebar extends Component {
                     entryTypeVisible: visible
                 };
             });
-        }
+        };
 
-    render () {
-        const { drafts, intl, match, resolvingEntries } = this.props;
-        const { searchBarVisible, searching, searchString } = this.state;
+    renderPopover = (type) => {
+        const visible = type === 'draft' ?
+            this.state.draftTypeVisible :
+            this.state.entryTypeVisible;
+        return (
+          <Popover
+            arrowPointAtCenter
+            content={this.wasVisible ? this._getEntryTypePopover(type) : null}
+            trigger="click"
+            placement="bottomLeft"
+            overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
+            overlayStyle={{ width: 190 }}
+            visible={visible}
+            onVisibleChange={this._forceTypeVisibility(type)}
+          >
+            <div
+              className="flex-center-y content-link"
+              onClick={this._handleTypeVisibility(type)}
+            >
+              <Icon className="content-link" type="arrowDropdownOpen" />
+            </div>
+          </Popover>
+        )
+    };
+
+    renderSidebarItem = (draft, matchString) => {
+        const { intl, match, resolvingEntries } = this.props;
         const currentDraftId = match.params.draftId;
+        return (
+          <EntrySecondarySidebarItem
+            active={(draft.id === currentDraftId)}
+            key={draft.id}
+            draft={draft}
+            intl={intl}
+            matchString={matchString}
+            onItemClick={this._onDraftItemClick}
+            onDraftDelete={this._showDraftDeleteConfirm}
+            showDraftMenuDropdown={this._showDraftMenuDropdown}
+            onPreviewCreate={this._createDraftPreviewLink}
+            onDraftRevert={this._handleDraftRevert}
+            unresolved={resolvingEntries.includes(draft.id)}
+          />
+        );
+    };
+
+    render () { // eslint-disable-line complexity
+        const { draftList, drafts, intl, moreEntries } = this.props;
+        const { searchBarVisible, searching, searchString } = this.state;
         const draftType = this.state.selectedDraftFilter;
         const entryType = this.state.selectedEntryFilter;
-        const localDraftsByType = drafts
-            .filter((drft) => {
+        const localDraftsByType = draftList
+            .filter((id) => {
+                const drft = drafts.get(id);
                 if (draftType === 'all') {
                     return !drft.get('onChain');
                 }
                 return (!drft.get('onChain') && drft.getIn(['content', 'entryType']) === draftType);
-            })
-            .sort(sortCreated);
+            });
 
-        const publishedDraftsByType = drafts.filter((drft) => {
-            if (entryType === 'all') {
-                return drft.get('id') && drft.get('onChain');
-            }
-            return (drft.get('id') && drft.get('onChain') &&
-                drft.getIn(['content', 'entryType']) === entryType);
-        }).sort(sortCreated);
-
-        const searchResults = this._getSearchResults(drafts, resolvingEntries, 'all');
+        const publishedDraftsByType = draftList
+            .filter((id) => {
+                const drft = drafts.get(id);
+                if (entryType === 'all') {
+                    return drft.get('id') && drft.get('onChain');
+                }
+                return (drft.get('id') && drft.get('onChain') &&
+                    drft.getIn(['content', 'entryType']) === entryType);
+            });
+        const searchResults = this._getSearchResults();
         return (
-          <div
-            className="new-entry-secondary-sidebar"
-          >
-            <div
-              className="new-entry-secondary-sidebar__sidebar-header"
-            >
+          <div className="new-entry-secondary-sidebar">
+            <div className="new-entry-secondary-sidebar__sidebar-header">
               <div
                 className={
                   `new-entry-secondary-sidebar__sidebar-header_dropdown-container
@@ -403,156 +414,78 @@ class NewEntrySecondarySidebar extends Component {
                 className="flex-center new-entry-secondary-sidebar__sidebar-header_search-icon"
                 onClick={this._toggleSearchBarVisibility}
               >
-                <Icon
-                  type={`${searchBarVisible ? 'close' : 'search'}`}
-                />
+                <Icon type={`${searchBarVisible ? 'close' : 'search'}`} />
               </div>
             </div>
-            <div
-              className="new-entry-secondary-sidebar__sidebar-body"
-            >
-              <div
-                className="new-entry-secondary-sidebar__draft-list-container"
-              >
+            <div className="new-entry-secondary-sidebar__sidebar-body">
+              <div className="new-entry-secondary-sidebar__draft-list-container">
                 <div className="new-entry-secondary-sidebar__draft-list-title">
                   <span
                     className="content-link new-entry-secondary-sidebar__draft-list-title-text"
                     onClick={this._handleTypeVisibility('draft')}
                   >
-                    {draftType === 'all' && intl.formatMessage(entryMessages.draftAll)}
                     {
-                        (draftType !== 'all') && intl.formatMessage(entryMessages[`${draftType}EntryType`])
+                      intl.formatMessage(draftType === 'all' ?
+                        entryMessages.draftAll :
+                        entryMessages[`${draftType}EntryType`]
+                      )
                     } {(draftType !== 'all') &&
-                       intl.formatMessage(entryMessages.draftEntryCategory)
+                      intl.formatMessage(entryMessages.draftEntryCategory)
                     }
                   </span>
-                  <Popover
-                    arrowPointAtCenter
-                    content={this.wasVisible ? this._getEntryTypePopover('draft') : null}
-                    trigger="click"
-                    placement="bottomLeft"
-                    overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
-                    overlayStyle={{ width: 190 }}
-                    visible={this.state.draftTypeVisible}
-                    onVisibleChange={this._forceTypeVisibility('draft')}
-                  >
-                    <div
-                      className="flex-center-y content-link"
-                      onClick={this._handleTypeVisibility('draft')}
-                    >
-                      <Icon
-                        className="content-link"
-                        type="arrowDropdownOpen"
-                      />
-                    </div>
-                  </Popover>
+                  {this.renderPopover('draft')}
                 </div>
                 {searching && (searchResults.length > 0) &&
                     searchResults
-                        .filter(drft => !drft.original.onChain)
-                        .map(draft => (
-                          <EntrySecondarySidebarItem
-                            active={(draft.original.id === currentDraftId)}
-                            key={`${draft.original.id}`}
-                            draft={draft.original}
-                            matchString={draft.string}
-                            intl={intl}
-                            onItemClick={this._onDraftItemClick}
-                            onDraftDelete={this._showDraftDeleteConfirm}
-                            showDraftMenuDropdown={this._showDraftMenuDropdown}
-                            onPreviewCreate={this._createDraftPreviewLink}
-                            onDraftRevert={this._handleDraftRevert}
-                          />
-                        ))
+                        .filter((drft) => {
+                            const hasFilter = draftType !== 'all';
+                            const filtered = drft.original.content.entryType === draftType;
+                            return !drft.original.onChain && (!hasFilter || filtered);
+                        })
+                        .map(draft => this.renderSidebarItem(draft.original, draft.string))
                 }
                 {searching && searchResults.length === 0 &&
                   <div>{intl.formatMessage(entryMessages.noDraftsFoundOnSearch)}</div>
                 }
                 {!searching &&
-                    localDraftsByType.map(draft => (
-                      <EntrySecondarySidebarItem
-                        active={(draft.get('id') === currentDraftId)}
-                        key={`${draft.get('id')}`}
-                        draft={draft.toJS()}
-                        intl={intl}
-                        onItemClick={this._onDraftItemClick}
-                        onDraftDelete={this._showDraftDeleteConfirm}
-                        showDraftMenuDropdown={this._showDraftMenuDropdown}
-                        onPreviewCreate={this._createDraftPreviewLink}
-                        onDraftRevert={this._handleDraftRevert}
-                      />
-                    )).toList()}
+                  localDraftsByType.map(id => this.renderSidebarItem(drafts.get(id).toJS()))}
                 <div>
                   <div className="new-entry-secondary-sidebar__draft-list-title">
                     <span
                       className="content-link new-entry-secondary-sidebar__draft-list-title-text"
                       onClick={this._handleTypeVisibility('published')}
                     >
-                      {entryType === 'all' && intl.formatMessage(entryMessages.entriesAll)}
                       {
-                          entryType !== 'all' && intl.formatMessage(entryMessages[`${entryType}EntryType`])
+                        intl.formatMessage(entryType === 'all' ?
+                            entryMessages.entriesAll :
+                            entryMessages[`${entryType}EntryType`]
+                        )
                       } {(entryType !== 'all') &&
                         intl.formatMessage(entryMessages.publishedEntryCategory)
                       }
                     </span>
-                    <Popover
-                      arrowPointAtCenter
-                      content={this.wasVisible ? this._getEntryTypePopover('published') : null}
-                      trigger="click"
-                      placement="bottomLeft"
-                      overlayClassName="new-entry-secondary-sidebar__draft-type-popover"
-                      overlayStyle={{ width: 190 }}
-                      visible={this.state.entryTypeVisible}
-                      onVisibleChange={this._forceTypeVisibility('published')}
-                    >
-                      <div
-                        className="flex-center-y content-link"
-                        onClick={this._handleTypeVisibility('published')}
-                      >
-                        <Icon
-                          className="content-link"
-                          type="arrowDropdownOpen"
-                        />
-                      </div>
-                    </Popover>
+                    {this.renderPopover('published')}
                   </div>
-                  {!searching && publishedDraftsByType.map(draft => (
-                    <div key={`${draft.get('id')}`}>
-                      <EntrySecondarySidebarItem
-                        active={(draft.get('id') === currentDraftId)}
-                        key={`${draft.get('id')}`}
-                        draft={draft.toJS()}
-                        intl={intl}
-                        onItemClick={this._onDraftItemClick}
-                        onDraftDelete={this._showDraftDeleteConfirm}
-                        showDraftMenuDropdown={this._showDraftMenuDropdown}
-                        onPreviewCreate={this._createDraftPreviewLink}
-                        published={draft.get('onChain')}
-                        localChanges={draft.get('localChanges')}
-                        unresolved={resolvingEntries.includes(draft.get('id'))}
-                        onDraftRevert={this._handleDraftRevert}
-                      />
+                  {!searching &&
+                    publishedDraftsByType.map(id => this.renderSidebarItem(drafts.get(id).toJS()))}
+                  {!searching && moreEntries &&
+                    <div className="flex-center-x">
+                      <span
+                        className="new-entry-secondary-sidebar__load-more-button"
+                        onClick={this.entryProfileIterator}
+                      >
+                        {intl.formatMessage(generalMessages.loadMore)}
+                      </span>
                     </div>
-                  )).toList()}
-                  {searching && searchResults.filter(drft =>
-                      drft.original.onChain)
-                      .map(draft => (
-                        <EntrySecondarySidebarItem
-                          active={(draft.original.id === currentDraftId)}
-                          key={`${draft.original.id}`}
-                          draft={draft.original}
-                          intl={intl}
-                          matchString={draft.string}
-                          onItemClick={this._onDraftItemClick}
-                          onDraftDelete={this._showDraftDeleteConfirm}
-                          showDraftMenuDropdown={this._showDraftMenuDropdown}
-                          onPreviewCreate={this._createDraftPreviewLink}
-                          published={draft.original.onChain}
-                          localChanges={draft.original.localChanges}
-                          unresolved={resolvingEntries.includes(draft.original.id)}
-                          onDraftRevert={this._handleDraftRevert}
-                        />
-                  ))}
+                  }
+                  {searching && searchResults
+                      .filter((drft) => {
+                          const hasFilter = entryType !== 'all';
+                          const filtered = drft.original.content.entryType === entryType;
+                          return drft.original.onChain && (!hasFilter || filtered);
+                      })
+                      .map(draft => this.renderSidebarItem(draft.original, draft.string))
+                  }
                   {searching && searchResults.length === 0 &&
                     <div>{intl.formatMessage(entryMessages.noDraftsFoundOnSearch)}</div>
                   }
@@ -563,28 +496,35 @@ class NewEntrySecondarySidebar extends Component {
         );
     }
 }
+
 NewEntrySecondarySidebar.propTypes = {
     ethAddress: PropTypes.string,
     draftCreate: PropTypes.func,
     draftDelete: PropTypes.func,
+    draftList: PropTypes.shape().isRequired,
     draftsFetched: PropTypes.bool,
     drafts: PropTypes.shape(),
     draftsGetCount: PropTypes.func,
-    entryProfileIterator: PropTypes.func,
+    draftResetIterator: PropTypes.func.isRequired,    
+    entryProfileIterator: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     match: PropTypes.shape(),
+    moreEntries: PropTypes.bool,
     resolvingEntries: PropTypes.shape(),
     userSelectedLicence: PropTypes.shape(),
     draftRevertToVersion: PropTypes.func,
     entryGetFull: PropTypes.func,
     tagCanCreate: PropTypes.func,
 };
+
 const mapStateToProps = state => ({
+    draftList: state.draftState.get('draftList'),
     draftsCount: state.draftState.get('draftsCount'),
     ethAddress: state.profileState.getIn(['loggedProfile', 'ethAddress']),
     draftsFetched: state.draftState.get('draftsFetched'),
     drafts: state.draftState.get('drafts'),
+    moreEntries: state.draftState.getIn(['iterator', 'moreEntries']),
     resolvingEntries: state.draftState.get('resolvingEntries'),
     userSelectedLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
 });
@@ -596,6 +536,7 @@ export default connect(
         draftDelete,
         draftsGetCount,
         draftsGet,
+        draftResetIterator,
         draftRevertToVersion,
         entryGetFull,
         entryProfileIterator,
