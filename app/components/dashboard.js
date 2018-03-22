@@ -46,11 +46,11 @@ class Dashboard extends Component {
     }
 
     componentDidMount () {
-        const { match, dashboards } = this.props;
+        const { match, dashboards, columns } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
         if(this._dashboardNode && activeDashboard) {
-            this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
         if (dashboardId && activeDashboard) {
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
@@ -58,12 +58,15 @@ class Dashboard extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, dashboards } = nextProps;
+        const { match, dashboards, columns } = nextProps;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
         const isNewDashboard = dashboardId && (dashboardId !== this.props.match.params.dashboardId);
-        const columnsChanged = !activeDashboard.get('columns')
+        const columnsChanged = activeDashboard && !activeDashboard.get('columns')
             .equals(this.props.dashboards.getIn([dashboardId, 'columns']));
+        if(!activeDashboard) {
+            return;
+        }
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
             this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
@@ -71,7 +74,7 @@ class Dashboard extends Component {
         }
         if (isNewDashboard || columnsChanged) {
             if(this._dashboardNode) {
-                this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
+                this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
             }
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
@@ -92,11 +95,13 @@ class Dashboard extends Component {
     /**
      * calculate left position and other column data and store it
      */
-    _calculateColumnData = (columnOrder, dashboardId) => {
-        const { columns } = this.props;
+    _calculateColumnData = (columnOrder, dashboardId, columns) => {
         const { viewportScrolledWidth } = this.state;
         const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
         let accWidth = 0;
+        if(!columnOrder.size) {
+            return this.columnData = this.columnData.delete(dashboardId);
+        }
         columnOrder.forEach((colId) => {
             const colData = columns.get(colId);
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
@@ -115,7 +120,8 @@ class Dashboard extends Component {
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
         !equals(nextProps.match.params, this.props.match.params) ||
-        !nextProps.columns.equals(this.props.columns);
+        !nextProps.columns.equals(this.props.columns) ||
+        !nextProps.dashboards.equals(this.props.dashboards);
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -151,11 +157,11 @@ class Dashboard extends Component {
     }
     _reorderColumns = () => {
         const { columnOrder, columnPlaceholder } = this.state;
-        const { match } = this.props;
+        const { match, columns } = this.props;
         const { dashboardId } = match.params;
         const { drag, hover } = columnPlaceholder;
         const newOrderedColumns = this._getColumns(columnOrder.get(dashboardId), drag, hover);
-        this._calculateColumnData(newOrderedColumns, dashboardId);
+        this._calculateColumnData(newOrderedColumns, dashboardId, columns);
         this._mapColumnsToState(newOrderedColumns, dashboardId);
     }
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
@@ -202,11 +208,11 @@ class Dashboard extends Component {
         return newColumnPositionLeft;
     }
     _handleColumnSizeChange = () => {
-        const { match, dashboards } = this.props;
+        const { match, dashboards, columns } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
         if(this._dashboardNode) {
-            this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
         this.forceUpdate();
     }
