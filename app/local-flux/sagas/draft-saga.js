@@ -336,7 +336,7 @@ export function* watchDraftActions () {
     yield takeEvery(types.DRAFT_PUBLISH_UPDATE_SUCCESS, draftPublishSuccess);
     yield takeEvery(types.DRAFT_REVERT_TO_VERSION, draftRevert);
     yield takeEvery(types.DRAFT_UPDATE, draftUpdate);
-    yield throttle(2000, types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
+    yield takeLatest(types.DRAFT_UPDATE_SUCCESS, draftAutoSave);
     yield takeLatest(types.DRAFTS_GET, draftsGet);
     yield takeLatest(types.DRAFTS_GET_COUNT, draftsGetCount);
     yield takeEvery(types.DRAFT_DELETE, draftDelete);

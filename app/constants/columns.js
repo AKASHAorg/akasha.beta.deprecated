@@ -8,6 +8,7 @@ export const profileFollowers = 'profileFollowers';
 export const profileFollowings = 'profileFollowings';
 export const stream = 'stream';
 export const tag = 'tag';
+export const newColumn = 'newColumn';
 
 // column sizes
 export const largeColumnWidth = 540;
