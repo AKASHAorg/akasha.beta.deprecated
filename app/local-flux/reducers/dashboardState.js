@@ -2,7 +2,7 @@ import { List, fromJS } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
-
+import { newColumn as newColumnType } from '../../constants/columns';
 const initialState = new DashboardState();
 
 const entryIterator = (state, { column }) => {
@@ -10,7 +10,7 @@ const entryIterator = (state, { column }) => {
     if (reversed || !id || !state.getIn(['columnById', id])) {
         return state;
     }
-    if (id === 'newColumn') {
+    if (id === newColumnType) {
         return state.mergeIn(['columnById', id], {
             flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
             value,
@@ -107,8 +107,8 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN]: state =>
         state.merge({
-            columnById: state.get('columnById').set('newColumn', new ColumnRecord()),
-            newColumn: null
+            columnById: state.get('columnById').set(newColumnType, new ColumnRecord()),
+            [newColumnType]: null
         }),
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
@@ -123,7 +123,7 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_ADD_FIRST_SUCCESS]: state => state.setIn(['flags', 'firstDashboardReady'], true),
 
     [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
-        state.set('newColumn', new NewColumnRecord()),
+        state.set(newColumnType, new NewColumnRecord()),
 
     [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) => {
         let columnById = state.get('columnById');
@@ -151,7 +151,7 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
-    [types.DASHBOARD_DELETE_NEW_COLUMN]: state => state.set('newColumn', null),
+    [types.DASHBOARD_DELETE_NEW_COLUMN]: state => state.set(newColumnType, null),
 
     [types.DASHBOARD_DELETE_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -223,7 +223,7 @@ const dashboardState = createReducer(initialState, {
     },
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
-        state.setIn(['columnById', 'newColumn'], new ColumnRecord()),
+        state.setIn(['columnById', newColumnType], new ColumnRecord()),
 
     [types.DASHBOARD_SEARCH]: (state, { query }) =>
         state.set('search', query),
@@ -231,7 +231,7 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({
             activeDashboard: data,
-            newColumn: null
+            [newColumnType]: null
         }),
 
     [types.DASHBOARD_TOGGLE_PROFILE_COLUMN_SUCCESS]: (state, { data }) => {
@@ -268,7 +268,7 @@ const dashboardState = createReducer(initialState, {
         state.mergeIn(['columnById', data.id], data.changes),
 
     [types.DASHBOARD_UPDATE_NEW_COLUMN]: (state, { changes }) =>
-        state.mergeIn(['newColumn'], changes || NewColumnRecord()),
+        state.mergeIn([newColumnType], changes || NewColumnRecord()),
 
     [types.ENTRY_LIST_ITERATOR]: entryIterator,
 

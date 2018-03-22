@@ -1,16 +1,17 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { batchedSubscribe } from 'redux-batched-subscribe';
-import debounce from 'lodash.debounce';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
+import batchedSubscribeMiddleware from './batching/middleware';
+import batchedSubscribeEnhancer from './batching/enhancer';
 import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(
-    applyMiddleware(sagaMiddleware),
+    applyMiddleware(batchedSubscribeMiddleware, sagaMiddleware),
+    batchedSubscribeEnhancer,
     global.devToolsExtension ?
         global.devToolsExtension({ actionCreators }) :
         noop => noop,
-    batchedSubscribe(debounce(notify => notify(), 75)),
+    // batchedSubscribe(updateBatcher),
     // persistState(
     //   global.location.href.match(
     //     /[?&]debug_session=([^&]+)\b/

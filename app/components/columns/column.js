@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
+import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import {
     entryMoreNewestIterator, entryMoreProfileIterator, entryProfileIterator, entryListIterator,
     entryMoreListIterator, entryNewestIterator, entryMoreTagIterator, entryTagIterator,
@@ -145,7 +146,8 @@ const mapDispatchToProps = {
     entryPageShow,
     searchProfiles,
     searchTags,
-    searchResetResults
+    searchResetResults,
+    toggleOutsideNavigation
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DropTarget(

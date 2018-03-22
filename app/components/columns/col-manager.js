@@ -53,7 +53,7 @@ class ColManager extends Component {
         const { column, onItemPooling } = this.props;
         const { id } = column;
         window.addEventListener('resize', this._debouncedResize);
-        this._rootNodeRef.addEventListener('scroll', this._debouncedScroll, false);
+        this._rootNodeRef.addEventListener('scroll', this._debouncedScroll, {passive: true});
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         if (typeof onItemPooling === 'function' && !this.poolingInterval) {
             this._createRequestPooling();
@@ -89,6 +89,13 @@ class ColManager extends Component {
 
     componentWillReceiveProps = (nextProps) => {
         this._prepareUpdates(nextProps, { canUpdateState: true, isNext: true });
+        if(nextProps.large !== this.props.large) {
+            console.log(this.props);
+            if(this.props.onSizeChange) {
+                console.log('callback called');
+                this.props.onSizeChange();
+            }
+        }
     }
     componentDidUpdate (prevProps) {
         // do not update the state!
@@ -357,6 +364,7 @@ ColManager.propTypes = {
     column: PropTypes.shape(),
     onItemRequest: PropTypes.func,
     onItemMoreRequest: PropTypes.func,
+    onColumnSizeChange: PropTypes.func,
     initialItemHeight: PropTypes.number,
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,

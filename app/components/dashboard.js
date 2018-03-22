@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { OrderedMap, Map } from 'immutable';
+import { Map, List } from 'immutable';
 import { equals } from 'ramda';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
@@ -25,80 +25,97 @@ class Dashboard extends Component {
                 hover: null,
             },
             viewportScrolledWidth: 0,
-            preparingColumns: true,
+            columnOrder: new Map(),
         };
-        this.colPositions = new Map();
+        this.columnData = new Map();
         this._throttledScroll = throttle(this._handleDashboardScroll, 150, { trailing: true });
     }
 
     columnMarginLeft = 12;
-
+    /**
+     * set initial column order in state
+     */
     componentWillMount () {
-        this.colPositions = this.colPositions.set(this.props.match.params.dashboardId, new OrderedMap());
+        const { match } = this.props;
+        const { dashboardId } = match.params;
+        if(dashboardId && !this.state.columnOrder.get(dashboardId)) {
+            this.setState({
+                columnOrder: this.state.columnOrder.set(dashboardId, new Map())
+            });
+        }
     }
 
     componentDidMount () {
-        const { match, dashboards, columns } = this.props;
+        const { match, dashboards } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
-        let activeDashboardColumns = this.colPositions.get(dashboardId);
-        if (activeDashboard && activeDashboard.get('columns')) {
-            activeDashboardColumns = this._getOrderedColumns(activeDashboard.get('columns'));
+        if(this._dashboardNode && activeDashboard) {
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
         }
-        if (activeDashboardColumns.size) {
-            this._calculateColumnPosition(columns, activeDashboardColumns);
+        if (dashboardId && activeDashboard) {
+            this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { match, dashboards, columns } = nextProps;
+        const { match, dashboards } = nextProps;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
-        let activeDashboardColumns = this.colPositions.get(dashboardId);
-
-        if (activeDashboard && activeDashboard.get('columns')) {
-            activeDashboardColumns = this._getOrderedColumns(activeDashboard.get('columns'));
+        const isNewDashboard = dashboardId && (dashboardId !== this.props.match.params.dashboardId);
+        const columnsChanged = !activeDashboard.get('columns')
+            .equals(this.props.dashboards.getIn([dashboardId, 'columns']));
+        if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
+            this.setState({
+                columnOrder: this.state.columnOrder.set(dashboardId, new Map())
+            });
         }
-        if (activeDashboardColumns.size) {
-            this._calculateColumnPosition(columns, activeDashboardColumns);
+        if (isNewDashboard || columnsChanged) {
+            if(this._dashboardNode) {
+                this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
+            }
+            this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
     }
 
-    componentWillUpdate (nextProps, nextState) {
-        const { columnPlaceholder } = nextState;
-        const { match, columns } = nextProps;
-        const { dashboardId } = match.params;
-        let activeDashboardColumns = this.colPositions.get(dashboardId);
-
-        if (activeDashboardColumns.size && columnPlaceholder.hover !== null) {
-            activeDashboardColumns = this._getColumns(activeDashboardColumns);
+    /**
+     * set column order in state
+     */
+    _mapColumnsToState = (columnList, dashboardId) => {
+        const { columnOrder } = this.state;
+        if (dashboardId && columnList.size) {
+            const newOrder = columnOrder.set(dashboardId, columnList)
+            this.setState(() => ({
+                columnOrder: newOrder
+            }));
         }
-        if (activeDashboardColumns.size) {
-            this._calculateColumnPosition(columns, activeDashboardColumns);
-        }
+    }
+    /**
+     * calculate left position and other column data and store it
+     */
+    _calculateColumnData = (columnOrder, dashboardId) => {
+        const { columns } = this.props;
+        const { viewportScrolledWidth } = this.state;
+        const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
+        let accWidth = 0;
+        columnOrder.forEach((colId) => {
+            const colData = columns.get(colId);
+            this.columnData = this.columnData.setIn([dashboardId, colData.id], {
+                id: colData.id,
+                large: colData.large,
+                left: accWidth,
+                inViewport: accWidth <= (viewportScrolledWidth + dashboardWidth)
+            });
+            accWidth += (colData.large ? largeColumnWidth : smallColumnWidth) + this.columnMarginLeft;
+        });
     }
 
     shouldComponentUpdate = (nextProps, nextState) =>
-        !equals(nextState.preparingColumns, this.state.preparingColumns) ||
+        !nextState.columnOrder.equals(this.state.columnOrder) ||
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
-        !equals(nextState.draggingColumn, this.state.draggingColumn) ||
-            !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
-            !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
-            !nextProps.dashboards.equals(this.props.dashboards) ||
-            !equals(nextProps.match.params, this.props.match.params);
-
-    _getOrderedColumns = (dashboardColumns) => {
-        let activeDashboardColumns = new OrderedMap();
-        dashboardColumns.forEach(colId => {
-            activeDashboardColumns = activeDashboardColumns.set(colId, {
-                id: colId,
-                left: -1 * largeColumnWidth,
-                inViewport: false,
-                large: false,
-            })
-        });
-        return activeDashboardColumns;
-    }
+        !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
+        !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
+        !equals(nextProps.match.params, this.props.match.params) ||
+        !nextProps.columns.equals(this.props.columns);
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -132,13 +149,23 @@ class Dashboard extends Component {
             }
         });
     }
-
+    _reorderColumns = () => {
+        const { columnOrder, columnPlaceholder } = this.state;
+        const { match } = this.props;
+        const { dashboardId } = match.params;
+        const { drag, hover } = columnPlaceholder;
+        const newOrderedColumns = this._getColumns(columnOrder.get(dashboardId), drag, hover);
+        this._calculateColumnData(newOrderedColumns, dashboardId);
+        this._mapColumnsToState(newOrderedColumns, dashboardId);
+    }
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
         this.setState({
             columnPlaceholder: {
                 drag: dragIndex,
                 hover: hoverIndex,
             },
+        }, () => {
+            this._reorderColumns();
         });
     }
 
@@ -149,51 +176,15 @@ class Dashboard extends Component {
         }
     }
 
-    _getColumns = (cols) => {
-        const { columnPlaceholder } = this.state;
+    _getColumns = (cols, drag, hover) => {
         const { dashboardId } = this.props.match.params;
-        const { drag, hover } = columnPlaceholder;
         const dragCard = cols.get(drag);
-        if (drag !== hover) {
-            let columns = cols.delete(drag).toList();
-            cols = columns
-                .splice(columns.findIndex(c => c.id === hover), 0, dragCard)
-                .reduce((oMap, col) => oMap.set(col.id, col), new OrderedMap());
-            this.colPositions = this.colPositions.set(dashboardId, cols);
-            // return columns;
+        let columns = cols.toJS();
+        if (drag !== hover && dashboardId) {
+            columns = columns.filter((c, i) => i !== drag);
+            columns.splice(hover, 0, dragCard);
         }
-        return cols;
-    }
-    // calculate left position of each column and
-    // if it`s in viewport or not;
-    // first column has left = 0 and is in viewport for sure :)
-    _calculateColumnPosition = (columns, order) => {
-        // note that viewportScrolledWidth is the viewportWidth + scrollLeft;
-        const { viewportScrolledWidth } = this.state;
-        const { dashboardId } = this.props.match.params;
-        let orderedColumns = order;
-        let viewportWidth = viewportScrolledWidth;
-        if (this._dashboardNode) {
-            viewportWidth += this._dashboardNode.getBoundingClientRect().width;
-        }
-        const colItems = orderedColumns.reduce((prevMap, column) => {
-            const colId = column.id;
-            const col = columns.get(colId);
-            const width = col.large ? largeColumnWidth : smallColumnWidth;
-            const left = prevMap.last() ? prevMap.last().left + width + this.columnMarginLeft : 0;
-
-            return prevMap.set(colId, {
-                id: colId,
-                left,
-                inViewport: left <= viewportWidth,
-                large: col.large,
-            });
-
-        }, new OrderedMap());
-        this.colPositions = this.colPositions.set(dashboardId, colItems);
-        this.setState({
-            preparingColumns: false
-        });
+        return new List(columns);
     }
 
     _handleDashboardScroll = () => {
@@ -202,25 +193,43 @@ class Dashboard extends Component {
             viewportScrolledWidth: offsetWidth + scrollLeft
         });
     }
-
+    _getNewColumnPosition = (lastColumn) => {
+        let newColumnPositionLeft = 0;
+        if(lastColumn) {
+            newColumnPositionLeft = ((lastColumn.large ? largeColumnWidth : smallColumnWidth) +
+                lastColumn.left + this.columnMarginLeft);
+        }
+        return newColumnPositionLeft;
+    }
+    _handleColumnSizeChange = () => {
+        const { match, dashboards } = this.props;
+        const { dashboardId } = match.params;
+        const activeDashboard = dashboards.get(dashboardId);
+        if(this._dashboardNode) {
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId);
+        }
+        this.forceUpdate();
+    }
     render () {
         const {
             columns, darkTheme, dashboardCreateNew, dashboards,
             intl, match, connectDropTarget
         } = this.props;
-        const { draggingColumn, preparingColumns } = this.state;
         const { dashboardId } = match.params;
+        const { draggingColumn } = this.state;
+        const colData = this.columnData.get(dashboardId);
+        const columnOrderMap = this.state.columnOrder.get(dashboardId);
+        const newColumnPositionLeft = this._getNewColumnPosition(
+            columnOrderMap &&
+            columnOrderMap.size &&
+            colData &&
+            colData.get(columnOrderMap.last())
+        );
         const activeDashboard = dashboards.get(dashboardId);
         const imgClass = classNames('dashboard__empty-placeholder-img', {
             'dashboard__empty-placeholder-img_dark': darkTheme
         });
-        const colPositions = this.colPositions.get(dashboardId);
-        const lastColWidth = (colPositions && colPositions.last() && colPositions.last().large) ?
-            largeColumnWidth : smallColumnWidth;
-        const newColumnPositionLeft = colPositions && colPositions.last() ?
-            colPositions.last().left + lastColWidth + (this.columnMarginLeft * 2.5) :
-            (this.columnMarginLeft * 2);
-        console.log(this.colPositions);
+
         return connectDropTarget(
           <div
             className="dashboard"
@@ -228,23 +237,23 @@ class Dashboard extends Component {
             ref={this._getDashboardRef}
             onScroll={this._throttledScroll}
           >
-            {!preparingColumns && activeDashboard && this.colPositions.get(dashboardId).map((columnPos, index) => {
-                const column = columns.get(columnPos.id);
-                if (!column) {
+            {activeDashboard && colData && columnOrderMap && columnOrderMap.map((colId, colIndex) => {
+                const column = columns.get(colId);
+                const colPos = colData.get(colId);
+                if (!column || !colPos) {
                     return null;
                 }
                 const width = column.get('large') ? largeColumnWidth : smallColumnWidth;
-                const columnId = column.id;
-                const isDragging = columnId === draggingColumn.id;
-                const { left, inViewport } = columnPos
+                const isDragging = draggingColumn.id && (colId === draggingColumn.id);
+                const { left, inViewport } = colPos;
                 return (
                   <div
                     className={
                         `dashboard__column
                         dashboard__column${isDragging ? '_dragging' : ''}`
                     }
-                    id={column.id}
-                    key={column.id}
+                    id={colId}
+                    key={colId}
                     style={{
                         width,
                         transform: `translate(${left}px, 0)`
@@ -257,19 +266,21 @@ class Dashboard extends Component {
                       onEndDrag={this._handleEndDrag}
                       onNeighbourHover={this._handleNeighbourHover}
                       inDragMode={isDragging}
-                      columnIndex={index}
+                      columnIndex={colIndex}
                       intl={intl}
                       large={column.get('large')}
                       isVisible={inViewport}
                       draggable
+                      onSizeChange={this._handleColumnSizeChange}
                     />
                   </div>
                 );
-            }).toIndexedSeq()}
+            }).toSetSeq()}
             {activeDashboard &&
               <div
+                className="dashboard-column"
                 style={{
-                  left: newColumnPositionLeft,
+                  transform: `translate(${newColumnPositionLeft}px, 0px)`,
                   position: 'absolute',
                   top: 20,
                   bottom: 0
