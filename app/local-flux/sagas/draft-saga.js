@@ -232,7 +232,15 @@ function* draftPublishUpdate ({ actionId, draft }) {
 }
 
 function* draftRevert ({ data }) {
-    const { id } = data;
+    const { id, version } = data;
+    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    yield put(entryActions.entryGetFull({
+        entryId: id,
+        version,
+        asDraft: true,
+        revert: true,
+        ethAddress: loggedEthAddress,
+    }));
     try {
         const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
         yield put(draftActions.draftRevertToVersionSuccess({ id: resp }));

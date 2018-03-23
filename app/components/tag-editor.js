@@ -245,7 +245,6 @@ class TagEditor extends Component {
         const { tags, intl } = this.props;
         const tag = ev.target.value.trim().toLowerCase().replace('#', '');
         const alphaValid = /[a-z0-9.-]+$/.test(tag);
-        console.log('change ev!');
         const specialCharsValid = !tag.includes('.-') &&
             !tag.includes('-.') &&
             !tag.includes('--') &&
@@ -396,20 +395,13 @@ class TagEditor extends Component {
     }
     render () {
         const { tagInputWidth } = this.state;
-        const { tags, canCreateTags,
-            inputDisabled, tagErrors } = this.props;
+        const { tags, canCreateTags, isUpdate, tagErrors } = this.props;
         const suggestionsPopoverVisible = this._getSuggestionsPopoverVisibility();
 
         return (
           <div
             id="tag-editor"
             className={`tag-editor ${this.props.className}`}
-            ref={(node) => {
-                this._rootNode = node;
-                if (this.props.nodeRef) {
-                    this.props.nodeRef(node);
-                }
-            }}
             onClick={this._forceTagInputFocus}
           >
             {this._getTagList()}
@@ -433,12 +425,11 @@ class TagEditor extends Component {
                 }}
                 value={this.state.partialTag}
                 onFocus={this._changeInputFocus(true)}
-
                 disabled={
                     (tags.size &&
                     (!tags.every(tStatus => tStatus.exists && !tStatus.checking) && !canCreateTags)) ||
                     (tags.size >= 10) ||
-                    inputDisabled
+                    isUpdate
                 }
               />
             </Popover>
@@ -448,21 +439,19 @@ class TagEditor extends Component {
 }
 
 TagEditor.propTypes = {
-    className: PropTypes.string,
     canCreateTags: PropTypes.bool.isRequired,
+    className: PropTypes.string,
     intl: PropTypes.shape(),
-    inputDisabled: PropTypes.bool,
-    nodeRef: PropTypes.func,
-    searchTags: PropTypes.func,
-    tagSuggestions: PropTypes.shape(),
-    tagSuggestionsCount: PropTypes.number,
-    tagErrors: PropTypes.string,
-    tags: PropTypes.shape(),
-    searchResetResults: PropTypes.func,
+    isUpdate: PropTypes.bool,    
     onChange: PropTypes.func,
     onTagAdd: PropTypes.func.isRequired,
     onTagRemove: PropTypes.func.isRequired,
-    isUpdate: PropTypes.bool,
+    searchResetResults: PropTypes.func,
+    searchTags: PropTypes.func,
+    tagErrors: PropTypes.string,
+    tags: PropTypes.shape(),
+    tagSuggestions: PropTypes.shape(),
+    tagSuggestionsCount: PropTypes.number,
 };
 
 export default clickAway(TagEditor);
