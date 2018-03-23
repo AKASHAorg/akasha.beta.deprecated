@@ -23,26 +23,26 @@ class EntryCard extends Component {
         };
     }
 
-    // shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
-    //     const { author, blockNr, canClaimPending, claimPending, entry,
-    //         fetchingEntryBalance, isPending, large, style, votePending } = nextProps;
-    //     if (blockNr !== this.props.blockNr ||
-    //         canClaimPending !== this.props.canClaimPending ||
-    //         claimPending !== this.props.claimPending ||
-    //         !entry.equals(this.props.entry) ||
-    //         isPending !== this.props.isPending ||
-    //         large !== this.props.large ||
-    //         fetchingEntryBalance !== this.props.fetchingEntryBalance ||
-    //         !author.equals(this.props.author) ||
-    //         (style && style.width !== this.props.style.width) ||
-    //         votePending !== this.props.votePending ||
-    //         nextState.expanded !== this.state.expanded ||
-    //         nextState.showVotes !== this.state.showVotes
-    //     ) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
+    shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
+        const { author, blockNr, canClaimPending, claimPending, entry,
+            fetchingEntryBalance, isPending, large, style, votePending } = nextProps;
+        if (blockNr !== this.props.blockNr ||
+            canClaimPending !== this.props.canClaimPending ||
+            claimPending !== this.props.claimPending ||
+            !entry.equals(this.props.entry) ||
+            isPending !== this.props.isPending ||
+            large !== this.props.large ||
+            fetchingEntryBalance !== this.props.fetchingEntryBalance ||
+            !author.equals(this.props.author) ||
+            (style && style.width !== this.props.style.width) ||
+            votePending !== this.props.votePending ||
+            nextState.expanded !== this.state.expanded ||
+            nextState.showVotes !== this.state.showVotes
+        ) {
+            return true;
+        }
+        return false;
+    }
 
     showHiddenContent = () => {
         this.setState({
@@ -166,8 +166,9 @@ class EntryCard extends Component {
           </Card>
         );
     };
-
+    /* eslint-disable complexity */
     render () {
+
         const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
             style, toggleOutsideNavigation, intl } = this.props;
         const { expanded } = this.state;

@@ -69,9 +69,9 @@ class ColManager extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.topIndexTo !== this.state.topIndexTo ||
-        !nextProps.column.equals(this.props.column) ||
-        nextProps.ethAddress !== this.props.ethAddress ||
-        !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
+            !nextProps.column.equals(this.props.column) ||
+            nextProps.ethAddress !== this.props.ethAddress ||
+            !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
     }
 
     _clearIntervals = () => {
@@ -135,8 +135,8 @@ class ColManager extends Component {
                 topIndexTo: 0
             });
         }
-        if ((isNewColumn || shouldRequestItems) && !canUpdateState) {
-            ReactDOM.unstable_deferredUpdates(() => {
+        if ((isNewColumn || shouldRequestItems) && canUpdateState) {
+            window.requestAnimationFrame(() => {
                 this.props.onItemRequest(this.props.column);
             });
             this._clearIntervals();
@@ -148,6 +148,7 @@ class ColManager extends Component {
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
+
     componentWillUnmount () {
         if (this.poolingInterval) {
             clearInterval(this.poolingInterval);

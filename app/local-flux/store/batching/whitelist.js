@@ -17,5 +17,4 @@ export default [
     actionTypes.ENTRY_MORE_PROFILE_ITERATOR,
     actionTypes.ENTRY_STREAM_ITERATOR,
     actionTypes.ENTRY_MORE_STREAM_ITERATOR,
-
 ]

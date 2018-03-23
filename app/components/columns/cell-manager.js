@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 class CellManager extends Component {
     baseNodeSize = {}
-
     componentDidMount () {
         const { onMount, isPending } = this.props;
         // if the card is in pending state don`t bother to update
@@ -17,13 +16,6 @@ class CellManager extends Component {
     shouldComponentUpdate (nextProps) {
         return nextProps.isPending !== this.props.isPending;
     }
-
-    // componentWillUpdate (nextProps) {
-    //     const { isPending } = nextProps;
-    //     if (this._baseNodeRef && !isPending) {
-    //         this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
-    //     }
-    // }
 
     componentDidUpdate (prevProps) {
         const { onSizeChange, isPending } = this.props;

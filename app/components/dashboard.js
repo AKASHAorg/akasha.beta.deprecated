@@ -119,9 +119,8 @@ class Dashboard extends Component {
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
-        !equals(nextProps.match.params, this.props.match.params) ||
-        !nextProps.columns.equals(this.props.columns) ||
-        !nextProps.dashboards.equals(this.props.dashboards);
+        !equals(nextProps.match.params, this.props.match.params);
+        // !nextProps.dashboards.equals(this.props.dashboards);
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -134,14 +133,16 @@ class Dashboard extends Component {
 
     _handleEndDrag = () => {
         const { dashboardReorderColumn, match, dashboards } = this.props;
-        const { columnPlaceholder } = this.state;
+        const { columnPlaceholder, draggingColumn } = this.state;
+        const { hover } = columnPlaceholder;
         const { dashboardId } = match.params;
+        const cols = dashboards.getIn([dashboardId, 'columns']);
         const activeDashboard = dashboards.get(dashboardId);
         if (columnPlaceholder.drag !== columnPlaceholder.hover) {
             dashboardReorderColumn(
                 activeDashboard.get('id'),
-                activeDashboard.columns.indexOf(columnPlaceholder.drag),
-                activeDashboard.columns.indexOf(columnPlaceholder.hover)
+                cols.indexOf(draggingColumn.id),
+                hover
             );
         }
         this.setState({
@@ -194,9 +195,13 @@ class Dashboard extends Component {
     }
 
     _handleDashboardScroll = () => {
+        const { match, columns } = this.props;
+        const { dashboardId } = match.params;
         const { offsetWidth, scrollLeft } = this._dashboardNode;
         this.setState({
             viewportScrolledWidth: offsetWidth + scrollLeft
+        }, () => {
+            this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
         });
     }
     _getNewColumnPosition = (lastColumn) => {
@@ -235,7 +240,6 @@ class Dashboard extends Component {
         const imgClass = classNames('dashboard__empty-placeholder-img', {
             'dashboard__empty-placeholder-img_dark': darkTheme
         });
-
         return connectDropTarget(
           <div
             className="dashboard"

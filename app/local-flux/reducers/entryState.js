@@ -220,7 +220,6 @@ const entryState = createReducer(initialState, {
             }
             return newVal;
         }, createEntryRecord(data));
-
         return state.merge({
             byId: state.get('byId').set(entryId, newEntry),
             flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)

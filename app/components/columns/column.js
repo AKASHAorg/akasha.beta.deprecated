@@ -37,7 +37,8 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, baseWidth, type, ...
             other.entryGetShort({ ...data });
         },
         iconType: 'entries',
-        ...other
+        ...other,
+        pendingEntries: other.pendingEntries.get(other.column.id),
     });
     return (
       <ColumnHeader
@@ -99,10 +100,7 @@ const mapStateToProps = (state, ownProps) => {
         hideEntrySettings: selectHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingClaims: selectAllPendingClaims(state),
-        pendingEntries: state.entryState
-            .getIn(['flags', 'pendingEntries', (ownProps.column ?
-                ownProps.column.id : ownProps.type)]
-            ),
+        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries']),
         pendingVotes: selectAllPendingVotes(state),
         profiles: state.profileState.get('byEthAddress'),
         searchQuery: state.searchState.get('query'),
