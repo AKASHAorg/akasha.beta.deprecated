@@ -14,7 +14,11 @@ const getVersionsPopoverContent = (latestVersion, intl, entry, onEntryVersionNav
       <div
         key={`${index}`}
         className="popover-menu__item"
-        onClick={() => onEntryVersionNavigation(`/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}/${index}`)}
+        onClick={() =>
+            onEntryVersionNavigation(
+                `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}/${index}`
+            )
+        }
       >
         {intl.formatMessage(entryMessages.versionNumber, {
             index: index + 1
@@ -22,9 +26,11 @@ const getVersionsPopoverContent = (latestVersion, intl, entry, onEntryVersionNav
       </div>
     ));
 };
-
+/* eslint-disable complexity */
 const EntryCardHeader = (props) => {
-    const { author, containerRef, entry, intl, isOwnEntry, large, loading, onEntryVersionNavigation, onDraftNavigation } = props;
+    const { author, containerRef, entry, intl, isOwnEntry, large, loading,
+        onEntryVersionNavigation, onDraftNavigation
+    } = props;
     if (loading) {
         return (
           <div className="entry-card-header">
@@ -151,6 +157,7 @@ EntryCardHeader.propTypes = {
     large: PropTypes.bool,
     loading: PropTypes.bool,
     onEntryVersionNavigation: PropTypes.func,
+    onDraftNavigation: PropTypes.func,
 };
 
 export default injectIntl(EntryCardHeader);

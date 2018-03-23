@@ -9,9 +9,7 @@ export default () => next => (action) => {
     if (State.notify && !shouldBatch(action)) {
         State.notify();
     } else {
-        debounce(State.notify, 36, { trailing: true });
+        debounce(State.notify, 75, { trailing: true });
     }
-
     return resolved;
 }
-// optimal wait time ~36-40ms
