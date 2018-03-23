@@ -84,12 +84,12 @@ class NewEntryPage extends Component {
         });
         history.push(`/draft/article/${draftId}`);
         ev.preventDefault();
-    }
+    };
     _showPublishOptionsPanel = () => {
         this.setState({
             showPublishPanel: !this.state.showPublishPanel
         });
-    }
+    };
 
     _handleTitleChange = (ev) => {
         const { match, loggedProfile, draftObj } = this.props;
@@ -106,7 +106,7 @@ class NewEntryPage extends Component {
                 title: null,
             }
         }));
-    }
+    };
 
     _handleEditorChange = (editorState) => {
         const { draftObj, loggedProfile } = this.props;
@@ -122,7 +122,7 @@ class NewEntryPage extends Component {
                 draft: null,
             }
         }));
-    }
+    };
 
     _handleTagAdd = (tagName) => {
         const { draftObj } = this.props;
@@ -130,7 +130,7 @@ class NewEntryPage extends Component {
             tagName,
             draftId: draftObj.get('id')
         });
-    }
+    };
 
     _handleTagRemove = (tagName) => {
         const { draftObj } = this.props;
@@ -138,7 +138,7 @@ class NewEntryPage extends Component {
             tagName,
             draftId: draftObj.get('id')
         });
-    }
+    };
 
     _handleDraftLicenceChange = (licenceField, licence) => {
         const { draftObj, loggedProfile, licences } = this.props;
@@ -175,7 +175,7 @@ class NewEntryPage extends Component {
                 content: draftObj.get('content').setIn(['licence', licenceField], licence)
             })
         );
-    }
+    };
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
@@ -189,7 +189,7 @@ class NewEntryPage extends Component {
                 excerpt: null,
             }
         }));
-    }
+    };
 
     _handleFeaturedImageChange = (image) => {
         const { draftObj, loggedProfile } = this.props;
@@ -199,13 +199,13 @@ class NewEntryPage extends Component {
                 content: draftObj.get('content').set('featuredImage', fromJS(image))
             })
         );
-    }
+    };
 
     _handlePublishPanelClose = () => {
         this.setState({
             showPublishPanel: false
         });
-    }
+    };
 
     validateData = () =>
         new Promise((resolve, reject) => {
@@ -259,7 +259,7 @@ class NewEntryPage extends Component {
                 this.setState({ errors });
             });
         }, 100);
-    }
+    };
 
     _handleTagInputChange = () => {
         this.setState(prevState => ({
@@ -268,35 +268,21 @@ class NewEntryPage extends Component {
                 tags: null
             }
         }));
-    }
-    _createTimeline = (draftObj) => {
-        const { content, localChanges } = draftObj;
-        const { latestVersion, version } = content;
-        const timelineItems = [...Array(Number(latestVersion) + 1)];
-        return (
-          <Steps
-            progressDot={this._getProgressDot}
-            current={latestVersion + 1}
-            className="edit-entry-page__timeline-steps"
-          >
-            {
-              this._getTimelineSteps(timelineItems, localChanges, version)
-            }
-          </Steps>
-        );
-    }
+    };
+
     _checkIfDisabled = () => {
         const { pendingFaucetTx } = this.props;
         if (pendingFaucetTx) {
             return true;
         }
         return false;
-    }
+    };
+
     _handleTitleKeyPress = (ev) => {
         if (ev.keyCode === 13) {
             this.editor.focus();
         }
-    }
+    };
 
     render () { // eslint-disable-line complexity
         const { showPublishPanel, errors, shouldResetCaret } = this.state;
