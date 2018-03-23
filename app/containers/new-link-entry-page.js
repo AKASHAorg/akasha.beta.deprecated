@@ -101,7 +101,7 @@ class NewLinkEntryPage extends Component {
         });
         history.push(`/draft/link/${draftId}`);
         ev.preventDefault();
-    }
+    };
     _processUrl = (newerDraft) => {
         const { loggedProfile, intl } = this.props;
         let { draftObj } = this.props;
@@ -148,7 +148,7 @@ class NewLinkEntryPage extends Component {
                 });
             });
         });
-    }
+    };
 
     _handleUrlBlur = () => {
         const { draftObj } = this.props;
@@ -161,7 +161,7 @@ class NewLinkEntryPage extends Component {
             }
             return this.props.draftUpdate(draftObj);
         });
-    }
+    };
 
     _handleKeyPress = (ev) => {
         const { draftObj } = this.props;
@@ -178,7 +178,7 @@ class NewLinkEntryPage extends Component {
                 }
             });
         }
-    }
+    };
 
     _handleUrlChange = (ev) => {
         const { match, loggedProfile, draftObj } = this.props;
@@ -189,7 +189,7 @@ class NewLinkEntryPage extends Component {
             })),
             id: match.params.draftId,
         })));
-    }
+    };
 
     _handleEditorChange = (editorState) => {
         const { draftObj, loggedProfile } = this.props;
@@ -199,7 +199,7 @@ class NewLinkEntryPage extends Component {
                 draft: editorState,
             })),
         })));
-    }
+    };
 
     _handleTagAdd = (tagName) => {
         const { draftObj } = this.props;
@@ -208,7 +208,7 @@ class NewLinkEntryPage extends Component {
             draftId: draftObj.get('id')
         });
         this.props.draftUpdate(draftObj.setIn(['tags', tagName], { fetching: true }));
-    }
+    };
 
     _handleTagRemove = (tagName) => {
         const { draftObj } = this.props;
@@ -217,7 +217,7 @@ class NewLinkEntryPage extends Component {
             draftId: draftObj.get('id')
         });
         this.props.draftUpdate(draftObj.deleteIn(['tags', tagName]));
-    }
+    };
 
     _handleDraftLicenceChange = (licenceField, licence) => {
         const { draftObj, loggedProfile } = this.props;
@@ -227,7 +227,7 @@ class NewLinkEntryPage extends Component {
                 content: draftObj.get('content').setIn(['licence', licenceField], licence)
             }))
         );
-    }
+    };
 
     _handleExcerptChange = (excerpt) => {
         const { draftObj, loggedProfile } = this.props;
@@ -241,7 +241,7 @@ class NewLinkEntryPage extends Component {
                 excerpt: null,
             }
         }));
-    }
+    };
 
     validateData = () =>
         new Promise((resolve, reject) => {
