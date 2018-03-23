@@ -212,7 +212,7 @@ VotePopover.propTypes = {
     iconClassName: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     isOwnEntity: PropTypes.bool,
-    mana: PropTypes.string.isRequired,
+    mana: PropTypes.string,
     onSubmit: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
     voteCost: PropTypes.shape().isRequired,
