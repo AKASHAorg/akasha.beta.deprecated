@@ -44,9 +44,6 @@ class ColManager extends Component {
             this.props.onItemRequest(this.props.column);
             this.loadingMore.push(column.id);
         }
-        // else if(column.entriesList.size > 0) {
-        //     this._mapItemsToState(column.entriesList);
-        // }
     }
 
     componentDidMount = () => {
@@ -72,7 +69,7 @@ class ColManager extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.topIndexTo !== this.state.topIndexTo ||
-        !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
+        !nextProps.column.equals(this.props.column) ||
         nextProps.ethAddress !== this.props.ethAddress ||
         !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
     }
@@ -90,9 +87,7 @@ class ColManager extends Component {
     componentWillReceiveProps = (nextProps) => {
         this._prepareUpdates(nextProps, { canUpdateState: true, isNext: true });
         if(nextProps.large !== this.props.large) {
-            console.log(this.props);
             if(this.props.onSizeChange) {
-                console.log('callback called');
                 this.props.onSizeChange();
             }
         }
@@ -127,7 +122,6 @@ class ColManager extends Component {
     }
     /**
      * beware! passed props can be new props or old props
-     * prop options.isNext will flag that.
      */
     _doUpdates = (updateParams) => {
         const { isNewColumn, shouldRequestItems, hasNewItems, column, options } = updateParams;
@@ -311,7 +305,7 @@ class ColManager extends Component {
             <div
               className="col-manager__top-offset"
               style={{
-                  height: this._getSliceMeasure(0, topIndexTo)
+                  height: Math.ceil(this._getSliceMeasure(0, topIndexTo))
               }}
             />
             {items[id].slice(topIndexTo, bottomIndexFrom).map((item) => {
@@ -346,7 +340,7 @@ class ColManager extends Component {
             <div
               className="col-manager__bottom-offset"
               style={{
-                height: this._getSliceMeasure(bottomIndexFrom, items[id].length)
+                height: Math.ceil(this._getSliceMeasure(bottomIndexFrom, items[id].length))
               }}
             />
           </div>
@@ -364,7 +358,7 @@ ColManager.propTypes = {
     column: PropTypes.shape(),
     onItemRequest: PropTypes.func,
     onItemMoreRequest: PropTypes.func,
-    onColumnSizeChange: PropTypes.func,
+    onSizeChange: PropTypes.func,
     initialItemHeight: PropTypes.number,
     itemCard: PropTypes.node,
     columnHeight: PropTypes.number,
@@ -374,6 +368,7 @@ ColManager.propTypes = {
     fetchingMore: PropTypes.bool,
     onItemPooling: PropTypes.func,
     pendingEntries: PropTypes.shape(),
+    large: PropTypes.bool,
 };
 
 export default ColManager;

@@ -41,9 +41,13 @@ class CellManager extends Component {
     }
 
     render () {
+        const { id, children } = this.props;
         return (
-          <div ref={this._createBaseNodeRef}>
-            {this.props.children()}
+          <div
+            id={id}
+            ref={this._createBaseNodeRef}
+          >
+            {children()}
           </div>
         );
     }
@@ -54,6 +58,7 @@ CellManager.propTypes = {
     onSizeChange: PropTypes.func,
     children: PropTypes.func,
     isPending: PropTypes.bool,
+    id: PropTypes.string,
 };
 
 export default CellManager;
