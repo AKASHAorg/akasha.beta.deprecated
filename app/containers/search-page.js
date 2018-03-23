@@ -64,6 +64,9 @@ class SearchPage extends Component {
             searching
             moreEntries={moreEntries}
             style={{ padding: '12px 0px' }}
+            cardStyle={{
+                width: 320
+            }}
           />
         );
     }
