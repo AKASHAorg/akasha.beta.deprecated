@@ -156,12 +156,12 @@ class EntryCard extends Component {
     );
 
     renderResolvingPlaceholder = () => {
-        const { large } = this.props;
+        const { large, style } = this.props;
         const cardClass = classNames('entry-card entry-card_transparent', {
             'entry-card_large': large
         });
         return (
-          <Card className={cardClass} title={<EntryCardHeader loading />}>
+          <Card className={cardClass} style={style} title={<EntryCardHeader loading />}>
             {this.renderContentPlaceholder()}
           </Card>
         );

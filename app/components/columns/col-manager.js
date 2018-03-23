@@ -28,6 +28,7 @@ class ColManager extends Component {
         this.poolingTimeout = null;
         this.poolingDelay = 60000;
         this._debouncedOffsetUpdate = throttle(this._updateOffsets, 150, {trailing: true});
+        this.colFirstEntry = new Map();
     }
 
     componentWillMount = () => {
@@ -47,12 +48,12 @@ class ColManager extends Component {
     }
 
     componentDidMount = () => {
-        const { column, onItemPooling } = this.props;
+        const { column, onItemPooling, isVisible } = this.props;
         const { id } = column;
         window.addEventListener('resize', this._debouncedResize);
         this._rootNodeRef.addEventListener('scroll', this._debouncedScroll, {passive: true});
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
-        if (typeof onItemPooling === 'function' && !this.poolingInterval) {
+        if (typeof onItemPooling === 'function' && !this.poolingInterval && isVisible) {
             this._createRequestPooling();
         }
         if (newContainerHeight !== this.containerHeight) {
@@ -92,10 +93,12 @@ class ColManager extends Component {
             }
         }
     }
+
     componentDidUpdate (prevProps) {
         // do not update the state!
         this._prepareUpdates(prevProps, { canUpdateState: false });
     }
+
     _prepareUpdates = (passedProps, options) => {
         const { isNext } = options;
         let newerProps = this.props;
@@ -121,7 +124,7 @@ class ColManager extends Component {
         });
     }
     /**
-     * beware! passed props can be new props or old props
+     * WARNING! passed props can be new props or old props
      */
     _doUpdates = (updateParams) => {
         const { isNewColumn, shouldRequestItems, hasNewItems, column, options } = updateParams;
