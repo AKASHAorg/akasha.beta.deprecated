@@ -38,7 +38,8 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, baseWidth, type, ...
         },
         iconType: 'entries',
         ...other,
-        pendingEntries: other.pendingEntries.get(other.column.id),
+        pendingEntries: other.column ? other.pendingEntries.get(other.column.id) :
+            other.pendingEntries.get(type),
     });
     return (
       <ColumnHeader
