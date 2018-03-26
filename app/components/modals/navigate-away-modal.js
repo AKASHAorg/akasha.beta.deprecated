@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
-import { Checkbox, Modal } from 'antd';
+import { Button, Checkbox, Modal } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 import { isInternalLink } from '../../utils/url-utils';
 import { parseUrl } from '../../utils/parsers/parser-utils';
@@ -52,22 +52,39 @@ class NavigateAway extends Component {
 
         return (
           <Modal
-            onOk={this.handleOk}
+            closable
             onCancel={this.handleCancel}
-            closable={false}
+            onOk={this.handleOk}
             visible={navigation.get('isVisible')}
-            okText={intl.formatMessage(generalMessages.ok)}
-            cancelText={intl.formatMessage(generalMessages.cancel)}
+            footer={null}
             title={intl.formatMessage(generalMessages.waitASecond)}
+            wrapClassName="navigate-away-modal"
           >
-            {intl.formatMessage(generalMessages.externalNavigationWarning)}
+            <div className="navigate-away-modal__warn">
+              <div>{intl.formatMessage(generalMessages.externalNavigationWarning)}</div>
+              <div>{intl.formatMessage(generalMessages.externalNavigationAreYouSure)}</div>
+            </div>
             <div className="navigate-away-modal__url">{navigation.get('url')}</div>
-            <Checkbox
-              value={this.state.trustedDomain}
-              onChange={this.changeCheckbox}
-            >
-              {intl.formatMessage(generalMessages.trustedDomain)}
-            </Checkbox>
+            <div className="navigate-away-modal__custom-footer">
+              <div className="navigate-away-modal__checkbox">
+                <Checkbox
+                  checked={this.state.trustedDomain}
+                  onChange={this.changeCheckbox}
+                >
+                  {intl.formatMessage(generalMessages.trustedDomain)}
+                </Checkbox>
+              </div>
+              <div className="navigate-away-modal__footer-btns">
+                <div className="navigate-away-modal__cancel-btn">
+                  <Button key="back" onClick={this.handleCancel}>
+                    {intl.formatMessage(generalMessages.cancel)}
+                  </Button>
+                </div>
+                <Button key="submit" type="primary" onClick={this.handleOk}>
+                  {intl.formatMessage(generalMessages.confirm)}
+                </Button>
+              </div>
+            </div>
           </Modal>
         );
     }
