@@ -67,7 +67,8 @@ export const userSettingsAddTrustedDomain = (ethAddress, domain) => {
                 }
                 user.trustedDomains.push(domain);
             });
-        return Promise.fromCallback(cb => akashaDB.save(cb));
+        const userSettings = getSettingsCollection().findOne({opType: USER_TYPE, name: ethAddress});
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, userSettings));
     } catch (error) {
         return Promise.reject(error);
     }
