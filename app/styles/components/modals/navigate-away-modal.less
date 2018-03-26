@@ -1,5 +1,50 @@
 .navigate-away-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ant-modal {
+        top: 0;
+    }
+    .ant-modal-content {
+        text-align: center;
+    }
+
+    .ant-modal-header {
+        padding: 26px 24px 16px 24px;
+        border-bottom: none;
+    }
+
+    .ant-modal-body {
+        padding: 0 24px 24px 24px;
+    }
+
+    &__custom-footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 25px;
+    }
+
+    &__warn {
+        display: flex;
+        flex-direction: column;
+    }
+
     &__url {
+        margin-top: 15px;
         word-break: break-word;
+        background: @background;
+        border-radius: 3px;
+    }
+
+    &__footer-btns {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &__cancel-btn {
+        padding-right: 5px;
     }
 }
