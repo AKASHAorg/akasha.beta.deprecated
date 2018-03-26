@@ -14,7 +14,8 @@ class CellManager extends Component {
     }
 
     shouldComponentUpdate (nextProps) {
-        return nextProps.isPending !== this.props.isPending;
+        return nextProps.isPending !== this.props.isPending ||
+            nextProps.large !== this.props.large;
     }
 
     componentDidUpdate (prevProps) {
@@ -51,6 +52,7 @@ CellManager.propTypes = {
     children: PropTypes.func,
     isPending: PropTypes.bool,
     id: PropTypes.string,
+    large: PropTypes.bool,
 };
 
 export default CellManager;

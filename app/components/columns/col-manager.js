@@ -140,13 +140,13 @@ class ColManager extends Component {
         }
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
             window.requestAnimationFrame(() => {
-                this.props.onItemRequest(this.props.column);
+                this.props.onItemRequest(column);
             });
             this._clearIntervals();
             this.loadingMore.push(column.id);
         } else if (hasNewItems) {
             ReactDOM.unstable_deferredUpdates(() => {
-                this._mapItemsToState(this.props.column.entriesList);
+                this._mapItemsToState(column.entriesList);
             });
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
@@ -158,6 +158,9 @@ class ColManager extends Component {
         }
         if (this.poolingTimeout) {
             clearTimeout(this.poolingTimeout);
+        }
+        if(this.props.onUnmount) {
+            this.props.onUnmount(this.props.column);
         }
     }
 
@@ -329,6 +332,7 @@ class ColManager extends Component {
                     onMount={this._handleCellMount(item.id)}
                     onSizeChange={this._handleCellSizeChange(item.id)}
                     isPending={isPending}
+                    large={column.get('large')}
                   >
                     {cellProps => React.cloneElement(this.props.itemCard, {
                         ...cellProps,
@@ -373,6 +377,7 @@ ColManager.propTypes = {
     onItemPooling: PropTypes.func,
     pendingEntries: PropTypes.shape(),
     large: PropTypes.bool,
+    onUnmount: PropTypes.func,
 };
 
 export default ColManager;
