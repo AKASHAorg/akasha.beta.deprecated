@@ -117,10 +117,10 @@ class Dashboard extends Component {
     shouldComponentUpdate = (nextProps, nextState) =>
         !nextState.columnOrder.equals(this.state.columnOrder) ||
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
-        !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
+        // !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
-        !equals(nextProps.match.params, this.props.match.params) ||
-        !nextProps.columns.equals(this.props.columns);
+        !equals(nextProps.match.params, this.props.match.params); // ||
+        // !nextProps.columns.equals(this.props.columns);
         // !nextProps.dashboards.equals(this.props.dashboards);
 
     _handleBeginDrag = (column) => {
