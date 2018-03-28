@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import {descend, head, last, prop, sortWith, take} from 'ramda';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
 import { GethConnector } from '@akashaproject/geth-connector';
@@ -51,13 +52,45 @@ const execute = Promise.coroutine(function* (data: {
     for (let event of fetched.results) {
         const weight = (event.args.weight).toString(10);
 
-        collection.push({ weight: event.args.negative ? '-' + weight : weight, entryId: event.args.target });
+        collection.push({
+            weight: event.args.negative ? '-' + weight : weight,
+            entryId: event.args.target,
+            logIndex: event.logIndex,
+            blockNumber: event.blockNumber,
+            isVote: true
+        });
+
         if (collection.length === maxResults) {
             break;
         }
     }
+    const entryCount = yield contracts.instance.Entries.getEntryCount(etherBase);
 
-    return { collection: collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
+    let entryMaxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
+    if (entryMaxResults > entryCount.toNumber()) {
+        entryMaxResults = entryCount.toNumber();
+    }
+
+    const fetchedEntries = yield contracts
+        .fromEvent(contracts.instance.Entries.Publish, { author: etherBase }, data.toBlock,
+            entryMaxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
+    for (let event of fetchedEntries.results) {
+        collection.push({
+            entryId: event.args.entryId,
+            blockNumber: event.blockNumber,
+            logIndex: event.logIndex,
+            isVote: false
+        });
+    }
+    const sortedResults = take(data.limit || 5,
+        sortWith([descend(prop('blockNumber')),
+                descend(prop('logIndex'))],
+            collection));
+    const lastLog = data.reversed ? head(sortedResults) : last(sortedResults);
+    const [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] : [0, 0];
+
+
+    return { collection: sortedResults, lastBlock: lastBlock, lastIndex: lastIndex };
 });
 
 
