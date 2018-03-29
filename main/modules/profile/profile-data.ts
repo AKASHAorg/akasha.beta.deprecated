@@ -13,7 +13,7 @@ import schema from '../utils/jsonschema';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { dbs } from '../search/indexes';
 
-export const getProfileData1 = {
+export const getProfileData = {
     'id': '/getProfileData',
     'type': 'object',
     'properties': {
@@ -31,7 +31,7 @@ export const getProfileData1 = {
  */
 const execute = Promise.coroutine(function* (data: ProfileDataRequest, cb) {
     const v = new schema.Validator();
-    v.validate(data, getProfileData1, { throwError: true });
+    v.validate(data, getProfileData, { throwError: true });
 
     let profile, akashaId;
     const ethAddress = yield profileAddress(data);
