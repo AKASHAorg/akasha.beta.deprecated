@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import schema from '../utils/jsonschema';
-import getProfileData from './profile-data';
+import profileData, { getProfileData } from './profile-data';
 
 export const getProfileList = {
     'id': '/getProfileList',
@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function* (data: ProfileDataRequest[], cb) {
     v.validate(data, getProfileList, { throwError: true });
 
     const pool = data.map((profile) => {
-        return getProfileData.execute(profile, cb).then((profileData) => cb(null, profileData));
+        return profileData.execute(profile, cb).then((profileData) => cb(null, profileData));
     });
     yield Promise.all(pool);
     return { done: true };
