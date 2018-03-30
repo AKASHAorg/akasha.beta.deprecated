@@ -117,10 +117,10 @@ class Dashboard extends Component {
     shouldComponentUpdate = (nextProps, nextState) =>
         !nextState.columnOrder.equals(this.state.columnOrder) ||
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
-        // !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
+        !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
-        !equals(nextProps.match.params, this.props.match.params); // ||
-        // !nextProps.columns.equals(this.props.columns);
+        !equals(nextProps.match.params, this.props.match.params) ||
+        !nextProps.columns.equals(this.props.columns);
         // !nextProps.dashboards.equals(this.props.dashboards);
 
     _handleBeginDrag = (column) => {
@@ -248,15 +248,15 @@ class Dashboard extends Component {
             ref={this._getDashboardRef}
             onScroll={this._throttledScroll}
           >
-            {activeDashboard && colData && columnOrderMap && columnOrderMap.map((colId, colIndex) => {
+            {activeDashboard && colData && columnOrderMap && colData.map((col, colId) => {
+                const colIndex = columnOrderMap.indexOf(colId);
                 const column = columns.get(colId);
-                const colPos = colData.get(colId);
-                if (!column || !colPos) {
+                if (!column || !col) {
                     return null;
                 }
                 const width = column.get('large') ? largeColumnWidth : smallColumnWidth;
                 const isDragging = draggingColumn.id && (colId === draggingColumn.id);
-                const { left, inViewport } = colPos;
+                const { left, inViewport } = col;
                 return (
                   <div
                     className={
@@ -286,7 +286,7 @@ class Dashboard extends Component {
                     />
                   </div>
                 );
-            }).toSetSeq()}
+            }).toIndexedSeq()}
             {activeDashboard &&
               <div
                 className="dashboard-column"

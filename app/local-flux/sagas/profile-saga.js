@@ -20,8 +20,8 @@ import { getDisplayName } from '../../utils/dataModule';
 
 const Channel = global.Channel;
 const TRANSFERS_ITERATOR_LIMIT = 20;
-const FOLLOWERS_ITERATOR_LIMIT = 3;
-const FOLLOWINGS_ITERATOR_LIMIT = 3;
+const FOLLOWERS_ITERATOR_LIMIT = 2;
+const FOLLOWINGS_ITERATOR_LIMIT = 2;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
@@ -176,16 +176,17 @@ function* profileGetByAddress ({ ethAddress }) {
     yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
-function* profileGetData ({ akashaId, context, ethAddress, full = false }) {
+function* profileGetData ({ akashaId, context, ethAddress, full = false, batching }) {
     const channel = Channel.server.profile.getProfileData;
-    yield apply(channel, channel.send, [{ akashaId, context, ethAddress, full }]);
+    yield apply(channel, channel.send, [{ akashaId, context, ethAddress, full, batching }]);
 }
 
 export function* profileGetExtraOfList (collection, context) {
     const acs = yield all([
         ...collection.filter(prof => prof.ethAddress).map(prof => put(actions.profileGetData({
             context,
-            ethAddress: prof.ethAddress
+            ethAddress: prof.ethAddress,
+            batching: true
         })))
     ]);
     if (acs.length) {

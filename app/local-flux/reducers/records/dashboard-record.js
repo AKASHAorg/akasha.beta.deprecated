@@ -16,7 +16,7 @@ export const ColumnRecord = Record({
     entriesList: new List(),
     firstBlock: null,
     flags: new ColumnFlags(),
-    hasNewEntries: false,
+    newEntries: new List(), // a list of newly published entryIds
     large: false,
     lastBlock: null,
     lastIndex: null,

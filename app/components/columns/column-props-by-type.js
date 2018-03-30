@@ -22,6 +22,7 @@ const getLatestColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
+    onNewEntriesResolveRequest: data => props.entryGetShort(data),
 });
 
 const getListColumnProps = props => ({

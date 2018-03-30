@@ -28,6 +28,7 @@ class EntryCard extends Component {
         this.state = {
             expanded: false,
             showVotes: false,
+            markAsNew: props.markAsNew
         };
     }
 
@@ -45,13 +46,24 @@ class EntryCard extends Component {
             (style && style.width !== this.props.style.width) ||
             votePending !== this.props.votePending ||
             nextState.expanded !== this.state.expanded ||
-            nextState.showVotes !== this.state.showVotes
+            nextState.showVotes !== this.state.showVotes ||
+            nextState.markAsNew !== this.state.markAsNew ||
+            nextProps.markAsNew !== this.props.markAsNew
         ) {
             return true;
         }
         return false;
     }
-
+    componentWillReceiveProps (nextProps) {
+        const { markAsNew } = nextProps;
+        if(!markAsNew && this.props.markAsNew) {
+            setTimeout(() => {
+                this.setState({
+                    markAsNew
+                });
+            }, 2000)
+        }
+    }
     showHiddenContent = () => {
         this.setState({
             expanded: true
@@ -163,31 +175,31 @@ class EntryCard extends Component {
       </div>
     );
 
-    renderResolvingPlaceholder = () => {
-        const { large, style } = this.props;
-        const cardClass = classNames('entry-card entry-card_transparent', {
-            'entry-card_large': large
-        });
-        return (
-          <Card className={cardClass} style={style} title={<EntryCardHeader loading />}>
-            {this.renderContentPlaceholder()}
-          </Card>
-        );
-    };
+    // renderResolvingPlaceholder = () => {
+    //     const { large, style } = this.props;
+    //     const cardClass = classNames('entry-card entry-card_transparent', {
+    //         'entry-card_large': large
+    //     });
+    //     return (
+    //       <Card className={cardClass} style={style} title={<EntryCardHeader loading />}>
+    //         {this.renderContentPlaceholder()}
+    //       </Card>
+    //     );
+    // };
     /* eslint-disable complexity */
     render () {
 
         const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
             style, toggleOutsideNavigation, intl } = this.props;
-        const { expanded } = this.state;
-        const content = entry.get('content');
-        const entryType = entry.getIn(['content', 'entryType']);
-        const entryId = entry.get('entryId');
+        const { expanded, markAsNew } = this.state;
+        const content = entry && entry.get('content');
+        const entryType = entry && entry.getIn(['content', 'entryType']);
+        const entryId = entry && entry.get('entryId');
         // if (isPending) {
         //     return this.renderResolvingPlaceholder();
         // }
         const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title']).length > 0) ||
-            !!content.get('title');
+            (content && !!content.get('title'));
         const hideContent = !this.isOwnEntry() && hideEntrySettings.checked &&
             entry.score < hideEntrySettings.value && !expanded;
         const featuredImage = content.get('featuredImage');
@@ -197,7 +209,8 @@ class EntryCard extends Component {
         });
         const cardClass = classNames('entry-card', {
             'entry-card_transparent': hideContent || !hasContent,
-            'entry-card_large': large
+            'entry-card_large': large,
+            'entry-card_new-entry': markAsNew
         });
         return (
           <Card
