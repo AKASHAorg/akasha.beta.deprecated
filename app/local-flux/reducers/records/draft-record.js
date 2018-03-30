@@ -38,6 +38,7 @@ export const DraftsIterator = Record({
     lastBlock: undefined,
     lastIndex: undefined,
     moreEntries: null,
+    totalLoaded: 0,
 });
 
 export const Draft = Record({

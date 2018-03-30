@@ -128,6 +128,7 @@ const draftState = createReducer(initialState, {
     // data.draft
     [types.DRAFT_PUBLISH_SUCCESS]: (state, { data }) =>
         state.merge({
+            draftList: state.get('draftList').filter(id => id !== data.draft.id),
             drafts: state.get('drafts').delete(data.draft.id)
         }),
 
@@ -146,7 +147,7 @@ const draftState = createReducer(initialState, {
     [types.DRAFT_RESET_ITERATOR]: state =>
         state.set('iterator', new DraftsIterator()),
 
-    [types.ENTRIES_GET_AS_DRAFTS_SUCCESS]: (state, { data }) =>
+    [types.ENTRIES_GET_AS_DRAFTS_SUCCESS]: (state, { data, request }) =>
         /**
          * check if entry already in store, if it`s already in store,
          * check if entry version is up to date, if not update it.
@@ -182,7 +183,8 @@ const draftState = createReducer(initialState, {
             mState.set('iterator', new DraftsIterator({
                 lastBlock,
                 lastIndex,
-                moreEntries: lastBlock !== 0
+                moreEntries: request.limit === collection.length,
+                totalLoaded: mState.getIn(['iterator', 'totalLoaded']) + collection.length
             }));
         }),
 
