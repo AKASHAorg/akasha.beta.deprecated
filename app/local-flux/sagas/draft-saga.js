@@ -13,7 +13,6 @@ import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
-import * as entryActions from '../actions/entry-actions';
 import * as actionStatus from '../../constants/action-status';
 import * as eProcActions from '../actions/external-process-actions';
 import * as tagActions from '../actions/tag-actions';
@@ -189,14 +188,7 @@ function* draftPublish ({ actionId, draft }) {
 }
 /* eslint-enable max-statements */
 function* draftPublishSuccess ({ data }) {
-    const ethAddress = yield select(selectLoggedEthAddress);
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));
-    yield put(entryActions.entryProfileIterator({
-        column: null,
-        value: ethAddress,
-        limit: 1000000,
-        asDrafts: true
-    }));
     const isUpdate = data.draft.id.startsWith('0x');
     yield put(appActions.showNotification({
         id: isUpdate ? 'newVersionPublishedSuccessfully' : 'draftPublishedSuccessfully',
@@ -232,15 +224,7 @@ function* draftPublishUpdate ({ actionId, draft }) {
 }
 
 function* draftRevert ({ data }) {
-    const { id, version } = data;
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
-    yield put(entryActions.entryGetFull({
-        entryId: id,
-        version,
-        asDraft: true,
-        revert: true,
-        ethAddress: loggedEthAddress,
-    }));
+    const { id } = data;
     try {
         const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
         yield put(draftActions.draftRevertToVersionSuccess({ id: resp }));
