@@ -128,14 +128,15 @@ export const selectDashboards = (state) => {
 
 export const selectDashboardSearch = state => state.dashboardState.get('search');
 
-export const selectDraftById = (state, draftId) =>
-    state.draftState.getIn(['drafts', draftId]);
+export const selectDraftById = (state, draftId) => state.draftState.getIn(['drafts', draftId]);
 
 export const selectDrafts = state => state.draftState.get('drafts');
 
 export const selectDraftsLastBlock = state => state.draftState.getIn(['iterator', 'lastBlock']);
 
 export const selectDraftsLastIndex = state => state.draftState.getIn(['iterator', 'lastIndex']);
+
+export const selectDraftsTotalLoaded = state => state.draftState.getIn(['iterator', 'totalLoaded']);
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
