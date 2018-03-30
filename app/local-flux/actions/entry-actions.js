@@ -107,17 +107,17 @@ export const entryGetScoreError = (error) => {
     return action(types.ENTRY_GET_SCORE_ERROR, { error });
 };
 export const entryGetScoreSuccess = data => action(types.ENTRY_GET_SCORE_SUCCESS, { data });
-export const entryGetShort = ({ context, entryId, ethAddress }) =>
-    action(types.ENTRY_GET_SHORT, { context, entryId, ethAddress });
+export const entryGetShort = ({ context, entryId, ethAddress, batching }) =>
+    action(types.ENTRY_GET_SHORT, { context, entryId, ethAddress, batching });
 
 export const entryGetShortError = (error, request) => {
     error.code = 'EGSE02';
     error.messageId = 'entryGetShort';
-    return action(types.ENTRY_GET_SHORT_ERROR, { error, request });
+    return action(types.ENTRY_GET_SHORT_ERROR, { error, request, batching: request.batching });
 };
 
 export const entryGetShortSuccess = (data, request) =>
-    action(types.ENTRY_GET_SHORT_SUCCESS, { data, request });
+    action(types.ENTRY_GET_SHORT_SUCCESS, { data, request, batching: request.batching });
 export const entryGetVoteOf = entryIds => action(types.ENTRY_GET_VOTE_OF, { entryIds });
 
 export const entryGetVoteOfError = (error) => {

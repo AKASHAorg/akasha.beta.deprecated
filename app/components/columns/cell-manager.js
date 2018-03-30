@@ -15,7 +15,8 @@ class CellManager extends Component {
 
     shouldComponentUpdate (nextProps) {
         return nextProps.isPending !== this.props.isPending ||
-            nextProps.large !== this.props.large;
+            nextProps.large !== this.props.large ||
+            !!(nextProps.entry && !nextProps.entry.equals(this.props.entry));
     }
 
     componentDidUpdate (prevProps) {
@@ -23,7 +24,10 @@ class CellManager extends Component {
         if(isPending !== prevProps.isPending) {
             const refSize = this._baseNodeRef.getBoundingClientRect();
             if ( refSize.height !== this.baseNodeSize.height) {
-                onSizeChange(refSize);
+                // postpone updating the size..
+                requestIdleCallback(() => {
+                    onSizeChange(refSize);
+                });
                 this.baseNodeSize = refSize;
             }
         }
@@ -34,13 +38,12 @@ class CellManager extends Component {
     }
 
     render () {
-        const { id, children } = this.props;
+        const { entry, children } = this.props;
         return (
           <div
-            id={id}
             ref={this._createBaseNodeRef}
           >
-            {children()}
+            {entry && children()}
           </div>
         );
     }
@@ -53,6 +56,7 @@ CellManager.propTypes = {
     isPending: PropTypes.bool,
     id: PropTypes.string,
     large: PropTypes.bool,
+    entry: PropTypes.shape(),
 };
 
 export default CellManager;

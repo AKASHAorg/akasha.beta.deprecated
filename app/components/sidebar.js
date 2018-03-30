@@ -5,6 +5,7 @@ import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Button, Popover } from 'antd';
+import { equals } from 'ramda';
 import panels from '../constants/panels';
 import { genId } from '../utils/dataModule';
 import { Avatar, EssencePopover, Icon, KarmaPopover, ManaPopover, SidebarIcon } from './';
@@ -40,7 +41,8 @@ class Sidebar extends Component {
             nextProps.fetchingDrafts !== props.fetchingDrafts ||
             nextProps.isProfileEditToggled !== props.isProfileEditToggled ||
             !nextProps.loggedProfileData.equals(props.loggedProfileData) ||
-            !nextProps.loggedProfile.equals(props.loggedProfile)
+            !nextProps.loggedProfile.equals(props.loggedProfile) ||
+            equals(nextProps.location, props.location);
     }
     hide = () => {
         this.setState({

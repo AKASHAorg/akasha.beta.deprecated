@@ -16,9 +16,9 @@ import { isEthAddress } from '../../utils/dataModule';
 
 const { Channel } = global;
 const ALL_STREAM_LIMIT = 3;
-const ALL_STREAM_MORE_LIMIT = 5;
+const ALL_STREAM_MORE_LIMIT = 6;
 const ENTRY_ITERATOR_LIMIT = 3;
-const ENTRY_LIST_ITERATOR_LIMIT = 3;
+const ENTRY_LIST_ITERATOR_LIMIT = 4;
 
 /* eslint-disable no-use-before-define */
 
@@ -168,11 +168,12 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
     yield all([
-        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress }))),
+        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress, batching: true }))),
         ...collection.map(collection => put(actions.entryGetShort({
             entryId: collection.entryId,
             ethAddress: collection.author.ethAddress,
-            context: columnId
+            context: columnId,
+            batching: true
         })))
     ]);
 }
@@ -210,9 +211,9 @@ function* entryGetScore ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
-function* entryGetShort ({ context, entryId, ethAddress }) {
+function* entryGetShort ({ context, entryId, ethAddress, batching }) {
     const channel = Channel.server.entry.getEntry;
-    yield apply(channel, channel.send, [{ context, entryId, ethAddress }]);
+    yield apply(channel, channel.send, [{ context, entryId, ethAddress, batching }]);
 }
 
 function* entryGetVoteOf ({ entryIds }) {

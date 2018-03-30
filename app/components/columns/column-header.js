@@ -96,12 +96,13 @@ class ColumnHeader extends Component {
         }
     };
 
-    // onMouseDown = (ev) => {
-    //     ev.preventDefault();
-    // };
-
     onRefresh = () => {
-        this.props.onRefresh(this.props.column);
+        const { column } = this.props;
+        if(column.newEntries && column.newEntries.size > 0) {
+            this._colManagerComponent.loadNewItems();
+        } else {
+            this.props.onRefresh(this.props.column);
+        }
         this.setState({ popoverVisible: false });
     };
 
@@ -174,7 +175,9 @@ class ColumnHeader extends Component {
         const large = !column.get('large');
         this.props.dashboardUpdateColumn(column.get('id'), { large });
     };
-
+    _getComponentRef = (component) => {
+        this._colManagerComponent = component;
+    }
     renderEditMode = () => {
         const { column, dataSource, intl } = this.props;
         const { value } = this.state;
@@ -253,7 +256,7 @@ class ColumnHeader extends Component {
     /* eslint-disable complexity */
     render () {
         const { column, iconType, noMenu, readOnly, title, connectDragSource,
-            connectDropTarget, draggable } = this.props;
+            connectDropTarget, draggable, children } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header-wrapper__title-wrapper', {
             'column-header-wrapper__title-wrapper_no-icon': !iconType
@@ -263,6 +266,7 @@ class ColumnHeader extends Component {
         });
         const dragSourceConnect = draggable ? connectDragSource : nodes => nodes;
         const dropTargetConnect = draggable ? connectDropTarget : nodes => nodes;
+
         return dropTargetConnect(
           <div className="column-header" ref={(node) => { this._rootNode = node; }}>
             {dragSourceConnect(
@@ -299,7 +303,7 @@ class ColumnHeader extends Component {
                       onClick={this.onRefresh}
                       type="refresh"
                     />
-                    {column && column.get('hasNewEntries') &&
+                    {column && column.get('newEntries') && column.get('newEntries').size > 0 &&
                       <div className="column-header-wrapper__new-entries" />
                     }
                   </div>
@@ -325,7 +329,14 @@ class ColumnHeader extends Component {
                     }
               </div>
             )}
-            {this.props.children}
+            {React.Children.map(children, (child) => {
+                if (child && typeof child === 'object') {
+                    return React.cloneElement(child, {
+                        onRefLink: this._getComponentRef
+                    });
+                }
+                return child;
+            })}
           </div>
         );
     }

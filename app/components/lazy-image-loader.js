@@ -10,23 +10,29 @@ class LazyImageLoader extends Component {
     componentDidMount () {
         this._loadImage(this.props.image, this.props.baseWidth);
     }
+
     shouldComponentUpdate (nextProps, nextState) {
         return nextProps.baseWidth !== this.props.baseWidth ||
             nextState.loadedImageSrc !== this.state.loadedImageSrc ||
             !equals(nextProps.image, this.props.image);
     }
+
     componentWillReceiveProps (nextProps) {
         const { baseWidth } = nextProps;
         if (baseWidth !== this.props.baseWidth) {
             this._loadImage(this.props.image, baseWidth);
         }
     }
+
     _loadImage = (image, baseWidth) => {
         const img = new Image();
         const imageSrc = this._getImageSrc(image, baseWidth)
         img.src = imageSrc;
         img.onload = this._handleImageLoad(imageSrc);
     }
+
+    _createImageRef = (node) => this.imageNodeRef = node;
+
     _getImageSrc = (imageObj, baseWidth) => {
         const { baseUrl } = this.props;
         const bestMatch = findClosestMatch(baseWidth, imageObj, Object.keys(imageObj)[0]);
@@ -37,15 +43,18 @@ class LazyImageLoader extends Component {
     };
 
     _handleImageLoad = imageSrc => () => {
-        this.setState({
-            loadedImageSrc: imageSrc
-        });
+        if(this.imageNodeRef) {
+            this.setState({
+                loadedImageSrc: imageSrc
+            });
+        }
     }
 
     render () {
         return (
           <img
             className={this.props.className}
+            ref={this._createImageRef}
             src={this.state.loadedImageSrc ? this.state.loadedImageSrc : ''}
           />
         );

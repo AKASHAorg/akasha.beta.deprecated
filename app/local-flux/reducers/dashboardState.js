@@ -1,4 +1,5 @@
 import { List, fromJS } from 'immutable';
+import { differenceWith } from 'ramda';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
@@ -18,8 +19,7 @@ const entryIterator = (state, { column }) => {
         });
     }
     return state.mergeIn(['columnById', id], {
-        flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
-        hasNewEntries: false
+        flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true)
     });
 };
 
@@ -35,9 +35,14 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         return state;
     }
     if (request.reversed) {
-        const hasNewEntries = !!data.collection.length;
+        const diffFn = (x, y) => x === y;
+        const diffArr = differenceWith(
+            diffFn,
+            data.collection.map(entry => entry.entryId),
+            state.getIn(['columnById', request.columnId, 'newEntries']).toJS()
+        );
         return state.mergeIn(['columnById', request.columnId], {
-            hasNewEntries,
+            newEntries: state.getIn(['columnById', request.columnId, 'newEntries']).unshift(...diffArr),
         });
     }
     const entryIds = data.collection.map(entry => entry.entryId);
@@ -79,7 +84,6 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
     const moreEntries = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
-
     return state.mergeIn(['columnById', request.columnId], {
         entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).concat(fromJS(newIds)),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
@@ -322,6 +326,22 @@ const dashboardState = createReducer(initialState, {
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
+    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
+        const { context, entryId } = request;
+        if (context && state.getIn(['columnById', context])) {
+            return state.deleteIn(['columnById', context, 'newEntries'], entryId)
+                .setIn(['columnById', context, 'entriesList', 0], entryId);
+        }
+        return state;
+    },
+    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+        const { context, entryId } = request;
+        if (context && state.getIn(['columnById', context])) {
+            return state.deleteIn(['columnById', context, 'newEntries'], entryId)
+                .setIn(['columnById', context, 'entriesList', 0], entryId);
+        }
+        return state;
+    },
     [types.HIDE_PREVIEW]: state =>
         state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
 

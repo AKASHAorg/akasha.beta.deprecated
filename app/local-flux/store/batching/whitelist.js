@@ -1,9 +1,6 @@
 import * as actionTypes from '../../constants';
 
 export default [
-    actionTypes.ENTRY_GET_SHORT,
-    actionTypes.ENTRY_GET_SHORT_SUCCESS,
-    actionTypes.ENTRY_GET_SHORT_ERROR,
     actionTypes.PROFILE_GET_DATA,
     actionTypes.PROFILE_GET_DATA_SUCCESS,
     actionTypes.ENTRY_GET_VOTE_OF,
