@@ -290,6 +290,21 @@ const errorMessages = defineMessages({
         id: 'app.error.copyError',
         description: 'label for copy to clipboard button',
         defaultMessage: 'Copy error to clipboard'
+    },
+    profileRegister: {
+        id: 'app.error.profileRegister',
+        description: 'error message for registering your profile',
+        defaultMessage: 'An error occured while registering your profile'
+    },
+    profileFollow: {
+        id: 'app.error.profileFollow',
+        description: 'error message for profile follow',
+        defaultMessage: 'An error occurred while following {ethAddress}'
+    },
+    profileUnfollow: {
+        id: 'app.error.profileUnfollow',
+        description: 'error message for profile unfollow',
+        defaultMessage: 'An error occurred while unfollowing {ethAddress}'
     }
 });
 
