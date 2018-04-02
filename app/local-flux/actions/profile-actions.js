@@ -90,6 +90,7 @@ export const profileFollow = ({ actionId, ethAddress }) =>
 export const profileFollowError = (error, request) => {
     error.code = 'PFE01';
     error.messageId = 'profileFollow';
+    error.values = { ethAddress: request.ethAddress };
     return action(types.PROFILE_FOLLOW_ERROR, { error, request });
 };
 
@@ -391,6 +392,7 @@ export const profileUnfollow = ({ actionId, ethAddress }) =>
 export const profileUnfollowError = (error, request) => {
     error.code = 'PUE01';
     error.messageId = 'profileUnfollow';
+    error.values = { ethAddress: request.ethAddress };
     return action(types.PROFILE_UNFOLLOW_ERROR, { error, request });
 };
 
