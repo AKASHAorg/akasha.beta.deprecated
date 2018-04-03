@@ -69,11 +69,6 @@ class Dashboard extends Component {
         if(!activeDashboard) {
             return;
         }
-        // if(activeDashboard.get('columns').size !== this.props.dashboards.getIn([dashboardId, 'columns']).size) {
-        //     this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns, () => {
-        //         this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
-        //     })
-        // }
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
             return this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
@@ -111,7 +106,9 @@ class Dashboard extends Component {
         if(!columnOrder.size) {
             return this.columnData = this.columnData.delete(dashboardId);
         }
-        this.columnData = this.columnData.set(dashboardId, new Map());
+        if(this.columnData.get(dashboardId) && columnOrder.size !== this.columnData.get(dashboardId).size) {
+            this.columnData = this.columnData.set(dashboardId, new Map());
+        }
         columnOrder.forEach((colId, index) => {
             const colData = columns.get(colId);
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
