@@ -6,8 +6,8 @@ import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 import * as columnTypes from '../../constants/columns';
 
-const MORE_ITEMS_TRIGGER_SIZE = 4;
-const VIEWPORT_VISIBLE_BUFFER_SIZE = 6;
+const MORE_ITEMS_TRIGGER_SIZE = 5;
+const VIEWPORT_VISIBLE_BUFFER_SIZE = 5;
 
 class ColManager extends Component {
     constructor (props) {
@@ -54,7 +54,7 @@ class ColManager extends Component {
         const { column, onItemPooling, isVisible } = this.props;
         const { id } = column;
         window.addEventListener('resize', this._debouncedResize);
-        this._rootNodeRef.addEventListener('scroll', this._debouncedScroll, {passive: true});
+        this._rootNodeRef.addEventListener('scroll', this._debouncedScroll);
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         if (typeof onItemPooling === 'function' && !this.poolingInterval && isVisible) {
             this._createRequestPooling();
@@ -70,7 +70,7 @@ class ColManager extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.topIndexTo !== this.state.topIndexTo ||
-            !nextProps.column.equals(this.props.column) ||
+            !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
             !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
@@ -105,6 +105,24 @@ class ColManager extends Component {
         }
     }
 
+    resetColumn = (id) => {
+        this._resetColState(id);
+    }
+
+    _resetColState = (id) => {
+        const { isVisible, onItemPooling } = this.props;
+        this.items[id] = [];
+        this.itemCount = 0;
+        this.lastScrollTop[id] = 0;
+        this.setState({
+            topIndexTo: 0
+        });
+        this._clearIntervals();
+        if (typeof onItemPooling === 'function' && !this.poolingInterval && isVisible) {
+            this._createRequestPooling();
+        }
+    }
+
     _createRequestPooling = () => {
         this.interval = setInterval(() => {
             this.props.onItemPooling(this.props.column);
@@ -135,7 +153,7 @@ class ColManager extends Component {
         const diffedEntries = differenceWith(diffFn, oldEntries.toJS(), newEntries.toJS());
         this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
     }
-
+    /* eslint-disable complexity */
     _prepareUpdates = (passedProps, options) => {
         const { isNext } = options;
         let newerProps = this.props;
@@ -152,7 +170,9 @@ class ColManager extends Component {
             (column.value !== olderProps.column.value));
         const shouldRequestItems = entriesList.size === 0 &&
             !this.loadingMore.includes(column.id) && isVisible && !fetching;
-        const newEntriesLoaded = column.newEntries && column.newEntries.size < olderProps.column.newEntries.size;
+        const newEntriesSize = column.newEntries && column.newEntries.size;
+        const oldEntriesSize = olderProps.column.newEntries && olderProps.column.newEntries.size;
+        const newEntriesLoaded = column.newEntries && (newEntriesSize < oldEntriesSize);
         if (newEntriesLoaded && options.canUpdateState) {
             this._applyLoadedEntries(column.newEntries, olderProps.column.newEntries);
         }
@@ -160,7 +180,7 @@ class ColManager extends Component {
             isNewColumn,
             shouldRequestItems,
             hasNewItems: !column.entriesList.equals(oldItems),
-            hasUnseenNewItems: column.newEntries && column.newEntries.size !== olderProps.column.newEntries.size,
+            hasUnseenNewItems: column.newEntries && (newEntriesSize !== oldEntriesSize),
             column,
             options
         });
@@ -174,19 +194,12 @@ class ColManager extends Component {
             column, options } = updateParams;
         const { canUpdateState } = options;
         const { id } = column;
-
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
             this._mapItemsToState(column.get('newEntries'), { prepend: true });
             this._resolveNewEntries(column.get('newEntries'));
         }
-
         if (isNewColumn && canUpdateState) {
-            this.items[id] = [];
-            this.itemCount = 0;
-            this.lastScrollTop[id] = 0;
-            this.setState({
-                topIndexTo: 0
-            });
+            this._resetColState(id);
         }
 
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
@@ -256,12 +269,11 @@ class ColManager extends Component {
     _loadMoreIfNeeded = () => {
         const { props } = this;
         const { column, isVisible, fetchingMore } = props;
-        const { id } = column;
-        if (!this.loadingMore.includes(id) && isVisible && !fetchingMore) {
-            window.requestAnimationFrame(() => {
-                this.props.onItemMoreRequest(column.toJS());
-                this.loadingMore.push(id);
-            });
+        const { id, entriesList } = column;
+        const alreadyLoading = this.loadingMore.includes(id);
+        if (!alreadyLoading && isVisible && !fetchingMore && entriesList.size > 0) {
+            this.props.onItemMoreRequest(column.toJS());
+            this.loadingMore.push(id);
         }
     }
     /**
@@ -276,20 +288,21 @@ class ColManager extends Component {
         let topIndex = topIndexTo;
         for (let i = 0; i < items[id].length; i++) {
             const item = items[id][i];
-            if (accHeight >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
+            if (Math.ceil(accHeight) >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
                 topIndex = i;
                 accHeight = 0;
                 break;
             }
             accHeight += item.height;
         }
-
         if (this.state.topIndexTo !== topIndex) {
-            this.setState(() => ({
-                topIndexTo: topIndex
-            }));
+            window.requestAnimationFrame(() => {
+                this.setState(() => ({
+                    topIndexTo: topIndex
+                }));
+            });
         }
-        const shouldLoadMore = this._getBottomIndex(topIndex) + MORE_ITEMS_TRIGGER_SIZE > items[id].length;
+        const shouldLoadMore = items[id].length <= this._getBottomIndex(topIndex) + MORE_ITEMS_TRIGGER_SIZE;
         if (shouldLoadMore) {
             this._loadMoreIfNeeded();
         }
@@ -330,7 +343,7 @@ class ColManager extends Component {
             if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items[id] = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items[id]);
-                if(!this.scrollPending) {
+                if(this.scrollPending === 0) {
                     requestAnimationFrame(() => {
                         this._updateOffsets(this.lastScrollTop[id]);
                     });

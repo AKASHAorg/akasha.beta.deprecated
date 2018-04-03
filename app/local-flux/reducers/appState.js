@@ -89,7 +89,7 @@ const appState = createReducer(initialState, {
     },
 
     [types.SHOW_PREVIEW]: (state, { columnType, value }) =>
-        state.set('showPreview', new PreviewRecord({ columnType, value })),
+        state.set('showPreview', new PreviewRecord({ type: columnType, value })),
 
     [types.SHOW_TERMS]: state => state.set('showTerms', true),
 

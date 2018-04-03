@@ -17,7 +17,10 @@ const getLatestColumnProps = props => ({
     title: props.intl.formatMessage(dashboardMessages.latest),
     onItemRequest: props.entryNewestIterator,
     onItemMoreRequest: props.entryMoreNewestIterator,
-    onColumnRefresh: props.entryNewestIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryNewestIterator(column);
+    },
     onItemPooling: col => props.entryNewestIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
@@ -30,7 +33,10 @@ const getListColumnProps = props => ({
     onItemRequest: props.entryListIterator,
     onItemMoreRequest: props.entryMoreListIterator,
     title: props.lists.find(lst => lst.get('id') === props.column.get('value')).get('name') || ' ',
-    onColumnRefresh: props.entryMoreListIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryMoreListIterator(column)
+    },
     dataSource: props.lists,
     entries: props.entries
 });
@@ -40,7 +46,10 @@ const getTagColumnProps = props => ({
     iconType: 'tag',
     onItemRequest: props.entryTagIterator,
     onItemMoreRequest: props.entryMoreTagIterator,
-    onColumnRefresh: props.entryTagIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryTagIterator(column)
+    },
     onItemPooling: col => props.entryTagIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.tagSearchResults,
@@ -52,7 +61,10 @@ const getStreamColumnProps = props => ({
     onItemRequest: props.entryStreamIterator,
     onItemMoreRequest: props.entryMoreStreamIterator,
     title: props.intl.formatMessage(dashboardMessages.columnStream),
-    onColumnRefresh: props.entryStreamIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryStreamIterator(column);
+    },
     onItemPooling: col => props.entryStreamIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true
@@ -64,7 +76,10 @@ const getProfileColumnProps = props => ({
     iconType: 'user',
     onItemRequest: props.entryProfileIterator,
     onItemMoreRequest: props.entryMoreProfileIterator,
-    onColumnRefresh: props.entryProfileIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryProfileIterator(column);
+    },
     onItemPooling: col => props.entryProfileIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.profileSearchResults,
@@ -85,7 +100,10 @@ const getProfileEntriesColumnProps = props => ({
     title: props.intl.formatMessage(profileMessages.entries),
     onItemRequest: props.entryProfileIterator,
     onItemMoreRequest: props.entryMoreProfileIterator,
-    onColumnRefresh: props.entryProfileIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.entryProfileIterator(column)
+    },
     noMenu: true,
 });
 
@@ -103,7 +121,10 @@ const getProfileFollowersColumnProps = props => ({
     title: props.intl.formatMessage(profileMessages.followers),
     onItemRequest: props.profileFollowersIterator,
     onItemMoreRequest: props.profileMoreFollowersIterator,
-    onColumnRefresh: props.profileFollowersIterator,
+    onColumnRefresh: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.profileFollowersIterator(column);
+    },
     itemCard: <ProfileCard />,
 });
 
@@ -119,7 +140,10 @@ const getProfileFollowingsColumnProps = props => ({
     fetching: props.fetchingFollowings,
     fetchingMore: props.fetchingMoreFollowings,
     title: props.intl.formatMessage(profileMessages.followings),
-    onItemRequest: props.profileFollowingsIterator,
+    onItemRequest: (column) => {
+        props.dashboardResetColumnEntries(column.id);
+        props.profileFollowingsIterator(column)
+    },
     onItemMoreRequest: props.profileMoreFollowingsIterator,
     onColumnRefresh: props.profileFollowingsIterator,
     itemCard: <ProfileCard />

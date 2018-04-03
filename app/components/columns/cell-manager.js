@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 class CellManager extends Component {
@@ -24,11 +25,10 @@ class CellManager extends Component {
         if(isPending !== prevProps.isPending) {
             const refSize = this._baseNodeRef.getBoundingClientRect();
             if ( refSize.height !== this.baseNodeSize.height) {
-                // postpone updating the size..
-                requestIdleCallback(() => {
+                ReactDOM.unstable_batchedUpdates(() => {
                     onSizeChange(refSize);
+                    this.baseNodeSize = refSize;
                 });
-                this.baseNodeSize = refSize;
             }
         }
     }
@@ -42,6 +42,7 @@ class CellManager extends Component {
         return (
           <div
             ref={this._createBaseNodeRef}
+            // id={entry.get('entryId')}
           >
             {entry && children()}
           </div>

@@ -43,6 +43,8 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         );
         return state.mergeIn(['columnById', request.columnId], {
             newEntries: state.getIn(['columnById', request.columnId, 'newEntries']).unshift(...diffArr),
+            lastBlock: data.lastBlock,
+            lastIndex: data.lastIndex
         });
     }
     const entryIds = data.collection.map(entry => entry.entryId);
@@ -80,6 +82,15 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
+    /**
+     * In some cases this action is fired as a result of a previous fetch
+     * for example: user rapidly refreshes a column...
+     * To prevent that, make sure we already have something in entriesList
+     */
+    if(state.getIn(['columnById', request.columnId, 'entriesList']).size === 0) {
+        return state;
+    }
+
     const newIds = data.collection.map(entry => entry.entryId);
     const moreEntries = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
@@ -328,7 +339,7 @@ const dashboardState = createReducer(initialState, {
 
     [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
         const { context, entryId } = request;
-        if (context && state.getIn(['columnById', context])) {
+        if (context && state.getIn(['columnById', context, 'newEntries', entryId])) {
             return state.deleteIn(['columnById', context, 'newEntries'], entryId)
                 .setIn(['columnById', context, 'entriesList', 0], entryId);
         }
@@ -347,8 +358,12 @@ const dashboardState = createReducer(initialState, {
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
-    [types.SHOW_PREVIEW]: state =>
-        state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
+    [types.SHOW_PREVIEW]: (state, { columnType, value }) =>
+        state.setIn(['columnById', 'previewColumn'], new ColumnRecord({
+            id: 'previewColumn',
+            type: columnType,
+            value
+        })),
 });
 
 export default dashboardState;
