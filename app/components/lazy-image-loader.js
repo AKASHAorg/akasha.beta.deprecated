@@ -8,7 +8,9 @@ class LazyImageLoader extends Component {
     }
 
     componentDidMount () {
-        this._loadImage(this.props.image, this.props.baseWidth);
+        window.requestIdleCallback(() => {
+            this._loadImage(this.props.image, this.props.baseWidth);
+        });
     }
 
     shouldComponentUpdate (nextProps, nextState) {
@@ -20,7 +22,9 @@ class LazyImageLoader extends Component {
     componentWillReceiveProps (nextProps) {
         const { baseWidth } = nextProps;
         if (baseWidth !== this.props.baseWidth) {
-            this._loadImage(this.props.image, baseWidth);
+            window.requestIdleCallback(() => {
+                this._loadImage(this.props.image, baseWidth);
+            });
         }
     }
 

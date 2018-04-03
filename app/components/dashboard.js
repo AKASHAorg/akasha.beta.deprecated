@@ -43,12 +43,14 @@ class Dashboard extends Component {
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
             });
         }
+        window.removeEventListener('resize', this._throttledScroll);
     }
 
     componentDidMount () {
         const { match, dashboards, columns } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
+        window.addEventListener('resize', this._throttledScroll);
         if(this._dashboardNode && activeDashboard) {
             this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
@@ -67,14 +69,21 @@ class Dashboard extends Component {
         if(!activeDashboard) {
             return;
         }
+        // if(activeDashboard.get('columns').size !== this.props.dashboards.getIn([dashboardId, 'columns']).size) {
+        //     this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns, () => {
+        //         this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
+        //     })
+        // }
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
-            this.setState({
+            return this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
             });
         }
         if (isNewDashboard || columnsChanged) {
             if(this._dashboardNode) {
-                this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
+                return this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns, () => {
+                    this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
+                });
             }
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
@@ -86,7 +95,7 @@ class Dashboard extends Component {
     _mapColumnsToState = (columnList, dashboardId) => {
         const { columnOrder } = this.state;
         if (dashboardId && columnList.size) {
-            const newOrder = columnOrder.set(dashboardId, columnList)
+            const newOrder = columnOrder.set(dashboardId, columnList);
             this.setState(() => ({
                 columnOrder: newOrder
             }));
@@ -95,14 +104,15 @@ class Dashboard extends Component {
     /**
      * calculate left position and other column data and store it
      */
-    _calculateColumnData = (columnOrder, dashboardId, columns) => {
+    _calculateColumnData = (columnOrder, dashboardId, columns, cb) => {
         const { viewportScrolledWidth } = this.state;
         const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
         let accWidth = 0;
         if(!columnOrder.size) {
             return this.columnData = this.columnData.delete(dashboardId);
         }
-        columnOrder.forEach((colId) => {
+        this.columnData = this.columnData.set(dashboardId, new Map());
+        columnOrder.forEach((colId, index) => {
             const colData = columns.get(colId);
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
                 id: colData.id,
@@ -111,6 +121,11 @@ class Dashboard extends Component {
                 inViewport: accWidth <= (viewportScrolledWidth + dashboardWidth)
             });
             accWidth += (colData.large ? largeColumnWidth : smallColumnWidth) + this.columnMarginLeft;
+            if(index === columnOrder.size - 1) {
+                if(typeof cb === 'function') {
+                    cb();
+                }
+            }
         });
     }
 
@@ -120,8 +135,8 @@ class Dashboard extends Component {
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
         !equals(nextProps.match.params, this.props.match.params) ||
-        !nextProps.columns.equals(this.props.columns);
-        // !nextProps.dashboards.equals(this.props.dashboards);
+        !nextProps.columns.equals(this.props.columns); // ||
+        // nextProps.dashboards.size !== this.props.dashboards.size;
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -163,8 +178,9 @@ class Dashboard extends Component {
         const { dashboardId } = match.params;
         const { drag, hover } = columnPlaceholder;
         const newOrderedColumns = this._getColumns(columnOrder.get(dashboardId), drag, hover);
-        this._calculateColumnData(newOrderedColumns, dashboardId, columns);
-        this._mapColumnsToState(newOrderedColumns, dashboardId);
+        this._calculateColumnData(newOrderedColumns, dashboardId, columns, () => {
+            this._mapColumnsToState(newOrderedColumns, dashboardId);
+        });
     }
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
         this.setState({

@@ -9,7 +9,11 @@ const finalCreateStore = compose(
     applyMiddleware(batchedSubscribeMiddleware, sagaMiddleware),
     batchedSubscribeEnhancer,
     global.devToolsExtension ?
-        global.devToolsExtension({ actionCreators }) :
+        global.devToolsExtension({
+            actionCreators,
+            maxAge: 200,
+            actionBlacklist: ['ENTRY_GET_SHORT']
+        }) :
         noop => noop,
     // batchedSubscribe(updateBatcher),
     // persistState(

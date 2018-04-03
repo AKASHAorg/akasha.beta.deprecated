@@ -102,6 +102,7 @@ class ColumnHeader extends Component {
             this._colManagerComponent.loadNewItems();
         } else {
             this.props.onRefresh(this.props.column);
+            this._colManagerComponent.resetColumn(this.props.column.id);
         }
         this.setState({ popoverVisible: false });
     };
@@ -330,7 +331,7 @@ class ColumnHeader extends Component {
               </div>
             )}
             {React.Children.map(children, (child) => {
-                if (child && typeof child === 'object') {
+                if (child && typeof child === 'object' && child.type !== 'div') {
                     return React.cloneElement(child, {
                         onRefLink: this._getComponentRef
                     });
