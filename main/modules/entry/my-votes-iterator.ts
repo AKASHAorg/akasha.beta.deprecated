@@ -87,8 +87,8 @@ const execute = Promise.coroutine(function* (data: {
                 descend(prop('logIndex'))],
             collection));
     const lastLog = data.reversed ? head(sortedResults) : last(sortedResults);
-    const [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] : [0, 0];
-
+    let [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] :
+        [0, data.reversed ? data.toBlock : 0];
 
     return { collection: sortedResults, lastBlock: lastBlock, lastIndex: lastIndex };
 });
