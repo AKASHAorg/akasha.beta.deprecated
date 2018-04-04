@@ -353,21 +353,26 @@ const dashboardState = createReducer(initialState, {
 
     [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data, request }) => {
         const { entryId } = request;
-        const listColumn = state
+        const listColumns = state
             .get('columnById')
-            .find(column => column.type === columnTypes.list && column.value === data.id);
-        if (listColumn) {
-            const hasEntryId = listColumn.entriesList.includes(entryId);
-            if (hasEntryId) {
-                return state.setIn(
-                    ['columnById', listColumn.id, 'entriesList'],
-                    listColumn.entriesList.filter(id => id !== entryId)
-                );
-            }
-            return state.setIn(
-                ['columnById', listColumn.id, 'entriesList'],
-                listColumn.entriesList.push(entryId)
-            );
+            .filter(column => (column.type === null || column.type === columnTypes.list) &&
+                column.value === data.id);
+        if (listColumns.size) {
+            listColumns.map((listColumn) => {
+                const columnId = (listColumn.id) ? listColumn.id : 'newColumn';
+                const hasEntryId = listColumn.entriesList.includes(entryId);
+                if (hasEntryId) {
+                    state = state.setIn(
+                        ['columnById', columnId, 'entriesList'],
+                        listColumn.entriesList.filter(id => id !== entryId)
+                    );
+                } else {
+                    state = state.setIn(
+                        ['columnById', columnId, 'entriesList'],
+                        listColumn.entriesList.push(entryId)
+                    );
+                }
+            });
         }
         return state;
     },

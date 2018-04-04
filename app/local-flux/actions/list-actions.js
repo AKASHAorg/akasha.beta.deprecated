@@ -1,8 +1,8 @@
 import { action } from './helpers';
 import * as types from '../constants';
 
-export const listAdd = ({ name, description, entryIds }) =>
-    action(types.LIST_ADD, { name, description, entryIds });
+export const listAdd = ({ name, description, entryIds, addColumn }) =>
+    action(types.LIST_ADD, { name, description, entryIds, addColumn });
 
 export const listAddError = (error) => {
     error.code = 'LAE01';

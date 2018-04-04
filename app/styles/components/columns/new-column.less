@@ -10,9 +10,23 @@
         height: 100%;
         border: 1px @text-color-secondary dashed;
         border-radius: 4px;
+
+        &_placeholder {
+            background-color: @background;            
+            border: none;
+        }
     }
 
+    &__placeholder-background {
+        background: @no-column-placeholder-bg top center no-repeat;
+    }
+<<<<<<< HEAD
+
     &__placeholder {
+=======
+    
+    &__add-column {
+>>>>>>> chore(): sync with web version
         height: 100%;
         width: 100%;
         font-weight: 500;
@@ -22,6 +36,19 @@
         &:hover {
             background-color: @background;
         }
+    }
+
+    &__placeholder-title {
+        color: @heading-color;
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 340px;
+        margin-bottom: 8px;
+    }
+
+    &__placeholder-message {
+        font-size: 13px;
+        margin-bottom: 12px;
     }
 
     &__header {
@@ -85,5 +112,10 @@
 
     &__button {
         margin-left: 12px;
+    }
+
+    &__new-list {
+        flex: 1 1 auto;
+        padding: 0 16px;
     }
 }
