@@ -109,7 +109,7 @@ const dashboardMessages = defineMessages({
     firstDashboard: {
         id: 'app.dashboard.firstDashboard',
         description: 'the name for the first board',
-        defaultMessage: 'My first board'
+        defaultMessage: 'My board'
     },
     large: {
         id: 'app.dashboard.large',
@@ -185,6 +185,26 @@ const dashboardMessages = defineMessages({
         id: 'app.dashboard.tag',
         description: 'label for tag column',
         defaultMessage: 'Tag'
+    },
+    noColumnsTitle: {
+        id: 'app.dashboard.noColumnsTitle',
+        description: 'Column placeholder title',
+        defaultMessage: 'A new world awaits you!'
+    },
+    noColumns: {
+        id: 'app.dashboard.noColumns',
+        description: 'Column placeholder message',
+        defaultMessage: 'Your favorite topics and users at your fingertips.'
+    },
+    addFirstColumn: {
+        id: 'app.dashboard.addFirstColumn',
+        description: 'add first column button label',
+        defaultMessage: 'Add first column'
+    },
+    createNewListColumnSubtitle: {
+        id: 'app.dashboard.createNewListColumnSubtitle',
+        description: 'panel subtitle for creating a new list and adding it to a column',
+        defaultMessage: 'Please create a list'
     },
 });
 export { dashboardMessages };

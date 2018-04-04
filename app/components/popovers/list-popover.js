@@ -39,7 +39,7 @@ class ListPopover extends Component {
 
     isSaved = (list) => {
         const { entryId } = this.props;
-        return !!list.get('entryIds').find(ele => ele.entryId === entryId);
+        return !!(list.get('entryIds') && list.get('entryIds').find(ele => ele.entryId === entryId));
     };
 
     groupByState = (lists) => {

@@ -27,9 +27,10 @@ class ListColumn extends Component {
     }
 
     firstLoad = () => {
-        const { column } = this.props;
+        const { column, lists } = this.props;
         const value = column.get('value');
-        if (!column.get('entriesList').size && value && !this.firstCallDone) {
+        const list = lists.find(lst => lst.get('id') === value);
+        if (list && !column.get('entriesList').size && value && !this.firstCallDone) {
             this.props.entryListIterator({ columnId: column.get('id'), value });
             this.firstCallDone = true;
         }
@@ -44,11 +45,15 @@ class ListColumn extends Component {
     };
 
     onRefresh = () => {
-        const { column } = this.props;
-        this.props.entryListIterator({
-            columnId: column.get('id'),
-            value: column.get('value')
-        });
+        const { column, lists } = this.props;
+        const value = column.get('value');
+        const list = lists.find(lst => lst.get('id') === value);
+        if (list) {
+            this.props.entryListIterator({
+                columnId: column.get('id'),
+                value: value
+            });
+        }
     };
 
     render () {
