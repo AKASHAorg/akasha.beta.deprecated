@@ -183,47 +183,6 @@ function* actionGetAllHistory ({ loadMore }) {
     }
 }
 
-function* actionGetClaimable () {
-    try {
-        const loggedEthAddress = yield select(selectLoggedEthAddress);
-        const claimable = ['draftPublish', 'entryDownvote', 'entryUpvote'];
-        const data = yield apply(actionService, actionService.getClaimable, [{ethAddress: loggedEthAddress, type: claimable}]);
-        if (data.length) {
-            yield call(actionGetClaimableEntries, data); // eslint-disable-line no-use-before-define
-        }
-        yield put(actions.actionGetClaimableSuccess(data));
-    } catch (error) {
-        yield put(actions.actionGetClaimableError(error));
-    }
-}
-
-function* actionGetClaimableEntries (data) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
-    const entries = [];
-    const otherEntries = [];
-    const ownEntries = [];
-    data.forEach((action) => {
-        const { entryId, ethAddress } = action.payload;
-        if (entryId && ethAddress) {
-            entries.push(entryId);
-            if (ethAddress === loggedEthAddress) {
-                ownEntries.push(entryId);
-            } else {
-                otherEntries.push(entryId);
-            }
-        }
-    });
-    yield put(entryActions.entryGetEndPeriod(entries));
-    if (ownEntries.length) {
-        yield put(entryActions.entryCanClaim(ownEntries));
-        yield put(entryActions.entryGetBalance(ownEntries));
-    }
-    if (otherEntries.length) {
-        yield put(entryActions.entryCanClaimVote(otherEntries));
-        yield put(entryActions.entryGetVoteOf(otherEntries));
-    }
-}
-
 function* actionGetHistory ({ request }) {
     try {
         const loggedEthAddress = yield select(selectLoggedEthAddress);
@@ -383,7 +342,6 @@ export function* watchActionActions () {
     yield takeEvery(types.ACTION_ADD, actionAdd);
     yield takeEvery(types.ACTION_DELETE, actionDelete);
     yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory);
-    yield takeEvery(types.ACTION_GET_CLAIMABLE, actionGetClaimable);
     yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
     yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
     yield takeEvery(types.ACTION_PUBLISH, actionPublish);

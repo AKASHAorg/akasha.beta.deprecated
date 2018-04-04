@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { fromJS } from 'immutable';
 import { DraftJS } from 'megadraft';
-import { Row, Col, Steps } from 'antd';
+import { Row, Col } from 'antd';
 import { EditorFooter, NoDraftsPlaceholder, PublishOptionsPanel, TextEntryEditor, TagEditor,
     DataLoader } from '../components';
 import { genId } from '../utils/dataModule';

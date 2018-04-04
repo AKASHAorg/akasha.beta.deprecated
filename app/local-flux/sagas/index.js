@@ -1,6 +1,7 @@
 import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
+import * as claimableActions from '../actions/claimable-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import * as notificationsActions from '../actions/notifications-actions';
 import * as profileActions from '../actions/profile-actions';
@@ -8,6 +9,7 @@ import { selectLoggedEthAddress } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
 import * as appSaga from './app-saga';
+import * as claimableSaga from './claimable-saga';
 import * as commentsSaga from './comments-saga';
 import * as draftSaga from './draft-saga';
 import * as dashboardSaga from './dashboard-saga';
@@ -28,6 +30,7 @@ import * as types from '../constants';
 import { loadAkashaDB } from '../services/db/dbs';
 
 function* registerListeners () {
+    yield fork(claimableSaga.registerClaimableListeners);    
     yield fork(commentsSaga.registerCommentsListeners);
     yield fork(licenseSaga.registerLicenseListeners);
     yield fork(entrySaga.registerEntryListeners);
@@ -70,6 +73,7 @@ function* launchHomeActions () {
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     if (loggedEthAddress) {
         yield put(actionActions.actionGetPending());
+        yield put(claimableActions.claimableIterator());
         yield put(profileActions.profileFollowingsIterator({
             ethAddress: loggedEthAddress,
             allFollowings: true,
@@ -101,6 +105,7 @@ export default function* rootSaga () { // eslint-disable-line max-statements
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
+    yield fork(claimableSaga.watchClaimableActions);    
     yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(draftSaga.watchDraftActions);

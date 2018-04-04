@@ -14,7 +14,6 @@ export const ActionRecord = Record({
 
 const Flags = Record({
     fetchingAethTransfers: false,
-    fetchingClaimable: false,
     fetchingHistory: false,
 });
 
@@ -23,7 +22,6 @@ export const ActionState = Record({
     batchActions: new List(),
     byId: new Map(),
     byType: new Map(),
-    claimable: new List(),
     flags: new Flags(),
     history: new List(),
     historyTypes: new List(),

@@ -51,13 +51,15 @@ export const entryDownvoteError = (error, entryId, entryTitle) => {
 export const entryDownvoteSuccess = data =>
     action(types.ENTRY_DOWNVOTE_SUCCESS, { data });
 
-export const entryGetBalance = entryIds => action(types.ENTRY_GET_BALANCE, { entryIds });
+export const entryGetBalance = (entryIds, claimable) =>
+    action(types.ENTRY_GET_BALANCE, { entryIds, claimable });
 export const entryGetBalanceError = (error) => {
     error.code = 'EGBE01';
     error.messageId = 'entryGetBalance';
     return action(types.ENTRY_GET_BALANCE_ERROR, { error });
 };
-export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
+export const entryGetBalanceSuccess = (data, request) =>
+    action(types.ENTRY_GET_BALANCE_SUCCESS, { data, request });
 
 export const entryGetEndPeriod = entryIds => action(types.ENTRY_GET_END_PERIOD, { entryIds });
 export const entryGetEndPeriodError = (error) => {
@@ -118,15 +120,16 @@ export const entryGetShortError = (error, request) => {
 
 export const entryGetShortSuccess = (data, request) =>
     action(types.ENTRY_GET_SHORT_SUCCESS, { data, request, batching: request.batching });
-export const entryGetVoteOf = entryIds => action(types.ENTRY_GET_VOTE_OF, { entryIds });
 
+export const entryGetVoteOf = (entryIds, claimable) =>
+    action(types.ENTRY_GET_VOTE_OF, { entryIds, claimable });
 export const entryGetVoteOfError = (error) => {
     error.code = 'EGVOE01';
     error.messageId = 'entryGetVoteOf';
     return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
 };
-
-export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
+export const entryGetVoteOfSuccess = (data, request) =>
+    action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data, request });
 
 export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { data });
 export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });

@@ -64,6 +64,16 @@ export const selectBlockNumber = state => state.externalProcState.getIn(['geth',
 export const selectClaimableActions = state =>
     state.actionState.get('claimable').map(actionId => selectAction(state, actionId));
 
+export const selectClaimableEntries = state => state.claimableState.get('entryList');
+
+export const selectClaimableLoading = state => !!state.claimableState.get('entriesLoading').size;
+
+export const selectClaimableLoadingMore = state => !!state.claimableState.get('entriesLoadingMore').size;
+
+export const selectClaimableMoreEntries = state => state.claimableState.get('moreEntries');
+
+export const selectClaimableOffset = state => state.claimableState.get('entryList').size;
+
 export const selectColumn = (state, columnId) => state.dashboardState.getIn(['columnById', columnId]);
 
 export const selectColumnEntries = (state, columnId) =>
