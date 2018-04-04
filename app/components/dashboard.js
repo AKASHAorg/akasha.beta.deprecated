@@ -57,18 +57,8 @@ class Dashboard extends Component {
         if (dashboardId && activeDashboard) {
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
-        if(this._dashboardNode) {
-            const { match, columns } = this.props;
-            const { dashboardId } = match.params;
-            const { offsetWidth, scrollLeft } = this._dashboardNode;
-            this.setState({
-                viewportScrolledWidth: offsetWidth + scrollLeft
-            }, () => {
-                this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
-            });
-        }
     }
-
+    /* eslint-disable complexity */
     componentWillReceiveProps (nextProps) {
         const { match, dashboards, columns } = nextProps;
         const { dashboardId } = match.params;
@@ -81,11 +71,23 @@ class Dashboard extends Component {
             return;
         }
 
+        if(this.state.viewportScrolledWidth === 0 && activeDashboard.get('columns').size) {
+            if(this._dashboardNode) {
+                const { offsetWidth, scrollLeft } = this._dashboardNode;
+                this.setState({
+                    viewportScrolledWidth: offsetWidth + scrollLeft
+                }, () => {
+                    this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
+                });
+            }
+        }
+
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
             this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
             });
         }
+
         if (isNewDashboard || columnsChanged) {
             if(this._dashboardNode) {
                 return this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns, () => {
@@ -129,6 +131,7 @@ class Dashboard extends Component {
 
         columnOrder.forEach((colId, index) => {
             const colData = columns.get(colId);
+            console.log(accWidth <= viewportScrolledWidth, 'inView');
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
                 id: colData.id,
                 large: colData.large,
