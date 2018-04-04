@@ -73,8 +73,11 @@ export const profileExistsSuccess = data => action(types.PROFILE_EXISTS_SUCCESS,
 
 export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
     action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
-export const profileFaucetError = (error, request) =>
-    action(types.PROFILE_FAUCET_ERROR, { error, request });
+export const profileFaucetError = (error, request) => {
+    error.code = 'PFE02';
+    error.messageId = 'profileFaucet';
+    return action(types.PROFILE_FAUCET_ERROR, { error, request });
+}
 export const profileFaucetSuccess = (data, request) =>
     action(types.PROFILE_FAUCET_SUCCESS, { data, request });
 
