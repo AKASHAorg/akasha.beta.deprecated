@@ -130,7 +130,7 @@ class EntryCard extends Component {
 
     renderHiddenContent = () => (
       <div style={{ position: 'relative' }}>
-        {this.renderContentPlaceholder()}
+        <ContentPlaceholder />
         <div className="entry-card__hidden">
           <div className="heading flex-center">
             {this.props.intl.formatMessage(entryMessages.hiddenContent, {
@@ -154,7 +154,7 @@ class EntryCard extends Component {
 
     renderUnresolvedPlaceholder = () => (
       <div style={{ position: 'relative' }}>
-        {this.renderContentPlaceholder()}
+        <ContentPlaceholder />
         <div className="entry-card__unresolved">
           <div className="heading flex-center">
             {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
@@ -174,18 +174,6 @@ class EntryCard extends Component {
         </div>
       </div>
     );
-
-    // renderResolvingPlaceholder = () => {
-    //     const { large, style } = this.props;
-    //     const cardClass = classNames('entry-card entry-card_transparent', {
-    //         'entry-card_large': large
-    //     });
-    //     return (
-    //       <Card className={cardClass} style={style} title={<EntryCardHeader loading />}>
-    //         {this.renderContentPlaceholder()}
-    //       </Card>
-    //     );
-    // };
     /* eslint-disable complexity */
     render () {
 
