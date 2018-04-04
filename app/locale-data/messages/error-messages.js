@@ -291,6 +291,11 @@ const errorMessages = defineMessages({
         description: 'label for copy to clipboard button',
         defaultMessage: 'Copy error to clipboard'
     },
+    profileFaucet: {
+        id: 'app.error.profileFaucet',
+        description: 'error message for faucet request',
+        defaultMessage: 'An error occurred while requesting funds from faucet'
+    },
     profileRegister: {
         id: 'app.error.profileRegister',
         description: 'error message for registering your profile',

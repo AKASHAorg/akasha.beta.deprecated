@@ -2,17 +2,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button } from 'antd';
+import { Button, Input, Form } from 'antd';
 import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
+import { listAdd } from '../../local-flux/actions/list-actions';
 import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
     dashboardResetNewColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
 import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
     entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults, searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumn, selectColumnEntries, selectListsAll, selectNewColumn, selectProfileSearchResults,
-    selectTagSearchResults } from '../../local-flux/selectors';
-import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { selectActiveDashboard, selectColumn, selectColumnEntries, selectListsAll, selectNewColumn,
+    selectProfileSearchResults, selectTagSearchResults } from '../../local-flux/selectors';
+import { dashboardMessages, generalMessages, listMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { Icon, NewSearchColumn, NewSelectColumn } from '../';
 
@@ -29,7 +30,9 @@ const iconTypes = {
 
 class NewColumn extends Component {
     state = {
-        selectedColumn: null
+        selectedColumn: null,
+        newListName: '',
+        newListDescription: ''
     };
 
     componentWillReceiveProps (nextProps) {
@@ -38,18 +41,44 @@ class NewColumn extends Component {
             this.setState({ selectedColumn: null });
         }
     }
-    
+
+    shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
+        const { activeDashboard, column, dashboardId, lists, newColumn, previewEntries, profileResults,
+            tagResults } = nextProps;
+        const { newListDescription, newListName, selectedColumn } = nextState;
+        if (
+            !activeDashboard.equals(this.props.activeDashboard) ||
+            !column.equals(this.props.column) ||
+            dashboardId !== this.props.dashboardId ||
+            !lists.equals(this.props.lists) ||
+            (!newColumn && this.props.newColumn) ||
+            (newColumn && !newColumn.equals(this.props.newColumn)) ||
+            !previewEntries.equals(this.props.previewEntries) ||
+            !profileResults.equals(this.props.profileResults) ||
+            !tagResults.equals(this.props.tagResults) ||
+            selectedColumn !== this.state.selectedColumn ||
+            newListDescription !== this.state.newListDescription ||
+            newListName !== this.state.newListName
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     componentWillUnmount () {
         this.props.searchResetResults();
     }
 
     isDisabled = () => {
-        const { newColumn } = this.props;
-        const { selectedColumn } = this.state;
+        const { lists, newColumn } = this.props;
+        const { newListName, selectedColumn } = this.state;
         if (!selectedColumn) {
             return true;
         }
         if (oneStepColumns.includes(selectedColumn)) {
+            return false;
+        }
+        if (newColumn.get('type') === columnTypes.list && lists.size === 0 && newListName) {
             return false;
         }
         if (newColumn.get('type')) {
@@ -58,13 +87,32 @@ class NewColumn extends Component {
         return false;
     };
 
+    onListNameChange = (ev) => {
+        this.setState({ newListName: ev.target.value });
+    };
+
+    onListDescriptionChange = (ev) => {
+        this.setState({ newListDescription: ev.target.value });
+    };
+
     updateNewColumn = type => this.props.dashboardUpdateNewColumn({ type });
 
     onAddColumn = () => {
         const { newColumn } = this.props;
-        const { selectedColumn } = this.state;
+        const { newListDescription, newListName, selectedColumn } = this.state;
         if (oneStepColumns.includes(selectedColumn)) {
             this.props.dashboardAddColumn(selectedColumn);
+        } else if (newListName) {
+            this.props.listAdd({
+                name: newListName,
+                description: newListDescription,
+                entryIds: [],
+                addColumn: true
+            });
+            this.setState({
+                newListName: '',
+                newListDescription: ''
+            });
         } else if (newColumn.get('value')) {
             this.props.dashboardAddColumn(newColumn.get('type'), newColumn.get('value'));
         } else {
@@ -77,7 +125,11 @@ class NewColumn extends Component {
         if (!newColumn.get('type')) {
             this.props.dashboardDeleteNewColumn();
         } else {
-            this.setState({ selectedColumn: null });
+            this.setState({
+                selectedColumn: null,
+                newListName: '',
+                newListDescription: ''
+            });
             this.props.dashboardUpdateNewColumn({ type: null, value: null });
         }
     }
@@ -94,9 +146,32 @@ class NewColumn extends Component {
 
     renderPlaceholder = () => (
       <div className="new-column">
+        <div className="new-column__inner new-column__inner_placeholder">
+          <div className="new-column__placeholder-background">
+            <div className="flex-center-x new-column__placeholder-title">
+              {this.props.intl.formatMessage(dashboardMessages.noColumnsTitle)}
+            </div>
+            <div className="flex-center-x new-column__placeholder-message">
+              {this.props.intl.formatMessage(dashboardMessages.noColumns)}
+            </div>
+            <div className="flex-center-x">
+              <Button
+                onClick={this.props.dashboardAddNewColumn}            
+                type="primary"
+              >
+                {this.props.intl.formatMessage(dashboardMessages.addFirstColumn)}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    renderNewColumn = () => (
+      <div className="new-column">
         <div className="new-column__inner">
           <div
-            className="flex-center new-column__placeholder"
+            className="flex-center new-column__add-column"
             onClick={this.props.dashboardAddNewColumn}
           >
             <span>
@@ -126,10 +201,15 @@ class NewColumn extends Component {
         );
     };
 
-    render () {
-        const { column, intl, lists, newColumn, previewEntries, profileResults, tagResults } = this.props;
+    render () { // eslint-disable-line complexity
+        const { activeDashboard, column, dashboardId, intl, lists, newColumn, previewEntries, profileResults,
+            tagResults } = this.props;
+        if (dashboardId !== activeDashboard.get('id')) {
+            return null;
+        }
         if (!newColumn) {
-            return this.renderPlaceholder();
+            const hasColumns = !!activeDashboard.get('columns').size;
+            return hasColumns ? this.renderNewColumn() : this.renderPlaceholder();
         }
 
         let component, displayName, previewMessage, title, subtitle, listName; // eslint-disable-line
@@ -187,17 +267,48 @@ class NewColumn extends Component {
                 break;
             case columnTypes.list:
                 previewMessage = intl.formatMessage(dashboardMessages.previewList, { listName });
-                component = (
-                  <NewSelectColumn
-                    entryIterator={this.props.entryListIterator}
-                    entryMoreIterator={this.props.entryMoreListIterator}
-                    options={lists}
-                    previewMessage={previewMessage}
-                    {...props}
-                  />
-                );
+                component = (lists.size !== 0) ?
+                    (
+                      <NewSelectColumn
+                        entryIterator={this.props.entryListIterator}
+                        entryMoreIterator={this.props.entryMoreListIterator}
+                        options={lists}
+                        previewMessage={previewMessage}
+                        {...props}
+                      />
+                    ) :
+                    (
+                      <div className="new-column__new-list">
+                        <Form>
+                          <Form.Item
+                            label={intl.formatMessage(listMessages.listName)}
+                            colon={false}
+                          >
+                            <div className="new-column__new-list-input">
+                              <Input
+                                value={this.state.newListName}
+                                onChange={this.onListNameChange}
+                              />
+                            </div>
+                          </Form.Item>
+                          <Form.Item
+                            label={intl.formatMessage(listMessages.shortDescription)}
+                            colon={false}
+                          >
+                            <div className="new-column__new-list-input">
+                              <Input
+                                value={this.state.newListDescription}
+                                onChange={this.onListDescriptionChange}
+                              />
+                            </div>
+                          </Form.Item>
+                        </Form>
+                      </div>
+                    );
                 title = dashboardMessages.addNewListColumn;
-                subtitle = dashboardMessages.addNewListColumnSubtitle;
+                subtitle = (lists.size !== 0) ? 
+                    dashboardMessages.addNewListColumnSubtitle :
+                    dashboardMessages.createNewListColumnSubtitle
                 break;
             default:
                 title = dashboardMessages.addNewColumn;
@@ -247,10 +358,12 @@ class NewColumn extends Component {
 }
 
 NewColumn.propTypes = {
+    activeDashboard: PropTypes.shape(),
     column: PropTypes.shape().isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
     dashboardDeleteNewColumn: PropTypes.func.isRequired,
+    dashboardId: PropTypes.string.isRequired,
     dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
     entryListIterator: PropTypes.func.isRequired,
@@ -261,6 +374,7 @@ NewColumn.propTypes = {
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     lists: PropTypes.shape().isRequired,
+    listAdd: PropTypes.func.isRequired,
     newColumn: PropTypes.shape(),
     previewEntries: PropTypes.shape().isRequired,
     profileResults: PropTypes.shape().isRequired,
@@ -272,6 +386,7 @@ NewColumn.propTypes = {
 
 function mapStateToProps (state) {
     return {
+        activeDashboard: selectActiveDashboard(state),
         column: selectColumn(state, 'newColumn'),
         lists: selectListsAll(state),
         newColumn: selectNewColumn(state),
@@ -295,6 +410,7 @@ export default connect(
         entryMoreTagIterator,
         entryProfileIterator,
         entryTagIterator,
+        listAdd,
         searchProfiles,
         searchResetResults,
         searchTags

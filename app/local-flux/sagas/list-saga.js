@@ -1,15 +1,19 @@
 import { apply, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/list-actions';
+import * as dashboardActions from '../actions/dashboard-actions';
 import * as types from '../constants';
 import { selectLoggedEthAddress } from '../selectors';
 import * as listService from '../services/list-service';
 
-function* listAdd ({ name, description, entryIds = [] }) {
+function* listAdd ({ name, description, entryIds = [], addColumn }) {
     try {
         const ethAddress = yield select(selectLoggedEthAddress);
         const list = { ethAddress, name, description, entryIds };
         const { id, timestamp } = yield apply(listService, listService.addList, [list]);
         yield put(actions.listAddSuccess({ id, timestamp, ...list }));
+        if (addColumn) {
+            yield put(dashboardActions.dashboardAddColumn('list', id));
+        }
     } catch (error) {
         yield put(actions.listAddError(error));
     }

@@ -42,7 +42,7 @@ const Dashboard = (props) => {
               </div>
             );
         })}
-        {activeDashboard && <NewColumn />}
+        {activeDashboard && <NewColumn dashboardId={dashboardId} />}
         {!activeDashboard &&
           <div className="flex-center dashboard__empty-placeholder">
             <div className={imgClass} />
