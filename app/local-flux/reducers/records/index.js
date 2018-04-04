@@ -1,5 +1,6 @@
 export { ActionRecord, ActionState } from './action-record';
 export { AppRecord, NotificationRecord, PreviewRecord } from './app-record';
+export { ClaimableEntry, ClaimableState } from './claimable-record';
 export { CommentAuthor, CommentData, CommentRecord, CommentsState } from './comments-record';
 export { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
 export { DraftContent, Draft, DraftsIterator, CardInfo } from './draft-record';

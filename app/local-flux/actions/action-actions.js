@@ -22,14 +22,6 @@ export const actionGetAllHistoryError = (error, request) => {
 export const actionGetAllHistorySuccess = (data, request) =>
     action(types.ACTION_GET_ALL_HISTORY_SUCCESS, { data, request });
 
-export const actionGetClaimable = () => action(types.ACTION_GET_CLAIMABLE);
-export const actionGetClaimableError = (error) => {
-    error.code = 'AGCE01';
-    error.messageId = 'actionGetClaimable';
-    return action(types.ACTION_GET_CLAIMABLE_ERROR, { error });
-};
-export const actionGetClaimableSuccess = data => action(types.ACTION_GET_CLAIMABLE_SUCCESS, { data });
-
 export const actionGetHistory = request => action(types.ACTION_GET_HISTORY, { request });
 export const actionGetHistoryError = (error) => {
     error.code = 'AGHE01';

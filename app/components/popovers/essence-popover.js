@@ -5,7 +5,8 @@ import { injectIntl } from 'react-intl';
 import { Form, Popover, Progress, Tooltip } from 'antd';
 import { ClaimableList, EssenceHistory, Icon, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
-import { actionAdd, actionGetClaimable } from '../../local-flux/actions/action-actions';
+import { actionAdd } from '../../local-flux/actions/action-actions';
+import { claimableGetEntries } from '../../local-flux/actions/claimable-actions';
 import { profileEssenceIterator, profileGetBalance,
     profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectLoggedEthAddress,
@@ -32,7 +33,7 @@ class EssencePopover extends Component {
 
     onVisibleChange = (popoverVisible) => {
         if (popoverVisible) {
-            this.props.actionGetClaimable();
+            this.props.claimableGetEntries();
         }
         this.wasVisible = true;
 
@@ -134,8 +135,8 @@ class EssencePopover extends Component {
 
 EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
-    actionGetClaimable: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
+    claimableGetEntries: PropTypes.func.isRequired,    
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     pendingTransformEssence: PropTypes.bool,
@@ -152,8 +153,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        actionGetClaimable,
         actionAdd,
+        claimableGetEntries,
         profileEssenceIterator,
         profileGetBalance,
         profileResetEssenceEvents

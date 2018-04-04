@@ -9,6 +9,7 @@ import { entryTypes } from '../../constants/entry-types';
 import { getWordCount, extractExcerpt } from '../../utils/dataModule';
 import { extractImageFromContent } from '../../utils/imageUtils';
 import * as types from '../constants';
+import * as claimableActions from '../actions/claimable-actions';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
 import * as actionActions from '../actions/action-actions';
@@ -195,6 +196,7 @@ function* draftPublishSuccess ({ data }) {
         duration: 4,
         values: { title: data.draft.title }
     }));
+    yield put(claimableActions.claimableIterator());    
 }
 
 function* draftPublishUpdate ({ actionId, draft }) {

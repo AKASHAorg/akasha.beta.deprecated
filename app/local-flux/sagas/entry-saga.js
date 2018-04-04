@@ -4,6 +4,7 @@ import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
+import * as claimableActions from '../actions/claimable-actions';
 import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
@@ -102,13 +103,14 @@ function* entryDownvoteSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(claimableActions.claimableIterator());    
     yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
-function* entryGetBalance ({ entryIds }) {
+function* entryGetBalance ({ entryIds, claimable }) {
     const channel = Channel.server.entry.getEntryBalance;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [entryIds]);
+    yield apply(channel, channel.send, [{ list: entryIds, claimable }]);
 }
 
 function* entryGetEndPeriod ({ entryIds }) {
@@ -122,10 +124,10 @@ function* entryGetExtraOfEntry (entryId, ethAddress) {
     yield call(enableExtraChannels);
     const loggedEthAddress = yield select(selectLoggedEthAddress);
     const isOwnEntry = ethAddress && loggedEthAddress === ethAddress;
-    yield apply(getVoteOf, getVoteOf.send, [[{ ethAddress: loggedEthAddress, entryId }]]);
+    yield apply(getVoteOf, getVoteOf.send, [{ list: [{ ethAddress: loggedEthAddress, entryId }] }]);
     yield apply(getVoteRatio, getVoteRatio.send, [{ entryId }]);
     if (isOwnEntry) {
-        yield apply(getEntryBalance, getEntryBalance.send, [[entryId]]);
+        yield apply(getEntryBalance, getEntryBalance.send, [{ list: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
     } else {
         const isFollower = yield select(state => selectIsFollower(state, ethAddress));
@@ -161,11 +163,11 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
     }
 
     if (allEntries.length) {
-        yield apply(getVoteOf, getVoteOf.send, [allEntries]);
+        yield apply(getVoteOf, getVoteOf.send, [{ list: allEntries }]);
     }
 
     if (ownEntries.length) {
-        yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
+        yield apply(getEntryBalance, getEntryBalance.send, [{ list: ownEntries }]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
     yield all([
@@ -217,11 +219,11 @@ function* entryGetShort ({ context, entryId, ethAddress, batching }) {
     yield apply(channel, channel.send, [{ context, entryId, ethAddress, batching }]);
 }
 
-function* entryGetVoteOf ({ entryIds }) {
+function* entryGetVoteOf ({ entryIds, claimable }) {
     const channel = Channel.server.entry.getVoteOf;
     const ethAddress = yield select(selectLoggedEthAddress);
     const request = entryIds.map(id => ({ entryId: id, ethAddress }));
-    yield apply(channel, channel.send, [request]);
+    yield apply(channel, channel.send, [{ list: request, claimable }]);
 }
 
 function* entryListIterator ({ column }) {
@@ -409,6 +411,7 @@ function* entryUpvoteSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
+    yield put(claimableActions.claimableIterator());
     yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
@@ -512,10 +515,19 @@ function* watchEntryDownvoteChannel () {
 function* watchEntryGetBalanceChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntryBalance);
+        const { collection } = resp.data;
         if (resp.error) {
             yield put(actions.entryGetBalanceError(resp.error));
         } else {
-            yield put(actions.entryGetBalanceSuccess(resp.data));
+            if (resp.request.claimable) {
+                for (let i = 0; i < collection.length; i++) {
+                    const balance = collection[i];
+                    if (balance.claimed) {
+                        yield put(claimableActions.claimableDeleteEntry(balance.entryId));
+                    }
+                }
+            }
+            yield put(actions.entryGetBalanceSuccess(resp.data, resp.request));
         }
     }
 }
@@ -593,19 +605,29 @@ function* watchEntryGetScoreChannel () {
 function* watchEntryGetVoteOfChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getVoteOf);
+        const { collection } = resp.data;
         if (resp.error) {
             yield put(actions.entryGetVoteOfError(resp.error));
         } else {
-            const voteEntries = [];
-            resp.data.collection.forEach((vote) => {
-                if (vote.vote !== '0') {
-                    voteEntries.push(vote.entryId);
+            if (!resp.request.claimable) {
+                const voteEntries = [];
+                collection.forEach((vote) => {
+                    if (vote.vote !== '0') {
+                        voteEntries.push(vote.entryId);
+                    }
+                });
+                if (voteEntries.length) {
+                    yield put(actions.entryCanClaimVote(voteEntries));
                 }
-            });
-            if (voteEntries.length) {
-                yield put(actions.entryCanClaimVote(voteEntries));
+            } else {
+                for (let i = 0; i < collection.length; i++) {
+                    const vote = collection[i];
+                    if (vote.claimed) {
+                        yield put(claimableActions.claimableDeleteEntry(vote.entryId));
+                    }
+                }
             }
-            yield put(actions.entryGetVoteOfSuccess(resp.data));
+            yield put(actions.entryGetVoteOfSuccess(resp.data, resp.request));
         }
     }
 }

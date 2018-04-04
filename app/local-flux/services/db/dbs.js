@@ -2,6 +2,7 @@ import Loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter';
 import * as Promise from 'bluebird';
 import actionCollection from './action';
+import claimableCollection from './claimable';
 import dashboardCollection from './dashboard';
 import entriesCollection from './entry';
 import highlightCollection from './highlight';
@@ -14,6 +15,7 @@ const idbAdapter = new LokiIndexedAdapter('aka-shard');
 // const pa = new LokiPartitioningAdapter(idbAdapter, {paging: true});
 const collections = [
     actionCollection,
+    claimableCollection,
     dashboardCollection,
     entriesCollection,
     highlightCollection,
@@ -43,6 +45,7 @@ export const loadAkashaDB  = () => Promise.fromCallback(cb =>
 );
 
 export const getActionCollection = () => akashaDB.getCollection(actionCollection.collectionName);
+export const getClaimableCollection = () => akashaDB.getCollection(claimableCollection.collectionName);
 export const getDashboardCollection = () => akashaDB.getCollection(dashboardCollection.collectionName);
 export const getEntriesCollection = () => akashaDB.getCollection(entriesCollection.collectionName);
 export const getHighlightCollection = () => akashaDB.getCollection(highlightCollection.collectionName);
