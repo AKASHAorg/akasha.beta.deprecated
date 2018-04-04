@@ -5,12 +5,19 @@ import { GethConnector } from '@akashaproject/geth-connector';
 
 export const getEntryBalance = {
     'id': '/getEntryBalance',
-    'type': 'array',
-    'items': {
-        'type': 'string'
+    'type': 'object',
+    'properties': {
+        'list': {
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            },
+            'uniqueItems': true,
+            'minItems': 1
+        }
     },
-    'uniqueItems': true,
-    'minItems': 1
+    'required': ['list']
+
 };
 /**
  * Get current balance of an entry
@@ -22,11 +29,11 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function* (data: string[]) {
+    function* (data: {list: string[]}) {
         const v = new schema.Validator();
         v.validate(data, getEntryBalance, { throwError: true });
         const collection = [];
-        const requests = data.map((id) => {
+        const requests = data.list.map((id) => {
             return contracts.instance.Votes.getRecord(id).then((result) => {
                 const [_totalVotes, _score, _endPeriod, _totalKarma, _claimed] = result;
                 collection.push({
