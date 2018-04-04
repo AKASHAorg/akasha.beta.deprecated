@@ -254,7 +254,7 @@ class ColManager extends Component {
             height: this.avgItemHeight
         }));
         if (options.prepend) {
-            this.items[id] = mappedItems.unshift(diff);
+            this.items[id].unshift(diff);
         } else {
             this.items[id] = mappedItems.concat(diff);
         }
