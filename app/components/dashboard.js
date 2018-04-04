@@ -76,9 +76,11 @@ class Dashboard extends Component {
         const isNewDashboard = dashboardId && (dashboardId !== this.props.match.params.dashboardId);
         const columnsChanged = activeDashboard && !activeDashboard.get('columns')
             .equals(this.props.dashboards.getIn([dashboardId, 'columns']));
+
         if(!activeDashboard) {
             return;
         }
+
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
             this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
@@ -113,12 +115,18 @@ class Dashboard extends Component {
         const { viewportScrolledWidth } = this.state;
         // const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
         let accWidth = 0;
+        if(!columnOrder) {
+            return;
+        }
+
         if(!columnOrder.size) {
             return this.columnData = this.columnData.delete(dashboardId);
         }
+
         if(this.columnData.get(dashboardId) && columnOrder.size !== this.columnData.get(dashboardId).size) {
             this.columnData = this.columnData.set(dashboardId, new Map());
         }
+
         columnOrder.forEach((colId, index) => {
             const colData = columns.get(colId);
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
