@@ -6,18 +6,25 @@ import { GethConnector } from '@akashaproject/geth-connector';
 
 export const getVoteOf = {
     'id': '/getVoteOf',
-    'type': 'array',
-    'items': {
-        'type': 'object',
-        'properties': {
-            'entryId': { 'type': 'string' },
-            'akashaId': { 'type': 'string' },
-            'ethAddress': { 'type': 'string', 'format': 'address' }
-        },
-        'required': ['entryId']
+    'type': 'object',
+    'properties': {
+        'list': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'entryId': { 'type': 'string' },
+                    'akashaId': { 'type': 'string' },
+                    'ethAddress': { 'type': 'string', 'format': 'address' }
+                },
+                'required': ['entryId']
+            },
+            'uniqueItems': true,
+            'minItems': 1
+        }
     },
-    'uniqueItems': true,
-    'minItems': 1
+    'required': ['list']
+
 };
 
 /**
@@ -30,11 +37,11 @@ const execute = Promise.coroutine(
      * @param data
      * @returns {{collection: any}}
      */
-    function* (data: { entryId: string, akashaId?: string, ethAddress?: string }[]) {
+    function* (data: {list: { entryId: string, akashaId?: string, ethAddress?: string }[] }) {
         const v = new schema.Validator();
         v.validate(data, getVoteOf, { throwError: true });
 
-        const requests = data.map((req) => {
+        const requests = data.list.map((req) => {
             return profileAddress(req).then((ethAddress) => {
                 return Promise.all([
                     contracts.instance.Votes.voteOf(ethAddress, req.entryId),
