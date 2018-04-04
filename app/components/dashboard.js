@@ -131,7 +131,6 @@ class Dashboard extends Component {
 
         columnOrder.forEach((colId, index) => {
             const colData = columns.get(colId);
-            console.log(accWidth <= viewportScrolledWidth, 'inView');
             this.columnData = this.columnData.setIn([dashboardId, colData.id], {
                 id: colData.id,
                 large: colData.large,
