@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { differenceWith, propEq, findIndex, update, indexOf, remove } from 'ramda';
 import throttle from 'lodash.throttle';
@@ -28,7 +29,8 @@ class ColManager extends Component {
         this.poolingDelay = 60000;
         this._debouncedOffsetUpdate = throttle(this._updateOffsets, 150, {trailing: true});
         this.colFirstEntry = new Map();
-        this.scrollPending = 0;
+        this.scrollPending = -1;
+        this.alreadyRendered = [];
     }
 
     componentWillMount = () => {
@@ -198,6 +200,7 @@ class ColManager extends Component {
             this._mapItemsToState(column.get('newEntries'), { prepend: true });
             this._resolveNewEntries(column.get('newEntries'));
         }
+
         if (isNewColumn && canUpdateState) {
             this._resetColState(id);
         }
@@ -251,13 +254,13 @@ class ColManager extends Component {
             height: this.avgItemHeight
         }));
         if (options.prepend) {
-            this.items[id] = diff.concat(mappedItems);
+            this.items[id] = mappedItems.unshift(diff);
         } else {
             this.items[id] = mappedItems.concat(diff);
         }
         this.itemCount = mappedItems.length + diff.length;
-        if(itemCount !== this.itemCount && !this.scrollPending) {
-            this._debouncedOffsetUpdate(this.lastScrollTop[id]);
+        if(itemCount !== this.itemCount && this.scrollPending === -1) {
+            this._updateOffsets(this.lastScrollTop[id]);
         }
     }
 
@@ -296,7 +299,7 @@ class ColManager extends Component {
             accHeight += item.height;
         }
         if (this.state.topIndexTo !== topIndex) {
-            window.requestAnimationFrame(() => {
+            ReactDOM.unstable_batchedUpdates(() => {
                 this.setState(() => ({
                     topIndexTo: topIndex
                 }));
@@ -306,7 +309,7 @@ class ColManager extends Component {
         if (shouldLoadMore) {
             this._loadMoreIfNeeded();
         }
-        this.scrollPending = 0;
+        this.scrollPending = -1;
     }
     /**
      * get the index of the last visible element based on top index;
@@ -343,7 +346,7 @@ class ColManager extends Component {
             if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items[id] = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items[id]);
-                if(this.scrollPending === 0) {
+                if(this.scrollPending === -1) {
                     requestAnimationFrame(() => {
                         this._updateOffsets(this.lastScrollTop[id]);
                     });
@@ -354,19 +357,20 @@ class ColManager extends Component {
     _handleCellSizeChange = cellSize => this._handleCellMount(cellSize);
 
     _handleScroll = () => {
-        const { scrollTop } = this._rootNodeRef;
-        const { id } = this.props.column;
-        // already scrolled... wait for update...
-        if (this.scrollPending) return;
-
-        this.scrollPending = window.requestAnimationFrame(() => {
+        if(this.scrollPending !== -1) {
+            clearTimeout(this.scrollPending);
+            this.scrollPending = -1;
+        }
+        this.scrollPending = setTimeout(() => {
+            const { scrollTop } = this._rootNodeRef;
+            const { id } = this.props.column;
             this._onScrollMove(scrollTop);
-        });
-        this.lastScrollTop[id] = scrollTop;
+            this.lastScrollTop[id] = scrollTop;
+        }, 50);
     }
 
     _onScrollMove = (scrollTop) => {
-        this._debouncedOffsetUpdate(scrollTop);
+        this._updateOffsets(scrollTop);
     }
 
     _createRootNodeRef = (node) => {

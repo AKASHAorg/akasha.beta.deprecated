@@ -57,6 +57,16 @@ class Dashboard extends Component {
         if (dashboardId && activeDashboard) {
             this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
+        if(this._dashboardNode) {
+            const { match, columns } = this.props;
+            const { dashboardId } = match.params;
+            const { offsetWidth, scrollLeft } = this._dashboardNode;
+            this.setState({
+                viewportScrolledWidth: offsetWidth + scrollLeft
+            }, () => {
+                this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
+            });
+        }
     }
 
     componentWillReceiveProps (nextProps) {
@@ -70,7 +80,7 @@ class Dashboard extends Component {
             return;
         }
         if (dashboardId && !this.state.columnOrder.get(dashboardId)) {
-            return this.setState({
+            this.setState({
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
             });
         }
@@ -101,7 +111,7 @@ class Dashboard extends Component {
      */
     _calculateColumnData = (columnOrder, dashboardId, columns, cb) => {
         const { viewportScrolledWidth } = this.state;
-        const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
+        // const dashboardWidth = this._dashboardNode.getBoundingClientRect().width;
         let accWidth = 0;
         if(!columnOrder.size) {
             return this.columnData = this.columnData.delete(dashboardId);
@@ -115,7 +125,7 @@ class Dashboard extends Component {
                 id: colData.id,
                 large: colData.large,
                 left: accWidth,
-                inViewport: accWidth <= (viewportScrolledWidth + dashboardWidth)
+                inViewport: accWidth <= viewportScrolledWidth
             });
             accWidth += (colData.large ? largeColumnWidth : smallColumnWidth) + this.columnMarginLeft;
             if(index === columnOrder.size - 1) {
@@ -179,6 +189,7 @@ class Dashboard extends Component {
             this._mapColumnsToState(newOrderedColumns, dashboardId);
         });
     }
+
     _handleNeighbourHover = (dragIndex, hoverIndex) => {
         this.setState({
             columnPlaceholder: {

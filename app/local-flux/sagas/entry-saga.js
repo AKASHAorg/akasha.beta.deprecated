@@ -238,6 +238,7 @@ function* entryMoreListIterator ({ column }) {
 }
 
 function* entryMoreNewestIterator ({ column }) {
+    console.log('more iterator called');
     const channel = Channel.server.entry.allStreamIterator;
     const { id, lastIndex, lastBlock } = column;
     yield apply(
@@ -303,6 +304,7 @@ function* entryMoreTagIterator ({ column }) {
 }
 
 function* entryNewestIterator ({ column }) {
+    console.log('iterator call')
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const { id, firstBlock, reversed } = column;

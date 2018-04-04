@@ -115,9 +115,7 @@ class AppContainer extends Component {
             // make requests for geth status every 30s for updating the current block
             this.props.gethGetStatus();
             if (!this.interval) {
-                this.interval = setInterval(() => {
-                    this.props.gethGetStatus();
-                }, 30000);
+                this.interval = setInterval(this.props.gethGetStatus, 30000);
             }
             this.bootstrappingHome = true;
         }
