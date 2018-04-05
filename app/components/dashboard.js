@@ -151,9 +151,9 @@ class Dashboard extends Component {
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
-        !equals(nextProps.match.params, this.props.match.params) ||
-        !nextProps.columns.equals(this.props.columns); // ||
-        // nextProps.dashboards.size !== this.props.dashboards.size;
+        nextProps.match.params.dashboardId !== this.props.match.params.dashboardId ||
+        !nextProps.columns.equals(this.props.columns) ||
+        nextProps.activeDashboardId !== this.props.activeDashboardId;
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -331,7 +331,7 @@ class Dashboard extends Component {
                   bottom: 0
                 }}
               >
-                <NewColumn />
+                <NewColumn dashboardId={dashboardId} />
               </div>}
             {!activeDashboard &&
               <div className="flex-center dashboard__empty-placeholder">
@@ -352,6 +352,7 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
+    activeDashboardId: PropTypes.string,
     columns: PropTypes.shape(),
     darkTheme: PropTypes.bool,
     dashboardCreateNew: PropTypes.func.isRequired,

@@ -312,8 +312,8 @@ function* entryNewestIterator ({ column }) {
     yield apply(channel, channel.send, [{ columnId: id, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ column, entryType }) {
-    const { id, value, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT } = column;
+function* entryProfileIterator ({ column }) {
+    const { id, value, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT, entryType } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }

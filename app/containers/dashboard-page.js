@@ -107,6 +107,7 @@ class DashboardPage extends Component {
                   navigateRight={this.navigateRight}
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
                   dashboardReorderColumn={this.props.dashboardReorderColumn}
+                  activeDashboardId={this.props.activeDashboard}
                 />
               </div>
             </DataLoader>

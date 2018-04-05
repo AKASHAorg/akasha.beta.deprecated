@@ -47,7 +47,8 @@ class NewColumn extends Component {
             tagResults } = nextProps;
         const { newListDescription, newListName, selectedColumn } = nextState;
         if (
-            !activeDashboard.equals(this.props.activeDashboard) ||
+            (nextProps.activeDashboardId !== this.props.activeDashboardId) ||
+            this.props.activeDashboard.equals(activeDashboard) ||
             !column.equals(this.props.column) ||
             dashboardId !== this.props.dashboardId ||
             !lists.equals(this.props.lists) ||
@@ -360,6 +361,7 @@ class NewColumn extends Component {
 
 NewColumn.propTypes = {
     activeDashboard: PropTypes.shape(),
+    activeDashboardId: PropTypes.string,
     column: PropTypes.shape().isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
@@ -389,6 +391,7 @@ NewColumn.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
+        activeDashboardId: state.dashboardState.get('activeDashboard'),
         column: selectColumn(state, 'newColumn'),
         lists: selectListsAll(state),
         newColumn: selectNewColumn(state),
