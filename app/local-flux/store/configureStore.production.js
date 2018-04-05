@@ -2,9 +2,12 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
+import batchedSubscribeMiddleware from './batching/middleware';
+import batchedSubscribeEnhancer from './batching/enhancer';
 
 const finalCreateStore = compose(
-    applyMiddleware(thunk, sagaMiddleware)
+    applyMiddleware(batchedSubscribeMiddleware, sagaMiddleware),
+    batchedSubscribeEnhancer,
 )(createStore);
 
 export default function configureStore (initialState) {

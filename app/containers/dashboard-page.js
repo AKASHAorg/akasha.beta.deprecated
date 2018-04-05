@@ -106,6 +106,11 @@ class DashboardPage extends Component {
                   getDashboardRef={this.getDashboardRef}
                   navigateRight={this.navigateRight}
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
+<<<<<<< HEAD
+=======
+                  dashboardReorderColumn={this.props.dashboardReorderColumn}
+                  activeDashboardId={this.props.activeDashboard}
+>>>>>>> optimization/virtual-list
                 />
               </div>
             </DataLoader>

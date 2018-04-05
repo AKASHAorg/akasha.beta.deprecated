@@ -13,7 +13,10 @@ class ParserUtils {
     makeRequest = (url, contentType = 'application/json') => {
         const reqHeaders = new Headers();
         reqHeaders.append('Content-Type', contentType);
-        const reqParams = { ...this.fetchRequestParams, headers: reqHeaders };
+        const reqParams = {
+            ...this.fetchRequestParams,
+            headers: reqHeaders
+        };
         try {
             const req = new Request(url, reqParams);
             return new Promise((resolve, reject) => {
@@ -67,11 +70,13 @@ class ParserUtils {
 
     resizeImage = (image, { ipfsFile }) => {
         let filePromises = [];
+
         if (image) {
             filePromises = getResizedImages([image], {
                 ipfsFile
             });
         }
+
         return Promise.all(filePromises).then((results) => {
             let promise = Promise.resolve();
             if (results[0]) {

@@ -116,9 +116,7 @@ class AppContainer extends Component {
             // make requests for geth status every 30s for updating the current block
             this.props.gethGetStatus();
             if (!this.interval) {
-                this.interval = setInterval(() => {
-                    this.props.gethGetStatus();
-                }, 30000);
+                this.interval = setInterval(this.props.gethGetStatus, 30000);
             }
             this.bootstrappingHome = true;
         }
@@ -216,27 +214,28 @@ class AppContainer extends Component {
                       </div>
                     </DataLoader>
                   }
+                  <Sidebar />
+                  <Route path="/setup" component={SetupPages} />
+                  <FullSizeImageViewer />
+                  <ErrorNotification />
+                  <NavigateAwayModal
+                    loggedEthAddress={loggedEthAddress}
+                    userSettingsAddTrustedDomain={this.props.userSettingsAddTrustedDomain}
+                    navigation={appState.get('outsideNavigation')}
+                    onClick={this.props.toggleOutsideNavigation}
+                  />
+                  {needFunds && <FaucetAndManafyModal />}
+                  {showGethDetailsModal && <GethDetailsModal />}
+                  {showIpfsDetailsModal && <IpfsDetailsModal />}
+                  {appState.get('showNavigationModal') &&
+                    <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
+                  }
+                  {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
+                  {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
+                  {appState.get('showProfileEditor') && <ProfileEdit />}
                 </AppErrorBoundary>
-                <Sidebar />
-                <Route path="/setup" component={SetupPages} />
+                <CustomDragLayer />
                 <Notification />
-                <FullSizeImageViewer />
-                <ErrorNotification />
-                <NavigateAwayModal
-                  loggedEthAddress={loggedEthAddress}
-                  userSettingsAddTrustedDomain={this.props.userSettingsAddTrustedDomain}
-                  navigation={appState.get('outsideNavigation')}
-                  onClick={this.props.toggleOutsideNavigation}
-                />
-                {needFunds && <FaucetAndManafyModal />}
-                {showGethDetailsModal && <GethDetailsModal />}
-                {showIpfsDetailsModal && <IpfsDetailsModal />}
-                {appState.get('showNavigationModal') &&
-                  <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
-                }
-                {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
-                {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}
-                {appState.get('showProfileEditor') && <ProfileEdit />}
               </div>
             </DataLoader>
           </div>

@@ -11,10 +11,13 @@
         margin-right: 10px;
 
         &_placeholder {
-            background-color: @placeholder-color;
             border-radius: 4px;
             width: 32px;
             height: 32px;
+            background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+            background-size: 400% 400%;
+            animation: loadingSlide 1.3s infinite linear forwards;
+            -webkit-animation: loadingSlide 1.3s infinite linear forwards;
         }
     }
 
@@ -34,7 +37,10 @@
             height: 13px;
             width: 80px;
             margin: 2px 0px;
-            background-color: @placeholder-color;
+            background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+            background-size: 400% 400%;
+            animation: loadingSlide 1.3s infinite linear forwards;
+            -webkit-animation: loadingSlide 1.3s infinite linear forwards;
         }
     }
 
@@ -50,7 +56,10 @@
             height: 11px;
             width: 120px;
             margin: 4px 0px;
-            background-color: @placeholder-color;
+            background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+            background-size: 400% 400%;
+            animation: loadingSlide 1.3s infinite linear forwards;
+            -webkit-animation: loadingSlide 1.3s infinite linear forwards;
         }
     }
 

@@ -36,7 +36,7 @@ class TagPopover extends Component {
     showPreview = () => {
         const { tag } = this.props;
         this.closePopover();
-        this.props.showPreview({ columnType: columnTypes.column, value: tag });
+        this.props.showPreview({ columnType: columnTypes.tag, value: tag });
     }
 
     onAddToDashboard = () => {

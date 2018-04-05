@@ -146,7 +146,7 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (!ethAddress) {
-            console.error('entry with no author found', collection);
+            console.error('entry with no author found', entry); //eslint-disable-line
         }
         if (ethAddress && !ethAddresses.includes(ethAddress)) {
             ethAddresses.push(ethAddress);
@@ -155,23 +155,28 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts) { // eslin
             ownEntries.push(entry.entryId);
         }
     });
+
     if (ethAddresses.length) {
         yield put(profileActions.profileIsFollower(ethAddresses));
     }
+
     if (allEntries.length) {
         yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     }
+
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [ownEntries]);
         yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
-    for (let i = 0; i < ethAddresses.length; i++) {
-        yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
-    }
-    for (let i = 0; i < collection.length; i++) {
-        const { author, entryId } = collection[i];
-        yield put(actions.entryGetShort({ entryId, ethAddress: author.ethAddress, context: columnId }));
-    }
+    yield all([
+        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress, batching: true }))),
+        ...collection.map(collection => put(actions.entryGetShort({
+            entryId: collection.entryId,
+            ethAddress: collection.author.ethAddress,
+            context: columnId,
+            batching: true
+        })))
+    ]);
 }
 
 function* entryGetFull ({
@@ -207,9 +212,9 @@ function* entryGetScore ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
-function* entryGetShort ({ context, entryId, ethAddress }) {
+function* entryGetShort ({ context, entryId, ethAddress, batching }) {
     const channel = Channel.server.entry.getEntry;
-    yield apply(channel, channel.send, [{ context, entryId, ethAddress }]);
+    yield apply(channel, channel.send, [{ context, entryId, ethAddress, batching }]);
 }
 
 function* entryGetVoteOf ({ entryIds }) {
@@ -297,7 +302,8 @@ function* entryNewestIterator ({ columnId, reversed }) {
     yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, reversed, toBlock }]);
 }
 
-function* entryProfileIterator ({ columnId, value, limit = ITERATOR_LIMIT, asDrafts, reversed, entryType }) {
+function* entryProfileIterator ({ column }) {
+    const { id, value, asDrafts, reversed, limit = ENTRY_ITERATOR_LIMIT, entryType } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
@@ -310,7 +316,7 @@ function* entryProfileIterator ({ columnId, value, limit = ITERATOR_LIMIT, asDra
         totalLoaded = yield select(selectDraftsTotalLoaded);
     } else {
         toBlock = reversed ?
-            yield select(state => selectColumnFirstBlock(state, columnId)) :
+            yield select(state => selectColumnFirstBlock(state, id)) :
             yield select(selectBlockNumber);
     }
     if (isEthAddress(value)) {
@@ -321,7 +327,10 @@ function* entryProfileIterator ({ columnId, value, limit = ITERATOR_LIMIT, asDra
     yield apply(
         channel,
         channel.send,
-        [{ columnId, limit, akashaId, ethAddress, asDrafts, toBlock, reversed, lastIndex, entryType, totalLoaded }]
+        [{ columnId: id, limit, akashaId,
+            ethAddress, asDrafts, toBlock, reversed,
+            lastIndex, entryType, totalLoaded
+        }]
     );
 }
 
@@ -669,12 +678,18 @@ function* handleEntryProfileIteratorResponse (resp) { // eslint-disable-line max
             resp.data.collection.every(entry => !!drafts.get(entry.entryId));
         yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
         const ethAddress = resp.request.ethAddress;
-        for (let i = resp.data.collection.length - 1; i >= 0; i--) {
-            yield put(actions.entryGetFull({
-                entryId: resp.data.collection[i].entryId,
-                ethAddress,
-                asDraft: true
-            }));
+        const incomingDrafts = resp.data.collection;
+        yield all(incomingDrafts.map(draft => put(actions.entryGetFull({
+            entryId: draft.entryId,
+            ethAddress,
+            asDraft: true
+        }))));
+        /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
+         * continue to iterate until at least one entry is found or the end of the chain is reached
+         */
+        if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
+            const args = { ...resp.request, value: resp.request.ethAddress };
+            yield fork(entryProfileIterator, args);
         }
         /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
          * continue to iterate until at least one entry is found or the end of the chain is reached
