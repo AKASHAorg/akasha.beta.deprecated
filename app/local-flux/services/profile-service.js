@@ -32,7 +32,8 @@ export const profileSaveLogged = profile => {
                 return Promise.resolve(true);
             })
             .then(() => {
-                getProfileCollection().insert(Object.assign({opType: IS_LOGGED_TYPE}, profile));
+                const record = Object.assign({opType: IS_LOGGED_TYPE}, profile);
+                getProfileCollection().insertOne(record, false);
                 return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
             });
     } catch (error) {
