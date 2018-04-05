@@ -100,6 +100,11 @@ class DashboardSecondarySidebar extends Component {
     onToggleNewDashboard = () => {
         this.setState({ newDashboard: '' });
     };
+    _deleteDashboard = (dashBoardId) => {
+        const {history, dashboardDelete} = this.props;
+        dashboardDelete(dashBoardId);
+        history.push('/dashboard');
+    }
     // _simNewEntries = () => {
     //     const { entries } = this.props;
     //     const { author, blockNumber, entryType, tags } = entries.first().toJS();
@@ -160,7 +165,7 @@ class DashboardSecondarySidebar extends Component {
                     <DashboardSidebarRow
                       activeDashboard={activeDashboard}
                       dashboard={dashboard}
-                      dashboardDelete={this.props.dashboardDelete}
+                      dashboardDelete={this._deleteDashboard}
                       isRenamed={isRenamed}
                       key={dashboard.get('id')}
                       index={i}
