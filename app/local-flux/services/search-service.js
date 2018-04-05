@@ -33,11 +33,7 @@ export const updateLastEntriesBlock = ({ ethAddress, blockNr }) => {
         } else {
             getSearchCollection().insert({id: ethAddress, opType: LAST_ENTRY_TYPE, blockNr: blockNr})
         }
-<<<<<<< HEAD
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
-=======
-        return Promise.fromCallback(cb => akashaDB.save(cb));
->>>>>>> optimization/virtual-list
     }catch (error) {
         return Promise.reject(error);
     }
@@ -54,11 +50,7 @@ export const updateLastTagsBlock = ({ type, blockNr }) => {
         } else {
             getSearchCollection().insert({id: type, opType: LAST_TAG_TYPE, blockNr: blockNr})
         }
-<<<<<<< HEAD
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
-=======
-        return Promise.fromCallback(cb => akashaDB.save(cb));
->>>>>>> optimization/virtual-list
     }catch (error) {
         return Promise.reject(error);
     }
