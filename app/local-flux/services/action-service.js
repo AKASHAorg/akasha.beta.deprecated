@@ -6,7 +6,7 @@ import * as Promise from 'bluebird';
 export const deleteAction = id => {
     try {
         getActionCollection().findAndRemove({id: id});
-        return Promise.fromCallback(cb => akashaDB.save(cb));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -96,7 +96,7 @@ export const saveAction = action => {
                 Object.assign(result, action);
             })
         }
-        return Promise.fromCallback(cb => akashaDB.save(cb));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -112,7 +112,7 @@ export const updateClaimAction = (ethAddress, entryId) => {
             })
             .where(obj => obj.payload.entryId === entryId)
             .update(action => action.claimed = true);
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => records.data().id);
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => records.data().id);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -135,7 +135,7 @@ export const updateClaimVoteAction = (ethAddress, entryId) => {
             })
             .where(obj => obj.payload.entryId === entryId)
             .update(action => action.claimed = true);
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => records.data().id);
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => records.data().id);
     } catch (error) {
         return Promise.reject(error);
     }

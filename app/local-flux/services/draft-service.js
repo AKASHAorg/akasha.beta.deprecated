@@ -7,7 +7,7 @@ export const draftModify = (draft) => {
     try {
         getEntriesCollection()
             .findAndUpdate({id: id}, (rec) => Object.assign(rec, changes));
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => draftGetById(id));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => draftGetById(id));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -17,7 +17,7 @@ export const draftCreate = (draft) => {
     try {
         const record = Object.assign({}, {id: genId()}, draft);
         const inserted = getEntriesCollection().insert(record);
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, inserted));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, inserted));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -53,7 +53,7 @@ export const draftCreateOrUpdate = ({draft}) => {
 export const draftDelete = ({draftId}) => {
     try {
         getEntriesCollection().findAndRemove({id: draftId});
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => draftId);
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => draftId);
     } catch (error) {
         return Promise.reject(error);
     }
