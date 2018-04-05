@@ -38,7 +38,7 @@ class EntryList extends Component {
             history.push(`/${loggedEthAddress}/draft/new?editEntry=${entryId}`);
         }
     };
-
+    /* eslint-disable */
     render () {
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,

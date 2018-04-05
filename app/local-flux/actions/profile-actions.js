@@ -16,65 +16,59 @@ export const profileAllFollowings = following => action(types.PROFILE_ALL_FOLLOW
 
 export const profileBondAeth = ({ actionId, amount }) =>
     action(types.PROFILE_BOND_AETH, { actionId, amount });
-
 export const profileBondAethError = (error, amount) => {
     error.code = 'PBAE01';
     error.messageId = 'profileBondAeth';
     error.values = { amount };
     return action(types.PROFILE_BOND_AETH_ERROR, { error });
 };
-
 export const profileBondAethSuccess = data => action(types.PROFILE_BOND_AETH_SUCCESS, { data });
+
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
+
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
     action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
-
 export const profileCreateEthAddressError = (error) => {
     error.code = 'PCEAE01';
     error.messageId = 'profileCreateEthAddress';
     return action(types.PROFILE_CREATE_ETH_ADDRESS_ERROR, { error });
 };
-
 export const profileCreateEthAddressSuccess = data =>
     action(types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS, { data });
+
 export const profileCycleAeth = ({ actionId, amount }) =>
     action(types.PROFILE_CYCLE_AETH, { actionId, amount });
-
 export const profileCycleAethError = (error, amount) => {
     error.code = 'PCAE01';
     error.messageId = 'profileCycleAeth';
     error.values = { amount };
     return action(types.PROFILE_CYCLE_AETH_ERROR, { error });
 };
-
 export const profileCycleAethSuccess = data => action(types.PROFILE_CYCLE_AETH_SUCCESS, { data });
-export const profileCyclingStates = () => action(types.PROFILE_CYCLING_STATES);
 
+export const profileCyclingStates = () => action(types.PROFILE_CYCLING_STATES);
 export const profileCyclingStatesError = (error) => {
     error.code = 'PCSE01';
     error.messageId = 'profileCyclingStates';
     return action(types.PROFILE_CYCLING_STATES_ERROR, { error });
 };
-
 export const profileCyclingStatesSuccess = data => action(types.PROFILE_CYCLING_STATES_SUCCESS, { data });
-export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 
+export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 export const profileDeleteLoggedError = (error) => {
     error.code = 'PDLE01';
     error.messageId = 'profileDeleteError';
     return action(types.PROFILE_DELETE_LOGGED_ERROR);
 };
-
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
-export const profileExists = akashaId => action(types.PROFILE_EXISTS, { akashaId });
 
+export const profileExists = akashaId => action(types.PROFILE_EXISTS, { akashaId });
 export const profileExistsError = (error, request) => {
     error.code = 'PEE01';
     error.messageId = 'profileExists';
     return action(types.PROFILE_EXISTS_ERROR, { error, request });
 };
-
 export const profileExistsSuccess = data => action(types.PROFILE_EXISTS_SUCCESS, { data });
 
 export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
@@ -89,7 +83,7 @@ export const profileFaucetSuccess = (data, request) =>
 
 export const profileFollow = ({ actionId, ethAddress }) =>
     action(types.PROFILE_FOLLOW, { actionId, ethAddress });
-
+export const profileFollowSuccess = data => action(types.PROFILE_FOLLOW_SUCCESS, { data });
 export const profileFollowError = (error, request) => {
     error.code = 'PFE01';
     error.messageId = 'profileFollow';
@@ -99,66 +93,58 @@ export const profileFollowError = (error, request) => {
 
 export const profileFollowersIterator = ({ context, ethAddress }) =>
     action(types.PROFILE_FOLLOWERS_ITERATOR, { context, ethAddress });
-
 export const profileFollowersIteratorError = (error, request) => {
     error.code = 'PFIE01';
     error.messageId = 'profileFollowersIterator';
     return action(types.PROFILE_FOLLOWERS_ITERATOR_ERROR, { error, request });
 };
-
 export const profileFollowersIteratorSuccess = (data, request) =>
     action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
+
 export const profileFollowingsIterator = ({ context, ethAddress, limit, allFollowings }) =>
     action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress, limit, allFollowings });
-
 export const profileFollowingsIteratorError = (error, request) => {
     error.code = 'PFIE02';
     error.messageId = 'profileFollowingsIterator';
     return action(types.PROFILE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
 };
-
 export const profileFollowingsIteratorSuccess = (data, request) =>
     action(types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request });
-export const profileFollowSuccess = data => action(types.PROFILE_FOLLOW_SUCCESS, { data });
+
 export const profileFreeAeth = ({ actionId, amount }) =>
     action(types.PROFILE_FREE_AETH, { actionId, amount });
-
 export const profileFreeAethError = (error) => {
     error.code = 'PFAE01';
     error.messageId = 'profileFreeAeth';
     return action(types.PROFILE_FREE_AETH_ERROR, { error });
 };
-
 export const profileFreeAethSuccess = data => action(types.PROFILE_FREE_AETH_SUCCESS, { data });
-export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
 
+export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
 export const profileGetBalanceError = (error) => {
     error.code = 'PGBE01';
     error.messageId = 'profileGetBalance';
     return action(types.PROFILE_GET_BALANCE_ERROR, { error });
 };
-
 export const profileGetBalanceSuccess = data => action(types.PROFILE_GET_BALANCE_SUCCESS, { data });
-export const profileGetByAddress = ethAddress => action(types.PROFILE_GET_BY_ADDRESS, { ethAddress });
 
+export const profileGetByAddress = ethAddress => action(types.PROFILE_GET_BY_ADDRESS, { ethAddress });
 export const profileGetByAddressError = (error, request) => {
     error.code = 'PGBAE01';
     error.messageId = 'profileGetByAddress';
     return action(types.PROFILE_GET_BY_ADDRESS_ERROR, { error, request });
 };
-
 export const profileGetByAddressSuccess = data => action(types.PROFILE_GET_BY_ADDRESS_SUCCESS, { data });
-export const profileGetData = ({ akashaId, context, ethAddress, full }) =>
-    action(types.PROFILE_GET_DATA, { akashaId, context, ethAddress, full });
 
+export const profileGetData = ({ akashaId, context, ethAddress, full, batching }) =>
+    action(types.PROFILE_GET_DATA, { akashaId, context, ethAddress, full, batching });
 export const profileGetDataError = (error, request) => {
     error.code = 'PGDE01';
     error.messageId = 'profileGetData';
-    return action(types.PROFILE_GET_DATA_ERROR, { error, request });
+    return action(types.PROFILE_GET_DATA_ERROR, { error, request, batching: request.batching });
 };
-
 export const profileGetDataSuccess = (data, request) =>
-    action(types.PROFILE_GET_DATA_SUCCESS, { data, request });
+    action(types.PROFILE_GET_DATA_SUCCESS, { data, request, batching: request.batching });
 
 export const profileGetEntrySyncBlockError = (error) => {
     error.code = 'PGESBE01';
@@ -167,6 +153,7 @@ export const profileGetEntrySyncBlockError = (error) => {
 
 export const profileGetEntrySyncBlockSuccess = block =>
     action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
+
 export const profileGetList = ethAddresses =>
     action(types.PROFILE_GET_LIST, { ethAddresses });
 

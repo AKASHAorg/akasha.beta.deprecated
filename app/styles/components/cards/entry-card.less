@@ -2,13 +2,19 @@
     margin: 5px 5px;
     width: 340px;
     background-color: @light-background;
-
+    transition: background-color 0.5 ease-in-out;
     &_fixed-height {
         height: 300px;
     }
 
     &_large {
         width: 520px;
+    }
+    .ant-card-head {
+        background: transparent;
+    }
+    &_new-entry {
+        background-color: @entry-card-highlight-color;
     }
 
     &__featured-image-wrapper {
@@ -24,6 +30,12 @@
 
     &__featured-image {
         width: 100%;
+        text-align: center;
+        background-color: @light-border;
+    }
+
+    &__featured-image[src=''] {
+        height: 100%;
     }
 
     &__title {
@@ -39,11 +51,19 @@
         &_placeholder {
             height: 15px;
             margin: 8px 0px;
+            background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+            background-size: 400% 400%;
+            animation: loadingSlide 1.3s infinite linear forwards;
+            -webkit-animation: loadingSlide 1.3s infinite linear forwards;
         }
     }
 
     &__content-placeholder {
         height: 11px;
+        background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%), @placeholder-color);
+        background-size: 400% 400%;
+        animation: loadingSlide 1.3s infinite linear forwards;
+        -webkit-animation: loadingSlide 1.3s infinite linear forwards;
     }
 
     &__hidden {

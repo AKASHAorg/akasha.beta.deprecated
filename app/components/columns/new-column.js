@@ -47,7 +47,8 @@ class NewColumn extends Component {
             tagResults } = nextProps;
         const { newListDescription, newListName, selectedColumn } = nextState;
         if (
-            !activeDashboard.equals(this.props.activeDashboard) ||
+            (nextProps.activeDashboardId !== this.props.activeDashboardId) ||
+            this.props.activeDashboard.equals(activeDashboard) ||
             !column.equals(this.props.column) ||
             dashboardId !== this.props.dashboardId ||
             !lists.equals(this.props.lists) ||
@@ -156,7 +157,7 @@ class NewColumn extends Component {
             </div>
             <div className="flex-center-x">
               <Button
-                onClick={this.props.dashboardAddNewColumn}            
+                onClick={this.props.dashboardAddNewColumn}
                 type="primary"
               >
                 {this.props.intl.formatMessage(dashboardMessages.addFirstColumn)}
@@ -202,8 +203,8 @@ class NewColumn extends Component {
     };
 
     render () { // eslint-disable-line complexity
-        const { activeDashboard, column, dashboardId, intl, lists, newColumn, previewEntries, profileResults,
-            tagResults } = this.props;
+        const { activeDashboard, column, entries, dashboardId, intl, lists, newColumn, previewEntries,
+            profileResults, tagResults } = this.props;
         if (dashboardId !== activeDashboard.get('id')) {
             return null;
         }
@@ -223,7 +224,8 @@ class NewColumn extends Component {
             dashboardResetNewColumn: this.props.dashboardResetNewColumn,
             dashboardUpdateNewColumn: this.props.dashboardUpdateNewColumn,
             newColumn,
-            previewEntries
+            previewEntries,
+            entries
         };
         switch (newColumn.get('type')) {
             case columnTypes.profile:
@@ -306,7 +308,7 @@ class NewColumn extends Component {
                       </div>
                     );
                 title = dashboardMessages.addNewListColumn;
-                subtitle = (lists.size !== 0) ? 
+                subtitle = (lists.size !== 0) ?
                     dashboardMessages.addNewListColumnSubtitle :
                     dashboardMessages.createNewListColumnSubtitle
                 break;
@@ -359,6 +361,7 @@ class NewColumn extends Component {
 
 NewColumn.propTypes = {
     activeDashboard: PropTypes.shape(),
+    activeDashboardId: PropTypes.string,
     column: PropTypes.shape().isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardAddNewColumn: PropTypes.func.isRequired,
@@ -366,6 +369,8 @@ NewColumn.propTypes = {
     dashboardId: PropTypes.string.isRequired,
     dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
+    entries: PropTypes.shape(),
+    entries: PropTypes.shape(),
     entryListIterator: PropTypes.func.isRequired,
     entryMoreListIterator: PropTypes.func.isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
@@ -387,10 +392,12 @@ NewColumn.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
+        activeDashboardId: state.dashboardState.get('activeDashboard'),
         column: selectColumn(state, 'newColumn'),
         lists: selectListsAll(state),
         newColumn: selectNewColumn(state),
         previewEntries: selectColumnEntries(state, 'newColumn'),
+        entries: state.entryState.get('byId'),
         profileResults: selectProfileSearchResults(state),
         tagResults: selectTagSearchResults(state)
     };

@@ -50,10 +50,14 @@ class ColumnHeader extends Component {
         }
     };
 
-    onMouseDown = (ev) => { ev.preventDefault(); };
-
     onRefresh = () => {
-        this.props.onRefresh();
+        const { column } = this.props;
+        if(column.newEntries && column.newEntries.size > 0) {
+            this._colManagerComponent.loadNewItems();
+        } else {
+            this.props.onRefresh(this.props.column);
+            this._colManagerComponent.resetColumn(this.props.column.id);
+        }
         this.setState({ popoverVisible: false });
     };
 
@@ -126,7 +130,9 @@ class ColumnHeader extends Component {
         const large = !column.get('large');
         this.props.dashboardUpdateColumn(column.get('id'), { large });
     };
-
+    _getComponentRef = (component) => {
+        this._colManagerComponent = component;
+    }
     renderEditMode = () => {
         const { column, dataSource, intl } = this.props;
         const { value } = this.state;
@@ -204,7 +210,8 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { column, iconType, noMenu, readOnly, title } = this.props;
+        const { column, iconType, noMenu, readOnly, title, connectDragSource,
+            connectDropTarget, draggable, children } = this.props;
         const { editMode, value } = this.state;
         const titleWrapperClass = classNames('column-header__title-wrapper', {
             'column-header__title-wrapper_no-icon': !iconType
@@ -212,56 +219,72 @@ class ColumnHeader extends Component {
         const titleClass = classNames('overflow-ellipsis column-header__title', {
             'column-header__title_large': column && column.get('large')
         });
+        const dragSourceConnect = draggable ? connectDragSource : nodes => nodes;
+        const dropTargetConnect = draggable ? connectDropTarget : nodes => nodes;
 
-        return (
-          <div className="flex-center-y column-header">
-            {iconType &&
-              <Icon className="dark-icon column-header__icon" type={iconType} />
-            }
-            <div className={titleWrapperClass}>
-              {(readOnly || !editMode) &&
-                <div
-                  className={titleClass}
-                  onDoubleClick={!readOnly ? this.editColumn : undefined}
-                  onMouseDown={this.onMouseDown}
-                >
-                  {title || value}
+        return dropTargetConnect(
+          <div className="column-header" ref={(node) => { this._rootNode = node; }}>
+            {dragSourceConnect(
+              <div
+                className={
+                    `flex-center-y
+                    column-header-wrapper
+                    column-header-wrapper${draggable ? '_draggable' : ''}`
+                }
+              >
+                {iconType &&
+                  <Icon
+                    className="dark-icon column-header-wrapper__icon"
+                    type={iconType}
+                  />
+                }
+                <div className={titleWrapperClass}>
+                  {(readOnly || !editMode) &&
+                    <div
+                      className={titleClass}
+                      onDoubleClick={!readOnly ? this.editColumn : undefined}
+                      onMouseDown={this.onMouseDown}
+                    >
+                        {title || value}
+                    </div>
+                  }
+                  {!readOnly && editMode && this.renderEditMode()}
                 </div>
-              }
-              {!readOnly && editMode && this.renderEditMode()}
-            </div>
-            {this.showModal()}
-            {!editMode &&
-              <div className="column-header__refresh-icon">
-                <Icon
-                  className="content-link"
-                  onClick={this.onRefresh}
-                  type="refresh"
-                />
-                {column && column.get('hasNewEntries') &&
-                  <div className="column-header__new-entries" />
+                {this.showModal()}
+                {!editMode &&
+                  <div className="column-header-wrapper__refresh-icon">
+                    <Icon
+                      className="content-link"
+                      onClick={this.onRefresh}
+                      type="refresh"
+                    />
+                    {column && column.get('newEntries') && column.get('newEntries').size > 0 &&
+                      <div className="column-header-wrapper__new-entries" />
+                    }
+                  </div>
+                }
+                {!editMode && !noMenu &&
+                  <Popover
+                    content={this.wasVisible ? this.renderContent() : null}
+                    onVisibleChange={this.onVisibleChange}
+                    overlayClassName="popover-menu"
+                    placement="bottom"
+                    trigger="click"
+                    visible={this.state.popoverVisible}
+                  >
+                    <Icon className="content-link column-header-wrapper__menu-icon" type="menu" />
+                  </Popover>
                 }
               </div>
-            }
-            {!editMode && !noMenu &&
-              <Popover
-                content={this.wasVisible ? this.renderContent() : null}
-                onVisibleChange={this.onVisibleChange}
-                overlayClassName="popover-menu"
-                placement="bottom"
-                trigger="click"
-                visible={this.state.popoverVisible}
-              >
-                <Icon className="content-link column-header__menu-icon" type="menu" />
-              </Popover>
-            }
-            {editMode &&
-              <Icon
-                className="content-link column-header__reset-icon"
-                onClick={this.onCancel}
-                type="close"
-              />
-            }
+            )}
+            {React.Children.map(children, (child) => {
+                if (child && typeof child === 'object' && child.type !== 'div') {
+                    return React.cloneElement(child, {
+                        onRefLink: this._getComponentRef
+                    });
+                }
+                return child;
+            })}
           </div>
         );
     }

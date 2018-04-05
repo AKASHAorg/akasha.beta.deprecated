@@ -3,13 +3,21 @@ import { persistState } from 'redux-devtools';
 import thunk from 'redux-thunk';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
+import batchedSubscribeMiddleware from './batching/middleware';
+import batchedSubscribeEnhancer from './batching/enhancer';
 import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(
-    applyMiddleware(thunk, sagaMiddleware),
+    applyMiddleware(batchedSubscribeMiddleware, sagaMiddleware),
+    batchedSubscribeEnhancer,
     global.devToolsExtension ?
-        global.devToolsExtension({ actionCreators }) :
+        global.devToolsExtension({
+            actionCreators,
+            maxAge: 200,
+            actionBlacklist: ['ENTRY_GET_SHORT']
+        }) :
         noop => noop,
+    // batchedSubscribe(updateBatcher),
     // persistState(
     //   global.location.href.match(
     //     /[?&]debug_session=([^&]+)\b/
