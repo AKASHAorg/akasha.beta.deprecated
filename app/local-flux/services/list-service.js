@@ -7,7 +7,7 @@ export const addList = (payload) => {
         payload['timestamp'] = timestamp;
         payload['id'] = `${timestamp}-${payload.ethAddress}`;
         const record = getListCollection().insert(payload);
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, record));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -41,7 +41,7 @@ export const addList = (payload) => {
 export const deleteList = (listId) => {
     try {
         getListCollection().findAndRemove({id: listId});
-        return Promise.fromCallback(cb => akashaDB.save(cb));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -54,7 +54,7 @@ export const editList = ({id, name, description}) => {
                 rec.name = name;
                 rec.description = description;
             });
-        return Promise.fromCallback(cb => akashaDB.save(cb))
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb))
     } catch (error) {
         return Promise.reject(error);
     }
@@ -145,7 +145,7 @@ export const toggleEntry = ({ethAddress, id, entryId, entryType, authorEthAddres
         }
         getListCollection()
             .findAndUpdate({ethAddress: ethAddress, id: id}, rec => Object.assign(rec, list));
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, list));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, list));
     } catch (error) {
         return Promise.reject(error);
     }

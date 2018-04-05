@@ -13,7 +13,7 @@ export const createTempProfile = profileData => {
     try {
         getProfileCollection().findAndRemove({ethAddress: profileData.ethAddress, opType: TMP_PROFILE_TYPE});
         const record = getProfileCollection().insert(Object.assign({opType: TMP_PROFILE_TYPE}, profileData));
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, record));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -37,7 +37,7 @@ export const updateTempProfile = (tempProfile, status) => {
                         Object.assign(rec.status, status);
                     }
                 });
-        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => Object.assign({}, record));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
     }
@@ -48,7 +48,7 @@ export const updateTempProfile = (tempProfile, status) => {
 export const deleteTempProfile = ethAddress => {
     try {
         getProfileCollection().findAndRemove({ethAddress: ethAddress, opType: TMP_PROFILE_TYPE});
-        return Promise.fromCallback(cb => akashaDB.save(cb));
+        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
     }
