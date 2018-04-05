@@ -247,6 +247,7 @@
     "ramda": "0.25.0",
     "request": "2.85.0",
     "search-index": "0.15.0",
+    "style-loader": "^0.20.3",
     "winston": "2.4.1"
   },
   "devEngines": {

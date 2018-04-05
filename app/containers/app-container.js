@@ -22,7 +22,7 @@ import { AppErrorBoundary, AppPreferences, ConfirmationDialog, FaucetAndManafyMo
     Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
     NotificationsPanel, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
     ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
-    ProfileSettings, WalletPanel, FullSizeImageViewer } from '../components';
+    ProfileSettings, WalletPanel, FullSizeImageViewer, CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 import { selectLoggedEthAddress } from '../local-flux/selectors/index';
 

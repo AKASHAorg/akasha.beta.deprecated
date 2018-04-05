@@ -154,6 +154,7 @@ class Dashboard extends Component {
         nextProps.match.params.dashboardId !== this.props.match.params.dashboardId ||
         !nextProps.columns.equals(this.props.columns) ||
         nextProps.activeDashboardId !== this.props.activeDashboardId;
+        // this.props.dashboards.equals(nextProps.dashboards);
 
     _handleBeginDrag = (column) => {
         this.setState({

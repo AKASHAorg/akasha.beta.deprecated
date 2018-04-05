@@ -22,6 +22,7 @@ export CommentHighlight from './comment/comment-highlight';
 export CommentsList from './comment/comments-list';
 export CommentThread from './comment/comment-thread';
 export Configuration from './setup/configuration';
+export CustomDragLayer from './custom-drag-layer';
 export CyclingAeth from './wallets/cycling-aeth';
 export Dashboard from './dashboard';
 export DashboardSecondarySidebar from './secondary-sidebars/dashboard-secondary-sidebar';

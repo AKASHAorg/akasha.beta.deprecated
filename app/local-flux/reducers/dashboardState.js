@@ -4,12 +4,12 @@ import { differenceWith } from 'ramda';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
-import { newColumn as newColumnType } from '../../constants/columns';
+import { newColumn as newColumnType, list as listColumnType } from '../../constants/columns';
 const initialState = new DashboardState();
 
 const entryIterator = (state, { column }) => {
     const { id, value, reversed } = column;
-    if (reversed || !columnId || !state.getIn(['columnById', id])) {
+    if (reversed || !id || !state.getIn(['columnById', id])) {
         return state;
     }
     if (id === newColumnType) {
@@ -64,11 +64,12 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     });
 };
 
-const entryMoreIterator = (state, { columnId }) => {
-    if (!columnId || !state.getIn(['columnById', columnId])) {
+const entryMoreIterator = (state, { column }) => {
+    const { id } = column;
+    if (!id || !state.getIn(['columnById', id])) {
         return state;
     }
-    return state.mergeIn(['columnById', columnId, 'flags'], { fetchingMoreEntries: true });
+    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreEntries: true });
 };
 
 const entryMoreIteratorError = (state, { request }) => {
@@ -354,7 +355,7 @@ const dashboardState = createReducer(initialState, {
         const { entryId } = request;
         const listColumns = state
             .get('columnById')
-            .filter(column => (column.type === null || column.type === columnTypes.list) &&
+            .filter(column => (column.type === null || column.type === listColumnType) &&
                 column.value === data.id);
         if (listColumns.size) {
             listColumns.map((listColumn) => {

@@ -10,12 +10,12 @@ import { EntryList } from '../';
 class Highlights extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
-        this.props.entryProfileIterator({ columnId: 'profileEntries', value: ethAddress });
+        this.props.entryProfileIterator({ id: 'profileEntries', value: ethAddress });
     }
 
     fetchMoreProfileEntries = () => {
         const { ethAddress } = this.props;
-        this.props.entryMoreProfileIterator({ columnId: 'profileEntries', value: ethAddress });
+        this.props.entryMoreProfileIterator({ id: 'profileEntries', value: ethAddress });
     };
 
     render () {
