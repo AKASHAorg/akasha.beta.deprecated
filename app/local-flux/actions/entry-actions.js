@@ -194,8 +194,8 @@ export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
 
-export const entryProfileIterator = ({ column, entryType }) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { column, entryType });
+export const entryProfileIterator = (column) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { column });
 
 export const entryProfileIteratorError = (error, request) => {
     error.code = 'EPIE01';

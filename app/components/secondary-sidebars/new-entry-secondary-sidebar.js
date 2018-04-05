@@ -40,7 +40,7 @@ class NewEntrySecondarySidebar extends Component {
         const draftCardTitle = nextProps.drafts.getIn([draftId, 'content', 'cardInfo', 'title']);
 
         return (nextProps.draftsFetched !== this.props.draftsFetched) ||
-            !nextProps.draftList.equals(this.props.draftList) || 
+            !nextProps.draftList.equals(this.props.draftList) ||
             !nextProps.drafts.equals(this.props.drafts) ||
             nextProps.moreEntries !== this.props.moreEntries ||
             (nextProps.match.params.draftType !== this.props.match.params.draftType) ||
@@ -61,7 +61,7 @@ class NewEntrySecondarySidebar extends Component {
             undefined :
             entryTypes.indexOf(selectedEntryFilter);
         this.props.entryProfileIterator({
-            column: null,
+            id: null,
             value: ethAddress,
             limit: 5,
             asDrafts: true,
@@ -505,7 +505,7 @@ NewEntrySecondarySidebar.propTypes = {
     draftsFetched: PropTypes.bool,
     drafts: PropTypes.shape(),
     draftsGetCount: PropTypes.func,
-    draftResetIterator: PropTypes.func.isRequired,    
+    draftResetIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
