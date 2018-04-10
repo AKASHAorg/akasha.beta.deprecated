@@ -258,7 +258,6 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_TOGGLE_TAG_COLUMN_SUCCESS]: (state, { data }) => {
         let columnById = state.get('columnById');
         let byId = state.get('byId');
-        console.log(data, 'toggle tag data');
         data.columns.forEach((column) => {
             if (!columnById.get(column.id)) {
                 columnById = columnById.set(column.id, new ColumnRecord(column));
