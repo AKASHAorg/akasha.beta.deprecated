@@ -14,23 +14,6 @@ export default {
             }
         }]
     },
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                commons: {
-                    chunks: "initial",
-                    minChunks: 2
-                },
-                vendor: {
-                    test: /node_modules/,
-                    chunks: "initial",
-                    name: "vendor",
-                    priority: 10,
-                    enforce: true
-                }
-            }
-        }
-    },
     output: {
         path: path.join(__dirname, 'app'),
         filename: 'bundle.js',
@@ -56,7 +39,7 @@ export default {
         new webpack.NamedModulesPlugin(),
     ],
     node: {
-        fs: false,
+        fs: 'empty',
         net: false,
         tls: false
     }

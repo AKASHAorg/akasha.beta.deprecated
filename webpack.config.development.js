@@ -14,7 +14,7 @@ export default merge(baseConfig, {
         'react-hot-loader/patch',
         `webpack-dev-server/client?http://localhost:${port}/`,
         'webpack/hot/only-dev-server',
-        path.join(__dirname, 'app/index.js'),
+        path.join(__dirname, process.env.DARK_THEME ? 'app/index-dark.js' : 'app/index.js'),
     ],
 
     output: {
@@ -82,56 +82,62 @@ export default merge(baseConfig, {
                             localIdentName: '[name]__[local]__[hash:base64:5]',
                         }
                     },
-                    { loader: 'less-loader', options: { sourceMap: true } }
+                    { loader: 'less-loader', options: { sourceMap: true, javascriptEnabled: true } }
                 ]
             },
             {
                 test: /\.woff(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
-                        limit: 10000,
-                        mimetype: 'application/font-woff',
+                        name: 'fonts/[name].[ext]'
                     }
                 },
             },
             {
                 test: /\.woff2(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
-                        limit: 10000,
-                        mimetype: 'application/font-woff',
+                        name: 'fonts/[name].[ext]'
                     }
                 }
             },
             {
                 test: /\.ttf(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
-                        limit: 10000,
-                        mimetype: 'application/octet-stream'
+                        name: 'fonts/[name].[ext]'
                     }
                 }
             },
             {
                 test: /\.eot(\?[a-z0-9-=]+)?$/,
-                use: 'file-loader',
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: 'fonts/[name].[ext]'
+                    }
+                }
             },
             {
                 test: /\.svg(\?[a-z0-9-=]+)?$/,
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
-                        limit: 10000,
-                        mimetype: 'image/svg+xml',
+                        name: 'fonts/[name].[ext]'
                     }
                 }
             },
             {
                 test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-                use: 'url-loader',
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: 'fonts/images/[name].[ext]'
+                    }
+                }
             }
         ]
     },

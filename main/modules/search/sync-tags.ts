@@ -20,10 +20,21 @@ const execute = Promise.coroutine(function* (data: { fromBlock: number }) {
 
     const tagCreateEvent = contracts.createWatcher(contracts.instance.Tags.TagCreate, {}, data.fromBlock);
     tagCreateEvent.watch((err, event) => {
-        const data = { id: event.args.tag, tagName: event.args.tag };
-        dbs.tags
-            .searchIndex
-             .concurrentAdd({}, [data], (err) => { if (err) { console.log(err); } });
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        if (event && event.args) {
+            const data = {id: event.args.tag, tagName: event.args.tag};
+            dbs.tags
+                .searchIndex
+                .concurrentAdd({}, [data], (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+        }
     });
     const lastBlock = yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
     return { done: true, lastBlock };
