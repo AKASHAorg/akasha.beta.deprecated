@@ -203,7 +203,7 @@ export const setActive = payload => {
 
 export const toggleColumn = ({dashboardId, columnType, value}) => {
     try {
-        const record = getDashboardCollection()
+        getDashboardCollection()
             .findAndUpdate(
                 {id: dashboardId},
                 dashboard => {
@@ -223,8 +223,11 @@ export const toggleColumn = ({dashboardId, columnType, value}) => {
                             col.type !== columnType || col.value !== value
                         );
                     }
-                });
-        return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => record);
+                    return dashboard;
+                }
+            );
+        const record = getDashboardCollection().findOne({ id: dashboardId });
+        return Promise.fromCallback(cb => akashaDB.save(cb)).then(() => record);
     } catch (error) {
         return Promise.reject(error);
     }
