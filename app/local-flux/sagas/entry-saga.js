@@ -103,7 +103,7 @@ function* entryDownvoteSuccess ({ data }) {
         duration: 4,
         values: { entryTitle: data.entryTitle }
     }));
-    yield put(claimableActions.claimableIterator());    
+    yield put(claimableActions.claimableIterator());
     yield apply(getVoteRatio, getVoteRatio.send, [{ entryId: data.entryId }]);
 }
 
@@ -373,12 +373,12 @@ function* entryStreamIterator ({ column }) {
 }
 
 function* entryTagIterator ({ column }) {
+    const { id, value, reversed, firstBlock } = column;
     yield put(tagActions.tagExists({ tagName: value }));
-    const { id, value, reversed } = column;
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = reversed ?
-        yield select(state => selectColumnFirstBlock(state, id)) :
+        firstBlock :
         yield select(selectBlockNumber);
     yield apply(
         channel,

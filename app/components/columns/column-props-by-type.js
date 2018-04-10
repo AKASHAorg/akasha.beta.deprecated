@@ -90,7 +90,7 @@ const getProfileEntriesColumnProps = props => ({
     ...props,
     column: new TempRec({
         id: 'profileEntries',
-        entriesList: props.profileEntriesList,
+        entriesList: props.profileEntriesList.map(entry => entry.entryId),
         ethAddress: props.ethAddress,
         value: props.ethAddress,
         context: 'profileEntries'
@@ -111,7 +111,7 @@ const getProfileFollowersColumnProps = props => ({
     ...props,
     column: new TempRec({
         id: 'profileFollowers',
-        entriesList: props.followers,
+        entriesList: props.followers.map(follower => follower.ethAddress),
         ethAddress: props.ethAddress,
         context: 'profilePageFollowers'
     }),
@@ -132,7 +132,7 @@ const getProfileFollowingsColumnProps = props => ({
     ...props,
     column: new TempRec({
         id: 'profileFollowings',
-        entriesList: props.followings,
+        entriesList: props.followings.map(foll => foll.ethAddress),
         ethAddress: props.ethAddress,
         context: 'profilePageFollowings',
     }),

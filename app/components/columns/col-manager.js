@@ -7,7 +7,6 @@ import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 import * as columnTypes from '../../constants/columns';
 
-const MORE_ITEMS_TRIGGER_SIZE = 5;
 const VIEWPORT_VISIBLE_BUFFER_SIZE = 5;
 
 class ColManager extends Component {
@@ -283,7 +282,7 @@ class ColManager extends Component {
      * this method slices the items based on the user's current scroll position
      * it is called onScroll and on cellUpdate handler;
      */
-    _updateOffsets = (scrollTop) => {
+    _updateOffsets = (scrollTop) => { // eslint-disable-line max-statements
         const { items, state, props } = this;
         const { id } = props.column;
         const { topIndexTo } = state;
@@ -305,8 +304,10 @@ class ColManager extends Component {
                 }));
             });
         }
-        const shouldLoadMore = items[id].length <= this._getBottomIndex(topIndex) + MORE_ITEMS_TRIGGER_SIZE;
-        if (shouldLoadMore) {
+        const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndexTo), items[id].length)
+        const bottomPadding = Math.ceil(bottomPadderHeight);
+        const bottomBufferHeight = (VIEWPORT_VISIBLE_BUFFER_SIZE * this.avgItemHeight);
+        if (bottomPadding <= bottomBufferHeight) {
             this._loadMoreIfNeeded();
         }
         this.scrollPending = -1;

@@ -81,6 +81,11 @@ export const selectColumnEntries = (state, columnId) =>
         .getIn(['columnById', columnId, 'entriesList'])
         .map(id => selectEntry(state, id));
 
+export const selectColumnPendingEntries = (state, dashboardId) =>
+    state.dashboardState.getIn(['byId', dashboardId, 'columns']).map(colId =>
+        state.entryState.getIn(['flags', 'pendingEntries', colId])
+    );
+
 export const selectColumnFirstBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'firstBlock']);
 
