@@ -153,7 +153,8 @@ class Dashboard extends Component {
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
         nextProps.match.params.dashboardId !== this.props.match.params.dashboardId ||
         !nextProps.columns.equals(this.props.columns) ||
-        nextProps.activeDashboardId !== this.props.activeDashboardId;
+        nextProps.activeDashboardId !== this.props.activeDashboardId ||
+        !nextProps.pendingEntries.equals(this.props.pendingEntries);
         // this.props.dashboards.equals(nextProps.dashboards);
 
     _handleBeginDrag = (column) => {

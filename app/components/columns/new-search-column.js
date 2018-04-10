@@ -40,17 +40,14 @@ class NewSearchColumn extends Component {
 
     onSelect = (value) => {
         this.selecting = true;
-        this.props.entryIterator({ columnId: 'newColumn', value });
+        this.props.entryIterator({ id: 'newColumn', value });
     };
 
-    onLoadMore = () => this.props.entryMoreIterator({
-        columnId: 'newColumn',
-        value: this.props.column.get('value')
-    });
+    onLoadMore = () => this.props.entryMoreIterator(this.props.column);
 
     onSearchEntries = () => {
         const { entryIterator, newColumn } = this.props;
-        entryIterator({ columnId: 'newColumn', value: newColumn.get('value') });
+        entryIterator({ id: 'newColumn', value: newColumn.get('value') });
     };
 
     render () {

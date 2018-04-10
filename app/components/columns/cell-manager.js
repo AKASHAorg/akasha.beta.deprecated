@@ -29,6 +29,10 @@ class CellManager extends Component {
                     onSizeChange(refSize);
                     this.baseNodeSize = refSize;
                 });
+            // probably the entry cannot be resolved
+            } else if (!isPending) {
+                onSizeChange(refSize);
+                this.baseNodeSize = refSize;
             }
         }
     }
