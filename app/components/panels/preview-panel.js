@@ -12,8 +12,8 @@ import clickAway from '../../utils/clickAway';
 
 class PreviewPanel extends Component {
     componentDidMount () {
-        const { preview } = this.props;
-        this.props.entryTagIterator({ id: 'previewColumn', value: preview.get('value') });
+        const { preview, column } = this.props;
+        this.props.entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column });
     }
 
     componentClickAway = () => {
@@ -27,7 +27,6 @@ class PreviewPanel extends Component {
 
     render () {
         const { column, intl, preview, previewEntries, entries } = this.props;
-        const previews = previewEntries.map(entryId => entries.get(entryId))
         return (
           <div className="preview-panel">
             <div className="preview-panel__header">
@@ -43,7 +42,7 @@ class PreviewPanel extends Component {
             <div className="preview-panel__list-wrapper">
               <EntryList
                 contextId="previewColumn"
-                entries={previews}
+                entries={previewEntries}
                 fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
                 fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
                 fetchMoreEntries={this.loadMoreEntries}
@@ -63,6 +62,7 @@ PreviewPanel.propTypes = {
     intl: PropTypes.shape().isRequired,
     preview: PropTypes.shape().isRequired,
     previewEntries: PropTypes.shape().isRequired,
+    entries: PropTypes.shape(),
 };
 
 function mapStateToProps (state) {
