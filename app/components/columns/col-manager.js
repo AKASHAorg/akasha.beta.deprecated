@@ -23,7 +23,7 @@ class ColManager extends Component {
         this.lastScrollTop = {};
         this._debouncedScroll = throttle(this._handleScroll, 100, { trailing: true });
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
-        this.poolingInterval = null;
+        this.poolingInterval = {};
         this.poolingTimeout = null;
         this.poolingDelay = 60000;
         this._debouncedOffsetUpdate = throttle(this._updateOffsets, 150, {trailing: true});
@@ -37,8 +37,9 @@ class ColManager extends Component {
         const { id } = column;
         this.lastScrollTop[id] = 0;
         this.items[id] = [];
-        if (typeof onItemPooling === 'function' && !this.poolingInterval) {
-            this._createRequestPooling();
+        const isPooling = this.poolingInterval[id] > 0;
+        if (typeof onItemPooling === 'function' && !isPooling) {
+            this._createRequestPooling(id);
         }
         const shouldRequestItems = column.entriesList.size === 0 &&
             !this.loadingMore.includes(column.id) && isVisible;
@@ -57,8 +58,9 @@ class ColManager extends Component {
         window.addEventListener('resize', this._debouncedResize);
         this._rootNodeRef.addEventListener('scroll', this._debouncedScroll);
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
-        if (typeof onItemPooling === 'function' && !this.poolingInterval && isVisible) {
-            this._createRequestPooling();
+        const isPooling = this.poolingInterval[id] > 0;
+        if (typeof onItemPooling === 'function' && !isPooling && isVisible) {
+            this._createRequestPooling(id);
         }
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
@@ -79,6 +81,12 @@ class ColManager extends Component {
 
     componentWillReceiveProps = (nextProps) => {
         this._prepareUpdates(nextProps, { canUpdateState: true, isNext: true });
+        const { onItemPooling, column, isVisible } = nextProps;
+        const { id } = column;
+        const isPooling = this.poolingInterval[id] > 0;
+        if (typeof onItemPooling === 'function' && !isPooling && isVisible) {
+            this._createRequestPooling(id);
+        }
         if(nextProps.large !== this.props.large) {
             if(this.props.onSizeChange) {
                 this.props.onSizeChange();
@@ -119,24 +127,25 @@ class ColManager extends Component {
             topIndexTo: 0
         });
         this._clearIntervals();
-        if (typeof onItemPooling === 'function' && !this.poolingInterval && isVisible) {
-            this._createRequestPooling();
+        const isPooling = this.poolingInterval[id] > 0;
+        if (typeof onItemPooling === 'function' && !isPooling && isVisible) {
+            setTimeout(() => this._createRequestPooling(id), this.poolingDelay);
         }
     }
 
-    _createRequestPooling = () => {
-        this.interval = setInterval(() => {
+    _createRequestPooling = (id) => {
+        this.poolingInterval[id] = setInterval(() => {
             this.props.onItemPooling(this.props.column);
         }, this.poolingDelay);
     }
 
     _clearIntervals = () => {
-        const { onItemPooling } = this.props;
+        const { onItemPooling, column } = this.props;
         if (typeof onItemPooling === 'function') {
-            if (this.poolingInterval) {
-                clearInterval(this.poolingInterval);
+            const isPooling = typeof this.poolingInterval[column.id] === 'function';
+            if (isPooling) {
+                clearInterval(this.poolingInterval[column.id]);
             }
-            this.timeout = setTimeout(this._createRequestPooling, this.poolingDelay);
         }
     }
 
@@ -208,7 +217,7 @@ class ColManager extends Component {
             window.requestAnimationFrame(() => {
                 this.props.onItemRequest(column);
             });
-            this._clearIntervals();
+            // this._clearIntervals();
             this.loadingMore.push(column.id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.get(id)) {
@@ -220,11 +229,9 @@ class ColManager extends Component {
     }
 
     componentWillUnmount () {
-        if (this.poolingInterval) {
-            clearInterval(this.poolingInterval);
-        }
-        if (this.poolingTimeout) {
-            clearTimeout(this.poolingTimeout);
+        const isPooling = typeof this.poolingInterval[this.props.column.id] === 'function';
+        if (this.isPooling) {
+            clearInterval(this.poolingInterval[this.props.column.id]);
         }
         this._rootNodeRef.removeEventListener('scroll', this._debouncedScroll);
         window.removeEventListener('resize', this._debouncedResize);
