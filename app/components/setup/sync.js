@@ -13,21 +13,35 @@ class Sync extends Component {
     };
 
     componentDidMount () {
-        const { gethGetSyncStatus, gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
-        if (!gethStatus.get('process')) {
-            gethStart();
-        } else {
-            gethGetSyncStatus();
+        const { gethGetSyncStatus, gethStart, gethStatus, gethStatusFetched, ipfsStart,
+            ipfsStatus, ipfsStatusFetched } = this.props;
+        if (gethStatusFetched) {
+            if (!gethStatus.get('process')) {
+                gethStart();
+            } else {
+                gethGetSyncStatus();
+            }
         }
-        if (!ipfsStatus.get('process')) {
+        if (ipfsStatusFetched && !ipfsStatus.get('process')) {
             ipfsStart();
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { gethSyncStatus, ipfsGetPorts, ipfsStatus } = nextProps;
+        const { gethGetSyncStatus, gethStart, gethStatus, gethStatusFetched, gethSyncStatus, ipfsGetPorts,
+            ipfsStart, ipfsStatus, ipfsStatusFetched } = nextProps;
         if (gethSyncStatus.get('synced') && ipfsStatus.get('process')) {
             ipfsGetPorts();
+        }
+        if (gethStatusFetched && !this.props.gethStatusFetched) {
+            if (!gethStatus.get('process')) {
+                gethStart();
+            } else {
+                gethGetSyncStatus();
+            }   
+        }
+        if (ipfsStatusFetched && !this.props.ipfsStatusFetched && !ipfsStatus.get('process')) {
+            ipfsStart();
         }
     }
 
@@ -102,7 +116,7 @@ class Sync extends Component {
         return { action, buttonIcon };
     };
 
-    render () {
+    render () { // eslint-disable-line complexity
         const { configurationSaved, gethBusyState, gethStarting, gethStatus,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId } = this.props;
@@ -205,6 +219,7 @@ Sync.propTypes = {
     gethStart: PropTypes.func.isRequired,
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
+    gethStatusFetched: PropTypes.bool,    
     gethStop: PropTypes.func.isRequired,
     gethStopLogger: PropTypes.func.isRequired,
     gethStopSync: PropTypes.func.isRequired,
@@ -215,6 +230,7 @@ Sync.propTypes = {
     ipfsPortsRequested: PropTypes.bool,
     ipfsStart: PropTypes.func.isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
+    ipfsStatusFetched: PropTypes.bool,
     ipfsStop: PropTypes.func.isRequired,
     saveGeneralSettings: PropTypes.func.isRequired,
     syncActionId: PropTypes.number,
