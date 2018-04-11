@@ -82,7 +82,7 @@ export default merge(baseConfig, {
                             localIdentName: '[name]__[local]__[hash:base64:5]',
                         }
                     },
-                    { loader: 'less-loader', options: { sourceMap: true, javascriptEnabled: true } }
+                    { loader: 'less-loader', options: { sourceMap: true, javascriptEnabled: true, noIeCompat: true } }
                 ]
             },
             {
