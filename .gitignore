@@ -49,3 +49,4 @@ main/**/*.js
 main/**/*.js.map
 package-lock.json
 app/locale-data/en-source.json
+app/locale-data/en.json
