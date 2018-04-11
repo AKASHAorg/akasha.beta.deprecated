@@ -93,7 +93,7 @@
     "@types/mocha": "5.0.0",
     "@types/node": "9.6.2",
     "@types/rimraf": "2.0.2",
-    "antd": "3.4.1",
+    "antd": "3.4.0",
     "asar": "0.14.3",
     "babel-cli": "6.26.0",
     "babel-core": "6.26.0",
@@ -251,6 +251,9 @@
     "search-index": "0.15.0",
     "style-loader": "^0.20.3",
     "winston": "2.4.1"
+  },
+  "resolutions": {
+    "antd/rc-tooltip": "3.7.0"
   },
   "devEngines": {
     "node": ">=8.3.x",
