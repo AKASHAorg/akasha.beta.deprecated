@@ -1,10 +1,7 @@
 
-@font-face {font-family: "anticon";
-  src: url('./iconfont.eot?t=1494480257283'); /* IE9*/
-  src: url('./iconfont.eot?t=1494480257283#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('./iconfont.woff?t=1494480257283') format('woff'), /* chrome, firefox */
-  url('./iconfont.ttf?t=1494480257283') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('./iconfont.svg?t=1494480257283#anticon') format('svg'); /* iOS 4.1- */
+@font-face {
+    font-family: "anticon";
+    src: url('./iconfont.ttf') format('truetype'); /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
 }
 
 .anticon {
@@ -51,7 +48,7 @@
 
 .icon-verticleright:before { content: "\e611"; }
 
-.icon-rollback:before { content: "\e612"; }
+.icon-back:before { content: "\e612"; }
 
 .icon-retweet:before { content: "\e613"; }
 
@@ -517,5 +514,97 @@
 
 .icon-fork:before { content: "\e6f2"; }
 
-.icon-edit1:before { content: "\e692"; }
+.icon-edit:before { content: "\e692"; }
+
+.icon-form:before { content: "\e996"; }
+
+.icon-warning:before { content: "\e997"; }
+
+.icon-table:before { content: "\e998"; }
+
+.icon-profile:before { content: "\e999"; }
+
+.icon-dashboard:before { content: "\e99a"; }
+
+.icon-indent-left:before { content: "\e9a6"; }
+
+.icon-indent-right:before { content: "\e9a7"; }
+
+.icon-menu-unfold:before { content: "\e9ac"; }
+
+.icon-menu-fold:before { content: "\e9ad"; }
+
+.icon-antdesign:before { content: "\e9b2"; }
+
+.icon-alipay-square:before { content: "\e9b3"; }
+
+.icon-codepen-circle:before { content: "\e9b4"; }
+
+.icon-google:before { content: "\e9b5"; }
+
+.icon-amazon:before { content: "\e9b6"; }
+
+.icon-codepen:before { content: "\e9b7"; }
+
+.icon-facebook-square:before { content: "\e9b8"; }
+
+.icon-dropbox:before { content: "\e9b9"; }
+
+.icon-googleplus:before { content: "\e9ba"; }
+
+.icon-linkedin-square:before { content: "\e9bb"; }
+
+.icon-medium-monogram:before { content: "\e9bc"; }
+
+.icon-gitlab:before { content: "\e9bd"; }
+
+.icon-medium-wordmark:before { content: "\e9be"; }
+
+.icon-QQ:before { content: "\e9bf"; }
+
+.icon-skype:before { content: "\e9c0"; }
+
+.icon-taobao-square:before { content: "\e9c1"; }
+
+.icon-alipay-circle:before { content: "\e9c2"; }
+
+.icon-youtube:before { content: "\e9c3"; }
+
+.icon-wechat:before { content: "\e9c4"; }
+
+.icon-twitter:before { content: "\e9c5"; }
+
+.icon-weibo:before { content: "\e9c6"; }
+
+.icon-HTML:before { content: "\e9c7"; }
+
+.icon-taobao-circle:before { content: "\e6f3"; }
+
+.icon-weibo-circle:before { content: "\e6f4"; }
+
+.icon-weibo-square:before { content: "\e6f5"; }
+
+.icon-CodeSandbox:before { content: "\e9d4"; }
+
+.icon-aliyun:before { content: "\e9f4"; }
+
+.icon-zhihu:before { content: "\e703"; }
+
+.icon-behance:before { content: "\e707"; }
+
+.icon-dribbble:before { content: "\e709"; }
+
+.icon-dribbble-square:before { content: "\e70a"; }
+
+.icon-behance-square:before { content: "\e708"; }
+
+.icon-file-markdown:before { content: "\e704"; }
+
+.icon-instagram:before { content: "\e70b"; }
+
+.icon-yuque:before { content: "\e70c"; }
+
+.icon-slack:before { content: "\e705"; }
+
+.icon-slack-square:before { content: "\e706"; }
 
