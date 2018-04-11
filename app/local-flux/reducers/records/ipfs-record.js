@@ -18,7 +18,8 @@ const IpfsFlags = Record({
     busyState: false,
     ipfsStarting: false,
     portsRequested: false,
-    settingPorts: false
+    settingPorts: false,
+    statusFetched: false,
 });
 
 export const IpfsRecord = Record({
