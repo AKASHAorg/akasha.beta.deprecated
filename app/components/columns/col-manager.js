@@ -278,9 +278,9 @@ class ColManager extends Component {
     _loadMoreIfNeeded = () => {
         const { props } = this;
         const { column, isVisible, fetchingMore } = props;
-        const { id, entriesList } = column;
+        const { id } = column;
         const alreadyLoading = this.loadingMore.includes(id);
-        if (!alreadyLoading && isVisible && !fetchingMore && entriesList.size > 0) {
+        if (!alreadyLoading && isVisible && !fetchingMore) {
             this.props.onItemMoreRequest(column.toJS());
             this.loadingMore.push(id);
         }

@@ -234,12 +234,14 @@ class Dashboard extends Component {
     _handleDashboardScroll = () => {
         const { match, columns } = this.props;
         const { dashboardId } = match.params;
-        const { offsetWidth, scrollLeft } = this._dashboardNode;
-        this.setState({
-            viewportScrolledWidth: offsetWidth + scrollLeft
-        }, () => {
-            this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
-        });
+        if(this._dashboardNode) {
+            const { offsetWidth, scrollLeft } = this._dashboardNode;
+            this.setState({
+                viewportScrolledWidth: offsetWidth + scrollLeft
+            }, () => {
+                this._calculateColumnData(this.state.columnOrder.get(dashboardId), dashboardId, columns);
+            });
+        }
     }
     _getNewColumnPosition = (lastColumn) => {
         let newColumnPositionLeft = 0;
