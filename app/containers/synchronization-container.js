@@ -11,10 +11,12 @@ function mapStateToProps (state) {
         gethBusyState: state.externalProcState.getIn(['geth', 'flags', 'busyState']),
         gethStarting: state.externalProcState.getIn(['geth', 'gethStarting']),
         gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        gethStatusFetched: state.externalProcState.getIn(['geth', 'flags', 'statusFetched']),        
         gethSyncStatus: state.externalProcState.getIn(['geth', 'syncStatus']),
         ipfsBusyState: state.externalProcState.getIn(['ipfs', 'flags', 'busyState']),
         ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'portsRequested']),
         ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        ipfsStatusFetched: state.externalProcState.getIn(['ipfs', 'flags', 'statusFetched']),        
         syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
     };
 }
