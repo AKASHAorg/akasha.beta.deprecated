@@ -142,7 +142,7 @@ class ColManager extends Component {
     _clearIntervals = () => {
         const { onItemPooling, column } = this.props;
         if (typeof onItemPooling === 'function') {
-            const isPooling = typeof this.poolingInterval[column.id] === 'function';
+            const isPooling = this.poolingInterval[column.id] > 0;
             if (isPooling) {
                 clearInterval(this.poolingInterval[column.id]);
             }
@@ -229,8 +229,8 @@ class ColManager extends Component {
     }
 
     componentWillUnmount () {
-        const isPooling = typeof this.poolingInterval[this.props.column.id] === 'function';
-        if (this.isPooling) {
+        const isPooling = this.poolingInterval[this.props.column.id] > 0;
+        if (isPooling) {
             clearInterval(this.poolingInterval[this.props.column.id]);
         }
         this._rootNodeRef.removeEventListener('scroll', this._debouncedScroll);
@@ -260,7 +260,7 @@ class ColManager extends Component {
             height: this.avgItemHeight
         }));
         if (options.prepend) {
-            this.items[id].unshift(diff);
+            this.items[id].unshift(...diff);
         } else {
             this.items[id] = mappedItems.concat(diff);
         }

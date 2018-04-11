@@ -48,7 +48,7 @@ const entryIteratorHandler = (state, { data, request }) => {
     }
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
-        if (!state.getIn(['byId', entry.entryId])) {
+        if (!state.get('byId').has(entry.entryId)) {
             const newEntry = createEntryWithAuthor(entry);
             byId = byId.set(entry.entryId, newEntry);
         }
