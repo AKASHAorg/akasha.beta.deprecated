@@ -48,7 +48,7 @@ class NewColumn extends Component {
         const { newListDescription, newListName, selectedColumn } = nextState;
         if (
             (nextProps.activeDashboardId !== this.props.activeDashboardId) ||
-            this.props.activeDashboard.equals(activeDashboard) ||
+            !this.props.activeDashboard.equals(activeDashboard) ||
             !column.equals(this.props.column) ||
             dashboardId !== this.props.dashboardId ||
             !lists.equals(this.props.lists) ||
