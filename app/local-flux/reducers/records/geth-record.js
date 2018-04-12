@@ -29,6 +29,7 @@ const GethFlags = Record({
     // @TODO: Document this flag
     busyState: false,
     gethStarting: false,
+    statusFetched: false,
 });
 
 export const GethRecord = Record({

@@ -192,7 +192,7 @@ class ClaimableList extends Component {
               </div>
             </div>
             <div className="claimable-list__list-wrapper">
-              {(!claimableLoading && entriesList.size === 0) &&
+              {(!claimableLoading && !moreClaimableEntries && entriesList.size === 0) &&
                 <div className="claimable-list__list-placeholder-wrapper">
                   <div className="claimable-list__list-placeholder">
                     <div className="claimable-list__list-placeholder_image" />
@@ -203,22 +203,20 @@ class ClaimableList extends Component {
                   </div>
                 </div>
               }
-              {entriesList.size > 0 &&
-                <DataLoader flag={claimableLoading} style={{ paddingTop: '40px' }}>
-                  <div className="claimable-list__list">
-                    {entriesList.map(this.renderRow)}
-                    {moreClaimableEntries &&
-                      <div style={{ height: '35px' }}>
-                        <DataLoader flag={claimableLoadingMore} size="small">
-                          <div className="flex-center">
-                            <Waypoint onEnter={this.claimableGetMore} />
-                          </div>
-                        </DataLoader>
-                      </div>
-                    }
-                  </div>
-                </DataLoader>
-              }
+              <DataLoader flag={claimableLoading} style={{ paddingTop: '40px' }}>
+                <div className="claimable-list__list">
+                  {entriesList.map(this.renderRow)}
+                  {moreClaimableEntries &&
+                    <div style={{ height: '35px' }}>
+                      <DataLoader flag={claimableLoadingMore} size="small">
+                        <div className="flex-center">
+                          <Waypoint onEnter={this.claimableGetMore} />
+                        </div>
+                      </DataLoader>
+                    </div>
+                  }
+                </div>
+              </DataLoader>
             </div>
             <div className="claimable-list__actions">
               <Button
