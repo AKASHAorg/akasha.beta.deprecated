@@ -140,12 +140,11 @@ const getProfileFollowingsColumnProps = props => ({
     fetching: props.fetchingFollowings,
     fetchingMore: props.fetchingMoreFollowings,
     title: props.intl.formatMessage(profileMessages.followings),
-    onItemRequest: (column) => {
-        props.dashboardResetColumnEntries(column.id);
-        props.profileFollowingsIterator(column)
-    },
+    onItemRequest: column => props.profileFollowingsIterator(column),
     onItemMoreRequest: props.profileMoreFollowingsIterator,
-    onColumnRefresh: props.profileFollowingsIterator,
+    onColumnRefresh: (column) => {
+        props.profileFollowingsIterator(column);
+    },
     itemCard: <ProfileCard />
 });
 
