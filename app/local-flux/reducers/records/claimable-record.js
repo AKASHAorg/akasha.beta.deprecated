@@ -13,5 +13,4 @@ export const ClaimableState = Record({
     entriesLoadingMore: List(),    
     entryList: List(),
     moreEntries: null,
-    offset: 0,
 });
