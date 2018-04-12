@@ -47,7 +47,7 @@ class ColManager extends Component {
             this.props.onItemRequest(this.props.column);
             this.loadingMore.push(column.id);
         }
-        if(column.entriesList.size > 0) {
+        if(column.entriesList.size > 0 && this.items[id].length === 0) {
             this._mapItemsToState(column.entriesList);
         }
     }
@@ -212,12 +212,9 @@ class ColManager extends Component {
         if (isNewColumn && canUpdateState) {
             this._resetColState(id);
         }
-
+        console.log(column.value, isNewColumn, shouldRequestItems, canUpdateState);
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
-            window.requestAnimationFrame(() => {
-                this.props.onItemRequest(column);
-            });
-            // this._clearIntervals();
+            this.props.onItemRequest(column);
             this.loadingMore.push(column.id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.get(id)) {
