@@ -46,7 +46,7 @@ class CellManager extends Component {
         return (
           <div
             ref={this._createBaseNodeRef}
-            id={entry.entryId}
+            // id={entry.entryId}
           >
             {entry && children()}
           </div>

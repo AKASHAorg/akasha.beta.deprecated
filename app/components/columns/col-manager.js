@@ -13,7 +13,7 @@ class ColManager extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            topIndexTo: 0
+            [props.column.id]: 0
         };
         this.avgItemHeight = this.props.initialItemHeight;
         this.loadingMore = [];
@@ -72,11 +72,13 @@ class ColManager extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        return nextState.topIndexTo !== this.state.topIndexTo ||
-            !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
+        return nextState[this.props.column.id] !== this.state[this.props.column.id] ||
+            // !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
+            nextProps.column.entriesList.size !== this.props.column.entriesList.size ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
-            !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries));
+            !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
+            !nextProps.profiles.equals(this.props.profiles);
     }
 
     componentWillReceiveProps = (nextProps) => {
@@ -105,7 +107,7 @@ class ColManager extends Component {
         if(this.lastScrollTop[id] !== 0) {
             this._mapItemsToState(column.get('newEntries'), { prepend: true });
             this.setState({
-                topIndexTo: 0
+                [id]: 0
             }, () => {
                 this.lastScrollTop[id] = 0;
                 this._rootNodeRef.scrollTop = 0;
@@ -124,7 +126,7 @@ class ColManager extends Component {
         this.itemCount = 0;
         this.lastScrollTop[id] = 0;
         this.setState({
-            topIndexTo: 0
+            [id]: 0
         });
         this._clearIntervals();
         const isPooling = this.poolingInterval[id] > 0;
@@ -212,7 +214,6 @@ class ColManager extends Component {
         if (isNewColumn && canUpdateState) {
             this._resetColState(id);
         }
-        console.log(column.value, isNewColumn, shouldRequestItems, canUpdateState);
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
             this.props.onItemRequest(column);
             this.loadingMore.push(column.id);
@@ -250,20 +251,23 @@ class ColManager extends Component {
         const { props, itemCount } = this;
         const { id } = props.column;
         const mappedItems = this.items[id].slice();
-        const jsItems = items.toJS().map(v => ({ id: v }));
-        const eqKey = (x, y) => x.id === y.id;
-        const diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
-            id: v.id,
+        const jsItems = items.toJS().map(v => ({
+            id: v,
             height: this.avgItemHeight
         }));
-        if (options.prepend) {
-            this.items[id].unshift(...diff);
-        } else {
-            this.items[id] = mappedItems.concat(diff);
-        }
-        this.itemCount = mappedItems.length + diff.length;
-        if(itemCount !== this.itemCount && this.scrollPending === -1) {
-            this._updateOffsets(this.lastScrollTop[id]);
+        if(jsItems.length > mappedItems.length) {
+            let diff = [];
+            if(options.prepend) {
+                diff = jsItems.slice(0, (jsItems.length - mappedItems.length));
+                this.items[id].unshift(...diff);
+            } else {
+                diff = jsItems.slice(mappedItems.length, jsItems.length);
+                this.items[id] = mappedItems.concat(diff);
+            }
+            this.itemCount = mappedItems.length + diff.length;
+            if(this.scrollPending === 0) {
+                this._updateOffsets(this.lastScrollTop[id]);
+            }
         }
     }
 
@@ -289,28 +293,27 @@ class ColManager extends Component {
     _updateOffsets = (scrollTop) => { // eslint-disable-line max-statements
         const { items, state, props } = this;
         const { id } = props.column;
-        const { topIndexTo } = state;
         let accHeight = 0;
-        let topIndex = topIndexTo;
+        let topIndex = this.state[id];
         for (let i = 0; i < items[id].length; i++) {
             const item = items[id][i];
-            if (Math.ceil(accHeight) >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
+            if (accHeight >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
                 topIndex = i;
                 accHeight = 0;
                 break;
             }
-            accHeight += item.height;
+            accHeight = Math.ceil(accHeight + item.height);
         }
-        if (this.state.topIndexTo !== topIndex) {
+        if (this.state[id] !== topIndex) {
             ReactDOM.unstable_batchedUpdates(() => {
                 this.setState(() => ({
-                    topIndexTo: topIndex
+                    [id]: topIndex
                 }));
             });
         }
-        const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndexTo), items[id].length)
+        const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
         const bottomPadding = Math.ceil(bottomPadderHeight);
-        const bottomBufferHeight = (VIEWPORT_VISIBLE_BUFFER_SIZE * this.avgItemHeight);
+        const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
         if (bottomPadding <= bottomBufferHeight) {
             this._loadMoreIfNeeded();
         }
@@ -333,7 +336,7 @@ class ColManager extends Component {
                 accHeight = 0;
                 break;
             }
-            accHeight += item.height;
+            accHeight = Math.ceil(accHeight + item.height);
         }
         return bottomIndex;
     }
@@ -383,17 +386,16 @@ class ColManager extends Component {
     }
 
     _getSliceMeasure = (begin, end) => {
-        const { items, props } = this;
-        const { id } = props.column;
-        const measure = items[id].slice(begin, end).reduce((prev, curr) => prev + curr.height, 0);
-        return measure;
+        const { id } = this.props.column;
+        const measure = this.items[id].slice(begin, end).reduce((prev, curr) => prev + curr.height, 0);
+        return Math.ceil(measure);
     }
 
     render () {
         const { items, state, props } = this;
-        const { topIndexTo } = state;
         const { column, type, ...other } = props;
         const { id } = column;
+        const topIndexTo = state[id];
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
         return (
           <div
