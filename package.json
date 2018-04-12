@@ -162,7 +162,7 @@
     "less-loader": "4.1.0",
     "lodash.debounce": "4.0.8",
     "lokijs": "^1.5.3",
-    "megadraft": "0.4.36",
+    "megadraft": "0.4.37",
     "minimist": "1.2.0",
     "mocha": "5.0.5",
     "mock-css-modules": "1.0.0",
@@ -199,7 +199,7 @@
     "react-validation-mixin": "5.4.0",
     "react-waypoint": "8.0.1",
     "redux": "3.7.2",
-    "redux-batched-subscribe": "^0.1.6",
+    "redux-batched-subscribe": "0.1.6",
     "redux-devtools": "3.4.1",
     "redux-devtools-dock-monitor": "1.1.3",
     "redux-devtools-log-monitor": "1.4.0",
@@ -208,7 +208,7 @@
     "redux-saga-tester": "1.0.379",
     "redux-thunk": "2.2.0",
     "rimraf": "2.6.2",
-    "roboto-fontface": "^0.9.0",
+    "roboto-fontface": "0.9.0",
     "sass-loader": "6.0.7",
     "source-map-support": "0.5.4",
     "style-loader": "0.20.3",
@@ -251,9 +251,6 @@
     "request": "2.85.0",
     "search-index": "0.15.0",
     "winston": "2.4.1"
-  },
-  "resolutions": {
-    "antd/rc-tooltip": "3.7.0"
   },
   "devEngines": {
     "node": ">=8.3.x",
