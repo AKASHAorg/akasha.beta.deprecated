@@ -34,7 +34,7 @@ class AvatarEditr extends Component {
             if (!this.props.image && !this.editor) {
                 return resolve(null);
             }
-            const imageCanvas = this.editor.getImage();
+            const imageCanvas = this.editor.getImageScaledToCanvas();
             return imageCanvas.toBlob((blob) => {
                 const reader = new FileReader();
                 reader.onloadend = ev =>
