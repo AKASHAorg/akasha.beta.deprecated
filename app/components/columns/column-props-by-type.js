@@ -28,18 +28,21 @@ const getLatestColumnProps = props => ({
     onNewEntriesResolveRequest: data => props.entryGetShort(data),
 });
 
-const getListColumnProps = props => ({
-    ...props,
-    onItemRequest: props.entryListIterator,
-    onItemMoreRequest: props.entryMoreListIterator,
-    title: props.lists.find(lst => lst.get('id') === props.column.get('value')).get('name') || ' ',
-    onColumnRefresh: (column) => {
-        props.dashboardResetColumnEntries(column.id);
-        props.entryMoreListIterator(column)
-    },
-    dataSource: props.lists,
-    entries: props.entries
-});
+const getListColumnProps = props => {
+    const list = props.lists.find(lst => lst.get('id') === props.column.get('value'));
+    return {
+        ...props,
+        onItemRequest: props.entryListIterator,
+        onItemMoreRequest: props.entryMoreListIterator,
+        title: list.get('name') || ' ',
+        onColumnRefresh: (column) => {
+            props.dashboardResetColumnEntries(column.id);
+            props.entryMoreListIterator(column)
+        },
+        dataSource: props.lists,
+        entries: props.entries
+    }
+};
 
 const getTagColumnProps = props => ({
     ...props,

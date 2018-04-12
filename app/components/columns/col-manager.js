@@ -73,8 +73,8 @@ class ColManager extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         return nextState[this.props.column.id] !== this.state[this.props.column.id] ||
-            // !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
-            nextProps.column.entriesList.size !== this.props.column.entriesList.size ||
+            !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
+            // nextProps.column.entriesList.size !== this.props.column.entriesList.size ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
             !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
@@ -251,23 +251,29 @@ class ColManager extends Component {
         const { props, itemCount } = this;
         const { id } = props.column;
         const mappedItems = this.items[id].slice();
-        const jsItems = items.toJS().map(v => ({
-            id: v,
-            height: this.avgItemHeight
-        }));
-        if(jsItems.length > mappedItems.length) {
-            let diff = [];
-            if(options.prepend) {
-                diff = jsItems.slice(0, (jsItems.length - mappedItems.length));
+        let diff = [];
+        // when loadMore triggers
+        if(items.size > mappedItems.length) {
+            const jsItems = items.toJS().map(v => ({ id: v }));
+            const eqKey = (x, y) => x.id === y.id;
+            diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
+                id: v.id,
+                height: this.avgItemHeight
+            }));
+            if (options.prepend) {
                 this.items[id].unshift(...diff);
             } else {
-                diff = jsItems.slice(mappedItems.length, jsItems.length);
                 this.items[id] = mappedItems.concat(diff);
             }
-            this.itemCount = mappedItems.length + diff.length;
-            if(this.scrollPending === 0) {
-                this._updateOffsets(this.lastScrollTop[id]);
-            }
+        } else if (items.size === 0) {
+            this.items[id] = [];
+        } else {
+            // in this case an item was removed (lists column)
+            this.items[id] = mappedItems.filter(item => items.includes(item.id));
+        }
+        this.itemCount = items.size;
+        if (items.size !== mappedItems.length && this.scrollPending === -1) {
+            this._updateOffsets(this.lastScrollTop[id]);
         }
     }
 
@@ -304,11 +310,15 @@ class ColManager extends Component {
             }
             accHeight = Math.ceil(accHeight + item.height);
         }
-        if (this.state[id] !== topIndex) {
+        if (this.state[id] !== topIndex || items[id].length === 0) {
             ReactDOM.unstable_batchedUpdates(() => {
-                this.setState(() => ({
+                this.setState({
                     [id]: topIndex
-                }));
+                }, () => {
+                    if (items[id].length === 0) {
+                        this.forceUpdate();
+                    }
+                });
             });
         }
         const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)

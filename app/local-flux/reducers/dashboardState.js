@@ -35,6 +35,7 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
+
     if (request.reversed) {
         const diffFn = (x, y) => x === y;
         const diffArr = differenceWith(
@@ -44,10 +45,10 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         );
         return state.mergeIn(['columnById', request.columnId], {
             newEntries: state.getIn(['columnById', request.columnId, 'newEntries']).unshift(...diffArr),
-            lastBlock: data.lastBlock,
-            lastIndex: data.lastIndex
+            firstBlock: data.lastBlock
         });
     }
+
     const entryIds = data.collection.map(entry => entry.entryId);
     const moreEntries = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
