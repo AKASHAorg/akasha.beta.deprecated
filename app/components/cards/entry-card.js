@@ -109,6 +109,12 @@ class EntryCard extends Component {
         });
     };
 
+    onRetry = () => {
+        const { contextId, entry } = this.props;
+        const ethAddress = entry.getIn(['author', 'ethAddress']);
+        this.props.onRetry({ context: contextId, entryId: entry.entryId, ethAddress });
+    };
+
     // getImageSrc = (imageObj) => {
     //     const { baseUrl, large } = this.props;
     //     const baseWidth = large ? largeCard : smallCard;
@@ -160,7 +166,7 @@ class EntryCard extends Component {
             {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
           </div>
           <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.props.onRetry}>
+            <span className="content-link entry-card__retry-button" onClick={this.onRetry}>
               {this.props.intl.formatMessage(generalMessages.retry)}
             </span>
           </div>
@@ -232,6 +238,19 @@ class EntryCard extends Component {
                   />
                 </div>
               </Link>,
+              entryType === 1 &&
+                <WebsiteInfoCard
+                  key={`${entryId}-entryCard`}
+                  baseUrl={baseUrl}
+                  baseWidth={large ? largeCard : smallCard}
+                  cardInfo={content.get('cardInfo')}
+                  hasCard={!!hasContent}
+                  onClick={toggleOutsideNavigation}
+                  maxImageHeight={150}
+                  infoExtracted
+                  intl={intl}
+                />,
+              entryType === 0 &&
                 <div className="entry-card__title" key={`${entryId}-title`}>
                   <Link
                     className="unstyled-link"
@@ -255,18 +274,6 @@ class EntryCard extends Component {
                     <span className="content-link">{content.get('excerpt')}</span>
                   </Link>
                 </div>,
-              entryType === 1 &&
-                <WebsiteInfoCard
-                  key={`${entryId}-entryCard`}
-                  baseUrl={baseUrl}
-                  baseWidth={large ? largeCard : smallCard}
-                  cardInfo={content.get('cardInfo')}
-                  hasCard={!!hasContent}
-                  onClick={toggleOutsideNavigation}
-                  maxImageHeight={150}
-                  infoExtracted
-                  intl={intl}
-                />,
                 <div className="entry-card__tags" key={`${entryId}-tags`}>
                   {content.get('tags').map(tag => (
                     <TagPopover
@@ -304,6 +311,7 @@ EntryCard.propTypes = {
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
+    contextId: PropTypes.string,
     entry: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,
