@@ -77,7 +77,7 @@ class ColManager extends Component {
             // nextProps.column.entriesList.size !== this.props.column.entriesList.size ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
-            !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
+            (nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
             !nextProps.profiles.equals(this.props.profiles);
     }
 

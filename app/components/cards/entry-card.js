@@ -109,6 +109,12 @@ class EntryCard extends Component {
         });
     };
 
+    onRetry = () => {
+        const { contextId, entry } = this.props;
+        const ethAddress = entry.getIn(['author', 'ethAddress']);
+        this.props.onRetry({ context: contextId, entryId: entry.entryId, ethAddress });
+    };
+
     // getImageSrc = (imageObj) => {
     //     const { baseUrl, large } = this.props;
     //     const baseWidth = large ? largeCard : smallCard;
@@ -160,7 +166,7 @@ class EntryCard extends Component {
             {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
           </div>
           <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.props.onRetry}>
+            <span className="content-link entry-card__retry-button" onClick={this.onRetry}>
               {this.props.intl.formatMessage(generalMessages.retry)}
             </span>
           </div>
@@ -304,6 +310,7 @@ EntryCard.propTypes = {
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
+    contextId: PropTypes.string,
     entry: PropTypes.shape(),
     entryPageShow: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,

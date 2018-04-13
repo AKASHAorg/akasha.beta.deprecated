@@ -34,9 +34,7 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, baseWidth, type, ...
     const passedProps = columnProps[type]({
         baseWidth,
         type,
-        onRetry: (data) => {
-            other.entryGetShort({ ...data });
-        },
+        onRetry: other.entryGetShort,
         // onUnmount: (col) => other.dashboardResetColumnEntries(col.get('id')),
         iconType: 'entries',
         ...other,
