@@ -23,7 +23,7 @@ function findClosestMatch (width, obj, initialKey) {
     const sortedKeys = Object.keys(obj).sort((a, b) => obj[a].width > obj[b].width);
     for (let i = sortedKeys.length - 1; i >= 0; i -= 1) {
         const key = sortedKeys[i];
-        if (obj[key].width >= width) {
+        if (key !== 'gif' && obj[key].width >= width) {
             imageKey = key;
         }
     }

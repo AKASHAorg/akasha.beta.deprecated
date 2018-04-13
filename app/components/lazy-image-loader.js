@@ -39,7 +39,8 @@ class LazyImageLoader extends Component {
 
     _getImageSrc = (imageObj, baseWidth) => {
         const { baseUrl } = this.props;
-        const bestMatch = findClosestMatch(baseWidth, imageObj, Object.keys(imageObj)[0]);
+        const initial = Object.keys(imageObj).find(key => key !== 'gif');
+        const bestMatch = findClosestMatch(baseWidth, imageObj, initial);
         if (bestMatch) {
             return imageCreator(imageObj[bestMatch].src, baseUrl);
         }
