@@ -192,7 +192,7 @@ const draftState = createReducer(initialState, {
         const { entryId, content, publishDate } = data;
         const existingDraft = state.getIn(['drafts', entryId]);
         return state.withMutations((mState) => {
-            if ((existingDraft && !existingDraft.get('localChanges')) || data.revert) {
+            if ((existingDraft && !existingDraft.get('localChanges') && content) || data.revert) {
                 const { draftParts, tags, ...newDraftContent } = content;
                 mState.mergeIn(['drafts', entryId], DraftModel.createDraft({
                     ...existingDraft.toJS(),

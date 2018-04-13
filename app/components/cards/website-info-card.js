@@ -24,7 +24,7 @@ const navigateTo = (url, onClick, isEdit) =>
 
 class WebsiteInfoCard extends Component {
     getNodeRef = () => this.baseNodeRef;
-    render () {
+    render () { // eslint-disable-line complexity
         const { cardInfo, baseUrl, hasCard, baseWidth, onClick, intl,
             onClose, isEdit, loading, error, infoExtracted, maxImageHeight } = this.props;
         const { url, image, description, title, bgColor } = cardInfo;

@@ -238,6 +238,19 @@ class EntryCard extends Component {
                   />
                 </div>
               </Link>,
+              entryType === 1 &&
+                <WebsiteInfoCard
+                  key={`${entryId}-entryCard`}
+                  baseUrl={baseUrl}
+                  baseWidth={large ? largeCard : smallCard}
+                  cardInfo={content.get('cardInfo')}
+                  hasCard={!!hasContent}
+                  onClick={toggleOutsideNavigation}
+                  maxImageHeight={150}
+                  infoExtracted
+                  intl={intl}
+                />,
+              entryType === 0 &&
                 <div className="entry-card__title" key={`${entryId}-title`}>
                   <Link
                     className="unstyled-link"
@@ -261,18 +274,6 @@ class EntryCard extends Component {
                     <span className="content-link">{content.get('excerpt')}</span>
                   </Link>
                 </div>,
-              entryType === 1 &&
-                <WebsiteInfoCard
-                  key={`${entryId}-entryCard`}
-                  baseUrl={baseUrl}
-                  baseWidth={large ? largeCard : smallCard}
-                  cardInfo={content.get('cardInfo')}
-                  hasCard={!!hasContent}
-                  onClick={toggleOutsideNavigation}
-                  maxImageHeight={150}
-                  infoExtracted
-                  intl={intl}
-                />,
                 <div className="entry-card__tags" key={`${entryId}-tags`}>
                   {content.get('tags').map(tag => (
                     <TagPopover
