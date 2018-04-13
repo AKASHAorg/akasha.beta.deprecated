@@ -17,7 +17,7 @@ class EntryList extends Component {
         return !newProps.entries.equals(this.props.entries) ||
             newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
             newProps.fetchingEntries !== this.props.fetchingEntries ||
-            (this.props.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
+            (newProps.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
             newProps.large !== this.props.large ||
             !newProps.profiles.equals(this.props.profiles);
     }
@@ -53,7 +53,6 @@ class EntryList extends Component {
             const author = profiles.get(ethAddress);
             const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
             const entryId = entry.get('entryId');
-            const onRetry = () => this.props.entryGetShort({ context: contextId, entryId, ethAddress });
 
             return (<EntryCard
               author={author}
@@ -63,6 +62,7 @@ class EntryList extends Component {
               canClaimPending={canClaimPending}
               claimPending={claimPending}
               containerRef={this.container}
+              contextId={contextId}
               entry={entry}
               entryPageShow={this.props.entryPageShow}
               existingDraft={this.getExistingDraft(entry.get('entryId'))}
@@ -74,7 +74,7 @@ class EntryList extends Component {
               key={entry.get('entryId')}
               large={large}
               loggedEthAddress={loggedEthAddress}
-              onRetry={onRetry}
+              onRetry={this.props.entryGetShort}
               style={cardStyle}
               toggleOutsideNavigation={this.props.toggleOutsideNavigation}
               votePending={!!pendingVotes.get(entry.get('entryId'))}
