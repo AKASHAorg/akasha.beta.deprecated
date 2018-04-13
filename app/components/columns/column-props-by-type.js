@@ -93,7 +93,7 @@ const getProfileEntriesColumnProps = props => ({
     ...props,
     column: new TempRec({
         id: 'profileEntries',
-        entriesList: props.profileEntriesList.map(entry => entry.entryId),
+        entriesList: props.profileEntriesList,
         ethAddress: props.ethAddress,
         value: props.ethAddress,
         context: 'profileEntries'
