@@ -16,6 +16,7 @@ class CellManager extends Component {
 
     shouldComponentUpdate (nextProps) {
         return nextProps.isPending !== this.props.isPending ||
+            (nextProps.author && !nextProps.author.equals(this.props.author)) ||
             nextProps.large !== this.props.large ||
             !!(nextProps.entry && !nextProps.entry.equals(this.props.entry));
     }
@@ -55,6 +56,7 @@ class CellManager extends Component {
 }
 
 CellManager.propTypes = {
+    author: PropTypes.shape(),
     onMount: PropTypes.func,
     onSizeChange: PropTypes.func,
     children: PropTypes.func,

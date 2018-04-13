@@ -76,7 +76,7 @@ class ColManager extends Component {
             !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
-            !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
+            (nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
             !nextProps.profiles.equals(this.props.profiles);
     }
 
@@ -444,6 +444,7 @@ class ColManager extends Component {
                 }
                 return (
                   <CellManager
+                    author={author}
                     key={item.id}
                     id={item.id}
                     onMount={this._handleCellMount(item.id)}
