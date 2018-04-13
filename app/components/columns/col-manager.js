@@ -441,6 +441,7 @@ class ColManager extends Component {
                 }
                 return (
                   <CellManager
+                    author={author}
                     key={item.id}
                     id={item.id}
                     onMount={this._handleCellMount(item.id)}

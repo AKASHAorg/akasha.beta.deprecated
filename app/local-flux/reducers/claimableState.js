@@ -41,6 +41,20 @@ const claimableState = createReducer(initialState, {
         });
     },
 
+    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+        const { entryId } = request;
+        const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
+        
+        if (index !== -1) {
+            return state.merge({
+                entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
+                entriesLoadingMore: state.get('entriesLoadingMore')
+                    .filter(id => id !== entryId),
+            });
+        }
+        return state;
+    },
+
     [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
         const { entryId } = request;
         const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
