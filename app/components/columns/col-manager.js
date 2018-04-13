@@ -74,7 +74,6 @@ class ColManager extends Component {
     shouldComponentUpdate (nextProps, nextState) {
         return nextState[this.props.column.id] !== this.state[this.props.column.id] ||
             !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
-            // nextProps.column.entriesList.size !== this.props.column.entriesList.size ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
             !!(nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
@@ -222,6 +221,7 @@ class ColManager extends Component {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
             this._mapItemsToState(column.entriesList);
+            // this._updateOffsets(this.lastScrollTop[id]);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
@@ -272,7 +272,8 @@ class ColManager extends Component {
             this.items[id] = mappedItems.filter(item => items.includes(item.id));
         }
         this.itemCount = items.size;
-        if (items.size !== mappedItems.length && this.scrollPending === -1) {
+        if (this.itemCount !== itemCount && this.scrollPending === -1) {
+            this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
             this._updateOffsets(this.lastScrollTop[id]);
         }
     }
@@ -294,13 +295,13 @@ class ColManager extends Component {
     }
     /**
      * this method slices the items based on the user's current scroll position
-     * it is called onScroll and on cellUpdate handler;
+     * it is called both onScroll() and on cellUpdate handlers;
      */
     _updateOffsets = (scrollTop) => { // eslint-disable-line max-statements
         const { items, state, props } = this;
         const { id } = props.column;
         let accHeight = 0;
-        let topIndex = this.state[id];
+        let topIndex = state[id];
         for (let i = 0; i < items[id].length; i++) {
             const item = items[id][i];
             if (accHeight >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
@@ -310,11 +311,13 @@ class ColManager extends Component {
             }
             accHeight = Math.ceil(accHeight + item.height);
         }
-        if (this.state[id] !== topIndex || items[id].length === 0) {
+        if (state[id] !== topIndex || items[id].length === 0) {
             ReactDOM.unstable_batchedUpdates(() => {
                 this.setState({
                     [id]: topIndex
                 }, () => {
+                    // special case for lists - when you delete the last
+                    // item in the list
                     if (items[id].length === 0) {
                         this.forceUpdate();
                     }
@@ -324,14 +327,14 @@ class ColManager extends Component {
         const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
         const bottomPadding = Math.ceil(bottomPadderHeight);
         const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
-        if (bottomPadding <= bottomBufferHeight) {
+        const hasMoreEntries = (props.column && (props.column.moreEntries || (props.column.flags && props.column.flags.moreEntries))) || true;
+        if ((bottomPadding <= bottomBufferHeight) && hasMoreEntries) {
             this._loadMoreIfNeeded();
         }
         this.scrollPending = -1;
     }
     /**
      * get the index of the last visible element based on top index;
-     *
      */
     _getBottomIndex = (topIndex) => {
         const { containerHeight, items, props } = this;
@@ -497,6 +500,7 @@ ColManager.propTypes = {
     onUnmount: PropTypes.func,
     onRefLink: PropTypes.func,
     onNewEntriesResolveRequest: PropTypes.func,
+    profiles: PropTypes.shape(),
 };
 
 export default ColManager;

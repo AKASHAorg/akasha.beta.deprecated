@@ -108,7 +108,7 @@ const mapStateToProps = (state, ownProps) => {
         profiles: state.profileState.get('byEthAddress'),
         searchQuery: state.searchState.get('query'),
         entries: state.entryState.get('byId'),
-        profileEntriesList: selectProfileEntries(state, ethAddress),
+        profileEntriesList: state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']),
         fetchingEntries,
         fetchingMoreEntries,
         moreEntries,
