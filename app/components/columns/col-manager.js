@@ -347,7 +347,7 @@ class ColManager extends Component {
         const bufferHeight = this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE;
         for (let i = topIndex; i < items[id].length; i++) {
             const item = items[id][i];
-            if (accHeight + item.height > (containerHeight + this.lastScrollTop[id] + bufferHeight)) {
+            if (accHeight > (containerHeight + this.lastScrollTop[id] + bufferHeight)) {
                 bottomIndex = i;
                 accHeight = 0;
                 break;
