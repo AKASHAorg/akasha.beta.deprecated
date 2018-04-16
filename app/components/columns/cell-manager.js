@@ -8,9 +8,9 @@ class CellManager extends Component {
         const { onMount, isPending } = this.props;
         // if the card is in pending state don`t bother to update
         // it`s height
-        if (this._baseNodeRef && !isPending) {
+        if (this._baseNodeRef) {
             this.baseNodeSize = this._baseNodeRef.getBoundingClientRect();
-            onMount(this.baseNodeSize);
+            onMount(this.baseNodeSize, { firstMount: true });
         }
     }
 
@@ -47,7 +47,7 @@ class CellManager extends Component {
         return (
           <div
             ref={this._createBaseNodeRef}
-            // id={entry.entryId}
+            id={entry.entryId}
           >
             {entry && children()}
           </div>

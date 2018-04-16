@@ -347,7 +347,10 @@ const dashboardState = createReducer(initialState, {
     },
     [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
         const { context, entryId } = request;
-        if (context && state.getIn(['columnById', context])) {
+        if (context &&
+            state.getIn(['columnById', context, 'newEntries']) &&
+            state.getIn(['columnById', context, 'newEntries']).includes(entryId)
+        ) {
             return state.deleteIn(['columnById', context, 'newEntries'], entryId)
                 .setIn(['columnById', context, 'entriesList', 0], entryId);
         }
