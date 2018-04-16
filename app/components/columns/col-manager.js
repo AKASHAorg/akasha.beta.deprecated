@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import { Map } from 'immutable';
 import { differenceWith, propEq, findIndex, update, indexOf, remove } from 'ramda';
 import throttle from 'lodash.throttle';
 import CellManager from './cell-manager';
@@ -49,6 +50,9 @@ class ColManager extends Component {
             this.loadingMore.push(column.id);
         }
         if(column.entriesList.size > 0 && this.items[id].length === 0) {
+            if(!this.colFirstEntry.has(id)) {
+                this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
+            }
             this._mapItemsToState(column.entriesList);
         }
     }
@@ -164,6 +168,7 @@ class ColManager extends Component {
         const diffFn = (x, y) => x === y;
         const diffedEntries = differenceWith(diffFn, oldEntries.toJS(), newEntries.toJS());
         this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
+        console.log('setting col first entry', this.colFirstEntry);
     }
     /* eslint-disable complexity */
     _prepareUpdates = (passedProps, options) => {
@@ -219,8 +224,9 @@ class ColManager extends Component {
             this.props.onItemRequest(column);
             this.initialRequests.push(id);
         } else if (hasNewItems) {
-            if (!this.colFirstEntry.get(id)) {
+            if (!this.colFirstEntry.has(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
+                console.log('setting col first entry', this.colFirstEntry);
             }
             this._mapItemsToState(column.entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
@@ -237,6 +243,7 @@ class ColManager extends Component {
         if(this.props.onUnmount) {
             this.props.onUnmount(this.props.column);
         }
+        this._resetColState(this.props.column.id);
     }
 
     _onResize = () => {
@@ -413,6 +420,9 @@ class ColManager extends Component {
         const { id } = column;
         const topIndexTo = state[id];
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
+        if(column.value === 'akasha') {
+            console.log(items[id], 'items', this.colFirstEntry.get(id));
+        }
         return (
           <div
             ref={this._createRootNodeRef}
