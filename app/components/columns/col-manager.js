@@ -17,6 +17,7 @@ class ColManager extends Component {
         };
         this.avgItemHeight = this.props.initialItemHeight;
         this.loadingMore = [];
+        this.initialRequests = [];
         this.containerHeight = this.props.columnHeight;
         this.items = {};
         this.itemCount = 0;
@@ -173,14 +174,15 @@ class ColManager extends Component {
             newerProps = passedProps;
             olderProps = this.props;
         }
-        const { column, isVisible, ethAddress, fetching } = newerProps;
+        const { column, isVisible, ethAddress } = newerProps;
         const { entriesList } = column;
         const oldItems = olderProps.column.entriesList;
         const oldEthAddress = olderProps.ethAddress;
         const isNewColumn = ((oldEthAddress !== ethAddress) ||
             (column.value !== olderProps.column.value));
         const shouldRequestItems = entriesList.size === 0 &&
-            !this.loadingMore.includes(column.id) && isVisible && !fetching;
+            !this.loadingMore.includes(column.id) && isVisible &&
+            !this.initialRequests.includes(column.id);
         const newEntriesSize = column.newEntries && column.newEntries.size;
         const oldEntriesSize = olderProps.column.newEntries && olderProps.column.newEntries.size;
         const newEntriesLoaded = column.newEntries && (newEntriesSize < oldEntriesSize);
@@ -215,13 +217,12 @@ class ColManager extends Component {
         }
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
             this.props.onItemRequest(column);
-            this.loadingMore.push(column.id);
+            this.initialRequests.push(id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.get(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
             this._mapItemsToState(column.entriesList);
-            // this._updateOffsets(this.lastScrollTop[id]);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
@@ -304,7 +305,7 @@ class ColManager extends Component {
         let topIndex = state[id];
         for (let i = 0; i < items[id].length; i++) {
             const item = items[id][i];
-            if (accHeight >= Math.floor(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
+            if (accHeight >= Math.ceil(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
                 topIndex = i;
                 accHeight = 0;
                 break;
@@ -327,7 +328,9 @@ class ColManager extends Component {
         const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
         const bottomPadding = Math.ceil(bottomPadderHeight);
         const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
-        const hasMoreEntries = (props.column && (props.column.moreEntries || (props.column.flags && props.column.flags.moreEntries))) || true;
+        const hasMoreEntries = (props.column &&
+            (props.column.moreEntries || (props.column.flags && props.column.flags.moreEntries))) ||
+            true;
         if ((bottomPadding <= bottomBufferHeight) && hasMoreEntries) {
             this._loadMoreIfNeeded();
         }
