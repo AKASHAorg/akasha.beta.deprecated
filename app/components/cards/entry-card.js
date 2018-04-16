@@ -134,8 +134,8 @@ class EntryCard extends Component {
       </div>
     );
 
-    renderHiddenContent = () => (
-      <div style={{ position: 'relative' }}>
+    renderHiddenContent = (entryId) => (
+      <div key={`${entryId}-hidden`} style={{ position: 'relative' }}>
         <ContentPlaceholder />
         <div className="entry-card__hidden">
           <div className="heading flex-center">
@@ -219,9 +219,8 @@ class EntryCard extends Component {
           >
             {isPending && <ContentPlaceholder />}
             {hasContent &&
-              !hideContent &&
               !isPending &&
-              [hasFeaturedImage && entryType === 0 && <Link
+              [!hideContent && hasFeaturedImage && entryType === 0 && <Link
                 className="unstyled-link"
                 key={`${entryId}-fImage`}
                 to={{
@@ -238,7 +237,7 @@ class EntryCard extends Component {
                   />
                 </div>
               </Link>,
-              entryType === 1 &&
+              !hideContent && entryType === 1 &&
                 <WebsiteInfoCard
                   key={`${entryId}-entryCard`}
                   baseUrl={baseUrl}
@@ -250,7 +249,7 @@ class EntryCard extends Component {
                   infoExtracted
                   intl={intl}
                 />,
-              entryType === 0 &&
+                !hideContent && entryType === 0 &&
                 <div className="entry-card__title" key={`${entryId}-title`}>
                   <Link
                     className="unstyled-link"
@@ -274,7 +273,7 @@ class EntryCard extends Component {
                     <span className="content-link">{content.get('excerpt')}</span>
                   </Link>
                 </div>,
-                <div className="entry-card__tags" key={`${entryId}-tags`}>
+              !hideContent && <div className="entry-card__tags" key={`${entryId}-tags`}>
                   {content.get('tags').map(tag => (
                     <TagPopover
                       containerRef={containerRef}
@@ -283,6 +282,7 @@ class EntryCard extends Component {
                     />
                   ))}
                 </div>,
+              hideContent && this.renderHiddenContent(entryId),
                 <EntryPageActions
                   key={`${entryId}-entryActions`}
                   containerRef={containerRef}
