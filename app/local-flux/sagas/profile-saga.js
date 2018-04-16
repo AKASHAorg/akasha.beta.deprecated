@@ -132,21 +132,21 @@ function* profileFollowSuccess ({ data }) {
     }));
 }
 
-function* profileFollowersIterator ({ context, ethAddress }) {
+function* profileFollowersIterator ({ context, ethAddress, batching }) {
     const channel = Channel.server.profile.followersIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT }]);
+    yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT, batching }]);
 }
 
 function* profileFollowingsIterator ({
-    context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings
+    context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings, batching
 }) {
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(
         channel,
         channel.send,
-        [{ context, ethAddress, limit, allFollowings }]
+        [{ context, ethAddress, limit, allFollowings, batching }]
     );
 }
 
@@ -673,7 +673,7 @@ function* watchProfileFollowersIteratorChannel () {
             if (resp.request.lastBlock) {
                 yield put(actions.profileMoreFollowersIteratorSuccess(resp.data, resp.request));
             } else {
-                yield put(actions.profileFollowersIteratorSuccess(resp.data, resp.request));
+                yield put(actions.profileFollowersIteratorSuccess(resp.data, resp.request, resp.request.batching));
             }
         }
     }

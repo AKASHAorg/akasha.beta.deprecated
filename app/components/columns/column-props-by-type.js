@@ -15,13 +15,13 @@ const TempRec = Record({
 const getLatestColumnProps = props => ({
     ...props,
     title: props.intl.formatMessage(dashboardMessages.latest),
-    onItemRequest: props.entryNewestIterator,
-    onItemMoreRequest: props.entryMoreNewestIterator,
+    onItemRequest: (column) => props.entryNewestIterator(column, true),
+    onItemMoreRequest: (column) => props.entryMoreNewestIterator(column, true),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.entryNewestIterator(column);
+        props.entryNewestIterator(column, true);
     },
-    onItemPooling: col => props.entryNewestIterator({ ...col.toJS(), reversed: true }),
+    onItemPooling: col => props.entryNewestIterator({ ...col.toJS(), reversed: true }, true),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
@@ -33,11 +33,11 @@ const getListColumnProps = props => {
     return {
         ...props,
         onItemRequest: props.entryListIterator,
-        onItemMoreRequest: props.entryMoreListIterator,
+        onItemMoreRequest: (column) => props.entryMoreListIterator(column, true),
         title: list.get('name') || ' ',
         onColumnRefresh: (column) => {
             props.dashboardResetColumnEntries(column.id);
-            props.entryMoreListIterator(column)
+            props.entryListIterator(column)
         },
         dataSource: props.lists,
         entries: props.entries
@@ -47,11 +47,11 @@ const getListColumnProps = props => {
 const getTagColumnProps = props => ({
     ...props,
     iconType: 'tag',
-    onItemRequest: props.entryTagIterator,
-    onItemMoreRequest: props.entryMoreTagIterator,
+    onItemRequest: (column) => props.entryTagIterator(column, true),
+    onItemMoreRequest: (column) => props.entryMoreTagIterator(column, true),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.entryTagIterator(column)
+        props.entryTagIterator(column, true);
     },
     onItemPooling: col => props.entryTagIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
@@ -61,12 +61,12 @@ const getTagColumnProps = props => ({
 
 const getStreamColumnProps = props => ({
     ...props,
-    onItemRequest: props.entryStreamIterator,
-    onItemMoreRequest: props.entryMoreStreamIterator,
+    onItemRequest: (column) => props.entryStreamIterator(column, true),
+    onItemMoreRequest: (column) => props.entryMoreStreamIterator(column, true),
     title: props.intl.formatMessage(dashboardMessages.columnStream),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.entryStreamIterator(column);
+        props.entryStreamIterator(column, true);
     },
     onItemPooling: col => props.entryStreamIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
@@ -77,11 +77,11 @@ const getProfileColumnProps = props => ({
     ...props,
     title: props.column ? `@${props.column.value}` : props.intl.formatMessage(profileMessages.entries),
     iconType: 'user',
-    onItemRequest: props.entryProfileIterator,
-    onItemMoreRequest: props.entryMoreProfileIterator,
+    onItemRequest: (column) => props.entryProfileIterator(column, true),
+    onItemMoreRequest: (column) => props.entryMoreProfileIterator(column, true),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.entryProfileIterator(column);
+        props.entryProfileIterator(column, true);
     },
     onItemPooling: col => props.entryProfileIterator({ ...col.toJS(), reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
@@ -101,11 +101,11 @@ const getProfileEntriesColumnProps = props => ({
     fetching: props.fetchingEntries,
     fetchingMore: props.fetchingMoreEntries,
     title: props.intl.formatMessage(profileMessages.entries),
-    onItemRequest: props.entryProfileIterator,
-    onItemMoreRequest: props.entryMoreProfileIterator,
+    onItemRequest: (column) => props.entryProfileIterator(column, true),
+    onItemMoreRequest: (column) => props.entryMoreProfileIterator(column, true),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.entryProfileIterator(column)
+        props.entryProfileIterator(column, true)
     },
     noMenu: true,
 });
@@ -122,11 +122,11 @@ const getProfileFollowersColumnProps = props => ({
     fetching: props.fetchingFollowers,
     fetchingMore: props.fetchingMoreFollowers,
     title: props.intl.formatMessage(profileMessages.followers),
-    onItemRequest: props.profileFollowersIterator,
-    onItemMoreRequest: props.profileMoreFollowersIterator,
+    onItemRequest: (col) => props.profileFollowersIterator({ ...col.toJS(), batching: true }),
+    onItemMoreRequest: (col) => props.profileMoreFollowersIterator({...col.toJS(), batching: true}),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.profileFollowersIterator(column);
+        props.profileFollowersIterator({...column, batching: true});
     },
     itemCard: <ProfileCard />,
 });
@@ -143,10 +143,10 @@ const getProfileFollowingsColumnProps = props => ({
     fetching: props.fetchingFollowings,
     fetchingMore: props.fetchingMoreFollowings,
     title: props.intl.formatMessage(profileMessages.followings),
-    onItemRequest: column => props.profileFollowingsIterator(column),
-    onItemMoreRequest: props.profileMoreFollowingsIterator,
+    onItemRequest: column => props.profileFollowingsIterator({ ...column, batching: true }),
+    onItemMoreRequest: col => props.profileMoreFollowingsIterator({ ...col, batching: true }),
     onColumnRefresh: (column) => {
-        props.profileFollowingsIterator(column);
+        props.profileFollowingsIterator({...column, batching: true});
     },
     itemCard: <ProfileCard />
 });
@@ -162,4 +162,3 @@ export default {
     [columnTypes.profileFollowers]: getProfileFollowersColumnProps,
     [columnTypes.profileFollowings]: getProfileFollowingsColumnProps,
 };
-

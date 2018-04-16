@@ -140,12 +140,13 @@ export const entryListIterator = column =>
 export const entryListIteratorSuccess = (data, request) =>
     action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreListIterator = column =>
-    action(types.ENTRY_MORE_LIST_ITERATOR, { column });
+export const entryMoreListIterator = (column, batching) =>
+    action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
 export const entryMoreListIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreNewestIterator = column => action(types.ENTRY_MORE_NEWEST_ITERATOR, { column });
+export const entryMoreNewestIterator = (column, batching) =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR, { column, batching });
 export const entryMoreNewestIteratorError = (error, request) => {
     error.code = 'EMNIE01';
     error.messageId = 'entryMoreNewestIterator';
@@ -154,8 +155,8 @@ export const entryMoreNewestIteratorError = (error, request) => {
 export const entryMoreNewestIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreProfileIterator = column =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR, { column });
+export const entryMoreProfileIterator = (column, batching) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { column, batching });
 export const entryMoreProfileIteratorError = (error, request) => {
     error.code = 'EMPIE01';
     error.messageId = 'entryMoreProfileIterator';
@@ -164,7 +165,7 @@ export const entryMoreProfileIteratorError = (error, request) => {
 export const entryMoreProfileIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreStreamIterator = column => action(types.ENTRY_MORE_STREAM_ITERATOR, { column });
+export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
 export const entryMoreStreamIteratorError = (error, request) => {
     error.code = 'EMSIE01';
     error.messageId = 'entryMoreStreamIterator';
@@ -173,8 +174,8 @@ export const entryMoreStreamIteratorError = (error, request) => {
 export const entryMoreStreamIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreTagIterator = column =>
-    action(types.ENTRY_MORE_TAG_ITERATOR, { column });
+export const entryMoreTagIterator = (column, batching) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { column, batching });
 export const entryMoreTagIteratorError = (error, request) => {
     error.code = 'EMTIE01';
     error.messageId = 'entryMoreTagIterator';
@@ -183,8 +184,8 @@ export const entryMoreTagIteratorError = (error, request) => {
 export const entryMoreTagIteratorSuccess = (data, request) =>
     action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, request });
 
-export const entryNewestIterator = (column, reversed) =>
-    action(types.ENTRY_NEWEST_ITERATOR, { column, reversed });
+export const entryNewestIterator = (column, batching) =>
+    action(types.ENTRY_NEWEST_ITERATOR, { column, batching });
 export const entryNewestIteratorError = (error, request) => {
     error.code = 'ENIE01';
     error.messageId = 'entryNewestIterator';
@@ -197,8 +198,8 @@ export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
 
-export const entryProfileIterator = (column) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { column });
+export const entryProfileIterator = (column, batching) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { column, batching });
 
 export const entryProfileIteratorError = (error, request) => {
     error.code = 'EPIE01';
@@ -218,8 +219,8 @@ export const entryResolveIpfsHashError = (error, request) => {
 export const entryResolveIpfsHashSuccess = (data, request) =>
     action(types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS, { data, request });
 
-export const entryStreamIterator = (column, reversed) =>
-    action(types.ENTRY_STREAM_ITERATOR, { column, reversed });
+export const entryStreamIterator = (column, batching) =>
+    action(types.ENTRY_STREAM_ITERATOR, { column, batching });
 export const entryStreamIteratorError = (error, request) => {
     error.code = 'ESIE01';
     error.messageId = 'entryStreamIterator';
@@ -228,8 +229,8 @@ export const entryStreamIteratorError = (error, request) => {
 export const entryStreamIteratorSuccess = (data, request) =>
     action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, request });
 
-export const entryTagIterator = (column, reversed) =>
-    action(types.ENTRY_TAG_ITERATOR, { column, reversed });
+export const entryTagIterator = (column, batching) =>
+    action(types.ENTRY_TAG_ITERATOR, { column, batching });
 export const entryTagIteratorError = (error, request) => {
     error.code = 'ETIE01';
     error.messageId = 'entryTagIterator';
