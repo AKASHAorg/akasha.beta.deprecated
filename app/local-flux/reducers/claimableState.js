@@ -7,16 +7,36 @@ const initialState = new ClaimableState();
 
 const claimableState = createReducer(initialState, {
 
-    [types.CLAIMABLE_DELETE_ENTRY_SUCCESS]: (state, { data }) => {
-        const entriesLoading = state.get('entriesLoading').filter(entryId => entryId !== data.entryId);
+    [types.CLAIMABLE_DELETE_ENTRY]: (state, { entryId }) => {
+        const entriesLoading = state.get('entriesLoading').filter(entryId => entryId !== entryId);
         const entriesLoadingMore = state.get('entriesLoadingMore')
-            .filter(entryId => entryId !== data.entryId);                
-        const entryList = state.get('entryList').filter(entry => entry.entryId !== data.entryId);
+            .filter(entryId => entryId !== entryId);                
+        const entryList = state.get('entryList').filter(entry => entry.entryId !== entryId);
         return state.merge({
             entriesLoading,
             entriesLoadingMore,
             entryList,
         });
+    },
+
+    [types.CLAIMABLE_DELETE_LOADING]: (state, { entryId }) =>
+        state.merge({
+            entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
+            entriesLoadingMore: state.get('entriesLoadingMore').filter(id => id !== entryId),            
+        }),
+
+    [types.CLAIMABLE_GET_ENTRIES]: (state, { more }) => {
+        if (more) {
+            return state.set('fetchingMoreEntries', true);
+        }
+        return state.set('fetchingEntries', true);        
+    },
+
+    [types.CLAIMABLE_GET_ENTRIES_ERROR]: (state, { request }) => {
+        if (request.more) {
+            return state.set('fetchingMoreEntries', false);
+        }
+        return state.set('fetchingEntries', false);
     },
 
     [types.CLAIMABLE_GET_ENTRIES_SUCCESS]: (state, { data, request }) => {
@@ -37,6 +57,8 @@ const claimableState = createReducer(initialState, {
             entriesLoading,
             entriesLoadingMore,
             entryList,
+            fetchingEntries: request.more ? state.get('fetchingEntries') : false,
+            fetchingMoreEntries: request.more ? false : state.get('fetchingMoreEntries'),
             moreEntries: data.length === request.limit,
         });
     },
@@ -55,7 +77,7 @@ const claimableState = createReducer(initialState, {
         return state;
     },
 
-    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
+    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
         const { entryId } = request;
         const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
         
@@ -64,7 +86,6 @@ const claimableState = createReducer(initialState, {
                 entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
                 entriesLoadingMore: state.get('entriesLoadingMore')
                     .filter(id => id !== entryId),                
-                entryList: state.get('entryList').setIn([index, 'endPeriod'], data.endPeriod)
             });
         }
         return state;

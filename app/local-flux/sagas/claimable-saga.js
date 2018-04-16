@@ -4,7 +4,9 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/claimable-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectClaimableOffset, selectLoggedEthAddress } from '../selectors';
+import { selectBlockNumber, selectClaimableOffset, selectLoggedEthAddress,
+    selectPendingEntries, 
+    selectEntry} from '../selectors';
 import * as claimableService from '../services/claimable-service';
 
 const { Channel } = self;
@@ -24,6 +26,7 @@ function* claimableDeleteEntry ({ entryId }) {
 function* claimableGetEntries ({ more }) {
     const ethAddress = yield select(selectLoggedEthAddress);
     const offset = more ? yield select(selectClaimableOffset) : 0;
+    yield apply(reduxSaga, reduxSaga.delay, [500]);    
     try {
         const data = yield call(
             [claimableService, claimableService.getEntries],
@@ -32,7 +35,7 @@ function* claimableGetEntries ({ more }) {
         yield put(actions.claimableGetEntriesSuccess(data, { more, limit: ENTRIES_LIMIT }));
         yield fork(claimableGetEntriesData, data);
     } catch (error) {
-        yield put(actions.claimableGetEntriesError(error));
+        yield put(actions.claimableGetEntriesError(error, { more }));
     }
 }
 
@@ -50,7 +53,15 @@ function* claimableGetEntriesData (data) {
         }
     });
     for (let i = 0; i < allEntries.length; i++) {
-        yield put(entryActions.entryGetShort({ context: 'claimable', entryId: allEntries[i] }));
+        const context = 'claimable';
+        const pendingEntries = yield select(state => selectPendingEntries(state, context));
+        const isPending = pendingEntries && pendingEntries.get(allEntries[i]);
+        const entry = yield select(state => selectEntry(state, allEntries[i]));
+        if (!isPending && !entry) {
+            yield put(entryActions.entryGetShort({ context, entryId: allEntries[i] }));
+        } else {
+            yield put(actions.claimableDeleteLoading(allEntries[i]));
+        }
     }
     if (ownEntries.length) {
         yield put(entryActions.entryCanClaim(ownEntries));
