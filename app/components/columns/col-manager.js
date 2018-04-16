@@ -365,14 +365,14 @@ class ColManager extends Component {
      * update the height of the cell (called on cell`s didMount lifecycle)
      */
     _handleCellMount = cellId =>
-        (cellSize) => {
+        (cellSize, options = {}) => {
             const { items, props } = this;
             const { id } = props.column;
             const cellHeight = cellSize.height;
             const propFind = propEq('id', cellId);
             const stateCellIdx = findIndex(propFind)(items[id]);
             const sameHeight = (stateCellIdx > -1) && items[id][stateCellIdx].height === cellHeight;
-            if (!sameHeight) {
+            if (!sameHeight || options.firstMount) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items[id] = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items[id]);
                 if(this.scrollPending === -1) {
