@@ -168,7 +168,6 @@ class ColManager extends Component {
         const diffFn = (x, y) => x === y;
         const diffedEntries = differenceWith(diffFn, oldEntries.toJS(), newEntries.toJS());
         this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
-        console.log('setting col first entry', this.colFirstEntry);
     }
     /* eslint-disable complexity */
     _prepareUpdates = (passedProps, options) => {
@@ -226,7 +225,6 @@ class ColManager extends Component {
         } else if (hasNewItems) {
             if (!this.colFirstEntry.has(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
-                console.log('setting col first entry', this.colFirstEntry);
             }
             this._mapItemsToState(column.entriesList);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
@@ -420,9 +418,6 @@ class ColManager extends Component {
         const { id } = column;
         const topIndexTo = state[id];
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
-        if(column.value === 'akasha') {
-            console.log(items[id], 'items', this.colFirstEntry.get(id));
-        }
         return (
           <div
             ref={this._createRootNodeRef}
