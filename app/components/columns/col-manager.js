@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
 import { differenceWith, propEq, findIndex, update, indexOf, remove } from 'ramda';
 import throttle from 'lodash.throttle';
+import { Map } from 'immutable';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
 import * as columnTypes from '../../constants/columns';
@@ -28,9 +28,9 @@ class ColManager extends Component {
         this.poolingInterval = {};
         this.poolingTimeout = null;
         this.poolingDelay = 60000;
-        this._debouncedOffsetUpdate = throttle(this._updateOffsets, 150, {trailing: true});
         this.colFirstEntry = new Map();
         this.scrollPending = -1;
+        this.requestPoolingTimeout = -1;
         this.alreadyRendered = [];
     }
 
@@ -53,7 +53,7 @@ class ColManager extends Component {
             if(!this.colFirstEntry.has(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
-            this._mapItemsToState(column.entriesList);
+            this._mapItemsToState(column.entriesList, column);
         }
     }
 
@@ -69,7 +69,7 @@ class ColManager extends Component {
         }
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
-            this._updateOffsets(this.lastScrollTop[id]);
+            this._updateOffsets(this.lastScrollTop[id], column);
         }
         if(this.props.onRefLink) {
             this.props.onRefLink(this);
@@ -109,7 +109,7 @@ class ColManager extends Component {
         const { column } = this.props;
         const { id } = column;
         if(this.lastScrollTop[id] !== 0) {
-            this._mapItemsToState(column.get('newEntries'), { prepend: true });
+            this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
             this.setState({
                 [id]: 0
             }, () => {
@@ -135,7 +135,7 @@ class ColManager extends Component {
         this._clearIntervals();
         const isPooling = this.poolingInterval[id] > 0;
         if (typeof onItemPooling === 'function' && !isPooling && isVisible) {
-            setTimeout(() => this._createRequestPooling(id), this.poolingDelay);
+            this.requestPoolingTimeout = setTimeout(() => this._createRequestPooling(id), this.poolingDelay);
         }
     }
 
@@ -212,7 +212,7 @@ class ColManager extends Component {
         const { canUpdateState } = options;
         const { id } = column;
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
-            this._mapItemsToState(column.get('newEntries'), { prepend: true });
+            this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
             this._resolveNewEntries(column.get('newEntries'));
         }
 
@@ -226,7 +226,7 @@ class ColManager extends Component {
             if (!this.colFirstEntry.has(id)) {
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
-            this._mapItemsToState(column.entriesList);
+            this._mapItemsToState(column.entriesList, column);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
@@ -238,10 +238,13 @@ class ColManager extends Component {
         }
         this._rootNodeRef.removeEventListener('scroll', this._debouncedScroll);
         window.removeEventListener('resize', this._debouncedResize);
+        window.clearTimeout(this.scrollPending);
+        window.clearTimeout(this.requestPoolingTimeout);
         if(this.props.onUnmount) {
             this.props.onUnmount(this.props.column);
         }
         this._resetColState(this.props.column.id);
+        this.unmounting = true;
     }
 
     _onResize = () => {
@@ -253,9 +256,9 @@ class ColManager extends Component {
         }
     }
 
-    _mapItemsToState = (items, options = {}) => {
-        const { props, itemCount } = this;
-        const { id } = props.column;
+    _mapItemsToState = (items, column, options = {}) => {
+        const { itemCount } = this;
+        const { id } = column;
         const mappedItems = this.items[id].slice();
         let diff = [];
         // when loadMore triggers
@@ -280,7 +283,7 @@ class ColManager extends Component {
         this.itemCount = items.size;
         if (this.itemCount !== itemCount && this.scrollPending === -1) {
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
-            this._updateOffsets(this.lastScrollTop[id]);
+            this._updateOffsets(this.lastScrollTop[id], column);
         }
     }
 
@@ -289,9 +292,9 @@ class ColManager extends Component {
         ((this.avgItemHeight * (this.itemCount - 1)) + newSize) / this.itemCount;
 
     // load more entries
-    _loadMoreIfNeeded = () => {
+    _loadMoreIfNeeded = (column) => {
         const { props } = this;
-        const { column, isVisible, fetchingMore } = props;
+        const { isVisible, fetchingMore } = props;
         const { id } = column;
         const alreadyLoading = this.loadingMore.includes(id);
         if (!alreadyLoading && isVisible && !fetchingMore) {
@@ -303,22 +306,22 @@ class ColManager extends Component {
      * this method slices the items based on the user's current scroll position
      * it is called both onScroll() and on cellUpdate handlers;
      */
-    _updateOffsets = (scrollTop) => { // eslint-disable-line max-statements
-        const { items, state, props } = this;
-        const { id } = props.column;
+    _updateOffsets = (scrollTop, column) => { // eslint-disable-line max-statements
+        const { items, state } = this;
+        const { id } = column;
         let accHeight = 0;
         let topIndex = state[id];
-        for (let i = 0; i < items[id].length; i++) {
-            const item = items[id][i];
-            if (accHeight >= Math.ceil(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
-                topIndex = i;
-                accHeight = 0;
-                break;
+        window.requestAnimationFrame(() => {
+            for (let i = 0; i < items[id].length; i++) {
+                const item = items[id][i];
+                if (accHeight >= Math.ceil(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
+                    topIndex = i;
+                    accHeight = 0;
+                    break;
+                }
+                accHeight = Math.ceil(accHeight + item.height);
             }
-            accHeight = Math.ceil(accHeight + item.height);
-        }
-        if (state[id] !== topIndex || items[id].length === 0) {
-            ReactDOM.unstable_batchedUpdates(() => {
+            if (state[id] !== topIndex || items[id].length === 0) {
                 this.setState({
                     [id]: topIndex
                 }, () => {
@@ -328,18 +331,18 @@ class ColManager extends Component {
                         this.forceUpdate();
                     }
                 });
-            });
-        }
-        const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
-        const bottomPadding = Math.ceil(bottomPadderHeight);
-        const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
-        const hasMoreEntries = (props.column &&
-            (props.column.moreEntries || (props.column.flags && props.column.flags.moreEntries))) ||
-            true;
-        if ((bottomPadding <= bottomBufferHeight) && hasMoreEntries) {
-            this._loadMoreIfNeeded();
-        }
-        this.scrollPending = -1;
+            }
+            const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
+            const bottomPadding = Math.ceil(bottomPadderHeight);
+            const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
+            const hasMoreEntries = (column &&
+                (column.moreEntries || (column.flags && column.flags.moreEntries))) ||
+                true;
+            if ((bottomPadding <= bottomBufferHeight) && hasMoreEntries) {
+                this._loadMoreIfNeeded(column);
+            }
+            this.scrollPending = -1;
+        })
     }
     /**
      * get the index of the last visible element based on top index;
@@ -365,20 +368,18 @@ class ColManager extends Component {
      * update the height of the cell (called on cell`s didMount lifecycle)
      */
     _handleCellMount = cellId =>
-        (cellSize, options = {}) => {
+        (cellSize) => {
             const { items, props } = this;
             const { id } = props.column;
             const cellHeight = cellSize.height;
             const propFind = propEq('id', cellId);
             const stateCellIdx = findIndex(propFind)(items[id]);
             const sameHeight = (stateCellIdx > -1) && items[id][stateCellIdx].height === cellHeight;
-            if (!sameHeight || options.firstMount) {
+            if (!sameHeight) {
                 this.avgItemHeight = Math.ceil(this._calculateAverage(cellHeight));
                 this.items[id] = update(stateCellIdx, { id: cellId, height: cellHeight }, this.items[id]);
-                if(this.scrollPending === -1) {
-                    requestAnimationFrame(() => {
-                        this._updateOffsets(this.lastScrollTop[id]);
-                    });
+                if(this.scrollPending === -1 && !this.unmounting) {
+                    this._updateOffsets(this.lastScrollTop[id], props.column);
                 }
             }
         }
@@ -399,7 +400,9 @@ class ColManager extends Component {
     }
 
     _onScrollMove = (scrollTop) => {
-        this._updateOffsets(scrollTop);
+        window.requestAnimationFrame(() => {
+            this._updateOffsets(scrollTop, this.props.column);
+        });
     }
 
     _createRootNodeRef = (node) => {
@@ -486,7 +489,7 @@ class ColManager extends Component {
 }
 
 ColManager.defaultProps = {
-    initialItemHeight: 170,
+    initialItemHeight: 270,
     itemCard: <EntryCard />,
     columnHeight: 600
 };
