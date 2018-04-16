@@ -254,7 +254,8 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR]: (state, { value }) => {
+    [types.ENTRY_MORE_PROFILE_ITERATOR]: (state, { column }) => {
+        const { value } = column;
         if (isEthAddress(value)) {
             return state.setIn(['profileEntries', value, 'fetchingMoreEntries'], true);
         }
@@ -288,7 +289,8 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_PAGE_SHOW]: (state, { entryId, version = null }) =>
         state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
 
-    [types.ENTRY_PROFILE_ITERATOR]: (state, { value, asDrafts }) => {
+    [types.ENTRY_PROFILE_ITERATOR]: (state, { column }) => {
+        const { value, asDrafts } = column;
         if (isEthAddress(value) && !asDrafts) {
             return state.setIn(['profileEntries', value], new ProfileEntries({ fetchingEntries: true }));
         }
