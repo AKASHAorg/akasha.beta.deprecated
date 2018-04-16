@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { differenceWith, propEq, findIndex, update, indexOf, remove } from 'ramda';
 import throttle from 'lodash.throttle';

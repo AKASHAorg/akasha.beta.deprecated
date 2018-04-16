@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
 import batchedSubscribeMiddleware from './batching/middleware';

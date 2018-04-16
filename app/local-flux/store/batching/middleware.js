@@ -8,7 +8,7 @@ export default () => next => (action) => {
     if (State.notify && !shouldBatch(action)) {
         State.notify();
     } else {
-        debounce(State.notify, 48, { leading: true, trailing: true });
+        debounce(State.notify, 56, { trailing: true });
     }
     return resolved;
 }
