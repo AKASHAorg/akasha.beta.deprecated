@@ -9,11 +9,13 @@ export const claimableDeleteEntryError = (error) => {
 };
 export const claimableDeleteEntrySuccess = data => action(types.CLAIMABLE_DELETE_ENTRY_SUCCESS, { data });
 
+export const claimableDeleteLoading = (entryId) => action(types.CLAIMABLE_DELETE_LOADING, { entryId });
+
 export const claimableGetEntries = (more) => action(types.CLAIMABLE_GET_ENTRIES, { more });
-export const claimableGetEntriesError = (error) => {
+export const claimableGetEntriesError = (error, request) => {
     error.code = 'CGEE01';
     error.messageId = 'claimableGetEntries';
-    return action(types.CLAIMABLE_GET_ENTRIES_ERROR, { error });
+    return action(types.CLAIMABLE_GET_ENTRIES_ERROR, { error, request });
 };
 export const claimableGetEntriesSuccess = (data, request) =>
     action(types.CLAIMABLE_GET_ENTRIES_SUCCESS, { data, request });

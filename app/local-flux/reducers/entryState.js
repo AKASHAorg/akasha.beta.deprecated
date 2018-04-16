@@ -203,6 +203,9 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
         const { entryId, context } = request;
+        if (!state.getIn(['byId', entryId])) {
+            return state;
+        }
         data.entryId = entryId;
         let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
         pendingEntries = pendingEntries.set(entryId, false);
