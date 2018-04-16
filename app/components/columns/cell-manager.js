@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 class CellManager extends Component {
     baseNodeSize = {}
     componentDidMount () {
-        const { onMount, isPending } = this.props;
+        const { onMount } = this.props;
         // if the card is in pending state don`t bother to update
         // it`s height
         if (this._baseNodeRef) {
@@ -47,7 +47,7 @@ class CellManager extends Component {
         return (
           <div
             ref={this._createBaseNodeRef}
-            id={entry.entryId}
+            // id={entry.entryId}
           >
             {entry && children()}
           </div>
