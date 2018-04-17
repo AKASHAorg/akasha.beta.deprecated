@@ -166,7 +166,9 @@ class ColManager extends Component {
     _applyLoadedEntries = (newEntries, oldEntries) => {
         const diffFn = (x, y) => x === y;
         const diffedEntries = differenceWith(diffFn, newEntries.toJS(), oldEntries.toJS());
-        this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
+        if (diffedEntries.length > 0) {
+            this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
+        }
     }
     /* eslint-disable complexity */
     _prepareUpdates = (passedProps, options) => {
@@ -213,7 +215,6 @@ class ColManager extends Component {
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
             this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
             this._resolveNewEntries(column.get('newEntries'));
-            return;
         }
 
         if (isNewColumn && canUpdateState) {
@@ -270,14 +271,12 @@ class ColManager extends Component {
                     id: v.id,
                     height: this.avgItemHeight
                 }));
-                console.log(diff, 'some diff for prepend');
                 this.items[id].unshift(...diff);
             } else {
                 diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
                     id: v.id,
                     height: this.avgItemHeight
                 }));
-                console.log(diff, 'some diff for append');
                 this.items[id] = mappedItems.concat(diff);
             }
         } else if (items.size === 0) {
@@ -456,7 +455,6 @@ class ColManager extends Component {
                 const currentItemIndex = items[id].findIndex(i => i.id === item.id);
                 const lastSeenItemIndex = items[id].findIndex(i => i.id === lastSeenID)
                 const isNewItem = lastSeenID && lastSeenItemIndex > currentItemIndex;
-                console.log(isNewItem, lastSeenID, currentItemIndex, lastSeenItemIndex, 'any new item?');
                 if (isNewItem) {
                     markAsNew = true;
                 }
