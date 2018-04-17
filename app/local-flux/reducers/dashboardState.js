@@ -341,7 +341,10 @@ const dashboardState = createReducer(initialState, {
             state.getIn(['columnById', context, 'newEntries']) &&
             state.getIn(['columnById', context, 'newEntries']).includes(entryId)
         ) {
-            let mState = state.deleteIn(['columnById', context, 'newEntries'], entryId)
+            let mState = state.deleteIn(
+                ['columnById', context, 'newEntries'],
+                state.getIn(['columnById', context, 'newEntries']).indexOf(entryId)
+            )
             mState = mState.mergeIn(['columnById', context], {
                 entriesList: state.getIn(['columnById', context, 'entriesList']).unshift(entryId)
             });
