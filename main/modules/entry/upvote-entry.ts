@@ -16,7 +16,7 @@ const execute = Promise.coroutine(function* (data: EntryUpvoteRequest, cb) {
         throw new Error('Vote weight value must be between 1-10');
     }
 
-    const txData = contracts.instance.Votes.voteEntry.request(data.weight, data.entryId, false, data.ethAddress, { gas: 200000 });
+    const txData = contracts.instance.Votes.voteEntry.request(data.weight, data.entryId, false, data.ethAddress, { gas: 250000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     pinner.execute({
         type: ObjectType.ENTRY,

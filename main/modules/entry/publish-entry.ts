@@ -56,7 +56,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
         default:
             publishMethod = contracts.instance.Entries.publishOther;
     }
-    const txData = publishMethod.request(...decodedHash, data.tags, { gas: 2000000 });
+    const txData = publishMethod.request(...decodedHash, data.tags, { gas: 800000 });
     ipfsEntry = null;
     delete data.content;
     delete data.tags;
