@@ -670,7 +670,7 @@ function* watchProfileFollowersIteratorChannel () {
             }
         } else {
             yield call(profileGetExtraOfList, resp.data.collection, resp.request.context);
-            if (resp.request.lastBlock) {
+            if (!isNaN(resp.request.lastBlock)) {
                 yield put(actions.profileMoreFollowersIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.profileFollowersIteratorSuccess(resp.data, resp.request, resp.request.batching));
@@ -694,7 +694,7 @@ function* watchProfileFollowingsIteratorChannel () {
             yield put(searchActions.searchSyncEntries(followings));
         } else {
             yield call(profileGetExtraOfList, resp.data.collection, resp.request.context);
-            if (resp.request.lastBlock) {
+            if (!isNaN(resp.request.lastBlock)) {
                 yield put(actions.profileMoreFollowingsIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.profileFollowingsIteratorSuccess(resp.data, resp.request));
