@@ -102,7 +102,7 @@ class ColumnHeader extends Component {
             this._colManagerComponent.loadNewItems();
         } else {
             this._colManagerComponent.resetColumn(this.props.column.id);
-            this.props.onRefresh(this.props.column);
+            this.props.onRefresh(this.props.column.toJS());
         }
         this.setState({ popoverVisible: false });
     };
