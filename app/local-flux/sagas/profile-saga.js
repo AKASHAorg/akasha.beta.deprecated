@@ -291,6 +291,7 @@ function* profileMoreFollowersIterator ({ ethAddress }) {
 
 function* profileMoreFollowingsIterator ({ ethAddress }) {
     const channel = Channel.server.profile.followingIterator;
+    console.log(ethAddress, 'the eth address');
     const last = yield select(state => selectLastFollowing(state, ethAddress));
     const totalLoaded = yield select(state => selectCurrentTotalFollowing(state, ethAddress));
     const payload = {
