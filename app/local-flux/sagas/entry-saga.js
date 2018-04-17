@@ -320,20 +320,22 @@ function* entryMoreTagIterator ({ column, batching }) {
 function* entryNewestIterator ({ column, batching }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    const { id, firstBlock, reversed } = column;
+    const { id, firstBlock, firstIndex, reversed } = column;
     const toBlock = reversed ? firstBlock : yield select(selectBlockNumber);
+    const lastIndex = reversed ? firstIndex : 0;
     yield apply(channel, channel.send,
         [{
             columnId: id,
             limit: ALL_STREAM_LIMIT,
             reversed,
             toBlock,
+            lastIndex,
             batching
         }]);
 }
 
 function* entryProfileIterator ({ column, batching }) {
-    const { id, value, asDrafts, reversed, limit = ITERATOR_LIMIT, entryType } = column;
+    const { id, value, asDrafts, reversed, limit = ITERATOR_LIMIT, entryType, firstIndex } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
@@ -348,6 +350,7 @@ function* entryProfileIterator ({ column, batching }) {
         toBlock = reversed ?
             yield select(state => selectColumnFirstBlock(state, id)) :
             yield select(selectBlockNumber);
+        lastIndex = reversed ? firstIndex : column.lastIndex;
     }
     if (isEthAddress(value)) {
         ethAddress = value;
@@ -376,11 +379,12 @@ function* entryResolveIpfsHash ({ entryId, ipfsHash }) {
 
 function* entryStreamIterator ({ column, batching }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const { id, reversed } = column;
+    const { id, reversed, firstIndex } = column;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = reversed ?
         yield select(state => selectColumnFirstBlock(state, id)) :
         yield select(selectBlockNumber);
+    const lastIndex = reversed ? firstIndex : null;
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
@@ -390,6 +394,7 @@ function* entryStreamIterator ({ column, batching }) {
             ethAddress,
             limit: ITERATOR_LIMIT,
             toBlock,
+            lastIndex,
             reversed,
             batching
         }]
@@ -397,13 +402,15 @@ function* entryStreamIterator ({ column, batching }) {
 }
 
 function* entryTagIterator ({ column, batching }) {
-    const { id, value, reversed, firstBlock } = column;
+    const { id, value, reversed, firstBlock, firstIndex } = column;
     yield put(tagActions.tagExists({ tagName: value }));
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     const toBlock = reversed ?
         firstBlock :
         yield select(selectBlockNumber);
+    const lastIndex = reversed ? firstIndex : null;
+
     yield apply(
         channel,
         channel.send,
@@ -412,6 +419,7 @@ function* entryTagIterator ({ column, batching }) {
             limit: ITERATOR_LIMIT,
             tagName: value,
             toBlock,
+            lastIndex,
             reversed,
             batching
         }]
