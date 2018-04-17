@@ -222,7 +222,8 @@ class ColManager extends Component {
             this.props.onItemRequest(column.toJS());
             this.initialRequests.push(id);
         } else if (hasNewItems) {
-            if (!this.colFirstEntry.has(id)) {
+            if (!this.colFirstEntry.has(id) && !hasUnseenNewItems) {
+                console.log('updating colFirstEntry to', column.entriesList.first());
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
             this._mapItemsToState(column.entriesList, column);
@@ -264,13 +265,17 @@ class ColManager extends Component {
         if(items.size > mappedItems.length) {
             const jsItems = items.toJS().map(v => ({ id: v }));
             const eqKey = (x, y) => x.id === y.id;
-            diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
-                id: v.id,
-                height: this.avgItemHeight
-            }));
             if (options.prepend) {
+                diff = differenceWith(eqKey, mappedItems, jsItems).map(v => ({
+                    id: v.id,
+                    height: this.avgItemHeight
+                }));
                 this.items[id].unshift(...diff);
             } else {
+                diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
+                    id: v.id,
+                    height: this.avgItemHeight
+                }));
                 this.items[id] = mappedItems.concat(diff);
             }
         } else if (items.size === 0) {

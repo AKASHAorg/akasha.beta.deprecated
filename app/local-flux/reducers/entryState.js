@@ -43,7 +43,7 @@ const createEntryWithAuthor = entry =>
     new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
 
 const entryIteratorHandler = (state, { data, request }) => {
-    if (!request || request.reversed) {
+    if (!request) {
         return state;
     }
     let byId = state.get('byId');
