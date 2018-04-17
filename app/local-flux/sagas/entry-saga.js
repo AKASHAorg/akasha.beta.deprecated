@@ -384,7 +384,7 @@ function* entryStreamIterator ({ column, batching }) {
     const toBlock = reversed ?
         yield select(state => selectColumnFirstBlock(state, id)) :
         yield select(selectBlockNumber);
-    const lastIndex = reversed ? firstIndex : null;
+    const lastIndex = reversed ? firstIndex : column.lastIndex;
     const ethAddress = yield select(selectLoggedEthAddress);
     yield apply(
         channel,
@@ -409,7 +409,7 @@ function* entryTagIterator ({ column, batching }) {
     const toBlock = reversed ?
         firstBlock :
         yield select(selectBlockNumber);
-    const lastIndex = reversed ? firstIndex : null;
+    const lastIndex = reversed ? firstIndex : column.lastIndex;
 
     yield apply(
         channel,
