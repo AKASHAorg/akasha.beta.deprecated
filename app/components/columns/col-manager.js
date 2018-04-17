@@ -165,7 +165,7 @@ class ColManager extends Component {
 
     _applyLoadedEntries = (newEntries, oldEntries) => {
         const diffFn = (x, y) => x === y;
-        const diffedEntries = differenceWith(diffFn, oldEntries.toJS(), newEntries.toJS());
+        const diffedEntries = differenceWith(diffFn, newEntries.toJS(), oldEntries.toJS());
         this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
     }
     /* eslint-disable complexity */
@@ -188,7 +188,7 @@ class ColManager extends Component {
             !this.initialRequests.includes(column.id);
         const newEntriesSize = column.newEntries && column.newEntries.size;
         const oldEntriesSize = olderProps.column.newEntries && olderProps.column.newEntries.size;
-        const newEntriesLoaded = column.newEntries && (newEntriesSize < oldEntriesSize);
+        const newEntriesLoaded = column.newEntries && newEntriesSize === 0 && (newEntriesSize < oldEntriesSize);
         if (newEntriesLoaded && options.canUpdateState) {
             this._applyLoadedEntries(column.newEntries, olderProps.column.newEntries);
         }
@@ -196,7 +196,7 @@ class ColManager extends Component {
             isNewColumn,
             shouldRequestItems,
             hasNewItems: !column.entriesList.equals(oldItems),
-            hasUnseenNewItems: column.newEntries && (newEntriesSize !== oldEntriesSize),
+            hasUnseenNewItems: column.newEntries && (newEntriesSize > oldEntriesSize),
             column,
             options
         });
@@ -213,6 +213,7 @@ class ColManager extends Component {
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
             this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
             this._resolveNewEntries(column.get('newEntries'));
+            return;
         }
 
         if (isNewColumn && canUpdateState) {
@@ -223,7 +224,6 @@ class ColManager extends Component {
             this.initialRequests.push(id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.has(id) && !hasUnseenNewItems) {
-                console.log('updating colFirstEntry to', column.entriesList.first());
                 this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
             }
             this._mapItemsToState(column.entriesList, column);
@@ -270,12 +270,14 @@ class ColManager extends Component {
                     id: v.id,
                     height: this.avgItemHeight
                 }));
+                console.log(diff, 'some diff for prepend');
                 this.items[id].unshift(...diff);
             } else {
                 diff = differenceWith(eqKey, jsItems, mappedItems).map(v => ({
                     id: v.id,
                     height: this.avgItemHeight
                 }));
+                console.log(diff, 'some diff for append');
                 this.items[id] = mappedItems.concat(diff);
             }
         } else if (items.size === 0) {
@@ -454,6 +456,7 @@ class ColManager extends Component {
                 const currentItemIndex = items[id].findIndex(i => i.id === item.id);
                 const lastSeenItemIndex = items[id].findIndex(i => i.id === lastSeenID)
                 const isNewItem = lastSeenID && lastSeenItemIndex > currentItemIndex;
+                console.log(isNewItem, lastSeenID, currentItemIndex, lastSeenItemIndex, 'any new item?');
                 if (isNewItem) {
                     markAsNew = true;
                 }
@@ -467,6 +470,7 @@ class ColManager extends Component {
                     isPending={isPending}
                     large={column.get('large')}
                     entry={entry}
+                    markAsNew={markAsNew}
                   >
                     {cellProps => React.cloneElement(this.props.itemCard, {
                         ...cellProps,
