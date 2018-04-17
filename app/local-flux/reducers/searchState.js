@@ -45,7 +45,7 @@ const searchState = createReducer(initialState, {
             });
         }
         return state.merge({
-            flags: state.get('flags').set('queryPending', true),
+            flags: state.get('flags').merge({ queryPending: !!query.length, moreQueryPending: false }),
             profiles: new List(),
             query: query.toLowerCase(),
         });
@@ -75,7 +75,7 @@ const searchState = createReducer(initialState, {
         state.merge({
             currentPage: null,
             entryIds: new List(),
-            flags: state.get('flags').merge({ queryPending: true }),
+            flags: state.get('flags').merge({ queryPending: !!text.length, moreQueryPending: false }),
             offset: null,
             query: text,
             resultsCount: null,
@@ -99,7 +99,7 @@ const searchState = createReducer(initialState, {
 
     [types.SEARCH_TAGS]: (state, { query }) =>
         state.merge({
-            flags: state.get('flags').set('queryPending', true),
+            flags: state.get('flags').merge({ queryPending: !!query.length, moreQueryPending: false }),
             query: query.toLowerCase(),
             tags: new List(),
             tagResultsCount: 0
