@@ -20,7 +20,7 @@ export const ColumnRecord = Record({
     newEntries: new List(), // a list of newly published entryIds
     large: false,
     lastBlock: null,
-    lastIndex: null,
+    lastIndex: 0,
     type: null,
     value: '',
 });
