@@ -45,7 +45,7 @@ class ColManager extends Component {
         const shouldRequestItems = column.entriesList.size === 0 &&
             !this.loadingMore.includes(column.id) && isVisible;
         if (shouldRequestItems) {
-            this.props.onItemRequest(this.props.column);
+            this.props.onItemRequest(this.props.column.toJS());
             this.loadingMore.push(column.id);
         }
         if(column.entriesList.size > 0 && this.items[id].length === 0) {
@@ -140,7 +140,7 @@ class ColManager extends Component {
 
     _createRequestPooling = (id) => {
         this.poolingInterval[id] = setInterval(() => {
-            this.props.onItemPooling(this.props.column);
+            this.props.onItemPooling(this.props.column.toJS());
         }, this.poolingDelay);
     }
 
@@ -219,7 +219,7 @@ class ColManager extends Component {
             this._resetColState(id);
         }
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
-            this.props.onItemRequest(column);
+            this.props.onItemRequest(column.toJS());
             this.initialRequests.push(id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.has(id)) {

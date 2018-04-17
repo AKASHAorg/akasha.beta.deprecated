@@ -21,7 +21,7 @@ const getLatestColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.entryNewestIterator(column, true);
     },
-    onItemPooling: col => props.entryNewestIterator({ ...col.toJS(), reversed: true }, true),
+    onItemPooling: col => props.entryNewestIterator({ ...col, reversed: true }, true),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
@@ -53,7 +53,7 @@ const getTagColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.entryTagIterator(column, true);
     },
-    onItemPooling: col => props.entryTagIterator({ ...col.toJS(), reversed: true }),
+    onItemPooling: col => props.entryTagIterator({ ...col, reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.tagSearchResults,
     onSearch: props.searchTags
@@ -68,7 +68,7 @@ const getStreamColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.entryStreamIterator(column, true);
     },
-    onItemPooling: col => props.entryStreamIterator({ ...col.toJS(), reversed: true }),
+    onItemPooling: col => props.entryStreamIterator({ ...col, reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true
 });
@@ -83,7 +83,7 @@ const getProfileColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.entryProfileIterator(column, true);
     },
-    onItemPooling: col => props.entryProfileIterator({ ...col.toJS(), reversed: true }),
+    onItemPooling: col => props.entryProfileIterator({ ...col, reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.profileSearchResults,
     onSearch: props.searchProfiles
@@ -122,8 +122,8 @@ const getProfileFollowersColumnProps = props => ({
     fetching: props.fetchingFollowers,
     fetchingMore: props.fetchingMoreFollowers,
     title: props.intl.formatMessage(profileMessages.followers),
-    onItemRequest: (col) => props.profileFollowersIterator({ ...col.toJS(), batching: true }),
-    onItemMoreRequest: (col) => props.profileMoreFollowersIterator({...col.toJS(), batching: true}),
+    onItemRequest: (col) => props.profileFollowersIterator({ ...col, batching: true }),
+    onItemMoreRequest: (col) => props.profileMoreFollowersIterator({...col, batching: true}),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
         props.profileFollowersIterator({...column, batching: true});
