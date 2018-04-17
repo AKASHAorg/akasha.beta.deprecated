@@ -341,8 +341,12 @@ const dashboardState = createReducer(initialState, {
             state.getIn(['columnById', context, 'newEntries']) &&
             state.getIn(['columnById', context, 'newEntries']).includes(entryId)
         ) {
-            return state.deleteIn(['columnById', context, 'newEntries'], entryId)
-                .setIn(['columnById', context, 'entriesList', 0], entryId);
+            const newState = state.deleteIn(['columnById', context, 'newEntries'], entryId)
+                .setIn(
+                    ['columnById', context, 'entriesList'],
+                    state.getIn(['columnById', context, 'entriesList']).insert(0, entryId)
+                );
+            return newState;
         }
         return state;
     },
@@ -353,7 +357,10 @@ const dashboardState = createReducer(initialState, {
             state.getIn(['columnById', context, 'newEntries']).includes(entryId)
         ) {
             return state.deleteIn(['columnById', context, 'newEntries'], entryId)
-                .setIn(['columnById', context, 'entriesList', 0], entryId);
+                .setIn(
+                    ['columnById', context, 'entriesList'],
+                    state.getIn(['columnById', context, 'entriesList']).insert(0, entryId)
+                );
         }
         return state;
     },
