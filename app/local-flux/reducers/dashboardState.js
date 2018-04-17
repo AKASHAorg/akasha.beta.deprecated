@@ -45,7 +45,8 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         );
         return state.mergeIn(['columnById', request.columnId], {
             newEntries: state.getIn(['columnById', request.columnId, 'newEntries']).unshift(...diffArr),
-            firstBlock: data.lastBlock
+            firstBlock: data.lastBlock,
+            firstIndex: data.lastIndex,
         });
     }
 

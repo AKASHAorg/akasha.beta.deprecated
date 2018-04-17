@@ -251,7 +251,7 @@ class ColManager extends Component {
         const newContainerHeight = this._rootNodeRef.getBoundingClientRect().height;
         if (newContainerHeight !== this.containerHeight) {
             this.containerHeight = newContainerHeight;
-            this._debouncedOffsetUpdate(this.lastScrollTop[id]);
+            this._updateOffsets(this.lastScrollTop[id], this.props.column);
         }
     }
 
