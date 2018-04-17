@@ -265,14 +265,20 @@ export const selectLastFollower = (state, ethAddress) =>
 export const selectLastFollowing = (state, ethAddress) =>
     state.profileState.getIn(['lastFollowing', ethAddress]);
 
-export const selectCurrentTotalFollowing = (state, ethAddress) =>
-    (state.profileState.getIn(['followings', ethAddress])).size;
+export const selectCurrentTotalFollowing = (state, ethAddress) => {
+    const following = state.profileState.getIn(['followings', ethAddress]);
+    return following ? following.size : null;
+};
 
-export const selectCurrentTotalFollowers = (state, ethAddress) =>
-    (state.profileState.getIn(['followers', ethAddress])).size;
+export const selectCurrentTotalFollowers = (state, ethAddress) => {
+    const followers = state.profileState.getIn(['followers', ethAddress]);
+    return followers ? followers.size : null;
+};
 
-export const selectCurrentTotalProfileEntries = (state, ethAddress) =>
-    (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds'])).size;
+export const selectCurrentTotalProfileEntries = (state, ethAddress) => {
+    const entries = state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']);    
+    return entries ? entries.size : null;
+};
 
 export const selectLastGethLog = state =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
