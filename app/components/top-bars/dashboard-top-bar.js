@@ -45,7 +45,7 @@ class DashboardTopBar extends Component {
             const className = column.getAttribute('class');
             column.setAttribute('class', `${className} column_focused`);
             setTimeout(() => removeClass(id), 500);
-            const columnLeftOffset = column.offsetLeft;
+            const columnLeftOffset = column.style.left.replace('"', '').replace('px', '');
             const scrollLeft = (columnLeftOffset - (dashboard.clientWidth / 2)) + (column.clientWidth / 2);
             dashboard.scrollLeft = scrollLeft;
         };

@@ -305,7 +305,8 @@ class Dashboard extends Component {
                     key={colId}
                     style={{
                         width,
-                        transform: `translate(${left}px, 0)`
+                        // This property is used in dashboard-top-bar for scrolling the column into view
+                        left: left + 20
                     }}
                   >
                     <Column
