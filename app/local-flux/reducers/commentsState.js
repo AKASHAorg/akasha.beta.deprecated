@@ -78,6 +78,25 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
+    [types.COMMENTS_GET_COMMENT_SUCCESS]: (state, {data, request}) => {
+        let byId = state.get('byId');
+        if (!data.parent || data.parent === hexZero) {
+            data.parent = '0';
+        }
+        data.entryId = request.entryId;
+        data.commentId = request.commentId;
+        let list = state.getIn(['byParent', data.parent]) || new List();
+        const comment = createCommentWithAuthor(data);
+        byId = byId.set(data.commentId, comment);
+        list = list.includes(data.commentId) ? list : list.push(data.commentId);
+        list = sortByScore(byId, list);
+
+        return state.merge({
+            byId,
+            byParent: state.get('byParent').set(data.parent, list)
+        });
+    },
+
     [types.COMMENTS_GET_SCORE_SUCCESS]: (state, {data}) => {
         const {commentId, score} = data;
         if (score === state.getIn(['byId', commentId, 'score'])) {
