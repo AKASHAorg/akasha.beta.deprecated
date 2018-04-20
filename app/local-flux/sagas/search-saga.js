@@ -68,7 +68,7 @@ function* searchTags ({ query, autocomplete }) {
     const channel = Channel.server.search.findTags;
     const limit = autocomplete ? autocompleteLimit : tagSearchLimit;
     if (query.length) {
-        yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit }]);
+        yield apply(channel, channel.send, [{ text: query.toLowerCase(), limit, autocomplete }]);
     }
 }
 
@@ -178,7 +178,9 @@ function* watchSearchTagsChannel () {
             yield put(actions.searchTagsError(resp.error));
         } else if (resp.data.collection && query === resp.request.text) {
             yield put(actions.searchTagsSuccess(resp.data.collection));
-            yield put(tagActions.tagGetEntriesCount(resp.data.collection));
+            if (!resp.request.autocomplete) {
+                yield put(tagActions.tagGetEntriesCount(resp.data.collection));
+            }
         }
     }
 }
