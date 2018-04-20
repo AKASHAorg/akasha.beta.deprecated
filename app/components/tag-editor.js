@@ -17,10 +17,11 @@ class TagEditor extends Component {
     constructor (props) {
         super(props);
         const { intl, isUpdate, tags } = this.props;
-        let tagInputWidth = this._getTextWidth(
+        this.initialInputWidth = this._getTextWidth(
             `${intl.formatMessage(tagMessages.addTag)} ${intl.formatMessage(tagMessages.tagsLeft, {
                 value: 10 - tags.size
             })}`).width + 20;
+        let tagInputWidth = this.initialInputWidth;
 
         if (isUpdate) {
             tagInputWidth = this._getTextWidth(`
@@ -41,7 +42,8 @@ class TagEditor extends Component {
             return this.tagInput.blur();
         }
         return this.setState({
-            partialTag: ''
+            partialTag: '',
+            tagInputWidth: this.initialInputWidth
         }, () => {
             this.props.searchResetResults();
         });
@@ -275,7 +277,7 @@ class TagEditor extends Component {
             };
         }, () => {
             if (this.state.partialTag.length >= 1) {
-                this.props.searchTags(this.state.partialTag.trim().toLowerCase().replace('#', ''));
+                this.props.searchTags(this.state.partialTag.trim().toLowerCase().replace('#', ''), true);
             } else {
                 this.props.searchResetResults();
             }
