@@ -31,7 +31,14 @@ const execute = Promise.coroutine(function* (data: any, cb) {
         .Comments.publish.request(data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
 
     const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    let commentId = null;
+    const receipt = transaction.receipt;
+    // in the future extract this should be dynamic @TODO
+    if (receipt.logs && receipt.logs.length > 1) {
+        const log = receipt.logs[receipt.logs.length - 1];
+        commentId = log.topics.length > 3 ? log.data : null;
+    }
+    return { tx: transaction.tx, receipt: transaction.receipt, commentId: commentId, entryId: data.entryId };
 });
 
 export default { execute, name: 'comment', hasStream: true };
