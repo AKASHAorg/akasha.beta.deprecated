@@ -7,6 +7,7 @@ import { HistoryTable, Icon, TransferForm } from '../';
 import { sendTip, transferEth } from '../../constants/action-types';
 import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
+import { profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
     selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
@@ -24,6 +25,7 @@ class EthWallet extends Component {
 
     componentDidMount () {
         this.props.actionGetHistory([sendTip, transferEth]);
+        this.props.profileGetBalance();
     }
 
     componentWillUnmount () {
@@ -114,6 +116,7 @@ EthWallet.propTypes = {
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string.isRequired,
     pendingTransfer: PropTypes.bool,
+    profileGetBalance: PropTypes.func.isRequired,
     profileResults: PropTypes.shape().isRequired,
     searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
@@ -138,6 +141,7 @@ export default connect(
         actionAdd,
         actionClearHistory,
         actionGetHistory,
+        profileGetBalance,
         searchProfiles,
         searchResetResults,
         showNotification,
