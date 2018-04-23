@@ -5,6 +5,7 @@ import throttle from 'lodash.throttle';
 import { Map } from 'immutable';
 import CellManager from './cell-manager';
 import EntryCard from '../cards/entry-card';
+import { DataLoader } from '../';
 import * as columnTypes from '../../constants/columns';
 
 const VIEWPORT_VISIBLE_BUFFER_SIZE = 5;
@@ -107,16 +108,14 @@ class ColManager extends Component {
     loadNewItems = () => {
         const { column } = this.props;
         const { id } = column;
-        if(this.lastScrollTop[id] !== 0) {
-            this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
-            this.setState({
-                [id]: 0
-            }, () => {
-                this.lastScrollTop[id] = 0;
-                this._rootNodeRef.scrollTop = 0;
-                this._resolveNewEntries(column.get('newEntries'));
-            });
-        }
+        this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
+        this.setState({
+            [id]: 0
+        }, () => {
+            this.lastScrollTop[id] = 0;
+            this._rootNodeRef.scrollTop = 0;
+            this._resolveNewEntries(column.get('newEntries'));
+        });
     }
 
     resetColumn = (id) => {
@@ -305,9 +304,14 @@ class ColManager extends Component {
     _loadMoreIfNeeded = (column) => {
         const { props } = this;
         const { isVisible, fetchingMore } = props;
-        const { id } = column;
+        const { id, hasMoreEntries, flags = {} } = column;
         const alreadyLoading = this.loadingMore.includes(id);
-        if (!alreadyLoading && isVisible && !fetchingMore && this.items[id].length > 0) {
+
+        if (
+            !alreadyLoading && isVisible &&
+            !fetchingMore && this.items[id].length > 0 &&
+            (hasMoreEntries || flags.moreEntries)
+        ) {
             this.props.onItemMoreRequest(column.toJS());
             this.loadingMore.push(id);
         }
@@ -324,12 +328,12 @@ class ColManager extends Component {
         window.requestAnimationFrame(() => {
             for (let i = 0; i < items[id].length; i++) {
                 const item = items[id][i];
-                if (accHeight >= Math.ceil(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
+                if (accHeight > Math.ceil(scrollTop - (this.avgItemHeight * VIEWPORT_VISIBLE_BUFFER_SIZE))) {
                     topIndex = i;
                     accHeight = 0;
                     break;
                 }
-                accHeight = Math.ceil(accHeight + item.height);
+                accHeight = Math.ceil(accHeight + item.height + (item.height * 0.1));
             }
             if (state[id] !== topIndex || items[id].length === 0) {
                 this.setState({
@@ -428,9 +432,11 @@ class ColManager extends Component {
     render () {
         const { items, state, props } = this;
         const { column, type, ...other } = props;
-        const { id } = column;
+        const { id, hasMoreEntries, flags = {} } = column;
         const topIndexTo = state[id];
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
+        const topSliceMeasure = Math.ceil(this._getSliceMeasure(0, topIndexTo));
+        const bottomSliceMeasure = Math.ceil(this._getSliceMeasure(bottomIndexFrom, items[id].length));
         return (
           <div
             ref={this._createRootNodeRef}
@@ -439,7 +445,7 @@ class ColManager extends Component {
             <div
               className="col-manager__top-offset"
               style={{
-                  height: Math.ceil(this._getSliceMeasure(0, topIndexTo))
+                  height: topSliceMeasure
               }}
             />
             {items[id].slice(topIndexTo, bottomIndexFrom).map((item) => {
@@ -491,9 +497,12 @@ class ColManager extends Component {
             <div
               className="col-manager__bottom-offset"
               style={{
-                height: Math.ceil(this._getSliceMeasure(bottomIndexFrom, items[id].length))
+                height: bottomSliceMeasure
               }}
             />
+            {bottomSliceMeasure < 30 && bottomIndexFrom > 0 && (hasMoreEntries || flags.moreEntries) &&
+              <DataLoader flag={true} />
+            }
           </div>
         );
     }
@@ -502,7 +511,7 @@ class ColManager extends Component {
 ColManager.defaultProps = {
     initialItemHeight: 270,
     itemCard: <EntryCard />,
-    columnHeight: 600
+    columnHeight: 600,
 };
 
 ColManager.propTypes = {

@@ -22,6 +22,7 @@
         height: 150px;
         margin: 12px 0px;
         overflow: hidden;
+        position: relative;
 
         &_large {
             height: 250px;
@@ -32,6 +33,37 @@
         width: 100%;
         text-align: center;
         background-color: @light-border;
+        &_loading {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: @lazy-image-loader-bg;
+            border: 1px solid @lazy-image-loader-border;
+            color: @lazy-image-loader-text;
+            text-align: center;
+            display: flex;
+            transition: opacity 0.218s ease-in-out;
+            .loading-message-inner {
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                .text-message {
+                    margin-top: 8px;
+                }
+                svg {
+                    stroke: @lazy-image-loader-text;
+                }
+            }
+            &.loaded {
+                opacity: 0;
+                transition: opacity 0.218s ease-in-out;
+            }
+        }
     }
 
     &__featured-image[src=''] {
