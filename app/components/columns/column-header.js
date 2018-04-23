@@ -298,10 +298,12 @@ class ColumnHeader extends Component {
                 </div>
                 {this.showModal()}
                 {!editMode &&
-                  <div className="column-header-wrapper__refresh-icon">
+                  <div
+                    className="column-header-wrapper__refresh-icon"
+                    onClick={this.onRefresh}
+                  >
                     <Icon
                       className="content-link"
-                      onClick={this.onRefresh}
                       type="refresh"
                     />
                     {column && column.get('newEntries') && column.get('newEntries').size > 0 &&

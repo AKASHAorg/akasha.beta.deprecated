@@ -93,7 +93,7 @@ class EntryPageAction extends Component {
           />
         );
     };
-
+    /* eslint-disable complexity */
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
@@ -285,7 +285,6 @@ class EntryPageAction extends Component {
             downvote: downvotePercent && downvotePercent.toFixed(0),
             upvote: upvotePercent && upvotePercent.toFixed(0)
         });
-
         return (
           <div className="entry-actions">
             <div className="flex-center-y">

@@ -9,7 +9,8 @@ const TempRec = Record({
     entriesList: List(),
     ethAddress: '',
     context: '',
-    value: ''
+    value: '',
+    hasMoreEntries: false,
 });
 
 const getLatestColumnProps = props => ({
@@ -99,7 +100,8 @@ const getProfileEntriesColumnProps = props => ({
         entriesList: props.profileEntriesList,
         ethAddress: props.ethAddress,
         value: props.ethAddress,
-        context: 'profileEntries'
+        context: 'profileEntries',
+        hasMoreEntries: props.moreProfileEntries
     }),
     fetching: props.fetchingEntries,
     fetchingMore: props.fetchingMoreEntries,
@@ -119,7 +121,8 @@ const getProfileFollowersColumnProps = props => ({
         id: 'profileFollowers',
         entriesList: props.followers.map(follower => follower.ethAddress),
         ethAddress: props.ethAddress,
-        context: 'profilePageFollowers'
+        context: 'profilePageFollowers',
+        hasMoreEntries: props.moreFollowers,
     }),
     entries: props.profiles,
     fetching: props.fetchingFollowers,
@@ -141,6 +144,7 @@ const getProfileFollowingsColumnProps = props => ({
         entriesList: props.followings.map(foll => foll.ethAddress),
         ethAddress: props.ethAddress,
         context: 'profilePageFollowings',
+        hasMoreEntries: props.moreFollowings,
     }),
     entries: props.profiles,
     fetching: props.fetchingFollowings,
