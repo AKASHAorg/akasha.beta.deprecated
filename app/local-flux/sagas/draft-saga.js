@@ -160,7 +160,12 @@ function* draftPublish ({ actionId, draft }) {
         );
         draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
         if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
-            draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;
+            const text = draftFromState.getIn(['content', 'draft']).getCurrentContent().getPlainText();
+            if (text.length) {
+                draftToPublish.content.excerpt = text.slice(0, 120);
+            } else {
+                draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;                
+            }
         }
         yield call(enableChannel, channel, Channel.client.entry.manager);
         if (

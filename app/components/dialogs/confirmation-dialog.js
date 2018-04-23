@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Form, Modal } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
@@ -24,6 +24,36 @@ class ConfirmationDialog extends Component {
             userIsLoggedIn: Date.parse(props.tokenExpiration) - 3000 > Date.now()
         };
     }
+
+    componentDidMount () {
+        if (this.state.userIsLoggedIn) {
+            this.focusTimeout = setTimeout(this.focusSubmitButton, 100);
+        } else {
+            this.focusTimeout = setTimeout(this.focusInput, 100);
+        }
+    }
+
+    componentWillUnmount () {
+        if (this.focusTimeout) {
+            clearTimeout(this.focusTimeout);
+        }
+    }
+
+    focusSubmitButton = () => {
+        const button = document.getElementById('confirmation__submit-button');
+        if (button) {
+            button.focus();
+        }
+        this.focusTimeout = null;
+    };
+
+    focusInput = () => {
+        const input = document.getElementById('confirmation__input');
+        if (input) {
+            input.focus();
+        }
+        this.focusTimeout = null;
+    };
 
     onRememberPasswordToggle = () => {
         this.setState({
@@ -83,7 +113,30 @@ class ConfirmationDialog extends Component {
         if (ev.key === 'Enter') {
             this.onSubmit();
         }
-    }
+    };
+
+    renderFooter = () => {
+        const { intl } = this.props;
+        return (
+          <div className="flex-center-y confirmation__footer">
+            <Button className="confirmation__footer-button" onClick={this.handleCancel}>
+              <span className="confirmation__button">
+                {intl.formatMessage(generalMessages.cancel)}
+              </span>
+            </Button>
+            <Button
+              className="confirmation__footer-button"
+              id="confirmation__submit-button"
+              onClick={this.handleSubmit}
+              type="primary"
+            >
+              <span className="confirmation__button">
+                {intl.formatMessage(generalMessages.submit)}
+              </span>
+            </Button>
+          </div>
+        );
+    };
 
     render () {
         const { action, intl, loginErrors, loginPending, needAuth } = this.props;
@@ -106,18 +159,7 @@ class ConfirmationDialog extends Component {
                 {intl.formatMessage(confirmationMessages[actionTypeTitle])}
               </span>
             }
-            okText={
-              <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.submit)}
-              </span>
-            }
-            cancelText={
-              <span className="confirmation__button">
-                {intl.formatMessage(generalMessages.cancel)}
-              </span>
-            }
-            onOk={this.handleSubmit}
-            onCancel={this.handleCancel}
+            footer={this.renderFooter()}
             maskClosable={false}
             style={{ top: 60, marginRight: 10 }}
             confirmLoading={loginPending}
@@ -142,8 +184,8 @@ class ConfirmationDialog extends Component {
                         }
                     >
                       <Input
-                        autoFocus
                         className="confirmation__input"
+                        id="confirmation__input"
                         onChange={this.onPasswordChange}
                         placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
                         size="large"
