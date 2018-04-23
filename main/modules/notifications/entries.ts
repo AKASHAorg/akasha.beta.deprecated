@@ -1,4 +1,4 @@
-import { contains } from 'ramda';
+import { contains, isNil } from 'ramda';
 import contracts from '../../contracts/index';
 
 class EntriesCache {
@@ -7,7 +7,7 @@ class EntriesCache {
 
     public push(entryId) {
 
-        if (contains(entryId, this.published)) {
+        if (contains(entryId, this.published) || isNil(entryId)) {
             return Promise.resolve();
         }
         return contracts.instance

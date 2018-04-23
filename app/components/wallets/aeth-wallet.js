@@ -7,7 +7,8 @@ import { CyclingAeth, HistoryTable, Icon, PieChart, TransferForm, TransformForm 
 import * as actionTypes from '../../constants/action-types';
 import { showNotification, toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
-import { profileAethTransfersIterator, profileCyclingStates } from '../../local-flux/actions/profile-actions';
+import { profileAethTransfersIterator, profileCyclingStates,
+    profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { selectActionsHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
     selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
@@ -29,6 +30,7 @@ class AethWallet extends Component {
     componentDidMount () {
         this.props.profileCyclingStates();
         this.props.profileAethTransfersIterator();
+        this.props.profileGetBalance();
         this.props.actionGetHistory([actionTypes.transferAeth, actionTypes.bondAeth, actionTypes.freeAeth,
             actionTypes.sendTip, actionTypes.transformEssence]);
     }
@@ -300,6 +302,7 @@ AethWallet.propTypes = {
     pendingTransformEssence: PropTypes.bool,
     profileAethTransfersIterator: PropTypes.func.isRequired,
     profileCyclingStates: PropTypes.func.isRequired,
+    profileGetBalance: PropTypes.func.isRequired,
     profileResults: PropTypes.shape().isRequired,
     searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
@@ -331,6 +334,7 @@ export default connect(
         actionGetHistory,
         profileAethTransfersIterator,
         profileCyclingStates,
+        profileGetBalance,
         searchProfiles,
         searchResetResults,
         showNotification,

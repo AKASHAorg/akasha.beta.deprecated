@@ -26,8 +26,9 @@ class ProfileCard extends Component {
     };
 
     render () {
-        const { containerRef, followPending, intl, isFollower, isOwnProfile, isPending, profile,
+        const { containerRef, followPending, intl, isFollower, isPending, loggedEthAddress, profile,
             tipPending } = this.props;
+        const isOwnProfile = profile.ethAddress === loggedEthAddress;
         const getPopupContainer = () => containerRef || document.body;
 
         if (isPending) {
@@ -145,7 +146,6 @@ ProfileCard.propTypes = {
     followPending: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     isFollower: PropTypes.bool,
-    isOwnProfile: PropTypes.bool,
     isPending: PropTypes.bool,
     loggedEthAddress: PropTypes.string.isRequired,
     profile: PropTypes.shape().isRequired,
