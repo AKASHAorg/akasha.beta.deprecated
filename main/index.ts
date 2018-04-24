@@ -70,7 +70,7 @@ const stopServices = () => {
             height: mainWindowState.height,
             show: false,
             webPreferences: {
-                // nodeIntegration: false,
+                nodeIntegration: false,
                 preload: resolve(__dirname, 'preloader.js'),
                 scrollBounce: true
             }
