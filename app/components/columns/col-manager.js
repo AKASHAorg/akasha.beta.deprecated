@@ -81,6 +81,7 @@ class ColManager extends Component {
             !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
+            nextProps.entries.equals(this.props.entries) ||
             (nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
             !nextProps.profiles.equals(this.props.profiles);
     }
@@ -335,7 +336,8 @@ class ColManager extends Component {
                 }
                 accHeight = Math.ceil(accHeight + item.height + (item.height * 0.1));
             }
-            if (state[id] !== topIndex || items[id].length === 0) {
+            const delta = Math.abs(topIndex - state[id]);
+            if (delta >= 1 || items[id].length === 0) {
                 this.setState({
                     [id]: topIndex
                 }, () => {

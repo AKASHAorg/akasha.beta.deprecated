@@ -285,6 +285,7 @@ class EntryPageAction extends Component {
             downvote: downvotePercent && downvotePercent.toFixed(0),
             upvote: upvotePercent && upvotePercent.toFixed(0)
         });
+
         return (
           <div className="entry-actions">
             <div className="flex-center-y">

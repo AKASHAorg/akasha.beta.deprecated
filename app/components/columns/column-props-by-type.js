@@ -26,7 +26,7 @@ const getLatestColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getListColumnProps = props => {
@@ -58,7 +58,7 @@ const getTagColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.tagSearchResults,
     onSearch: props.searchTags,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getStreamColumnProps = props => ({
@@ -73,7 +73,7 @@ const getStreamColumnProps = props => ({
     onItemPooling: col => props.entryStreamIterator({ ...col, reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getProfileColumnProps = props => ({
@@ -90,7 +90,7 @@ const getProfileColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.profileSearchResults,
     onSearch: props.searchProfiles,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getProfileEntriesColumnProps = props => ({
@@ -101,7 +101,7 @@ const getProfileEntriesColumnProps = props => ({
         ethAddress: props.ethAddress,
         value: props.ethAddress,
         context: 'profileEntries',
-        hasMoreEntries: props.moreProfileEntries
+        hasMoreEntries: props.moreProfileEntries,
     }),
     fetching: props.fetchingEntries,
     fetchingMore: props.fetchingMoreEntries,
