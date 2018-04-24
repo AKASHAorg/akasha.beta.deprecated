@@ -76,7 +76,7 @@ class UrlInput extends Component {
         const isValid = isInternalLink(value);
         if (isValid) {
             onSubmit();
-            history.push(`/${this.state.value}`);
+            history.push(`/${this.state.value.replace('/#', '')}`);
         } else {
             this.setState({
                 isInvalid: true
