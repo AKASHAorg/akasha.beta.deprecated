@@ -214,9 +214,9 @@ function* entryGetScore ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
-function* entryGetShort ({ context, entryId, ethAddress, batching }) {
+function* entryGetShort ({ context, entryId, ethAddress, batching, includeVotes }) {
     const channel = Channel.server.entry.getEntry;
-    yield apply(channel, channel.send, [{ context, entryId, ethAddress, batching }]);
+    yield apply(channel, channel.send, [{ context, entryId, ethAddress, batching, includeVotes }]);
 }
 
 function* entryGetVoteOf ({ entryIds, claimable }) {
@@ -612,6 +612,9 @@ function* watchEntryGetChannel () {
                 }
             }
         } else {
+            if(resp.request.includeVotes) {
+                yield put(actions.entryGetVoteOf([resp.request.entryId]));
+            }
             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
         }
     }
