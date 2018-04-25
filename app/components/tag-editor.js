@@ -164,8 +164,9 @@ class TagEditor extends Component {
                     typeof this.tagInput.scrollIntoViewIfNeeded === 'function'
                 ) {
                     this.tagInput.scrollIntoViewIfNeeded();
+                } else {
+                    this.tagInput.scrollIntoView();
                 }
-                this.tagInput.scrollIntoView();
             });
         }
     }
