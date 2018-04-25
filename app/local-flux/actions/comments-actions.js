@@ -23,7 +23,8 @@ export const commentsDownvoteError = (error, request) => {
 
 export const commentsDownvoteSuccess = data => action(types.COMMENTS_DOWNVOTE_SUCCESS, { data });
 
-export const commentsGetComment = (entryId, commentId) => action(types.COMMENTS_GET_COMMENT, { entryId, commentId });
+export const commentsGetComment = ({ context, entryId, commentId, author, parent }) =>
+    action(types.COMMENTS_GET_COMMENT, { context, entryId, commentId, author, parent });
 
 export const commentsGetCommentError = (error) => {
     error.code = 'CGCE01';
@@ -31,7 +32,8 @@ export const commentsGetCommentError = (error) => {
     return action(types.COMMENTS_GET_COMMENT_ERROR, { error });
 };
 
-export const commentsGetCommentSuccess = (data, request) => action(types.COMMENTS_GET_COMMENT_SUCCESS, { data, request });
+export const commentsGetCommentSuccess = (data, request) =>
+    action(types.COMMENTS_GET_COMMENT_SUCCESS, { data, request });
 
 export const commentsGetCount = entryId => action(types.COMMENTS_GET_COUNT, { entryId });
 

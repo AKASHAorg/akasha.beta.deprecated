@@ -29,15 +29,6 @@ class EntryList extends Component {
         return drafts.find(draft => draft.get('entryId') === entryId);
     }
 
-    handleEdit = (entryId) => {
-        const { history, loggedEthAddress } = this.props;
-        const existingDraft = this.getExistingDraft(entryId);
-        if (existingDraft) {
-            history.push(`/${loggedEthAddress}/draft/${existingDraft.get('id')}`);
-        } else {
-            history.push(`/${loggedEthAddress}/draft/new?editEntry=${entryId}`);
-        }
-    };
     /* eslint-disable */
     render () {
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,

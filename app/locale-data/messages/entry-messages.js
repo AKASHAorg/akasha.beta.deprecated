@@ -509,5 +509,15 @@ const entryMessages = defineMessages({
         description: 'when user searches for a draft and nothing found',
         defaultMessage: 'Be the first one to write a comment!'
     },
+    commentedOn: {
+        id: 'app.entry.commentedOn',
+        description: 'commented on',
+        defaultMessage: 'commented on'
+    },
+    repliedOn: {
+        id: 'app.entry.repliedOn',
+        description: 'replied on',
+        defaultMessage: 'replied on a comment on'
+    },
 });
 export { entryMessages };

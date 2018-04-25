@@ -75,7 +75,7 @@ function* launchHomeActions () {
         yield put(actionActions.actionGetPending());
         yield put(claimableActions.claimableIterator());
         yield put(profileActions.profileFollowingsIterator({
-            ethAddress: loggedEthAddress,
+            column: { value: loggedEthAddress }, 
             allFollowings: true,
             limit: 1000
         }));

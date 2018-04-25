@@ -33,12 +33,22 @@ export const CommentRecord = Record({
 const Flags = Record({
     fetchingComments: new Map(),
     fetchingMoreComments: new Map(),
+    pendingComments: new Map(),
     resolvingComments: new Map()
 });
 
 const NewComments = Record({
     lastBlock: null,
     comments: new List()
+});
+
+export const ProfileComments = Record({
+    commentIds: new List(),
+    fetchingComments: false,
+    fetchingMoreComments: false,
+    lastBlock: null,
+    lastIndex: null,
+    moreEntries: false
 });
 
 export const CommentsState = Record({
@@ -52,5 +62,6 @@ export const CommentsState = Record({
     moreComments: new Map(),
     newComments: new NewComments(),
     newestCommentBlock: new Map(),
+    profileComments: new Map(),
     votes: new Map(),
 });

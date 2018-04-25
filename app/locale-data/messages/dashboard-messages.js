@@ -226,5 +226,25 @@ const dashboardMessages = defineMessages({
         description: 'placeholder for new dashboard modal input',
         defaultMessage: 'Type the name of your board here'
     },
+    comments: {
+        id: 'app.dashboard.comments',
+        description: 'label for user comments column',
+        defaultMessage: 'User comments'
+    },
+    previewComments: {
+        id: 'app.dashboard.previewComments',
+        description: 'label for user comments column preview',
+        defaultMessage: 'Preview for {displayName}'
+    },
+    addNewCommentsColumn: {
+        id: 'app.dashboard.addNewCommentsColumn',
+        description: 'panel title for adding a new comments column',
+        defaultMessage: 'User comments column'
+    },
+    addNewCommentsColumnSubtitle: {
+        id: 'app.dashboard.addNewCommentsColumnSubtitle',
+        description: 'panel subtitle for adding a new comments column',
+        defaultMessage: 'Please choose a user'
+    },
 });
 export { dashboardMessages };

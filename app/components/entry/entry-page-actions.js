@@ -93,8 +93,8 @@ class EntryPageAction extends Component {
           />
         );
     };
-    /* eslint-disable complexity */
-    renderOwnEntryActions = () => {
+
+    renderOwnEntryActions = () => { // eslint-disable-line complexity
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
         const balance = entryBalance && balanceToNumber(entryBalance.get('totalKarma'));
@@ -199,7 +199,7 @@ class EntryPageAction extends Component {
         );
     };
 
-    renderCollectEntryVote = () => {
+    renderCollectEntryVote = () => { // eslint-disable-line complexity
         const { canClaimVote, claimVotePending, containerRef, entry, intl, isFullEntry, vote } = this.props;
         const balance = vote && balanceToNumber(vote.get('essence'));
         const isVoteClaimed = vote && vote.get('claimed');
@@ -261,7 +261,7 @@ class EntryPageAction extends Component {
         );
     };
 
-    render () {
+    render () { // eslint-disable-line complexity
         const { containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
             listsAll, listSearchKeyword, votePending, vote } = this.props;
         if (isOwnEntry) {

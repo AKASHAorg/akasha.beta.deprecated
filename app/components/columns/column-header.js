@@ -329,7 +329,7 @@ class ColumnHeader extends Component {
                     onClick={this.onCancel}
                     type="close"
                   />
-                    }
+                }
               </div>
             )}
             {React.Children.map(children, (child) => {

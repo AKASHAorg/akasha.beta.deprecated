@@ -3,12 +3,14 @@ import { reject, isNil } from 'ramda';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
+import * as commentsActions from '../actions/comments-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as actions from '../actions/profile-actions';
 import * as searchActions from '../actions/search-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
+import { isEthAddress } from '../../utils/dataModule';
 
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
@@ -22,6 +24,7 @@ const Channel = global.Channel;
 const TRANSFERS_ITERATOR_LIMIT = 20;
 const FOLLOWERS_ITERATOR_LIMIT = 2;
 const FOLLOWINGS_ITERATOR_LIMIT = 2;
+const COMMENTS_ITERATOR_LIMIT = 3;
 
 function* profileAethTransfersIterator () {
     const channel = Channel.server.profile.transfersIterator;
@@ -58,6 +61,36 @@ function* profileBondAethSuccess ({ data }) {
         duration: 4,
         values: { amount: data.amount },
     }));
+}
+
+function* profileCommentsIterator ({ column }) {
+    const { id, value, reversed, firstBlock, firstIndex } = column;
+    const channel = Channel.server.profile.commentsIterator;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const lastBlock = reversed ?
+        firstBlock :
+        yield select(selectBlockNumber);
+    const lastIndex = reversed ? firstIndex : column.lastIndex;
+    let akashaId, ethAddress;
+    if (isEthAddress(value)) {
+        ethAddress = value;
+    } else {
+        akashaId = value;
+    }
+    yield apply(
+        channel,
+        channel.send,
+        [{
+            columnId: id,
+            limit: COMMENTS_ITERATOR_LIMIT,
+            akashaId,
+            ethAddress,
+            lastBlock,
+            lastIndex,
+            reversed,
+            // batching
+        }]
+    );
 }
 
 function* profileCreateEthAddress ({ passphrase, passphrase1 }) {
@@ -132,21 +165,25 @@ function* profileFollowSuccess ({ data }) {
     }));
 }
 
-function* profileFollowersIterator ({ context, ethAddress, batching }) {
+function* profileFollowersIterator ({ column, batching }) {
+    const { id, value } = column;    
     const channel = Channel.server.profile.followersIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
-    yield apply(channel, channel.send, [{ context, ethAddress, limit: FOLLOWERS_ITERATOR_LIMIT, batching }]);
+    yield apply(
+        channel,
+        channel.send,
+        [{ columnId: id, ethAddress: value, limit: FOLLOWERS_ITERATOR_LIMIT, batching }]
+    );
 }
 
-function* profileFollowingsIterator ({
-    context, ethAddress, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings, batching
-}) {
+function* profileFollowingsIterator ({ column, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings, batching }) {
+    const { id, value } = column;
     const channel = Channel.server.profile.followingIterator;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(
         channel,
         channel.send,
-        [{ context, ethAddress, limit, allFollowings, batching }]
+        [{ columnId: id, ethAddress: value, limit, allFollowings, batching }]
     );
 }
 
@@ -275,30 +312,52 @@ function* profileManaBurned () {
     yield apply(channel, channel.send, [{ ethAddress }]);
 }
 
-function* profileMoreFollowersIterator ({ ethAddress }) {
+function* profileMoreCommentsIterator ({ column }) {
+    const channel = Channel.server.profile.commentsIterator;
+    const { id, lastIndex, lastBlock, value } = column;
+    let akashaId, ethAddress;
+    if (isEthAddress(value)) {
+        ethAddress = value;
+    } else {
+        akashaId = value;
+    }
+    yield apply(
+        channel,
+        channel.send,
+        [{
+            columnId: id,
+            ethAddress,
+            akashaId,
+            limit: COMMENTS_ITERATOR_LIMIT,
+            lastBlock,
+            lastIndex,
+            more: true
+        }]
+    );
+}
+
+function* profileMoreFollowersIterator ({ column }) {
     const channel = Channel.server.profile.followersIterator;
-    const last = yield select(state => selectLastFollower(state, ethAddress));
-    const totalLoaded = yield select(state => selectCurrentTotalFollowers(state, ethAddress));
     const payload = {
-        ethAddress,
+        columnId: column.id,
+        ethAddress: column.value,
         limit: FOLLOWERS_ITERATOR_LIMIT,
-        lastBlock: last.lastBlock,
-        lastIndex: last.lastIndex,
-        totalLoaded
+        lastBlock: column.lastBlock,
+        lastIndex: column.lastIndex,
+        totalLoaded: column.itemsList.size
     };
     yield apply(channel, channel.send, [payload]);
 }
 
-function* profileMoreFollowingsIterator ({ ethAddress }) {
+function* profileMoreFollowingsIterator ({ column }) {
     const channel = Channel.server.profile.followingIterator;
-    const last = yield select(state => selectLastFollowing(state, ethAddress));
-    const totalLoaded = yield select(state => selectCurrentTotalFollowing(state, ethAddress));
     const payload = {
-        ethAddress,
+        columnId: column.id,        
+        ethAddress: column.value,
         limit: FOLLOWINGS_ITERATOR_LIMIT,
-        lastBlock: last.lastBlock,
-        lastIndex: last.lastIndex,
-        totalLoaded
+        lastBlock: column.lastBlock,
+        lastIndex: column.lastIndex,
+        totalLoaded: column.itemsList.size
     };
     yield apply(channel, channel.send, [payload]);
 }
@@ -550,6 +609,54 @@ function* watchProfileBondAethChannel () {
     }
 }
 
+function* watchProfileCommentsIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.commentsIterator);
+        yield fork(handleCommentsIteratorResponse, resp);
+    }
+}
+
+function* handleCommentsIteratorResponse (resp) { // eslint-disable-line max-statements
+    const { more } = resp.request;
+    if (resp.error) {
+        if (more) {
+            yield put(actions.profileMoreCommentsIteratorError(resp.error, resp.request));
+        } else {
+            yield put(actions.profileCommentsIteratorError(resp.error, resp.request));
+        }
+    } else {
+        const { data, request } = resp;
+        const context = request.columnId;
+        const { collection } = data;
+        const ethAddress = yield select(selectLoggedEthAddress);
+        let voteOf = [];
+        for (let i = 0; i < collection.length; i++) {
+            const { author, commentId, entryId, parent } = collection[i];
+            yield put(entryActions.entryGetShort({
+                context,
+                ethAddress: author,
+                entryId,
+                batching: true,
+            }));
+            yield put(actions.profileGetData({ ethAddress: author, batching: true }));
+            yield put(commentsActions.commentsGetComment({
+                context, entryId, commentId, author: { ethAddress: author }, parent
+            }));
+            voteOf.push({ commentId, ethAddress });
+        }
+        const ethAddresses = collection.map(comment => comment.author);
+        yield put(actions.profileIsFollower(ethAddresses));
+        if (voteOf.length) {
+            yield put(commentsActions.commentsGetVoteOf(voteOf));
+        }
+        if (more) {
+            yield put(actions.profileMoreCommentsIteratorSuccess(resp.data, resp.request));
+        } else {
+            yield put(actions.profileCommentsIteratorSuccess(resp.data, resp.request));
+        }
+    }
+}
+
 function* watchProfileCreateEthAddressChannel () {
     while (true) {
         const resp = yield take(actionChannels.auth.generateEthKey);
@@ -664,7 +771,7 @@ function* watchProfileFollowersIteratorChannel () {
         const resp = yield take(actionChannels.profile.followersIterator);
         if (resp.error) {
             if (resp.request.lastBlock) {
-                yield put(actions.profileMoreFollowersIteratorError(resp.error, resp.request));
+                yield put(actions.iIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.profileFollowersIteratorError(resp.error, resp.request));
             }
@@ -1059,6 +1166,7 @@ export function* registerProfileListeners () { // eslint-disable-line max-statem
     yield fork(watchProfileEssenceIteratorChannel);
     yield fork(watchProfileAethTransfersIteratorChannel);
     yield fork(watchProfileBondAethChannel);
+    yield fork(watchProfileCommentsIteratorChannel);
     yield fork(watchProfileCreateEthAddressChannel);
     yield fork(watchProfileCycleAethChannel);
     yield fork(watchProfileCyclingStatesChannel);
@@ -1092,6 +1200,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeEvery(types.PROFILE_AETH_TRANSFERS_ITERATOR, profileAethTransfersIterator);
     yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
     yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
+    yield takeLatest(types.PROFILE_COMMENTS_ITERATOR, profileCommentsIterator);    
     yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
     yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
     yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
@@ -1119,6 +1228,7 @@ export function* watchProfileActions () { // eslint-disable-line max-statements
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
     yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);
+    yield takeEvery(types.PROFILE_MORE_COMMENTS_ITERATOR, profileMoreCommentsIterator);    
     yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
     yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
     yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);

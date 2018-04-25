@@ -1,34 +1,40 @@
 // @flow
-import { List, fromJS } from 'immutable';
+import { List } from 'immutable';
 import { differenceWith } from 'ramda';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
-import { newColumn as newColumnType, list as listColumnType } from '../../constants/columns';
+import * as columnTypes from '../../constants/columns';
 const initialState = new DashboardState();
 
-const entryIterator = (state, { column }) => {
+const itemIterator = (state, { column }) => {
     const { id, value, reversed } = column;
-    if (reversed || !id || !state.getIn(['columnById', id])) {
+    if (reversed || !id) {
         return state;
     }
-    if (id === newColumnType) {
+    if (!state.getIn(['columnById', id])) {
+        const newColumn = (new ColumnRecord({ id, value })).setIn(['flags', 'fetchingItems'], true);
+        return state.setIn(['columnById', id], newColumn);
+    }
+    if (id === columnTypes.newColumn) {
         return state.mergeIn(['columnById', id], {
-            flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true),
+            flags: state.getIn(['columnById', id, 'flags']).set('fetchingItems', true),
             value,
             id
         });
     }
     return state.mergeIn(['columnById', id], {
-        flags: state.getIn(['columnById', id, 'flags']).set('fetchingEntries', true)
+        flags: state.getIn(['columnById', id, 'flags']).set('fetchingItems', true),
+        itemsList: List(),
+        value
     });
 };
 
-const entryIteratorError = (state, { request }) => {
+const itemIteratorError = (state, { request }) => {
     if (request.reversed || !request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
-    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingEntries: false });
+    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingItems: false });
 };
 
 const entryIteratorSuccess = (state, { data, type, request }) => {
@@ -41,44 +47,61 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
         const diffArr = differenceWith(
             diffFn,
             data.collection.map(entry => entry.entryId),
-            state.getIn(['columnById', request.columnId, 'newEntries']).toJS()
+            state.getIn(['columnById', request.columnId, 'newItems']).toJS()
         );
         return state.mergeIn(['columnById', request.columnId], {
-            newEntries: state.getIn(['columnById', request.columnId, 'newEntries']).unshift(...diffArr),
+            newItems: state.getIn(['columnById', request.columnId, 'newItems']).unshift(...diffArr),
             firstBlock: data.lastBlock,
             firstIndex: data.lastIndex,
         });
     }
 
     const entryIds = data.collection.map(entry => entry.entryId);
-    const moreEntries = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
+    const moreItems = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
-        entriesList: List(entryIds),
+        itemsList: List(entryIds),
         firstBlock: request.toBlock + 1,
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingEntries: false,
-            moreEntries
+            fetchingItems: false,
+            moreItems
         }),
         lastBlock: data.lastBlock,
         lastIndex: data.lastIndex
     });
 };
 
-const entryMoreIterator = (state, { column }) => {
+const profileIteratorSuccess = (state, { data, request }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+        return state;
+    }
+
+    const ethAddresses = data.collection.map(profile => profile.ethAddress);
+    return state.mergeIn(['columnById', request.columnId], {
+        itemsList: List(ethAddresses),
+        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
+            fetchingItems: false,
+            moreItems: !!data.lastBlock
+        }),
+        lastBlock: data.lastBlock,
+        lastIndex: data.lastIndex
+    });
+};
+
+const itemMoreIterator = (state, { column }) => {
     const { id } = column;
     if (!id || !state.getIn(['columnById', id])) {
         return state;
     }
-    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreEntries: true });
+    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreItems: true });
 };
 
-const entryMoreIteratorError = (state, { request }) => {
+const itemMoreIteratorError = (state, { request }) => {
     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
         return state;
     }
-    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingMoreEntries: false });
+    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingMoreItems: false });
 };
 
 const entryMoreIteratorSuccess = (state, { data, request, type }) => {
@@ -88,21 +111,51 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
     /**
      * In some cases this action is fired as a result of a previous fetch
      * for example: user rapidly refreshes a column...
-     * To prevent that, make sure we already have something in entriesList
+     * To prevent that, make sure we already have something in itemsList
      */
-    if(state.getIn(['columnById', request.columnId, 'entriesList']).size === 0) {
+    if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
+        return state;
+    }
+    const column = state.getIn(['columnById', request.columnId]);    
+    if (request.columnId === columnTypes.profileEntries && column.value && request.ethAddress !== column.value) {
+        console.log('more iterator - is not the same ethAddress!!!');
         return state;
     }
 
     const newIds = data.collection.map(entry => entry.entryId);
-    const moreEntries = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
+    const moreItems = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
-        entriesList: state.getIn(['columnById', request.columnId, 'entriesList']).push(...newIds),
+        itemsList: state.getIn(['columnById', request.columnId, 'itemsList']).push(...newIds),
         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingMoreEntries: false,
-            moreEntries
+            fetchingMoreItems: false,
+            moreItems
+        }),
+        lastBlock: data.lastBlock || null,
+        lastIndex: data.lastIndex
+    });
+};
+
+const profileMoreIteratorSuccess = (state, { data, request }) => {
+    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+        return state;
+    }
+    /**
+     * In some cases this action is fired as a result of a previous fetch
+     * for example: user rapidly refreshes a column...
+     * To prevent that, make sure we already have something in itemsList
+     */
+    if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
+        return state;
+    }
+
+    const newIds = data.collection.map(profile => profile.ethAddress);
+    return state.mergeIn(['columnById', request.columnId], {
+        itemsList: state.getIn(['columnById', request.columnId, 'itemsList']).push(...newIds),
+        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
+            fetchingMoreItems: false,
+            moreItems: !!data.lastBlock,
         }),
         lastBlock: data.lastBlock || null,
         lastIndex: data.lastIndex
@@ -119,8 +172,8 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN]: state =>
         state.merge({
-            columnById: state.get('columnById').set(newColumnType, new ColumnRecord()),
-            [newColumnType]: null
+            columnById: state.get('columnById').set(columnTypes.newColumn, new ColumnRecord()),
+            [columnTypes.newColumn]: null
         }),
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
@@ -135,7 +188,7 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_ADD_FIRST_SUCCESS]: state => state.setIn(['flags', 'firstDashboardReady'], true),
 
     [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
-        state.set(newColumnType, new NewColumnRecord()),
+        state.set(columnTypes.newColumn, new NewColumnRecord()),
 
     [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) => {
         let columnById = state.get('columnById');
@@ -163,7 +216,7 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
-    [types.DASHBOARD_DELETE_NEW_COLUMN]: state => state.set(newColumnType, null),
+    [types.DASHBOARD_DELETE_NEW_COLUMN]: state => state.set(columnTypes.newColumn, null),
 
     [types.DASHBOARD_DELETE_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -225,13 +278,13 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_RESET_COLUMN_ENTRIES]: (state, { columnId }) => {
         if (state.getIn(['columnById', columnId])) {
-            return state.setIn(['columnById', columnId, 'entriesList'], List());
+            return state.setIn(['columnById', columnId, 'itemsList'], List());
         }
         return state;
     },
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
-        state.setIn(['columnById', newColumnType], new ColumnRecord()),
+        state.setIn(['columnById', columnTypes.newColumn], new ColumnRecord()),
 
     [types.DASHBOARD_SEARCH]: (state, { query }) =>
         state.set('search', query),
@@ -239,7 +292,7 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({
             activeDashboard: data,
-            [newColumnType]: null
+            [columnTypes.newColumn]: null
         }),
 
     [types.DASHBOARD_TOGGLE_PROFILE_COLUMN_SUCCESS]: (state, { data }) => {
@@ -276,61 +329,61 @@ const dashboardState = createReducer(initialState, {
         state.mergeIn(['columnById', data.id], data.changes),
 
     [types.DASHBOARD_UPDATE_NEW_COLUMN]: (state, { changes }) =>
-        state.mergeIn([newColumnType], changes || NewColumnRecord()),
+        state.mergeIn([columnTypes.newColumn], changes || NewColumnRecord()),
 
-    [types.ENTRY_LIST_ITERATOR]: entryIterator,
+    [types.ENTRY_LIST_ITERATOR]: itemIterator,
 
     [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_MORE_LIST_ITERATOR]: entryMoreIterator,
+    [types.ENTRY_MORE_LIST_ITERATOR]: itemMoreIterator,
 
     [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR]: entryMoreIterator,
+    [types.ENTRY_MORE_NEWEST_ITERATOR]: itemMoreIterator,
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR_ERROR]: entryMoreIteratorError,
+    [types.ENTRY_MORE_NEWEST_ITERATOR_ERROR]: itemMoreIteratorError,
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR]: entryMoreIterator,
+    [types.ENTRY_MORE_PROFILE_ITERATOR]: itemMoreIterator,
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR_ERROR]: entryMoreIteratorError,
+    [types.ENTRY_MORE_PROFILE_ITERATOR_ERROR]: itemMoreIteratorError,
 
     [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
-    [types.ENTRY_MORE_STREAM_ITERATOR]: entryMoreIterator,
+    [types.ENTRY_MORE_STREAM_ITERATOR]: itemMoreIterator,
 
-    [types.ENTRY_MORE_STREAM_ITERATOR_ERROR]: entryMoreIteratorError,
+    [types.ENTRY_MORE_STREAM_ITERATOR_ERROR]: itemMoreIteratorError,
 
     [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
-    [types.ENTRY_MORE_TAG_ITERATOR]: entryMoreIterator,
+    [types.ENTRY_MORE_TAG_ITERATOR]: itemMoreIterator,
 
-    [types.ENTRY_MORE_TAG_ITERATOR_ERROR]: entryMoreIteratorError,
+    [types.ENTRY_MORE_TAG_ITERATOR_ERROR]: itemMoreIteratorError,
 
     [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
-    [types.ENTRY_NEWEST_ITERATOR]: entryIterator,
+    [types.ENTRY_NEWEST_ITERATOR]: itemIterator,
 
-    [types.ENTRY_NEWEST_ITERATOR_ERROR]: entryIteratorError,
+    [types.ENTRY_NEWEST_ITERATOR_ERROR]: itemIteratorError,
 
     [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_PROFILE_ITERATOR]: entryIterator,
+    [types.ENTRY_PROFILE_ITERATOR]: itemIterator,
 
-    [types.ENTRY_PROFILE_ITERATOR_ERROR]: entryIteratorError,
+    [types.ENTRY_PROFILE_ITERATOR_ERROR]: itemIteratorError,
 
     [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_STREAM_ITERATOR]: entryIterator,
+    [types.ENTRY_STREAM_ITERATOR]: itemIterator,
 
-    [types.ENTRY_STREAM_ITERATOR_ERROR]: entryIteratorError,
+    [types.ENTRY_STREAM_ITERATOR_ERROR]: itemIteratorError,
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_TAG_ITERATOR]: entryIterator,
+    [types.ENTRY_TAG_ITERATOR]: itemIterator,
 
-    [types.ENTRY_TAG_ITERATOR_ERROR]: entryIteratorError,
+    [types.ENTRY_TAG_ITERATOR_ERROR]: itemIteratorError,
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
@@ -338,15 +391,15 @@ const dashboardState = createReducer(initialState, {
         const { context, entryId } = request;
         if (
             context &&
-            state.getIn(['columnById', context, 'newEntries']) &&
-            state.getIn(['columnById', context, 'newEntries']).includes(entryId)
+            state.getIn(['columnById', context, 'newItems']) &&
+            state.getIn(['columnById', context, 'newItems']).includes(entryId)
         ) {
             let mState = state.deleteIn(
-                ['columnById', context, 'newEntries'],
-                state.getIn(['columnById', context, 'newEntries']).indexOf(entryId)
+                ['columnById', context, 'newItems'],
+                state.getIn(['columnById', context, 'newItems']).indexOf(entryId)
             )
             mState = mState.mergeIn(['columnById', context], {
-                entriesList: state.getIn(['columnById', context, 'entriesList']).unshift(entryId)
+                itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
             });
             return mState;
         }
@@ -355,12 +408,12 @@ const dashboardState = createReducer(initialState, {
     [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
         const { context, entryId } = request;
         if (context &&
-            state.getIn(['columnById', context, 'newEntries']) &&
-            state.getIn(['columnById', context, 'newEntries']).includes(entryId)
+            state.getIn(['columnById', context, 'newItems']) &&
+            state.getIn(['columnById', context, 'newItems']).includes(entryId)
         ) {
-            let mState = state.deleteIn(['columnById', context, 'newEntries'], entryId)
+            let mState = state.deleteIn(['columnById', context, 'newItems'], entryId)
             mState = mState.mergeIn(['columnById', context], {
-                entriesList: state.getIn(['columnById', context, 'entriesList']).unshift(entryId)
+                itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
             });
             return mState;
         }
@@ -373,27 +426,104 @@ const dashboardState = createReducer(initialState, {
         const { entryId } = request;
         const listColumns = state
             .get('columnById')
-            .filter(column => (column.type === null || column.type === listColumnType) &&
+            .filter(column => (column.type === null || column.type === columnTypes.list) &&
                 column.value === data.id);
         if (listColumns.size) {
             listColumns.map((listColumn) => {
                 const columnId = (listColumn.id) ? listColumn.id : 'newColumn';
-                const hasEntryId = listColumn.entriesList.includes(entryId);
+                const hasEntryId = listColumn.itemsList.includes(entryId);
                 if (hasEntryId) {
                     state = state.setIn(
-                        ['columnById', columnId, 'entriesList'],
-                        listColumn.entriesList.filter(id => id !== entryId)
+                        ['columnById', columnId, 'itemsList'],
+                        listColumn.itemsList.filter(id => id !== entryId)
                     );
                 } else {
                     state = state.setIn(
-                        ['columnById', columnId, 'entriesList'],
-                        listColumn.entriesList.push(entryId)
+                        ['columnById', columnId, 'itemsList'],
+                        listColumn.itemsList.push(entryId)
                     );
                 }
             });
         }
         return state;
     },
+
+    [types.PROFILE_COMMENTS_ITERATOR]: itemIterator,
+
+    [types.PROFILE_COMMENTS_ITERATOR_ERROR]: itemIteratorError,
+
+    [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+            return state;
+        }
+    
+        const commentIds = data.collection.map(comm => comm.commentId);
+        const moreItems = !!data.lastBlock;
+        return state.mergeIn(['columnById', request.columnId], {
+            itemsList: List(commentIds),
+            firstBlock: request.lastBlock + 1,
+            flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
+                fetchingItems: false,
+                moreItems
+            }),
+            lastBlock: data.lastBlock,
+            lastIndex: data.lastIndex
+        });
+    },
+
+    [types.PROFILE_FOLLOWERS_ITERATOR]: itemIterator,
+
+    [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: itemIteratorError,
+
+    [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: profileIteratorSuccess,
+    
+    [types.PROFILE_FOLLOWINGS_ITERATOR]: itemIterator,
+    
+    [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: itemIteratorError,
+
+    [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: profileIteratorSuccess,    
+
+    [types.PROFILE_MORE_COMMENTS_ITERATOR]: itemMoreIterator,
+
+    [types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR]: itemMoreIteratorError,    
+
+    [types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+            return state;
+        }
+        /**
+         * In some cases this action is fired as a result of a previous fetch
+         * for example: user rapidly refreshes a column...
+         * To prevent that, make sure we already have something in itemsList
+         */
+        if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
+            return state;
+        }
+    
+        const newIds = data.collection.map(comm => comm.commentId);
+        const moreItems = !!data.lastBlock;
+        return state.mergeIn(['columnById', request.columnId], {
+            itemsList: state.getIn(['columnById', request.columnId, 'itemsList']).push(...newIds),
+            flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
+                fetchingMoreItems: false,
+                moreItems
+            }),
+            lastBlock: data.lastBlock || null,
+            lastIndex: data.lastIndex
+        });
+    },
+
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: itemMoreIterator,
+
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR]: itemMoreIteratorError,
+
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS]: profileMoreIteratorSuccess,
+
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR]: itemMoreIterator,
+    
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR]: itemMoreIteratorError,
+
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: profileMoreIteratorSuccess, 
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 

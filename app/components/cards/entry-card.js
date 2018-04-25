@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
+import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
+import { entryGetShort, entryPageShow } from '../../local-flux/actions/entry-actions';
 import { ProfileRecord } from '../../local-flux/reducers/records';
+import { selectBaseUrl, selectBlockNumber, selectEntry, selectHideEntrySettings, selectLoggedEthAddress,
+    selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
 
@@ -27,27 +32,20 @@ class EntryCard extends Component {
 
         this.state = {
             expanded: false,
-            showVotes: false,
             markAsNew: props.markAsNew
         };
     }
 
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
-        const { author, blockNr, canClaimPending, claimPending, entry,
-            fetchingEntryBalance, isPending, large, style, votePending } = nextProps;
+        const { author, blockNr, entry, isPending, large, style } = nextProps;
 
         if (blockNr !== this.props.blockNr ||
-            canClaimPending !== this.props.canClaimPending ||
-            claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
             isPending !== this.props.isPending ||
             large !== this.props.large ||
-            fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             !author.equals(this.props.author) ||
             (style && style.width !== this.props.style.width) ||
-            votePending !== this.props.votePending ||
             nextState.expanded !== this.state.expanded ||
-            nextState.showVotes !== this.state.showVotes ||
             nextState.markAsNew !== this.state.markAsNew ||
             nextProps.markAsNew !== this.props.markAsNew
         ) {
@@ -57,7 +55,7 @@ class EntryCard extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { markAsNew } = nextProps;
-        if(!markAsNew && this.props.markAsNew) {
+        if (!markAsNew && this.props.markAsNew) {
             setTimeout(() => {
                 this.setState({
                     markAsNew
@@ -76,55 +74,16 @@ class EntryCard extends Component {
         return entry.getIn(['author', 'ethAddress']) === loggedEthAddress;
     };
 
-    handleComments = () => {
-        const { entry, history, loggedEthAddress } = this.props;
-        history.push(`/${loggedEthAddress}/${entry.get('entryId')}#comments-section`);
-    };
-
-    handleEdit = () => {
-        const { entry, handleEdit } = this.props;
-        handleEdit(entry.get('entryId'));
-    };
-
     _handleNavigation = (href) => {
         const { history } = this.props;
         history.push(href);
     };
 
-    getVersion = (version) => {
-        // const { entry, loggedAkashaId, entryPageShow } = this.props;
-        // const query = version !== undefined ? `?version=${version}` : '';
-        // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
-        // entryPageShow(entry.get('entryId'));
-    };
-
-    openVotesPanel = () => {
-        this.setState({
-            showVotes: true
-        });
-    };
-
-    closeVotesPanel = () => {
-        this.setState({
-            showVotes: false
-        });
-    };
-
     onRetry = () => {
         const { contextId, entry } = this.props;
         const ethAddress = entry.getIn(['author', 'ethAddress']);
-        this.props.onRetry({ context: contextId, entryId: entry.entryId, ethAddress });
+        this.props.entryGetShort({ context: contextId, entryId: entry.entryId, ethAddress });
     };
-
-    // getImageSrc = (imageObj) => {
-    //     const { baseUrl, large } = this.props;
-    //     const baseWidth = large ? largeCard : smallCard;
-    //     const bestMatch = findClosestMatch(baseWidth || 700, imageObj, Object.keys(imageObj)[0]);
-    //     if (bestMatch) {
-    //         return imageCreator(imageObj[bestMatch].src, baseUrl);
-    //     }
-    //     return '';
-    // };
 
     renderContentPlaceholder = () => (
       <div>
@@ -174,18 +133,15 @@ class EntryCard extends Component {
         </div>
       </div>
     );
+
     /* eslint-disable complexity */
     render () {
-
         const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
             style, toggleOutsideNavigation, intl } = this.props;
         const { expanded, markAsNew } = this.state;
         const content = entry && entry.get('content');
         const entryType = entry && entry.getIn(['content', 'entryType']);
         const entryId = entry && entry.get('entryId');
-        // if (isPending) {
-        //     return this.renderResolvingPlaceholder();
-        // }
         const hasContent = (entryType === 1 && content.getIn(['cardInfo', 'title']).length > 0) ||
             (content && !!content.get('title'));
         const hideContent = !this.isOwnEntry() && hideEntrySettings.checked &&
@@ -311,25 +267,40 @@ EntryCard.propTypes = {
     author: PropTypes.shape().isRequired,
     blockNr: PropTypes.number,
     baseUrl: PropTypes.string,
-    canClaimPending: PropTypes.bool,
-    claimPending: PropTypes.bool,
     containerRef: PropTypes.shape(),
     contextId: PropTypes.string,
     entry: PropTypes.shape(),
+    entryGetShort: PropTypes.func.isRequired,
     entryPageShow: PropTypes.func.isRequired,
-    fetchingEntryBalance: PropTypes.bool,
-    handleEdit: PropTypes.func,
     hideEntrySettings: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     isPending: PropTypes.bool,
     large: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
-    onRetry: PropTypes.func.isRequired,
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
-    votePending: PropTypes.bool,
     markAsNew: PropTypes.bool,
 };
 
-export default withRouter(injectIntl(EntryCard));
+function mapStateToProps (state, ownProps) {
+    const entry = ownProps.entry || selectEntry(state, ownProps.itemId);
+    const ethAddress = entry.author.ethAddress;
+    return {
+        author: selectProfile(state, ethAddress),
+        baseUrl: selectBaseUrl(state),        
+        blockNr: selectBlockNumber(state),
+        entry,
+        hideEntrySettings: selectHideEntrySettings(state),       
+        loggedEthAddress: selectLoggedEthAddress(state),         
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        entryGetShort,
+        entryPageShow,
+        toggleOutsideNavigation
+    }
+)(withRouter(injectIntl(EntryCard)));

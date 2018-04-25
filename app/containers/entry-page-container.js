@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { EntryPage } from '../components';
 import { actionAdd } from '../local-flux/actions/action-actions';
-import { commentsCheckNew, commentsClean, commentsIterator, commentsLoadNew,
+import { commentsCheckNew, commentsIterator, commentsLoadNew,
     commentsMoreIterator } from '../local-flux/actions/comments-actions';
 import { entryCleanFull, entryGetFull, entryGetLatestVersion,
     entryResolveIpfsHash } from '../local-flux/actions/entry-actions';
@@ -29,7 +29,6 @@ export default connect(
     {
         actionAdd,
         commentsCheckNew,
-        commentsClean,
         commentsIterator,
         commentsLoadNew,
         commentsMoreIterator,

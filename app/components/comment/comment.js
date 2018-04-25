@@ -266,7 +266,7 @@ class Comment extends Component {
       </div>
     );
 
-    render () { // eslint-disable-line max-statements
+    render () { // eslint-disable-line max-statements, complexity
         const { author, blockNr, comment, containerRef, children, hideCommentSettings, intl,
             onReply, resolvingComment, showReplyButton, vote, votePending } = this.props;
         const { editorState, isExpanded, isHidden } = this.state;

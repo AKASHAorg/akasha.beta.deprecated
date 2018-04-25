@@ -1,4 +1,6 @@
 import { List, Map, Record } from 'immutable';
+import { profileComments, profileEntries, profileFollowings,
+    profileFollowers } from '../../../constants/columns';
 
 const Flags = Record({
     firstDashboardReady: false,
@@ -6,18 +8,18 @@ const Flags = Record({
 });
 
 const ColumnFlags = Record({
-    fetchingEntries: false,
-    fetchingMoreEntries: false,
-    moreEntries: false
+    fetchingItems: false,
+    fetchingMoreItems: false,
+    moreItems: false
 });
 
 export const ColumnRecord = Record({
     id: null,
-    entriesList: new List(),
+    itemsList: new List(),
     firstBlock: null,
     firstIndex: 0,
     flags: new ColumnFlags(),
-    newEntries: new List(), // a list of newly published entryIds
+    newItems: new List(), // a list of newly published entryIds
     large: false,
     lastBlock: null,
     lastIndex: 0,
@@ -44,7 +46,11 @@ export const DashboardState = Record({
     allDashboards: new List(),
     byId: new Map(),
     columnById: new Map({
-        newColumn: new ColumnRecord()
+        newColumn: new ColumnRecord(),
+        profileComments: new ColumnRecord({ id: profileComments, type: profileComments }),
+        // profileEntries: new ColumnRecord({ id: profileEntries, type: profileEntries }),
+        profileFollowers: new ColumnRecord({ id: profileFollowers, type: profileFollowers }),
+        profileFollowings: new ColumnRecord({ id: profileFollowings, type: profileFollowings }),        
     }),
     flags: new Flags(),
     newColumn: null,

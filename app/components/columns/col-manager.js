@@ -43,17 +43,17 @@ class ColManager extends Component {
         if (typeof onItemPooling === 'function' && !isPooling) {
             this._createRequestPooling(id);
         }
-        const shouldRequestItems = column.entriesList.size === 0 &&
+        const shouldRequestItems = column.itemsList.size === 0 &&
             !this.loadingMore.includes(column.id) && isVisible;
         if (shouldRequestItems) {
             this.props.onItemRequest(this.props.column.toJS());
             this.loadingMore.push(column.id);
         }
-        if(column.entriesList.size > 0 && this.items[id].length === 0) {
+        if(column.itemsList.size > 0 && this.items[id].length === 0) {
             if(!this.colFirstEntry.has(id)) {
-                this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
+                this.colFirstEntry = this.colFirstEntry.set(id, column.itemsList.first());
             }
-            this._mapItemsToState(column.entriesList, column);
+            this._mapItemsToState(column.itemsList, column);
         }
     }
 
@@ -77,13 +77,11 @@ class ColManager extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        return nextState[this.props.column.id] !== this.state[this.props.column.id] ||
-            !nextProps.column.entriesList.equals(this.props.column.entriesList) ||
+        return !!(nextState[this.props.column.id] !== this.state[this.props.column.id] ||
+            !nextProps.column.equals(this.props.column) ||
             nextProps.ethAddress !== this.props.ethAddress ||
             nextProps.large !== this.props.large ||
-            nextProps.entries.equals(this.props.entries) ||
-            (nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)) ||
-            !nextProps.profiles.equals(this.props.profiles);
+            (nextProps.pendingEntries && !nextProps.pendingEntries.equals(this.props.pendingEntries)));
     }
 
     componentWillReceiveProps = (nextProps) => {
@@ -94,8 +92,8 @@ class ColManager extends Component {
         if (typeof onItemPooling === 'function' && !isPooling && isVisible) {
             this._createRequestPooling(id);
         }
-        if(nextProps.large !== this.props.large) {
-            if(this.props.onSizeChange) {
+        if (nextProps.large !== this.props.large) {
+            if (this.props.onSizeChange) {
                 this.props.onSizeChange();
             }
         }
@@ -109,13 +107,13 @@ class ColManager extends Component {
     loadNewItems = () => {
         const { column } = this.props;
         const { id } = column;
-        this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
+        this._mapItemsToState(column.get('newItems'), column, { prepend: true });
         this.setState({
             [id]: 0
         }, () => {
             this.lastScrollTop[id] = 0;
             this._rootNodeRef.scrollTop = 0;
-            this._resolveNewEntries(column.get('newEntries'));
+            this._resolveNewItems(column.get('newItems'));
         });
     }
 
@@ -158,18 +156,18 @@ class ColManager extends Component {
         }
     }
 
-    _resolveNewEntries = (entriesList) => {
-        const { column, ethAddress, onNewEntriesResolveRequest } = this.props;
-        entriesList.forEach(entryId => onNewEntriesResolveRequest({
+    _resolveNewItems = (itemsList) => {
+        const { column, ethAddress, onNewItemsResolveRequest } = this.props;
+        itemsList.forEach(entryId => onNewItemsResolveRequest({
             context: column.get('id'),
             entryId,
             ethAddress
         }));
     }
 
-    _applyLoadedEntries = (newEntries, oldEntries) => {
+    _applyLoadedEntries = (newItems, oldEntries) => {
         const diffFn = (x, y) => x === y;
-        const diffedEntries = differenceWith(diffFn, newEntries.toJS(), oldEntries.toJS());
+        const diffedEntries = differenceWith(diffFn, newItems.toJS(), oldEntries.toJS());
         if (diffedEntries.length > 0) {
             this.colFirstEntry = this.colFirstEntry.set(this.props.column.id, diffedEntries[0]);
         }
@@ -184,23 +182,23 @@ class ColManager extends Component {
             olderProps = this.props;
         }
         const { column, isVisible, ethAddress } = newerProps;
-        const { entriesList } = column;
-        const oldItems = olderProps.column.entriesList;
+        const { itemsList } = column;
+        const oldItems = olderProps.column.itemsList;
         const oldEthAddress = olderProps.ethAddress;
         const isNewColumn = ((oldEthAddress !== ethAddress) ||
             (column.value !== olderProps.column.value));
-        const shouldRequestItems = entriesList.size === 0 &&
+        const shouldRequestItems = itemsList.size === 0 &&
             !this.loadingMore.includes(column.id) && isVisible &&
             !this.initialRequests.includes(column.id);
-        const newEntriesSize = column.newEntries && column.newEntries.size;
-        const oldEntriesSize = olderProps.column.newEntries && olderProps.column.newEntries.size;
-        const newEntriesLoaded = column.newEntries && (newEntriesSize < oldEntriesSize);
+        const newItemsSize = column.newItems && column.newItems.size;
+        const oldItemsSize = olderProps.column.newItems && olderProps.column.newItems.size;
+        const newItemsLoaded = column.newItems && (newItemsSize < oldItemsSize);
         this._doUpdates({
             isNewColumn,
             shouldRequestItems,
-            hasNewItems: !column.entriesList.equals(oldItems),
-            hasUnseenNewItems: column.newEntries && (newEntriesSize > oldEntriesSize),
-            newEntriesLoaded,
+            hasNewItems: !column.itemsList.equals(oldItems),
+            hasUnseenNewItems: column.newItems && (newItemsSize > oldItemsSize),
+            newItemsLoaded,
             column,
             oldColumn: olderProps.column,
             options
@@ -212,20 +210,20 @@ class ColManager extends Component {
     /* eslint-disable complexity */
     _doUpdates = (updateParams) => {
         const { isNewColumn, shouldRequestItems, hasNewItems, hasUnseenNewItems,
-            column, options, newEntriesLoaded, oldColumn } = updateParams;
+            column, options, newItemsLoaded, oldColumn } = updateParams;
         const { canUpdateState } = options;
         const { id } = column;
         if (hasUnseenNewItems && this.lastScrollTop[id] === 0 && canUpdateState) {
-            this._mapItemsToState(column.get('newEntries'), column, { prepend: true });
-            this._resolveNewEntries(column.get('newEntries'));
+            this._mapItemsToState(column.get('newItems'), column, { prepend: true });
+            this._resolveNewItems(column.get('newItems'));
         }
 
         if (isNewColumn && canUpdateState) {
             this._resetColState(id);
         }
 
-        if (newEntriesLoaded && options.canUpdateState) {
-            this._applyLoadedEntries(column.newEntries, oldColumn.newEntries);
+        if (newItemsLoaded && options.canUpdateState) {
+            this._applyLoadedEntries(column.newItems, oldColumn.newItems);
         }
 
         if ((isNewColumn || shouldRequestItems) && canUpdateState) {
@@ -233,9 +231,9 @@ class ColManager extends Component {
             this.initialRequests.push(id);
         } else if (hasNewItems) {
             if (!this.colFirstEntry.has(id)) {
-                this.colFirstEntry = this.colFirstEntry.set(id, column.entriesList.first());
+                this.colFirstEntry = this.colFirstEntry.set(id, column.itemsList.first());
             }
-            this._mapItemsToState(column.entriesList, column);
+            this._mapItemsToState(column.itemsList, column);
             this.loadingMore = remove(indexOf(id, this.loadingMore), 1, this.loadingMore);
         }
     }
@@ -309,13 +307,13 @@ class ColManager extends Component {
     _loadMoreIfNeeded = (column) => {
         const { props } = this;
         const { isVisible, fetchingMore } = props;
-        const { id, hasMoreEntries, flags = {} } = column;
+        const { id, flags = {} } = column;
         const alreadyLoading = this.loadingMore.includes(id);
 
         if (
             !alreadyLoading && isVisible &&
             !fetchingMore && this.items[id].length > 0 &&
-            (hasMoreEntries || flags.moreEntries)
+            flags.moreItems
         ) {
             this.props.onItemMoreRequest(column.toJS());
             this.loadingMore.push(id);
@@ -355,10 +353,8 @@ class ColManager extends Component {
             const bottomPadderHeight = this._getSliceMeasure(this._getBottomIndex(topIndex), items[id].length)
             const bottomPadding = Math.ceil(bottomPadderHeight);
             const bottomBufferHeight = Math.ceil(this.containerHeight * 1.5);
-            const hasMoreEntries = (column &&
-                (column.moreEntries || (column.flags && column.flags.moreEntries))) ||
-                true;
-            if ((bottomPadding <= bottomBufferHeight) && hasMoreEntries) {
+            const hasMoreItems = column.getIn(['flags', 'moreItems']);
+            if ((bottomPadding <= bottomBufferHeight) && hasMoreItems) {
                 this._loadMoreIfNeeded(column);
             }
             this.scrollPending = -1;
@@ -438,7 +434,7 @@ class ColManager extends Component {
     render () {
         const { items, state, props } = this;
         const { column, type, ...other } = props;
-        const { id, hasMoreEntries, flags = {} } = column;
+        const { id, flags = {} } = column;
         const topIndexTo = state[id];
         const bottomIndexFrom = this._getBottomIndex(topIndexTo);
         const topSliceMeasure = Math.ceil(this._getSliceMeasure(0, topIndexTo));
@@ -454,18 +450,10 @@ class ColManager extends Component {
                   height: topSliceMeasure
               }}
             />
-            {items[id].slice(topIndexTo, bottomIndexFrom).map((item) => {
-                const entry = other.entries.get(item.id);
-                let author;
-                let profile;
-                if ((type === columnTypes.profileFollowings || type === columnTypes.profileFollowers)) {
-                    profile = other.profiles && other.profiles.get(entry.ethAddress);
-                } else {
-                    author = other.profiles && entry && other.profiles.get(entry.author.ethAddress);
-                }
+            {items[id].slice(topIndexTo, bottomIndexFrom).map((item) => { // eslint-disable-line max-statements
                 let isPending = other.pendingEntries ? other.pendingEntries.get(item.id) : false;
                 let markAsNew = false;
-                if (!isPending && column.newEntries && column.newEntries.includes(item.id)) {
+                if (!isPending && column.newItems && column.newItems.includes(item.id)) {
                     isPending = true;
                 }
                 const lastSeenID = this.colFirstEntry.get(id);
@@ -477,22 +465,19 @@ class ColManager extends Component {
                 }
                 return (
                   <CellManager
-                    author={author}
+                    column={column}
                     key={item.id}
                     id={item.id}
                     onMount={this._handleCellMount(item.id)}
                     onSizeChange={this._handleCellSizeChange(item.id)}
                     isPending={isPending}
                     large={column.get('large')}
-                    entry={entry}
                     markAsNew={markAsNew}
                   >
                     {cellProps => React.cloneElement(this.props.itemCard, {
                         ...cellProps,
                         ...other,
-                        entry,
-                        author,
-                        profile,
+                        itemId: item.id,
                         isPending,
                         contextId: column.get('id'),
                         markAsNew,
@@ -506,8 +491,8 @@ class ColManager extends Component {
                 height: bottomSliceMeasure
               }}
             />
-            {bottomSliceMeasure < 30 && bottomIndexFrom > 0 && (hasMoreEntries || flags.moreEntries) &&
-              <DataLoader flag={true} />
+            {bottomSliceMeasure < 30 && bottomIndexFrom > 0 && flags.moreItems &&
+              <DataLoader flag />
             }
           </div>
         );
@@ -537,8 +522,7 @@ ColManager.propTypes = {
     large: PropTypes.bool,
     onUnmount: PropTypes.func,
     onRefLink: PropTypes.func,
-    onNewEntriesResolveRequest: PropTypes.func,
-    profiles: PropTypes.shape(),
+    onNewItemsResolveRequest: PropTypes.func,
     entries: PropTypes.shape(),
 };
 

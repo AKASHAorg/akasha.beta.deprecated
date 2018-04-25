@@ -3,6 +3,7 @@ export const community = '';
 export const latest = 'latest';
 export const list = 'list';
 export const profile = 'profile';
+export const profileComments = 'profileComments';
 export const profileEntries = 'profileEntries';
 export const profileFollowers = 'profileFollowers';
 export const profileFollowings = 'profileFollowings';
