@@ -264,17 +264,18 @@ class EntryCard extends Component {
                   </Link>
                 </div>,
               hasContent && !hideContent && content.get('excerpt') &&
-                <div className="entry-card__excerpt" key={`${entryId}-excerpt`}>
-                  <Link
-                    className="unstyled-link"
-                    to={{
-                        pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
-                        state: { overlay: true }
-                    }}
-                  >
+                <Link
+                  key={`${entryId}-excerpt`}
+                  className="unstyled-link"
+                  to={{
+                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
+                      state: { overlay: true }
+                  }}
+                >
+                  <div className="entry-card__excerpt">
                     <span className="content-link">{content.get('excerpt')}</span>
-                  </Link>
-                </div>,
+                  </div>
+                </Link>,
               !hideContent && <div className="entry-card__tags" key={`${entryId}-tags`}>
                   {content.get('tags').map(tag => (
                     <TagPopover
