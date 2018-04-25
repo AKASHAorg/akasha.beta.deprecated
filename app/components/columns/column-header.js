@@ -98,7 +98,7 @@ class ColumnHeader extends Component {
 
     onRefresh = () => {
         const { column } = this.props;
-        if(column.newEntries && column.newEntries.size > 0) {
+        if (column.newEntries && column.newEntries.size > 0) {
             this._colManagerComponent.loadNewItems();
         } else {
             this._colManagerComponent.resetColumn(this.props.column.id);
