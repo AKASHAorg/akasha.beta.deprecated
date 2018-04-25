@@ -1,7 +1,7 @@
 // @flow
-const prefix = 'akasha.world';
+const prefix = 'beta.akasha.world';
 
-export const addPrefix = (str: string = ''): string => `${prefix}${str}`;
+export const addPrefix = (str: string = ''): string => `${prefix}/#${str}`;
 
 export const isAbsolute = (route: string = ''): boolean => !route.startsWith('/');
 
