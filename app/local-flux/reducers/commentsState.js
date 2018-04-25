@@ -2,7 +2,7 @@ import {List, Map} from 'immutable';
 import {isEmpty} from 'ramda';
 import * as types from '../constants';
 import {createReducer} from './create-reducer';
-import {CommentAuthor, CommentRecord, CommentsState} from './records';
+import { CommentAuthor, CommentRecord, CommentsState, ProfileComments } from './records';
 
 const initialState = new CommentsState();
 const hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -78,6 +78,26 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
+    [types.COMMENTS_GET_COMMENT]: (state, { context, entryId, commentId, author, parent }) => {
+        let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
+        pendingComments = pendingComments.set(commentId, true);
+        if (state.getIn(['byId', commentId])) {
+            return state.setIn(['flags', 'pendingComments', context], pendingComments);
+        }
+        const comm = createCommentWithAuthor({ entryId, commentId, author, parent });
+        return state.merge({
+            byId: state.get('byId').set(commentId, comm),
+            flags: state.get('flags').setIn(['pendingComments', context], pendingComments)
+        });
+    },
+
+    [types.COMMENTS_GET_COMMENT_ERROR]: (state, { request }) => {
+        const { context, commentId } = request;
+        let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
+        pendingComments = pendingComments.set(commentId, false);
+        return state.setIn(['flags', 'pendingComments', context], pendingComments);        
+    },
+
     [types.COMMENTS_GET_COMMENT_SUCCESS]: (state, {data, request}) => {
         let byId = state.get('byId');
         if (!data.parent || data.parent === hexZero) {
@@ -85,15 +105,19 @@ const commentsState = createReducer(initialState, {
         }
         data.entryId = request.entryId;
         data.commentId = request.commentId;
+        const { context } = request;
         let list = state.getIn(['byParent', data.parent]) || new List();
         const comment = createCommentWithAuthor(data);
         byId = byId.set(data.commentId, comment);
         list = list.includes(data.commentId) ? list : list.push(data.commentId);
         list = sortByScore(byId, list);
+        let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
+        pendingComments = pendingComments.set(data.commentId, false);
 
         return state.merge({
             byId,
-            byParent: state.get('byParent').set(data.parent, list)
+            byParent: state.get('byParent').set(data.parent, list),
+            flags: state.get('flags').setIn(['pendingComments', context], pendingComments),
         });
     },
 
@@ -249,6 +273,27 @@ const commentsState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').setIn([commentId, 'content'], data.content),
             flags: state.get('flags').setIn(['resolvingComments', data.ipfsHash], false)
+        });
+    },
+
+    [types.PROFILE_COMMENTS_ITERATOR]: (state, { column }) =>
+        state.setIn(['profileComments', column.value], new ProfileComments({ fetchingComments: true })),
+
+    [types.PROFILE_COMMENTS_ITERATOR_ERROR]: (state, { request }) =>
+        state.setIn(
+            ['profileComments', request.ethAddress],
+            new ProfileComments({ fetchingComments: false })
+        ),
+
+    [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+        const { ethAddress } = request;
+        const commentIds = data.collection.map(result => result.commentId);
+        return state.mergeIn(['profileComments', ethAddress], {
+            commentIds: new List(commentIds),
+            fetchingComments: false,
+            lastBlock: data.lastBlock,
+            lastIndex: data.lastIndex,
+            moreComments: !!data.lastBlock
         });
     },
 });

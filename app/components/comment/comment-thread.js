@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
-import { selectCommentsForParent, selectLoggedProfileData, selectMoreComments,
+import { selectEntryCommentsForParent, selectLoggedProfileData, selectMoreComments,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -143,14 +143,15 @@ CommentThread.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const { comment } = ownProps;
+    const entryId = state.entryState.getIn(['fullEntry', 'entryId']);
     return {
         author: selectProfile(state, comment.author.ethAddress),
-        entryId: state.entryState.getIn(['fullEntry', 'entryId']),
+        entryId,
         entryTitle: state.entryState.getIn(['fullEntry', 'content', 'title']),
         ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
         loggedProfileData: selectLoggedProfileData(state),
         moreReplies: selectMoreComments(state, comment.commentId),
-        replies: selectCommentsForParent(state, comment.commentId),
+        replies: selectEntryCommentsForParent(state, entryId, comment.commentId),
     };
 }
 

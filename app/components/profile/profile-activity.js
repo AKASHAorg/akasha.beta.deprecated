@@ -8,35 +8,47 @@ const ProfileActivity = ({ ethAddress, intl }) => (
   <div className="profile-activity" id="profile-activity">
     <div className="profile-activity__column" id="profile-entries">
       <Column
-        readOnly
-        intl={intl}
+        columnId={`${columnTypes.profileEntries}-${ethAddress}`}
         ethAddress={ethAddress}
-        type={columnTypes.profileEntries}
+        intl={intl}
         isVisible
         noMenu
+        readOnly
+        type={columnTypes.profileEntries}
+      />
+    </div>
+    <div className="profile-activity__column" id="profile-comments">
+      <Column
+        columnId={columnTypes.profileComments}      
+        ethAddress={ethAddress}
+        intl={intl}
+        isVisible
+        noMenu
+        readOnly
+        type={columnTypes.profileComments}
       />
     </div>
     <div className="profile-activity__column" id="profile-followers">
       <Column
-        readOnly
-        intl={intl}
+        columnId={columnTypes.profileFollowers}
         ethAddress={ethAddress}
-        type={columnTypes.profileFollowers}
+        intl={intl}
         isVisible
         noMenu
+        readOnly
+        type={columnTypes.profileFollowers}        
       />
     </div>
-    <div>
-      <div className="profile-activity__column" id="profile-followings">
-        <Column
-          readOnly
-          intl={intl}
-          ethAddress={ethAddress}
-          type={columnTypes.profileFollowings}
-          isVisible
-          noMenu
-        />
-      </div>
+    <div className="profile-activity__column" id="profile-followings">
+      <Column
+        columnId={columnTypes.profileFollowings} 
+        ethAddress={ethAddress}
+        intl={intl}
+        isVisible
+        noMenu
+        readOnly
+        type={columnTypes.profileFollowings}
+      />
     </div>
   </div>
 );

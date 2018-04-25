@@ -16,14 +16,13 @@ class CellManager extends Component {
 
     shouldComponentUpdate (nextProps) {
         return nextProps.isPending !== this.props.isPending ||
-            (nextProps.author && !nextProps.author.equals(this.props.author)) ||
-            nextProps.large !== this.props.large ||
-            !!(nextProps.entry && !nextProps.entry.equals(this.props.entry));
+            !nextProps.column.equals(this.props.column) ||
+            nextProps.large !== this.props.large;
     }
 
     componentDidUpdate (prevProps) {
         const { onSizeChange, isPending } = this.props;
-        if(isPending !== prevProps.isPending) {
+        if (isPending !== prevProps.isPending) {
             const refSize = this._baseNodeRef.getBoundingClientRect();
             if ( refSize.height !== this.baseNodeSize.height) {
                 ReactDOM.unstable_batchedUpdates(() => {
@@ -43,27 +42,23 @@ class CellManager extends Component {
     }
 
     render () {
-        const { entry, children } = this.props;
+        const { children } = this.props;
         return (
-          <div
-            ref={this._createBaseNodeRef}
-            // id={entry.entryId}
-          >
-            {entry && children()}
+          <div ref={this._createBaseNodeRef}>
+            {children()}
           </div>
         );
     }
 }
 
 CellManager.propTypes = {
-    author: PropTypes.shape(),
+    column: PropTypes.shape(),
     onMount: PropTypes.func,
     onSizeChange: PropTypes.func,
     children: PropTypes.func,
     isPending: PropTypes.bool,
     id: PropTypes.string,
     large: PropTypes.bool,
-    entry: PropTypes.shape(),
 };
 
 export default CellManager;

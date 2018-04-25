@@ -1,0 +1,119 @@
+.comment-card {
+    margin: 5px 5px;
+    width: 340px;
+    height: auto;
+    background-color: @light-background;
+    transition: background-color 0.5 ease-in-out;
+
+    &_large {
+        width: 520px;
+    }
+
+    &_new-entry {
+        animation: entryCardHighlightAnimation 1s;
+    }
+
+    &__header {
+        padding: 16px 0px 12px;
+        font-size: 14px;
+    }
+
+    &__commentedOn {
+        font-weight: 400;
+        margin: 0px 5px;
+    }
+
+    &__subtitle {
+        color: @text-color-secondary;
+        font-size: 12px;    
+        font-weight: 400;    
+        height: 14px;                
+    }
+
+    &__excerpt {
+        margin: 12px 0px 6px;
+        word-break: break-word;
+        color: @entry-excerpt;
+        font-size: 14px;
+    }
+
+    &__unresolved {
+        position: absolute;
+        top: 24px;
+        left: 0;
+        right: 0;
+        font-size: 13px;
+    }
+
+    &__hidden {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        font-size: 13px;
+    }
+
+    &__settings-link {
+        margin-left: 5px;
+    }
+
+    &__hidden-message {
+        max-width: 70%;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    &__retry-button {
+        color: @primary-color;
+        font-weight: 500;
+        font-size: 11px;
+        padding: 2px;
+    }
+
+    &__title-placeholder {
+        height: 13px;
+        width: 240px;
+        margin: 2px 0px;
+        background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+        background-size: 400% 400%;
+        animation: loadingSlide 1.3s infinite linear forwards;
+        -webkit-animation: loadingSlide 1.3s infinite linear forwards;
+    }
+
+    &__subtitle-placeholder {
+        height: 11px;
+        width: 90px;
+        margin: 4px 0px;
+        background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%));
+        background-size: 400% 400%;
+        animation: loadingSlide 1.3s infinite linear forwards;
+        -webkit-animation: loadingSlide 1.3s infinite linear forwards;
+    }
+
+    &__content-placeholder {
+        height: 11px;
+        background: linear-gradient(90deg, @placeholder-color, darken(@placeholder-color, 2%), @placeholder-color);
+        background-size: 400% 400%;
+        animation: loadingSlide 1.3s infinite linear forwards;
+        -webkit-animation: loadingSlide 1.3s infinite linear forwards;
+    }
+
+    .ant-card-head {
+        padding: 0 16px;
+        height: auto;
+        border-bottom: none;
+        background: transparent;
+    }
+
+    .ant-card-head-title {
+        padding: 0px;
+    }
+
+    .ant-card-body {
+        padding: 0 16px 16px;
+    }
+
+    .ant-card-head-title {
+        white-space: normal;
+    }
+}

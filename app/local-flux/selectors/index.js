@@ -87,7 +87,7 @@ export const selectColumn = (state, columnId) => state.dashboardState.getIn(['co
 
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
-        .getIn(['columnById', columnId, 'entriesList'])
+        .getIn(['columnById', columnId, 'itemsList'])
         .map(id => selectEntry(state, id));
 
 export const selectColumnPendingEntries = (state, dashboardId) => {
@@ -106,7 +106,7 @@ export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
 
 export const selectColumnLastEntry = (state, columnId) =>
-    state.dashboardState.getIn(['columnById', columnId, 'entriesList']).last();
+    state.dashboardState.getIn(['columnById', columnId, 'itemsList']).last();
 
 export const selectColumnLastIndex = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastIndex']);
@@ -115,15 +115,18 @@ export const selectColumns = state => state.dashboardState.get('columnById');
 
 export const selectComment = (state, id) => state.commentsState.getIn(['byId', id]);
 
+export const selectCommentIsPending = (state, context, commentId) =>
+    state.commentsState.getIn(['flags', 'pendingComments', context, commentId]);
+
 export const selectCommentLastBlock = (state, parent) => state.commentsState.getIn(['lastBlock', parent]);
 
 export const selectCommentLastIndex = (state, parent) => state.commentsState.getIn(['lastIndex', parent]);
 
 export const selectCommentVote = (state, commentId) => state.commentsState.getIn(['votes', commentId]);
 
-export const selectCommentsForParent = (state, parent) => {
+export const selectEntryCommentsForParent = (state, entryId, parent) => {
     const list = state.commentsState.getIn(['byParent', parent]) || new List();
-    return list.map(id => selectComment(state, id));
+    return list.map(id => selectComment(state, id)).filter(comm => comm.entryId === entryId);
 };
 
 export const selectCommentsFlag = (state, flag, id) => {

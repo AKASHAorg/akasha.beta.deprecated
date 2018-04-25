@@ -12,7 +12,7 @@ import { DataLoader, ProfileCard } from './index';
 class ProfileList extends Component {
     getContainerRef = (el) => { this.container = el; };
 
-    render () {
+    render () { // eslint-disable-line complexity
         const { fetchingProfiles, fetchingMoreProfiles, intl, loggedEthAddress, masonry, moreProfiles,
             pendingProfiles, placeholderMessage, profiles, style, searchQuery, searching } = this.props;
         const profileRows = profiles && profiles.map((profile) => {
@@ -22,7 +22,7 @@ class ProfileList extends Component {
             }
             const isOwnProfile = profile.ethAddress === loggedEthAddress;
             const isPending = pendingProfiles && pendingProfiles.get(profile.ethAddress);
-
+            console.log('profile', profile.toJS());
             return (
               <ProfileCard
                 containerRef={this.container}

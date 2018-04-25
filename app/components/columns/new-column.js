@@ -17,8 +17,8 @@ import { dashboardMessages, generalMessages, listMessages } from '../../locale-d
 import { getDisplayName } from '../../utils/dataModule';
 import { Icon, NewSearchColumn, NewSelectColumn } from '../';
 
-const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile, columnTypes.tag,
-    columnTypes.list];
+const columns = [columnTypes.latest, columnTypes.stream, columnTypes.profile,
+    columnTypes.tag, columnTypes.list];
 const oneStepColumns = [columnTypes.latest, columnTypes.stream];
 const iconTypes = {
     [columnTypes.latest]: 'entries',
@@ -369,7 +369,6 @@ NewColumn.propTypes = {
     dashboardId: PropTypes.string.isRequired,
     dashboardResetNewColumn: PropTypes.func.isRequired,
     dashboardUpdateNewColumn: PropTypes.func.isRequired,
-    entries: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryListIterator: PropTypes.func.isRequired,
     entryMoreListIterator: PropTypes.func.isRequired,

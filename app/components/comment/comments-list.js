@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Spin } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader, OptimisticComment } from '../';
-import { selectCommentsFlag, selectCommentsForParent, selectLoggedProfileData,
+import { selectCommentsFlag, selectEntryCommentsForParent, selectLoggedProfileData,
     selectPendingComments } from '../../local-flux/selectors';
 
 class CommentList extends Component {
@@ -127,7 +127,7 @@ CommentList.propTypes = {
 function mapStateToProps (state) {
     const entryId = state.entryState.getIn(['fullEntry', 'entryId']);
     return {
-        comments: selectCommentsForParent(state, '0'),
+        comments: selectEntryCommentsForParent(state, entryId, '0'),
         fetchingComments: selectCommentsFlag(state, 'fetchingComments', '0'),
         fetchingMoreComments: selectCommentsFlag(state, 'fetchingMoreComments', '0'),
         loggedProfileData: selectLoggedProfileData(state),

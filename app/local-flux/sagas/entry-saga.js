@@ -9,7 +9,8 @@ import * as draftActions from '../actions/draft-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
+import * as columnTypes from '../../constants/columns';
+import { selectBlockNumber, selectColumn, selectColumnFirstBlock, selectColumnLastBlock, selectColumnLastIndex,
     selectListEntries, selectListEntryType, selectIsFollower, selectListNextEntries, selectLoggedEthAddress,
     selectProfileEntriesLastBlock, selectProfileEntriesLastIndex, selectToken,
     selectCurrentTotalProfileEntries, selectDrafts, selectDraftsLastBlock,
@@ -252,7 +253,7 @@ function* entryMoreNewestIterator ({ column, batching }) {
 
 function* entryMoreProfileIterator ({ column, batching }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const { id, value } = column;
+    const { id, itemsList, value } = column;
     const isProfileEntries = id === 'profileEntries';
     const toBlock = !isProfileEntries ?
         yield select(state => selectColumnLastBlock(state, id)) :
@@ -260,10 +261,9 @@ function* entryMoreProfileIterator ({ column, batching }) {
     const lastIndex = !isProfileEntries ?
         yield select(state => selectColumnLastIndex(state, id)) :
         yield select(state => selectProfileEntriesLastIndex(state, value));
-    let akashaId, ethAddress, totalLoaded; // eslint-disable-line
+    let akashaId, ethAddress; // eslint-disable-line
     if (isEthAddress(value)) {
         ethAddress = value;
-        totalLoaded = yield select(state => selectCurrentTotalProfileEntries(state, ethAddress));
     } else {
         akashaId = value;
     }
@@ -271,9 +271,9 @@ function* entryMoreProfileIterator ({ column, batching }) {
         channel,
         channel.send,
         [{
-            columnId: id, ethAddress,
-            akashaId, limit: ITERATOR_LIMIT,
-            toBlock, lastIndex, totalLoaded,
+            columnId: id,
+            ethAddress, akashaId, limit: ITERATOR_LIMIT, toBlock, lastIndex,
+            totalLoaded: itemsList.size,
             more: true,
             batching
         }]

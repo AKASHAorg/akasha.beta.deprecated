@@ -25,14 +25,13 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { commentsClean, entry, match, pendingComments } = this.props;
+        const { entry, match, pendingComments } = this.props;
 
         const { params } = match;
         const nextParams = nextProps.match.params;
         const { entryId } = nextParams;
 
         if (params.entryId !== entryId && entry.get('entryId') !== entryId) {
-            commentsClean();
             this.getFullEntry({ props: nextProps });
         }
         if (!this.listenerRegistered && this.container) {
@@ -57,13 +56,12 @@ class EntryPage extends Component {
     }
 
     componentWillUnmount () {
-        const { commentsClean, entryCleanFull } = this.props;
+        const { entryCleanFull } = this.props;
         if (this.container) {
             this.container.removeEventListener('scroll', this.throttledHandler);
         }
         clearInterval(this.checkNewCommentsInterval);
         entryCleanFull();
-        commentsClean();
     }
 
     getFullEntry = ({ props } = {}) => {
@@ -265,7 +263,6 @@ EntryPage.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     baseUrl: PropTypes.string.isRequired,
     commentsCheckNew: PropTypes.func.isRequired,
-    commentsClean: PropTypes.func.isRequired,
     commentsIterator: PropTypes.func.isRequired,
     commentsLoadNew: PropTypes.func.isRequired,
     commentsMoreIterator: PropTypes.func.isRequired,

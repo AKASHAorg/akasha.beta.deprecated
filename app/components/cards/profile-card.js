@@ -8,7 +8,7 @@ import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
 import { selectIsFollower, selectPendingFollow, selectPendingTip,
-    selectLoggedEthAddress } from '../../local-flux/selectors';
+    selectLoggedEthAddress, selectProfile } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { formatBalance } from '../../utils/number-formatter';
 
@@ -30,7 +30,6 @@ class ProfileCard extends Component {
             tipPending } = this.props;
         const isOwnProfile = profile.ethAddress === loggedEthAddress;
         const getPopupContainer = () => containerRef || document.body;
-
         if (isPending) {
             return (
               <Card
@@ -154,11 +153,13 @@ ProfileCard.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const ethAddress = ownProps.profile.ethAddress;
+    const ethAddress = ownProps.itemId;
+    const profile = ethAddress ? selectProfile(state, ethAddress) : ownProps.profile;
     return {
         followPending: selectPendingFollow(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
+        profile,
         tipPending: selectPendingTip(state, ethAddress)
     };
 }

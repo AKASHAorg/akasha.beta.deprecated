@@ -27,6 +27,15 @@ export const profileBondAethSuccess = data => action(types.PROFILE_BOND_AETH_SUC
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
 
+export const profileCommentsIterator = (column) => action(types.PROFILE_COMMENTS_ITERATOR, { column });
+export const profileCommentsIteratorError = (error) => {
+    error.code = 'PCIE01';
+    error.messageId = 'profileCommentsIterator';
+    return action(types.PROFILE_COMMENTS_ITERATOR_ERROR, { error });
+};
+export const profileCommentsIteratorSuccess = (data, request) =>
+    action(types.PROFILE_COMMENTS_ITERATOR_SUCCESS, { data, request });
+
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
     action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
 export const profileCreateEthAddressError = (error) => {
@@ -91,8 +100,8 @@ export const profileFollowError = (error, request) => {
     return action(types.PROFILE_FOLLOW_ERROR, { error, request });
 };
 
-export const profileFollowersIterator = ({ context, ethAddress, batching }) =>
-    action(types.PROFILE_FOLLOWERS_ITERATOR, { context, ethAddress, batching });
+export const profileFollowersIterator = ({ column, batching }) =>
+    action(types.PROFILE_FOLLOWERS_ITERATOR, { column, batching });
 export const profileFollowersIteratorError = (error, request) => {
     error.code = 'PFIE01';
     error.messageId = 'profileFollowersIterator';
@@ -101,8 +110,8 @@ export const profileFollowersIteratorError = (error, request) => {
 export const profileFollowersIteratorSuccess = (data, request, batching) =>
     action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data, request, batching });
 
-export const profileFollowingsIterator = ({ context, ethAddress, limit, allFollowings, batching }) =>
-    action(types.PROFILE_FOLLOWINGS_ITERATOR, { context, ethAddress, limit, allFollowings, batching });
+export const profileFollowingsIterator = ({ column, limit, allFollowings, batching }) =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR, { column, limit, allFollowings, batching });
 export const profileFollowingsIteratorError = (error, request) => {
     error.code = 'PFIE02';
     error.messageId = 'profileFollowingsIterator';
@@ -237,8 +246,19 @@ export const profileManaBurnedError = (error) => {
 };
 
 export const profileManaBurnedSuccess = data => action(types.PROFILE_MANA_BURNED_SUCCESS, { data });
-export const profileMoreFollowersIterator = ({ context, ethAddress, batching }) =>
-    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { context, ethAddress, batching });
+
+export const profileMoreCommentsIterator = column =>
+    action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
+export const profileMoreCommentsIteratorError = (error, request) => {
+    error.code = 'PMCIE01';
+    error.messageId = 'profileMoreCommentsIterator';
+    return action(types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR, { error, request });
+};
+export const profileMoreCommentsIteratorSuccess = (data, request) =>
+    action(types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS, { data, request });
+
+export const profileMoreFollowersIterator = ({ column, batching }) =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
 
 export const profileMoreFollowersIteratorError = (error, request) => {
     error.code = 'PMFIE01';
@@ -249,8 +269,8 @@ export const profileMoreFollowersIteratorError = (error, request) => {
 export const profileMoreFollowersIteratorSuccess = (data, request) =>
     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
 
-export const profileMoreFollowingsIterator = ({ context, ethAddress, batching }) =>
-    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { context, ethAddress, batching });
+export const profileMoreFollowingsIterator = ({ column, batching }) =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
 
 export const profileMoreFollowingsIteratorError = (error, request) => {
     error.code = 'PMFIE02';

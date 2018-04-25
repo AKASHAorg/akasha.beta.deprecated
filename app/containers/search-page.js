@@ -73,7 +73,6 @@ class SearchPage extends Component {
 
     renderProfileResults () {
         const { fetchingResults, profiles } = this.props;
-
         return (
           <ProfileList
             context={SEARCH}

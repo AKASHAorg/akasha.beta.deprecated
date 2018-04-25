@@ -34,10 +34,10 @@ function* commentsDownvoteSuccess ({ data }) {
     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
-function* getComment (entryId, commentId) {
+function* commentsGet ({ context, entryId, commentId }) {
     const channel = Channel.server.comments.getComment;
     yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ entryId, commentId }]);
+    yield apply(channel, channel.send, [{ context, entryId, commentId }]);
 }
 
 function* commentsGetCount ({ entryId }) {
@@ -280,17 +280,18 @@ function* watchCommentsIteratorChannel () { // eslint-disable-line max-statement
 function* watchCommentsPublishChannel () {
     while (true) {
         const resp = yield take(actionChannels.comments.comment);
+        const { entryId, commentId, receipt } = resp.data;
         const { actionId } = resp.request;
         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
         if (shouldApplyChanges) {
             if (resp.error) {
                 yield put(actions.commentsPublishError(resp.error));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (resp.data.entryId && resp.data.commentId) {
-                    yield fork(getComment, resp.data.entryId, resp.data.commentId);
+            } else if (receipt) {
+                yield put(actionActions.actionPublished(receipt));
+                if (entryId && commentId) {
+                    yield fork(commentsGet, { entryId, commentId });
                 }
-                if (!resp.data.receipt.success) {
+                if (!receipt.success) {
                     yield put(actions.commentsPublishError({}));
                 }
             } else {
@@ -350,6 +351,7 @@ export function* watchCommentsActions () {
     yield takeEvery(types.COMMENTS_DOWNVOTE, commentsDownvote);
     yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
+    yield takeEvery(types.COMMENTS_GET_COMMENT, commentsGet);
     yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
     yield takeEvery(types.COMMENTS_GET_SCORE, commentsGetScore);
     yield takeEvery(types.COMMENTS_GET_VOTE_OF, commentsGetVoteOf);

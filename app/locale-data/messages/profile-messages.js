@@ -332,4 +332,9 @@ export const profileMessages = defineMessages({
         description: 'plural form of profile :)',
         defaultMessage: 'profiles'
     },
+    comments: {
+        id: 'app.profile.comments',
+        description: 'label for profile comments column',
+        defaultMessage: 'Comments'
+    }
 });
