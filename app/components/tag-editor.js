@@ -159,7 +159,13 @@ class TagEditor extends Component {
             }, () => {
                 this.props.searchResetResults();
                 this.props.onChange();
-                this.tagInput.scrollIntoViewIfNeeded();
+                if(
+                    this.tagInput.scrollIntoViewIfNeeded &&
+                    typeof this.tagInput.scrollIntoViewIfNeeded === 'function'
+                ) {
+                    this.tagInput.scrollIntoViewIfNeeded();
+                }
+                this.tagInput.scrollIntoView();
             });
         }
     }
@@ -444,7 +450,7 @@ TagEditor.propTypes = {
     canCreateTags: PropTypes.bool.isRequired,
     className: PropTypes.string,
     intl: PropTypes.shape(),
-    isUpdate: PropTypes.bool,    
+    isUpdate: PropTypes.bool,
     onChange: PropTypes.func,
     onTagAdd: PropTypes.func.isRequired,
     onTagRemove: PropTypes.func.isRequired,
