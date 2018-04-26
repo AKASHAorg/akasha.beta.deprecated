@@ -35,6 +35,7 @@ class EntryCard extends Component {
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
         const { author, blockNr, canClaimPending, claimPending, entry,
             fetchingEntryBalance, isPending, large, style, votePending } = nextProps;
+
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
@@ -91,7 +92,7 @@ class EntryCard extends Component {
     };
 
     getVersion = (version) => {
-        const { entry, loggedAkashaId, entryPageShow } = this.props;
+        // const { entry, loggedAkashaId, entryPageShow } = this.props;
         // const query = version !== undefined ? `?version=${version}` : '';
         // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
         // entryPageShow(entry.get('entryId'));
@@ -199,6 +200,7 @@ class EntryCard extends Component {
             'entry-card_large': large,
             'entry-card_new-entry': markAsNew
         });
+
         return (
           <Card
             className={cardClass}
@@ -262,17 +264,18 @@ class EntryCard extends Component {
                   </Link>
                 </div>,
               hasContent && !hideContent && content.get('excerpt') &&
-                <div className="entry-card__excerpt" key={`${entryId}-excerpt`}>
-                  <Link
-                    className="unstyled-link"
-                    to={{
-                        pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
-                        state: { overlay: true }
-                    }}
-                  >
+                <Link
+                  key={`${entryId}-excerpt`}
+                  className="unstyled-link"
+                  to={{
+                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
+                      state: { overlay: true }
+                  }}
+                >
+                  <div className="entry-card__excerpt">
                     <span className="content-link">{content.get('excerpt')}</span>
-                  </Link>
-                </div>,
+                  </div>
+                </Link>,
               !hideContent && <div className="entry-card__tags" key={`${entryId}-tags`}>
                   {content.get('tags').map(tag => (
                     <TagPopover
@@ -326,6 +329,7 @@ EntryCard.propTypes = {
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
     votePending: PropTypes.bool,
+    markAsNew: PropTypes.bool,
 };
 
 export default withRouter(injectIntl(EntryCard));

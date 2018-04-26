@@ -30,6 +30,7 @@ export const AppRecord = Record({
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
     showNavigationModal: false,
+    showNewDashboardModal: false,
     showNotificationsPanel: false,
     showPreview: null,
     showProfileEditor: false,

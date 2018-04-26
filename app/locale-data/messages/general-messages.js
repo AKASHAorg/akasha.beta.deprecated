@@ -847,6 +847,11 @@ const generalMessages = defineMessages({
         id: 'app.general.externalNavigationAreYouSure',
         description: 'warning displayed when clicking an external link',
         defaultMessage: 'Are you sure you want to go there?'
+    },
+    loadingImage: {
+        id: 'app.general.loadingImage',
+        description: 'message to display when an image is in loading state',
+        defaultMessage: 'Loading image'
     }
 });
 export { generalMessages };

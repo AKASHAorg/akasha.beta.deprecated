@@ -62,6 +62,7 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, baseWidth, type, ...
           <DataLoader
             flag
             timeout={500}
+            className="column__data-loader"
           />
         }
         {(!passedProps.column || passedProps.column.entriesList.size === 0) && !passedProps.fetching &&
@@ -109,7 +110,7 @@ const mapStateToProps = (state, ownProps) => {
         profileEntriesList: state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']),
         fetchingEntries,
         fetchingMoreEntries,
-        moreEntries,
+        moreProfileEntries: moreEntries,
         fetchingFollowers: selectFetchingFollowers(state, ethAddress),
         fetchingMoreFollowers: selectFetchingMoreFollowers(state, ethAddress),
         followers: selectFollowers(state, ethAddress),

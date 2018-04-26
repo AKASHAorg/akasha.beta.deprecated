@@ -1,38 +1,29 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import { equals } from 'ramda';
+import classNames from 'classnames';
+import { injectIntl } from 'react-intl';
 import imageCreator, { findClosestMatch } from '../utils/imageUtils';
+import { generalMessages } from '../locale-data/messages';
+import { Icon } from './';
 class LazyImageLoader extends Component {
     state = {
-        loadedImageSrc: null
+        loaded: false,
+        errored: false,
     }
-
-    componentDidMount () {
-        window.requestIdleCallback(() => {
-            this._loadImage(this.props.image, this.props.baseWidth);
-        });
-    }
-
+    idleCallbackHandler = null;
     shouldComponentUpdate (nextProps, nextState) {
         return nextProps.baseWidth !== this.props.baseWidth ||
-            nextState.loadedImageSrc !== this.state.loadedImageSrc ||
+            nextState.loaded !== this.state.loaded ||
+            nextState.errored !== this.state.errored ||
             !equals(nextProps.image, this.props.image);
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { baseWidth } = nextProps;
-        if (baseWidth !== this.props.baseWidth) {
-            window.requestIdleCallback(() => {
-                this._loadImage(this.props.image, baseWidth);
-            });
+    componentWillUnmount = () => {
+        if(this.idleCallbackHandler) {
+            window.cancelIdleCallback(this.idleCallbackHandler);
+            this.idleCallbackHandler = null;
         }
-    }
-
-    _loadImage = (image, baseWidth) => {
-        const img = new Image();
-        const imageSrc = this._getImageSrc(image, baseWidth)
-        img.src = imageSrc;
-        img.onload = this._handleImageLoad(imageSrc);
     }
 
     _createImageRef = (node) => this.imageNodeRef = node;
@@ -47,22 +38,54 @@ class LazyImageLoader extends Component {
         return '';
     };
 
-    _handleImageLoad = imageSrc => () => {
-        if(this.imageNodeRef) {
+    _handleImageLoad = (imgSrc) => () => {
+        this.idleCallbackHandler = window.requestIdleCallback(() => {
             this.setState({
-                loadedImageSrc: imageSrc
+                loaded: imgSrc,
+                errored: false
             });
-        }
+        }, {
+            timeout: 500
+        });
+    }
+
+    _handleImageError = (imgSrc) => () => {
+        this.setState({
+            loaded: true,
+            errored: imgSrc,
+        });
     }
 
     render () {
-        return (
+        const { loaded, errored } = this.state;
+        const { className, image, baseUrl, intl } = this.props;
+        const source = this._getImageSrc(image, baseUrl);
+        const imageLoaded = source === loaded;
+        const imageErrored = source === errored;
+        const rootClass = classNames({
+            [`${className}_loading`]: !imageLoaded && !imageErrored,
+            [`${className}_loading loaded`]: imageLoaded && !imageErrored,
+            [`${className}_loading errored`]: imageLoaded && imageErrored,
+        });
+        return [
+          <div key="loading_message" className={rootClass}>
+            <div className="loading-message-inner">
+              <Icon type="photoImage" width="32px" height="32px" />
+              <div
+                className="text-message">
+                {intl.formatMessage(generalMessages.loadingImage)}
+              </div>
+            </div>
+          </div>,
           <img
-            className={this.props.className}
+            key="image"
             ref={this._createImageRef}
-            src={this.state.loadedImageSrc ? this.state.loadedImageSrc : ''}
+            src={source}
+            style={{ width: '100%' }}
+            onError={this._handleImageError(source)}
+            onLoad={this._handleImageLoad(source)}
           />
-        );
+        ];
     }
 }
 
@@ -77,6 +100,7 @@ LazyImageLoader.propTypes = {
     baseUrl: PropTypes.string,
     baseWidth: PropTypes.number,
     className: PropTypes.string,
+    intl: PropTypes.shape(),
 }
 
-export default LazyImageLoader;
+export default injectIntl(LazyImageLoader);

@@ -93,7 +93,7 @@ class EntryPageAction extends Component {
           />
         );
     };
-
+    /* eslint-disable complexity */
     renderOwnEntryActions = () => {
         const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
             lists, listsAll, listSearchKeyword } = this.props;
