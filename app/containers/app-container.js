@@ -18,9 +18,9 @@ import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
 import { AppErrorBoundary, AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
-    DashboardSecondarySidebar, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
-    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
-    NotificationsPanel, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
+    DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
+    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, NotificationsPanel,
+    NewDashboardModal, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
     ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
     ProfileSettings, WalletPanel, FullSizeImageViewer, CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
@@ -160,7 +160,6 @@ class AppContainer extends Component {
                           <Redirect to={`/dashboard/${activeDashboard}`} />
                         }
                         <SecondarySidebar shown={appState.get('showSecondarySidebar')}>
-                          <Route path="/dashboard/:dashboardId?" component={DashboardSecondarySidebar} />
                           <Route path="/draft/:draftType/:draftId" component={NewEntrySecondarySidebar} />
                           <Route path="/profileoverview/:title" component={ProfileOverviewSecondarySidebar} />
                         </SecondarySidebar>
@@ -229,6 +228,9 @@ class AppContainer extends Component {
                   {showIpfsDetailsModal && <IpfsDetailsModal />}
                   {appState.get('showNavigationModal') &&
                     <NavigationModal toggleNavigationModal={this.props.toggleNavigationModal} />
+                  }
+                  {appState.get('showNewDashboardModal') &&
+                    <NewDashboardModal />
                   }
                   {needAuth && !needFunds && <ConfirmationDialog intl={intl} needAuth={needAuth} />}
                   {appState.get('showTerms') && <Terms hideTerms={hideTerms} />}

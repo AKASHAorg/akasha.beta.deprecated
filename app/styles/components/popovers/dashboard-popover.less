@@ -1,0 +1,97 @@
+.dashboard-popover {
+    width: 250px;
+
+    .ant-popover-inner-content {
+        padding: 5px;
+    }
+
+    &__button {
+        height: 36px;
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        background-color: @dark-background;
+    }
+
+    &__link {
+        width: 100%;
+    }
+
+    &__list {
+        overflow-y: auto;
+    }
+
+    &__icon {
+        height: 16px;
+        width: 16px;
+        font-size: 16px;
+        flex: 0 0 auto;
+        &_delete {
+            margin-left: 10px;
+        }
+    }
+
+    &__row {
+        display: flex;
+        justify-content: space-between;
+        height: 42px;
+        border-radius: 4px;
+        padding: 8px;
+        cursor: pointer;
+        &:hover {
+            background-color: @background;
+        }
+        &_hovered {
+            background-color: @background;            
+        }
+        &_active {
+            color: @heading-color;
+            font-weight: 500;            
+            // background-color: @dark-background;
+        }
+        &_input {
+            cursor: default;
+        }
+    }
+
+    &__row-menu {
+        display: inline-flex !important;
+    }
+
+    &__input {
+        border: none;
+        outline: none;
+        background-color: transparent;
+    }
+
+    &__name {
+        flex: 1 1 auto;
+        max-width: 145px;
+        display: inline-block;
+    }
+
+    &__title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 15px;
+        cursor: pointer;
+        color: @heading-color;
+    }
+
+    &__title-text {
+        padding-left: 10px;
+        width: 145px;
+    }
+
+    &__left-item {
+        margin-right: 10px;
+    }
+
+    &__small-icon {
+        width: 11px;
+        height: 11px;
+    }
+}
