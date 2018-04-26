@@ -302,7 +302,7 @@
         "deb",
         "zip",
         "AppImage",
-          "snap"
+        "snap"
       ],
       "icon": "icons"
     },

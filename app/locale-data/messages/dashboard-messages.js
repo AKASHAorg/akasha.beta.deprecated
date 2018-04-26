@@ -206,5 +206,25 @@ const dashboardMessages = defineMessages({
         description: 'panel subtitle for creating a new list and adding it to a column',
         defaultMessage: 'Please create a list'
     },
+    akashaBoard: {
+        id: 'app.dashboard.akashaBoard',
+        description: 'label for dashboard top bar popover',
+        defaultMessage: 'Akasha Board'
+    },
+    newBoard: {
+        id: 'app.dashboard.newBoard',
+        description: 'label for dashboard popover new board button',
+        defaultMessage: 'New board'
+    },
+    createNewSubtitle: {
+        id: 'app.dashboard.createNewSubtitle',
+        description: 'subtitle for creating a new board modal',
+        defaultMessage: 'Please insert the name of your board'
+    },
+    modalInputPlaceholder: {
+        id: 'app.dashboard.modalInputPlaceholder',
+        description: 'placeholder for new dashboard modal input',
+        defaultMessage: 'Type the name of your board here'
+    },
 });
 export { dashboardMessages };
