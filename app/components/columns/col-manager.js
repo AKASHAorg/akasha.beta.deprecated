@@ -27,7 +27,7 @@ class ColManager extends Component {
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
         this.poolingInterval = {};
         this.poolingTimeout = null;
-        this.poolingDelay = 60000;
+        this.poolingDelay = 10000;
         this.colFirstEntry = new Map();
         this.scrollPending = -1;
         this.requestPoolingTimeout = -1;
@@ -140,9 +140,11 @@ class ColManager extends Component {
     }
 
     _createRequestPooling = (id) => {
-        this.poolingInterval[id] = setInterval(() => {
-            this.props.onItemPooling(this.props.column.toJS());
-        }, this.poolingDelay);
+        if(!this.unmounting && !this.poolingInterval[id]) {
+            this.poolingInterval[id] = setInterval(() => {
+                this.props.onItemPooling(this.props.column.toJS());
+            }, this.poolingDelay);
+        }
     }
 
     _clearIntervals = () => {
@@ -151,6 +153,7 @@ class ColManager extends Component {
             const isPooling = this.poolingInterval[column.id] > 0;
             if (isPooling) {
                 this.poolingInterval[column.id] = clearInterval(this.poolingInterval[column.id]);
+                this.poolingInterval[column.id] = null;
             }
         }
     }
@@ -238,18 +241,19 @@ class ColManager extends Component {
     }
 
     componentWillUnmount () {
+        this._resetColState(this.props.column.id);
         const isPooling = this.poolingInterval[this.props.column.id] > 0;
         if (isPooling) {
-            clearInterval(this.poolingInterval[this.props.column.id]);
+            this.poolingInterval[this.props.column.id] = clearInterval(this.poolingInterval[this.props.column.id]);
+            this.poolingInterval[this.props.column.id] = null;
         }
         this._rootNodeRef.removeEventListener('scroll', this._debouncedScroll);
         window.removeEventListener('resize', this._debouncedResize);
-        window.clearTimeout(this.scrollPending);
-        window.clearTimeout(this.requestPoolingTimeout);
+        this.scrollPending = window.clearTimeout(this.scrollPending);
+        this.requestPoolingTimeout = window.clearTimeout(this.requestPoolingTimeout);
         if(this.props.onUnmount) {
             this.props.onUnmount(this.props.column);
         }
-        this._resetColState(this.props.column.id);
         this.unmounting = true;
     }
 
@@ -337,7 +341,7 @@ class ColManager extends Component {
                 accHeight = Math.ceil(accHeight + item.height + (item.height * 0.1));
             }
             const delta = Math.abs(topIndex - state[id]);
-            if (delta >= 1 || items[id].length === 0) {
+            if ((delta >= 1 || items[id].length === 0) && !this.unmounting) {
                 this.setState({
                     [id]: topIndex
                 }, () => {
@@ -358,7 +362,7 @@ class ColManager extends Component {
                 this._loadMoreIfNeeded(column);
             }
             this.scrollPending = -1;
-        })
+        });
     }
     /**
      * get the index of the last visible element based on top index;
