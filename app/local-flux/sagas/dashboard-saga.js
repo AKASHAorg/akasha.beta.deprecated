@@ -5,6 +5,7 @@ import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
 import { selectActiveDashboardId, selectDashboards,
     selectLoggedEthAddress } from '../selectors';
+import getHistory from '../../history';
 
 function* reorderDashboards () {
     const ethAddress = yield select(selectLoggedEthAddress);
@@ -21,10 +22,16 @@ function* dashboardAdd ({ name, columns = [] }) {
             [{ ethAddress, columns, name }]
         );
         yield put(actions.dashboardAddSuccess(dashboard));
-        yield reorderDashboards();
+        yield call(reorderDashboards, []);
+        yield call(navigateToActiveDashboard, []);
     } catch (error) {
         yield put(actions.dashboardAddError(error));
     }
+}
+
+function* navigateToActiveDashboard () {
+    const dashboardId = yield select(selectActiveDashboardId);
+    yield call((getHistory()).push, `/dashboard/${dashboardId}`);
 }
 
 function* dashboardAddColumn ({ columnType, value }) {
@@ -55,7 +62,8 @@ function* dashboardDelete ({ id }) {
         yield apply(dashboardService, dashboardService.deleteDashboard, [id]);
         yield fork(dashboardSetNextActive, id); // eslint-disable-line
         yield put(actions.dashboardDeleteSuccess({ id }));
-        yield reorderDashboards();
+        yield call(reorderDashboards, []);
+        yield call(navigateToActiveDashboard, []);
     } catch (error) {
         yield put(actions.dashboardDeleteError(error));
     }

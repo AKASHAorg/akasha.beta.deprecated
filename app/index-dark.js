@@ -1,7 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
-import createHashHistory from 'history/createHashHistory';
 import Route from 'react-router-dom/Route';
 import {ConnectedRouter} from 'react-router-redux';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
@@ -13,8 +12,9 @@ import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import {AppContainer} from './containers';
 import './styles/core.scss';
 import './styles/ant-vars/extract-dark-theme.less';
+import getHistory from "./history";
 
-const history = createHashHistory();
+export const history = getHistory();
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
 
