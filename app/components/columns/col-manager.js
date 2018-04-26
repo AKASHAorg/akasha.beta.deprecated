@@ -27,7 +27,7 @@ class ColManager extends Component {
         this._debouncedResize = throttle(this._onResize, 100, { trailing: true });
         this.poolingInterval = {};
         this.poolingTimeout = null;
-        this.poolingDelay = 10000;
+        this.poolingDelay = 60000;
         this.colFirstEntry = new Map();
         this.scrollPending = -1;
         this.requestPoolingTimeout = -1;
