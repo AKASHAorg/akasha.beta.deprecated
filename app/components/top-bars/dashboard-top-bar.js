@@ -10,7 +10,7 @@ import { selectActiveDashboard, selectActiveDashboardId,
     selectActiveDashboardColumns } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { Navigation, PlusSquareIcon, TopBarIcon } from '../';
+import { DashboardPopover, Navigation, PlusSquareIcon, TopBarIcon } from '../';
 
 const iconsTypes = {
     [columnTypes.latest]: 'entries',
@@ -30,6 +30,15 @@ const removeClass = (id) => {
 };
 
 class DashboardTopBar extends Component {
+    componentWillReceiveProps (nextProps) {
+        const { history } = this.props;
+        if (nextProps.activeDashboardId !== this.props.activeDashboardId &&
+            nextProps.match.params.dashboardId !== nextProps.activeDashboardId
+        ) {
+            history.push(`/dashboard/${nextProps.activeDashboardId}`);
+        }
+    }
+
     shouldComponentUpdate (nextProps) {
         return !!(symmetricDifference([this.props], [pick(Object.keys(this.props), nextProps)])).length;
     }
@@ -71,6 +80,7 @@ class DashboardTopBar extends Component {
         return (
           <div className="flex-center-y dashboard-top-bar">
             <Navigation />
+            <DashboardPopover />
             {columns.map((column, i) => (
               <TopBarIcon
                 key={column.get('id')}
@@ -102,6 +112,8 @@ DashboardTopBar.propTypes = {
     dashboardAddNewColumn: PropTypes.func.isRequired,
     dashboardReorderColumn: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    history: PropTypes.shape(),
+    match: PropTypes.shape(),
     lists: PropTypes.shape().isRequired,
 };
 
