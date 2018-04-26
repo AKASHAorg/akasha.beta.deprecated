@@ -21,7 +21,8 @@ class LazyImageLoader extends Component {
 
     componentWillUnmount = () => {
         if(this.idleCallbackHandler) {
-            window.cancelIdleCallback(this.idleCallbackHandler)
+            window.cancelIdleCallback(this.idleCallbackHandler);
+            this.idleCallbackHandler = null;
         }
     }
 
