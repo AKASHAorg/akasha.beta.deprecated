@@ -9,7 +9,8 @@ const TempRec = Record({
     entriesList: List(),
     ethAddress: '',
     context: '',
-    value: ''
+    value: '',
+    hasMoreEntries: false,
 });
 
 const getLatestColumnProps = props => ({
@@ -25,7 +26,7 @@ const getLatestColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getListColumnProps = props => {
@@ -57,7 +58,7 @@ const getTagColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.tagSearchResults,
     onSearch: props.searchTags,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getStreamColumnProps = props => ({
@@ -72,7 +73,7 @@ const getStreamColumnProps = props => ({
     onItemPooling: col => props.entryStreamIterator({ ...col, reversed: true }),
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getProfileColumnProps = props => ({
@@ -89,7 +90,7 @@ const getProfileColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     dataSource: props.profileSearchResults,
     onSearch: props.searchProfiles,
-    onNewEntriesResolveRequest: data => props.entryGetShort(data),
+    onNewEntriesResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
 });
 
 const getProfileEntriesColumnProps = props => ({
@@ -99,7 +100,8 @@ const getProfileEntriesColumnProps = props => ({
         entriesList: props.profileEntriesList,
         ethAddress: props.ethAddress,
         value: props.ethAddress,
-        context: 'profileEntries'
+        context: 'profileEntries',
+        hasMoreEntries: props.moreProfileEntries,
     }),
     fetching: props.fetchingEntries,
     fetchingMore: props.fetchingMoreEntries,
@@ -119,7 +121,8 @@ const getProfileFollowersColumnProps = props => ({
         id: 'profileFollowers',
         entriesList: props.followers.map(follower => follower.ethAddress),
         ethAddress: props.ethAddress,
-        context: 'profilePageFollowers'
+        context: 'profilePageFollowers',
+        hasMoreEntries: props.moreFollowers,
     }),
     entries: props.profiles,
     fetching: props.fetchingFollowers,
@@ -141,6 +144,7 @@ const getProfileFollowingsColumnProps = props => ({
         entriesList: props.followings.map(foll => foll.ethAddress),
         ethAddress: props.ethAddress,
         context: 'profilePageFollowings',
+        hasMoreEntries: props.moreFollowings,
     }),
     entries: props.profiles,
     fetching: props.fetchingFollowings,

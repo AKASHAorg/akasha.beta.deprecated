@@ -5,6 +5,7 @@ export arrowDropdownOpen from './arrow-dropdown-open';
 export arrowLeft from './arrow-left';
 export arrowRight from './arrow-right';
 export arrowUp from './arrow-up';
+export arrowsUpDown from './arrows-up-down';
 export back from './back';
 export bold from './bold';
 export bookmark from './bookmark';

@@ -243,7 +243,7 @@ class Sidebar extends Component {
               <div className="flex-center-x sidebar__new-entry">
                 <Popover
                   arrowPointAtCenter
-                  placement="rightTop"
+                  placement="right"
                   content={this._getEntryMenu()}
                   overlayClassName="entry-menu-popover"
                 >

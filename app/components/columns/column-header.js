@@ -98,7 +98,7 @@ class ColumnHeader extends Component {
 
     onRefresh = () => {
         const { column } = this.props;
-        if(column.newEntries && column.newEntries.size > 0) {
+        if (column.newEntries && column.newEntries.size > 0) {
             this._colManagerComponent.loadNewItems();
         } else {
             this._colManagerComponent.resetColumn(this.props.column.id);
@@ -298,10 +298,12 @@ class ColumnHeader extends Component {
                 </div>
                 {this.showModal()}
                 {!editMode &&
-                  <div className="column-header-wrapper__refresh-icon">
+                  <div
+                    className="column-header-wrapper__refresh-icon"
+                    onClick={this.onRefresh}
+                  >
                     <Icon
                       className="content-link"
-                      onClick={this.onRefresh}
                       type="refresh"
                     />
                     {column && column.get('newEntries') && column.get('newEntries').size > 0 &&
