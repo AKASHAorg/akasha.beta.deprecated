@@ -205,7 +205,7 @@ class NewColumn extends Component {
     render () { // eslint-disable-line complexity
         const { activeDashboard, column, entries, dashboardId, intl, lists, newColumn, previewEntries,
             profileResults, tagResults } = this.props;
-        if (dashboardId !== activeDashboard.get('id')) {
+        if (!activeDashboard || (dashboardId !== activeDashboard.get('id'))) {
             return null;
         }
         if (!newColumn) {
