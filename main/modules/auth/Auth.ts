@@ -1,5 +1,6 @@
-import { Cipher, createCipher, createDecipher, Decipher, randomBytes } from 'crypto';
+import { Cipher, createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
+// import { takeLast }from 'ramda';
 import {
     addHexPrefix,
     bufferToHex,
@@ -224,10 +225,12 @@ export class Auth implements AuthInterface {
      * @private
      */
     _generateRandom() {
-        return randomBytesAsync(64).then((buff: Buffer) => {
-            this._cipher = createCipher('aes-256-ctr', buff.toString('hex'));
-            this._decipher = createDecipher('aes-256-ctr', buff.toString('hex'));
-            return true;
+        return randomBytesAsync(16).then((buff: Buffer) => {
+            return randomBytesAsync(16).then((iv: Buffer) => {
+                this._cipher = createCipheriv('aes-256-gcm', buff.toString('hex'), iv);
+                this._decipher = createDecipheriv('aes-256-gcm', buff.toString('hex'), iv);
+                return true;
+            });
         });
     }
 

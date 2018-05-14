@@ -4,6 +4,7 @@ import * as Promise from 'bluebird';
 import contracts from '../../contracts/index';
 import schema from '../utils/jsonschema';
 import entriesCache from '../notifications/entries';
+import GethConnector from "@akashaproject/geth-connector/lib/GethConnector";
 
 const publish = {
     'id': '/publish',
@@ -41,6 +42,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
     let ipfsEntry = new IpfsEntry();
     const ipfsHash = yield ipfsEntry.create(data.content, data.tags, data.entryType);
     const decodedHash = decodeHash(ipfsHash);
+    const tags = data.tags.map(tag => GethConnector.getInstance().web3.fromUtf8(tag));
     let publishMethod;
     switch (data.entryType) {
         case 0:
@@ -55,7 +57,7 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest, cb) {
         default:
             publishMethod = contracts.instance.Entries.publishOther;
     }
-    const txData = publishMethod.request(...decodedHash, data.tags, { gas: 800000 });
+    const txData = publishMethod.request(...decodedHash, tags, { gas: 800000 });
     ipfsEntry = null;
     delete data.content;
     delete data.tags;

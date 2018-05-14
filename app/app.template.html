@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>AKASHA</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src https:">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body style="visibility: hidden">
@@ -12,7 +13,7 @@
         const DARK_THEME = "1";
         const fileRef = document.createElement("link");
         const theme = localStorage.getItem('theme');
-        const fileName = (theme === DARK_THEME) ? "dark-style.css": "style.css";
+        const fileName = (theme === DARK_THEME) ? "dark-style.css" : "style.css";
         fileRef.setAttribute("rel", "stylesheet");
         fileRef.setAttribute("type", "text/css");
         fileRef.setAttribute("href", fileName);
