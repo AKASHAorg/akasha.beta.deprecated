@@ -161,7 +161,7 @@
     "less": "3.0.4",
     "less-loader": "4.1.0",
     "lodash.debounce": "4.0.8",
-    "lokijs": "^1.5.3",
+    "lokijs": "1.5.4",
     "megadraft": "0.4.37",
     "minimist": "1.2.0",
     "mocha": "5.1.1",
@@ -224,7 +224,7 @@
     "webpack-merge": "4.1.2",
     "webpack-node-externals": "1.7.2",
     "webpack-sources": "1.1.0",
-    "why-did-you-update": "^0.1.0",
+    "why-did-you-update": "0.1.1",
     "xregexp": "4.1.1"
   },
   "dependencies": {
@@ -237,8 +237,8 @@
     "compare-versions": "3.2.0",
     "electron-debug": "1.5.0",
     "electron-devtools-installer": "2.2.4",
-    "electron-log": "^2.2.14",
-    "electron-updater": "^2.21.0",
+    "electron-log": "2.2.14",
+    "electron-updater": "2.21.10",
     "electron-window-state": "4.1.1",
     "ethereumjs-util": "5.2.0",
     "idna-uts46": "1.1.0",
