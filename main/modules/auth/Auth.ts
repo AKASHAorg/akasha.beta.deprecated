@@ -227,8 +227,12 @@ export class Auth implements AuthInterface {
     _generateRandom() {
         return randomBytesAsync(16).then((buff: Buffer) => {
             return randomBytesAsync(16).then((iv: Buffer) => {
+                const extraData = randomBytes(8);
                 this._cipher = createCipheriv('aes-256-gcm', buff.toString('hex'), iv);
                 this._decipher = createDecipheriv('aes-256-gcm', buff.toString('hex'), iv);
+
+                this._cipher.setAAD(extraData);
+                this._decipher.setAAD(extraData);
                 return true;
             });
         });
@@ -258,6 +262,7 @@ export class Auth implements AuthInterface {
         if (!this.isLogged(token)) {
             throw new Error('Token is not valid');
         }
+        this._decipher.setAuthTag(this._cipher.getAuthTag());
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
