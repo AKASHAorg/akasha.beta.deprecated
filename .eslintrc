@@ -27,7 +27,8 @@
         "no-param-reassign": [0],
         "no-plusplus": 0,
         "object-curly-newline": 0,
-        "function-paren-newline": 0
+        "function-paren-newline": 0,
+        "react/no-deprecated": 0,
     },
     "settings": {
         "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"],
