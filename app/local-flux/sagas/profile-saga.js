@@ -13,9 +13,8 @@ import * as profileService from '../services/profile-service';
 import { isEthAddress } from '../../utils/dataModule';
 
 import {
-    selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLastFollower, selectLastFollowing,
-    selectLoggedEthAddress, selectNeedAuthAction, selectProfileEditToggle, selectToken, selectAllFollowings,
-    selectCurrentTotalFollowing, selectCurrentTotalFollowers } from '../selectors';
+    selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLoggedEthAddress, selectNeedAuthAction,
+    selectProfileEditToggle, selectToken, selectAllFollowings } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { getDisplayName } from '../../utils/dataModule';
@@ -771,7 +770,7 @@ function* watchProfileFollowersIteratorChannel () {
         const resp = yield take(actionChannels.profile.followersIterator);
         if (resp.error) {
             if (resp.request.lastBlock) {
-                yield put(actions.iIteratorError(resp.error, resp.request));
+                yield put(actions.profileMoreFollowersIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.profileFollowersIteratorError(resp.error, resp.request));
             }

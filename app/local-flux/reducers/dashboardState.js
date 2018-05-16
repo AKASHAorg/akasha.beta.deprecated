@@ -117,8 +117,8 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
         return state;
     }
     const column = state.getIn(['columnById', request.columnId]);    
-    if (request.columnId === columnTypes.profileEntries && column.value && request.ethAddress !== column.value) {
-        console.log('more iterator - is not the same ethAddress!!!');
+    if (request.columnId === columnTypes.profileEntries && column.value &&
+        request.ethAddress !== column.value) {
         return state;
     }
 
