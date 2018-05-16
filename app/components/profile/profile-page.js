@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { dashboardResetProfileColumns } from '../../local-flux/actions/dashboard-actions';
 import { profileGetData, profileResetColumns } from '../../local-flux/actions/profile-actions';
 import { selectProfile } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
@@ -29,6 +30,7 @@ class ProfilePage extends Component {
     componentWillUnmount () {
         const { ethAddress } = this.props.match.params;
         this.props.profileResetColumns(`0x${ethAddress}`);
+        this.props.dashboardResetProfileColumns();
     }
 
     render () {
@@ -59,6 +61,7 @@ class ProfilePage extends Component {
 }
 
 ProfilePage.propTypes = {
+    dashboardResetProfileColumns: PropTypes.func.isRequired,
     profileData: PropTypes.shape(),
     profileGetData: PropTypes.func.isRequired,
     profileResetColumns: PropTypes.func.isRequired,
@@ -76,6 +79,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
+        dashboardResetProfileColumns,
         profileGetData,
         profileResetColumns,
     }
