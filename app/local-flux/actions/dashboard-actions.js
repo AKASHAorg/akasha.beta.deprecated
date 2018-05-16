@@ -93,6 +93,8 @@ export const dashboardResetColumnEntries = columnId =>
     action(types.DASHBOARD_RESET_COLUMN_ENTRIES, { columnId });
 export const dashboardResetNewColumn = () => action(types.DASHBOARD_RESET_NEW_COLUMN);
 
+export const dashboardResetProfileColumns = () => action(types.DASHBOARD_RESET_PROFILE_COLUMNS);
+
 export const dashboardSearch = query => action(types.DASHBOARD_SEARCH, { query });
 
 export const dashboardSetActive = id => action(types.DASHBOARD_SET_ACTIVE, { id });
