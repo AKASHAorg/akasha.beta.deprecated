@@ -22,7 +22,6 @@ class ProfileList extends Component {
             }
             const isOwnProfile = profile.ethAddress === loggedEthAddress;
             const isPending = pendingProfiles && pendingProfiles.get(profile.ethAddress);
-            console.log('profile', profile.toJS());
             return (
               <ProfileCard
                 containerRef={this.container}

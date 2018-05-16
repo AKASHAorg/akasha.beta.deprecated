@@ -117,8 +117,8 @@ const entryMoreIteratorSuccess = (state, { data, request, type }) => {
         return state;
     }
     const column = state.getIn(['columnById', request.columnId]);    
-    if (request.columnId === columnTypes.profileEntries && column.value && request.ethAddress !== column.value) {
-        console.log('more iterator - is not the same ethAddress!!!');
+    if (request.columnId === columnTypes.profileEntries && column.value &&
+        request.ethAddress !== column.value) {
         return state;
     }
 
@@ -285,6 +285,15 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_RESET_NEW_COLUMN]: state =>
         state.setIn(['columnById', columnTypes.newColumn], new ColumnRecord()),
+
+    [types.DASHBOARD_RESET_PROFILE_COLUMNS]: (state) => {
+        const { profileComments, profileFollowers, profileFollowings } = columnTypes;
+        return state.mergeIn(['columnById'], {
+            profileComments: new ColumnRecord({ id: profileComments, type: profileComments }),
+            profileFollowers: new ColumnRecord({ id: profileFollowers, type: profileFollowers }),
+            profileFollowings: new ColumnRecord({ id: profileFollowings, type: profileFollowings }),
+        });
+    },
 
     [types.DASHBOARD_SEARCH]: (state, { query }) =>
         state.set('search', query),

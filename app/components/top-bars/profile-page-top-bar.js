@@ -39,6 +39,13 @@ const ProfilePageTopBar = (props) => {
             type="entries"
           />
         </Tooltip>
+        <Tooltip title={intl.formatMessage(profileMessages.comments)}>
+          <Icon
+            className="content-link profile-page-top-bar__column-icon"
+            onClick={() => scrollColumnIntoView('profile-comments')}
+            type="comment"
+          />
+        </Tooltip>
         <Tooltip title={intl.formatMessage(profileMessages.followers)}>
           <Icon
             className="content-link profile-page-top-bar__column-icon"
