@@ -14,12 +14,7 @@ matrix:
 
     - os: linux
       services: docker
-      language: node_js
-      node_js:
-        - "8.10.0"
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      language: generic
 
 cache:
   directories:
