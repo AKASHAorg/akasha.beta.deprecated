@@ -151,7 +151,7 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_ITERATOR_SUCCESS]: (state, {data, request}) => {
         let byId = state.get('byId');
-        const parent = request.parent;
+        const { context, parent } = request;
         let newState = state;
         data.collection.forEach((comm) => {
             if (!comm.parent || comm.parent === hexZero) {
@@ -168,9 +168,10 @@ const commentsState = createReducer(initialState, {
                 byParent: newState.get('byParent').set(comm.parent, list)
             });
         });
-
+        const fetchingComments = state.getIn(['flags', 'fetchingComments']).set(parent, false);
+        const commentsFetched = state.getIn(['flags', 'commentsFetched']).set(context, true);
         return newState.merge({
-            flags: state.get('flags').setIn(['fetchingComments', parent], false),
+            flags: state.get('flags').merge({ fetchingComments, commentsFetched }),
             lastBlock: state.get('lastBlock').set(parent, data.lastBlock),
             lastIndex: state.get('lastIndex').set(parent, data.lastIndex),
             moreComments: state.get('moreComments').set(parent, !!data.lastBlock),
@@ -276,6 +277,8 @@ const commentsState = createReducer(initialState, {
         });
     },
 
+    [types.ENTRY_GET_FULL]: state => state.setIn(['flags', 'commentsFetched', 'entryPage'], false),
+
     [types.PROFILE_COMMENTS_ITERATOR]: (state, { column }) =>
         state.setIn(['profileComments', column.value], new ProfileComments({ fetchingComments: true })),
 
@@ -299,4 +302,3 @@ const commentsState = createReducer(initialState, {
 });
 
 export default commentsState;
-

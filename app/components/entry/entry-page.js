@@ -67,7 +67,6 @@ class EntryPage extends Component {
     getFullEntry = ({ props } = {}) => {
         const { match } = props || this.props;
         const { akashaId, entryId, ethAddress } = match.params;
-        this.fetchComments(entryId);
         if (this.checkNewCommentsInterval) {
             clearInterval(this.checkNewCommentsInterval);
         }
@@ -89,10 +88,6 @@ class EntryPage extends Component {
 
     getEditorRef = (editor) => {
         this.commentEditor = editor && editor.refs.clickAwayableElement;
-    };
-
-    fetchComments = (entryId) => {
-        this.props.commentsIterator({ entryId, parent: '0' });
     };
 
     checkNewComments = () => {
@@ -263,7 +258,6 @@ EntryPage.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     baseUrl: PropTypes.string.isRequired,
     commentsCheckNew: PropTypes.func.isRequired,
-    commentsIterator: PropTypes.func.isRequired,
     commentsLoadNew: PropTypes.func.isRequired,
     commentsMoreIterator: PropTypes.func.isRequired,
     entry: PropTypes.shape(),
