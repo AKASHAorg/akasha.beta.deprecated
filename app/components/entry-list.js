@@ -29,8 +29,7 @@ class EntryList extends Component {
         return drafts.find(draft => draft.get('entryId') === entryId);
     }
 
-    /* eslint-disable */
-    render () {
+    render () { // eslint-disable-line complexity
         const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
             fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,
             loggedEthAddress, masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes,
@@ -43,7 +42,6 @@ class EntryList extends Component {
             const ethAddress = entry.getIn(['author', 'ethAddress']);
             const author = profiles.get(ethAddress);
             const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
-            const entryId = entry.get('entryId');
 
             return (<EntryCard
               author={author}

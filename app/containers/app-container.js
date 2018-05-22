@@ -17,12 +17,13 @@ import { reloadPage } from '../local-flux/actions/utils-actions';
 import { errorDeleteFatal } from '../local-flux/actions/error-actions';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLinkEntryPage } from './';
-import { AppErrorBoundary, AppPreferences, ConfirmationDialog, FaucetAndManafyModal, NavigateAwayModal,
-    DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
-    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification, NotificationsPanel,
-    NewDashboardModal, PageContent, PreviewPanel, ProfileOverview, ProfileOverviewSecondarySidebar,
-    ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar, Terms, TopBar, TransactionsLogPanel,
-    ProfileSettings, WalletPanel, FullSizeImageViewer, CustomDragLayer } from '../components';
+import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, FaucetAndManafyModal,
+    NavigateAwayModal, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
+    Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
+    NotificationsPanel, NewDashboardModal, PageContent, PreviewPanel, ProfileOverview,
+    ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
+    Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
+    CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 import { selectLoggedEthAddress } from '../local-flux/selectors/index';
 
@@ -165,7 +166,7 @@ class AppContainer extends Component {
                         </SecondarySidebar>
                         <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                           <Route exact path="/@:akashaId" component={ProfilePage} />
-                          <Route exact path="/0x:ethAddress" component={ProfilePage} />
+                          {/* <Route exact path="/0x:ethAddress" component={ProfilePage} /> */}
                           <Route path="/profileoverview/overview" component={ProfileOverview} />
                           <Route path="/profileoverview/myentries" component={MyEntries} />
                           <Route path="/profileoverview/highlights" component={Highlights} />
@@ -174,18 +175,23 @@ class AppContainer extends Component {
                           <Route path="/profileoverview/settings" component={ProfileSettings} />
                           <Route path="/profileoverview/preferences" component={AppPreferences} />
                           <Switch location={isOverlay ? this.previousLocation : location}>
+                            <Route exact path="/0x:ethAddress" component={ProfilePage} />
                             <Route path="/dashboard/:dashboardId?" component={DashboardPage} />
                             <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                             <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
+                            <Route path="/@:akashaId/:entryId/comment/:commentId" component={CommentPage} />
+                            <Route path="/0x:ethAddress/:entryId/comment/:commentId" component={CommentPage} />
                             <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
                             <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
                             <Route path="/search" component={SearchPage} />
                           </Switch>
                           {isOverlay &&
-                            <div>
+                            <Switch>
+                              <Route path="/@:akashaId/:entryId/comment/:commentId" component={CommentPage} />
+                              <Route path="/0x:ethAddress/:entryId/comment/:commentId" component={CommentPage} />
                               <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
                               <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
-                            </div>
+                            </Switch>
                           }
                         </PageContent>
                         <TopBar
