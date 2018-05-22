@@ -31,14 +31,18 @@ class CommentPage extends Component {
         const author = { ethAddress };
         const context = 'commentPage';
         this.props.commentsGetComment({ context, entryId, commentId, author });
-        this.props.entryGetShort({ context, entryId, ethAddress });
-        this.props.profileGetData({ ethAddress, context });        
+        this.props.entryGetShort({ context, entryId });
     }
 
     componentWillReceiveProps (nextProps) {
-        const { pendingComments } = nextProps;
+        const { entry, entryAuthor, pendingComments } = nextProps;
         if (pendingComments.size > this.props.pendingComments.size) {
             this.resetReplies();
+        }
+        const newEthAddress = entry && entry.getIn(['author', 'ethAddress']);
+        if (newEthAddress && !entryAuthor.ethAddress) {
+            const context = 'commentPage';            
+            this.props.profileGetData({ ethAddress: newEthAddress, context });                    
         }
     }
 
@@ -181,15 +185,15 @@ CommentPage.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    let { ethAddress, entryId, commentId } = ownProps.match.params;
-    ethAddress = `0x${ethAddress}`; 
+    let { entryId, commentId } = ownProps.match.params;
     const comment = selectComment(state, commentId);
+    const entry = selectEntry(state, entryId);
     const parentComment = comment && comment.parent !== '0' ? selectComment(state, comment.parent) : null;
     return {
         comment,
         commentAuthor: comment && selectProfile(state, comment.author.ethAddress),
-        entry: selectEntry(state, entryId),
-        entryAuthor: selectProfile(state, ethAddress),
+        entry,
+        entryAuthor: entry && selectProfile(state, entry.author.ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
         parentComment,
         pendingComments: selectPendingComments(state, entryId),
