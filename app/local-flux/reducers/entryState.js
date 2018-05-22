@@ -218,6 +218,9 @@ const entryState = createReducer(initialState, {
         }
         const newEntry = state.getIn(['byId', entryId]).mergeWith((old, newVal, key) => {
             if (key === 'author') {
+                if (!old.ethAddress) {
+                    return { ethAddress: data.ethAddress };
+                }
                 return old;
             }
             if (key === 'entryType' && old === -1) {
