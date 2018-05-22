@@ -12,8 +12,6 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         ethAddress={ethAddress}
         intl={intl}
         isVisible
-        noMenu
-        readOnly
         type={columnTypes.profileEntries}
       />
     </div>
@@ -23,8 +21,6 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         ethAddress={ethAddress}
         intl={intl}
         isVisible
-        noMenu
-        readOnly
         type={columnTypes.profileComments}
       />
     </div>
@@ -34,8 +30,6 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         ethAddress={ethAddress}
         intl={intl}
         isVisible
-        noMenu
-        readOnly
         type={columnTypes.profileFollowers}        
       />
     </div>
@@ -45,8 +39,6 @@ const ProfileActivity = ({ ethAddress, intl }) => (
         ethAddress={ethAddress}
         intl={intl}
         isVisible
-        noMenu
-        readOnly
         type={columnTypes.profileFollowings}
       />
     </div>

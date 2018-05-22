@@ -52,7 +52,7 @@ class CommentList extends Component {
     };
 
     render () {
-        const { comments, containerRef, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
+        const { comments, containerRef, entryId, fetchingComments, fetchingMoreComments, getTriggerRef, intl,
             loggedProfileData, moreComments, pendingComments } = this.props;
         const optimisticComments = pendingComments
             .filter(action => action.getIn(['payload', 'parent']) === '0')
@@ -68,10 +68,11 @@ class CommentList extends Component {
                 loggedProfileData={loggedProfileData}
               />
             ))}
-            {comments.map(comm => (
+            {!fetchingComments && comments.map(comm => (
               <CommentThread
                 comment={comm}
                 containerRef={containerRef}
+                entryId={entryId}
                 key={comm.commentId}
                 onReply={this.handleReply}
                 onReplyClose={this.resetReplies}
@@ -114,6 +115,7 @@ class CommentList extends Component {
 CommentList.propTypes = {
     comments: PropTypes.shape().isRequired,
     containerRef: PropTypes.shape(),
+    entryId: PropTypes.string,
     fetchingComments: PropTypes.bool,
     fetchingMoreComments: PropTypes.bool,
     getTriggerRef: PropTypes.func.isRequired,
@@ -128,6 +130,7 @@ function mapStateToProps (state) {
     const entryId = state.entryState.getIn(['fullEntry', 'entryId']);
     return {
         comments: selectEntryCommentsForParent(state, entryId, '0'),
+        entryId,
         fetchingComments: selectCommentsFlag(state, 'fetchingComments', '0'),
         fetchingMoreComments: selectCommentsFlag(state, 'fetchingMoreComments', '0'),
         loggedProfileData: selectLoggedProfileData(state),

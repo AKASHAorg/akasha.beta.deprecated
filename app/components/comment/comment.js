@@ -268,7 +268,7 @@ class Comment extends Component {
 
     render () { // eslint-disable-line max-statements, complexity
         const { author, blockNr, comment, containerRef, children, hideCommentSettings, intl,
-            onReply, resolvingComment, showReplyButton, vote, votePending } = this.props;
+            isHighlighted, onReply, resolvingComment, showReplyButton, vote, votePending } = this.props;
         const { editorState, isExpanded, isHidden } = this.state;
         const hideContent = !this.isLogged() && hideCommentSettings.checked &&
             comment.score < hideCommentSettings.value && isHidden;
@@ -289,6 +289,9 @@ class Comment extends Component {
             commentText;
         const ethAddress = comment.author.ethAddress;
         const akashaId = author && author.get('akashaId');
+        const innerClass = classNames('comment__inner', {
+            'comment__inner_highlighted': isHighlighted
+        });
         const authorClass = classNames('content-link comment__author-name', {
             'comment__author-name_logged': this.isLogged(),
             'comment__author-name_author': !this.isLogged() && this.isEntryAuthor()
@@ -309,7 +312,7 @@ class Comment extends Component {
 
         return (
           <div id={`comment-${comment.get('commentId')}`} className="comment">
-            <div className="comment__inner">
+            <div className={innerClass}>
               <div className="comment__votes">
                 <VotePopover
                   onSubmit={this.handleVote}
@@ -397,6 +400,7 @@ Comment.propTypes = {
     ethAddress: PropTypes.string,
     hideCommentSettings: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
+    isHighlighted: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
     onReply: PropTypes.func,
     resolvingComment: PropTypes.bool,
@@ -408,19 +412,17 @@ Comment.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const { commentId } = ownProps;
-    const ethAddress = state.entryState.getIn(['fullEntry', 'author', 'ethAddress']);
+    const { commentId, context } = ownProps;
     const comment = selectComment(state, commentId);
+    const resolvingComment = state.commentsState.getIn(['flags', 'pendingComments', context, commentId]) ||
+        selectResolvingComment(state, comment.ipfsHash);
     return {
         author: selectProfile(state, comment.author.ethAddress),
         blockNr: selectBlockNumber(state),
         comment,
-        entryId: state.entryState.getIn(['fullEntry', 'entryId']),
-        entryTitle: state.entryState.getIn(['fullEntry', 'content', 'title']),
-        ethAddress,
         hideCommentSettings: selectHideCommentSettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        resolvingComment: selectResolvingComment(state, comment.ipfsHash),
+        resolvingComment,
         vote: selectCommentVote(state, commentId),
         votePending: !!selectPendingCommentVote(state, commentId)
     };

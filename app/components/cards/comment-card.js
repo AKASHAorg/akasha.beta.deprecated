@@ -308,6 +308,8 @@ class CommentCard extends Component {
             style } = this.props;
         const { content, expanded, hidden } = this.state;
         const entryId = entry && entry.get('entryId');
+        const ethAddress = entry && (entry.getIn(['author', 'ethAddress']) || '0x0');
+        const commentId = comment.commentId;
         const hasContent = !!content;
         const hideContent = !this.isOwnComment() && hideCommentSettings.checked &&
             comment.score < hideCommentSettings.value && !hidden;
@@ -327,7 +329,7 @@ class CommentCard extends Component {
                   <Link
                     className="unstyled-link"
                     to={{
-                        pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
+                        pathname: `/${ethAddress}/${entryId}/comment/${commentId}`,
                         state: { overlay: true }
                     }}
                   >

@@ -114,6 +114,8 @@ const getProfileCommentsColumnProps = (props) => ({
         props.dashboardResetColumnEntries(column.id);
         props.profileCommentsIterator(column, true);
     },
+    readOnly: true,
+    noMenu: true,
     itemCard: <CommentCard />,
 });
 
@@ -131,6 +133,7 @@ const getProfileEntriesColumnProps = props => ({
         props.entryProfileIterator(column, true)
     },
     noMenu: true,
+    readOnly: true,
 });
 
 const getProfileFollowersColumnProps = props => ({
@@ -146,6 +149,8 @@ const getProfileFollowersColumnProps = props => ({
         props.profileFollowersIterator({ column, batching: true});
     },
     itemCard: <ProfileCard />,
+    noMenu: true,    
+    readOnly: true,    
 });
 
 const getProfileFollowingsColumnProps = props => ({
@@ -160,7 +165,9 @@ const getProfileFollowingsColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.profileFollowingsIterator({ column, batching: true });
     },
-    itemCard: <ProfileCard />
+    itemCard: <ProfileCard />,
+    noMenu: true,    
+    readOnly: true,
 });
 
 export default {
