@@ -633,7 +633,6 @@ function* handleCommentsIteratorResponse (resp) { // eslint-disable-line max-sta
             const { author, commentId, entryId, parent } = collection[i];
             yield put(entryActions.entryGetShort({
                 context,
-                ethAddress: author,
                 entryId,
                 batching: true,
             }));

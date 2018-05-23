@@ -5,8 +5,8 @@ import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
-import { selectEntryCommentsForParent, selectLoggedProfileData, selectMoreComments,
-    selectProfile } from '../../local-flux/selectors';
+import { selectEntry, selectEntryCommentsForParent, selectFullEntry, selectLoggedProfileData,
+    selectMoreComments, selectProfile } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -59,11 +59,32 @@ class CommentThread extends Component {
     };
 
     renderReplies = () => {
-        const { containerRef, replies } = this.props;
+        const { containerRef, context, entryId, entryTitle, ethAddress, highlightComment, onlyReply,
+            replies } = this.props;
+        if (onlyReply) {
+            const comment = replies.find(comm => comm.commentId === onlyReply);
+            return comment && (
+              <Comment
+                commentId={comment.commentId}
+                containerRef={containerRef}
+                context={context}
+                entryId={entryId}
+                entryTitle={entryTitle}
+                ethAddress={ethAddress}
+                isHighlighted={comment.commentId === highlightComment}
+                key={comment.commentId}
+              />
+            );
+        }
         return replies.map(comment => (
           <Comment
             commentId={comment.commentId}
             containerRef={containerRef}
+            context={context}            
+            entryId={entryId}
+            entryTitle={entryTitle}
+            ethAddress={ethAddress}
+            isHighlighted={comment.commentId === highlightComment}
             key={comment.commentId}
           />
         ));
@@ -97,13 +118,19 @@ class CommentThread extends Component {
     };
 
     render () {
-        const { comment, containerRef, intl, moreReplies, onReply, replies, replyTo } = this.props;
-
+        const { comment, containerRef, context, entryId, entryTitle, ethAddress, highlightComment, intl,
+            moreReplies, onReply, replies, replyTo } = this.props;
+        const isHighlighted = highlightComment && highlightComment === comment.commentId;
         return (
           <div className="comment-thread">
             <Comment
               commentId={comment.commentId}
               containerRef={containerRef}
+              context={context}
+              entryId={entryId}
+              entryTitle={entryTitle}
+              ethAddress={ethAddress}              
+              isHighlighted={isHighlighted}
               key={comment.commentId}
               onReply={onReply}
               showReplyButton
@@ -128,12 +155,15 @@ CommentThread.propTypes = {
     comment: PropTypes.shape().isRequired,
     commentsMoreIterator: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
+    context: PropTypes.string,
     entryId: PropTypes.string,
     entryTitle: PropTypes.string,
     ethAddress: PropTypes.string,
+    highlightComment: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
     intl: PropTypes.shape(),
     moreReplies: PropTypes.bool,
+    onlyReply: PropTypes.string,
     onReply: PropTypes.func.isRequired,
     onReplyClose: PropTypes.func.isRequired,
     pendingComments: PropTypes.shape(),
@@ -142,13 +172,14 @@ CommentThread.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const { comment } = ownProps;
-    const entryId = state.entryState.getIn(['fullEntry', 'entryId']);
+    const { comment, entryId } = ownProps;
+    const entry = entryId ?
+        selectEntry(state, entryId) :
+        selectFullEntry(state);
     return {
         author: selectProfile(state, comment.author.ethAddress),
-        entryId,
-        entryTitle: state.entryState.getIn(['fullEntry', 'content', 'title']),
-        ethAddress: state.entryState.getIn(['fullEntry', 'author', 'ethAddress']),
+        entryTitle: entry && entry.getIn(['content', 'title']),
+        ethAddress: entry && entry.getIn(['author', 'ethAddress']),
         loggedProfileData: selectLoggedProfileData(state),
         moreReplies: selectMoreComments(state, comment.commentId),
         replies: selectEntryCommentsForParent(state, entryId, comment.commentId),

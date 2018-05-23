@@ -1,0 +1,117 @@
+.comment-page {
+    position: fixed;
+    top: 40px;
+    bottom: 0;
+    left: 64px;
+    right: 0;
+    overflow-x: hidden;
+    background-color: @background;
+    z-index: 999999;
+
+    &__inner {
+        margin: 0 auto;
+    }
+
+    &__entry-card {
+        margin: 24px auto;
+        width: 700px;
+        background-color: @light-background;
+    }
+
+    &__content {
+        z-index: 10;
+        position: relative;
+        .website-info-card {
+            max-width: @text-editor-width;
+            background: @card-bg-color;
+        }
+    }
+
+    &__unresolved-placeholder {
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__retry-button {
+        color: @primary-color;
+        font-weight: 500;
+        font-size: 13px;
+        padding: 2px;
+    }
+
+    &__comments {
+        max-width: 700px;
+        margin: 16px auto;
+        background-color: @light-background;
+        padding: 20px;
+        border-radius: 4px;
+        border: 2px solid @light-border;
+    }
+
+    &__comments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: @text-color-secondary;
+    }
+
+    &__comments-title {
+        color: @heading-color;
+        font-size: 18px;
+    }
+
+    &__comment-icon {
+        width: 16px;
+        height: 16px;
+        stroke: @text-color-secondary !important;
+        margin-left: 10px;
+    }
+
+    &__new-comments-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 2;
+        color: @primary-color;
+    }
+
+    &__new-comments {
+        background-color: @light-background;
+        border-radius: 6px;
+        position: absolute;
+        left: 50%;
+        padding: 0px 4px;
+    }
+
+    &__button-wrapper {
+        &_fixed {
+            position: fixed;
+            left: 64px;
+            right: 6px;
+            top: 54px;
+        }
+
+        &_absolute {
+            position: absolute;
+            margin: 0 auto;
+            top: 0px;
+            width: 100%;
+        }
+    }
+
+    .ant-card-head {
+        padding: 0 16px;
+        height: 60px;
+        border-bottom: none;
+    }
+
+    .ant-card-head-title {
+        padding: 0px;
+    }
+
+    .ant-card-body {
+        padding: 0 16px 16px;
+    }
+}

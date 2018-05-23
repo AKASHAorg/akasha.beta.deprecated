@@ -7,7 +7,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
 import * as actionStatus from '../../constants/action-status';
 import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
-    selectNewCommentsBlock, selectNewestCommentBlock, selectToken, selectFullEntry } from '../selectors';
+    selectNewCommentsBlock, selectProfile, selectToken, selectFullEntry } from '../selectors';
 
 const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;
@@ -34,10 +34,10 @@ function* commentsDownvoteSuccess ({ data }) {
     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsGet ({ context, entryId, commentId }) {
+function* commentsGet ({ context, entryId, commentId, isParent }) {
     const channel = Channel.server.comments.getComment;
     yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ context, entryId, commentId }]);
+    yield apply(channel, channel.send, [{ context, entryId, commentId, isParent }]);
 }
 
 function* commentsGetCount ({ entryId }) {
@@ -88,7 +88,7 @@ function* commentsGetVoteOf ({ data }) {
     yield apply(channel, channel.send, [data]);
 }
 
-function* commentsIterator ({ entryId, parent, reversed, toBlock, more, checkNew }) {
+function* commentsIterator ({ context, entryId, parent, reversed, toBlock, more, checkNew }) {
     const channel = Channel.server.comments.commentsIterator;
     yield call(enableChannel, channel, Channel.client.comments.manager);
     let block;
@@ -102,7 +102,9 @@ function* commentsIterator ({ entryId, parent, reversed, toBlock, more, checkNew
     yield apply(
         channel,
         channel.send,
-        [{ entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew }]
+        [{
+            context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew
+        }]
     );
 }
 
@@ -186,6 +188,22 @@ function* watchCommentsGetCommentChannel () {
         if (resp.error) {
             yield put(actions.commentsGetCommentError(resp.error));
         } else {
+            const { commentId, context, entryId, isParent } = resp.request;
+            const { author, parent } = resp.data;
+            if (context === 'commentPage') {
+                if (parent) {
+                    yield put(actions.commentsGetComment({
+                        context, entryId, commentId: parent, isParent: true
+                    }));
+                } else if (!isParent) {
+                    const context = 'commentPage';
+                    yield put(actions.commentsIterator({ context, entryId, parent: commentId }));
+                }
+            }
+            const profile = yield select(state => selectProfile(state, author.ethAddress));
+            if (context === 'commentPage' && !profile.ethAddress) {
+                yield put(profileActions.profileGetData({ ethAddress: author.ethAddress }));
+            }
             yield put(actions.commentsGetCommentSuccess(resp.data, resp.request));
         }
     }
@@ -224,22 +242,23 @@ function* watchCommentsGetVoteOfChannel () {
     }
 }
 
-function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements
+function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements, complexity
     while (true) {
         const resp = yield take(actionChannels.comments.commentsIterator);
+        const { checkNew, context, entryId, more, reversed } = resp.request;
         const fullEntry = yield select(selectFullEntry);
-        if (!fullEntry || resp.request.entryId !== fullEntry.entryId) {
+        if (context !== 'commentPage' && (!fullEntry || entryId !== fullEntry.entryId)) {
             continue; // eslint-disable-line no-continue
         }
         if (resp.error) {
-            if (resp.request.checkNew) {
+            if (checkNew) {
                 yield put(actions.commentsCheckNewError(resp.error));
-            } else if (resp.request.more) {
+            } else if (more) {
                 yield put(actions.commentsMoreIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.commentsIteratorError(resp.error, resp.request));
             }
-        } else if (resp.request.checkNew) {
+        } else if (checkNew) {
             const collection = [];
             const loggedEthAddress = yield select(selectLoggedEthAddress);
             resp.data.collection.forEach((comm) => {
@@ -250,7 +269,7 @@ function* watchCommentsIteratorChannel () { // eslint-disable-line max-statement
             resp.data.collection = collection;
             yield fork(commentsGetExtra, resp.data.collection, resp.request);
             yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
-        } else if (resp.request.reversed) {
+        } else if (reversed) {
             yield fork(commentsGetExtra, resp.data.collection, resp.request);
             yield put(actions.commentsIteratorReversedSuccess(resp.data, resp.request));
             // const byId = yield select(state => state.commentsState.get('byId'));
@@ -268,7 +287,7 @@ function* watchCommentsIteratorChannel () { // eslint-disable-line max-statement
             // yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
         } else {
             yield fork(commentsGetExtra, resp.data.collection, resp.request);
-            if (resp.request.more) {
+            if (more) {
                 yield put(actions.commentsMoreIteratorSuccess(resp.data, resp.request));
             } else {
                 yield put(actions.commentsIteratorSuccess(resp.data, resp.request));

@@ -16,6 +16,7 @@ export ClaimableList from './claimable-list';
 export Column from './columns/column';
 export ColumnHeader from './columns/column-header';
 export CommentCard from './cards/comment-card';
+export CommentPage from './comment/comment-page';
 export ConfirmationDialog from './dialogs/confirmation-dialog';
 export Comment from './comment/comment';
 export CommentEditor from './comment/comment-editor';
