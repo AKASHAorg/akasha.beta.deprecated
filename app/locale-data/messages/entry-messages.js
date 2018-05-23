@@ -519,5 +519,15 @@ const entryMessages = defineMessages({
         description: 'replied on',
         defaultMessage: 'replied on a comment on'
     },
+    loadComments: {
+        id: 'app.entry.loadComments',
+        description: 'label for load comments button',
+        defaultMessage: `Load {commentsCount, number} {commentsCount, plural,
+            one {comment}
+            few {comments}
+            many {comments}
+            other {comments}
+        }`
+    }
 });
 export { entryMessages };

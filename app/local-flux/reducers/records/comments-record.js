@@ -31,6 +31,7 @@ export const CommentRecord = Record({
 });
 
 const Flags = Record({
+    commentsFetched: new Map(),
     fetchingComments: new Map(),
     fetchingMoreComments: new Map(),
     pendingComments: new Map(),

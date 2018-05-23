@@ -23,8 +23,8 @@ export const commentsDownvoteError = (error, request) => {
 
 export const commentsDownvoteSuccess = data => action(types.COMMENTS_DOWNVOTE_SUCCESS, { data });
 
-export const commentsGetComment = ({ context, entryId, commentId, author, parent }) =>
-    action(types.COMMENTS_GET_COMMENT, { context, entryId, commentId, author, parent });
+export const commentsGetComment = ({ context, entryId, commentId, author, parent, isParent }) =>
+    action(types.COMMENTS_GET_COMMENT, { context, entryId, commentId, author, parent, isParent });
 
 export const commentsGetCommentError = (error) => {
     error.code = 'CGCE01';
@@ -62,8 +62,8 @@ export const commentsGetVoteOfError = (error) => {
 };
 
 export const commentsGetVoteOfSuccess = data => action(types.COMMENTS_GET_VOTE_OF_SUCCESS, { data });
-export const commentsIterator = ({ entryId, parent, more }) =>
-    action(types.COMMENTS_ITERATOR, { entryId, parent, more });
+export const commentsIterator = ({ context, entryId, parent, more }) =>
+    action(types.COMMENTS_ITERATOR, { context, entryId, parent, more });
 
 export const commentsIteratorError = (error, request) => {
     error.code = 'CIE01';

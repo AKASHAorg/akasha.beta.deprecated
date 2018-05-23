@@ -168,7 +168,6 @@ class EntryCard extends Component {
                 entry={entry}
                 isOwnEntry={this.isOwnEntry()}
                 large={large}
-                openVersionsPanel={this.openVersionsPanel}
                 onEntryVersionNavigation={this._handleNavigation}
                 onDraftNavigation={this._handleNavigation}
                 loading={isPending}
@@ -207,7 +206,7 @@ class EntryCard extends Component {
                   infoExtracted
                   intl={intl}
                 />,
-                !hideContent && entryType === 0 &&
+              !hideContent && entryType === 0 &&
                 <div className="entry-card__title" key={`${entryId}-title`}>
                   <Link
                     className="unstyled-link"
