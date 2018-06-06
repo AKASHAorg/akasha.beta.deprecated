@@ -1,35 +1,40 @@
+// @flow
 import { supportedProtocols } from './parser-config';
 import { getResizedImages } from '../imageUtils';
 import { uploadImage } from '../../local-flux/services/utils-service';
 
-class ParserUtils {
-    constructor () {
-        this.fetchRequestParams = {
-            method: 'GET',
-            mode: 'cors'
-        };
-    }
+const PARSER_URL = 'https://beta.akasha.world/fetch-link';
 
-    makeRequest = (url, contentType = 'application/json') => {
-        const reqHeaders = new Headers();
-        reqHeaders.append('Content-Type', contentType);
-        const reqParams = {
-            ...this.fetchRequestParams,
-            headers: reqHeaders
-        };
+class ParserUtils {
+    fetchRequestParams = {
+        method: 'GET',
+        mode: 'no-cors'
+    }
+    makeParserRequest = (url: string) => {
+        const parserUrl = `${PARSER_URL}?url=${url.toString()}`;
         try {
-            const req = new Request(url, reqParams);
-            return new Promise((resolve, reject) => {
-                fetch(req).then(resolve).catch(reject);
-                setTimeout(() => {
-                    const error = new Error('Request timeout!');
-                    error.code = 408;
-                    reject(error);
-                }, 5000);
-            });
+            return fetch(parserUrl).then(resp => resp.json());
         } catch (ex) {
-            return Promise.reject('error!');
+            return Promise.reject('Unexpected error!');
         }
+        // const reqParams = {
+        //     ...this.fetchRequestParams,
+        //     headers: reqHeaders
+        // };
+        // try {
+        //     const req = new Request(url, reqParams);
+        //     return new Promise((resolve, reject) => {
+        //         fetch(req).then(resolve).catch(reject);
+        //         setTimeout(() => {
+        //             const error = new Error('Request timeout!');
+        //             error.code = 408;
+        //             reject(error);
+        //         }, 5000);
+        //     });
+        // } catch (ex) {
+        //     return Promise.reject('error!');
+        // }
+
     }
 
     getUrlQueryParams = search => new URLSearchParams(search)
@@ -68,7 +73,7 @@ class ParserUtils {
         return superParser.parseFromString(htmlString, 'text/html');
     }
 
-    resizeImage = (image, { ipfsFile }) => {
+    resizeImage = (image:string, { ipfsFile }: Object) => {
         let filePromises = [];
 
         if (image) {
