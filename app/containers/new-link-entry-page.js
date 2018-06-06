@@ -142,7 +142,7 @@ class NewLinkEntryPage extends Component {
                 console.error('parser crashed!', error);
                 this.setState({
                     errors: {
-                        card: intl.formatMessage(entryMessages.websiteInfoFetchingError),
+                        card: error || intl.formatMessage(entryMessages.websiteInfoFetchingError),
                     },
                     parsingInfo: false,
                     infoExtracted: true,

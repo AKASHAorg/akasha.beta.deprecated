@@ -99,8 +99,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         const { pathname } = this.parsedUrl;
         let extension = null;
         let documentName = '';
-
-        if (pathname.split('.').length) {
+        if (pathname.split('.').length > 1) {
             extension = pathname.split('.')[pathname.split('.').length - 1];
             documentName = pathname.split('/')[pathname.split('/').length - 1];
         }
@@ -113,6 +112,9 @@ class WebsiteParser extends ParserUtils<ParserParams> {
                     description: `This links to a ${extension.toUpperCase()} file`
                 }
             });
+        } else if (extension && !supportedDocs.includes(extension)) {
+            console.log(extension, 'the ext');
+            return Promise.reject('The address provided is not a website!');
         }
 
         return this.requestWebsiteInfo(this.url)
