@@ -174,9 +174,6 @@ class NewLinkEntryPage extends Component {
                 if (draftObj.getIn(['content', 'cardInfo', 'url']).length) {
                     this._processUrl();
                 }
-                if (!ev.defaultPrevented) {
-                    ev.preventDefault();
-                }
             });
         }
     };
@@ -448,10 +445,10 @@ class NewLinkEntryPage extends Component {
                         className="edit-entry-page__tag-editor"
                         intl={intl}
                         isUpdate={onChain}
-                        onChange={this._handleTagInputChange}                        
+                        onChange={this._handleTagInputChange}
                         onTagAdd={this._handleTagAdd}
                         onTagRemove={this._handleTagRemove}
-                        searchResetResults={this.props.searchResetResults}                        
+                        searchResetResults={this.props.searchResetResults}
                         searchTags={this.props.searchTags}
                         tagErrors={errors.tags}
                         tags={tags}
