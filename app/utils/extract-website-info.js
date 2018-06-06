@@ -113,7 +113,6 @@ class WebsiteParser extends ParserUtils<ParserParams> {
                 }
             });
         } else if (extension && !supportedDocs.includes(extension)) {
-            console.log(extension, 'the ext');
             return Promise.reject('The address provided is not a website!');
         }
 
