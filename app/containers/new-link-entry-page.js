@@ -422,7 +422,7 @@ class NewLinkEntryPage extends Component {
                       isEdit
                       loading={parsingInfo}
                       infoExtracted={infoExtracted}
-                      error={errors.card}
+                      error={errors.card && errors.card.toString()}
                     />
                   </div>
                   {!parsingInfo && infoExtracted && !errors.card &&
