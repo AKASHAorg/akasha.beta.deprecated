@@ -34,6 +34,7 @@
 
     &__image-wrapper {
         position: relative;
+        z-index: 5;
     }
     &__image-remove-button {
         position: absolute;
@@ -127,6 +128,40 @@
         &:focus {
             border: none;
             box-shadow: none;
+        }
+    }
+    .entry-image-block {
+        background-color: @background;
+        display: flex;
+        &_loading {
+            min-height: 350px;
+            .loading-message-inner {
+                display: flex;
+                width: 100%;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                color: darken(@light-grey, 15%);
+                svg {
+                    stroke: darken(@light-grey, 10%);
+                }
+                .text-message {
+                    font-size: 0.667em;
+                    margin-top: 0.5em;
+                    font-weight: bold;
+                }
+            }
+        }
+        &.loaded {
+            min-height: auto;
+            height: 0;
+            opacity: 0;
+        }
+        &_image {
+            &.errored {
+                display: none;
+                height: 0;
+            }
         }
     }
 }
