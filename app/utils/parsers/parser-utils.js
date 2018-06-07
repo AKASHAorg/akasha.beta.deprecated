@@ -37,24 +37,23 @@ class ParserUtils {
 
     }
 
-    getUrlQueryParams = search => new URLSearchParams(search)
+    getUrlQueryParams = (search: string) => new URLSearchParams(search)
 
-    getAbsoluteUrl = (url, parsedUrl) => {
+    getAbsoluteUrl = (url: string, parsedUrl: Object) => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
         return null;
     }
 
-    formatUrl = (url) => {
-        const urlPrefix = ParserUtils.parseUrl(url).protocol;
-        if (urlPrefix && supportedProtocols.includes(urlPrefix)) {
-            return url;
+    formatUrl = (url: string) => {
+        if (!url.startsWith('http')) {
+            return `http://${url}`;
         }
         return `${supportedProtocols[0]}//${url}`;
     }
 
-    static parseUrl = (url) => {
+    static parseUrl = (url: string) => {
         const link = document.createElement('a');
         link.href = url;
         return {
@@ -68,7 +67,7 @@ class ParserUtils {
         };
     }
 
-    parseHtmlFromString = (htmlString) => {
+    parseHtmlFromString = (htmlString: string) => {
         const superParser = new DOMParser();
         return superParser.parseFromString(htmlString, 'text/html');
     }
