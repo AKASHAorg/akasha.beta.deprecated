@@ -73,20 +73,27 @@ export default class BlockButton extends Component {
                     dialogOpen: false
                 });
                 // verify if editor is in focus, and blur it;
-                if (document.activeElement.contentEditable === 'true') {
-                    document.activeElement.blur();
-                }
+                // if (document.activeElement.contentEditable === 'true') {
+                //     document.activeElement.blur();
+                // }
                 this.props.onChange(insertDataBlock(this.props.editorState, {
                     files: imgHashes,
                     ...data
                 }));
             });
         }).catch((reason) => {
-            this.props.onImageError(reason);
+            this.setState({
+                isAddingImage: false,
+                dialogOpen: false,
+                error: reason
+            }, () => {
+                this.props.onImageError(reason);
+            });
         });
     }
 
     render () {
+
         return (
           <div>
             <Icon

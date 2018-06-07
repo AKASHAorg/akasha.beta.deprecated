@@ -56,16 +56,21 @@ class LazyImageLoader extends Component {
         });
     }
 
-    render () {
+    render () { // eslint-disable-line complexity
         const { loaded, errored } = this.state;
         const { className, image, baseUrl, intl } = this.props;
         const source = this._getImageSrc(image, baseUrl);
-        const imageLoaded = source === loaded;
-        const imageErrored = source === errored;
-        const rootClass = classNames({
+        const imageLoaded = (source === loaded);
+        const imageErrored = (source === errored);
+        const rootClass = classNames(className, {
             [`${className}_loading`]: !imageLoaded && !imageErrored,
             [`${className}_loading loaded`]: imageLoaded && !imageErrored,
-            [`${className}_loading errored`]: imageLoaded && imageErrored,
+            [`${className}_loading errored`]: imageErrored && loaded,
+        });
+        const imageClass = classNames(`${className}_image`, {
+            [`${className}_image_loading`]: !imageLoaded && !imageErrored,
+            [`${className}_image_loading loaded`]: imageLoaded && !imageErrored,
+            [`${className}_image_loading errored`]: imageErrored && loaded,
         });
         return [
           <div key="loading_message" className={rootClass}>
@@ -73,12 +78,14 @@ class LazyImageLoader extends Component {
               <Icon type="photoImage" width="32px" height="32px" />
               <div
                 className="text-message">
-                {intl.formatMessage(generalMessages.loadingImage)}
+                {!imageLoaded && !imageErrored && intl.formatMessage(generalMessages.loadingImage)}
+                {imageErrored && loaded && intl.formatMessage(generalMessages.loadingImageFailed)}
               </div>
             </div>
           </div>,
           <img
             key="image"
+            className={imageClass}
             ref={this._createImageRef}
             src={source}
             style={{ width: '100%' }}

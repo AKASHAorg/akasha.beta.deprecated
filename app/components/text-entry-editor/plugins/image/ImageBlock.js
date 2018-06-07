@@ -5,8 +5,8 @@ import { Input, Popover, Menu, Icon as AntdIcon } from 'antd';
 import {
     ImageSizeXS,
     ImageSizeMedium,
-    ImageSizeXL } from '../../../../components/svg';
-import { SvgIcon, Icon } from '../../../../components';
+    ImageSizeLarge } from '../../../../components/svg';
+import { SvgIcon, Icon, LazyImageLoader } from '../../../../components';
 import { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
@@ -38,16 +38,17 @@ class ImageBlock extends Component {
     }
 
     componentClickAway = () => {
-        this.setState({
-            isCardEnabled: false
-        }, () => {
-            this.props.blockProps.setReadOnly(false);
-            window.removeEventListener('keyup', this._removeImageContainer);
-        });
+        if (this.state.isCardEnabled) {
+            this.setState({
+                isCardEnabled: false
+            }, () => {
+                this.props.blockProps.setReadOnly(false);
+                this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
+            });
+        }
     }
 
     _handleCaptionChange = (ev) => {
-        ev.stopPropagation();
         this.props.container.updateData({ caption: ev.target.value });
     }
 
@@ -58,7 +59,12 @@ class ImageBlock extends Component {
         });
         this.props.container.updateData({ media: payload });
     }
-
+    _handleTextareaClick = () => {
+        this.props.blockProps.setReadOnly(true);
+        if(this.state.isCardEnabled) {
+            this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
+        }
+    }
     _handleImageClick = (ev) => {
         const { editorState, onChange } = this.props.blockProps;
         const selection = editorState.getSelection();
@@ -69,25 +75,26 @@ class ImageBlock extends Component {
             if (this.state.isCardEnabled) {
                 this.props.blockProps.setReadOnly(true);
                 onChange(EditorState.forceSelection(editorState, selWithoutFocus));
-                window.addEventListener('keyup', this._removeImageContainer);
+                this.wrapperNode.addEventListener('keyup', this._removeImageContainer);
             } else {
                 this.props.blockProps.setReadOnly(false);
-                window.removeEventListener('keyup', this._removeImageContainer);
+                this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
             }
         });
+        ev.preventDefault();
     }
 
     _removeImageContainer = (ev) => {
         if (ev.key === 'Delete' || ev.key === 'Backspace') {
             this.props.container.remove();
             this.props.blockProps.setReadOnly(false);
-            window.removeEventListener('keyup', this._removeImageContainer);
+            this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
         }
     }
-    _removeImage = (ev) => {
+    _removeImage = () => {
         this.props.container.remove();
         this.props.blockProps.setReadOnly(false);
-        window.removeEventListener('keyup', this._removeImageContainer);
+        this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
     }
     _handleImageSizeChange = ({ key }) => {
         const { container } = this.props;
@@ -119,7 +126,7 @@ class ImageBlock extends Component {
             {data.files.xl &&
               <Menu.Item className="image-block__image-size-menu-item" key="lg">
                 <SvgIcon viewBox="0 0 24 24">
-                  <ImageSizeXL />
+                  <ImageSizeLarge />
                 </SvgIcon>
               </Menu.Item>
             }
@@ -127,19 +134,19 @@ class ImageBlock extends Component {
         );
     }
 
-    _getImageSource = () => {
-        const { media, files } = this.props.data;
-        switch (media) {
-            case 'xs':
-                return files[findClosestMatch(320, files, 'xs')].src;
-            case 'md':
-                return files[findClosestMatch(700, files, 'md')].src;
-            case 'lg':
-                return files[findClosestMatch(1280, files, 'lg')].src;
-            default:
-                break;
-        }
-    }
+    // _getImageSource = () => {
+    //     const { media, files } = this.props.data;
+    //     switch (media) {
+    //         case 'xs':
+    //             return files[findClosestMatch(320, files, 'xs')].src;
+    //         case 'md':
+    //             return files[findClosestMatch(700, files, 'md')].src;
+    //         case 'lg':
+    //             return files[findClosestMatch(1280, files, 'lg')].src;
+    //         default:
+    //             break;
+    //     }
+    // }
 
     _handlePopoverVisibility = (visible) => {
         this.setState({
@@ -154,6 +161,7 @@ class ImageBlock extends Component {
         const { baseUrl, data, intl } = this.props;
         const { isCardEnabled } = this.state;
         const { files, caption, media } = data;
+
         return (
           <div ref={(baseNode) => { this.baseNodeRef = baseNode; }} className="image-block">
             <div
@@ -177,17 +185,19 @@ class ImageBlock extends Component {
                         image-block__image-wrapper${isCardEnabled ? '_active' : ''}`
                     }
                     onClick={this._handleImageClick}
+                    ref={(wrapperNode) => { this.wrapperNode = wrapperNode; }}
                   >
                     {files && files.gif &&
                       <div className="image-block__gif-play-icon">
                         <AntdIcon type="play-circle-o" />
                       </div>
                     }
-                    <img
-                      src={`${baseUrl}/${this._getImageSource(files)}`}
-                      alt=""
-                      style={{ width: '100%', display: 'block' }}
-                    />
+                    <LazyImageLoader
+                      image={files}
+                      baseUrl={baseUrl}
+                      intl={intl}
+                      className="entry-image-block"
+                     />
                     <Icon
                       type="close"
                       onClick={this._removeImage}
@@ -200,6 +210,7 @@ class ImageBlock extends Component {
                     value={caption}
                     autosize
                     onChange={this._handleCaptionChange}
+                    onClick={this._handleTextareaClick}
                   />
                 </Popover>
               }
