@@ -212,7 +212,7 @@
     {
         "id": "app.entry.noCommentsFound",
         "description": "placeholder for empty comments list",
-        "defaultMessage": "No se encontraron comentarios"
+        "defaultMessage": "No comments yet."
     },
     {
         "id": "app.noDraftsFoundOnSearch",
@@ -222,7 +222,7 @@
     {
         "id": "app.entry.noEntries",
         "description": "placeholder for empty entry list",
-        "defaultMessage": "No hay entradas"
+        "defaultMessage": "No entries yet"
     },
     {
         "id": "app.entry.noNewEntries",
@@ -282,7 +282,7 @@
     {
         "id": "app.entry.resolvingIpfsHash",
         "description": "message to show when an ipfs hash is in resolving state",
-        "defaultMessage": "Resolviendo hash ipfs..."
+        "defaultMessage": "Resolviendo hash de ipfs..."
     },
     {
         "id": "app.entry.revertConfirmTitle",
@@ -447,7 +447,7 @@
     {
         "id": "app.entry.gotoMyDrafts",
         "description": "go to my drafts button label",
-        "defaultMessage": "Go to my drafts"
+        "defaultMessage": "Ir a mis borradores"
     },
     {
         "id": "app.entry.myEntries",
@@ -457,26 +457,46 @@
     {
         "id": "app.entry.draftRevert",
         "description": "button label to revert changes",
-        "defaultMessage": "Revert changes"
+        "defaultMessage": "Revertir los cambios"
     },
     {
         "id": "app.entry.linkDisabled",
         "description": "tooltip for link button in comment editor",
-        "defaultMessage": "You must select some text first"
+        "defaultMessage": "Primero debe seleccionar un texto"
     },
     {
         "id": "app.entry.linkPlaceholder",
         "description": "placeholder for the link input in editors",
-        "defaultMessage": "Type the link and press enter"
+        "defaultMessage": "Escriba el enlace y pulse enter"
     },
     {
         "id": "app.entry.loadingImage",
         "description": "placeholder when an image is loading",
-        "defaultMessage": "Loading image"
+        "defaultMessage": "Cargando imagen"
     },
     {
         "id": "app.entry.entries",
         "description": "plural form of entry! :)",
-        "defaultMessage": "entries"
+        "defaultMessage": "entradas"
+    },
+    {
+        "id": "app.leaveAComment",
+        "description": "when user searches for a draft and nothing found",
+        "defaultMessage": "Be the first one to write a comment!"
+    },
+    {
+        "id": "app.entry.commentedOn",
+        "description": "comentó en",
+        "defaultMessage": "comentó en"
+    },
+    {
+        "id": "app.entry.repliedOn",
+        "description": "replied on",
+        "defaultMessage": "replied on a comment on"
+    },
+    {
+        "id": "app.entry.loadComments",
+        "description": "label for load comments button",
+        "defaultMessage": "Load {commentsCount, number} {commentsCount, plural, one {comment} few {comments} many {comments} other {comments}}"
     }
 ]

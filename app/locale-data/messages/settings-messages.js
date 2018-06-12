@@ -172,5 +172,76 @@ const settingsMessages = defineMessages({
         description: 'description for trusted domains user settings',
         defaultMessage: 'External links to which you can navigate without being prompted'
     },
+    arabic: {
+        id: 'app.settings.arabic',
+        description: 'arabic language',
+        defaultMessage: 'Arabic'
+    },
+    chineseSimplified: {
+        id: 'app.settings.chineseSimplified',
+        description: 'chinese simplified language',
+        defaultMessage: 'Chinese (Simplified)'
+    },
+    filipino: {
+        id: 'app.settings.filipino',
+        description: 'filipino language',
+        defaultMessage: 'Filipino'
+    },
+    finnish: {
+        id: 'app.settings.finnish',
+        description: 'Finnish language',
+        defaultMessage: 'Finnish'
+    },
+    french: {
+        id: 'app.settings.french',
+        description: 'french language',
+        defaultMessage: 'French'
+    },
+    german: {
+        id: 'app.settings.german',
+        description: 'german language',
+        defaultMessage: 'German'
+    },
+    indonesian: {
+        id: 'app.settings.indonesian',
+        description: 'indonesian language',
+        defaultMessage: 'Indonesian'
+    },
+    italian: {
+        id: 'app.settings.italian',
+        description: 'italian language',
+        defaultMessage: 'Italian'
+    },
+    japanese: {
+        id: 'app.settings.japanese',
+        description: 'japanese language',
+        defaultMessage: 'Japanese'
+    },
+    korean: {
+        id: 'app.settings.korean',
+        description: 'korean language',
+        defaultMessage: 'Korean'
+    },
+    portuguese: {
+        id: 'app.settings.portuguese',
+        description: 'portuguese language',
+        defaultMessage: 'Portuguese'
+    },
+    portugueseBrazilian: {
+        id: 'app.settings.portugueseBrazilian',
+        description: 'portuguese brazilian language',
+        defaultMessage: 'Portuguese, Brazilian'
+    },
+    turkish: {
+        id: 'app.settings.turkish',
+        description: 'turkish language',
+        defaultMessage: 'Turkish'
+    },
+
+    ukrainian: {
+        id: 'app.settings.ukrainian',
+        description: 'ukrainian language',
+        defaultMessage: 'Ukrainian'
+    },
 });
 export { settingsMessages };

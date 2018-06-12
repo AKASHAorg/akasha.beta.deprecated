@@ -142,7 +142,7 @@
     {
         "id": "app.form.amountToForge",
         "description": "label for forge AETH amount slider",
-        "defaultMessage": "Seleccione la cantidad de Esencia para transformarse"
+        "defaultMessage": "Seleccione la cantidad de Esencia a transformar"
     },
     {
         "id": "app.form.amountToShift",
@@ -202,12 +202,12 @@
     {
         "id": "app.form.shiftDown",
         "description": "shift down",
-        "defaultMessage": "Convertir hacia abajo"
+        "defaultMessage": "Disminuir"
     },
     {
         "id": "app.form.shiftDownMana",
         "description": "title for shift down Mana form",
-        "defaultMessage": "Convertir Mana hacia abajo"
+        "defaultMessage": "Disminuir Reserva de Mana"
     },
     {
         "id": "app.form.shiftDownManaHelp",
@@ -217,12 +217,12 @@
     {
         "id": "app.form.shiftUp",
         "description": "shift up",
-        "defaultMessage": "Convertir hacia arriba"
+        "defaultMessage": "Aumentar"
     },
     {
         "id": "app.form.shiftUpMana",
         "description": "title for shift up Mana form",
-        "defaultMessage": "Convertir Mana hacia arriba"
+        "defaultMessage": "Aumentar Reserva de Mana"
     },
     {
         "id": "app.form.shiftUpManaHelp",
@@ -317,26 +317,26 @@
     {
         "id": "app.form.navigationError",
         "description": "error message for invalid Akasha link",
-        "defaultMessage": "This is not a valid AKASHA link"
+        "defaultMessage": "Este no es un enlace válido de AKASHA"
     },
     {
         "id": "app.form.navigateTitle",
         "description": "title for the navigation modal",
-        "defaultMessage": "Paste an AKASHA link here"
+        "defaultMessage": "Pegue un enlace de AKASHA aquí"
     },
     {
         "id": "app.form.navigateSubtitle",
         "description": "subtitle for the navigation modal",
-        "defaultMessage": "Insert a link to navigate to an entry or a profile page"
+        "defaultMessage": "Insertar un vínculo para navegar a una entrada o una página de perfil"
     },
     {
         "id": "app.form.shareLinkTitle",
         "description": "title for the share link modal",
-        "defaultMessage": "Share link"
+        "defaultMessage": "Compartir enlace"
     },
     {
         "id": "app.form.shareLinkSubtitle",
         "description": "subtitle for the share link modal",
-        "defaultMessage": "This is an internal link that can only be used inside the Akasha app"
+        "defaultMessage": "Este es un enlace interno que sólo puede usarse dentro de la aplicación de Akasha"
     }
 ]
