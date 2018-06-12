@@ -136,10 +136,10 @@ class ServiceStatusBar extends Component {
                 value={generalSettings.get('locale')}
               >
                 <Option value="en">{intl.formatMessage(settingsMessages.english)}</Option>
-                <Option value="es">{intl.formatMessage(settingsMessages.spanish)}</Option>
-                <Option value="fi">{intl.formatMessage(settingsMessages.finnish)}</Option>
                 <Option value="zh">{intl.formatMessage(settingsMessages.chineseSimplified)}</Option>
+                <Option value="fi">{intl.formatMessage(settingsMessages.finnish)}</Option>
                 <Option value="id">{intl.formatMessage(settingsMessages.indonesian)}</Option>
+                <Option value="es">{intl.formatMessage(settingsMessages.spanish)}</Option>
                 <Option className="flex-center-y service-status-bar__translate-option" value="translate">
                   <a className="unstyled-link" href="https://crowdin.com/project/akasha" >
                     {intl.formatMessage(generalMessages.translate)}
