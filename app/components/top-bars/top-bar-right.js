@@ -7,7 +7,7 @@ import { Balance, Icon, ServiceStatusBar } from '../';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 
 const TopBarRight = (props) => {
-    const { balance, hasPendingActions, intl, notificationsLoaded, notificationsPanelOpen,
+    const { balance, cyclingStates, hasPendingActions, intl, notificationsLoaded, notificationsPanelOpen,
         showNotificationsPanel, showTransactionsLog, showWallet, toggleAethWallet, toggleEthWallet,
         transactionsLogOpen, unreadNotifications } = props;
     const ethClass = classNames('top-bar-right__balance', {
@@ -22,6 +22,7 @@ const TopBarRight = (props) => {
     const notificationsClass = classNames('content-link top-bar-right__notifications-icon', {
         'top-bar-right__notifications-icon_selected': notificationsPanelOpen
     });
+    const hasCycledAeth = !!(+cyclingStates.getIn(['available', 'total']));
     return (
       <div className="top-bar-right">
         <div className="flex-center-y top-bar-right__services">
@@ -60,6 +61,9 @@ const TopBarRight = (props) => {
           <Balance balance={balance.get('eth')} short type="eth" />
         </div>
         <div className={aethClass} onClick={toggleAethWallet}>
+          {hasCycledAeth &&
+            <div className="top-bar-right__cycled-indicator" />
+          }
           <Balance balance={balance.getIn(['aeth', 'free'])} short type="aeth" />
         </div>
       </div>
@@ -68,6 +72,7 @@ const TopBarRight = (props) => {
 
 TopBarRight.propTypes = {
     balance: PropTypes.shape().isRequired,
+    cyclingStates: PropTypes.shape().isRequired,
     hasPendingActions: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     notificationsLoaded: PropTypes.bool,
