@@ -79,6 +79,7 @@ function* launchHomeActions () {
             allFollowings: true,
             limit: 1000
         }));
+        yield put(profileActions.profileCyclingStates());
     }
     yield put(profileActions.profileManaBurned());
 }

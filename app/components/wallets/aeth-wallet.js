@@ -192,8 +192,12 @@ class AethWallet extends Component {
         const aethBalance = balance.get('aeth').toJS();
         const cyclingPending = cyclingStates.getIn(['pending', 'collection']);
         const cyclingCount = pendingCycleAeth ? (cyclingPending.length || 0) + 1 : cyclingPending.length;
+        const hasCycledAeth = !!(+cyclingStates.getIn(['available', 'total']));
         const cyclingTab = (
           <span className="flex-center">
+            {hasCycledAeth &&
+              <div className="aeth-wallet__cycled-indicator" />
+            }
             {intl.formatMessage(generalMessages.cycling)}
             <span className="flex-center aeth-wallet__cycling-count">{cyclingCount}</span>
           </span>
