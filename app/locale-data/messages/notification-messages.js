@@ -284,5 +284,25 @@ const notificationMessages = defineMessages({
         description: 'notification to show when user copies error info',
         defaultMessage: 'Error copied to clipboard'
     },
+    welcomeTitle: {
+        id: 'app.notification.welcomeTitle',
+        description: 'title for welcome/faucet notification',
+        defaultMessage: 'Welcome to AKASHA'
+    },
+    welcomeMessage: {
+        id: 'app.notification.welcomeMessage',
+        description: 'welcome/faucet notification message',
+        defaultMessage: 'To claim your test ETH gift, please click'
+    },
+    noFunds: {
+        id: 'app.notification.noFunds',
+        description: 'title for faucet notification',
+        defaultMessage: 'No more funds'
+    },
+    renewBalance: {
+        id: 'app.notification.renewBalance',
+        description: 'description for faucet notification',
+        defaultMessage: 'To renew your balance, please click'
+    },
 });
 export { notificationMessages };

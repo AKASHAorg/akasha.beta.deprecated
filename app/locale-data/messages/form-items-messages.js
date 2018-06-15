@@ -341,5 +341,10 @@ const formMessages = defineMessages({
         description: 'subtitle for the share link modal',
         defaultMessage: 'This is an internal link that can only be used inside the Akasha app'
     },
+    storageNameInvalid: {
+        id: 'app.form.storageNameInvalid',
+        description: 'error message for ipfs storage name field',
+        defaultMessage: 'Storage name cannot contain slash (/) character'
+    },
 });
 export { formMessages };

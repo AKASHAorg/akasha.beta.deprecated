@@ -333,6 +333,21 @@ const setupMessages = defineMessages({
         description: 'text for tutorial Modal',
         defaultMessage: 'Alternatively, you can click the sidebar Mana indicator next to your avatar photo and choose Shift up.'
     },
+    gethDescription: {
+        id: 'app.setup.gethDescription',
+        description: 'geth service description',
+        defaultMessage: 'You are using a third party web3 provider.'
+    },
+    ipfsDescription: {
+        id: 'app.setup.ipfsDescription',
+        description: 'ipfs service description',
+        defaultMessage: 'You are using the JavaScript implementation of IPFS.'
+    },
+    ipfsStorageName: {
+        id: 'app.setup.ipfsStorageName',
+        description: 'IPFS storage name input field label',
+        defaultMessage: 'IPFS storage name'
+    },
 });
 
 export { setupMessages };
