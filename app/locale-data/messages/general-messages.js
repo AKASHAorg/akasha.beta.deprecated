@@ -857,6 +857,66 @@ const generalMessages = defineMessages({
         id: 'app.general.loadingImageFailed',
         description: 'message to show when an image failed to load',
         defaultMessage: 'Cannot load image :('
-    }
+    },
+    or: {
+        id: 'app.general.or',
+        description: 'or',
+        defaultMessage: 'or'
+    },
+    sidebarTooltipGuest: {
+        id: 'app.general.sidebarTooltipGuest',
+        description: 'tooltip text for sidebar guest mode',
+        defaultMessage: 'Not available in guest mode'
+    },
+    guestMode: {
+        id: 'app.general.guestMode',
+        description: 'title for guest mode button',
+        defaultMessage: 'Guest Mode'
+    },
+    guestModeInfo: {
+        id: 'app.general.guestModeInfo',
+        description: 'info for guest mode modal',
+        defaultMessage: 'While in guest mode you have access to a limited part of the Akasha app, and cannot do any action that requires a transaction.'
+    },
+    unlockVault: {
+        id: "app.general.unlockVault",
+        description: "info for guest mode modal",
+        defaultMessage: "Please refresh the page to login after unlocking Metamask."
+    },
+    thanks: {
+        id: 'app.general.thanks',
+        description: 'thanks',
+        defaultMessage: 'Thanks!'
+    },
+    loginUnlock: {
+        id: 'app.general.loginUnlock',
+        description: 'info for guest mode modal',
+        defaultMessage: 'Login by unlocking your Metamask'
+    },
+    here: {
+        id: 'app.general.here',
+        description: 'here',
+        defaultMessage: 'here'
+    },
+    version: {
+        id: 'app.general.version',
+        description: 'version',
+        defaultMessage: 'Version'
+    },
+    and: {
+        id: 'app.general.and',
+        description: 'and',
+        defaultMessage: 'and'
+    },
+    accept: {
+        id: 'app.general.accept',
+        description: 'accept',
+        defaultMessage: 'Accept'
+    },
+    decline: {
+        id: 'app.general.decline',
+        description: 'decline',
+        defaultMessage: 'Decline'
+    },
 });
 export { generalMessages };
