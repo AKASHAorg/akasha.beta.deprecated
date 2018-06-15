@@ -17,24 +17,6 @@ class ParserUtils {
         } catch (ex) {
             return Promise.reject('Unexpected error!');
         }
-        // const reqParams = {
-        //     ...this.fetchRequestParams,
-        //     headers: reqHeaders
-        // };
-        // try {
-        //     const req = new Request(url, reqParams);
-        //     return new Promise((resolve, reject) => {
-        //         fetch(req).then(resolve).catch(reject);
-        //         setTimeout(() => {
-        //             const error = new Error('Request timeout!');
-        //             error.code = 408;
-        //             reject(error);
-        //         }, 5000);
-        //     });
-        // } catch (ex) {
-        //     return Promise.reject('error!');
-        // }
-
     }
 
     getUrlQueryParams = (search: string) => new URLSearchParams(search)
@@ -50,7 +32,7 @@ class ParserUtils {
         if (!url.startsWith('http')) {
             return `http://${url}`;
         }
-        return `${supportedProtocols[0]}//${url}`;
+        return url;
     }
 
     static parseUrl = (url: string) => {
