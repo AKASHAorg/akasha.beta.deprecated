@@ -8,20 +8,24 @@ import zh from 'react-intl/locale-data/zh';
 import es from 'react-intl/locale-data/es';
 import fi from 'react-intl/locale-data/fi';
 import id from 'react-intl/locale-data/id';
-import ruMessages from './locale-data/ru.json';
-import zhMessages from './locale-data/zh.json';
-import enMessages from './locale-data/en.json';
-import esMessages from './locale-data/es.json';
-import fiMessages from './locale-data/fi.json';
-import idMessages from './locale-data/id.json';
+import ru_RU_messages from './locale-data/ru_RU.json';
+import zh_CN_messages from './locale-data/zh_CN.json';
+import en_US_messages from './locale-data/en_US.json';
+import es_ES_messages from './locale-data/es_ES.json';
+import fi_FI_messages from './locale-data/fi_FI.json';
+import id_ID_messages from './locale-data/id_ID.json';
+
+// WARNING: we should use dashes instead underscores for the keys of this object
+// because it is supported by react-intl! for example
+// localeMessages = { 'en-EN': en_EN_messages, 'es-ES': es_ES_messages, ...etc }
 
 const localeMessages = {
-    en: enMessages,
-    ru: ruMessages,
-    zh: zhMessages,
-    es: esMessages,
-    fi: fiMessages,
-    id: idMessages,
+    'en-US': en_US_messages,
+    'ru-RU': ru_RU_messages,
+    'zh-CN': zh_CN_messages,
+    'es-ES': es_ES_messages,
+    'fi-FI': fi_FI_messages,
+    'id-ID': id_ID_messages,
 };
 
 addLocaleData([...en, ...es, ...ru, ...zh, ...fi, ...id]);

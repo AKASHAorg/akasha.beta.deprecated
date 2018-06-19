@@ -18,115 +18,115 @@
 files: [
  {
      "source": "/en/app/locale-data/messages/action-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/action-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/akasha-terms-161006.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/akasha-terms-161006.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/chat-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/chat-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/confirmation-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/confirmation-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/dashboard-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/dashboard-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/entry-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/entry-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/error-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/error-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/form-items-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/form-items-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/general-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/general-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/highlight-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/highlight-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/list-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/list-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/notification-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/notification-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/profile-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/profile-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/search-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/search-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/settings-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/settings-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/setup-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/setup-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/tag-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/tag-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/tutorial-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/tutorial-messages.json",
      "type": "json"
  },
  {
      "source": "/en/app/locale-data/messages/validation-messages.json",
-     "translation": "/master/%two_letters_code%/app/locale-data/messages/%original_file_name%",
+     "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
      "dest": "/master/translations/intl/en/app/locale-data/messages/validation-messages.json",
      "type": "json"
  },
