@@ -68,11 +68,11 @@ class AppPreferences extends Component {
                   dropdownClassName="app-preferences__select-dropdown"
                   onChange={this.handleSelector}
                 >
-                  <Option value="en">{intl.formatMessage(settingsMessages.english)}</Option>
-                  <Option value="zh">{intl.formatMessage(settingsMessages.chineseSimplified)}</Option>
-                  <Option value="fi">{intl.formatMessage(settingsMessages.finnish)}</Option>
-                  <Option value="id">{intl.formatMessage(settingsMessages.indonesian)}</Option>
-                  <Option value="es">{intl.formatMessage(settingsMessages.spanish)}</Option>
+                  <Option value="en-US">{intl.formatMessage(settingsMessages.english)}</Option>
+                  <Option value="zh-CN">{intl.formatMessage(settingsMessages.chineseSimplified)}</Option>
+                  <Option value="fi-FI">{intl.formatMessage(settingsMessages.finnish)}</Option>
+                  <Option value="id-ID">{intl.formatMessage(settingsMessages.indonesian)}</Option>
+                  <Option value="es-ES">{intl.formatMessage(settingsMessages.spanish)}</Option>
                 </Select>
               </div>
               <div className="app-preferences__theme">
