@@ -23,9 +23,9 @@ files: [
      "type": "json"
  },
  {
-     "source": "/en/app/locale-data/messages/akasha-terms-161006.json",
+     "source": "/en/app/components/terms.json",
      "translation": "/master/%locale_with_underscore%/app/locale-data/messages/%original_file_name%",
-     "dest": "/master/translations/intl/en/app/locale-data/messages/akasha-terms-161006.json",
+     "dest": "/master/translations/intl/en/app/locale-data/messages/terms.json",
      "type": "json"
  },
  {

@@ -1,0 +1,122 @@
+[
+    {
+        "id": "app.terms.title",
+        "description": "AKASHA`s terms and conditions title",
+        "defaultMessage": "AKASHA：服务条款"
+    },
+    {
+        "id": "app.terms.preface",
+        "description": "AKASHA`s terms preface",
+        "defaultMessage": "<p>1、AKASHA是基于周知的以太坊和星际文件系统（IPFS）的新型计算机系统而建立的下一代的社交博客网络。作为一个完全去中心化的平台，AKASHA不为任何法律实体或个人所控制。即便AKASHA国际股份有限公司已经开发并将继续开发AKASHA，但它并不会操纵和控制AKASHA以及／或用户通过AKASHA发布的内容。AKASHA国际股份有限公司仅操作akasha.world的网页界面以用于访问AKASHA。</p>\n                      <p>2、通过使用AKASHA以及创建一个AKASHA帐户或一个智能合约配置文件，您确定已经仔细审阅并完全理解及同意本文档（“条款”）中规定的各项条款和条件。</p>\n                      <p>3、由于目前AKASHA的版本仅为预测试版，因此我们将要求您审阅并接受适用于将来您与AKASHA交互及新增功能的新的或补充的条款。</p>\n                      <p>4、在安装AKASHA之前，请确认通过由AKASHA直接发送的预测试版邀请下载的.zip文件。解压／安装其他任何文件可能引起较严重的安全风险。</p>"
+    },
+    {
+        "id": "app.terms.privacyTitle",
+        "description": "privacy section title",
+        "defaultMessage": "1、隐私"
+    },
+    {
+        "id": "app.terms.privacyBody",
+        "description": "privacy section content",
+        "defaultMessage": "<p>5、AKASHA有别于诸多已知社交媒体网络的地方在于，您的隐私对于我们来说至关重要。AKASHA设计的初衷是让您可以始终控制与他人共享数据的方式。AKASHA不会以任何目的收集和使用您所选择的内容和信息。</p>"
+    },
+    {
+        "id": "app.terms.sharingYourContentTitle",
+        "description": "sharing content section title",
+        "defaultMessage": "2、分享您的内容与信息"
+    },
+    {
+        "id": "app.terms.sharingYourContentBody",
+        "description": "content of sharing your content section",
+        "defaultMessage": "<p>6、AKASHA不对您发布在AKASHA上的任何内容和信息索取所有权。AKASHA允许您控制您的内容以及通过您的AKASHA设置来分享它们。</p>\n                      <p>7、对于受知识产权保护的内容，如照片、文本和视频（网络内容），您可以在不同的许可选项（涵盖所有从有版权到无版权的范围）之间进行选择，这些许可选项允许您指定您的内容在哪些条件下可以被他人分发和使用。</p>\n                      <p>8、通过在AKASHA上发布您的网络内容，您授予AKASHA非独占、可转让、分许可、免版税、世界范围的许可来使用网络内容，以便在AKASHA上发布与分发，同时符合您在许可选项中指定的条件。</p>\n                      <p>9、您知晓AKASHA是一个去中心化的应用，因此，在AKASHA上发布的内容不受任何法人或个人的控制。也因此，您将无法完全删除从AKASHA平台发布的任何内容。当您移除内容时，您的内容仅是被下架，致使他人更难找到。您应了解被移除的内容将不受时间的限制一直存在，同时仍然可以被其他用户使用。</p>\n                      <p>10、当您使用“无版权”的许可选项设置来发布内容，这意味着您允许任何人访问和使用该内容，将其与您（即您的用户名和头像）关联，同时您也就放弃了对于该内容的所有权益，包括版权及其他相关权益。</p>"
+    },
+    {
+        "id": "app.terms.noUnlawfulTitle",
+        "description": "no unlawful activities and content section title",
+        "defaultMessage": "3、无非法活动和内容"
+    },
+    {
+        "id": "app.terms.noUnlawfulBody",
+        "description": "no unlawful activities and content section body",
+        "defaultMessage": "<p>11、您知晓，AKASHA是一个完全去中心化的平台，不受任何法人或个人的控制。AKASHA和／或AKASHA国际有限公司对在AKASHA上发布的任何内容是否违反任何第三方知识产权或在某些司法管辖区的法律下是否非法均无从知晓更无法控制。因此，AKASHA的成功依赖于每一个用户的责任。通过使用AKASHA，您承诺让AKASHA远离一切非法内容与活动。特别是：\n            <ul><li>不收集登录信息或访问属于其他人的帐户。</li>\n            <li>不欺凌、恐吓或骚扰其他任何用户。</li>\n            <li>不发表仇恨言论、威胁、煽动暴力内容的帖子。</li>\n            <li>在您所在的司法辖区或瑞士，不使用AKASHA做任何违法的事情。</li>\n            <li>不使用AKASHA做任何具有误导、恶意或歧视性的事情。</li>\n            <li>在AKASHA中不发布内容或采取任何行动去侵害或亵渎他人权利，包括版权和其他知识产权，或以其他方式违反法律。</li></ul></p>\n                      <p>12、预计AKASHA的更新版本将包含自我节制功能，使AKASHA社区能在没有AKASHA国际有限公司任何直接干预的情况下，保持AKASHA远离任何非法的内容和活动。</p>"
+    },
+    {
+        "id": "app.terms.registrationTitle",
+        "description": "registration and identity section title",
+        "defaultMessage": "4、注册及身份验证"
+    },
+    {
+        "id": "app.terms.registrationBody",
+        "description": "registration and identity section content",
+        "defaultMessage": "<p>13、您可以使用您选择的证件创建一个身份或维持多个身份。然而，由于AKASHA运行在以太坊上，AKASHA在使用时会涉及到支付问题。因此，若您年龄在13岁以下，请勿使用AKASHA。</p>"
+    },
+    {
+        "id": "app.terms.gasDeductionTitle",
+        "description": "gas deduction section title",
+        "defaultMessage": "5、AKASHA用气扣除功能"
+    },
+    {
+        "id": "app.terms.gasDeductionBody",
+        "description": "gas deduction section content",
+        "defaultMessage": "<p>14、当在AKASHA上创建身份时，您将获得一个以太坊地址（以太坊身份密钥）以用于进行少量以太坊的转账。以太坊密钥包含预设功能，可以从您的帐户扣除在AKASHA的每一笔交易中消耗的气。您以太坊帐户的余额仅受您的控制，而且可以随时提现。AKASHA以及／或AKASHA国际有限公司无法访问您的以太坊私钥。</p>"
+    },
+    {
+        "id": "app.terms.noWarrantyTitle",
+        "description": "no warranty section title",
+        "defaultMessage": "6、无担保"
+    },
+    {
+        "id": "app.terms.noWarrantyBody",
+        "description": "no warranty section content",
+        "defaultMessage": "<p>15、理解和明确地接受对法律框架下明示或默示的可用性、功能及／或AKASHA的成功与以太坊私钥无任何保证。使用AKASHA内部测试版的特定风险来自基于“目前”和“正在开发”的版本，也来自在法律框架内没有任何形式的保证，包括（但不限于）所有权及其他默示保证，关于适销性和适合某一特定用途的保证。</p>"
+    },
+    {
+        "id": "app.terms.passwordTitle",
+        "description": "password section title",
+        "defaultMessage": "7、密码／登录"
+    },
+    {
+        "id": "app.terms.passwordBody",
+        "description": "password section content",
+        "defaultMessage": "<p>16、作为创建身份的一个环节，需要提供密码。密码将用于访问AKASHA和使用以太坊帐户的余额。请务必保证密码安全，不告知他人。</p>\n              <p>17、登录时您可以选择在您所选的时间段内创建安全的“身份验证哈希／令牌”，它可以让您在登录后发贴、评论或投票（开启登录功能）的任何时间安全地签署交易而无需重新输入密码。当选择的时间段失效后，系统将提示重新输入密码。请确保在选择开启登录功能（Open Login Function）后不要离开已登陆AKASHA的设备。</p>"
+    },
+    {
+        "id": "app.terms.risksTitle",
+        "description": "risks section title",
+        "defaultMessage": "8、风险"
+    },
+    {
+        "id": "app.terms.risksBody",
+        "description": "risks section content",
+        "defaultMessage": "<p>18、了解和接受使用AKASHA以及转账以太坊至钱包而产生的如下文所述示的相关风险。特别是，了解以下列出的内在风险（但不限于此）：\n              <ul>\n              <li>软件漏洞风险：理解并接受AKASHA、智能合约系统概念、底层软件应用程序和软件平台 (即以太坊区块链) 仍处于早期开发阶段，未经充分验证，因此无法保证AKASHA流畅或无误地运行，内在风险依然存在，软件可能包含弱点、漏洞或缺陷从而导致您个人信息的完全丢失及／或提至钱包的以太坊完全损失。</li>\n              <li>监管风险：用户理解并接受区块链技术允许的新的交互形式，可能某些司法机构将使用现有法规或引入新的法规来规范基于区块链技术的应用，这些法规可能与当前AKASHA的设置相抵触，也可能会导致很多对AKASHA的大量改动，包括项目终止和提至钱包的以太坊损失。</li>\n              <li>终止／失败风险: 理解并接受AKASHA的内部测试版的开发可能因为公众缺乏兴趣、缺乏资金、缺乏商业成功或前景（例如由竞争项目引起）等一些问题而被终止。</li>\n              <li>盗窃风险：理解并接受AKASHA智能合约概念、底层软件应用和软件平台（即以太坊区块链）可能会受到黑客或其他个人的攻击，这可能会导致信息被盗或提至钱包的以太坊损失。</li>\n              <li>以太坊算力攻击的风险：理解并接受用于AKASHA的区块链与其他数字加密货币一样，易受到算力攻击，包括但不限于双花攻击、多数算力攻击、“私挖”攻击和种族条件攻击。</li>\n              <li>新版本的风险：理解并接受矿工网络最终将控制AKASHA。大多数矿工可以在任何时候达成共识以改变官方的AKASHA网络，并运行新版本的智能合约系统。</li></ul></p>"
+    },
+    {
+        "id": "app.terms.taxationTitle",
+        "description": "taxation section title",
+        "defaultMessage": "9、税费"
+    },
+    {
+        "id": "app.terms.taxationBody",
+        "description": "taxation section content",
+        "defaultMessage": "<p>19、您承担的责任是确定是否任何与AKASHA有关的活动或交易对您有税收的影响。</p>"
+    },
+    {
+        "id": "app.terms.noLiabilityTitle",
+        "description": "no liability section title",
+        "defaultMessage": "10、免责"
+    },
+    {
+        "id": "app.terms.noLiabilityBody",
+        "description": "no liability section content",
+        "defaultMessage": "<p>20、承认并同意在任何适用的法律允许的最大范围内，用户将不追究任何开发人、承包人或AKASHA的创始人对因在任何管辖范围内的任何原因或行为下使用AKASHA或与其使用相关、或无法使用等原因而造成的任何及所有损失或伤害的责任，包括但不限于：违反保证的行为、违反合约或侵权行为（包括因疏忽造成的过失）。同时，AKASHA的开发者将不对以任何方式下因使用或无法使用AKASHA而产生的任何间接的、意外的、特殊的、惩戒性的或相应的损失（包括利润、商誉、数据信誉或其他无形损失）负责。</p>\n                      <p>21、特别是，承认并同意AKASHA与其任何开发人、承包人、创始人在任何情况下都不会为您或任何参与方、个人或实体承担以下可能造成的任何损害或损失责任：\n                  <ul>\n                  <li>AKASHA的终止、暂停、丢失或修改；</li>\n                  <li>使用或无法使用AKASHA；</li>\n                  <li>访问AKASHA延迟或中断；</li>\n                  <li>数据无传输、传输错误、损坏、破坏或其他改动；</li>\n                  <li>超出AKASHA控制范围的事件；</li>\n                  <li>适用任何法律、法规或AKASHA政策；</li>\n                  <li>从存款钱包支付或不支付资金；</li>\n                  <li>与AKASHA相关的错误、纰漏、错报造成的损失或责任（包括因延误、无法传送、错误传送或无故服务中断）；</li>\n                  <li>由未经授权使用、误用您的身份、密码或其他安全认证事项造成的损失或责任；</li>\n                  <li>未经授权使用或更改您的内容；</li>\n                  <li>侵犯任何第三方的权利，包括但不限于公开权、隐私权、知识产权和任何其他所有权；</li>\n                  <li>与使用AKASHA相关的任何其他事项。</li>\n                  </ul></p>\n                      <p>22、AKASHA对您通过AKASHA售卖的任何内容、商品及服务，或通过AKASHA提供的任何信息，或在AKASHA上发布的任何信息的质量或准确性，概不负责。AKASHA不会认可、授权或担保通过AKASHA提供的任何产品或服务，也不会参与或以任何方式监控您与第三方提供的或由AKASHA提供的服务或使用AKASHA而产生的任何交易，包括但不限于所有内容、交易或任何业务协议的许可。</p>\n                      <p>23、同意保障、维护和保护AKASHA及／或AKASHA国际有限公司免受任何及所有索赔、损失、费用等因您违反条款中所承担的义务、保证或陈述而造成的由第三方所带来的损害。</p>"
+    },
+    {
+        "id": "app.terms.miscTitle",
+        "description": "miscellaneous section title",
+        "defaultMessage": "11、其他"
+    },
+    {
+        "id": "app.terms.miscBody",
+        "description": "miscellaneous section content",
+        "defaultMessage": "<p>24、您同意，如果这些条款中的任何部分被发现全部或部分内容非法或无法执行，如所列条款以及权益，将对以下内容确定的范围完全无效：无效力、无法执行但不影响效力、以任何其他方式强制执行、拥有权益并继续充分发挥效力且不影响其余条款。</p>\n                      <p>25、适用法律为瑞士法律。任何由AKASHA产生或与AKASHA有关的争议将由被告方注册所在地的法院受理和解决。</p>"
+    }
+]
