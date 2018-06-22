@@ -81,7 +81,7 @@ const stopServices = () => {
         modules.initListeners(mainWindow.webContents).then(() => {
             console.timeEnd('mainApi');
             mainWindow.loadURL(
-                process.env.HOT ? `http://localhost:3000/dist/index.html` : `file://${viewHtml}/dist/index.html`
+                process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/index.html`
             );
             mainWindow.once('close', (ev: Event) => {
                 ev.preventDefault();

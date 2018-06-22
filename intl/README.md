@@ -14,5 +14,3 @@
 
  - Q: I\`m not familiar with the word `excerpt`. Is `excerpt` like an abstract?
  - A: Yes. Excerpt is a brief summary (abstract) of an article.
-
-
