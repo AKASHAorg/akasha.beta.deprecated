@@ -18,3 +18,4 @@
 
 
 #### Note: You should restart / start application after each modification.
+#### Please review visible strings (like id's and description) each time you upload source files. **You must hide `id` and `description` fields from crowdin interface.**
