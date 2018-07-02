@@ -6,10 +6,12 @@ import { metaTagsPriority, supportedDocs } from './parsers/parser-config';
 //    property="meta.attributes.property.textContent"
 //    content="meta.attributes.content.textContent"
 // />
+const AKASHA_WEB_HOSTNAME = 'beta.akasha.world';
 
 type ParserParams = {
     url: String,
-    uploadImageToIpfs: ?Boolean
+    uploadImageToIpfs: ?Boolean,
+    parseUrl: (url: String) => Object,
 };
 
 type AkashaParserResponse = {
@@ -95,10 +97,74 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         return Promise.resolve(outputDescr);
     }
 
+    assertInternalLink = () =>
+        this.parsedUrl.host.includes(AKASHA_WEB_HOSTNAME);
+
+    requestAkashaEntry = (entryId: string): Promise =>
+        new Promise((resolve: void, reject: void) => {
+            const ch: Object = window.Channel;
+            ch.client.entry.getEntry.once((ev, resp) => {
+                if(resp.error) {
+                    reject('some error occured when fetching entry');
+                }
+                return resolve(resp.data);
+            });
+            ch.server.entry.getEntry.send({ entryId });
+        });
+
+    getEntryIdFromUrl = () => {
+        const url = this.url;
+        const urlParts = url.split('/');
+        const entryId = urlParts[urlParts.length - 1];
+        if (entryId.length && entryId.length === 66 && entryId.startsWith('0x')) {
+            return entryId;
+        }
+        return null;
+    }
+    getEntryType = (entry : Object) : Number => {
+        let { type } = entry;
+        if(!type && entry.cardInfo.title.length) {
+            type = 1;
+        }
+        return type;
+    }
     getInfo = () => {
         const { pathname } = this.parsedUrl;
         let extension = null;
         let documentName = '';
+        const isAkashaInternalLink = this.assertInternalLink();
+
+        if(isAkashaInternalLink) {
+            const entryId = this.getEntryIdFromUrl();
+            if (entryId) {
+                return this.requestAkashaEntry(entryId).then(resp => {
+                    const entryType = this.getEntryType(resp.content);
+                    switch (entryType) {
+                        case 1:
+                            return {
+                                url: resp.content.cardInfo.url,
+                                info: {
+                                    title: resp.content.cardInfo.title,
+                                    description: resp.content.cardInfo.description,
+                                    image: resp.content.cardInfo.image
+                                }
+                            }
+                        // default is case 0/'text entry type'
+                        default:
+                            return {
+                                url: this.parsedUrl.href,
+                                info: {
+                                    title: resp.content.title,
+                                    description: resp.content.excerpt,
+                                    image: resp.content.featuredImage
+                                }
+                            }
+                    }
+
+                });
+            }
+        }
+
         if (pathname.split('.').length > 1) {
             extension = pathname.split('.')[pathname.split('.').length - 1];
             documentName = pathname.split('/')[pathname.split('/').length - 1];
@@ -115,7 +181,6 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         } else if (extension && !supportedDocs.includes(extension)) {
             return Promise.reject('The address provided is not a website!');
         }
-
         return this.requestWebsiteInfo(this.url)
             .then((websiteData) =>
                 this.filterData(websiteData).then(filtered => ({
@@ -123,7 +188,6 @@ class WebsiteParser extends ParserUtils<ParserParams> {
                     info: filtered
                 })));
     }
-
 
     getParsedUrl = () => this.parsedUrl;
 }
