@@ -39,15 +39,15 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
       <ColumnHeader
         readOnly={passedProps.readOnly}
         column={passedProps.column}
-        columnIndex={passedProps.columnIndex}
+        columnIndex={other.columnIndex}
         onRefresh={passedProps.onColumnRefresh}
         onBeginDrag={onBeginDrag}
         onEndDrag={onEndDrag}
         isColumnDragging={isColumnDragging}
-        connectDropTarget={passedProps.connectDropTarget}
+        connectDropTarget={other.connectDropTarget}
         iconType={passedProps.iconType}
         title={passedProps.title}
-        draggable={passedProps.draggable}
+        draggable={other.draggable}
         noMenu={passedProps.noMenu}
         dataSource={passedProps.dataSource}
         onSearch={passedProps.onSearch}
@@ -62,10 +62,10 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
         {(!passedProps.column || passedProps.column.itemsList.size === 0) && !fetchingItems &&
           <ColumnEmptyPlaceholder
             type={type}
-            intl={passedProps.intl}
+            intl={other.intl}
           />
         }
-        <ColManager {...passedProps} />
+        <ColManager {...passedProps} intl={other.intl} />
       </ColumnHeader>
     );
 };

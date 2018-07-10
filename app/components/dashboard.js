@@ -146,8 +146,8 @@ class Dashboard extends Component {
         });
     }
 
-    shouldComponentUpdate = (nextProps, nextState) =>
-        !nextState.columnOrder.equals(this.state.columnOrder) ||
+    shouldComponentUpdate = (nextProps, nextState) => {
+        return !nextState.columnOrder.equals(this.state.columnOrder) ||
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
@@ -156,9 +156,9 @@ class Dashboard extends Component {
         nextProps.activeDashboardId !== this.props.activeDashboardId ||
         !nextProps.pendingEntries.equals(this.props.pendingEntries);
         // this.props.dashboards.equals(nextProps.dashboards);
+    }
 
     _handleBeginDrag = (column) => {
-        console.log('handle drag start');
         this.setState({
             draggingColumn: {
                 id: column.get('id'),
@@ -191,7 +191,6 @@ class Dashboard extends Component {
                 hover: null,
             }
         });
-        console.log('handle drag end');
     }
     _reorderColumns = () => {
         const { columnOrder, columnPlaceholder } = this.state;
