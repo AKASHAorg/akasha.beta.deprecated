@@ -14,6 +14,7 @@ import { selectBaseUrl, selectBlockNumber, selectEntry, selectHideEntrySettings,
     selectProfile } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
+import { isLinkToAkashaWeb, extractEntryUrl } from '../../utils/url-utils';
 
 const smallCard = 320;
 const largeCard = 480;
@@ -79,6 +80,19 @@ class EntryCard extends Component {
         history.push(href);
     };
 
+    _handleOutsideNavigation = (url) => {
+        const { history } = this.props;
+        const isInternalUrl = isLinkToAkashaWeb(url);
+        if (isInternalUrl) {
+            const entryUrl = extractEntryUrl(url);
+            if (entryUrl) {
+                return history.push(entryUrl);
+            }
+        } else {
+            this.props.toggleOutsideNavigation(url);
+        }
+    }
+
     onRetry = () => {
         const { contextId, entry } = this.props;
         const ethAddress = entry.getIn(['author', 'ethAddress']);
@@ -137,7 +151,7 @@ class EntryCard extends Component {
     /* eslint-disable complexity */
     render () {
         const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
-            style, toggleOutsideNavigation, intl } = this.props;
+            style, intl } = this.props;
         const { expanded, markAsNew } = this.state;
         const content = entry && entry.get('content');
         const entryType = entry && entry.getIn(['content', 'entryType']);
@@ -201,7 +215,7 @@ class EntryCard extends Component {
                   baseWidth={large ? largeCard : smallCard}
                   cardInfo={content.get('cardInfo')}
                   hasCard={!!hasContent}
-                  onClick={toggleOutsideNavigation}
+                  onClick={this._handleOutsideNavigation}
                   maxImageHeight={150}
                   infoExtracted
                   intl={intl}
@@ -287,11 +301,11 @@ function mapStateToProps (state, ownProps) {
     const ethAddress = entry.author.ethAddress;
     return {
         author: selectProfile(state, ethAddress),
-        baseUrl: selectBaseUrl(state),        
+        baseUrl: selectBaseUrl(state),
         blockNr: selectBlockNumber(state),
         entry,
-        hideEntrySettings: selectHideEntrySettings(state),       
-        loggedEthAddress: selectLoggedEthAddress(state),         
+        hideEntrySettings: selectHideEntrySettings(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
     };
 }
 

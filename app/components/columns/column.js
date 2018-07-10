@@ -32,7 +32,7 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
         pendingEntries: other.column ?
             pendingEntries.get(other.column.id) :
             pendingEntries.get(type),
-        ...other,            
+        ...other,
     });
     const fetchingItems = passedProps.column.flags.fetchingItems;
     return (

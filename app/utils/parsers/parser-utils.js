@@ -21,21 +21,21 @@ class ParserUtils {
 
     getUrlQueryParams = (search: string) => new URLSearchParams(search)
 
-    getAbsoluteUrl = (url: string, parsedUrl: Object) => {
+    getAbsoluteUrl = (url: string, parsedUrl: Object) : ?string => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
-        return null;
+        return '';
     }
 
-    formatUrl = (url: string) => {
+    formatUrl = (url: string): string => {
         if (!url.startsWith('http')) {
             return `http://${url}`;
         }
         return url;
     }
 
-    static parseUrl = (url: string) => {
+    static parseUrl = (url: string): Object => {
         const link = document.createElement('a');
         link.href = url;
         return {
@@ -49,15 +49,10 @@ class ParserUtils {
         };
     }
 
-    parseHtmlFromString = (htmlString: string) => {
-        const superParser = new DOMParser();
-        return superParser.parseFromString(htmlString, 'text/html');
-    }
-
-    resizeImage = (image:string, { ipfsFile }: Object) => {
+    resizeImage = (image:string, { ipfsFile }: Object): Promise<Object> => {
         let filePromises = [];
 
-        if (image) {
+        if (image.length) {
             filePromises = getResizedImages([image], {
                 ipfsFile
             });

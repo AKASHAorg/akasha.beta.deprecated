@@ -158,6 +158,7 @@ class Dashboard extends Component {
         // this.props.dashboards.equals(nextProps.dashboards);
 
     _handleBeginDrag = (column) => {
+        console.log('handle drag start');
         this.setState({
             draggingColumn: {
                 id: column.get('id'),
@@ -190,6 +191,7 @@ class Dashboard extends Component {
                 hover: null,
             }
         });
+        console.log('handle drag end');
     }
     _reorderColumns = () => {
         const { columnOrder, columnPlaceholder } = this.state;
