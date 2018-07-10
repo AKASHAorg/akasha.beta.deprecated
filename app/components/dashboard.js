@@ -146,17 +146,17 @@ class Dashboard extends Component {
         });
     }
 
-    shouldComponentUpdate = (nextProps, nextState) => {
-        return !nextState.columnOrder.equals(this.state.columnOrder) ||
+    shouldComponentUpdate = (nextProps, nextState) =>
+        !nextState.columnOrder.equals(this.state.columnOrder) ||
         !equals(nextState.draggingColumn, this.state.draggingColumn) ||
         !equals(nextState.columnPlaceholder, this.state.columnPlaceholder) ||
         !equals(nextState.viewportScrolledWidth, this.state.viewportScrolledWidth) ||
         nextProps.match.params.dashboardId !== this.props.match.params.dashboardId ||
         !nextProps.columns.equals(this.props.columns) ||
+        // nextProps.columns.some((val, id) => this.props.columns.get(id).large !== val.large) ||
         nextProps.activeDashboardId !== this.props.activeDashboardId ||
         !nextProps.pendingEntries.equals(this.props.pendingEntries);
         // this.props.dashboards.equals(nextProps.dashboards);
-    }
 
     _handleBeginDrag = (column) => {
         this.setState({
@@ -256,7 +256,7 @@ class Dashboard extends Component {
         const { match, dashboards, columns } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
-        if(this._dashboardNode) {
+        if (this._dashboardNode) {
             this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
         this.forceUpdate();
@@ -368,6 +368,7 @@ Dashboard.propTypes = {
     match: PropTypes.shape(),
     connectDropTarget: PropTypes.func,
     dashboardReorderColumn: PropTypes.func,
+    pendingEntries: PropTypes.shape(),
 };
 
 export default withRouter(DropTarget(dragItemTypes.COLUMN, {}, connect => ({

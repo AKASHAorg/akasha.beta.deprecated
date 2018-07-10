@@ -65,7 +65,12 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
             intl={other.intl}
           />
         }
-        <ColManager {...passedProps} intl={other.intl} />
+        <ColManager
+            {...passedProps}
+            large={other.large}
+            onSizeChange={other.onSizeChange}
+            intl={other.intl}
+        />
       </ColumnHeader>
     );
 };
