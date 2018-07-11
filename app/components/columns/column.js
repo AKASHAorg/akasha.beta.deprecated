@@ -32,22 +32,22 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
         pendingEntries: other.column ?
             pendingEntries.get(other.column.id) :
             pendingEntries.get(type),
-        ...other,            
+        ...other,
     });
     const fetchingItems = passedProps.column.flags.fetchingItems;
     return (
       <ColumnHeader
         readOnly={passedProps.readOnly}
         column={passedProps.column}
-        columnIndex={passedProps.columnIndex}
+        columnIndex={other.columnIndex}
         onRefresh={passedProps.onColumnRefresh}
         onBeginDrag={onBeginDrag}
         onEndDrag={onEndDrag}
         isColumnDragging={isColumnDragging}
-        connectDropTarget={passedProps.connectDropTarget}
+        connectDropTarget={other.connectDropTarget}
         iconType={passedProps.iconType}
         title={passedProps.title}
-        draggable={passedProps.draggable}
+        draggable={other.draggable}
         noMenu={passedProps.noMenu}
         dataSource={passedProps.dataSource}
         onSearch={passedProps.onSearch}
@@ -62,10 +62,15 @@ const Column = ({ onBeginDrag, onEndDrag, isColumnDragging, pendingEntries, type
         {(!passedProps.column || passedProps.column.itemsList.size === 0) && !fetchingItems &&
           <ColumnEmptyPlaceholder
             type={type}
-            intl={passedProps.intl}
+            intl={other.intl}
           />
         }
-        <ColManager {...passedProps} />
+        <ColManager
+            {...passedProps}
+            large={other.large}
+            onSizeChange={other.onSizeChange}
+            intl={other.intl}
+        />
       </ColumnHeader>
     );
 };

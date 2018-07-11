@@ -5,10 +5,9 @@ import { CommentCard, ProfileCard } from '../';
 
 const getLatestColumnProps = props => ({
     column: props.column,
-    ethAddress: props.ethAddress,    
-    intl: props.intl,
-    isVisible: props.isVisible,  
-    pendingEntries: props.pendingEntries,  
+    ethAddress: props.ethAddress,
+    isVisible: props.isVisible,
+    pendingEntries: props.pendingEntries,
     title: props.intl.formatMessage(dashboardMessages.latest),
     onItemRequest: (column) => props.entryNewestIterator(column, true),
     onItemMoreRequest: (column) => props.entryMoreNewestIterator(column, true),
@@ -28,8 +27,8 @@ const getListColumnProps = props => {
     return {
         column: props.column,
         ethAddress: props.ethAddress,
-        intl: props.intl,   
-        isVisible: props.isVisible,       
+
+        isVisible: props.isVisible,
         pendingEntries: props.pendingEntries,
         onItemRequest: props.entryListIterator,
         onItemMoreRequest: (column) => props.entryMoreListIterator(column, true),
@@ -46,8 +45,7 @@ const getListColumnProps = props => {
 const getTagColumnProps = props => ({
     column: props.column,
     ethAddress: props.ethAddress,
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
     iconType: 'tag',
     onItemRequest: (column) => props.entryTagIterator(column, true),
@@ -63,10 +61,9 @@ const getTagColumnProps = props => ({
 });
 
 const getStreamColumnProps = props => ({
-    column: props.column,   
-    ethAddress: props.ethAddress, 
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    column: props.column,
+    ethAddress: props.ethAddress,
+    isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
     onItemRequest: (column) => props.entryStreamIterator(column, true),
     onItemMoreRequest: (column) => props.entryMoreStreamIterator(column, true),
@@ -81,10 +78,9 @@ const getStreamColumnProps = props => ({
 });
 
 const getProfileColumnProps = props => ({
-    column: props.column,    
+    column: props.column,
     ethAddress: props.ethAddress,
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
     title: props.column ? `@${props.column.value}` : props.intl.formatMessage(profileMessages.entries),
     iconType: 'user',
@@ -103,8 +99,7 @@ const getProfileColumnProps = props => ({
 const getProfileCommentsColumnProps = (props) => ({
     column: props.column.set('value', props.ethAddress),
     ethAddress: props.ethAddress,
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
     title: props.intl.formatMessage(profileMessages.comments),
     iconType: 'comment',
@@ -122,9 +117,8 @@ const getProfileCommentsColumnProps = (props) => ({
 const getProfileEntriesColumnProps = props => ({
     column: props.column.set('value', props.ethAddress),
     ethAddress: props.ethAddress,
-    isVisible: props.isVisible,  
+    isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
-    intl: props.intl,
     title: props.intl.formatMessage(profileMessages.entries),
     onItemRequest: (column) => props.entryProfileIterator(column, true),
     onItemMoreRequest: (column) => props.entryMoreProfileIterator(column, true),
@@ -137,10 +131,9 @@ const getProfileEntriesColumnProps = props => ({
 });
 
 const getProfileFollowersColumnProps = props => ({
-    column: props.column.set('value', props.ethAddress), 
-    ethAddress: props.ethAddress,   
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    column: props.column.set('value', props.ethAddress),
+    ethAddress: props.ethAddress,
+    isVisible: props.isVisible,
     title: props.intl.formatMessage(profileMessages.followers),
     onItemRequest: (column) => props.profileFollowersIterator({ column, batching: true }),
     onItemMoreRequest: (column) => props.profileMoreFollowersIterator({ column, batching: true }),
@@ -149,15 +142,14 @@ const getProfileFollowersColumnProps = props => ({
         props.profileFollowersIterator({ column, batching: true});
     },
     itemCard: <ProfileCard />,
-    noMenu: true,    
-    readOnly: true,    
+    noMenu: true,
+    readOnly: true,
 });
 
 const getProfileFollowingsColumnProps = props => ({
     column: props.column.set('value', props.ethAddress),
     ethAddress: props.ethAddress,
-    intl: props.intl,
-    isVisible: props.isVisible,  
+    isVisible: props.isVisible,
     title: props.intl.formatMessage(profileMessages.followings),
     onItemRequest: column => props.profileFollowingsIterator({ column, batching: true }),
     onItemMoreRequest: column => props.profileMoreFollowingsIterator({ column, batching: true }),
@@ -166,7 +158,7 @@ const getProfileFollowingsColumnProps = props => ({
         props.profileFollowingsIterator({ column, batching: true });
     },
     itemCard: <ProfileCard />,
-    noMenu: true,    
+    noMenu: true,
     readOnly: true,
 });
 
