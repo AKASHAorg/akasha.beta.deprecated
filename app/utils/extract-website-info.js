@@ -1,33 +1,33 @@
 // @flow
 import ParserUtils from './parsers/parser-utils';
 import { metaTagsPriority, supportedDocs } from './parsers/parser-config';
-
+import { isInternalLink } from './url-utils';
 // <meta
 //    property="meta.attributes.property.textContent"
 //    content="meta.attributes.content.textContent"
 // />
-const AKASHA_WEB_HOSTNAME = 'beta.akasha.world';
+
 
 type ParserParams = {
-    url: String,
-    uploadImageToIpfs: ?Boolean,
-    parseUrl: (url: String) => Object,
+    url: string,
+    uploadImageToIpfs: ?boolean,
+    parseUrl: (url: string) => Object,
 };
 
 type AkashaParserResponse = {
     tags?: Array<Object>,
     status_code: number,
-    title: String,
-    description: String,
-    body_description: String,
-    body_image?: String
+    title: string,
+    description: string,
+    body_description: string,
+    body_image?: string
 };
 
 /**
  * @class WebsiteParser
  * @description Url parser class, used to extract info from a website`s html content
  *
- * @param {String} url website`s url
+ * @param {string} url website`s url
  * @param {Boolean} [uploadImageToIpfs] specifies if any image found on website should be uploaded to ipfs.
  *
  * @tutorial
@@ -35,15 +35,18 @@ type AkashaParserResponse = {
  *   websiteParser.getInfo().then(info: Object);
  */
 class WebsiteParser extends ParserUtils<ParserParams> {
-    constructor (params: Object): void {
+    url: string;
+    parsedUrl: Object;
+    uploadImageToIpfs: Object;
+    constructor (params: Object) {
         super();
         this.url = this.formatUrl(params.url);
         this.parsedUrl = ParserUtils.parseUrl(this.url);
         this.uploadImageToIpfs = params.uploadImageToIpfs;
     }
 
-    requestWebsiteInfo = (url: String): Promise<AkashaParserResponse> =>
-        this.makeParserRequest(url, 'text/html').then((response) => {
+    requestWebsiteInfo = (url: string): Promise<AkashaParserResponse> =>
+        this.makeParserRequest(url).then((response) => {
             const { status_code } = response;
             if (status_code !== 200) {
                 const error = new Error('Request failed! Cannot generate card!');
@@ -52,7 +55,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
             return response;
         });
     /**
-     * filter data based on config object => metaTagsPriority
+     * filter data based on config Object => metaTagsPriority
      */
     filterData = (websiteData: AkashaParserResponse) => {
         let { title, description, body_description, body_image, tags } = websiteData;
@@ -97,11 +100,8 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         return Promise.resolve(outputDescr);
     }
 
-    assertInternalLink = () =>
-        this.parsedUrl.host.includes(AKASHA_WEB_HOSTNAME);
-
-    requestAkashaEntry = (entryId: string): Promise =>
-        new Promise((resolve: void, reject: void) => {
+    requestAkashaEntry = (entryId: string): Promise<Object> =>
+        new Promise((resolve, reject) => {
             const ch: Object = window.Channel;
             ch.client.entry.getEntry.once((ev, resp) => {
                 if(resp.error) {
@@ -121,7 +121,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         }
         return null;
     }
-    getEntryType = (entry : Object) : Number => {
+    getEntryType = (entry : Object) : number => {
         let { type } = entry;
         if(!type && entry.cardInfo.title.length) {
             type = 1;
@@ -132,7 +132,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         const { pathname } = this.parsedUrl;
         let extension = null;
         let documentName = '';
-        const isAkashaInternalLink = this.assertInternalLink();
+        const isAkashaInternalLink = isInternalLink(this.parsedUrl.host);
 
         if(isAkashaInternalLink) {
             const entryId = this.getEntryIdFromUrl();
@@ -160,7 +160,6 @@ class WebsiteParser extends ParserUtils<ParserParams> {
                                 }
                             }
                     }
-
                 });
             }
         }

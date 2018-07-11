@@ -176,9 +176,11 @@ class ColumnHeader extends Component {
         const large = !column.get('large');
         this.props.dashboardUpdateColumn(column.get('id'), { large });
     };
+
     _getComponentRef = (component) => {
         this._colManagerComponent = component;
     }
+
     renderEditMode = () => {
         const { column, dataSource, intl } = this.props;
         const { value } = this.state;
