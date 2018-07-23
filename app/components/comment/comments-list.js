@@ -150,6 +150,7 @@ CommentList.propTypes = {
     moreComments: PropTypes.bool,
     pendingComments: PropTypes.shape(),
     onNewCommentButtonClick: PropTypes.func,
+    noCommentsPlaceholderVisible: PropTypes.bool,
 };
 
 function mapStateToProps (state) {
