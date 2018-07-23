@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AvatarEditor from 'react-avatar-editor/dist';
 import { injectIntl } from 'react-intl';
-import { Button } from 'antd';
+import { Button, Slider } from 'antd';
 import { Icon } from '../';
 import { generalMessages } from '../../locale-data/messages/general-messages';
 import { selectBaseUrl } from '../../local-flux/selectors/index';
@@ -214,37 +214,33 @@ class AvatarEditr extends Component {
                   }
                 </div>
                 {/* <div className="avatar__controls">
-                  <Row type="flex" align="middle" gutter={8}>
-                    <Col span={16}>
-                      <Slider
-                        max={2}
-                        min={1}
-                        step={0.1}
-                        defaultValue={this.state.avatarScale}
-                        onChange={this._handleSliderChange}
-                      />
-                    </Col>
-                    <Col
-                      span={4}
-                    >
-                      <Button
-                        ghost
-                        onClick={this._handleRotate}
-                        shape="circle"
-                        icon="reload"
-                        className="standard-button"
-                      />
-                    </Col>
-                    <Col span={4}>
-                      <Button
-                        ghost
-                        onClick={this._handleAvatarClear}
-                        shape="circle"
-                        icon="close"
-                        className="standard-button"
-                      />
-                    </Col>
-                  </Row>
+                  <div>
+                    <Slider
+                      max={10}
+                      min={1}
+                      step={0.1}
+                      value={this.state.avatarScale}
+                      onChange={this._handleSliderChange}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      ghost
+                      onClick={this._handleRotate}
+                      shape="circle"
+                      icon="reload"
+                      className="standard-button"
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      ghost
+                      onClick={this._handleAvatarClear}
+                      shape="circle"
+                      icon="close"
+                      className="standard-button"
+                    />
+                  </div>
                 </div> */}
               </div>
             }

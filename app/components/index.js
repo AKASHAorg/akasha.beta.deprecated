@@ -59,6 +59,7 @@ export HighlightHeader from './cards/highlight-header';
 export HistoryTable from './history-table';
 export Icon from './icon';
 export ImageUploader from './image-uploader/image-uploader';
+export ImageUploadModal from './modals/image-upload-modal';
 export Input from './common/input.js';
 export InputNumber from './common/input-number.js';
 export IpfsDetailsModal from './modals/ipfs-details-modal';

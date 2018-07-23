@@ -140,7 +140,7 @@ class ImageUploader extends Component {
             highlightDropZone: false,
         });
     }
-    render () {
+    render () { // eslint-disable-line complexity
         const { multiFiles, intl, initialImage } = this.props;
         const { imageLoaded, imageUploaderClose, processingFinished,
             progress, error, highlightDropZone } = this.state;
