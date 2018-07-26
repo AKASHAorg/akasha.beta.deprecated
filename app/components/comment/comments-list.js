@@ -80,7 +80,7 @@ class CommentList extends Component {
               </div>
             )
         }
-        console.log(optimisticComments, comments, 'the optimistic comments');
+
         return (
           <div className="comment-list">
             {optimisticComments && optimisticComments.map(commAction => (
@@ -91,8 +91,7 @@ class CommentList extends Component {
                 loggedProfileData={loggedProfileData}
               />
             ))}
-            {/* add an extra filter to comments in case of newly added comments */}
-            {!fetchingComments && comments.filter(c => c.entryId === entryId).map(comm => (
+            {!fetchingComments && comments.map(comm => (
               <CommentThread
                 comment={comm}
                 containerRef={containerRef}
@@ -109,7 +108,7 @@ class CommentList extends Component {
                 <Spin />
               </div>
             }
-            {!fetchingComments && !commentsCount && !optimisticComments.length && !comments.size &&
+            {!fetchingComments && !commentsCount && !optimisticComments.length &&
               <div className="comment-list__placeholder">
                 <div>{intl.formatMessage(entryMessages.noCommentsFound)}</div>
                 <div>
