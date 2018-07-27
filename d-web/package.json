@@ -1,0 +1,12 @@
+{
+  "name": "d-web",
+  "version": "1.0.0",
+  "dependencies": {
+    
+  },
+  "peerDependencies": {
+    "@akashaproject/common": "^1.0.0",
+    "@akashaproject/core": "^1.0.0",
+    "@akashaproject/ipfs-js-connector": "^1.0.26"
+  }
+}

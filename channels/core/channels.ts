@@ -1,0 +1,26 @@
+import { ApiListener, ApiRequest } from './ipcPreloader';
+
+const hashPath = (...path: string[]) => {
+  return path.join('/');
+};
+
+const channels: any = { client: {}, server: {} };
+
+export function
+registerChannel(
+  implListener: ApiListener,
+  implRequest: ApiRequest,
+  module,
+  method,
+) {
+  if (!channels.client.hasOwnProperty(module)) {
+    channels.client[module] = {};
+    channels.server[module] = {};
+  }
+  channels.client[module][method] = new implListener(hashPath('client', module, method), method);
+  channels.server[module][method] = new implRequest(hashPath('server', module, method), method);
+}
+
+export default function getChannels() {
+  return { client: channels.client, server: channels.server };
+}
