@@ -433,6 +433,10 @@ export const selectProfileEntries = (state, ethAddress) =>
     (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']) || new List())
         .map(entryId => selectEntry(state, entryId));
 
+export const selectProfileLoggedEntries = (state) =>
+    (state.dashboardState.getIn(['columnById', 'profileEntries', 'itemsList']) || new List())
+        .map(entryId => selectEntry(state, entryId));
+
 export const selectProfileEntriesFlags = (state, ethAddress) => {
     const profileEntries = state.entryState.getIn(['profileEntries', ethAddress]);
     if (!profileEntries) {
