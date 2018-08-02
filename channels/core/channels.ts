@@ -10,8 +10,8 @@ export function
 registerChannel(
   implListener: ApiListener,
   implRequest: ApiRequest,
-  module,
-  method,
+  module: string,
+  method: string,
 ) {
   if (!channels.client.hasOwnProperty(module)) {
     channels.client[module] = {};

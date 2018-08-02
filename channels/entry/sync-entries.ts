@@ -45,11 +45,11 @@ export default function init(sp, getService) {
       const contracts = getService(CORE_MODULE.CONTRACTS);
       const dbs = getService(CORE_MODULE.DB_INDEX);
       const [fn, digestSize, hash] = yield contracts.instance
-        .Entries.getEntry(data.author, data.entryId);
+      .Entries.getEntry(data.author, data.entryId);
       if (!!unpad(hash)) {
         const ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
         const entry = yield getService(ENTRY_MODULE.ipfs)
-          .getShortContent(ipfsHash).timeout(40000);
+        .getShortContent(ipfsHash).timeout(40000);
 
         dbs.entry.searchIndex.concurrentAdd(
           {}, [{
@@ -69,32 +69,32 @@ export default function init(sp, getService) {
     });
 
   const execute = Promise
-    .coroutine(function* (data: { fromBlock: number, following: string[] }, cb) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
-      v.validate(data, syncEntriesS, { throwError: true });
+  .coroutine(function* (data: { fromBlock: number, following: string[] }, cb) {
+    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    v.validate(data, syncEntriesS, { throwError: true });
 
-      if (!data.following || !data.following.length) {
-        return {};
+    if (!data.following || !data.following.length) {
+      return {};
+    }
+
+    const entryList = yield filterFromPublish(
+      { fromBlock: data.fromBlock, following: data.following },
+    );
+
+    delete data.following;
+    const indexEntry = (i) => {
+      if (i === entryList.entries.length) {
+        return cb('', { done: true, lastBlock: entryList.lastBlock });
       }
+      const nextId = i + 1;
+      return indexDbEntry(entryList.entries[i])
+      .then(() => indexEntry(nextId))
+      .catch(() => indexEntry(nextId));
+    };
+    indexEntry(0);
 
-      const entryList = yield filterFromPublish(
-        { fromBlock: data.fromBlock, following: data.following },
-      );
-
-      delete data.following;
-      const indexEntry = (i) => {
-        if (i === entryList.entries.length) {
-          return cb('', { done: true, lastBlock: entryList.lastBlock });
-        }
-        const nextId = i + 1;
-        return indexDbEntry(entryList.entries[i])
-          .then(() => indexEntry(nextId))
-          .catch(() => indexEntry(nextId));
-      };
-      indexEntry(0);
-
-      return { done: false };
-    });
+    return { done: false };
+  });
 
   const serviceFilterFromPublish = function () {
     return filterFromPublish;

@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     v.validate(data, removeCommentS, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = yield contracts.instance.Comments
-      .deleteComment.request(data.entryId, data.ethAddress, data.commentId, { gas: 250000 });
+    .deleteComment.request(data.entryId, data.ethAddress, data.commentId, { gas: 250000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
   });

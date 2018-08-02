@@ -13,18 +13,18 @@ export const freeAethSchema = {
 export default function init(sp, getService) {
 
   const execute = Promise
-    .coroutine(function* (data: { token: string }, cb) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
-      v.validate(data, freeAethSchema, { throwError: true });
+  .coroutine(function* (data: { token: string }, cb) {
+    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    v.validate(data, freeAethSchema, { throwError: true });
 
-      const txData = getService(CORE_MODULE.CONTRACTS)
-        .instance.AETH.freeAeth.request({ gas: 1000000 });
+    const txData = getService(CORE_MODULE.CONTRACTS)
+    .instance.AETH.freeAeth.request({ gas: 1000000 });
 
-      const transaction = yield getService(CORE_MODULE.CONTRACTS)
-        .send(txData, data.token, cb);
+    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    .send(txData, data.token, cb);
 
-      return { tx: transaction.tx, receipt: transaction.receipt };
-    });
+    return { tx: transaction.tx, receipt: transaction.receipt };
+  });
   const freeAeth = { execute, name: 'freeAeth', hasStream: true };
   const service = function () {
     return freeAeth;

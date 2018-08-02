@@ -61,7 +61,7 @@ export default function init(sp, getService) {
       !installedFilters.feed) {
 
       installedFilters.feed = yield getService(NOTIFICATIONS_MODULE.feed)
-        .execute(watchFilter, cb);
+      .execute(watchFilter, cb);
 
     }
 
@@ -71,7 +71,7 @@ export default function init(sp, getService) {
       !installedFilters.donations) {
 
       installedFilters.donations = yield getService(NOTIFICATIONS_MODULE.donations)
-        .execute(watchFilter, cb);
+      .execute(watchFilter, cb);
 
     }
 
@@ -81,7 +81,7 @@ export default function init(sp, getService) {
       !installedFilters.comments) {
 
       installedFilters.comments = yield getService(NOTIFICATIONS_MODULE.comments)
-        .execute(watchFilter, cb);
+      .execute(watchFilter, cb);
 
     }
 
@@ -90,7 +90,7 @@ export default function init(sp, getService) {
       data.settings.votes) && !installedFilters.votes) {
 
       installedFilters.votes = yield getService(NOTIFICATIONS_MODULE.votes)
-        .execute(watchFilter, cb);
+      .execute(watchFilter, cb);
     }
 
     return { watching: true };

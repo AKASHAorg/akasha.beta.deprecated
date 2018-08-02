@@ -29,15 +29,15 @@ export default function init(sp, getService) {
 
         if (!data[0] && data[1] > 0) {
           return getService(CORE_MODULE.WEB3_API).instance
-            .eth
-            .getBlockAsync('latest')
-            .then((latestBlock: any): any => {
-              if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
-                this.syncing = false;
-                return [];
-              }
-              return [data[1]];
-            });
+          .eth
+          .getBlockAsync('latest')
+          .then((latestBlock: any): any => {
+            if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
+              this.syncing = false;
+              return [];
+            }
+            return [data[1]];
+          });
         }
 
         return [data[1]];
@@ -72,7 +72,7 @@ export default function init(sp, getService) {
         for (const hash of this.getCurrentTxQueue()) {
           currentQueue.push(
             getService(CORE_MODULE.WEB3_API).instance
-              .eth.getTransactionReceiptAsync(hash),
+            .eth.getTransactionReceiptAsync(hash),
           );
         }
         Promise.all(currentQueue).then((receipt: any[]) => {
@@ -102,11 +102,11 @@ export default function init(sp, getService) {
     // check if local node has access to provided address
     public hasKey(address: string) {
       return getService(CORE_MODULE.WEB3_API).instance
-        .eth
-        .getAccountsAsync()
-        .then((list: string[]) => {
-          return list.indexOf(address) !== -1;
-        });
+      .eth
+      .getAccountsAsync()
+      .then((list: string[]) => {
+        return list.indexOf(address) !== -1;
+      });
     }
 
     public stopTxWatch() {

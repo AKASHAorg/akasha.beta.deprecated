@@ -13,14 +13,14 @@ export default function init(sp, getService) {
         return Promise.resolve();
       }
       return getService(CORE_MODULE.CONTRACTS).instance
-        .Votes
-        .getRecord(entryId)
-        .then(record => {
-          if (record[2] > (Date.now() / 1000)) {
-            this.canVote.push(entryId);
-          }
-          this.published.push(entryId);
-        });
+      .Votes
+      .getRecord(entryId)
+      .then(record => {
+        if (record[2] > (Date.now() / 1000)) {
+          this.canVote.push(entryId);
+        }
+        this.published.push(entryId);
+      });
     }
 
     public getAll() {

@@ -30,12 +30,12 @@ export default function init(sp, getService) {
     const commentsCount = yield contracts.instance.Comments.totalComments(data.entryId);
     const maxResults = commentsCount.toNumber();
     const fetched = yield contracts
-      .fromEvent(
-        contracts.instance.Comments.Publish, {
-          entryId: data.entryId,
-          author: data.author,
-        },
-        data.toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed });
+    .fromEvent(
+      contracts.instance.Comments.Publish, {
+        entryId: data.entryId,
+        author: data.author,
+      },
+      data.toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed });
     for (const event of fetched.results) {
       const comment = yield fetchComment.execute({
         commentId: event.args.id,

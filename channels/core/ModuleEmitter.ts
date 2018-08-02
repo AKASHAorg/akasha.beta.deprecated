@@ -16,25 +16,25 @@ export default class ModuleEmitter {
       let response: any;
       // console.time(method.name);
       return method
-        .execute(data, (er, ev) => {
-          if (er) {
-            response = this.formatMessage({ error: { message: er } }, data);
-          } else {
-            response = this.formatMessage(ev, data);
-          }
-          getChannels().client[this.MODULE_NAME][method.name].send(response);
-        })
-        .then((result: any) => {
-          response = this.formatMessage(result, data);
-        })
-        .catch((err: Error) => {
-          response = this.formatMessage({ error: { message: err.message } }, data);
-        })
-        .finally(() => {
-          getChannels().client[this.MODULE_NAME][method.name].send(response);
-          // console.timeEnd(method.name);
-          response = null;
-        });
+      .execute(data, (er, ev) => {
+        if (er) {
+          response = this.formatMessage({ error: { message: er } }, data);
+        } else {
+          response = this.formatMessage(ev, data);
+        }
+        getChannels().client[this.MODULE_NAME][method.name].send(response);
+      })
+      .then((result: any) => {
+        response = this.formatMessage(result, data);
+      })
+      .catch((err: Error) => {
+        response = this.formatMessage({ error: { message: err.message } }, data);
+      })
+      .finally(() => {
+        getChannels().client[this.MODULE_NAME][method.name].send(response);
+        // console.timeEnd(method.name);
+        response = null;
+      });
     };
   }
 
@@ -42,22 +42,22 @@ export default class ModuleEmitter {
     return (data: any) => {
       let response: any;
       return method
-        .execute(data)
-        .then((result: any) => {
-          response = this.formatMessage(result, data);
-        })
-        .catch((err: Error) => {
-          console.log(err);
-          response = this.formatMessage({ error: { message: err.message } }, data);
-        })
-        .finally(() => {
-          getChannels().client[this.MODULE_NAME][method.name].send(response);
-          response = null;
-        });
+      .execute(data)
+      .then((result: any) => {
+        response = this.formatMessage(result, data);
+      })
+      .catch((err: Error) => {
+        console.log(err);
+        response = this.formatMessage({ error: { message: err.message } }, data);
+      })
+      .finally(() => {
+        getChannels().client[this.MODULE_NAME][method.name].send(response);
+        response = null;
+      });
     };
   }
 
-  protected manager() {
+  protected _manager() {
     this.DEFAULT_MANAGED.forEach(
       (action: string) => {
         getChannels().server[this.MODULE_NAME][action].enable();
@@ -65,22 +65,19 @@ export default class ModuleEmitter {
     );
   }
 
-  protected initMethods(
+  protected _initMethods(
     implListener: ApiListener,
     implRequest: ApiRequest,
     methods,
   ) {
     methods.forEach((method) => {
-      if (!method.hasOwnProperty('name')) {
-        return;
-      }
       registerChannel(implListener, implRequest, this.MODULE_NAME, method.name);
       getChannels()
         .server[this.MODULE_NAME][method.name]
-        .registerListener(
-          method.hasStream ?
-            this.generateStreamListener(method) : this.generateListener(method),
-        );
+      .registerListener(
+        method.hasStream ?
+          this.generateStreamListener(method) : this.generateListener(method),
+      );
     });
   }
 }

@@ -36,7 +36,7 @@ export default function init(sp, getService) {
     let ipfsEntry = new getService(ENTRY_MODULE.ipfsEntryHelper).IpfsEntry();
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const [fn, digestSize, hash] = yield contracts.instance
-      .Entries.getEntry(data.ethAddress, data.entryId);
+    .Entries.getEntry(data.ethAddress, data.entryId);
 
     if (!unpad(hash)) {
       throw new Error(`entryId: ${data.entryId} published by ${data.ethAddress} does not exits`);
@@ -44,7 +44,7 @@ export default function init(sp, getService) {
 
     const ipfsHashPublished = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
     const ipfsHash = yield ipfsEntry
-      .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
+    .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
     const decodedHash = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;

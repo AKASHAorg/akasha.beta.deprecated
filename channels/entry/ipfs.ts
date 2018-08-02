@@ -43,16 +43,16 @@ export default function init(sp, getService) {
           }
           const mediaData = this._normalizeImage(content.featuredImage[imSize].src);
           return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-            .add(content.featuredImage[imSize].src, true, is(String, mediaData))
-            .then((obj) => {
-              return {
-                [imSize]: Object.assign(
-                  {},
-                  content.featuredImage[imSize],
-                  { src: obj.hash },
-                ),
-              };
-            });
+          .add(content.featuredImage[imSize].src, true, is(String, mediaData))
+          .then((obj) => {
+            return {
+              [imSize]: Object.assign(
+                {},
+                content.featuredImage[imSize],
+                { src: obj.hash },
+              ),
+            };
+          });
         });
         ipfsApiRequests.push(
           Promise.all(req).then((sizes) => {
@@ -69,63 +69,63 @@ export default function init(sp, getService) {
       if (content.cardInfo && is(Object, content.cardInfo)) {
         ipfsApiRequests.push(
           getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-            .add(content.cardInfo)
-            .then((obj) => this.entryLinks.push(
-              Object.assign({}, obj, { name: CARD_INFO }))));
+          .add(content.cardInfo)
+          .then((obj) => this.entryLinks.push(
+            Object.assign({}, obj, { name: CARD_INFO }))));
       }
 
       ipfsApiRequests.push(
         getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-          .add(content.excerpt)
-          .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
+        .add(content.excerpt)
+        .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
 
       if (previous && previous.hash) {
         getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-          .getStats(previous.hash)
-          .then((stats) => {
-            this.entryLinks.push(
-              { hash: stats.Hash, size: stats.CumulativeSize, name: PREVIOUS_VERSION });
-          });
+        .getStats(previous.hash)
+        .then((stats) => {
+          this.entryLinks.push(
+            { hash: stats.Hash, size: stats.CumulativeSize, name: PREVIOUS_VERSION });
+        });
       }
 
       return Promise.all(ipfsApiRequests)
-        .then(() => this._uploadMediaDraft())
-        .then((parts) => {
-          return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-            .createNode(
-              {
-                draftParts: parts,
-                licence: this.licence,
-                tags: this.tags,
-                title: this.title,
-                wordCount: this.wordCount,
-                entryType,
-                version:
-                  (previous && previous.hasOwnProperty('version')) ?
-                    ++previous.version : 0,
-              },
-              this.entryLinks).then((node) => node.hash);
-        });
+      .then(() => this._uploadMediaDraft())
+      .then((parts) => {
+        return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+        .createNode(
+          {
+            draftParts: parts,
+            licence: this.licence,
+            tags: this.tags,
+            title: this.title,
+            wordCount: this.wordCount,
+            entryType,
+            version:
+              (previous && previous.hasOwnProperty('version')) ?
+                ++previous.version : 0,
+          },
+          this.entryLinks).then((node) => node.hash);
+      });
     }
 
     edit(content: any, tags: any[], entryType: number, previousHash) {
       return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-        .get(previousHash)
-        .then((data) => {
-          if (content.hasOwnProperty('version')) {
-            delete content.version;
-          }
+      .get(previousHash)
+      .then((data) => {
+        if (content.hasOwnProperty('version')) {
+          delete content.version;
+        }
 
-          return this.create(
-            content,
-            tags,
-            entryType,
-            {
-              hash: previousHash,
-              version: (data.version) ? data.version : 0,
-            },
-          );
-        });
+        return this.create(
+          content,
+          tags,
+          entryType,
+          {
+            hash: previousHash,
+            version: (data.version) ? data.version : 0,
+          },
+        );
+      });
     }
 
     private _filterForImages() {
@@ -167,16 +167,16 @@ export default function init(sp, getService) {
           const mediaData = this._normalizeImage(element.data.files[imSize].src);
           uploads.push(
             getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-              .add(mediaData, true, is(String, mediaData))
-              .then(
-                (obj) => {
-                  this.entryLinks.push(
-                    Object.assign({}, obj, { name: (imSize + index) }));
+            .add(mediaData, true, is(String, mediaData))
+            .then(
+              (obj) => {
+                this.entryLinks.push(
+                  Object.assign({}, obj, { name: (imSize + index) }));
 
-                  this.draft[DRAFT_BLOCKS][blockIndex[index]]
-                    .data.files[imSize].src = obj.hash;
-                },
-              ),
+                this.draft[DRAFT_BLOCKS][blockIndex[index]]
+                  .data.files[imSize].src = obj.hash;
+              },
+            ),
           );
         });
       });
@@ -200,14 +200,14 @@ export default function init(sp, getService) {
           const sliceDraft = entryDraft.slice(start, end);
           slices.push(
             getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-              .add(sliceDraft)
-              .then(
-                (obj) => {
-                  this.entryLinks.push(
-                    Object.assign({}, obj, { name: (DRAFT_PART + q) }),
-                  );
-                },
-              ),
+            .add(sliceDraft)
+            .then(
+              (obj) => {
+                this.entryLinks.push(
+                  Object.assign({}, obj, { name: (DRAFT_PART + q) }),
+                );
+              },
+            ),
           );
         }
         return Promise.all(slices).then(() => parts);
@@ -233,10 +233,10 @@ export default function init(sp, getService) {
     const root = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
 
     const extraData = yield getService(CORE_MODULE.IPFS_CONNECTOR)
-      .getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE, CARD_INFO]);
+    .getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE, CARD_INFO]);
     for (let i = 0; i < extraData.length; i++) {
       response[extraData[i].name] = yield getService(CORE_MODULE.IPFS_CONNECTOR)
-        .getInstance().api.get(extraData[i].multihash);
+      .getInstance().api.get(extraData[i].multihash);
     }
 
     if ((response[CARD_INFO] && !is(Object, response[CARD_INFO])) ||
@@ -282,7 +282,7 @@ export default function init(sp, getService) {
         linkPath.push(PREVIOUS_VERSION);
       }
       const seek = yield getService(CORE_MODULE.IPFS_CONNECTOR)
-        .getInstance().api.findLinkPath(hash, linkPath);
+      .getInstance().api.findLinkPath(hash, linkPath);
 
       return seek[0].multihash;
     });
@@ -307,7 +307,7 @@ export default function init(sp, getService) {
       }
 
       const root = yield getService(CORE_MODULE.IPFS_CONNECTOR)
-        .getInstance().api.get(rootHash);
+      .getInstance().api.get(rootHash);
 
       const parts = [];
       const draftParts = [];
@@ -315,10 +315,10 @@ export default function init(sp, getService) {
         parts.push(DRAFT_PART + i);
       }
       const extraData = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance()
-        .api.findLinks(rootHash, parts);
+      .api.findLinks(rootHash, parts);
       for (let y = 0; y < extraData.length; y++) {
         tmp = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance()
-          .api.getObject(extraData[y].multihash, true);
+        .api.getObject(extraData[y].multihash, true);
         draftParts.push(tmp);
       }
       const draftObj = draftParts.map((el) => {

@@ -54,12 +54,12 @@ export default function init(sp, getService) {
     filter.setBlockNr(blockNr);
     if (!data.profiles.length) {
       temp = yield getService(PROFILE_MODULE.followingIterator)
-        .execute({ lastBlock: blockNr, limit: 500 });
+      .execute({ lastBlock: blockNr, limit: 500 });
 
       data.profiles = temp.collection;
 
       getService(CORE_MODULE.STASH)
-        .mixed.setFull(PROFILE_MODULE.followingIterator, temp.collection);
+      .mixed.setFull(PROFILE_MODULE.followingIterator, temp.collection);
     }
     data.profiles.forEach((profileAddress) => {
       if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {

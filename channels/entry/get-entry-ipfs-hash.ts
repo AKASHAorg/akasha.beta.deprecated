@@ -21,7 +21,7 @@ export default function init(sp, getService) {
     let ipfsHash;
     const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
     const [fn, digestSize, hash] = yield getService(CORE_MODULE.CONTRACTS)
-      .instance.Entries.getEntry(ethAddress, data.entryId);
+    .instance.Entries.getEntry(ethAddress, data.entryId);
     if (!!unpad(hash)) {
       ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
     }

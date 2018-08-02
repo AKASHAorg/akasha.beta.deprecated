@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     const getCommentContent = getService(COMMENTS_MODULE.commentIpfs).getCommentContent;
     for (const ipfsHash of data) {
       getCommentContent(ipfsHash)
-        .then((result) => cb('', Object.assign({}, result, { ipfsHash })));
+      .then((result) => cb('', Object.assign({}, result, { ipfsHash })));
     }
     return {};
   });

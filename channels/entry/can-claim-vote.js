@@ -35,9 +35,7 @@ function init(sp, getService) {
         return { collection };
     });
     const canClaimVote = { execute, name: 'canClaimVote' };
-    const service = function () {
-        return canClaimVote;
-    };
+    const service = function () { return canClaimVote; };
     sp().service(constants_1.ENTRY_MODULE.canClaimVote, service);
     return canClaimVote;
 }

@@ -6,7 +6,7 @@ export const licences = [
     description: [
       {
         icon: 'copyright-1', text: 'Others cannot copy, distribute, or perform your work without your' +
-        ' permission (or as permitted by fair use).',
+          ' permission (or as permitted by fair use).',
       },
     ],
   }, {

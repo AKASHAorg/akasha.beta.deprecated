@@ -10,8 +10,8 @@ export default function init(sp, getService) {
       date,
     };
     return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-      .add(constructed)
-      .then((result: any) => result.hash);
+    .add(constructed)
+    .then((result: any) => result.hash);
   };
 
   const getCommentContent = function getCommentContent(hash) {
@@ -20,14 +20,14 @@ export default function init(sp, getService) {
       return Promise.resolve(comments.getFull(hash));
     }
     return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-      .get(hash)
-      .timeout(getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.FULL_WAIT_TIME))
-      .then((data) => {
-        comments.setFull(hash, data);
-        return data;
-      }).catch((e) => {
-        return { content: null };
-      });
+    .get(hash)
+    .timeout(getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.FULL_WAIT_TIME))
+    .then((data) => {
+      comments.setFull(hash, data);
+      return data;
+    }).catch((e) => {
+      return { content: null };
+    });
   };
 
   const commentIpfs = { create, getCommentContent };

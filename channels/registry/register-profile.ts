@@ -31,26 +31,26 @@ export default function init(sp, getService) {
     v.validate(data, registerProfileSchema, { throwError: true });
     const normalisedId = getService(COMMON_MODULE.profileHelpers).normaliseId(data.akashaId);
     const check = yield getService(REGISTRY_MODULE.checkIdFormat)
-      .execute({ akashaId: normalisedId });
+    .execute({ akashaId: normalisedId });
 
     if (!check.idValid) {
       throw new Error('Invalid akashaId');
     }
 
     const ipfsHash = yield getService(COMMON_MODULE.profileHelpers)
-      .ipfsCreateProfile(data.ipfs);
+    .ipfsCreateProfile(data.ipfs);
 
     const [hash, fn, digest] = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
 
     const txData = getService(CORE_MODULE.CONTRACTS).instance
-      .ProfileRegistrar
-      .register.request(normalisedId, data.donationsEnabled, hash, fn, digest, {
-        gas: 400000,
-        from: data.ethAddress,
-      });
+    .ProfileRegistrar
+    .register.request(normalisedId, data.donationsEnabled, hash, fn, digest, {
+      gas: 400000,
+      from: data.ethAddress,
+    });
 
     const transaction = yield getService(CORE_MODULE.CONTRACTS)
-      .send(txData, data.token, cb);
+    .send(txData, data.token, cb);
 
     return { tx: transaction.tx, receipt: transaction.receipt };
   });

@@ -25,9 +25,9 @@ export default function init(sp, getService) {
       }
 
       const txData = contracts.instance
-        .ProfileResolver
-        .toggleDonations
-        .request(currentProfile.raw, data.status, { gas: 200000 });
+      .ProfileResolver
+      .toggleDonations
+      .request(currentProfile.raw, data.status, { gas: 200000 });
       const transaction = yield contracts.send(txData, data.token, cb);
       return {
         tx: transaction.tx,

@@ -22,23 +22,23 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const requests = data.transactionHash.map((txHash) => {
       return web3Api
-        .instance.eth
-        .getTransactionReceiptAsync(txHash).then((receipt) => {
-          if (receipt) {
-            return Object.assign(
-              {},
-              receipt,
-              { success: receipt.status === '0x1' });
+      .instance.eth
+      .getTransactionReceiptAsync(txHash).then((receipt) => {
+        if (receipt) {
+          return Object.assign(
+            {},
+            receipt,
+            { success: receipt.status === '0x1' });
+        }
+        return web3Api.instance.eth
+        .getTransactionAsync(txHash)
+        .then((txHashData) => {
+          if (txHashData) {
+            return { transactionHash: txHash, blockNumber: null };
           }
-          return web3Api.instance.eth
-            .getTransactionAsync(txHash)
-            .then((txHashData) => {
-              if (txHashData) {
-                return { transactionHash: txHash, blockNumber: null };
-              }
-              return null;
-            });
+          return null;
         });
+      });
     });
     return Promise.all(requests);
   });

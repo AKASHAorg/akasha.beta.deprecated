@@ -30,7 +30,6 @@ import updateProfileInit from './update-profile';
 import votesIteratorInit from './votes-iterator';
 
 
-
 export const moduleName = 'profile';
 
 const init = function init(sp, getService) {

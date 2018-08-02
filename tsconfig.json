@@ -13,10 +13,10 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "experimentalDecorators": true,
-        "rootDir": "main",
         "emitDecoratorMetadata": true,
         "typeRoots": ["node_modules/@types"],
         "outDir": "dist/main"
     },
+    "include": ["d-web", "channels"],
     "exclude": ["node_modules"]
 }

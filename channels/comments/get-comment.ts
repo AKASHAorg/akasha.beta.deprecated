@@ -9,7 +9,7 @@ export default function init(sp, getService) {
     const [
       parent, ethAddress, deleted,
       publishDate, fn, digestSize, hash] = yield contracts.instance
-      .Comments.getComment(data.entryId, data.commentId);
+    .Comments.getComment(data.entryId, data.commentId);
 
     const ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
     const author = yield getService(PROFILE_MODULE.resolveEthAddress).execute({ ethAddress });
@@ -17,7 +17,7 @@ export default function init(sp, getService) {
       { ipfsHash } : yield getService(COMMENTS_MODULE.commentIpfs).getCommentContent(ipfsHash);
 
     const [totalVotes, score, endPeriod] = yield contracts
-      .instance.Votes.getRecord(data.commentId);
+    .instance.Votes.getRecord(data.commentId);
 
     return Object.assign(
       {},
