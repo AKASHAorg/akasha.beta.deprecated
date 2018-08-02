@@ -125,8 +125,8 @@ export const selectCommentLastIndex = (state, parent) => state.commentsState.get
 export const selectCommentVote = (state, commentId) => state.commentsState.getIn(['votes', commentId]);
 
 export const selectEntryCommentsForParent = (state, entryId, parent) => {
-    const list = state.commentsState.getIn(['byParent', parent]) || new List();
-    return list.map(id => selectComment(state, id)).filter(comm => comm.entryId === entryId);
+    const list = state.commentsState.getIn(['byParent', parent]);
+    return List(list).map(id => selectComment(state, id)).filter(comm => comm.entryId === entryId);
 };
 
 export const selectCommentsFlag = (state, flag, id) => {
@@ -279,7 +279,7 @@ export const selectCurrentTotalFollowers = (state, ethAddress) => {
 };
 
 export const selectCurrentTotalProfileEntries = (state, ethAddress) => {
-    const entries = state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']);    
+    const entries = state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']);
     return entries ? entries.size : null;
 };
 
@@ -431,6 +431,10 @@ export const selectProfileEditToggle = state =>
 
 export const selectProfileEntries = (state, ethAddress) =>
     (state.entryState.getIn(['profileEntries', ethAddress, 'entryIds']) || new List())
+        .map(entryId => selectEntry(state, entryId));
+
+export const selectProfileLoggedEntries = (state) =>
+    (state.dashboardState.getIn(['columnById', 'profileEntries', 'itemsList']) || new List())
         .map(entryId => selectEntry(state, entryId));
 
 export const selectProfileEntriesFlags = (state, ethAddress) => {
