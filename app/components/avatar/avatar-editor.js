@@ -40,7 +40,7 @@ class AvatarEditr extends Component {
                 reader.onloadend = ev =>
                     resolve(new Uint8Array(ev.target.result));
                 reader.readAsArrayBuffer(blob);
-            }, 'image/jpeg');
+            }, 'image/png');
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;
