@@ -16,7 +16,7 @@ export default function init(sp, getService) {
     v.validate(data, checkFormatSchema, { throwError: true });
 
     const status = yield getService(CORE_MODULE.CONTRACTS)
-      .instance.Tags.checkFormat(data.tagName);
+    .instance.Tags.checkFormat(data.tagName);
     return { status, tagName: data.tagName };
   });
 

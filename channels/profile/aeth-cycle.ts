@@ -14,21 +14,21 @@ export const cycleAethSchema = {
 export default function init(sp, getService) {
 
   const execute = Promise
-    .coroutine(function* (data: { amount: string, token: string }, cb) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
-      v.validate(data, cycleAethSchema, { throwError: true });
+  .coroutine(function* (data: { amount: string, token: string }, cb) {
+    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    v.validate(data, cycleAethSchema, { throwError: true });
 
-      const bnAmount = getService(CORE_MODULE.WEB3_API)
-        .instance.toWei(data.amount, 'ether');
+    const bnAmount = getService(CORE_MODULE.WEB3_API)
+    .instance.toWei(data.amount, 'ether');
 
-      const txData = getService(CORE_MODULE.CONTRACTS)
-        .instance.AETH.cycleAeth.request(bnAmount, { gas: 160000 });
+    const txData = getService(CORE_MODULE.CONTRACTS)
+    .instance.AETH.cycleAeth.request(bnAmount, { gas: 160000 });
 
-      const transaction = yield getService(CORE_MODULE.CONTRACTS)
-        .send(txData, data.token, cb);
+    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    .send(txData, data.token, cb);
 
-      return { tx: transaction.tx, receipt: transaction.receipt };
-    });
+    return { tx: transaction.tx, receipt: transaction.receipt };
+  });
   const cycleAeth = { execute, name: 'cycleAeth', hasStream: true };
   const service = function () {
     return cycleAeth;

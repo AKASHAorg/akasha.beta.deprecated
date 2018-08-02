@@ -9,10 +9,10 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
 
     const address = yield getService(COMMON_MODULE.profileHelpers)
-      .profileAddress(data);
+    .profileAddress(data);
 
     const txData = contracts.instance.Feed
-      .unFollow.request(address, { gas: 400000 });
+    .unFollow.request(address, { gas: 400000 });
 
     const transaction = yield contracts.send(txData, data.token, cb);
     getService(CORE_MODULE.STASH).mixed.flush();

@@ -14,7 +14,7 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     try {
       normalisedId = getService(COMMON_MODULE.profileHelpers)
-        .normaliseId(data.akashaId);
+      .normaliseId(data.akashaId);
 
       const idHash = yield contracts.instance.ProfileRegistrar.hash(normalisedId);
       exists = yield contracts.instance.ProfileResolver.addr(idHash);

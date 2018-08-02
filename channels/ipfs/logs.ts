@@ -5,7 +5,7 @@ export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
     return Promise.fromCallback((cb) => {
       return getService(CORE_MODULE.IPFS_CONNECTOR)
-        .getInstance().logger.query({ start: 0, limit: 10, order: 'desc' }, cb);
+      .getInstance().logger.query({ start: 0, limit: 10, order: 'desc' }, cb);
     });
   });
 

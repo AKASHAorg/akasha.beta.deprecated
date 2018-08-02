@@ -41,17 +41,17 @@ export default function init(sp, getService) {
       buildFilter(data.authors, data.text) : defaultQuery;
     dbs.entry.searchIndex.totalHits({ query }, function (err, count) {
       dbs.entry.searchIndex.search({
-          query,
-          pageSize,
-          offset,
-        })
-        .on('data', (data) => {
-          collection.push({
-            entryId: data.document.id,
-            ethAddress: data.document.ethAddress,
-            version: data.document.version,
-          });
-        }).on('end', () => {
+        query,
+        pageSize,
+        offset,
+      })
+      .on('data', (data) => {
+        collection.push({
+          entryId: data.document.id,
+          ethAddress: data.document.ethAddress,
+          version: data.document.version,
+        });
+      }).on('end', () => {
         cb('', { collection, totalHits: count, searching: false });
       });
     });

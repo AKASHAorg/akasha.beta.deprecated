@@ -27,13 +27,13 @@ export default function init(sp, getService) {
       const tokenAmount = web3Api.instance.toWei(data.tokenAmount || 0, 'ether');
       const ethAmount = web3Api.instance.toWei(data.value || 0, 'ether');
       const address = yield getService(COMMON_MODULE.profileHelpers)
-        .profileAddress(data);
+      .profileAddress(data);
 
       const txData = contracts.instance.AETH
-        .donate.request(address, tokenAmount, data.message || '', {
-          value: ethAmount,
-          gas: 200000,
-        });
+      .donate.request(address, tokenAmount, data.message || '', {
+        value: ethAmount,
+        gas: 200000,
+      });
       const transaction = yield contracts.send(txData, data.token, cb);
       return {
         tx: transaction.tx,

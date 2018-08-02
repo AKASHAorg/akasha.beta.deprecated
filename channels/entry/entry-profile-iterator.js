@@ -42,9 +42,7 @@ function init(sp, getService) {
         }));
     });
     const entryProfileIterator = { execute, name: 'entryProfileIterator' };
-    const service = function () {
-        return entryProfileIterator;
-    };
+    const service = function () { return entryProfileIterator; };
     sp().service(constants_1.ENTRY_MODULE.entryProfileIterator, service);
     return entryProfileIterator;
 }

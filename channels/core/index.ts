@@ -1,4 +1,4 @@
-import {CORE_MODULE} from '@akashaproject/common/constants';
+import { CORE_MODULE } from '@akashaproject/common/constants';
 import contractsInit from './contracts';
 import responsesInit from './responses';
 import servicesInit from './services';

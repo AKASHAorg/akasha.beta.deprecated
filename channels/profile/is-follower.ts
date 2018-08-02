@@ -27,22 +27,22 @@ export default function init(sp, getService) {
         let addressFollower;
         let addressFollowing;
         return profileHelpers
-          .profileAddress(
-            { akashaId: req.akashaIdFollower, ethAddress: req.ethAddressFollower })
-          .then((data1) => {
-            addressFollower = data1;
-            return profileHelpers.profileAddress(
-              { akashaId: req.akashaIdFollowing, ethAddress: req.ethAddressFollowing });
-          })
-          .then((data1) => {
-            addressFollowing = data1;
-            return getService(CORE_MODULE.CONTRACTS)
-              .instance.Feed.follows(addressFollower, addressFollowing);
+        .profileAddress(
+          { akashaId: req.akashaIdFollower, ethAddress: req.ethAddressFollower })
+        .then((data1) => {
+          addressFollower = data1;
+          return profileHelpers.profileAddress(
+            { akashaId: req.akashaIdFollowing, ethAddress: req.ethAddressFollowing });
+        })
+        .then((data1) => {
+          addressFollowing = data1;
+          return getService(CORE_MODULE.CONTRACTS)
+          .instance.Feed.follows(addressFollower, addressFollowing);
 
-          })
-          .then((result) => {
-            return { result, addressFollower, addressFollowing };
-          });
+        })
+        .then((result) => {
+          return { result, addressFollower, addressFollowing };
+        });
       });
 
       const collection = yield Promise.all(requests);

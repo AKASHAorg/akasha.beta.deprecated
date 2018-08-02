@@ -32,12 +32,12 @@ export default function init(sp, getService) {
         }
         const transformed = Buffer.from(pass).toString('utf8');
         return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
-          .web3
-          .personal
-          .newAccountAsync(transformed)
-          .then((address: string) => {
-            return address;
-          });
+        .web3
+        .personal
+        .newAccountAsync(transformed)
+        .then((address: string) => {
+          return address;
+        });
       } catch (err) {
         return Promise.reject(err);
       }
@@ -47,46 +47,46 @@ export default function init(sp, getService) {
     public login(acc: string, pass: any | Uint8Array, timer: number = 1) {
 
       return getService(CORE_MODULE.WEB3_HELPER)
-        .hasKey(acc)
-        .then((found) => {
-          if (!found) {
-            throw new Error(`local key for ${acc} not found`);
-          }
-          return this._encrypt(pass);
-        })
-        .then(() => {
-          return randomBytesAsync(64);
-        })
-        .then((buff) => {
-          const token = addHexPrefix(buff.toString('hex'));
-          return this._signSession(token, acc, Buffer.from(pass).toString('utf8'))
-            .then((signedString: string) => {
-              const expiration = new Date();
-              const clientToken = hashPersonalMessage(buff);
-              expiration.setMinutes(expiration.getMinutes() + timer);
-              getService(CORE_MODULE.GETH_CONNECTOR)
-                .getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
-              getService(CORE_MODULE.GETH_CONNECTOR)
-                .getInstance().web3.eth.defaultAccount = acc;
-              this.session = {
-                expiration,
-                address: acc,
-                vrs: fromRpcSig(signedString),
-              };
-              this.task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-              return {
-                token: addHexPrefix(clientToken.toString('hex')),
-                expiration,
-                ethAddress: acc
-              };
-            });
+      .hasKey(acc)
+      .then((found) => {
+        if (!found) {
+          throw new Error(`local key for ${acc} not found`);
+        }
+        return this._encrypt(pass);
+      })
+      .then(() => {
+        return randomBytesAsync(64);
+      })
+      .then((buff) => {
+        const token = addHexPrefix(buff.toString('hex'));
+        return this._signSession(token, acc, Buffer.from(pass).toString('utf8'))
+        .then((signedString: string) => {
+          const expiration = new Date();
+          const clientToken = hashPersonalMessage(buff);
+          expiration.setMinutes(expiration.getMinutes() + timer);
+          getService(CORE_MODULE.GETH_CONNECTOR)
+          .getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
+          getService(CORE_MODULE.GETH_CONNECTOR)
+          .getInstance().web3.eth.defaultAccount = acc;
+          this.session = {
+            expiration,
+            address: acc,
+            vrs: fromRpcSig(signedString),
+          };
+          this.task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+          return {
+            token: addHexPrefix(clientToken.toString('hex')),
+            expiration,
+            ethAddress: acc,
+          };
         });
+      });
     }
 
     public logout() {
       if (this.session) {
         getService(CORE_MODULE.GETH_CONNECTOR)
-          .getInstance().web3.personal.lockAccountAsync(this.session.address);
+        .getInstance().web3.personal.lockAccountAsync(this.session.address);
       }
       this._flushSession();
 
@@ -118,19 +118,19 @@ export default function init(sp, getService) {
 
     public signData(data: {}, token: string) {
       return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
-        .web3
-        .personal
-        .sendTransactionAsync(data, this._read(token).toString('utf8'));
+      .web3
+      .personal
+      .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 
     public signMessage(data: {}, token: string) {
       return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
-        .web3
-        .personal
-        .signAsync(
-          data,
-          getService(CORE_MODULE.GETH_CONNECTOR).getInstance().web3.eth.defaultAccount,
-          this._read(token).toString('utf8'));
+      .web3
+      .personal
+      .signAsync(
+        data,
+        getService(CORE_MODULE.GETH_CONNECTOR).getInstance().web3.eth.defaultAccount,
+        this._read(token).toString('utf8'));
     }
 
     _generateRandom() {
@@ -178,9 +178,9 @@ export default function init(sp, getService) {
 
     _signSession(hash: string, account: string, password: string) {
       return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
-        .web3
-        .personal
-        .signAsync(hash, account, password);
+      .web3
+      .personal
+      .signAsync(hash, account, password);
     }
   }
 

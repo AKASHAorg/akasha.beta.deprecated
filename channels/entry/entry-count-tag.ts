@@ -19,10 +19,10 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const requests = data.map((tag) => {
       return contracts.instance.Tags
-        .totalEntries(tag)
-        .then((count) => {
-          return { count: count.toString(10), tag };
-        });
+      .totalEntries(tag)
+      .then((count) => {
+        return { count: count.toString(10), tag };
+      });
     });
     const collection = yield Promise.all(requests);
     return { collection };

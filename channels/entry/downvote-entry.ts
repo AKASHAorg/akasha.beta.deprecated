@@ -23,7 +23,7 @@ export default function init(sp, getService) {
     }
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.Votes
-      .voteEntry.request(data.weight, data.entryId, true, data.ethAddress, { gas: 250000 });
+    .voteEntry.request(data.weight, data.entryId, true, data.ethAddress, { gas: 250000 });
     const transaction = yield contracts.send(txData, data.token, cb);
     return { tx: transaction.tx, receipt: transaction.receipt };
   });

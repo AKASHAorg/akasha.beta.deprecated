@@ -17,10 +17,10 @@ export default function init(sp, getService) {
     v.validate(data, getCommentsCountSchema, { throwError: true });
 
     const address = yield getService(COMMON_MODULE.profileHelpers)
-      .profileAddress(data);
+    .profileAddress(data);
 
     const count = yield getService(CORE_MODULE.CONTRACTS)
-      .instance.Comments.totalCommentsOf(address);
+    .instance.Comments.totalCommentsOf(address);
 
     return { count: count.toString(10), akashaId: data.akashaId };
   });

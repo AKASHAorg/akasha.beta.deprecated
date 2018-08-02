@@ -49,14 +49,14 @@ export default function init(sp, getService) {
 
     init() {
       return Promise
-        .fromCallback((cb) => SearchIndex(this.options, cb));
+      .fromCallback((cb) => SearchIndex(this.options, cb));
     }
   }
 
   const init = function init() {
     const waitFor = Object.keys(dbs).map((index) => {
       return new StorageIndex(dbs[index].path, dbs[index].additional).init()
-        .then(si => dbs[index].searchIndex = si);
+      .then(si => dbs[index].searchIndex = si);
     });
     return Promise.all(waitFor);
   };
