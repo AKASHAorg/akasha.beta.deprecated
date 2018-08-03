@@ -219,7 +219,7 @@ class EntryPageHeader extends Component {
 
 EntryPageHeader.propTypes = {
     author: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     entryGetFull: PropTypes.func,
     existingDraft: PropTypes.shape(),
