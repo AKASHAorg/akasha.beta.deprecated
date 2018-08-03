@@ -15,7 +15,7 @@ class LinkPopover extends Component {
     onAddLink = (value) => {
         const isValid = isValidLink(value);
         if (isValid) {
-            const url = isInternalLink(value) ? `#/${value}` : prependHttp(value);
+            const url = isInternalLink(value) ? `${value}` : prependHttp(value);
             this.props.onSubmit(url);
         } else {
             this.setState({ invalidLink: true });

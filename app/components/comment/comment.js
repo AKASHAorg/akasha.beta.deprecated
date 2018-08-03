@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
@@ -48,7 +49,8 @@ class Comment extends Component {
         this.imagePlugin = createImagePlugin({ imageComponent: wrappedComponent });
         this.linkPlugin = createLinkPlugin({
             Link: decorateComponentWithProps(LinkDecorator, {
-                onOutsideNavigation: this.props.toggleOutsideNavigation
+                onOutsideNavigation: this.props.toggleOutsideNavigation,
+                history: this.props.history
             })
         });
     }
@@ -399,6 +401,7 @@ Comment.propTypes = {
     entryTitle: PropTypes.string,
     ethAddress: PropTypes.string,
     hideCommentSettings: PropTypes.shape().isRequired,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     isHighlighted: PropTypes.bool,
     loggedEthAddress: PropTypes.string,
@@ -436,4 +439,4 @@ export default connect(
         toggleOutsideNavigation,
         fullSizeImageAdd,
     }
-)(injectIntl(Comment));
+)(withRouter(injectIntl(Comment)));
