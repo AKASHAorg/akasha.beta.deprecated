@@ -113,8 +113,9 @@ function extractImageFromContent (content) {
 const settings = {
     extensions: ['jpg', 'jpeg', 'png', 'svg'],
     resizerSettings: {
-        alphaChannel: true,
-        unsharpAmount: 50,
+        quality: 2, // 2 lobbed, 16px in the neighborhood
+        alpha: true,
+        unsharpAmount: 80,
         unsharpRadius: 0.6,
         unsharpThreshold: 2,
     },
@@ -209,14 +210,11 @@ const resizeImage = (image, options) => {
             const targetHeight = (actualHeight * targetWidth) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0)';
             /**
              * pica.resizeCanvas(from, to, options, cb)
              */
-            return pica.resize(image, canvas, {
-                quality: 3,
-                alpha: true
-            }).then(destCanvas =>
+            return pica.resize(image, canvas, settings.resizerSettings).then(destCanvas =>
                 canvasToArray(destCanvas).then((result) => {
                     if (options.progressHandler && typeof options.progressHandler === 'function') {
                         const { maxProgress } = options;
