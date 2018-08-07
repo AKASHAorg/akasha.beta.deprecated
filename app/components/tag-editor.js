@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Popover, Button } from 'antd';
 import { tagMessages, generalMessages } from '../locale-data/messages';
-import { Icon } from './';
+import Icon from './icon';
 import clickAway from '../utils/clickAway';
 
 const tagCreatorKeycodes = [

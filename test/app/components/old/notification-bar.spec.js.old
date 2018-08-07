@@ -1,0 +1,75 @@
+import React from 'react';
+import { IntlProvider } from 'react-intl';
+import sinon, { spy } from 'sinon';
+import chai from 'chai';
+import { shallow } from 'enzyme';
+// import { Snackbar } from 'material-ui';
+// import { NotificationBar } from '../../../app/components';
+// import { NotificationRecord } from '../../../app/local-flux/reducers/records';
+// import muiTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+
+const { expect } = chai;
+
+describe('ErrorBar tests', () => {
+    // let props;
+    // let mountedComp;
+    // let stub;
+    // const intlProvider = new IntlProvider({ locale: 'en' }, {});
+    // const { intl } = intlProvider.getChildContext();
+    // const mountComp = () => {
+    //     if (!mountedComp) {
+    //         mountedComp = shallow(<NotificationBar {...props} />, { context: { muiTheme } });
+    //     }
+    //     return mountedComp;
+    // };
+    before(() => {
+        // stub = sinon.stub(intl, 'formatMessage', () => null);
+    })
+    beforeEach(() => {
+        // props = {
+        //     hideNotification: spy(),
+        //     intl,
+        //     notification: new NotificationRecord()
+        // };
+        // mountedComp = undefined;
+    });
+    after(() => {
+        // stub.restore();
+    });
+    describe('with empty notification', () => {
+        // it('should render Snackbar', () => {
+        //     expect(mountComp().find(Snackbar).length).to.equal(1, 'Snackbar wasn\'t rendered');
+        // });
+        // it('should pass correct props to Snackbar', () => {
+        //     expect(mountComp().find(Snackbar).prop('autoHideDuration')).to.not.be.ok;
+        // });
+    });
+    describe('with "real" notification', () => {
+        beforeEach(() => {
+            // props.notification = new NotificationRecord({
+            //     id: 'notif.id',
+            //     duration: 2000
+            // });
+        });
+        it('should render Snackbar', () => {
+            // expect(mountComp().find(Snackbar).length).to.equal(1, 'Snackbar wasn\'t rendered');
+        });
+        it('should pass correct props to Snackbar', () => {
+            // expect(mountComp().find(Snackbar).prop('autoHideDuration')).to.equal(2000,
+            //     'the auto hide duration was not passed correctly');
+        });
+        it('should call hideNotification on request close', () => {
+            // const component = mountComp();
+            // component.find(Snackbar).prop('onRequestClose')();
+            // expect(props.hideNotification.calledOnce, 'not called once').to.be.true;
+            // expect(props.hideNotification.calledWith(props.notification)).to.be.true;
+        });
+        it('should call hideNotification on action click', () => {
+            // expect(props.hideNotification.calledOnce).to.be.false;
+            // const component = mountComp();
+            // component.find(Snackbar).prop('onActionTouchTap')();
+            // expect(props.hideNotification.calledOnce, 'not called once').to.be.true;
+            // expect(props.hideNotification.calledWith(props.notification)).to.be.true;
+        });
+    });
+});
