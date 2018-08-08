@@ -1,38 +1,39 @@
-export class GenericApiClass {
+class GenericApi {
   public channel: string;
   public channelName: string;
-}
 
-export class ApiListenerClass extends GenericApiClass {
+  constructor(channel: string, channelName?: string) {
+    this.channel = channel;
+    this.channelName = channelName;
+  }
+
+}
+export type listenerType = (event, arg) => {};
+export abstract class ApiListener extends GenericApi {
   public pipe: any;
   public subscribers: Map<any, any>;
+
+  protected constructor(channel: string, channelName?: string) {
+    super(channel, channelName);
+  }
+  abstract send(data: {}): any | void;
+
+  abstract on(listener : listenerType);
+
+  abstract once(listener: listenerType);
+
+  abstract removeListener(listener: listenerType);
+
+  abstract removeAllListeners();
+
+  readonly listenerCount: number;
 }
 
-export interface GenericApi {
-  new(channel: string, channelName?: string): GenericApiClass;
-}
+export interface ApiRequest{
 
-export interface ApiListener extends GenericApi {
-  new(channel: string, channelName?: string): ApiListenerClass;
+  enable();
 
-  send(data: {}): any | void;
-
-  on(listener);
-
-  once(listener);
-
-  removeListener(listener);
-
-  removeAllListeners();
-
-  listenerCount(): number;
-}
-
-export interface ApiRequest extends ApiListener {
-
-  enable(): { listening: boolean };
-
-  disable(): { listening: boolean };
+  disable();
 
   registerListener(listener: (data) => {});
 }

@@ -17,8 +17,6 @@ export default function init(sp, getService) {
       return randomBytesAsync(arr)
       .then((buff: Buffer) => {
         const token = addHexPrefix(buff.toString('hex'));
-        // return this._signSession(token, acc)
-        //     .then((signedString: string) => {
         const expiration = new Date();
         getService(CORE_MODULE.RESPONSES).gethStatus.akashaKey = acc;
         expiration.setMinutes(expiration.getMinutes() + timer);

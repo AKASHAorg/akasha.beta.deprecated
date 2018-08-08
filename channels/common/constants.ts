@@ -12,6 +12,9 @@ export const CORE_MODULE = Object.freeze({
   SETTINGS: 'settings',
   AUTH: 'AUTH',
   RESPONSES: 'RESPONSES',
+  CHANNELS: 'CHANNELS',
+  DATA: 'DATA',
+  IPC: 'IPC',
 });
 
 export const AUTH_MODULE = Object.freeze({
