@@ -9,7 +9,7 @@ import sp, { getService } from './sp';
 
 export const moduleName = 'core';
 
-const init = async function init() {
+const init = function init() {
 
   const settings = new Map();
   const getSettings = function () {

@@ -2,12 +2,13 @@
   "name": "desktop",
   "version": "1.0.0",
   "dependencies": {
-    
+    "@akashaproject/auth": "../channels/auth"
   },
   "peerDependencies": {
     "@akashaproject/common": "^1.0.0",
     "@akashaproject/core": "^1.0.0",
     "@akashaproject/geth-connector": "^1.8.6",
-    "@akashaproject/ipfs-connector": "^1.10.29"
+    "@akashaproject/ipfs-connector": "^1.10.29",
+    "@akashaproject/comments": "^1.0.0"
   }
 }
