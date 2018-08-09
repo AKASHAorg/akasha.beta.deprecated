@@ -174,7 +174,7 @@ class ManaPopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip placement="topLeft" title={tooltip} mouseEnterDelay={0.3}>
+            <Tooltip placement="right" title={tooltip} mouseEnterDelay={0.3}>
               <Progress
                 className="mana-popover__progress"
                 format={() => <Icon type="mana" />}
