@@ -14,9 +14,8 @@
         "suppressImplicitAnyIndexErrors": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "typeRoots": ["node_modules/@types"],
-        "outDir": "dist/main"
+        "typeRoots": ["node_modules/@types"]
     },
-    "include": ["d-web", "channels"],
+    "include": ["desktop", "channels"],
     "exclude": ["node_modules"]
 }

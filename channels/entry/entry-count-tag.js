@@ -27,7 +27,9 @@ function init(sp, getService) {
         return { collection };
     });
     const getTagEntriesCount = { execute, name: 'getTagEntriesCount' };
-    const service = function () { return getTagEntriesCount; };
+    const service = function () {
+        return getTagEntriesCount;
+    };
     sp().service(constants_1.ENTRY_MODULE.getTagEntriesCount, service);
     return getTagEntriesCount;
 }

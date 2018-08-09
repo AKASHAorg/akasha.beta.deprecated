@@ -10,6 +10,9 @@ function init(sp) {
             this.SHORT_PREFIX = 'S-';
             this.loadOptions();
         }
+        get records() {
+            return this.entries;
+        }
         setOptions(newOptions) {
             this.options = Object.assign({}, this.options, newOptions);
             return this;
@@ -47,9 +50,6 @@ function init(sp) {
         flush() {
             this.entries.reset();
         }
-        get records() {
-            return this.entries;
-        }
     }
     const entries = new Entries();
     const profiles = new Entries();
@@ -59,7 +59,9 @@ function init(sp) {
     mixed.setOptions({ max: 1024, maxAge: 1000 * 60 * 15 });
     eventCache.setOptions({ max: 2048, maxAge: 1000 * 60 * 120 });
     const stash = { entries, profiles, comments, mixed, eventCache };
-    const service = function () { return stash; };
+    const service = function () {
+        return stash;
+    };
     sp().service(constants_1.CORE_MODULE.STASH, service);
 }
 exports.default = init;

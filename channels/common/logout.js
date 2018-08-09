@@ -7,7 +7,7 @@ function init(sp, getService) {
         yield getService(constants_1.CORE_MODULE.CONTRACTS).stopAllWatchers();
         yield getService(constants_1.NOTIFICATIONS_MODULE.subscribe).execute({
             settings: { feed: false, donations: false, comments: false, votes: false },
-            profile: {}, fromBlock: 0
+            profile: {}, fromBlock: 0,
         }, () => {
         });
         getService(constants_1.AUTH_MODULE.auth).logout();

@@ -1,9 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class GenericApiClass {
+class GenericApi {
+    constructor(channel, channelName) {
+        this.channel = channel;
+        this.channelName = channelName;
+    }
 }
-exports.GenericApiClass = GenericApiClass;
-class ApiListenerClass extends GenericApiClass {
+class ApiListener extends GenericApi {
+    constructor(channel, channelName) {
+        super(channel, channelName);
+    }
 }
-exports.ApiListenerClass = ApiListenerClass;
+exports.ApiListener = ApiListener;
 //# sourceMappingURL=ipcPreloader.js.map

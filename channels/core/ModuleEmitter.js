@@ -52,12 +52,12 @@ class ModuleEmitter {
             });
         };
     }
-    _manager() {
+    manager() {
         this.DEFAULT_MANAGED.forEach((action) => {
             channels_1.default().server[this.MODULE_NAME][action].enable();
         });
     }
-    _initMethods(implListener, implRequest, methods) {
+    initMethods(implListener, implRequest, methods) {
         methods.forEach((method) => {
             channels_1.registerChannel(implListener, implRequest, this.MODULE_NAME, method.name);
             channels_1.default()

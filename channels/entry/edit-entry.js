@@ -51,7 +51,9 @@ function init(sp, getService) {
         return { tx: transaction.tx, receipt: transaction.receipt };
     });
     const editEntry = { execute, name: 'editEntry', hasStream: true };
-    const service = function () { return editEntry; };
+    const service = function () {
+        return editEntry;
+    };
     sp().service(constants_1.ENTRY_MODULE.editEntry, service);
     return editEntry;
 }

@@ -11,7 +11,7 @@ const init = async function init(sp, getService) {
     const flush = clear_index_1.default(sp, getService);
     const findTags = find_tags_1.default(sp, getService);
     const findProfiles = find_profiles_1.default(sp, getService);
-    await indexes_1.default(sp, getService).init();
+    indexes_1.default(sp);
     return {
         query,
         flush,

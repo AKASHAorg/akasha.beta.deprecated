@@ -10,10 +10,7 @@ const init = async function init(sp, getService) {
   const flush = flushInit(sp, getService);
   const findTags = findTagsInit(sp, getService);
   const findProfiles = findProfilesInit(sp, getService);
-
-  // init db index
-  await indexes(sp, getService).init();
-
+  indexes(sp);
   return {
     query,
     flush,

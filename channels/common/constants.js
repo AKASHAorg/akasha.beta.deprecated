@@ -14,6 +14,9 @@ exports.CORE_MODULE = Object.freeze({
     SETTINGS: 'settings',
     AUTH: 'AUTH',
     RESPONSES: 'RESPONSES',
+    CHANNELS: 'CHANNELS',
+    DATA: 'DATA',
+    IPC: 'IPC',
 });
 exports.AUTH_MODULE = Object.freeze({
     auth: 'auth_AUTH',

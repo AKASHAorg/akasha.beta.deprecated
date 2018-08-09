@@ -21,7 +21,9 @@ function init(sp, getService) {
         return { tx: transaction.tx, receipt: transaction.receipt };
     });
     const claimVote = { execute, name: 'claimVote', hasStream: true };
-    const service = function () { return claimVote; };
+    const service = function () {
+        return claimVote;
+    };
     sp().service(constants_1.ENTRY_MODULE.claimVote, service);
     return claimVote;
 }

@@ -11,7 +11,7 @@ export default function init(sp, getService) {
       .set('Content-Type', 'application/json')
       .send({ address: data.address, token: FAUCET_TOKEN })
       .end(cb1);
-    }).then((body) => {
+    }).then((body: any) => {
       if (body.ok && body.text) {
         return JSON.parse(body.text);
       }

@@ -76,8 +76,8 @@ function init(sp, getService) {
                                     blockNumber: tx.blockNumber,
                                     cumulativeGasUsed: tx.cumulativeGasUsed,
                                     hasEvents: !!(tx.logs.length),
-                                    watching: this.watching
-                                }
+                                    watching: this.watching,
+                                },
                             });
                         }
                     });
@@ -111,7 +111,9 @@ function init(sp, getService) {
         }
     }
     const web3Helper = new Web3Helper();
-    const service = function () { return web3Helper; };
+    const service = function () {
+        return web3Helper;
+    };
     sp().service(constants_1.CORE_MODULE.WEB3_HELPER, service);
 }
 exports.default = init;

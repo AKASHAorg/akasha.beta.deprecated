@@ -21,7 +21,9 @@ function init(sp, getService) {
         return { tx: transaction.tx, receipt: transaction.receipt };
     });
     const claim = { execute, name: 'claim', hasStream: true };
-    const service = function () { return claim; };
+    const service = function () {
+        return claim;
+    };
     sp().service(constants_1.ENTRY_MODULE.claim, service);
     return claim;
 }

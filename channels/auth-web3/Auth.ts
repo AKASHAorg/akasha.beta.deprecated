@@ -1,6 +1,5 @@
 import { addHexPrefix } from 'ethereumjs-util';
 import * as Promise from 'bluebird';
-import { Buffer } from 'safe-buffer';
 import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
 
 export const randomBytesAsync = Promise.promisify(window.crypto.getRandomValues);

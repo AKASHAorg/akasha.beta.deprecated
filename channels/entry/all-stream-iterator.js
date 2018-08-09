@@ -25,7 +25,9 @@ function init(sp, getService) {
         }));
     });
     const allStreamIterator = { execute, name: 'allStreamIterator' };
-    const service = function () { return allStreamIterator; };
+    const service = function () {
+        return allStreamIterator;
+    };
     sp().service(constants_1.ENTRY_MODULE.allStreamIterator, service);
     return allStreamIterator;
 }
