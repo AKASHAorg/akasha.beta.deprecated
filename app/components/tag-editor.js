@@ -34,6 +34,7 @@ class TagEditor extends Component {
             tagInputWidth,
             selectedSuggestionIndex: 0,
         };
+        this.rootNodeRef = React.createRef();
     }
     componentClickAway = () => {
         const { partialTag } = this.state;
@@ -337,6 +338,14 @@ class TagEditor extends Component {
             }
             return null;
         }
+    _getTooltipContainer = () => {
+        if (this.rootNodeRef.current) {
+            return this.rootNodeRef.current;
+        } else if (document.getElementById('tag-editor')) {
+            return document.getElementById('tag-editor');
+        }
+        return document.body;
+    }
     /* eslint-disable react/no-array-index-key */
     _getTagList = () => {
         const { tags, canCreateTags, isUpdate } = this.props;
@@ -357,6 +366,7 @@ class TagEditor extends Component {
                 visible={popoverOpen}
                 onVisibleChange={this._handleTagStatusPopover(tag, status)}
                 trigger="click"
+                getTooltipContainer={this._getTooltipContainer}
               >
                 <div
                   className={
@@ -412,6 +422,7 @@ class TagEditor extends Component {
             id="tag-editor"
             className={`tag-editor ${this.props.className}`}
             onClick={this._forceTagInputFocus}
+            ref={this.rootNodeRef}
           >
             {this._getTagList()}
             <Popover
@@ -419,7 +430,7 @@ class TagEditor extends Component {
               placement="topLeft"
               visible={(tagErrors && tagErrors.length > 0) || suggestionsPopoverVisible}
               overlayClassName="tag-editor__suggestions-container"
-              getPopupContainer={() => document.getElementById('tag-editor')}
+              getPopupContainer={this._getTooltipContainer}
             >
               <input
                 ref={(node) => { this.tagInput = node; }}
