@@ -34,7 +34,9 @@ function init(sp, getService) {
         return { collection };
     });
     const canClaim = { execute, name: 'canClaim' };
-    const service = function () { return canClaim; };
+    const service = function () {
+        return canClaim;
+    };
     sp().service(constants_1.ENTRY_MODULE.canClaim, service);
     return canClaim;
 }

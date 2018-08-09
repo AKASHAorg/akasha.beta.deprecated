@@ -10,17 +10,6 @@ function init(sp, getService) {
         constructor() {
             this.watchers = [];
         }
-        async init() {
-            this.instance = await initContracts(getService(constants_1.CORE_MODULE.WEB3_API).instance.currentProvider);
-        }
-        reset() {
-            this.instance = null;
-        }
-        async send(data, token, cb) {
-            const tx = await getService(constants_1.AUTH_MODULE.auth).signData(data.params[0], token);
-            cb(null, { tx });
-            return Contracts.watchTx(tx);
-        }
         static watchTx(tx) {
             const timeout = 300000;
             const start = new Date().getTime();
@@ -50,6 +39,17 @@ function init(sp, getService) {
                 };
                 getReceipt();
             });
+        }
+        async init() {
+            this.instance = await initContracts(getService(constants_1.CORE_MODULE.WEB3_API).instance.currentProvider);
+        }
+        reset() {
+            this.instance = null;
+        }
+        async send(data, token, cb) {
+            const tx = await getService(constants_1.AUTH_MODULE.auth).signData(data.params[0], token);
+            cb(null, { tx });
+            return Contracts.watchTx(tx);
         }
         createWatcher(ethEvent, args, fromBlock) {
             const currentWatcher = ethEvent(args, { fromBlock });
@@ -184,7 +184,9 @@ function init(sp, getService) {
         }
     }
     const contracts = new Contracts();
-    const service = function () { return contracts; };
+    const service = function () {
+        return contracts;
+    };
     sp().service(constants_1.CORE_MODULE.CONTRACTS, service);
 }
 exports.default = init;

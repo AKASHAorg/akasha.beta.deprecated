@@ -21,7 +21,9 @@ function init(sp, getService) {
         return { count: count.toString(10) };
     });
     const getProfileEntriesCount = { execute, name: 'getProfileEntriesCount' };
-    const service = function () { return getProfileEntriesCount; };
+    const service = function () {
+        return getProfileEntriesCount;
+    };
     sp().service(constants_1.ENTRY_MODULE.getProfileEntriesCount, service);
     return getProfileEntriesCount;
 }

@@ -20,7 +20,9 @@ function init(sp, getService) {
         return { score: (score[1]).toString(10), entryId: data.entryId };
     });
     const getScore = { execute, name: 'getScore' };
-    const service = function () { return getScore; };
+    const service = function () {
+        return getScore;
+    };
     sp().service(constants_1.ENTRY_MODULE.getScore, service);
     return getScore;
 }

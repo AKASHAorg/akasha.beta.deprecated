@@ -103,7 +103,9 @@ function init(sp, getService) {
         };
     };
     const emitResponse = { gethStatus, mainResponse };
-    const service = function () { return emitResponse; };
+    const service = function () {
+        return emitResponse;
+    };
     sp().service(constants_1.CORE_MODULE.RESPONSES, service);
 }
 exports.default = init;

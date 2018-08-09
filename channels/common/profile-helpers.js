@@ -31,7 +31,7 @@ function init(sp, getService) {
     const resolveEthAddress = blPromise.coroutine(function* (ethAddress) {
         const nameHash = yield contracts.instance.ProfileResolver.reverse(ethAddress);
         if (!!ethereumjs_util_1.unpad(nameHash)) {
-            const [akashaId, , , ,] = yield contracts.instance.ProfileResolver.resolve(nameHash);
+            const [akashaId, , ,] = yield contracts.instance.ProfileResolver.resolve(nameHash);
             return { akashaId: normaliseId(web3Api.instance.toUtf8(akashaId)), ethAddress };
         }
         return { ethAddress };

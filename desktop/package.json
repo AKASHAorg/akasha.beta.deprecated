@@ -2,13 +2,24 @@
   "name": "desktop",
   "version": "1.0.0",
   "dependencies": {
-    "@akashaproject/auth": "../channels/auth"
+    "@akashaproject/auth": "../channels/auth",
+    "@akashaproject/geth": "../channels/geth"
   },
   "peerDependencies": {
     "@akashaproject/common": "^1.0.0",
     "@akashaproject/core": "^1.0.0",
     "@akashaproject/geth-connector": "^1.8.6",
     "@akashaproject/ipfs-connector": "^1.10.29",
-    "@akashaproject/comments": "^1.0.0"
+    "@akashaproject/comments": "^1.0.0",
+    "@akashaproject/entry": "^1.0.0",
+    "@akashaproject/ipfs": "^1.0.0",
+    "@akashaproject/licences": "^1.0.0",
+    "@akashaproject/notifications": "^1.0.0",
+    "@akashaproject/pinner": "^1.0.0",
+    "@akashaproject/profile": "^1.0.0",
+    "@akashaproject/registry": "^1.0.0",
+    "@akashaproject/search": "^1.0.0",
+    "@akashaproject/tags": "^1.0.0",
+    "@akashaproject/tx": "^1.0.0"
   }
 }

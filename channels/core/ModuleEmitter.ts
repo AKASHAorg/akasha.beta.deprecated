@@ -57,7 +57,7 @@ export default class ModuleEmitter {
     };
   }
 
-  protected _manager() {
+  protected manager() {
     this.DEFAULT_MANAGED.forEach(
       (action: string) => {
         getChannels().server[this.MODULE_NAME][action].enable();
@@ -65,7 +65,7 @@ export default class ModuleEmitter {
     );
   }
 
-  protected _initMethods(
+  protected initMethods(
     implListener: ApiListener,
     implRequest: ApiRequest,
     methods,

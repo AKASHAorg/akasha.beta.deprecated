@@ -20,8 +20,8 @@ class GeneralIPC extends ModuleEmitter_1.default {
             this.logger.debug(implListener, implRequest, methods);
             throw new Error('Must register a module namespace before adding methods');
         }
-        this._initMethods(implListener, implRequest, methods);
-        this._manager();
+        this.initMethods(implListener, implRequest, methods);
+        this.manager();
     }
 }
 exports.default = GeneralIPC;

@@ -1,5 +1,3 @@
-import { ApiListener, ApiRequest } from './ipcPreloader';
-
 const hashPath = (...path: string[]) => {
   return path.join('/');
 };
@@ -8,8 +6,8 @@ const channels: any = { client: {}, server: {} };
 
 export function
 registerChannel(
-  implListener: ApiListener,
-  implRequest: ApiRequest,
+  implListener: any,
+  implRequest: any,
   module: string,
   method: string,
 ) {

@@ -52,14 +52,14 @@ export default class GeneralIPC extends ModuleEmitter {
     }
 
     // register each method under @MODULE_NAME namespace
-    this._initMethods(
+    this.initMethods(
       implListener,
       implRequest,
       methods,
     );
 
     // enable default methods for module
-    this._manager();
+    this.manager();
   }
 
 }
