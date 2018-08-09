@@ -322,7 +322,7 @@ class KarmaPopover extends Component {
             visible={this.state.popoverVisible}
           >
             <Tooltip
-              placement="topLeft"
+              placement="right"
               title={tooltip}
             >
               <Progress
