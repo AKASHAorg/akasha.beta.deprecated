@@ -5,7 +5,7 @@ const SearchIndex = require("search-index");
 const constants_1 = require("@akashaproject/common/constants");
 exports.dbs = {
     entry: {
-        path: 'akasha#beta/entry-index',
+        path: 'beta-entry-index',
         additional: {
             fieldOptions: {
                 excerpt: {
@@ -21,28 +21,28 @@ exports.dbs = {
         searchIndex: null,
     },
     tags: {
-        path: 'akasha#beta/tags-index',
+        path: 'beta-tags-index',
         searchIndex: null,
         additional: {},
     },
     profiles: {
-        path: 'akasha#beta/profileID-index',
+        path: 'beta-profileID-index',
         searchIndex: null,
         additional: {},
     },
 };
 class StorageIndex {
-    constructor(dbPath, additional) {
+    constructor(dbPath, opts) {
         this.options = Object.assign({}, {
-            indexPath: dbPath,
+            indexPath: opts.prefix ? `${opts.prefix}${dbPath}` : dbPath,
             appendOnly: false,
             preserveCase: false,
             nGramLength: { gte: 1, lte: 4 },
-        }, additional);
+        }, opts.additional);
     }
     init() {
         return Promise
-            .fromCallback((cb) => SearchIndex(this.options, cb));
+            .fromCallback(cb => SearchIndex(this.options, cb));
     }
 }
 function default_1(sp) {
@@ -53,9 +53,9 @@ function default_1(sp) {
     return { init: exports.init };
 }
 exports.default = default_1;
-exports.init = function init() {
+exports.init = function init(prefix) {
     const waitFor = Object.keys(exports.dbs).map((index) => {
-        return new StorageIndex(exports.dbs[index].path, exports.dbs[index].additional).init()
+        return new StorageIndex(exports.dbs[index].path, { prefix, additional: exports.dbs[index].additional }).init()
             .then(si => exports.dbs[index].searchIndex = si);
     });
     return Promise.all(waitFor);
