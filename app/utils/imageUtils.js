@@ -78,14 +78,6 @@ function imageCreator (arrayBuffer, baseUrl) {
     // return null;
 }
 
-function firstFoundHQImage (imageBlock) {
-    const files = imageBlock.data.files;
-    return Object.keys(files).forEach(fileKey => {
-        if(files[fileKey].width >= 640) {
-            return true;
-        }
-    });
-}
 /**
  * Utility to extract first image from draftjs generated content;
  * @param {object} content Draft-js generated content;
