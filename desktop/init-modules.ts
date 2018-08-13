@@ -1,8 +1,9 @@
 import jsonSchemaWeb3 from '@akashaproject/jsonschema-web3';
-import sp, { getService } from '@akashaproject/core/sp';
 import { CORE_MODULE } from '@akashaproject/common/constants';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { app } from 'electron';
+import { sep } from 'path';
 import core from '@akashaproject/core';
 import commonModule from '@akashaproject/common';
 import authModule from '@akashaproject/auth';
@@ -20,7 +21,7 @@ import { init } from '@akashaproject/search/indexes';
 import tagsModule from '@akashaproject/tags';
 import txModule from '@akashaproject/tx';
 
-(function bootstrap(serviceProvider, gS) {
+export default async function bootstrap(serviceProvider, gS) {
   core.init();
   const common = commonModule.init(serviceProvider, gS);
   const auth = authModule.init(serviceProvider, gS);
@@ -45,24 +46,10 @@ import txModule from '@akashaproject/tx';
   serviceProvider().service(CORE_MODULE.VALIDATOR_SCHEMA, serviceValidator);
   serviceProvider().service(CORE_MODULE.GETH_CONNECTOR, GethConnector);
   serviceProvider().service(CORE_MODULE.IPFS_CONNECTOR, IpfsConnector);
-
-  console.log({
-    common,
-    auth,
-    comments,
-    entry,
-    geth,
-    ipfs,
-    licences,
-    notifications,
-    pinner,
-    profile,
-    registry,
-    search,
-    tags,
-    tx,
-  });
-  init().then(d => console.log(d)).catch(err => console.log(err));
+  const prefix = app.getPath('userData') + sep;
+  await init(prefix)
+  .then(d => console.info('Finished init local db.'))
+  .catch(err => console.log(`Error on local db ${err}`));
   return {
     common,
     auth,
@@ -79,4 +66,4 @@ import txModule from '@akashaproject/tx';
     tags,
     tx,
   };
-})(sp, getService);
+}

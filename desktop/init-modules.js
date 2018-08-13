@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonschema_web3_1 = require("@akashaproject/jsonschema-web3");
-const sp_1 = require("@akashaproject/core/sp");
 const constants_1 = require("@akashaproject/common/constants");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const electron_1 = require("electron");
+const path_1 = require("path");
 const core_1 = require("@akashaproject/core");
 const common_1 = require("@akashaproject/common");
 const auth_1 = require("@akashaproject/auth");
@@ -21,7 +22,7 @@ const search_1 = require("@akashaproject/search");
 const indexes_1 = require("@akashaproject/search/indexes");
 const tags_1 = require("@akashaproject/tags");
 const tx_1 = require("@akashaproject/tx");
-(function bootstrap(serviceProvider, gS) {
+async function bootstrap(serviceProvider, gS) {
     core_1.default.init();
     const common = common_1.default.init(serviceProvider, gS);
     const auth = auth_1.default.init(serviceProvider, gS);
@@ -45,23 +46,10 @@ const tx_1 = require("@akashaproject/tx");
     serviceProvider().service(constants_1.CORE_MODULE.VALIDATOR_SCHEMA, serviceValidator);
     serviceProvider().service(constants_1.CORE_MODULE.GETH_CONNECTOR, geth_connector_1.GethConnector);
     serviceProvider().service(constants_1.CORE_MODULE.IPFS_CONNECTOR, ipfs_connector_1.IpfsConnector);
-    console.log({
-        common,
-        auth,
-        comments,
-        entry,
-        geth,
-        ipfs,
-        licences,
-        notifications,
-        pinner,
-        profile,
-        registry,
-        search,
-        tags,
-        tx,
-    });
-    indexes_1.init().then(d => console.log(d)).catch(err => console.log(err));
+    const prefix = electron_1.app.getPath('userData') + path_1.sep;
+    await indexes_1.init(prefix)
+        .then(d => console.info('Finished init local db.'))
+        .catch(err => console.log(`Error on local db ${err}`));
     return {
         common,
         auth,
@@ -78,5 +66,6 @@ const tx_1 = require("@akashaproject/tx");
         tags,
         tx,
     };
-})(sp_1.default, sp_1.getService);
+}
+exports.default = bootstrap;
 //# sourceMappingURL=init-modules.js.map

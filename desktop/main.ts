@@ -1,6 +1,8 @@
 import { app, BrowserWindow, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import sp, { getService } from '@akashaproject/core/sp';
+import initModules from './init-modules';
 import { resolve } from 'path';
 import { initMenu } from './menu';
 import * as Promise from 'bluebird';
@@ -19,8 +21,65 @@ const stopServices = () => {
   shutDown().delay(800).finally(() => process.exit(0));
 };
 
-const bootstrap = function () {
+const startBrowser = function () {
   const viewHtml = resolve(__dirname, '../..');
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 1280,
+    defaultHeight: 720,
+  });
+  mainWindow = new BrowserWindow({
+    minHeight: 720,
+    minWidth: 1280,
+    resizable: true,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    show: false,
+    webPreferences: {
+      // nodeIntegration: false,
+      preload: resolve(__dirname, './preloader.js'),
+      scrollBounce: true,
+    },
+  });
+  mainWindowState.manage(mainWindow);
+  console.timeEnd('buildWindow');
+  mainWindow.loadURL(
+    process.env.HOT ? `http://localhost:3000/dist/index.html` :
+      `file://${viewHtml}/dist/index.html`,
+  );
+  mainWindow.once('close', (ev: Event) => {
+    ev.preventDefault();
+    stopServices();
+  });
+  // Init browserWindow menu
+  initMenu(mainWindow)
+  .then(() => console.info('Menu init -> done.'))
+  .catch(error => console.error(error));
+  // until all resources are loaded the renderer browser is hidden
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.focus();
+    console.timeEnd('total');
+  });
+  mainWindow.webContents.on('crashed', (e) => {
+    stopServices();
+  });
+  // prevent href link being opened inside app
+  const openDefault = (e, url) => {
+    e.preventDefault();
+    shell.openExternal(url);
+  };
+
+  mainWindow.webContents.on('will-navigate', openDefault);
+  mainWindow.webContents.on('new-window', openDefault);
+
+  mainWindow.on('unresponsive', () => {
+    console.error('APP is unresponsive');
+  });
+};
+
+const bootstrap = function () {
 
   if (process.env.NODE_ENV === 'development') {
     require('electron-debug')({ showDevTools: true });
@@ -29,7 +88,6 @@ const bootstrap = function () {
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
   });
-
   // prevent multiple instances of AKASHA
   const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
     if (mainWindow) {
@@ -45,60 +103,6 @@ const bootstrap = function () {
   app.on('ready', () => {
     console.time('total');
     console.time('buildWindow');
-    const mainWindowState = windowStateKeeper({
-      defaultWidth: 1280,
-      defaultHeight: 720,
-    });
-    mainWindow = new BrowserWindow({
-      minHeight: 720,
-      minWidth: 1280,
-      resizable: true,
-      x: mainWindowState.x,
-      y: mainWindowState.y,
-      width: mainWindowState.width,
-      height: mainWindowState.height,
-      show: false,
-      webPreferences: {
-        // nodeIntegration: false,
-        preload: resolve(__dirname, 'preloader.js'),
-        scrollBounce: true,
-      },
-    });
-    mainWindowState.manage(mainWindow);
-    console.timeEnd('buildWindow');
-    mainWindow.loadURL(
-      process.env.HOT ? `http://localhost:3000/dist/index.html` :
-        `file://${viewHtml}/dist/index.html`,
-    );
-    mainWindow.once('close', (ev: Event) => {
-      ev.preventDefault();
-      stopServices();
-    });
-    // Init browserWindow menu
-    initMenu(mainWindow)
-    .then(() => console.info('Menu init -> done.'))
-    .catch(error => console.error(error));
-    // until all resources are loaded the renderer browser is hidden
-    mainWindow.once('ready-to-show', () => {
-      mainWindow.show();
-      mainWindow.focus();
-      console.timeEnd('total');
-    });
-    mainWindow.webContents.on('crashed', (e) => {
-      stopServices();
-    });
-    // prevent href link being opened inside app
-    const openDefault = (e, url) => {
-      e.preventDefault();
-      shell.openExternal(url);
-    };
-
-    mainWindow.webContents.on('will-navigate', openDefault);
-    mainWindow.webContents.on('new-window', openDefault);
-
-    mainWindow.on('unresponsive', () => {
-      console.error('APP is unresponsive');
-    });
     process.on('uncaughtException', (err: Error) => {
       console.error(`uncaughtException ${err.message} ${err.stack}`);
     });
@@ -107,6 +111,12 @@ const bootstrap = function () {
     });
     process.on('SIGINT', stopServices);
     process.on('SIGTERM', stopServices);
+    // start app
+    initModules(sp, getService)
+    .then((modules) => {
+      console.log(modules);
+      startBrowser();
+    });
   });
 };
 
