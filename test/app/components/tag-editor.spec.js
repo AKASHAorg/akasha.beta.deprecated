@@ -125,5 +125,31 @@ describe('[Component] TagEditor', () => {
                 expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_SC}`)).to.be.true;
             });
         });
+
+        describe('-> special cases:', () => {
+
+            it('should not allow tag creation if canCreateTags=false && exists=undefined && checking=false', () => {
+                const wrapper = mountComp({
+                    ...defaultProps,
+                    tags: defaultProps.tags.set('test-tag', { checking: false }),
+                    canCreateTags: false
+                });
+                expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_CA}`)).to.be.true;
+            });
+
+            it('should ask to "register tag" if canCreateTags=true && exists=undefined && checking=false', () => {
+                const wrapper = mountComp({
+                    ...defaultProps,
+                    tags: defaultProps.tags.set('test-tag', { checking: false }),
+                    canCreateTags: true
+                });
+                expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_CA}`)).to.be.false;
+                expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_SC}`)).to.be.true;
+            });
+
+            it('should ', () => {
+
+            });
+        });
     });
 });
