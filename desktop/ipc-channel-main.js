@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const ipcPreloader_1 = require("@akashaproject/core/ipcPreloader");
 class IpcChannelMain extends ipcPreloader_1.ApiListener {
+    constructor(channel, opts) {
+        super(channel, opts.channelName);
+        this.windowId = opts.windowId;
+    }
     get listenerCount() {
         return electron_1.ipcMain.listenerCount(this.channel);
     }

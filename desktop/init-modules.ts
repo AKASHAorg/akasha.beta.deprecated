@@ -51,19 +51,19 @@ export default async function bootstrap(serviceProvider, gS) {
   .then(d => console.info('Finished init local db.'))
   .catch(err => console.log(`Error on local db ${err}`));
   return {
-    common,
-    auth,
-    comments,
-    entry,
-    geth,
-    ipfs,
-    licences,
-    notifications,
-    pinner,
-    profile,
-    registry,
-    search,
-    tags,
-    tx,
+    [commonModule.moduleName]: common ,
+    [authModule.moduleName]: auth,
+    [commentsModule.moduleName]: comments,
+    [entryModule.moduleName]: entry,
+    [gethModule.moduleName]: geth,
+    [ipfsModule.moduleName]: ipfs,
+    [licencesModule.moduleName]: licences,
+    [notificationsModule.moduleName]: notifications,
+    [pinnerModule.moduleName]: pinner,
+    [profileModule.moduleName]: profile,
+    [registryModule.moduleName]: registry,
+    [searchModule.moduleName]: search,
+    [tagsModule.moduleName]: tags,
+    [txModule.moduleName]: tx,
   };
 }

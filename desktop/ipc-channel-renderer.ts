@@ -9,15 +9,15 @@ export default class IpcChannelRenderer extends ApiListener {
     return ipcRenderer.listenerCount(this.channel);
   }
 
-  public on(listener: any) {
+  public on(listener: Function) {
     ipcRenderer.on(this.channel, listener);
   }
 
-  public once(listener: any) {
+  public once(listener: Function) {
     ipcRenderer.once(this.channel, listener);
   }
 
-  public removeListener(listener: any) {
+  public removeListener(listener: Function) {
     ipcRenderer.removeListener(this.channel, listener);
   }
 

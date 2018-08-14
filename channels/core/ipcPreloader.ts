@@ -8,7 +8,6 @@ class GenericApi {
   }
 
 }
-export type listenerType = (event, arg) => {};
 export abstract class ApiListener extends GenericApi {
   public pipe: any;
   public subscribers: Map<any, any>;
@@ -18,11 +17,11 @@ export abstract class ApiListener extends GenericApi {
   }
   abstract send(data: {}): any | void;
 
-  abstract on(listener : listenerType);
+  abstract on(listener : Function);
 
-  abstract once(listener: listenerType);
+  abstract once(listener: Function);
 
-  abstract removeListener(listener: listenerType);
+  abstract removeListener(listener: Function);
 
   abstract removeAllListeners();
 

@@ -4,6 +4,8 @@ const electron_1 = require("electron");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 const sp_1 = require("@akashaproject/core/sp");
+const constants_1 = require("@akashaproject/common/constants");
+const ipc_channel_main_1 = require("./ipc-channel-main");
 const init_modules_1 = require("./init-modules");
 const path_1 = require("path");
 const menu_1 = require("./menu");
@@ -101,6 +103,14 @@ const bootstrap = function () {
             .then((modules) => {
             console.log(modules);
             startBrowser();
+            const ipcChannelMain = new ipc_channel_main_1.default(constants_1.CORE_MODULE.DATA, {
+                channelName: 'mainChannel',
+                windowId: mainWindow.id,
+            });
+            ipcChannelMain.on(function (ev, args) {
+                console.log(ev, args);
+                ipcChannelMain.send({ main: args });
+            });
         });
     });
 };
