@@ -5,6 +5,7 @@ import sp, { getService } from '@akashaproject/core/sp';
 import initModules from './init-modules';
 import { resolve } from 'path';
 import { initMenu } from './menu';
+import startDataStream from './watcher';
 import * as Promise from 'bluebird';
 
 const windowStateKeeper = require('electron-window-state');
@@ -99,7 +100,6 @@ const bootstrap = function () {
   if (shouldQuit) {
     app.quit();
   }
-
   app.on('ready', () => {
     console.time('total');
     console.time('buildWindow');
@@ -111,11 +111,12 @@ const bootstrap = function () {
     });
     process.on('SIGINT', stopServices);
     process.on('SIGTERM', stopServices);
+
     // start app
     initModules(sp, getService)
     .then((modules) => {
-      console.log(modules);
       startBrowser();
+      startDataStream(modules, mainWindow.id);
     });
   });
 };

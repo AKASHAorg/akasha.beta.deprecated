@@ -51,20 +51,20 @@ async function bootstrap(serviceProvider, gS) {
         .then(d => console.info('Finished init local db.'))
         .catch(err => console.log(`Error on local db ${err}`));
     return {
-        common,
-        auth,
-        comments,
-        entry,
-        geth,
-        ipfs,
-        licences,
-        notifications,
-        pinner,
-        profile,
-        registry,
-        search,
-        tags,
-        tx,
+        [common_1.default.moduleName]: common,
+        [auth_1.default.moduleName]: auth,
+        [comments_1.default.moduleName]: comments,
+        [entry_1.default.moduleName]: entry,
+        [geth_1.default.moduleName]: geth,
+        [ipfs_1.default.moduleName]: ipfs,
+        [licences_1.default.moduleName]: licences,
+        [notifications_1.default.moduleName]: notifications,
+        [pinner_1.default.moduleName]: pinner,
+        [profile_1.default.moduleName]: profile,
+        [registry_1.default.moduleName]: registry,
+        [search_1.default.moduleName]: search,
+        [tags_1.default.moduleName]: tags,
+        [tx_1.default.moduleName]: tx,
     };
 }
 exports.default = bootstrap;

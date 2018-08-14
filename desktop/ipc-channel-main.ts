@@ -1,22 +1,26 @@
 import { ipcMain, BrowserWindow } from 'electron';
-import { ApiListener, listenerType } from '@akashaproject/core/ipcPreloader';
+import { ApiListener } from '@akashaproject/core/ipcPreloader';
 
 export default class IpcChannelMain extends ApiListener {
   protected windowId;
+  constructor(channel: string, opts: {channelName?: string, windowId?: string}) {
+    super(channel, opts.channelName);
+    this.windowId = opts.windowId;
+  }
 
   get listenerCount() {
     return ipcMain.listenerCount(this.channel);
   }
 
-  public on(listener: listenerType) {
+  public on(listener: Function) {
     ipcMain.on(this.channel, listener);
   }
 
-  public once(listener: listenerType) {
+  public once(listener: Function) {
     ipcMain.once(this.channel, listener);
   }
 
-  public removeListener(listener: listenerType) {
+  public removeListener(listener: Function) {
     ipcMain.removeListener(this.channel, listener);
   }
 
