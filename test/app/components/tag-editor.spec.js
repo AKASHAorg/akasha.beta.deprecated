@@ -146,10 +146,6 @@ describe('[Component] TagEditor', () => {
                 expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_CA}`)).to.be.false;
                 expect(wrapper.find(`.${TAG_ITEM_CLASSNAME}`).some(`.${TAG_ITEM_CLASSNAME_SC}`)).to.be.true;
             });
-
-            it('should ', () => {
-
-            });
         });
     });
 });

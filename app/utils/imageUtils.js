@@ -82,6 +82,7 @@ function imageCreator (arrayBuffer, baseUrl) {
  * Utility to extract first image from draftjs generated content;
  * @param {object} content Draft-js generated content;
  * @returns {array} image Array of versions of an image;
+ * @todo Optimize iterations!
  */
 function extractImageFromContent (content) { // eslint-disable-line
     const { blocks } = content;

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
-import { Button, Form } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -97,12 +97,24 @@ class LoginForm extends Component {
             rememberTime: unlockTime
         });
     };
-
-    render () {
-        const { ethAddress, gethStatus, getInputRef, intl, ipfsStatus, loginErrors,
-            loginPending } = this.props;
+    getLoginButtonState = () => {
+        const { loginPending, intl, gethStatus, ipfsStatus } = this.props;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
+        let popoverTitle = '';
+        if(isServiceStopped) {
+            popoverTitle = 'one of the services is stopped';
+        }
+        if (loginPending) {
+            popoverTitle = 'login is in progress';
+        }
+        return {
+            disabled: isServiceStopped || loginPending,
+            popoverTitle
+        }
+    }
+    render () {
+        const { ethAddress, getInputRef, intl, loginErrors } = this.props;
 
         return (
           <div className="login-form">
@@ -144,15 +156,21 @@ class LoginForm extends Component {
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>
-                <Button
-                  className="login-form__button"
-                  disabled={isServiceStopped || loginPending}
-                  htmlType="submit"
-                  onClick={this.handleLogin}
-                  type="primary"
+                <Tooltip
+                  title={this.getLoginButtonState().popoverTitle}
+                  defaultVisible={true}
+                  trigger="hover"
                 >
-                  {intl.formatMessage(generalMessages.submit)}
-                </Button>
+                  <Button
+                    className="login-form__button"
+                    disabled={this.getLoginButtonState().disabled}
+                    htmlType="submit"
+                    onClick={this.handleLogin}
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.submit)}
+                  </Button>
+                </Tooltip>
               </div>
             </Form>
           </div>
