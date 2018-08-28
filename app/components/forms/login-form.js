@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Form, Tooltip, Icon } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -98,23 +98,27 @@ class LoginForm extends Component {
         });
     };
     getLoginButtonState = () => {
-        const { loginPending, intl, gethStatus, ipfsStatus } = this.props;
-        const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
+        const {intl, gethStatus, ipfsStatus } = this.props;
+        const isGethStopped = !gethStatus.get('api') || gethStatus.get('stopped');
+        const isIpfsStopped = !ipfsStatus.get('started') && !ipfsStatus.get('process');
         let popoverTitle = '';
-        if(isServiceStopped) {
-            popoverTitle = 'one of the services is stopped';
-        }
-        if (loginPending) {
-            popoverTitle = 'login is in progress';
+        switch (true) {
+            case isGethStopped:
+                popoverTitle = intl.formatMessage(generalMessages.cannotLoginGethStopped);
+                break;
+            case isIpfsStopped:
+                popoverTitle = intl.formatMessage(generalMessages.cannotLoginIpfsStopped);
+                break;
+            default:
+                break;
         }
         return {
-            disabled: isServiceStopped || loginPending,
+            disabled: isGethStopped || isIpfsStopped,
             popoverTitle
         }
     }
     render () {
-        const { ethAddress, getInputRef, intl, loginErrors } = this.props;
+        const { ethAddress, getInputRef, intl, loginErrors, loginPending } = this.props;
 
         return (
           <div className="login-form">
@@ -156,23 +160,24 @@ class LoginForm extends Component {
                 >
                   {intl.formatMessage(generalMessages.cancel)}
                 </Button>
-                <Tooltip
-                  title={this.getLoginButtonState().popoverTitle}
-                  defaultVisible={true}
-                  trigger="hover"
-                >
-                  <Button
-                    className="login-form__button"
-                    disabled={this.getLoginButtonState().disabled}
-                    htmlType="submit"
-                    onClick={this.handleLogin}
-                    type="primary"
+                <Button
+                  className="login-form__button"
+                  disabled={this.getLoginButtonState().disabled}
+                  htmlType="submit"
+                  onClick={this.handleLogin}
+                  loading={loginPending}
+                  type="primary"
                   >
                     {intl.formatMessage(generalMessages.submit)}
-                  </Button>
-                </Tooltip>
+                </Button>
               </div>
             </Form>
+            {this.getLoginButtonState().popoverTitle &&
+              <div className="login-form__warning">
+                <Icon type="exclamation-circle-o" />
+                {this.getLoginButtonState().popoverTitle}
+              </div>
+            }
           </div>
         );
     }
