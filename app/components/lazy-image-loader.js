@@ -37,7 +37,6 @@ class LazyImageLoader extends Component {
         }
         return '';
     };
-
     _handleImageLoad = (imgSrc) => () => {
         this.idleCallbackHandler = window.requestIdleCallback(() => {
             this.setState({

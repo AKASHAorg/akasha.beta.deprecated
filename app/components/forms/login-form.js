@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
-import { Button, Form } from 'antd';
+import { Button, Form, Tooltip, Icon } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -97,12 +97,28 @@ class LoginForm extends Component {
             rememberTime: unlockTime
         });
     };
-
+    getLoginButtonState = () => {
+        const {intl, gethStatus, ipfsStatus } = this.props;
+        const isGethStopped = !gethStatus.get('api') || gethStatus.get('stopped');
+        const isIpfsStopped = !ipfsStatus.get('started') && !ipfsStatus.get('process');
+        let popoverTitle = '';
+        switch (true) {
+            case isGethStopped:
+                popoverTitle = intl.formatMessage(generalMessages.cannotLoginGethStopped);
+                break;
+            case isIpfsStopped:
+                popoverTitle = intl.formatMessage(generalMessages.cannotLoginIpfsStopped);
+                break;
+            default:
+                break;
+        }
+        return {
+            disabled: isGethStopped || isIpfsStopped,
+            popoverTitle
+        }
+    }
     render () {
-        const { ethAddress, gethStatus, getInputRef, intl, ipfsStatus, loginErrors,
-            loginPending } = this.props;
-        const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
+        const { ethAddress, getInputRef, intl, loginErrors, loginPending } = this.props;
 
         return (
           <div className="login-form">
@@ -146,15 +162,22 @@ class LoginForm extends Component {
                 </Button>
                 <Button
                   className="login-form__button"
-                  disabled={isServiceStopped || loginPending}
+                  disabled={this.getLoginButtonState().disabled}
                   htmlType="submit"
                   onClick={this.handleLogin}
+                  loading={loginPending}
                   type="primary"
-                >
-                  {intl.formatMessage(generalMessages.submit)}
+                  >
+                    {intl.formatMessage(generalMessages.submit)}
                 </Button>
               </div>
             </Form>
+            {this.getLoginButtonState().popoverTitle &&
+              <div className="login-form__warning">
+                <Icon type="exclamation-circle-o" />
+                {this.getLoginButtonState().popoverTitle}
+              </div>
+            }
           </div>
         );
     }

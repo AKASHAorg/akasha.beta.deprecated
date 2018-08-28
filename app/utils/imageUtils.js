@@ -77,34 +77,51 @@ function imageCreator (arrayBuffer, baseUrl) {
     return window.URL.createObjectURL(blobFile);
     // return null;
 }
+
 /**
  * Utility to extract first image from draftjs generated content;
  * @param {object} content Draft-js generated content;
  * @returns {array} image Array of versions of an image;
+ * @todo Optimize iterations!
  */
-function extractImageFromContent (content) {
+function extractImageFromContent (content) { // eslint-disable-line
     const { blocks } = content;
     if (!blocks) {
-        console.error('no blocks not found inside content param');
         return null;
     }
     if (blocks.length === 0) {
         return null;
     }
-    let firstImage;
-    for (let i = 0; i < blocks.length; i++) {
-        if (
-            blocks[i].type === 'atomic' &&
-            blocks[i].data.type &&
-            blocks[i].data.type === 'image' &&
-            blocks[i].data.files &&
-            !isEmpty(blocks[i].data.files)
-        ) {
-            firstImage = blocks[i].data.files;
-            break;
+    const targetBlock = blocks.filter(block =>
+        block.type === 'atomic' &&
+        block.data.type &&
+        block.data.type === 'image' &&
+        block.data.files &&
+        !isEmpty(block.data.files)
+    ).find(block => {
+        const files = block.data.files;
+        return Object.keys(files).some(fileKey => {
+            if (files[fileKey].width >= 640) {
+                return true;
+            }
+            return false;
+        });
+    });
+    if(targetBlock && targetBlock.data.files) {
+        return targetBlock.data.files;
+    } else {
+        for (let i = 0; i < blocks.length; i++) {
+            if (
+                blocks[i].type === 'atomic' &&
+                blocks[i].data.type &&
+                blocks[i].data.type === 'image' &&
+                blocks[i].data.files &&
+                !isEmpty(blocks[i].data.files)
+            ) {
+                return blocks[i].data.files;
+            }
         }
     }
-    return firstImage;
 }
 /**
  * @TODO Move this to a config file
