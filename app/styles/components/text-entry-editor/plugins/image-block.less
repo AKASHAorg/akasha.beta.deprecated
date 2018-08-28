@@ -158,6 +158,12 @@
             opacity: 0;
         }
         &_image {
+            &.loaded {
+                height: auto;
+            }
+            &_loading {
+                height: 0px;
+            }
             &.errored {
                 display: none;
                 height: 0;
