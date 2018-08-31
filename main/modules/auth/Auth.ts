@@ -1,4 +1,4 @@
-import { Cipher, createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
 // import { takeLast }from 'ramda';
 import {
@@ -91,9 +91,9 @@ export interface AuthInterface {
 }
 
 export class Auth implements AuthInterface {
-    private _encrypted: Buffer;
-    private _decipher: Decipher;
-    private _cipher: Cipher;
+    private _encrypted: any;
+    private _decipher: any;
+    private _cipher: any;
     private _session: { address: string, expiration: Date, vrs: { v: string, r: string, s: string } };
     private _task;
 
