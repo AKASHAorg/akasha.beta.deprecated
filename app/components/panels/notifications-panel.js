@@ -1,40 +1,54 @@
+// @flow
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Popover, Timeline, Switch } from 'antd';
-import classNames from 'classnames';
-import { DataLoader, Icon, NotificationLog } from '../';
+import { Popover } from 'antd';
+import type { List, Record, Map } from 'immutable';
+import { Icon } from '../';
 import { hideNotificationsPanel } from '../../local-flux/actions/app-actions';
 import { notificationsSubscribe } from '../../local-flux/actions/notifications-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { profileMessages, generalMessages, settingsMessages } from '../../locale-data/messages';
+import { generalMessages, settingsMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 import { selectLoggedEthAddress } from '../../local-flux/selectors';
+import NotificationPanelSettings from './notification-panel-settings';
+import NotificationList from './notification-list';
 
-const { Item } = Timeline;
+type Props = {
+    darkTheme: boolean,
+    notifications: List <Record>,
+    notificationsLoaded: boolean,
+    hideNotificationsPanel: Function,
+    loggedEthAddress: string,
+    userSettingsSave: Function,
+    userPreference: Map <boolean>,
+    notificationsSubscribe: Function,
+    intl: Object,
+    userSettings: Map<string,Record>
+};
+type State = {
+    visibleSettings: boolean
+};
 
-class NotificationsPanel extends Component {
+class NotificationsPanel<PanelMembers> extends Component<Props, State> {
     constructor (props) {
         super(props);
-        const notificationsPreference = props.userSettings.get('notificationsPreference');
         this.state = {
-            notifFeed: notificationsPreference.feed,
-            notifComments: notificationsPreference.comments,
-            notifDonations: notificationsPreference.donations,
-            notifVotes: notificationsPreference.votes,
             visibleSettings: false
         };
     }
+    containerRef = React.createRef();
 
     shouldComponentUpdate (nextProps, nextState) {
-        const { darkTheme, notifications, notificationsLoaded } = nextProps;
-        const stateKeys = Object.keys(nextState);
-        const stateChanged = stateKeys.some(key => nextState[key] !== this.state[key]);
+        const { darkTheme, notifications, notificationsLoaded, userSettings } = nextProps;
+        
         if (
-            stateChanged ||
+            this.state.visibleSettings !== nextState.visibleSettings ||
             darkTheme !== this.props.darkTheme ||
             !notifications.equals(this.props.notifications) ||
+            !userSettings.get('notificationsPreference')
+                .equals(this.props.userSettings.get('notificationsPreference')) ||
             notificationsLoaded !== this.props.notificationsLoaded
         ) {
             return true;
@@ -46,103 +60,16 @@ class NotificationsPanel extends Component {
         this.props.hideNotificationsPanel();
     };
 
-    getContainerRef = (el) => { this.containerRef = el; };
-
-    getUniqueKey = (notification) => {
-        const values = Object.values(notification.payload);
-        let key = notification.blockNumber;
-        values.forEach((val) => {
-            if (typeof val === 'string') {
-                key = `${key}-${val.substr(0, 10)}`;
-            }
-        });
-        return key;
-    };
-
-    handleVisibleChange = (visible) => {
-        const { loggedEthAddress } = this.props;
-        const notificationsPreference = {
-            feed: this.state.notifFeed,
-            donations: this.state.notifDonations,
-            comments: this.state.notifComments,
-            votes: this.state.notifVotes
-        };
+    handleVisibleChange = (visible: boolean): void => {
         this.setState({ visibleSettings: visible });
-        if (!visible) {
-            this.props.userSettingsSave(loggedEthAddress, { notificationsPreference });
-            this.props.notificationsSubscribe(notificationsPreference);
-        }
-    };
-
-    renderSettings = () => {
-        const { intl } = this.props;
-        const { notifComments, notifDonations, notifFeed, notifVotes } = this.state;
-
-        return (
-          <div className="notifications-panel__notif-pref-list">
-            <div className="notifications-panel__notif-pref">
-              {intl.formatMessage(profileMessages.followers)}
-              <Switch
-                size="small"
-                checked={notifFeed}
-                onChange={(checked) => {
-                  this.setState({
-                    notifFeed: checked
-                  });
-                  }
-                }
-              />
-            </div>
-            <div className="notifications-panel__notif-pref">
-              {intl.formatMessage(generalMessages.comments)}
-              <Switch
-                size="small"
-                checked={notifComments}
-                onChange={(checked) => {
-                  this.setState({
-                    notifComments: checked
-                  });
-                }}
-              />
-            </div>
-            <div className="notifications-panel__notif-pref">
-              {intl.formatMessage(settingsMessages.votes)}
-              <Switch
-                size="small"
-                checked={notifVotes}
-                onChange={(checked) => {
-                  this.setState({
-                    notifVotes: checked
-                  });
-                  }
-                }
-              />
-            </div>
-            <div className="notifications-panel__notif-pref notifications-panel__notif-pref_last">
-              {intl.formatMessage(settingsMessages.tips)}
-              <Switch
-                size="small"
-                checked={notifDonations}
-                onChange={(checked) => {
-                  this.setState({
-                    notifDonations: checked
-                  });
-                  }
-                }
-              />
-            </div>
-          </div>
-        );
-    }
-
-    renderNotifications = () => {
-        
+        // if (!visible) {
+        //     this.props.userSettingsSave(loggedEthAddress, { notificationsPreference });
+        //     this.props.notificationsSubscribe(notificationsPreference);
+        // }
     };
 
     render () {
-        const { intl, userSettings } = this.props;
-        const { feed, comments, donations, votes } = userSettings.get('notificationsPreference');
-        console.log(feed, comments, donations, votes);
+        const { intl, userSettings, darkTheme, loggedEthAddress, notifications, notificationsLoaded } = this.props;
 
         return (
           <div className="notifications-panel">
@@ -152,7 +79,15 @@ class NotificationsPanel extends Component {
               </div>
               <div className="notifications-panel__more">
                 <Popover
-                  content={this.renderSettings()}
+                  content={
+                    <NotificationPanelSettings
+                      loggedEthAddress={loggedEthAddress}
+                      intl={intl}
+                      userPreference={userSettings.get('notificationsPreference')}
+                      userSettingsSave={this.props.userSettingsSave}
+                      notificationsSubscribe={this.props.notificationsSubscribe}
+                    />
+                  }
                   id="notifications-panel__settings-popover"
                   onVisibleChange={this.handleVisibleChange}
                   overlayClassName="notifications-panel__settings-popover"
@@ -172,23 +107,17 @@ class NotificationsPanel extends Component {
                 </Popover>
               </div>
             </div>
-            {this.renderNotifications()}
+            {/* {this.renderNotifications()} */}
+            <NotificationList
+              intl={intl}
+              notifications={notifications}
+              notificationsLoaded={notificationsLoaded}
+              darkTheme={darkTheme}
+            />
           </div>
         );
     }
 }
-
-NotificationsPanel.propTypes = {
-    darkTheme: PropTypes.bool,
-    hideNotificationsPanel: PropTypes.func.isRequired,
-    intl: PropTypes.shape().isRequired,
-    loggedEthAddress: PropTypes.string.isRequired,
-    notifications: PropTypes.shape().isRequired,
-    notificationsLoaded: PropTypes.bool,
-    notificationsSubscribe: PropTypes.func.isRequired,
-    userSettings: PropTypes.shape().isRequired,
-    userSettingsSave: PropTypes.func.isRequired,
-};
 
 function mapStateToProps (state) {
     return {
