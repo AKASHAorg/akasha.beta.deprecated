@@ -1,12 +1,43 @@
+// @flow
 import React, {PureComponent} from 'react';
+import classNames from 'classnames';
+import { DataLoader, NotificationLog } from '../';
+import { profileMessages } from '../../locale-data/messages';
+import { Timeline } from 'antd';
+import type { List } from 'immutable';
 
-class NotificationList extends PureComponent {
+const { Item } = Timeline;
+
+type Props = {
+    darkTheme?: boolean,
+    intl: Object,
+    notifications: List<Object>,
+    notificationsLoaded: boolean,
+    containerRef: any,
+}
+
+class NotificationList extends PureComponent <Props> {
+    static defaultProps = {
+        darkTheme: false,
+        notificationsLoaded: false
+    }
+    
+    getUniqueKey = (notification: Object) => {
+        const values = Object.values(notification.payload);
+        let key = notification.blockNumber;
+        values.forEach((val) => {
+            if (typeof val === 'string') {
+                key = `${key}-${val.substr(0, 10)}`;
+            }
+        });
+        return key;
+    }
+
     render () {
-        const { darkTheme, intl, notifications, notificationsLoaded } = this.props;
+        const { darkTheme, intl, notifications, notificationsLoaded, containerRef } = this.props;
         const imgClass = classNames('notifications-panel__placeholder', {
             'notifications-panel__placeholder_dark': darkTheme
         });
-
         if (!notificationsLoaded) {
             return (
               <div className="notifications-panel__timeline-wrapper">
@@ -15,7 +46,7 @@ class NotificationList extends PureComponent {
             );
         }
         return (
-          <div className="notifications-panel__timeline-wrapper" ref={this.getContainerRef}>
+          <div className="notifications-panel__timeline-wrapper" ref={containerRef}>
             <Timeline>
               {notifications.map((notif) => {
                   if (!notif.blockNumber) {
@@ -27,7 +58,7 @@ class NotificationList extends PureComponent {
                       key={this.getUniqueKey(notif)}
                     >
                       <NotificationLog
-                        containerRef={this.containerRef}
+                        containerRef={containerRef}
                         key={notif.blockNumber}
                         notification={notif}
                       />
@@ -46,14 +77,6 @@ class NotificationList extends PureComponent {
           </div>
         );
     }
-}
-
-NotificationList.defaultProps = {
-    
-};
-
-NotificationList.PropTypes = {
-
 }
 
 export default NotificationList;
