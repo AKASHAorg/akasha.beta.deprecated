@@ -5,6 +5,7 @@ import { DataLoader, NotificationLog } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { Timeline } from 'antd';
 import type { List } from 'immutable';
+import type { Element } from 'react';
 
 const { Item } = Timeline;
 
@@ -24,7 +25,7 @@ class NotificationList extends PureComponent <Props> {
 
     containerRef = null;
 
-    getContainerRef = (el) => this.containerRef = el;
+    getContainerRef = (el:?HTMLDivElement) => this.containerRef = el;
 
     getUniqueKey = (notification: Object) => {
         const values = Object.values(notification.payload);
