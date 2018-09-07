@@ -15,7 +15,8 @@ const notificationsState = createReducer(initialState, {
         if (data.watching) {
             return state.set('fetchingNotifications', false);
         }
-        const notifications = state.get('allNotifications').push(data);
+        const allNotifs = state.get('allNotifications');
+        const notifications = state.get('allNotifications').push(data).toSet().toList();
         const sortedNotif = notifications.sort((a, b) => (b.blockNumber - a.blockNumber));
         const unreadNotifications = isPanelOpen && state.get('notificationsLoaded') ?
             state.get('unreadNotifications') :

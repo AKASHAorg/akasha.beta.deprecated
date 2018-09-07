@@ -36,6 +36,9 @@ class TagEditor extends Component {
         };
         this.rootNodeRef = React.createRef();
     }
+    static defaultProps = {
+        canCreateTags: false
+    }
     componentClickAway = () => {
         const { partialTag } = this.state;
         if (partialTag.length > 1 && partialTag.length <= 32) {

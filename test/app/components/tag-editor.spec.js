@@ -23,7 +23,7 @@ describe('[Component] TagEditor', () => {
     const sampleSearch = new SearchRecord();
 
     let defaultProps = {
-        canCreateTags: false,
+        // canCreateTags: false,
         className: ROOT_NODE_CLASSNAME_PROP,
         isUpdate: false,
         onChange: () => {},
@@ -53,6 +53,7 @@ describe('[Component] TagEditor', () => {
 
     it('should render component with default props', () => {
         const wrapper = mountComp();
+        console.log(wrapper.instance().refs.clickAwayableElement, 'the wrapper');
         expect(wrapper.find(`.${ROOT_NODE_ID}`)).to.have.lengthOf(1);
     });
 
