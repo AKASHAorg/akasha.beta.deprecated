@@ -93,7 +93,8 @@ const eProcState = createReducer(initialState, {
 
         return state.mergeIn(['geth'], {
             status: state.getIn(['geth', 'status']).merge(newStatus),
-            syncActionId
+            syncActionId,
+            syncStatus: state.getIn(['geth', 'syncStatus']).clear(),
         });
     },
 
