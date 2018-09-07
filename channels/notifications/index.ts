@@ -8,9 +8,7 @@ import queueInit from './queue';
 import setFilterInit from './set-filter';
 import subscribeInit from './subscribe';
 import votesInit from './votes';
-
-
-export const moduleName = 'notifications';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
 
@@ -26,21 +24,21 @@ const init = function init(sp, getService) {
   const votes = votesInit(sp, getService);
 
   return {
-    comment,
-    donations,
-    entries,
-    excludeFilter,
-    feed,
-    includeFilter,
-    queue,
-    setFilter,
-    subscribe,
-    votes,
+    [NOTIFICATIONS_MODULE.comments]: comment,
+    [NOTIFICATIONS_MODULE.donations]: donations,
+    [NOTIFICATIONS_MODULE.entriesCache]: entries,
+    [NOTIFICATIONS_MODULE.excludeFilter]: excludeFilter,
+    [NOTIFICATIONS_MODULE.feed]: feed,
+    [NOTIFICATIONS_MODULE.includeFilter]: includeFilter,
+    [NOTIFICATIONS_MODULE.queue]: queue,
+    [NOTIFICATIONS_MODULE.setFilter]: setFilter,
+    [NOTIFICATIONS_MODULE.subscribe]: subscribe,
+    [NOTIFICATIONS_MODULE.votes]: votes,
   };
 };
 const app = {
   init,
-  moduleName,
+  moduleName: NOTIFICATIONS_MODULE.$name,
 };
 
 export default app;

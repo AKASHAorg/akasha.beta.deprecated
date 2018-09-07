@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { post as POST } from 'superagent';
-import { AUTH_MODULE, CORE_MODULE, GENERAL_SETTINGS } from './constants';
+import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS } from './constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
@@ -32,6 +32,6 @@ export default function init(sp, getService) {
   const service = function () {
     return requestEther;
   };
-  sp().service(AUTH_MODULE.requestEther, service);
+  sp().service(COMMON_MODULE.requestEther, service);
   return requestEther;
 }

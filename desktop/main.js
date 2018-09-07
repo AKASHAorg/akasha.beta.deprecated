@@ -4,11 +4,10 @@ const electron_1 = require("electron");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 const sp_1 = require("@akashaproject/core/sp");
-const constants_1 = require("@akashaproject/common/constants");
-const ipc_channel_main_1 = require("./ipc-channel-main");
 const init_modules_1 = require("./init-modules");
 const path_1 = require("path");
 const menu_1 = require("./menu");
+const watcher_1 = require("./watcher");
 const Promise = require("bluebird");
 const windowStateKeeper = require('electron-window-state');
 let mainWindow = null;
@@ -101,16 +100,8 @@ const bootstrap = function () {
         process.on('SIGTERM', stopServices);
         init_modules_1.default(sp_1.default, sp_1.getService)
             .then((modules) => {
-            console.log(modules);
             startBrowser();
-            const ipcChannelMain = new ipc_channel_main_1.default(constants_1.CORE_MODULE.DATA, {
-                channelName: 'mainChannel',
-                windowId: mainWindow.id,
-            });
-            ipcChannelMain.on(function (ev, args) {
-                console.log(ev, args);
-                ipcChannelMain.send({ main: args });
-            });
+            watcher_1.default(modules, mainWindow.id);
         });
     });
 };

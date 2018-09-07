@@ -10,7 +10,7 @@ const queue_1 = require("./queue");
 const set_filter_1 = require("./set-filter");
 const subscribe_1 = require("./subscribe");
 const votes_1 = require("./votes");
-exports.moduleName = 'notifications';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     const comment = comments_1.default(sp, getService);
     const donations = donations_1.default(sp, getService);
@@ -23,21 +23,21 @@ const init = function init(sp, getService) {
     const subscribe = subscribe_1.default(sp, getService);
     const votes = votes_1.default(sp, getService);
     return {
-        comment,
-        donations,
-        entries,
-        excludeFilter,
-        feed,
-        includeFilter,
-        queue,
-        setFilter,
-        subscribe,
-        votes,
+        [constants_1.NOTIFICATIONS_MODULE.comments]: comment,
+        [constants_1.NOTIFICATIONS_MODULE.donations]: donations,
+        [constants_1.NOTIFICATIONS_MODULE.entriesCache]: entries,
+        [constants_1.NOTIFICATIONS_MODULE.excludeFilter]: excludeFilter,
+        [constants_1.NOTIFICATIONS_MODULE.feed]: feed,
+        [constants_1.NOTIFICATIONS_MODULE.includeFilter]: includeFilter,
+        [constants_1.NOTIFICATIONS_MODULE.queue]: queue,
+        [constants_1.NOTIFICATIONS_MODULE.setFilter]: setFilter,
+        [constants_1.NOTIFICATIONS_MODULE.subscribe]: subscribe,
+        [constants_1.NOTIFICATIONS_MODULE.votes]: votes,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.NOTIFICATIONS_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

@@ -11,7 +11,7 @@ const upvote_comment_1 = require("./upvote-comment");
 const vote_of_1 = require("./vote-of");
 const get_score_1 = require("./get-score");
 const ipfs_1 = require("./ipfs");
-exports.moduleName = 'comments';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     ipfs_1.default(sp, getService);
     const addComment = add_comment_1.default(sp, getService);
@@ -25,21 +25,21 @@ const init = function init(sp, getService) {
     const voteOf = vote_of_1.default(sp, getService);
     const getScore = get_score_1.default(sp, getService);
     return {
-        addComment,
-        commentsCount,
-        getComment,
-        removeComment,
-        commentsIterator,
-        resolveCommentsIpfsHash,
-        downvoteComment,
-        upvoteComment,
-        voteOf,
-        getScore,
+        [constants_1.COMMENTS_MODULE.comment]: addComment,
+        [constants_1.COMMENTS_MODULE.commentsCount]: commentsCount,
+        [constants_1.COMMENTS_MODULE.getComment]: getComment,
+        [constants_1.COMMENTS_MODULE.removeComment]: removeComment,
+        [constants_1.COMMENTS_MODULE.commentsIterator]: commentsIterator,
+        [constants_1.COMMENTS_MODULE.resolveCommentsIpfsHash]: resolveCommentsIpfsHash,
+        [constants_1.COMMENTS_MODULE.downVote]: downvoteComment,
+        [constants_1.COMMENTS_MODULE.upvote]: upvoteComment,
+        [constants_1.COMMENTS_MODULE.getVoteOf]: voteOf,
+        [constants_1.COMMENTS_MODULE.getScore]: getScore,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.COMMENTS_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

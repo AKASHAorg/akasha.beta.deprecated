@@ -7,7 +7,7 @@ const start_1 = require("./start");
 const status_1 = require("./status");
 const stop_1 = require("./stop");
 const sync_status_1 = require("./sync-status");
-exports.moduleName = 'geth';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     const logs = logs_1.default(sp, getService);
     const options = options_1.default(sp, getService);
@@ -17,18 +17,18 @@ const init = function init(sp, getService) {
     const stop = stop_1.default(sp, getService);
     const syncStatus = sync_status_1.default(sp, getService);
     return {
-        logs,
-        options,
-        restart,
-        start,
-        status,
-        stop,
-        syncStatus,
+        [constants_1.GETH_MODULE.logs]: logs,
+        [constants_1.GETH_MODULE.options]: options,
+        [constants_1.GETH_MODULE.restartService]: restart,
+        [constants_1.GETH_MODULE.start]: start,
+        [constants_1.GETH_MODULE.status]: status,
+        [constants_1.GETH_MODULE.stop]: stop,
+        [constants_1.GETH_MODULE.syncStatus]: syncStatus,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.GETH_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

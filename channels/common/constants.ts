@@ -15,22 +15,21 @@ export const CORE_MODULE = Object.freeze({
   CHANNELS: 'CHANNELS',
   DATA: 'DATA',
   IPC: 'IPC',
+  $name: 'core',
 });
 
 export const AUTH_MODULE = Object.freeze({
   auth: 'auth_AUTH',
   generateEthKey: 'generateEthKey_AUTH',
-  getLocalIdentities: 'getLocalIdentities_AUTH',
-  login: 'login_AUTH',
-  logout: 'logout_AUTH',
   regenSession: 'regenSession_AUTH',
-  requestEther: 'requestEther_AUTH',
+  $name: 'auth',
 });
 
 export const TX_MODULE = Object.freeze({
   addToQueue: 'addToQueue',
   emitMined: 'emitMined',
   getTransaction: 'getTransaction',
+  $name: 'tx',
 });
 
 export const TAGS_MODULE = Object.freeze({
@@ -43,6 +42,7 @@ export const TAGS_MODULE = Object.freeze({
   tagIterator: 'tagIterator',
   searchTag: 'searchTag',
   syncTags: 'syncTags',
+  $name: 'tags',
 });
 
 export const SEARCH_MODULE = Object.freeze({
@@ -50,12 +50,17 @@ export const SEARCH_MODULE = Object.freeze({
   flush: 'flush_SEARCH',
   findTags: 'findTags_SEARCH',
   findProfiles: 'findProfiles_SEARCH',
+  $name: 'search',
 });
 
 export const COMMON_MODULE = Object.freeze({
   profileHelpers: 'profile_common_helpers',
   ipfsHelpers: 'ipfs_common_helpers',
-
+  getLocalIdentities: 'getLocalIdentities_AUTH',
+  login: 'login_AUTH',
+  logout: 'logout_AUTH',
+  requestEther: 'requestEther_AUTH',
+  $name: 'common',
 });
 
 export const REGISTRY_MODULE = Object.freeze({
@@ -64,11 +69,12 @@ export const REGISTRY_MODULE = Object.freeze({
   fetchRegistered: 'fetchRegistered_R',
   profileExists: 'profileExists_R',
   registerProfile: 'registerProfile_R',
-
+  $name: 'registry',
 });
 
 export const PINNER_MODULE = Object.freeze({
   pin: 'pin_P',
+  $name: 'pinner',
 });
 
 export const NOTIFICATIONS_MODULE = Object.freeze({
@@ -82,11 +88,13 @@ export const NOTIFICATIONS_MODULE = Object.freeze({
   setFilter: 'setFilter_No',
   votes: 'votes_No',
   subscribe: 'subscribe_No',
+  $name: 'notifications',
 });
 
 export const LICENCE_MODULE = Object.freeze({
   getLicenceById: 'getLicenceById_Li',
   getLicences: 'getLicences_Li',
+  $name: 'licences',
 });
 
 export const IPFS_MODULE = Object.freeze({
@@ -99,6 +107,7 @@ export const IPFS_MODULE = Object.freeze({
   startService: 'startService_ip',
   status: 'status_ip',
   stopService: 'stopService_ip',
+  $name: 'ipfs',
 });
 
 export const GETH_MODULE = Object.freeze({
@@ -110,6 +119,7 @@ export const GETH_MODULE = Object.freeze({
   status: 'status_geth',
   syncStatus: 'syncStatus_geth',
   logs: 'logs_geth',
+  $name: 'geth',
 });
 
 export const PROFILE_MODULE = Object.freeze({
@@ -146,6 +156,7 @@ export const PROFILE_MODULE = Object.freeze({
   essenceIterator: 'essenceIterator_P',
   votesIterator: 'votesIterator_P',
   karmaRanking: 'karmaRanking_P',
+  $name: 'profile',
 });
 
 export const GENERAL_SETTINGS = Object.freeze({
@@ -246,6 +257,7 @@ export const ENTRY_MODULE = Object.freeze({
   getVoteEndPeriod: 'getVoteEndPeriod_ENTRY',
   getVoteRatio: 'getVoteRatio_entry',
   votesIterator: 'votesIterator_entry',
+  $name: 'entry',
 });
 
 export const COMMENTS_MODULE = Object.freeze({
@@ -260,7 +272,12 @@ export const COMMENTS_MODULE = Object.freeze({
   resolveCommentsIpfsHash: 'resolveCommentsIpfsHash',
   upvote: 'upvote_comments',
   getVoteOf: 'getVoteOf_comments',
+  $name: 'comments',
 });
+
+export const buildCall = function (module, method, data) {
+  return { method, module: module.$name, payload: data };
+};
 
 export default {
   CORE_MODULE,

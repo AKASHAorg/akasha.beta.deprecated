@@ -30,7 +30,7 @@ const my_votes_iterator_1 = require("./my-votes-iterator");
 const sync_entries_1 = require("./sync-entries");
 const helpers_1 = require("./helpers");
 const ipfs_1 = require("./ipfs");
-exports.moduleName = 'entry';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     helpers_1.default(sp, getService);
     ipfs_1.default(sp, getService);
@@ -63,39 +63,39 @@ const init = function init(sp, getService) {
     const myVotesIterator = my_votes_iterator_1.default(sp, getService);
     const syncEntries = sync_entries_1.default(sp, getService);
     return {
-        entryCountProfile,
-        entryCountTag,
-        entryTagIterator,
-        entryProfileIterator,
-        getEntry,
-        publishEntry,
-        canClaim,
-        claimDeposit,
-        downVoteEntry,
-        entryScore,
-        upVoteEntry,
-        voteCost,
-        getVoteOf,
-        votesIterator,
-        getEntryBalance,
-        getEntryList,
-        editEntry,
-        followingStreamIterator,
-        allStreamIterator,
-        getLatestEntryVersion,
-        getEntryIpfsHash,
-        resolveEntriesIpfsHash,
-        canClaimVote,
-        claimVote,
-        voteRatio,
-        getVoteEndPeriod,
-        myVotesIterator,
-        syncEntries,
+        [constants_1.ENTRY_MODULE.getProfileEntriesCount]: entryCountProfile,
+        [constants_1.ENTRY_MODULE.getTagEntriesCount]: entryCountTag,
+        [constants_1.ENTRY_MODULE.entryTagIterator]: entryTagIterator,
+        [constants_1.ENTRY_MODULE.entryProfileIterator]: entryProfileIterator,
+        [constants_1.ENTRY_MODULE.getEntry]: getEntry,
+        [constants_1.ENTRY_MODULE.publish]: publishEntry,
+        [constants_1.ENTRY_MODULE.canClaim]: canClaim,
+        [constants_1.ENTRY_MODULE.claim]: claimDeposit,
+        [constants_1.ENTRY_MODULE.downVote]: downVoteEntry,
+        [constants_1.ENTRY_MODULE.getScore]: entryScore,
+        [constants_1.ENTRY_MODULE.upVote]: upVoteEntry,
+        [constants_1.ENTRY_MODULE.voteCost]: voteCost,
+        [constants_1.ENTRY_MODULE.getVoteOf]: getVoteOf,
+        [constants_1.ENTRY_MODULE.votesIterator]: votesIterator,
+        [constants_1.ENTRY_MODULE.getEntryBalance]: getEntryBalance,
+        [constants_1.ENTRY_MODULE.getEntryList]: getEntryList,
+        [constants_1.ENTRY_MODULE.editEntry]: editEntry,
+        [constants_1.ENTRY_MODULE.followingStreamIterator]: followingStreamIterator,
+        [constants_1.ENTRY_MODULE.allStreamIterator]: allStreamIterator,
+        [constants_1.ENTRY_MODULE.getLatestEntryVersion]: getLatestEntryVersion,
+        [constants_1.ENTRY_MODULE.getEntryIpfsHash]: getEntryIpfsHash,
+        [constants_1.ENTRY_MODULE.resolveEntriesIpfsHash]: resolveEntriesIpfsHash,
+        [constants_1.ENTRY_MODULE.canClaimVote]: canClaimVote,
+        [constants_1.ENTRY_MODULE.claimVote]: claimVote,
+        [constants_1.ENTRY_MODULE.getVoteRatio]: voteRatio,
+        [constants_1.ENTRY_MODULE.getVoteEndPeriod]: getVoteEndPeriod,
+        [constants_1.ENTRY_MODULE.myVotesIterator]: myVotesIterator,
+        [constants_1.ENTRY_MODULE.syncEntries]: syncEntries,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.ENTRY_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

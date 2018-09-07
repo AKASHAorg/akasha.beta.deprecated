@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const runner_1 = require("./runner");
-exports.moduleName = 'pinner';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     const runner = runner_1.default(sp, getService);
-    return { runner };
+    return { [constants_1.PINNER_MODULE.pin]: runner };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.PINNER_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

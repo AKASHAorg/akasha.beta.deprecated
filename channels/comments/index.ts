@@ -9,8 +9,7 @@ import upvoteCommentInit from './upvote-comment';
 import voteOfInit from './vote-of';
 import getScoreInit from './get-score';
 import initIpfsComments from './ipfs';
-
-export const moduleName = 'comments';
+import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
   initIpfsComments(sp, getService);
@@ -26,22 +25,22 @@ const init = function init(sp, getService) {
   const getScore = getScoreInit(sp, getService);
 
   return {
-    addComment,
-    commentsCount,
-    getComment,
-    removeComment,
-    commentsIterator,
-    resolveCommentsIpfsHash,
-    downvoteComment,
-    upvoteComment,
-    voteOf,
-    getScore,
+    [COMMENTS_MODULE.comment]: addComment,
+    [COMMENTS_MODULE.commentsCount]: commentsCount,
+    [COMMENTS_MODULE.getComment]: getComment,
+    [COMMENTS_MODULE.removeComment]: removeComment,
+    [COMMENTS_MODULE.commentsIterator]: commentsIterator,
+    [COMMENTS_MODULE.resolveCommentsIpfsHash]: resolveCommentsIpfsHash,
+    [COMMENTS_MODULE.downVote]: downvoteComment,
+    [COMMENTS_MODULE.upvote]: upvoteComment,
+    [COMMENTS_MODULE.getVoteOf]: voteOf,
+    [COMMENTS_MODULE.getScore]: getScore,
   };
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: COMMENTS_MODULE.$name,
 };
 
 export default app;
