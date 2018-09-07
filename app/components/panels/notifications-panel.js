@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Popover } from 'antd';
-import type { List, Record, Map } from 'immutable';
+import type { List, RecordOf, Map } from 'immutable';
 import { Icon } from '../';
 import { hideNotificationsPanel } from '../../local-flux/actions/app-actions';
 import { notificationsSubscribe } from '../../local-flux/actions/notifications-actions';
@@ -14,10 +14,11 @@ import clickAway from '../../utils/clickAway';
 import { selectLoggedEthAddress } from '../../local-flux/selectors';
 import NotificationPanelSettings from './notification-panel-settings';
 import NotificationList from './notification-list';
+import * as notificationEvents from '../../constants/notification-events';
 
 type Props = {
     darkTheme: boolean,
-    notifications: List <Record>,
+    notifications: List <RecordOf<*>>,
     notificationsLoaded: boolean,
     hideNotificationsPanel: Function,
     loggedEthAddress: string,
@@ -25,7 +26,7 @@ type Props = {
     userPreference: Map <boolean>,
     notificationsSubscribe: Function,
     intl: Object,
-    userSettings: Map<string,Record>
+    userSettings: RecordOf<*>
 };
 type State = {
     visibleSettings: boolean
@@ -62,15 +63,21 @@ class NotificationsPanel<PanelMembers> extends Component<Props, State> {
 
     handleVisibleChange = (visible: boolean): void => {
         this.setState({ visibleSettings: visible });
-        // if (!visible) {
-        //     this.props.userSettingsSave(loggedEthAddress, { notificationsPreference });
-        //     this.props.notificationsSubscribe(notificationsPreference);
-        // }
     };
-
+    _handleNotificationSettingsChange = (newSettings) => {
+        const { loggedEthAddress } = this.props;
+        this.props.userSettingsSave(loggedEthAddress, { notificationsPreference: newSettings });
+        this.props.notificationsSubscribe(newSettings.toJS());
+    }
     render () {
-        const { intl, userSettings, darkTheme, loggedEthAddress, notifications, notificationsLoaded } = this.props;
-
+        const { intl, userSettings, darkTheme, notifications, notificationsLoaded } = this.props;
+        const notificationPrefs = userSettings.get('notificationsPreference');
+        const notifs = notifications.filter(notif => {
+            return (notif.type === notificationEvents.COMMENT_EVENT && notificationPrefs.comments ||
+                notif.type === notificationEvents.DONATION_EVENT && notificationPrefs.donations ||
+                notif.type === notificationEvents.FOLLOWING_EVENT && notificationPrefs.feed ||
+                notif.type === notificationEvents.VOTE_EVENT && notificationPrefs.votes);
+        });
         return (
           <div className="notifications-panel">
             <div className="notifications-panel__header">
@@ -81,11 +88,9 @@ class NotificationsPanel<PanelMembers> extends Component<Props, State> {
                 <Popover
                   content={
                     <NotificationPanelSettings
-                      loggedEthAddress={loggedEthAddress}
                       intl={intl}
                       userPreference={userSettings.get('notificationsPreference')}
-                      userSettingsSave={this.props.userSettingsSave}
-                      notificationsSubscribe={this.props.notificationsSubscribe}
+                      onSettingsChange={this._handleNotificationSettingsChange}
                     />
                   }
                   id="notifications-panel__settings-popover"
@@ -107,10 +112,9 @@ class NotificationsPanel<PanelMembers> extends Component<Props, State> {
                 </Popover>
               </div>
             </div>
-            {/* {this.renderNotifications()} */}
             <NotificationList
               intl={intl}
-              notifications={notifications}
+              notifications={notifs}
               notificationsLoaded={notificationsLoaded}
               darkTheme={darkTheme}
             />

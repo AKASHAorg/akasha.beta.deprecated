@@ -1,28 +1,23 @@
 // @flow
 import React, { PureComponent } from 'react';
 import { Switch } from 'antd';
+import type { RecordOf } from 'immutable';
 import { profileMessages, generalMessages, settingsMessages } from '../../locale-data/messages';
 
 type Props = {|
-    userPreference: Object,
+    userPreference: RecordOf<*>,
     intl: { formatMessage: Function },
-    userSettingsSave: Function,
-    loggedEthAddress: string,
-    notificationsSubscribe: Function,
-|}
+    onSettingsChange: Function,
+|};
 
 class NotificationPanelSettings extends PureComponent <Props> {
     
-    static defaultProps = {
-        userPreference: {},
-        loggedEthAddress: '',
-    }
+    static defaultProps = {}
     
     _changeUserPrefs = (prefKey: string) => (prefValue: boolean) => {
-        const { userPreference, userSettingsSave, notificationsSubscribe, loggedEthAddress} = this.props;
+        const { userPreference } = this.props;
         const notificationsPreference = userPreference.set([prefKey], prefValue);
-        userSettingsSave(loggedEthAddress, { notificationsPreference });
-        notificationsSubscribe(notificationsPreference);
+        this.props.onSettingsChange(notificationsPreference);
     }
 
     render() {

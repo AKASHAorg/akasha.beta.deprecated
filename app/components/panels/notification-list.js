@@ -13,15 +13,19 @@ type Props = {
     intl: Object,
     notifications: List<Object>,
     notificationsLoaded: boolean,
-    containerRef: any,
 }
 
 class NotificationList extends PureComponent <Props> {
+    
     static defaultProps = {
         darkTheme: false,
         notificationsLoaded: false
     }
-    
+
+    containerRef = null;
+
+    getContainerRef = (el) => this.containerRef = el;
+
     getUniqueKey = (notification: Object) => {
         const values = Object.values(notification.payload);
         let key = notification.blockNumber;
@@ -34,7 +38,7 @@ class NotificationList extends PureComponent <Props> {
     }
 
     render () {
-        const { darkTheme, intl, notifications, notificationsLoaded, containerRef } = this.props;
+        const { darkTheme, intl, notifications, notificationsLoaded } = this.props;
         const imgClass = classNames('notifications-panel__placeholder', {
             'notifications-panel__placeholder_dark': darkTheme
         });
@@ -46,7 +50,7 @@ class NotificationList extends PureComponent <Props> {
             );
         }
         return (
-          <div className="notifications-panel__timeline-wrapper" ref={containerRef}>
+          <div className="notifications-panel__timeline-wrapper" ref={this.getContainerRef}>
             <Timeline>
               {notifications.map((notif) => {
                   if (!notif.blockNumber) {
@@ -58,7 +62,7 @@ class NotificationList extends PureComponent <Props> {
                       key={this.getUniqueKey(notif)}
                     >
                       <NotificationLog
-                        containerRef={containerRef}
+                        containerRef={this.containerRef}
                         key={notif.blockNumber}
                         notification={notif}
                       />

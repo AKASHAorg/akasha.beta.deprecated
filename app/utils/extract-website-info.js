@@ -8,11 +8,11 @@ import { isInternalLink } from './url-utils';
 // />
 
 
-type ParserParams = {
-    url: string,
-    uploadImageToIpfs: ?boolean,
-    parseUrl: (url: string) => Object,
-};
+// type ParserParams = {
+//     url: string,
+//     uploadImageToIpfs: ?boolean,
+//     parseUrl: Function
+// };
 
 type AkashaParserResponse = {
     tags?: Array<Object>,
@@ -22,7 +22,10 @@ type AkashaParserResponse = {
     body_description: string,
     body_image?: string
 };
-
+type ParserProps = {
+    url: string,
+    uploadImageToIpfs?: boolean
+}
 /**
  * @class WebsiteParser
  * @description Url parser class, used to extract info from a website`s html content
@@ -34,10 +37,7 @@ type AkashaParserResponse = {
  *   const websiteParser = new WebsiteParser('www.akasha.world')
  *   websiteParser.getInfo().then(info: Object);
  */
-class WebsiteParser extends ParserUtils<ParserParams> {
-    url: string;
-    parsedUrl: Object;
-    uploadImageToIpfs: Object;
+class WebsiteParser<ParserProps> extends ParserUtils {
     constructor (params: Object) {
         super();
         this.url = this.formatUrl(params.url);
@@ -68,7 +68,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
             }
             return descriptionObject;
         }, {title, description, body_description, body_image});
-        let outputDescr = {};
+        let outputDescr:Object = {};
         let currPriorities = {};
         metaTagsPriority.forEach(tagConf => {
             if ((!outputDescr[tagConf.key] || !outputDescr[tagConf.key].length) && descr[tagConf.name]) {

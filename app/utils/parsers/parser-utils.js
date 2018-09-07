@@ -21,11 +21,11 @@ class ParserUtils {
 
     getUrlQueryParams = (search: string) => new URLSearchParams(search)
 
-    getAbsoluteUrl = (url: string, parsedUrl: Object) : ?string => {
+    getAbsoluteUrl = (url: ?string, parsedUrl: Object) : ?string => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
-        return '';
+        return url;
     }
 
     formatUrl = (url: string): string => {
