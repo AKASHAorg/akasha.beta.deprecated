@@ -7,7 +7,6 @@ const services_1 = require("./services");
 const stash_1 = require("./stash");
 const web3_helper_1 = require("./web3-helper");
 const sp_1 = require("./sp");
-exports.moduleName = 'core';
 const init = function init() {
     const settings = new Map();
     const getSettings = function () {
@@ -23,7 +22,7 @@ const init = function init() {
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.CORE_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

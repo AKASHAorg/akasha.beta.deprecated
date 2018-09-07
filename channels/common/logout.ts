@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { AUTH_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from './constants';
+import { AUTH_MODULE, COMMON_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from './constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
@@ -20,6 +20,6 @@ export default function init(sp, getService) {
   const service = function () {
     return logout;
   };
-  sp().service(AUTH_MODULE.logout, service);
+  sp().service(COMMON_MODULE.logout, service);
   return logout;
 }

@@ -7,8 +7,6 @@ import web3HelperInit from './web3-helper';
 
 import sp, { getService } from './sp';
 
-export const moduleName = 'core';
-
 const init = function init() {
 
   const settings = new Map();
@@ -28,7 +26,7 @@ const init = function init() {
 
 const app = {
   init,
-  moduleName,
+  moduleName: CORE_MODULE.$name,
 };
 
 export default app;

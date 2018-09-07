@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { uniq } from 'ramda';
-import { AUTH_MODULE, CORE_MODULE, PROFILE_MODULE } from './constants';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from './constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
@@ -21,6 +21,6 @@ export default function init(sp, getService) {
   const service = function () {
     return getLocalIdentities;
   };
-  sp().service(AUTH_MODULE.getLocalIdentities, service);
+  sp().service(COMMON_MODULE.getLocalIdentities, service);
   return getLocalIdentities;
 }

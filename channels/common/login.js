@@ -21,7 +21,7 @@ function init(sp, getService) {
     const service = function () {
         return login;
     };
-    sp().service(constants_1.AUTH_MODULE.login, service);
+    sp().service(constants_1.COMMON_MODULE.login, service);
     return login;
 }
 exports.default = init;

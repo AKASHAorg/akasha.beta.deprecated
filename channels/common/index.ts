@@ -4,8 +4,8 @@ import getLocalIdentitiesInit from './get-local-identities';
 import loginInit from './login';
 import logoutInit from './logout';
 import requestAethInit from './request-aeth';
+import { COMMON_MODULE } from './constants';
 
-export const moduleName = 'common';
 const init = function init(sp, getService) {
   ipfsHelpersInit(sp);
   profileHelpersInit(sp, getService);
@@ -15,16 +15,16 @@ const init = function init(sp, getService) {
   const requestAeth = requestAethInit(sp, getService);
 
   return {
-    getLocalIdentities,
-    login,
-    logout,
-    requestAeth,
+    [COMMON_MODULE.getLocalIdentities]: getLocalIdentities,
+    [COMMON_MODULE.login]: login,
+    [COMMON_MODULE.logout]: logout,
+    [COMMON_MODULE.requestEther]: requestAeth,
   };
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: COMMON_MODULE.$name,
 };
 
 export default app;

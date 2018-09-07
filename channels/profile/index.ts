@@ -28,9 +28,7 @@ import transformEssenceInit from './transform-essence';
 import unFollowProfileInit from './unfollow-profile';
 import updateProfileInit from './update-profile';
 import votesIteratorInit from './votes-iterator';
-
-
-export const moduleName = 'profile';
+import { PROFILE_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
 
@@ -67,41 +65,41 @@ const init = function init(sp, getService) {
   profileIpfsInit(sp, getService);
 
   return {
-    currentBalance,
-    commentsCount,
-    commentsIterator,
-    followProfile,
-    followersCount,
-    followingCount,
-    profileData,
-    unFollowProfile,
-    updateProfileData,
-    followersIterator,
-    followingIterator,
-    isFollower,
-    getProfileList,
-    sendTip,
-    resolveProfileIpfsHash,
-    toggleDonations,
-    bondAeth,
-    cycleAeth,
-    freeAeth,
-    transformEssence,
-    manaBurned,
-    cyclingStates,
-    transfer,
-    transfersIterator,
-    essenceIterator,
-    votesIterator,
-    karmaRanking,
-    getByAddress,
-    getCurrentProfile,
+    [PROFILE_MODULE.getBalance]: currentBalance,
+    [PROFILE_MODULE.getCommentsCount]: commentsCount,
+    [PROFILE_MODULE.commentsIterator]: commentsIterator,
+    [PROFILE_MODULE.followProfile]: followProfile,
+    [PROFILE_MODULE.followersCount]: followersCount,
+    [PROFILE_MODULE.followingCount]: followingCount,
+    [PROFILE_MODULE.profileData]: profileData,
+    [PROFILE_MODULE.unFollowProfile]: unFollowProfile,
+    [PROFILE_MODULE.updateProfileData]: updateProfileData,
+    [PROFILE_MODULE.followersIterator]: followersIterator,
+    [PROFILE_MODULE.followingIterator]: followingIterator,
+    [PROFILE_MODULE.isFollower]: isFollower,
+    [PROFILE_MODULE.getProfileList]: getProfileList,
+    [PROFILE_MODULE.sendTip]: sendTip,
+    [PROFILE_MODULE.resolveProfileIpfsHash]: resolveProfileIpfsHash,
+    [PROFILE_MODULE.toggleDonations]: toggleDonations,
+    [PROFILE_MODULE.bondAeth]: bondAeth,
+    [PROFILE_MODULE.cycleAeth]: cycleAeth,
+    [PROFILE_MODULE.freeAeth]: freeAeth,
+    [PROFILE_MODULE.transformEssence]: transformEssence,
+    [PROFILE_MODULE.manaBurned]: manaBurned,
+    [PROFILE_MODULE.cyclingStates]: cyclingStates,
+    [PROFILE_MODULE.transfer]: transfer,
+    [PROFILE_MODULE.transfersIterator]: transfersIterator,
+    [PROFILE_MODULE.essenceIterator]: essenceIterator,
+    [PROFILE_MODULE.votesIterator]: votesIterator,
+    [PROFILE_MODULE.karmaRanking]: karmaRanking,
+    [PROFILE_MODULE.getByAddress]: getByAddress,
+    [PROFILE_MODULE.getCurrentProfile]: getCurrentProfile,
   };
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: PROFILE_MODULE.$name,
 };
 
 export default app;

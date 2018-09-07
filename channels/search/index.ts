@@ -3,8 +3,8 @@ import flushInit from './clear-index';
 import findTagsInit from './find-tags';
 import findProfilesInit from './find-profiles';
 import indexes from './indexes';
+import { SEARCH_MODULE } from '@akashaproject/common/constants';
 
-export const moduleName = 'search';
 const init = async function init(sp, getService) {
   const query = queryInit(sp, getService);
   const flush = flushInit(sp, getService);
@@ -12,17 +12,17 @@ const init = async function init(sp, getService) {
   const findProfiles = findProfilesInit(sp, getService);
   indexes(sp);
   return {
-    query,
-    flush,
-    findTags,
-    findProfiles,
+    [SEARCH_MODULE.query]: query,
+    [SEARCH_MODULE.flush]: flush,
+    [SEARCH_MODULE.findTags]: findTags,
+    [SEARCH_MODULE.findProfiles]: findProfiles,
   };
 
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: SEARCH_MODULE.$name,
   async: true,
 };
 

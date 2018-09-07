@@ -6,7 +6,6 @@ import web3Helper from './modules/helpers/web3-helper';
 import getChannels from './channels';
 import { DEFAULT_IPFS_CONFIG } from './config/settings';
 
-
 declare const web3;
 declare const ipfs;
 

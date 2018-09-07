@@ -29,8 +29,7 @@ import syncEntriesInit from './sync-entries';
 
 import helpersInit from './helpers';
 import ipfsInit from './ipfs';
-
-export const moduleName = 'entry';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
 
@@ -67,40 +66,40 @@ const init = function init(sp, getService) {
   const syncEntries = syncEntriesInit(sp, getService);
 
   return {
-    entryCountProfile,
-    entryCountTag,
-    entryTagIterator,
-    entryProfileIterator,
-    getEntry,
-    publishEntry,
-    canClaim,
-    claimDeposit,
-    downVoteEntry,
-    entryScore,
-    upVoteEntry,
-    voteCost,
-    getVoteOf,
-    votesIterator,
-    getEntryBalance,
-    getEntryList,
-    editEntry,
-    followingStreamIterator,
-    allStreamIterator,
-    getLatestEntryVersion,
-    getEntryIpfsHash,
-    resolveEntriesIpfsHash,
-    canClaimVote,
-    claimVote,
-    voteRatio,
-    getVoteEndPeriod,
-    myVotesIterator,
-    syncEntries,
+    [ENTRY_MODULE.getProfileEntriesCount]: entryCountProfile,
+    [ENTRY_MODULE.getTagEntriesCount]: entryCountTag,
+    [ENTRY_MODULE.entryTagIterator]: entryTagIterator,
+    [ENTRY_MODULE.entryProfileIterator]: entryProfileIterator,
+    [ENTRY_MODULE.getEntry]: getEntry,
+    [ENTRY_MODULE.publish]: publishEntry,
+    [ENTRY_MODULE.canClaim]: canClaim,
+    [ENTRY_MODULE.claim]: claimDeposit,
+    [ENTRY_MODULE.downVote]: downVoteEntry,
+    [ENTRY_MODULE.getScore]: entryScore,
+    [ENTRY_MODULE.upVote]: upVoteEntry,
+    [ENTRY_MODULE.voteCost]: voteCost,
+    [ENTRY_MODULE.getVoteOf]: getVoteOf,
+    [ENTRY_MODULE.votesIterator]: votesIterator,
+    [ENTRY_MODULE.getEntryBalance]: getEntryBalance,
+    [ENTRY_MODULE.getEntryList]: getEntryList,
+    [ENTRY_MODULE.editEntry]: editEntry,
+    [ENTRY_MODULE.followingStreamIterator]: followingStreamIterator,
+    [ENTRY_MODULE.allStreamIterator]: allStreamIterator,
+    [ENTRY_MODULE.getLatestEntryVersion]: getLatestEntryVersion,
+    [ENTRY_MODULE.getEntryIpfsHash]: getEntryIpfsHash,
+    [ENTRY_MODULE.resolveEntriesIpfsHash]: resolveEntriesIpfsHash,
+    [ENTRY_MODULE.canClaimVote]: canClaimVote,
+    [ENTRY_MODULE.claimVote]: claimVote,
+    [ENTRY_MODULE.getVoteRatio]: voteRatio,
+    [ENTRY_MODULE.getVoteEndPeriod]: getVoteEndPeriod,
+    [ENTRY_MODULE.myVotesIterator]: myVotesIterator,
+    [ENTRY_MODULE.syncEntries]: syncEntries,
   };
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: ENTRY_MODULE.$name,
 };
 
 export default app;

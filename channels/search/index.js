@@ -5,7 +5,7 @@ const clear_index_1 = require("./clear-index");
 const find_tags_1 = require("./find-tags");
 const find_profiles_1 = require("./find-profiles");
 const indexes_1 = require("./indexes");
-exports.moduleName = 'search';
+const constants_1 = require("@akashaproject/common/constants");
 const init = async function init(sp, getService) {
     const query = query_1.default(sp, getService);
     const flush = clear_index_1.default(sp, getService);
@@ -13,15 +13,15 @@ const init = async function init(sp, getService) {
     const findProfiles = find_profiles_1.default(sp, getService);
     indexes_1.default(sp);
     return {
-        query,
-        flush,
-        findTags,
-        findProfiles,
+        [constants_1.SEARCH_MODULE.query]: query,
+        [constants_1.SEARCH_MODULE.flush]: flush,
+        [constants_1.SEARCH_MODULE.findTags]: findTags,
+        [constants_1.SEARCH_MODULE.findProfiles]: findProfiles,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.SEARCH_MODULE.$name,
     async: true,
 };
 exports.default = app;

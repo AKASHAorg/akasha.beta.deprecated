@@ -5,8 +5,7 @@ import startInit from './start';
 import statusInit from './status';
 import stopInit from './stop';
 import syncStatusInit from './sync-status';
-
-export const moduleName = 'geth';
+import { GETH_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
   const logs = logsInit(sp, getService);
@@ -18,19 +17,19 @@ const init = function init(sp, getService) {
   const syncStatus = syncStatusInit(sp, getService);
 
   return {
-    logs,
-    options,
-    restart,
-    start,
-    status,
-    stop,
-    syncStatus,
+    [GETH_MODULE.logs]: logs,
+    [GETH_MODULE.options]: options,
+    [GETH_MODULE.restartService]: restart,
+    [GETH_MODULE.start]: start,
+    [GETH_MODULE.status]: status,
+    [GETH_MODULE.stop]: stop,
+    [GETH_MODULE.syncStatus]: syncStatus,
   };
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: GETH_MODULE.$name,
 };
 
 export default app;

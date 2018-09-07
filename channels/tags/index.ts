@@ -7,8 +7,8 @@ import tagCountInit from './tag-count';
 import tagIteratorInit from './tags-iterator';
 import searchTagInit from './search-tag';
 import syncTagsInit from './sync-tags';
+import { TAGS_MODULE } from '@akashaproject/common/constants';
 
-export const moduleName = 'tags';
 const init = function init(sp, getService) {
 
   const canCreate = canCreateInit(sp, getService);
@@ -23,22 +23,22 @@ const init = function init(sp, getService) {
   const syncTags = syncTagsInit(sp, getService);
 
   return {
-    canCreate,
-    checkFormat,
-    createTag,
-    existsTag,
-    fetchTags,
-    tagCount,
-    tagIterator,
-    searchTag,
-    syncTags,
+    [TAGS_MODULE.canCreate]: canCreate,
+    [TAGS_MODULE.checkFormat]: checkFormat,
+    [TAGS_MODULE.createTag]: createTag,
+    [TAGS_MODULE.existsTag]: existsTag,
+    [TAGS_MODULE.fetchTags]: fetchTags,
+    [TAGS_MODULE.tagCount]: tagCount,
+    [TAGS_MODULE.tagIterator]: tagIterator,
+    [TAGS_MODULE.searchTag]: searchTag,
+    [TAGS_MODULE.syncTags]: syncTags,
   };
 
 };
 
 const app = {
   init,
-  moduleName,
+  moduleName: TAGS_MODULE.$name,
 };
 
 export default app;

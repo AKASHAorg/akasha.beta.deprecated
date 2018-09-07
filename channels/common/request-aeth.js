@@ -29,7 +29,7 @@ function init(sp, getService) {
     const service = function () {
         return requestEther;
     };
-    sp().service(constants_1.AUTH_MODULE.requestEther, service);
+    sp().service(constants_1.COMMON_MODULE.requestEther, service);
     return requestEther;
 }
 exports.default = init;

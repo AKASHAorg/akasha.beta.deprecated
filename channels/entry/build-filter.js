@@ -27,10 +27,10 @@ function init(sp, getService) {
             });
             const author = yield resolve.execute({ ethAddress: event.args.author });
             collection.push({
+                author,
                 tags,
                 entryType: event.args.entryType.toNumber(),
                 entryId: event.args.entryId,
-                author,
             });
             if (collection.length === maxResults) {
                 break;

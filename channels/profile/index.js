@@ -30,7 +30,7 @@ const transform_essence_1 = require("./transform-essence");
 const unfollow_profile_1 = require("./unfollow-profile");
 const update_profile_1 = require("./update-profile");
 const votes_iterator_1 = require("./votes-iterator");
-exports.moduleName = 'profile';
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
     const currentBalance = current_balance_1.default(sp, getService);
     const commentsCount = comments_count_1.default(sp, getService);
@@ -63,40 +63,40 @@ const init = function init(sp, getService) {
     const karmaRanking = ranking_1.default(sp, getService);
     ipfs_1.default(sp, getService);
     return {
-        currentBalance,
-        commentsCount,
-        commentsIterator,
-        followProfile,
-        followersCount,
-        followingCount,
-        profileData,
-        unFollowProfile,
-        updateProfileData,
-        followersIterator,
-        followingIterator,
-        isFollower,
-        getProfileList,
-        sendTip,
-        resolveProfileIpfsHash,
-        toggleDonations,
-        bondAeth,
-        cycleAeth,
-        freeAeth,
-        transformEssence,
-        manaBurned,
-        cyclingStates,
-        transfer,
-        transfersIterator,
-        essenceIterator,
-        votesIterator,
-        karmaRanking,
-        getByAddress,
-        getCurrentProfile,
+        [constants_1.PROFILE_MODULE.getBalance]: currentBalance,
+        [constants_1.PROFILE_MODULE.getCommentsCount]: commentsCount,
+        [constants_1.PROFILE_MODULE.commentsIterator]: commentsIterator,
+        [constants_1.PROFILE_MODULE.followProfile]: followProfile,
+        [constants_1.PROFILE_MODULE.followersCount]: followersCount,
+        [constants_1.PROFILE_MODULE.followingCount]: followingCount,
+        [constants_1.PROFILE_MODULE.profileData]: profileData,
+        [constants_1.PROFILE_MODULE.unFollowProfile]: unFollowProfile,
+        [constants_1.PROFILE_MODULE.updateProfileData]: updateProfileData,
+        [constants_1.PROFILE_MODULE.followersIterator]: followersIterator,
+        [constants_1.PROFILE_MODULE.followingIterator]: followingIterator,
+        [constants_1.PROFILE_MODULE.isFollower]: isFollower,
+        [constants_1.PROFILE_MODULE.getProfileList]: getProfileList,
+        [constants_1.PROFILE_MODULE.sendTip]: sendTip,
+        [constants_1.PROFILE_MODULE.resolveProfileIpfsHash]: resolveProfileIpfsHash,
+        [constants_1.PROFILE_MODULE.toggleDonations]: toggleDonations,
+        [constants_1.PROFILE_MODULE.bondAeth]: bondAeth,
+        [constants_1.PROFILE_MODULE.cycleAeth]: cycleAeth,
+        [constants_1.PROFILE_MODULE.freeAeth]: freeAeth,
+        [constants_1.PROFILE_MODULE.transformEssence]: transformEssence,
+        [constants_1.PROFILE_MODULE.manaBurned]: manaBurned,
+        [constants_1.PROFILE_MODULE.cyclingStates]: cyclingStates,
+        [constants_1.PROFILE_MODULE.transfer]: transfer,
+        [constants_1.PROFILE_MODULE.transfersIterator]: transfersIterator,
+        [constants_1.PROFILE_MODULE.essenceIterator]: essenceIterator,
+        [constants_1.PROFILE_MODULE.votesIterator]: votesIterator,
+        [constants_1.PROFILE_MODULE.karmaRanking]: karmaRanking,
+        [constants_1.PROFILE_MODULE.getByAddress]: getByAddress,
+        [constants_1.PROFILE_MODULE.getCurrentProfile]: getCurrentProfile,
     };
 };
 const app = {
     init,
-    moduleName: exports.moduleName,
+    moduleName: constants_1.PROFILE_MODULE.$name,
 };
 exports.default = app;
 //# sourceMappingURL=index.js.map

@@ -17,7 +17,7 @@ function init(sp, getService) {
     const service = function () {
         return logout;
     };
-    sp().service(constants_1.AUTH_MODULE.logout, service);
+    sp().service(constants_1.COMMON_MODULE.logout, service);
     return logout;
 }
 exports.default = init;

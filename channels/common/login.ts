@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { AUTH_MODULE, CORE_MODULE } from './constants';
+import { AUTH_MODULE, COMMON_MODULE, CORE_MODULE } from './constants';
 
 const loginS = {
   id: '/loginWeb',
@@ -23,6 +23,6 @@ export default function init(sp, getService) {
   const service = function () {
     return login;
   };
-  sp().service(AUTH_MODULE.login, service);
+  sp().service(COMMON_MODULE.login, service);
   return login;
 }

@@ -17,20 +17,19 @@ exports.CORE_MODULE = Object.freeze({
     CHANNELS: 'CHANNELS',
     DATA: 'DATA',
     IPC: 'IPC',
+    $name: 'core',
 });
 exports.AUTH_MODULE = Object.freeze({
     auth: 'auth_AUTH',
     generateEthKey: 'generateEthKey_AUTH',
-    getLocalIdentities: 'getLocalIdentities_AUTH',
-    login: 'login_AUTH',
-    logout: 'logout_AUTH',
     regenSession: 'regenSession_AUTH',
-    requestEther: 'requestEther_AUTH',
+    $name: 'auth',
 });
 exports.TX_MODULE = Object.freeze({
     addToQueue: 'addToQueue',
     emitMined: 'emitMined',
     getTransaction: 'getTransaction',
+    $name: 'tx',
 });
 exports.TAGS_MODULE = Object.freeze({
     canCreate: 'canCreateTag',
@@ -42,16 +41,23 @@ exports.TAGS_MODULE = Object.freeze({
     tagIterator: 'tagIterator',
     searchTag: 'searchTag',
     syncTags: 'syncTags',
+    $name: 'tags',
 });
 exports.SEARCH_MODULE = Object.freeze({
     query: 'query_SEARCH',
     flush: 'flush_SEARCH',
     findTags: 'findTags_SEARCH',
     findProfiles: 'findProfiles_SEARCH',
+    $name: 'search',
 });
 exports.COMMON_MODULE = Object.freeze({
     profileHelpers: 'profile_common_helpers',
     ipfsHelpers: 'ipfs_common_helpers',
+    getLocalIdentities: 'getLocalIdentities_AUTH',
+    login: 'login_AUTH',
+    logout: 'logout_AUTH',
+    requestEther: 'requestEther_AUTH',
+    $name: 'common',
 });
 exports.REGISTRY_MODULE = Object.freeze({
     addressOf: 'addressOf_R',
@@ -59,9 +65,11 @@ exports.REGISTRY_MODULE = Object.freeze({
     fetchRegistered: 'fetchRegistered_R',
     profileExists: 'profileExists_R',
     registerProfile: 'registerProfile_R',
+    $name: 'registry',
 });
 exports.PINNER_MODULE = Object.freeze({
     pin: 'pin_P',
+    $name: 'pinner',
 });
 exports.NOTIFICATIONS_MODULE = Object.freeze({
     entriesCache: 'entriesCache_No',
@@ -74,10 +82,12 @@ exports.NOTIFICATIONS_MODULE = Object.freeze({
     setFilter: 'setFilter_No',
     votes: 'votes_No',
     subscribe: 'subscribe_No',
+    $name: 'notifications',
 });
 exports.LICENCE_MODULE = Object.freeze({
     getLicenceById: 'getLicenceById_Li',
     getLicences: 'getLicences_Li',
+    $name: 'licences',
 });
 exports.IPFS_MODULE = Object.freeze({
     createImage: 'createImage_ip',
@@ -89,6 +99,7 @@ exports.IPFS_MODULE = Object.freeze({
     startService: 'startService_ip',
     status: 'status_ip',
     stopService: 'stopService_ip',
+    $name: 'ipfs',
 });
 exports.GETH_MODULE = Object.freeze({
     options: 'options_geth',
@@ -99,6 +110,7 @@ exports.GETH_MODULE = Object.freeze({
     status: 'status_geth',
     syncStatus: 'syncStatus_geth',
     logs: 'logs_geth',
+    $name: 'geth',
 });
 exports.PROFILE_MODULE = Object.freeze({
     getByAddress: 'getByAddress_P',
@@ -134,6 +146,7 @@ exports.PROFILE_MODULE = Object.freeze({
     essenceIterator: 'essenceIterator_P',
     votesIterator: 'votesIterator_P',
     karmaRanking: 'karmaRanking_P',
+    $name: 'profile',
 });
 exports.GENERAL_SETTINGS = Object.freeze({
     OP_WAIT_TIME: 'OP_WAIT_TIME',
@@ -229,6 +242,7 @@ exports.ENTRY_MODULE = Object.freeze({
     getVoteEndPeriod: 'getVoteEndPeriod_ENTRY',
     getVoteRatio: 'getVoteRatio_entry',
     votesIterator: 'votesIterator_entry',
+    $name: 'entry',
 });
 exports.COMMENTS_MODULE = Object.freeze({
     comment: 'comment_comments',
@@ -242,7 +256,11 @@ exports.COMMENTS_MODULE = Object.freeze({
     resolveCommentsIpfsHash: 'resolveCommentsIpfsHash',
     upvote: 'upvote_comments',
     getVoteOf: 'getVoteOf_comments',
+    $name: 'comments',
 });
+exports.buildCall = function (module, method, data) {
+    return { method, module: module.$name, payload: data };
+};
 exports.default = {
     CORE_MODULE: exports.CORE_MODULE,
     AUTH_MODULE: exports.AUTH_MODULE,

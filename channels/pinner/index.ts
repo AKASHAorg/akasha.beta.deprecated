@@ -1,14 +1,13 @@
 import runnerInit from './runner';
-
-export const moduleName = 'pinner';
+import { PINNER_MODULE } from '@akashaproject/common/constants';
 
 const init = function init(sp, getService) {
   const runner = runnerInit(sp, getService);
-  return { runner };
+  return { [PINNER_MODULE.pin]: runner };
 };
 const app = {
   init,
-  moduleName,
+  moduleName: PINNER_MODULE.$name,
 };
 
 export default app;

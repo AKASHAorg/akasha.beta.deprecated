@@ -21,7 +21,7 @@ function init(sp, getService) {
     const service = function () {
         return getLocalIdentities;
     };
-    sp().service(constants_1.AUTH_MODULE.getLocalIdentities, service);
+    sp().service(constants_1.COMMON_MODULE.getLocalIdentities, service);
     return getLocalIdentities;
 }
 exports.default = init;
