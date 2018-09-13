@@ -17,7 +17,7 @@ export default function init(sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
 
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, watchFollow, { throwError: true });
     const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
     const contracts = getService(CORE_MODULE.CONTRACTS);

@@ -13,7 +13,7 @@ exports.createSchema = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.createSchema, { throwError: true });
         const txData = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.Tags.add.request(data.tagName);

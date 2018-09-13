@@ -21,7 +21,7 @@ const canClaimVoteS = {
 export default function init(sp, getService) {
   const execute = Promise.coroutine(
     function* (data: { entries: string[], ethAddress: string }) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, canClaimVoteS, { throwError: true });
 
       const timeStamp = new Date().getTime() / 1000;

@@ -70,7 +70,7 @@ export default function init(sp, getService) {
 
   const execute = Promise
   .coroutine(function* (data: { fromBlock: number, following: string[] }, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, syncEntriesS, { throwError: true });
 
     if (!data.following || !data.following.length) {

@@ -12,7 +12,7 @@ exports.existsSchema = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.existsSchema, { throwError: true });
         const exists = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.Tags.exists(data.tagName);

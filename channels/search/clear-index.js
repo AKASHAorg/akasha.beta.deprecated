@@ -15,7 +15,7 @@ const modules = ['entry', 'tags', 'profiles'];
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.flushSchema, { throwError: true });
         if (modules.indexOf(data.target) === -1) {
             throw new Error('target is not recognized');

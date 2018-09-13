@@ -14,7 +14,7 @@ exports.cycleAethSchema = {
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.cycleAethSchema, { throwError: true });
         const bnAmount = getService(constants_1.CORE_MODULE.WEB3_API)
             .instance.toWei(data.amount, 'ether');

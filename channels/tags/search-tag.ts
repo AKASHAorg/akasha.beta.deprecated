@@ -16,7 +16,7 @@ export const cacheKey = 'search:tags:all';
 export default function init(sp, getService) {
   const execute = Promise
   .coroutine(function* (data: { tagName: string, limit: number }) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, searchTagSchema, { throwError: true });
     const stash = getService(CORE_MODULE.STASH);
 

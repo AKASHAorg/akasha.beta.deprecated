@@ -30,7 +30,7 @@ const update = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, update, { throwError: true });
         let ipfsEntry = new getService(constants_1.ENTRY_MODULE.ipfsEntryHelper).IpfsEntry();
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);

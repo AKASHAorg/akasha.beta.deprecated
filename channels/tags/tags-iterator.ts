@@ -14,7 +14,7 @@ const tagIteratorSchema = {
 export default function init(sp, getService) {
   const execute = Promise
   .coroutine(function* (data: { toBlock: number, limit?: number }) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, tagIteratorSchema, { throwError: true });
 
     const collection = [];

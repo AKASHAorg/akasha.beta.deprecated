@@ -15,7 +15,7 @@ exports.addressOfSchema = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.addSchema(check_id_format_1.checkIdFormatSchema, '/checkIdFormat');
         v.validate(data, exports.addressOfSchema, { throwError: true });
         const batch = data.map((profile) => {

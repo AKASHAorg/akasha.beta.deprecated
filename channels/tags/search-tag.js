@@ -15,7 +15,7 @@ exports.cacheKey = 'search:tags:all';
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.searchTagSchema, { throwError: true });
         const stash = getService(constants_1.CORE_MODULE.STASH);
         if (!stash.mixed.hasFull(exports.cacheKey)) {

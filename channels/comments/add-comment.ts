@@ -15,7 +15,7 @@ const commentS = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data: any, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, commentS, { throwError: true });
 
     const contracts = getService(CORE_MODULE.CONTRACTS);

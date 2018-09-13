@@ -5,7 +5,7 @@ const downvote_entry_1 = require("./downvote-entry");
 const constants_1 = require("@akashaproject/common/constants");
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, downvote_entry_1.downvote, { throwError: true });
         if (data.weight < 1 || data.weight > 10) {
             throw new Error('Vote weight value must be between 1-10');

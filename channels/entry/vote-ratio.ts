@@ -13,7 +13,7 @@ const getScore = {
 export default function init(sp, getService) {
   const execute = Promise
   .coroutine(function* (data: { entryId: string }) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getScore, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const score = yield contracts.instance.Votes.getRecord(data.entryId);

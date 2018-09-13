@@ -12,7 +12,7 @@ const startServiceS = {
 };
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, startServiceS, { throwError: true });
     const gethConnector = getService(CORE_MODULE.GETH_CONNECTOR);
     if (gethConnector.getInstance().serviceStatus.process) {

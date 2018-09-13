@@ -14,7 +14,7 @@ const generateEthKeyS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, generateEthKeyS, { throwError: true });
         if (!(safe_buffer_1.Buffer.from(data.password)).equals(safe_buffer_1.Buffer.from(data.password1))) {
             throw new Error('auth:generate-key:pwdm');

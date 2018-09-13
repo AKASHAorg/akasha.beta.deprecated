@@ -12,7 +12,7 @@ export const checkFormatSchema = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkFormatSchema, { throwError: true });
 
     const status = yield getService(CORE_MODULE.CONTRACTS)

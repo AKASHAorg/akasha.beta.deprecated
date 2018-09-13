@@ -15,7 +15,7 @@ const EVENT_TYPE = 'DONATION_EVENT';
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, watchDonate, { throwError: true });
         const ethAddress = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);
         const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);

@@ -21,7 +21,7 @@ export const resolveProfileIpfsHash = {
 export default function init(sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb: any) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, resolveProfileIpfsHash, { throwError: true });
     const resolveProfile = getService(PROFILE_MODULE.resolveProfile);
     const getShortProfile = getService(PROFILE_MODULE.getShortProfile);

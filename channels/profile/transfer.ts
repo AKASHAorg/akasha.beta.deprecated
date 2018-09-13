@@ -18,7 +18,7 @@ export default function init(sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data, cb) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, transfer, { throwError: true });
       const web3Api = getService(CORE_MODULE.WEB3_API);
       const contracts = getService(CORE_MODULE.CONTRACTS);

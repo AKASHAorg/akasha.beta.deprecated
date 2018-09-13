@@ -116,7 +116,7 @@ const bootstrap = function () {
     initModules(sp, getService)
     .then((modules) => {
       startBrowser();
-      startDataStream(modules, mainWindow.id);
+      startDataStream(modules, mainWindow.id, getService);
     });
   });
 };

@@ -13,7 +13,7 @@ exports.freeAethSchema = {
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.freeAethSchema, { throwError: true });
         const txData = getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.AETH.freeAeth.request({ gas: 1000000 });

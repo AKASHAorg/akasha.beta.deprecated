@@ -16,7 +16,7 @@ const entryTagIteratorS = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, entryTagIteratorS, { throwError: true });
 
     const entryCount = yield getService(CORE_MODULE.CONTRACTS)

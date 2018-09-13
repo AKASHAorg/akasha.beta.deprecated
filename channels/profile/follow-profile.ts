@@ -15,7 +15,7 @@ export const followProfileSchema = {
 export default function init(sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, followProfileSchema, { throwError: true });
 
     const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);

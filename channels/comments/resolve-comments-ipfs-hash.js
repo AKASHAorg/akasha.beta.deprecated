@@ -14,7 +14,7 @@ const resolveCommentsIpfsHashS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, resolveCommentsIpfsHashS, { throwError: true });
         const getCommentContent = getService(constants_1.COMMENTS_MODULE.commentIpfs).getCommentContent;
         for (const ipfsHash of data) {

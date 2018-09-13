@@ -18,7 +18,7 @@ const myVotesIteratorS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         v.validate(data, myVotesIteratorS, { throwError: true });
