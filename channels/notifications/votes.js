@@ -14,7 +14,7 @@ const watchVotes = {
 const EVENT_TYPE = 'VOTE_EVENT';
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, watchVotes, { throwError: true });
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const entriesCache = getService(constants_1.NOTIFICATIONS_MODULE.entriesCache);

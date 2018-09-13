@@ -13,7 +13,7 @@ exports.cyclingStatesSchema = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.cyclingStatesSchema, { throwError: true });
         const address = yield getService(constants_1.COMMON_MODULE.profileHelpers)
             .profileAddress(data);

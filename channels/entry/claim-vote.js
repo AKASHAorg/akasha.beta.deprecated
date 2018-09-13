@@ -13,7 +13,7 @@ const claimVoteS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, claimVoteS, { throwError: true });
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const txData = contracts.instance.Votes.claimKarmaVote.request(data.entryId, { gas: 200000 });

@@ -15,7 +15,7 @@ const getEntryIpfsHashS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, getEntryIpfsHashS, { throwError: true });
         let ipfsHash;
         const ethAddress = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);

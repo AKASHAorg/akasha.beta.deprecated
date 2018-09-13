@@ -21,7 +21,7 @@ export default function init(sp, getService) {
         tags: string[],
       },
     }) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, buildFilterS, { throwError: true });
 
       const collection = [];

@@ -14,7 +14,7 @@ export const getEntryListS = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.addSchema(getEntrySchema, '/getEntry');
     v.validate(data, getEntryListS, { throwError: true });
     const getEntry = getService(ENTRY_MODULE.getEntry);

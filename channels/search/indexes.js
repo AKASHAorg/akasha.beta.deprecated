@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
-const SearchIndex = require("search-index");
+const searchIndex = require('search-index');
 const constants_1 = require("@akashaproject/common/constants");
 exports.dbs = {
     entry: {
@@ -42,7 +42,7 @@ class StorageIndex {
     }
     init() {
         return Promise
-            .fromCallback(cb => SearchIndex(this.options, cb));
+            .fromCallback(cb => searchIndex(this.options, cb));
     }
 }
 function default_1(sp) {

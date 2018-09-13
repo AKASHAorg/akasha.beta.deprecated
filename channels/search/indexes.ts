@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import * as SearchIndex from 'search-index';
+const searchIndex = require('search-index');
 import { CORE_MODULE } from '@akashaproject/common/constants';
 
 export const dbs = {
@@ -49,7 +49,7 @@ class StorageIndex {
 
   init() {
     return Promise
-    .fromCallback(cb => SearchIndex(this.options, cb));
+    .fromCallback(cb => searchIndex(this.options, cb));
   }
 }
 

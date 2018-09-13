@@ -20,7 +20,7 @@ exports.resolveProfileIpfsHash = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.resolveProfileIpfsHash, { throwError: true });
         const resolveProfile = getService(constants_1.PROFILE_MODULE.resolveProfile);
         const getShortProfile = getService(constants_1.PROFILE_MODULE.getShortProfile);

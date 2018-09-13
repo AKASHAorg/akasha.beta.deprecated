@@ -16,7 +16,7 @@ const modules = ['entry', 'tags', 'profiles'];
 export default function init(sp, getService) {
   const execute = Promise
   .coroutine(function* (data: { target: string }, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, flushSchema, { throwError: true });
 
     if (modules.indexOf(data.target) === -1) {

@@ -25,7 +25,7 @@ export default function init(sp, getService) {
 
   //
   const execute = Promise.coroutine(function* (data, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.addSchema(IMG_SIZE_SCHEMA, '/imgSize');
     v.addSchema(PROFILE_SCHEMA, '/profileSchema');
     v.validate(data, registerProfileSchema, { throwError: true });

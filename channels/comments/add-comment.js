@@ -15,7 +15,7 @@ const commentS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, commentS, { throwError: true });
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const ipfsHash = yield getService(constants_1.COMMENTS_MODULE.commentIpfs).create(data.content);

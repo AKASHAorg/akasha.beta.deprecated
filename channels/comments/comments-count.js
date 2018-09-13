@@ -13,7 +13,7 @@ const commentsCountS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, commentsCountS, { throwError: true });
         const collection = [];
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);

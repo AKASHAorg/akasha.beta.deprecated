@@ -15,7 +15,7 @@ export default function init(sp, getService) {
 
   const execute = Promise
   .coroutine(function* (data: { amount: string, token: string }, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, cycleAethSchema, { throwError: true });
 
     const bnAmount = getService(CORE_MODULE.WEB3_API)

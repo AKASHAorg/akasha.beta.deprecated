@@ -29,7 +29,7 @@ const buildFilter = function (authors, text) {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, querySchema, { throwError: true });
         const collection = [];
         const pageSize = data.pageSize || 20;

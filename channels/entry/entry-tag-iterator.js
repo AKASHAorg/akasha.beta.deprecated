@@ -16,7 +16,7 @@ const entryTagIteratorS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, entryTagIteratorS, { throwError: true });
         const entryCount = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.Tags.totalEntries(data.tagName);

@@ -5,7 +5,7 @@ const constants_1 = require("@akashaproject/common/constants");
 const follow_profile_1 = require("./follow-profile");
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, follow_profile_1.followProfileSchema, { throwError: true });
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const address = yield getService(constants_1.COMMON_MODULE.profileHelpers)

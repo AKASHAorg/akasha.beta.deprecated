@@ -18,7 +18,7 @@ const commentsIteratorS = {
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data) {
 
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const fetchComment = getService(COMMENTS_MODULE.getComment);
     v.validate(data, commentsIteratorS, { throwError: true });

@@ -13,7 +13,7 @@ exports.toggleDonations = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.toggleDonations, { throwError: true });
         const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const currentProfile = yield getService(constants_1.PROFILE_MODULE.getCurrentProfile).execute();

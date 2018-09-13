@@ -20,7 +20,7 @@ export default function init(sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, isFollowerSchema, { throwError: true });
       const profileHelpers = getService(COMMON_MODULE.profileHelpers);
       const requests = data.map((req) => {

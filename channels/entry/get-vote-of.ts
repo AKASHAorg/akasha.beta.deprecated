@@ -27,7 +27,7 @@ export const getVoteOfS = {
 export default function init(sp, getService) {
   const execute = Promise.coroutine(
     function* (data: { list: { entryId: string, akashaId?: string, ethAddress?: string }[] }) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, getVoteOfS, { throwError: true });
 
       const profileAddress = getService(COMMON_MODULE).profileAddress;

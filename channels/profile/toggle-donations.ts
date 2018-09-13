@@ -15,7 +15,7 @@ export default function init(sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data: { status: boolean, token: string }, cb) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, toggleDonations, { throwError: true });
       const contracts = getService(CORE_MODULE.CONTRACTS);
 

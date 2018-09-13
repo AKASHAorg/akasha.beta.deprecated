@@ -30,7 +30,7 @@ const update = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, update, { throwError: true });
 
     let ipfsEntry = new getService(ENTRY_MODULE.ipfsEntryHelper).IpfsEntry();

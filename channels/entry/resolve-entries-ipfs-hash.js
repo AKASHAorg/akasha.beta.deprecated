@@ -19,7 +19,7 @@ exports.resolveEntriesIpfsHashS = {
 function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, exports.resolveEntriesIpfsHashS, { throwError: true });
         const SHORT_WAIT_TIME = getService(constants_1.CORE_MODULE.SETTINGS).get(constants_1.GENERAL_SETTINGS.OP_WAIT_TIME);
         const { getFullContent, getShortContent } = getService(constants_1.ENTRY_MODULE.ipfs);

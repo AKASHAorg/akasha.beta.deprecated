@@ -6,7 +6,7 @@ const followers_iterator_1 = require("./followers-iterator");
 const ramda_1 = require("ramda");
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, followers_iterator_1.followersIteratorSchema, { throwError: true });
         let lastFetchedBlock;
         let remainingResults;

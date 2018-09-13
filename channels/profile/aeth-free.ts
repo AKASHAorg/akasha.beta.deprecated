@@ -14,7 +14,7 @@ export default function init(sp, getService) {
 
   const execute = Promise
   .coroutine(function* (data: { token: string }, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, freeAethSchema, { throwError: true });
 
     const txData = getService(CORE_MODULE.CONTRACTS)

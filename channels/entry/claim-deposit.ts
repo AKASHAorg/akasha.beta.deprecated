@@ -13,7 +13,7 @@ const claimS = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, claimS, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.Entries.claim.request(data.entryId, { gas: 200000 });

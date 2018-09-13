@@ -13,7 +13,7 @@ export const emitMinedSchema = {
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, emitMinedSchema, { throwError: true });
     const web3Helper = getService(CORE_MODULE.WEB3_HELPER);
     (data.watch) ? web3Helper.startTxWatch() : web3Helper.stopTxWatch();

@@ -28,7 +28,7 @@ const publishS = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, publishS, { throwError: true });
         let ipfsEntry = new getService(constants_1.ENTRY_MODULE.ipfs).IpfsEntry();
         const ipfsHash = yield ipfsEntry.create(data.content, data.tags, data.entryType);

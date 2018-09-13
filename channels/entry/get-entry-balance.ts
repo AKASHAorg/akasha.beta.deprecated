@@ -21,7 +21,7 @@ export default function init(sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data: { list: string[] }) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, getEntryBalanceS, { throwError: true });
 
       const collection = [];

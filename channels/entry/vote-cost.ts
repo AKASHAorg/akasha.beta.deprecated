@@ -12,7 +12,7 @@ export const voteCostS = {
 export default function init(sp, getService) {
   const execute = Promise.coroutine(
     function* (data: number[]) {
-      const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
       v.validate(data, voteCostS, { throwError: true });
       const contracts = getService(CORE_MODULE.CONTRACTS);
       const web3Api = getService(CORE_MODULE.WEB3_API);

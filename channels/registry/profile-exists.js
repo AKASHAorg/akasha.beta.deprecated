@@ -6,7 +6,7 @@ const ethereumjs_util_1 = require("ethereumjs-util");
 const check_id_format_1 = require("./check-id-format");
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, check_id_format_1.checkIdFormatSchema, { throwError: true });
         let normalisedId;
         let exists;

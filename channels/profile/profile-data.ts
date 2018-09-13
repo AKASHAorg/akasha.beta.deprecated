@@ -17,7 +17,7 @@ export const getProfileDataSchema = {
 export default function init(sp, getService) {
 
   const execute: any = Promise.coroutine(function* (data: any, cb) {
-    const v = new getService(CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getProfileDataSchema, { throwError: true });
 
     let profile;

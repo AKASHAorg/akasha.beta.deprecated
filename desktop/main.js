@@ -101,7 +101,7 @@ const bootstrap = function () {
         init_modules_1.default(sp_1.default, sp_1.getService)
             .then((modules) => {
             startBrowser();
-            watcher_1.default(modules, mainWindow.id);
+            watcher_1.default(modules, mainWindow.id, sp_1.getService);
         });
     });
 };

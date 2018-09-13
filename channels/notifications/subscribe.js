@@ -36,7 +36,7 @@ const subscribe = {
 };
 function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, subscribe, { throwError: true });
         const watchFilter = Object.assign({}, data.profile, { fromBlock: data.fromBlock });
         if (data.settings) {
