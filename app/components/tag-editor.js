@@ -4,6 +4,7 @@ import { Popover, Button } from 'antd';
 import { tagMessages, generalMessages } from '../locale-data/messages';
 import Icon from './icon';
 import clickAway from '../utils/clickAway';
+import { latiniseText } from '../utils/latinise';
 
 const tagCreatorKeycodes = [
     13, // enter
@@ -253,7 +254,7 @@ class TagEditor extends Component {
     /* eslint-enable no-fallthrough, consistent-return */
     _handleTagInputChange = (ev) => {
         const { tags, intl } = this.props;
-        const tag = ev.target.value.trim().toLowerCase().replace('#', '');
+        const tag = latiniseText(ev.target.value.trim().toLowerCase().replace('#', ''));
         const alphaValid = /[a-z0-9.-]+$/.test(tag);
         const specialCharsValid = !tag.includes('.-') &&
             !tag.includes('-.') &&
@@ -294,7 +295,7 @@ class TagEditor extends Component {
     }
     _handleTagInputPaste = (ev) => {
         const { partialTag } = this.state;
-        const text = ev.clipboardData.getData('text');
+        const text = latiniseText(ev.clipboardData.getData('text'));
         ev.preventDefault();
         if (`${partialTag}${text}`.length <= 32) {
             return this.setState({

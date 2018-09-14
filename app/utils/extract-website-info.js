@@ -11,7 +11,6 @@ import { isInternalLink } from './url-utils';
 type ParserParams = {
     url: string,
     uploadImageToIpfs: ?boolean,
-    parseUrl: (url: string) => Object,
 };
 
 type AkashaParserResponse = {

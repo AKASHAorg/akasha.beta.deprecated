@@ -26,7 +26,7 @@ export const prependHttp = (url: string = ''): string => {
     return `http://${url}`;
 };
 
-export const extractEntryUrl = (externalUrl) =>
+export const extractEntryUrl = (externalUrl:string) =>
     externalUrl.substr(externalUrl.indexOf('#') + 1, externalUrl.length);
 
 export const removePrefix = (value: string = ''): string => {
