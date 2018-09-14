@@ -44,8 +44,8 @@ export default async function bootstrap(serviceProvider, gS) {
   gS(CORE_MODULE.WEB3_API).instance = GethConnector.getInstance().web3;
   gS(CORE_MODULE.IPFS_API).instance = IpfsConnector.getInstance();
   serviceProvider().service(CORE_MODULE.VALIDATOR_SCHEMA, serviceValidator);
-  serviceProvider().service(CORE_MODULE.GETH_CONNECTOR, GethConnector);
-  serviceProvider().service(CORE_MODULE.IPFS_CONNECTOR, IpfsConnector);
+  serviceProvider().service(CORE_MODULE.GETH_CONNECTOR, function () { return GethConnector; });
+  serviceProvider().service(CORE_MODULE.IPFS_CONNECTOR, function () { return IpfsConnector; });
   const prefix = app.getPath('userData') + sep;
   await init(prefix)
   .then(d => console.info('Finished init local db.'))

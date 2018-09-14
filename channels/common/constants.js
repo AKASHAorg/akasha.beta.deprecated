@@ -104,7 +104,6 @@ exports.IPFS_MODULE = Object.freeze({
 exports.GETH_MODULE = Object.freeze({
     options: 'options_geth',
     stop: 'stop_geth',
-    start: 'start_geth',
     restartService: 'restartService_geth',
     startService: 'startService_geth',
     status: 'status_geth',

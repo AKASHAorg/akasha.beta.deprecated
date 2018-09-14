@@ -6,7 +6,7 @@ function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
         yield getService(constants_1.GETH_MODULE.stop).execute();
         yield Promise.delay(500);
-        return getService(constants_1.GETH_MODULE.start).execute();
+        return getService(constants_1.GETH_MODULE.startService).execute();
     });
     const restartService = { execute, name: 'restartService' };
     const service = function () {
