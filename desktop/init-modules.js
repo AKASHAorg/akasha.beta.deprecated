@@ -44,7 +44,7 @@ async function bootstrap(serviceProvider, gS) {
     gS(constants_1.CORE_MODULE.WEB3_API).instance = geth_connector_1.GethConnector.getInstance().web3;
     gS(constants_1.CORE_MODULE.IPFS_API).instance = ipfs_connector_1.IpfsConnector.getInstance();
     serviceProvider().service(constants_1.CORE_MODULE.VALIDATOR_SCHEMA, serviceValidator);
-    serviceProvider().service(constants_1.CORE_MODULE.GETH_CONNECTOR, geth_connector_1.GethConnector);
+    serviceProvider().service(constants_1.CORE_MODULE.GETH_CONNECTOR, function () { return geth_connector_1.GethConnector; });
     serviceProvider().service(constants_1.CORE_MODULE.IPFS_CONNECTOR, ipfs_connector_1.IpfsConnector);
     const prefix = electron_1.app.getPath('userData') + path_1.sep;
     await indexes_1.init(prefix)

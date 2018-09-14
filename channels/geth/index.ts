@@ -20,7 +20,7 @@ const init = function init(sp, getService) {
     [GETH_MODULE.logs]: logs,
     [GETH_MODULE.options]: options,
     [GETH_MODULE.restartService]: restart,
-    [GETH_MODULE.start]: start,
+    [GETH_MODULE.startService]: start,
     [GETH_MODULE.status]: status,
     [GETH_MODULE.stop]: stop,
     [GETH_MODULE.syncStatus]: syncStatus,

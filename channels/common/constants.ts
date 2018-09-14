@@ -113,7 +113,6 @@ export const IPFS_MODULE = Object.freeze({
 export const GETH_MODULE = Object.freeze({
   options: 'options_geth',
   stop: 'stop_geth',
-  start: 'start_geth',
   restartService: 'restartService_geth',
   startService: 'startService_geth',
   status: 'status_geth',
