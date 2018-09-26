@@ -450,10 +450,10 @@ export const selectProfileEntriesFlags = (state, ethAddress) => {
 };
 
 export const selectProfileEntriesLastBlock = (state, value) =>
-    state.entryState.getIn(['profileEntries', value, 'lastBlock']);
+    state.dashboardState.getIn(['columnById', 'profileEntries', 'lastBlock']);
 
 export const selectProfileEntriesLastIndex = (state, value) =>
-    state.entryState.getIn(['profileEntries', value, 'lastIndex']);
+    state.dashboardState.getIn(['columnById', 'profileEntries', 'lastIndex']);
 
 export const selectProfileExists = state => state.profileState.get('exists');
 

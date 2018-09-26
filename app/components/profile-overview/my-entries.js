@@ -13,13 +13,13 @@ class MyEntries extends Component {
     }
 
     fetchMoreProfileEntries = () => {
-        const { ethAddress } = this.props;
-        this.props.entryMoreProfileIterator({ id: 'profileEntries', value: ethAddress });
+        const { ethAddress, profileEntriesColumn } = this.props;
+        this.props.entryMoreProfileIterator(profileEntriesColumn, true);
     };
 
     render () {
         const { profileEntries, fetchingProfileEntries, moreProfileEntries,
-            fetchingMoreProfileEntries } = this.props;
+            fetchingMoreProfileEntries, profileEntriesColumn } = this.props;
 
         return (
           <div className="myentries">
@@ -52,11 +52,12 @@ function mapStateToProps (state) {
     const ethAddress = selectLoggedEthAddress(state);
     return {
         ethAddress,
-        fetchingMoreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingMoreEntries']),
-        fetchingProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingEntries']),
+        fetchingMoreProfileEntries: state.dashboardState.getIn(['columnById', 'profileEntries', 'flags', 'fetchingMoreItems']),
+        fetchingProfileEntries: state.dashboardState.getIn(['columnById', 'profileEntries', 'flags', 'fetchingItems']),
         profileEntries: selectProfileLoggedEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
-        moreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'moreEntries']),
+        moreProfileEntries: state.dashboardState.getIn(['columnById', 'profileEntries', 'flags', 'moreItems']),
+        profileEntriesColumn: state.dashboardState.getIn(['columnById', 'profileEntries']),
     };
 }
 
