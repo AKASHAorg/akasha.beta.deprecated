@@ -12,3 +12,4 @@ Run :
 
 Package app:
 - `npm run package-linux`
+- `npm run package-mac`
