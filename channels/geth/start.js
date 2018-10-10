@@ -16,7 +16,6 @@ function init(sp, getService) {
         const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, startServiceS, { throwError: true });
         const gethConnector = getService(constants_1.CORE_MODULE.GETH_CONNECTOR);
-        console.log(gethConnector);
         if (gethConnector.getInstance().serviceStatus.process) {
             throw new Error('Geth is already running');
         }
