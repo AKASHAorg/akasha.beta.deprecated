@@ -1,9 +1,10 @@
 import { app, BrowserWindow, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import * as pino from 'pino';
 import sp, { getService } from '@akashaproject/core/sp';
 import initModules from './init-modules';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { initMenu } from './menu';
 import startDataStream from './watcher';
 import * as Promise from 'bluebird';
@@ -22,7 +23,7 @@ const stopServices = () => {
   shutDown().delay(800).finally(() => process.exit(0));
 };
 
-const startBrowser = function () {
+const startBrowser = function (logger) {
   const viewHtml = resolve(__dirname, '../..');
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1280,
@@ -46,7 +47,7 @@ const startBrowser = function () {
   mainWindowState.manage(mainWindow);
   console.timeEnd('buildWindow');
   mainWindow.loadURL(
-    process.env.HOT ? `http://localhost:3000/dist/index.html` :
+    process.env.HOT ? 'http://localhost:3000/dist/index.html' :
       `file://${viewHtml}/dist/index.html`,
   );
   mainWindow.once('close', (ev: Event) => {
@@ -55,8 +56,8 @@ const startBrowser = function () {
   });
   // Init browserWindow menu
   initMenu(mainWindow)
-  .then(() => console.info('Menu init -> done.'))
-  .catch(error => console.error(error));
+  .then(() => logger.info('Menu init -> done.'))
+  .catch(error => logger.error(error));
   // until all resources are loaded the renderer browser is hidden
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
@@ -76,12 +77,20 @@ const startBrowser = function () {
   mainWindow.webContents.on('new-window', openDefault);
 
   mainWindow.on('unresponsive', () => {
-    console.error('APP is unresponsive');
+    logger.error('APP is unresponsive');
   });
 };
 
 const bootstrap = function () {
-
+  const appLogger = pino(pino.destination(join(app.getPath('userData'), 'app.log')));
+  // default logging lvl is info
+  if (process.env.AKASHA_LOG_LEVEL) {
+    appLogger.level = process.env.AKASHA_LOG_LEVEL;
+  } else if (!process.env.HOT) {
+    // production logs
+    appLogger.level = 'error';
+  }
+  const windowLogger = appLogger.child({ module: 'window' });
   if (process.env.NODE_ENV === 'development') {
     require('electron-debug')({ showDevTools: true });
   }
@@ -104,19 +113,19 @@ const bootstrap = function () {
     console.time('total');
     console.time('buildWindow');
     process.on('uncaughtException', (err: Error) => {
-      console.error(`uncaughtException ${err.message} ${err.stack}`);
+      appLogger.error(err);
     });
     process.on('warning', (warning) => {
-      console.warn(warning);
+      appLogger.warn(warning);
     });
     process.on('SIGINT', stopServices);
     process.on('SIGTERM', stopServices);
 
     // start app
-    initModules(sp, getService)
+    initModules(sp, getService, appLogger)
     .then((modules) => {
-      startBrowser();
-      startDataStream(modules, mainWindow.id, getService);
+      startBrowser(windowLogger);
+      startDataStream(modules, mainWindow.id, getService, appLogger);
     });
   });
 };

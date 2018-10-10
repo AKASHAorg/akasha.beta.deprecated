@@ -4,10 +4,7 @@ const Promise = require("bluebird");
 const constants_1 = require("@akashaproject/common/constants");
 function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        return Promise.fromCallback((cb) => {
-            return getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
-                .getInstance().logger.query({ start: 0, limit: 10, order: 'desc' }, cb);
-        });
+        throw new Error('Filtering logs is deprecated');
     });
     const logs = { execute, name: 'logs' };
     const service = function () {

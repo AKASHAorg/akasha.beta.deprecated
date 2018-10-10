@@ -12,7 +12,7 @@ const dataStream = {
   required: ['module', 'method', 'payload'],
 };
 
-export default function startDataStream(modules, windowId, getService) {
+export default function startDataStream(modules, windowId, getService, logger) {
   // create listener on main Channel
   const ipcChannelMain = new IpcChannelMain(
     CORE_MODULE.DATA,
@@ -20,17 +20,18 @@ export default function startDataStream(modules, windowId, getService) {
       windowId,
       channelName: 'mainChannel',
     });
+  const ipcLogger = logger.child({ module: 'IPC' });
 
   ipcChannelMain.on(function (ev, args) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     const result = v.validate(args, dataStream);
     if (!result.valid) {
+      ipcLogger.debug({ args, result });
       return ipcChannelMain.send({ args, error: result.errors });
     }
     let call;
     let response;
     const method = modules[args.module][args.method];
-    console.log(modules[args.module]);
     if (!method) {
       return ipcChannelMain.send({
         args,
@@ -55,7 +56,7 @@ export default function startDataStream(modules, windowId, getService) {
     call
       .then(data => response = { data, args })
       .catch((err: Error) => {
-        console.log(err);
+        ipcLogger.debug({ args, err });
         response = { args, error: err };
       })
       .finally(() => {

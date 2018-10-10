@@ -22,7 +22,7 @@ const search_1 = require("@akashaproject/search");
 const indexes_1 = require("@akashaproject/search/indexes");
 const tags_1 = require("@akashaproject/tags");
 const tx_1 = require("@akashaproject/tx");
-async function bootstrap(serviceProvider, gS) {
+const bootstrap = async function bootstrap(serviceProvider, gS, logger) {
     core_1.default.init();
     const common = common_1.default.init(serviceProvider, gS);
     const auth = auth_1.default.init(serviceProvider, gS);
@@ -41,15 +41,31 @@ async function bootstrap(serviceProvider, gS) {
     const serviceValidator = function () {
         return { Validator: jsonschema_web3_1.default };
     };
+    const gethLogger = logger.child({ module: 'geth' });
+    const ipfsLogger = logger.child({ module: 'ipfs' });
     gS(constants_1.CORE_MODULE.WEB3_API).instance = geth_connector_1.GethConnector.getInstance().web3;
     gS(constants_1.CORE_MODULE.IPFS_API).instance = ipfs_connector_1.IpfsConnector.getInstance();
+    geth_connector_1.GethConnector.getInstance().setLogger(gethLogger);
+    ipfs_connector_1.IpfsConnector.getInstance().setLogger(ipfsLogger);
+    geth_connector_1.GethConnector.getInstance().setBinPath(path_1.join(electron_1.app.getPath('userData'), 'go-ethereum'));
+    geth_connector_1.GethConnector.getInstance().setOptions({
+        datadir: path_1.join(geth_connector_1.GethConnector.getDefaultDatadir(), 'rinkeby'),
+        ipcpath: path_1.join(geth_connector_1.GethConnector.getDefaultDatadir().replace(':', '\\'), 'rinkeby', 'geth.ipc'),
+        networkid: 4,
+        syncmode: 'fast',
+        rinkeby: '',
+    });
     serviceProvider().service(constants_1.CORE_MODULE.VALIDATOR_SCHEMA, serviceValidator);
-    serviceProvider().service(constants_1.CORE_MODULE.GETH_CONNECTOR, function () { return geth_connector_1.GethConnector; });
-    serviceProvider().service(constants_1.CORE_MODULE.IPFS_CONNECTOR, ipfs_connector_1.IpfsConnector);
+    serviceProvider().service(constants_1.CORE_MODULE.GETH_CONNECTOR, function () {
+        return geth_connector_1.GethConnector;
+    });
+    serviceProvider().service(constants_1.CORE_MODULE.IPFS_CONNECTOR, function () {
+        return ipfs_connector_1.IpfsConnector;
+    });
     const prefix = electron_1.app.getPath('userData') + path_1.sep;
     await indexes_1.init(prefix)
-        .then(d => console.info('Finished init local db.'))
-        .catch(err => console.log(`Error on local db ${err}`));
+        .then(() => logger.debug('Finished init local db.'))
+        .catch(err => logger.error(err));
     return {
         [common_1.default.moduleName]: common,
         [auth_1.default.moduleName]: auth,
@@ -66,6 +82,6 @@ async function bootstrap(serviceProvider, gS) {
         [tags_1.default.moduleName]: tags,
         [tx_1.default.moduleName]: tx,
     };
-}
+};
 exports.default = bootstrap;
 //# sourceMappingURL=init-modules.js.map
