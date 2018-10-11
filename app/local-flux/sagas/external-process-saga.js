@@ -8,6 +8,8 @@ import * as searchActions from '../actions/search-actions';
 import * as types from '../constants';
 import { selectGethStatus, selectGethSyncActionId, selectLastGethLog,
     selectLastIpfsLog, selectLoggedEthAddress } from '../selectors';
+import ChReqService from '../services/channel-request-service';
+import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 const Channel = global.Channel;
 
@@ -44,31 +46,35 @@ function* ipfsStartLogger () {
 }
 
 export function* gethGetOptions () {
-    const channel = Channel.server.geth.options;
-    yield call(enableChannel, channel, Channel.client.geth.manager);
-    yield apply(channel, channel.send, [{}]);
+    // const channel = Channel.server.geth.options;
+    // yield call(enableChannel, channel, Channel.client.geth.manager);
+    // yield apply(channel, channel.send, [{}]);
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.options, {});
 }
 
 export function* ipfsGetConfig () {
-    const channel = Channel.server.ipfs.getConfig;
-    yield call(enableChannel, channel, Channel.client.ipfs.manager);
-    yield apply(channel, channel.send, [{}]);
+    // const channel = Channel.server.ipfs.getConfig;
+    // yield call(enableChannel, channel, Channel.client.ipfs.manager);
+    // yield apply(channel, channel.send, [{}]);
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.getConfig, {});
 }
 
 export function* ipfsGetPorts () {
-    const channel = Channel.server.ipfs.getPorts;
-    yield call(enableChannel, channel, Channel.client.ipfs.manager);
-    yield apply(channel, channel.send, [{}]);
+    // const channel = Channel.server.ipfs.getPorts;
+    // yield call(enableChannel, channel, Channel.client.ipfs.manager);
+    // yield apply(channel, channel.send, [{}]);
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.getPorts, {});
 }
 
 function* ipfsSetPorts ({ ports, restart }) {
-    const channel = Channel.server.ipfs.setPorts;
-    yield call(enableChannel, channel, Channel.client.ipfs.manager);
-    yield apply(channel, channel.send, [{ ports, restart }]);
+    // const channel = Channel.server.ipfs.setPorts;
+    // yield call(enableChannel, channel, Channel.client.ipfs.manager);
+    // yield apply(channel, channel.send, [{ ports, restart }]);
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.setPorts, { ports, restart });
 }
 
 function* gethStart () {
-    const channel = Channel.server.geth.startService;
+    // const channel = Channel.server.geth.startService;
     const gethOptions = yield select(state => state.settingsState.get('geth').toJS());
     // filter out the null and false options
     const options = {};
@@ -80,7 +86,8 @@ function* gethStart () {
     if (options.ipcpath) {
         options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
     }
-    yield apply(channel, channel.send, [options]);
+    // yield apply(channel, channel.send, [options]);
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.startService, options);
 }
 
 function* gethStop () {
@@ -100,13 +107,11 @@ function* ipfsStop () {
 }
 
 export function* gethGetStatus () {
-    const channel = Channel.server.geth.status;
-    yield apply(channel, channel.send, [{}]);
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.status, {})
 }
 
 export function* ipfsGetStatus () {
-    const channel = Channel.server.ipfs.status;
-    yield apply(channel, channel.send, [{}]);
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.status, {})
 }
 
 function* gethGetSyncStatus () {
@@ -404,22 +409,22 @@ export function* watchEProcActions () {
 }
 
 export function* registerEProcListeners () {
-    yield fork(watchGethStopChannel);
-    yield fork(watchIpfsStopChannel);
-    yield fork(watchGethGetStatusChannel);
-    yield fork(watchIpfsStatusChannel);
-    yield fork(watchGethStartChannel);
-    yield fork(watchIpfsStartChannel);
-    yield fork(watchGethOptionsChannel);
-    yield fork(watchIpfsConfigChannel);
-    yield fork(watchIpfsGetPortsChannel);
-    yield fork(watchIpfsSetPortsChannel);
-    yield fork(watchGethSyncStatusChannel);
-    yield fork(watchGethLogsChannel);
-    yield fork(watchIpfsLogsChannel);
+    // yield fork(watchGethStopChannel);
+    // yield fork(watchIpfsStopChannel);
+    // yield fork(watchGethGetStatusChannel);
+    // yield fork(watchIpfsStatusChannel);
+    // yield fork(watchGethStartChannel);
+    // yield fork(watchIpfsStartChannel);
+    // yield fork(watchGethOptionsChannel);
+    // yield fork(watchIpfsConfigChannel);
+    // yield fork(watchIpfsGetPortsChannel);
+    // yield fork(watchIpfsSetPortsChannel);
+    // yield fork(watchGethSyncStatusChannel);
+    // yield fork(watchGethLogsChannel);
+    // yield fork(watchIpfsLogsChannel);
 }
 
 export function* registerWatchers () {
-    yield fork(registerEProcListeners);
-    yield fork(watchEProcActions);
+    // yield fork(registerEProcListeners);
+    // yield fork(watchEProcActions);
 }

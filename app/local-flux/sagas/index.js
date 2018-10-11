@@ -28,6 +28,7 @@ import * as transactionSaga from './transaction-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
 import { loadAkashaDB } from '../services/db/dbs';
+import ChService from '../services/channel-request-service';
 
 function* registerListeners () {
     yield fork(claimableSaga.registerClaimableListeners);    
@@ -45,6 +46,7 @@ function* registerListeners () {
 
 function* launchActions () {
     const timestamp = new Date().getTime();
+    yield call([ChService, ChService.addResponseListener]);
     yield put(eProcActions.servicesSetTimestamp(timestamp));
     // from local db
     yield fork(settingsSaga.getSettings);

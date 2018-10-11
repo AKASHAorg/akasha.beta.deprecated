@@ -114,11 +114,11 @@ function* watchTagSearchChannel () {
 }
 
 export function* registerTagListeners () {
-    yield fork(watchTagCreateChannel);
-    yield fork(watchTagExistsChannel);
-    yield fork(watchTagGetEntriesCountChannel);
-    yield fork(watchTagSearchChannel);
-    yield fork(watchTagCanCreateChannel);
+    // yield fork(watchTagCreateChannel);
+    // yield fork(watchTagExistsChannel);
+    // yield fork(watchTagGetEntriesCountChannel);
+    // yield fork(watchTagSearchChannel);
+    // yield fork(watchTagCanCreateChannel);
 }
 
 export function* watchTagActions () {

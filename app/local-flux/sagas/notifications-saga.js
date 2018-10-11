@@ -57,7 +57,7 @@ function* watchNotificationsChannel () {
 }
 
 export function* registerNotificationsListeners () {
-    yield fork(watchNotificationsChannel);
+    // yield fork(watchNotificationsChannel);
 }
 
 export function* watchNotificationsActions () {

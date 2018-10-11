@@ -42,10 +42,10 @@ export function* watchUtilsActions () {
 }
 
 export function* registerUtilsListeners () {
-    yield fork(watchBackupChannel);
+    // yield fork(watchBackupChannel);
 }
 
 export function* registerWatchers () {
-    yield fork(registerUtilsListeners);
+    // yield fork(registerUtilsListeners);
     yield fork(watchUtilsActions);
 }

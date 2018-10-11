@@ -31,9 +31,9 @@ function* watchLicenseGetAllChannel () {
 }
 
 export function* watchLicenseActions () {
-    yield fork(watchLicenseGetAll);
+    // yield fork(watchLicenseGetAll);
 }
 
 export function* registerLicenseListeners () {
-    yield fork(watchLicenseGetAllChannel);
+    // yield fork(watchLicenseGetAllChannel);
 }

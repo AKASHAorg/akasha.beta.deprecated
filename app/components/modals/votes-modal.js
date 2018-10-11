@@ -9,8 +9,8 @@ import { DataLoader, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 import { ToolbarVotes } from '../svg';
 
-const serverChannel = global.Channel.server.entry.votesIterator;
-const clientChannel = global.Channel.client.entry.votesIterator;
+// const serverChannel = global.Channel.server.entry.votesIterator;
+// const clientChannel = global.Channel.client.entry.votesIterator;
 
 class EntryVotesModal extends Component {
     constructor (props) {

@@ -170,11 +170,11 @@ function* watchUserSettingsSave () {
 }
 
 export function* watchSettingsActions () {
-    yield fork(watchSaveConfiguration);
-    yield fork(watchGeneralSettingsSave);
-    yield fork(watchGethSaveSettings);
-    yield fork(watchIpfsSettingsSave);
-    yield fork(watchUserSettingsRequest);
-    yield fork(watchUserSettingsSave);
+    // yield fork(watchSaveConfiguration);
+    // yield fork(watchGeneralSettingsSave);
+    // yield fork(watchGethSaveSettings);
+    // yield fork(watchIpfsSettingsSave);
+    // yield fork(watchUserSettingsRequest);
+    // yield fork(watchUserSettingsSave);
     yield takeEvery(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN, userSettingsAddTrustedDomain);
 }

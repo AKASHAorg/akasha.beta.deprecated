@@ -24,14 +24,14 @@ export function createActionChannel (channel) {
 }
 
 export function createActionChannels () {
-    const modules = Object.keys(Channel.client);
-    modules.forEach((module) => {
-        const channels = Object.keys(Channel.client[module]);
-        actionChannels[module] = {};
-        channels.forEach((channel) => {
-            actionChannels[module][channel] = createActionChannel(Channel.client[module][channel]);
-        });
-    });
+    // const modules = Object.keys(Channel.client);
+    // modules.forEach((module) => {
+    //     const channels = Object.keys(Channel.client[module]);
+    //     actionChannels[module] = {};
+    //     channels.forEach((channel) => {
+    //         actionChannels[module][channel] = createActionChannel(Channel.client[module][channel]);
+    //     });
+    // });
 }
 
 export function enableChannel (channel, mananger) {

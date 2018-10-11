@@ -11,6 +11,7 @@ import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { isEthAddress } from '../../utils/dataModule';
+import ChannelReqService from '../services/channel-request-service';
 
 import {
     selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLoggedEthAddress, selectNeedAuthAction,
@@ -285,11 +286,12 @@ function* profileIsFollower ({ followings, ethAddress }) {
 }
 
 function* profileLogin ({ data }) {
-    yield fork(watchProfileLoginChannel); // eslint-disable-line no-use-before-define
+    // yield fork(watchProfileLoginChannel); // eslint-disable-line no-use-before-define
     const { ...payload } = data;
-    const channel = Channel.server.auth.login;
+    // const channel = Channel.server.auth.login;
     payload.password = new global.TextEncoder('utf-8').encode(payload.password);
-    yield apply(channel, channel.send, [payload]);
+    yield call([ChannelReqService, ChannelReqService.sendRequest], payload);
+    // yield apply(channel, channel.send, [payload]);
 }
 
 function* profileLogout () {
@@ -1161,95 +1163,95 @@ function* watchProfileUpdateChannel () {
 }
 
 export function* registerProfileListeners () { // eslint-disable-line max-statements
-    yield fork(watchProfileEssenceIteratorChannel);
-    yield fork(watchProfileAethTransfersIteratorChannel);
-    yield fork(watchProfileBondAethChannel);
-    yield fork(watchProfileCommentsIteratorChannel);
-    yield fork(watchProfileCreateEthAddressChannel);
-    yield fork(watchProfileCycleAethChannel);
-    yield fork(watchProfileCyclingStatesChannel);
-    yield fork(watchProfileExistsChannel);
-    yield fork(watchProfileFollowChannel);
-    yield fork(watchProfileFollowersIteratorChannel);
-    yield fork(watchProfileFollowingsIteratorChannel);
-    yield fork(watchProfileFreeAethChannel);
-    yield fork(watchProfileGetBalanceChannel);
-    yield fork(watchProfileGetByAddressChannel);
-    yield fork(watchProfileGetDataChannel);
-    yield fork(watchProfileGetLocalChannel);
-    yield fork(watchProfileGetListChannel);
-    yield fork(watchProfileGetPublishingCostChannel);
-    yield fork(watchProfileIsFollowerChannel);
-    yield fork(watchProfileKarmaRankingChannel);
-    yield fork(watchProfileLogoutChannel);
-    yield fork(watchProfileManaBurnedChannel);
-    yield fork(watchProfileFaucetChannel);
-    yield fork(watchProfileResolveIpfsHashChannel);
-    yield fork(watchProfileSendTipChannel);
-    yield fork(watchProfileToggleDonationsChannel);
-    yield fork(watchProfileTransferChannel);
-    yield fork(watchProfileTransformEssenceChannel);
-    yield fork(watchProfileUnfollowChannel);
-    yield fork(watchProfileUpdateChannel);
-    yield fork(watchProfileRegisterChannel);
+    // yield fork(watchProfileEssenceIteratorChannel);
+    // yield fork(watchProfileAethTransfersIteratorChannel);
+    // yield fork(watchProfileBondAethChannel);
+    // yield fork(watchProfileCommentsIteratorChannel);
+    // yield fork(watchProfileCreateEthAddressChannel);
+    // yield fork(watchProfileCycleAethChannel);
+    // yield fork(watchProfileCyclingStatesChannel);
+    // yield fork(watchProfileExistsChannel);
+    // yield fork(watchProfileFollowChannel);
+    // yield fork(watchProfileFollowersIteratorChannel);
+    // yield fork(watchProfileFollowingsIteratorChannel);
+    // yield fork(watchProfileFreeAethChannel);
+    // yield fork(watchProfileGetBalanceChannel);
+    // yield fork(watchProfileGetByAddressChannel);
+    // yield fork(watchProfileGetDataChannel);
+    // yield fork(watchProfileGetLocalChannel);
+    // yield fork(watchProfileGetListChannel);
+    // yield fork(watchProfileGetPublishingCostChannel);
+    // yield fork(watchProfileIsFollowerChannel);
+    // yield fork(watchProfileKarmaRankingChannel);
+    // yield fork(watchProfileLogoutChannel);
+    // yield fork(watchProfileManaBurnedChannel);
+    // yield fork(watchProfileFaucetChannel);
+    // yield fork(watchProfileResolveIpfsHashChannel);
+    // yield fork(watchProfileSendTipChannel);
+    // yield fork(watchProfileToggleDonationsChannel);
+    // yield fork(watchProfileTransferChannel);
+    // yield fork(watchProfileTransformEssenceChannel);
+    // yield fork(watchProfileUnfollowChannel);
+    // yield fork(watchProfileUpdateChannel);
+    // yield fork(watchProfileRegisterChannel);
 }
 
 export function* watchProfileActions () { // eslint-disable-line max-statements
-    yield takeEvery(types.PROFILE_AETH_TRANSFERS_ITERATOR, profileAethTransfersIterator);
-    yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
-    yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
-    yield takeLatest(types.PROFILE_COMMENTS_ITERATOR, profileCommentsIterator);    
-    yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
-    yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
-    yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
-    yield takeEvery(types.PROFILE_CYCLING_STATES, profileCyclingStates);
-    yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
-    yield takeEvery(types.PROFILE_ESSENCE_ITERATOR, profileEssenceIterator);
-    yield takeLatest(types.PROFILE_EXISTS, profileExists);
-    yield takeEvery(types.PROFILE_FAUCET, profileFaucet);
-    yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
-    yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
-    yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
-    yield takeEvery(types.PROFILE_FREE_AETH, profileFreeAeth);
-    yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
-    yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
-    yield takeEvery(types.PROFILE_GET_BY_ADDRESS, profileGetByAddress);
-    yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
-    yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
-    yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
-    yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
-    yield takeLatest(types.PROFILE_GET_LOGGED_SUCCESS, profileGetPublishingCost);
-    yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
-    yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
-    yield takeEvery(types.PROFILE_KARMA_RANKING, profileKarmaRanking);
+    // yield takeEvery(types.PROFILE_AETH_TRANSFERS_ITERATOR, profileAethTransfersIterator);
+    // yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
+    // yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
+    // yield takeLatest(types.PROFILE_COMMENTS_ITERATOR, profileCommentsIterator);    
+    // yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
+    // yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
+    // yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
+    // yield takeEvery(types.PROFILE_CYCLING_STATES, profileCyclingStates);
+    // yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
+    // yield takeEvery(types.PROFILE_ESSENCE_ITERATOR, profileEssenceIterator);
+    // yield takeLatest(types.PROFILE_EXISTS, profileExists);
+    // yield takeEvery(types.PROFILE_FAUCET, profileFaucet);
+    // yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
+    // yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
+    // yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
+    // yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
+    // yield takeEvery(types.PROFILE_FREE_AETH, profileFreeAeth);
+    // yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
+    // yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
+    // yield takeEvery(types.PROFILE_GET_BY_ADDRESS, profileGetByAddress);
+    // yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
+    // yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
+    // yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
+    // yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
+    // yield takeLatest(types.PROFILE_GET_LOGGED_SUCCESS, profileGetPublishingCost);
+    // yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
+    // yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
+    // yield takeEvery(types.PROFILE_KARMA_RANKING, profileKarmaRanking);
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
-    yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
-    yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);
-    yield takeEvery(types.PROFILE_MORE_COMMENTS_ITERATOR, profileMoreCommentsIterator);    
-    yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
-    yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
-    yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
-    yield takeEvery(types.PROFILE_SAVE_LAST_BLOCK_NR, profileSaveLastBlockNr);
-    yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
-    yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
-    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS, profileToggleDonations);
-    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, profileToggleDonationsSuccess);
-    yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
-    yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
-    yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
-    yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
-    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE, profileTransformEssence);
-    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, profileTransformEssenceSuccess);
-    yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
-    yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
-    yield takeEvery(types.PROFILE_UPDATE, profileUpdate);
-    yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
-    yield takeEvery(types.PROFILE_REGISTER, profileRegister);
-    yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
+    // yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
+    // yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);
+    // yield takeEvery(types.PROFILE_MORE_COMMENTS_ITERATOR, profileMoreCommentsIterator);    
+    // yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
+    // yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+    // yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
+    // yield takeEvery(types.PROFILE_SAVE_LAST_BLOCK_NR, profileSaveLastBlockNr);
+    // yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
+    // yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    // yield takeEvery(types.PROFILE_TOGGLE_DONATIONS, profileToggleDonations);
+    // yield takeEvery(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, profileToggleDonationsSuccess);
+    // yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
+    // yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
+    // yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
+    // yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
+    // yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE, profileTransformEssence);
+    // yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, profileTransformEssenceSuccess);
+    // yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
+    // yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
+    // yield takeEvery(types.PROFILE_UPDATE, profileUpdate);
+    // yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
+    // yield takeEvery(types.PROFILE_REGISTER, profileRegister);
+    // yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
 }
 
 export function* registerWatchers () {
-    yield fork(registerProfileListeners);
+    // yield fork(registerProfileListeners);
     yield fork(watchProfileActions);
 }

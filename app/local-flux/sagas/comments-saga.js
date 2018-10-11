@@ -160,210 +160,210 @@ function* commentsVoteSuccess (commentId) {
 
 // Channel watchers
 
-function* watchCommentsDownvoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.downvote);
-        const { actionId } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.commentsDownvoteError(resp.error, resp.request));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.commentsDownvoteError({}, resp.request));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchCommentsDownvoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.downvote);
+//         const { actionId } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.commentsDownvoteError(resp.error, resp.request));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.commentsDownvoteError({}, resp.request));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchCommentsGetCommentChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.getComment);
-        if (resp.error) {
-            yield put(actions.commentsGetCommentError(resp.error));
-        } else {
-            const { commentId, context, entryId, isParent } = resp.request;
-            const { author, parent } = resp.data;
-            if (context === 'commentPage') {
-                if (parent) {
-                    yield put(actions.commentsGetComment({
-                        context, entryId, commentId: parent, isParent: true
-                    }));
-                } else if (!isParent) {
-                    const context = 'commentPage';
-                    yield put(actions.commentsIterator({ context, entryId, parent: commentId }));
-                }
-            }
-            const profile = yield select(state => selectProfile(state, author.ethAddress));
-            if (context === 'commentPage' && !profile.ethAddress) {
-                yield put(profileActions.profileGetData({ ethAddress: author.ethAddress }));
-            }
-            yield put(actions.commentsGetCommentSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* watchCommentsGetCommentChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.getComment);
+//         if (resp.error) {
+//             yield put(actions.commentsGetCommentError(resp.error));
+//         } else {
+//             const { commentId, context, entryId, isParent } = resp.request;
+//             const { author, parent } = resp.data;
+//             if (context === 'commentPage') {
+//                 if (parent) {
+//                     yield put(actions.commentsGetComment({
+//                         context, entryId, commentId: parent, isParent: true
+//                     }));
+//                 } else if (!isParent) {
+//                     const context = 'commentPage';
+//                     yield put(actions.commentsIterator({ context, entryId, parent: commentId }));
+//                 }
+//             }
+//             const profile = yield select(state => selectProfile(state, author.ethAddress));
+//             if (context === 'commentPage' && !profile.ethAddress) {
+//                 yield put(profileActions.profileGetData({ ethAddress: author.ethAddress }));
+//             }
+//             yield put(actions.commentsGetCommentSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchCommentsGetCountChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.commentsCount);
-        if (resp.error) {
-            yield put(actions.commentsGetCountError(resp.error));
-        } else {
-            yield put(actions.commentsGetCountSuccess(resp.data));
-        }
-    }
-}
+// function* watchCommentsGetCountChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.commentsCount);
+//         if (resp.error) {
+//             yield put(actions.commentsGetCountError(resp.error));
+//         } else {
+//             yield put(actions.commentsGetCountSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchCommentsGetScoreChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.getScore);
-        if (resp.error) {
-            yield put(actions.commentsGetScoreError(resp.error));
-        } else {
-            yield put(actions.commentsGetScoreSuccess(resp.data));
-        }
-    }
-}
+// function* watchCommentsGetScoreChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.getScore);
+//         if (resp.error) {
+//             yield put(actions.commentsGetScoreError(resp.error));
+//         } else {
+//             yield put(actions.commentsGetScoreSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchCommentsGetVoteOfChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.getVoteOf);
-        if (resp.error) {
-            yield put(actions.commentsGetVoteOfError(resp.error));
-        } else {
-            yield put(actions.commentsGetVoteOfSuccess(resp.data));
-        }
-    }
-}
+// function* watchCommentsGetVoteOfChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.getVoteOf);
+//         if (resp.error) {
+//             yield put(actions.commentsGetVoteOfError(resp.error));
+//         } else {
+//             yield put(actions.commentsGetVoteOfSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements, complexity
-    while (true) {
-        const resp = yield take(actionChannels.comments.commentsIterator);
-        const { checkNew, context, entryId, more, reversed } = resp.request;
-        const fullEntry = yield select(selectFullEntry);
-        if (context !== 'commentPage' && (!fullEntry || entryId !== fullEntry.entryId)) {
-            continue; // eslint-disable-line no-continue
-        }
-        if (resp.error) {
-            if (checkNew) {
-                yield put(actions.commentsCheckNewError(resp.error));
-            } else if (more) {
-                yield put(actions.commentsMoreIteratorError(resp.error, resp.request));
-            } else {
-                yield put(actions.commentsIteratorError(resp.error, resp.request));
-            }
-        } else if (checkNew) {
-            const collection = [];
-            const loggedEthAddress = yield select(selectLoggedEthAddress);
-            resp.data.collection.forEach((comm) => {
-                if (comm.author.ethAddress !== loggedEthAddress) {
-                    collection.push(comm);
-                }
-            });
-            resp.data.collection = collection;
-            yield fork(commentsGetExtra, resp.data.collection, resp.request);
-            yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
-        } else if (reversed) {
-            yield fork(commentsGetExtra, resp.data.collection, resp.request);
-            yield put(actions.commentsIteratorReversedSuccess(resp.data, resp.request));
-            // const byId = yield select(state => state.commentsState.get('byId'));
-            // const loggedProfile = yield select(state =>
-            //     state.profileState.getIn(['loggedProfile', 'profile']));
-            // resp.data.collection = resp.data.collection.filter((comm) => {
-            //     const { parent, profile } = comm.data;
-            //     const isOwnComm = profile && profile.profile === loggedProfile;
-            //     const isParentLoaded = parent === '0' || byId.get(parent);
-            //     if (!isOwnComm && isParentLoaded) {
-            //         return true;
-            //     }
-            //     return false;
-            // });
-            // yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
-        } else {
-            yield fork(commentsGetExtra, resp.data.collection, resp.request);
-            if (more) {
-                yield put(actions.commentsMoreIteratorSuccess(resp.data, resp.request));
-            } else {
-                yield put(actions.commentsIteratorSuccess(resp.data, resp.request));
-            }
-        }
-    }
-}
+// function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements, complexity
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.commentsIterator);
+//         const { checkNew, context, entryId, more, reversed } = resp.request;
+//         const fullEntry = yield select(selectFullEntry);
+//         if (context !== 'commentPage' && (!fullEntry || entryId !== fullEntry.entryId)) {
+//             continue; // eslint-disable-line no-continue
+//         }
+//         if (resp.error) {
+//             if (checkNew) {
+//                 yield put(actions.commentsCheckNewError(resp.error));
+//             } else if (more) {
+//                 yield put(actions.commentsMoreIteratorError(resp.error, resp.request));
+//             } else {
+//                 yield put(actions.commentsIteratorError(resp.error, resp.request));
+//             }
+//         } else if (checkNew) {
+//             const collection = [];
+//             const loggedEthAddress = yield select(selectLoggedEthAddress);
+//             resp.data.collection.forEach((comm) => {
+//                 if (comm.author.ethAddress !== loggedEthAddress) {
+//                     collection.push(comm);
+//                 }
+//             });
+//             resp.data.collection = collection;
+//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
+//             yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
+//         } else if (reversed) {
+//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
+//             yield put(actions.commentsIteratorReversedSuccess(resp.data, resp.request));
+//             // const byId = yield select(state => state.commentsState.get('byId'));
+//             // const loggedProfile = yield select(state =>
+//             //     state.profileState.getIn(['loggedProfile', 'profile']));
+//             // resp.data.collection = resp.data.collection.filter((comm) => {
+//             //     const { parent, profile } = comm.data;
+//             //     const isOwnComm = profile && profile.profile === loggedProfile;
+//             //     const isParentLoaded = parent === '0' || byId.get(parent);
+//             //     if (!isOwnComm && isParentLoaded) {
+//             //         return true;
+//             //     }
+//             //     return false;
+//             // });
+//             // yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
+//         } else {
+//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
+//             if (more) {
+//                 yield put(actions.commentsMoreIteratorSuccess(resp.data, resp.request));
+//             } else {
+//                 yield put(actions.commentsIteratorSuccess(resp.data, resp.request));
+//             }
+//         }
+//     }
+// }
 
-function* watchCommentsPublishChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.comment);
-        const { entryId, commentId, receipt } = resp.data;
-        const { actionId } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.commentsPublishError(resp.error));
-            } else if (receipt) {
-                yield put(actionActions.actionPublished(receipt));
-                if (entryId && commentId) {
-                    yield fork(commentsGet, { entryId, commentId });
-                }
-                if (!receipt.success) {
-                    yield put(actions.commentsPublishError({}));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchCommentsPublishChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.comment);
+//         const { entryId, commentId, receipt } = resp.data;
+//         const { actionId } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.commentsPublishError(resp.error));
+//             } else if (receipt) {
+//                 yield put(actionActions.actionPublished(receipt));
+//                 if (entryId && commentId) {
+//                     yield fork(commentsGet, { entryId, commentId });
+//                 }
+//                 if (!receipt.success) {
+//                     yield put(actions.commentsPublishError({}));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchCommentsResolveIpfsHashChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.resolveCommentsIpfsHash);
-        if (resp.error) {
-            yield put(actions.commentsResolveIpfsHashError(resp.error));
-        } else {
-            yield put(actions.commentsResolveIpfsHashSuccess(resp.data));
-        }
-    }
-}
+// function* watchCommentsResolveIpfsHashChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.resolveCommentsIpfsHash);
+//         if (resp.error) {
+//             yield put(actions.commentsResolveIpfsHashError(resp.error));
+//         } else {
+//             yield put(actions.commentsResolveIpfsHashSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchCommentsUpvoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.comments.upvote);
-        const { actionId } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.commentsUpvoteError(resp.error, resp.request));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.commentsUpvoteError({}, resp.request));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchCommentsUpvoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.comments.upvote);
+//         const { actionId } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.commentsUpvoteError(resp.error, resp.request));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.commentsUpvoteError({}, resp.request));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
 export function* registerCommentsListeners () {
-    yield fork(watchCommentsDownvoteChannel);
-    yield fork(watchCommentsGetCommentChannel);
-    yield fork(watchCommentsGetCountChannel);
-    yield fork(watchCommentsGetScoreChannel);
-    yield fork(watchCommentsGetVoteOfChannel);
-    yield fork(watchCommentsIteratorChannel);
-    yield fork(watchCommentsPublishChannel);
-    yield fork(watchCommentsResolveIpfsHashChannel);
-    yield fork(watchCommentsUpvoteChannel);
+    // yield fork(watchCommentsDownvoteChannel);
+    // yield fork(watchCommentsGetCommentChannel);
+    // yield fork(watchCommentsGetCountChannel);
+    // yield fork(watchCommentsGetScoreChannel);
+    // yield fork(watchCommentsGetVoteOfChannel);
+    // yield fork(watchCommentsIteratorChannel);
+    // yield fork(watchCommentsPublishChannel);
+    // yield fork(watchCommentsResolveIpfsHashChannel);
+    // yield fork(watchCommentsUpvoteChannel);
 }
 
 export function* watchCommentsActions () {
@@ -384,6 +384,6 @@ export function* watchCommentsActions () {
 }
 
 export function* registerWatchers () {
-    yield fork(registerCommentsListeners);
+    // yield fork(registerCommentsListeners);
     yield fork(watchCommentsActions);
 }

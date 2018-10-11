@@ -882,25 +882,25 @@ function* watchEntryVoteCostChannel () {
 }
 
 export function* registerEntryListeners () {
-    yield fork(watchEntryCanClaimChannel);
-    yield fork(watchEntryCanClaimVoteChannel);
-    yield fork(watchEntryClaimChannel);
-    yield fork(watchEntryClaimVoteChannel);
-    yield fork(watchEntryDownvoteChannel);
-    yield fork(watchEntryGetBalanceChannel);
-    yield fork(watchEntryGetChannel);
-    yield fork(watchEntryGetEndPeriodChannel);
-    yield fork(watchEntryGetScoreChannel);
-    yield fork(watchEntryGetVoteOfChannel);
-    yield fork(watchEntryGetVoteRatioChannel);
-    yield fork(watchEntryListIteratorChannel);
-    yield fork(watchEntryNewestIteratorChannel);
-    yield fork(watchEntryProfileIteratorChannel);
-    yield fork(watchEntryResolveIpfsHashChannel);
-    yield fork(watchEntryStreamIteratorChannel);
-    yield fork(watchEntryTagIteratorChannel);
-    yield fork(watchEntryUpvoteChannel);
-    yield fork(watchEntryVoteCostChannel);
+    // yield fork(watchEntryCanClaimChannel);
+    // yield fork(watchEntryCanClaimVoteChannel);
+    // yield fork(watchEntryClaimChannel);
+    // yield fork(watchEntryClaimVoteChannel);
+    // yield fork(watchEntryDownvoteChannel);
+    // yield fork(watchEntryGetBalanceChannel);
+    // yield fork(watchEntryGetChannel);
+    // yield fork(watchEntryGetEndPeriodChannel);
+    // yield fork(watchEntryGetScoreChannel);
+    // yield fork(watchEntryGetVoteOfChannel);
+    // yield fork(watchEntryGetVoteRatioChannel);
+    // yield fork(watchEntryListIteratorChannel);
+    // yield fork(watchEntryNewestIteratorChannel);
+    // yield fork(watchEntryProfileIteratorChannel);
+    // yield fork(watchEntryResolveIpfsHashChannel);
+    // yield fork(watchEntryStreamIteratorChannel);
+    // yield fork(watchEntryTagIteratorChannel);
+    // yield fork(watchEntryUpvoteChannel);
+    // yield fork(watchEntryVoteCostChannel);
 }
 
 export function* watchEntryActions () { // eslint-disable-line max-statements
@@ -936,7 +936,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
 }
 
 export function* registerWatchers () {
-    yield fork(registerEntryListeners);
+    // yield fork(registerEntryListeners);
     yield fork(watchEntryActions);
 }
 

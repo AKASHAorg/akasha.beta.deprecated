@@ -52,9 +52,9 @@ function* watchTransactionGetStatusChannel () {
 }
 
 export function* registerTransactionListeners () {
-    yield fork(watchTransactionGetStatusChannel);
+    // yield fork(watchTransactionGetStatusChannel);
 }
 
 export function* watchTransactionActions () {
-    yield fork(watchTransactionGetStatus);
+    // yield fork(watchTransactionGetStatus);
 }

@@ -120,30 +120,30 @@ function* claimableSaveEntries ({ data, request }) {
 }
 
 function* watchClaimableIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.myVotesIterator);
-        const { ethAddress, limit, reversed } = resp.request;
-        const loggedEthAddress = yield select(selectLoggedEthAddress);        
-        if (resp.error) {
-            yield put(actions.claimableIteratorError(resp.error));
-        } else if (loggedEthAddress === ethAddress) {
-            const status = yield call(claimableSaveEntries, { data: resp.data, request: resp.request });
-            const syncedNormal = status.oldestBlock === 0;
-            const syncedReversed = reversed && resp.data.collection.length !== limit;
-            if (!syncedNormal || !syncedReversed) {
-                yield apply(reduxSaga, reduxSaga.delay, [1000]);
-                yield call(claimableIterator);
-            }
-        }
-    }
+    // while (true) {
+    //     const resp = yield take(actionChannels.entry.myVotesIterator);
+    //     const { ethAddress, limit, reversed } = resp.request;
+    //     const loggedEthAddress = yield select(selectLoggedEthAddress);        
+    //     if (resp.error) {
+    //         yield put(actions.claimableIteratorError(resp.error));
+    //     } else if (loggedEthAddress === ethAddress) {
+    //         const status = yield call(claimableSaveEntries, { data: resp.data, request: resp.request });
+    //         const syncedNormal = status.oldestBlock === 0;
+    //         const syncedReversed = reversed && resp.data.collection.length !== limit;
+    //         if (!syncedNormal || !syncedReversed) {
+    //             yield apply(reduxSaga, reduxSaga.delay, [1000]);
+    //             yield call(claimableIterator);
+    //         }
+    //     }
+    // }
 }
 
 export function* registerClaimableListeners () {
-    yield fork(watchClaimableIteratorChannel);
+    // yield fork(watchClaimableIteratorChannel);
 }
 
 export function* watchClaimableActions () { // eslint-disable-line max-statements
-    yield takeEvery(types.CLAIMABLE_DELETE_ENTRY, claimableDeleteEntry);        
-    yield takeEvery(types.CLAIMABLE_GET_ENTRIES, claimableGetEntries);    
-    yield takeEvery(types.CLAIMABLE_ITERATOR, claimableIterator);
+    // yield takeEvery(types.CLAIMABLE_DELETE_ENTRY, claimableDeleteEntry);        
+    // yield takeEvery(types.CLAIMABLE_GET_ENTRIES, claimableGetEntries);    
+    // yield takeEvery(types.CLAIMABLE_ITERATOR, claimableIterator);
 }

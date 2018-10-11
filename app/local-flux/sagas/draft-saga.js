@@ -240,94 +240,94 @@ function* draftRevert ({ data }) {
     }
 }
 
-function* watchDraftPublishChannel () {
-    while (true) {
-        const response = yield take(actionChannels.entry.publish);
-        const { actionId } = response.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (response.error) {
-                yield put(draftActions.draftPublishError(
-                    response.error,
-                    response.request.id
-                ));
-            } else if (response.data.receipt) {
-                const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-                if (!response.data.receipt.success) {
-                    yield put(draftActions.draftPublishError({}, response.request.id));
-                } else {
-                    yield put(eProcActions.gethGetStatusSuccess({
-                        blockNr: blockNumber
-                    }, {
-                        geth: {}
-                    }));
-                    yield put(actionActions.actionUpdate({
-                        id: response.request.actionId,
-                        status: actionStatus.published,
-                        tx: response.data.tx,
-                        blockNumber,
-                        cumulativeGasUsed,
-                        success,
-                        payload: { entryId: response.data.entryId }
-                    }));
-                }
-            } else {
-                const loggedEthAddress = yield select(selectLoggedEthAddress);
-                yield put(actionActions.actionUpdate({
-                    id: response.request.actionId,
-                    status: actionStatus.publishing,
-                    tx: response.data.tx,
-                    payload: { ethAddress: loggedEthAddress }
-                }));
-            }
-        }
-    }
-}
+// function* watchDraftPublishChannel () {
+//     while (true) {
+//         const response = yield take(actionChannels.entry.publish);
+//         const { actionId } = response.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (response.error) {
+//                 yield put(draftActions.draftPublishError(
+//                     response.error,
+//                     response.request.id
+//                 ));
+//             } else if (response.data.receipt) {
+//                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+//                 if (!response.data.receipt.success) {
+//                     yield put(draftActions.draftPublishError({}, response.request.id));
+//                 } else {
+//                     yield put(eProcActions.gethGetStatusSuccess({
+//                         blockNr: blockNumber
+//                     }, {
+//                         geth: {}
+//                     }));
+//                     yield put(actionActions.actionUpdate({
+//                         id: response.request.actionId,
+//                         status: actionStatus.published,
+//                         tx: response.data.tx,
+//                         blockNumber,
+//                         cumulativeGasUsed,
+//                         success,
+//                         payload: { entryId: response.data.entryId }
+//                     }));
+//                 }
+//             } else {
+//                 const loggedEthAddress = yield select(selectLoggedEthAddress);
+//                 yield put(actionActions.actionUpdate({
+//                     id: response.request.actionId,
+//                     status: actionStatus.publishing,
+//                     tx: response.data.tx,
+//                     payload: { ethAddress: loggedEthAddress }
+//                 }));
+//             }
+//         }
+//     }
+// }
 
-function* watchDraftPublishUpdateChannel () {
-    while (true) {
-        const response = yield take(actionChannels.entry.editEntry);
-        const { actionId } = response.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (response.error) {
-                yield put(draftActions.draftPublishUpdateError(
-                    response.error,
-                    response.request.id
-                ));
-            } else if (response.data.receipt) {
-                const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-                if (!response.data.receipt.success) {
-                    yield put(draftActions.draftPublishUpdateError({}, response.request.id));
-                } else {
-                    yield put(eProcActions.gethGetStatusSuccess({
-                        blockNr: blockNumber
-                    }, {
-                        geth: {}
-                    }));
-                    yield put(actionActions.actionUpdate({
-                        id: response.request.actionId,
-                        status: actionStatus.published,
-                        tx: response.data.tx,
-                        blockNumber,
-                        cumulativeGasUsed,
-                        success,
-                    }));
-                }
-            } else {
-                yield put(actionActions.actionUpdate({
-                    id: response.request.actionId,
-                    status: actionStatus.publishing,
-                    tx: response.data.tx,
-                }));
-            }
-        }
-    }
-}
+// function* watchDraftPublishUpdateChannel () {
+//     while (true) {
+//         const response = yield take(actionChannels.entry.editEntry);
+//         const { actionId } = response.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (response.error) {
+//                 yield put(draftActions.draftPublishUpdateError(
+//                     response.error,
+//                     response.request.id
+//                 ));
+//             } else if (response.data.receipt) {
+//                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
+//                 if (!response.data.receipt.success) {
+//                     yield put(draftActions.draftPublishUpdateError({}, response.request.id));
+//                 } else {
+//                     yield put(eProcActions.gethGetStatusSuccess({
+//                         blockNr: blockNumber
+//                     }, {
+//                         geth: {}
+//                     }));
+//                     yield put(actionActions.actionUpdate({
+//                         id: response.request.actionId,
+//                         status: actionStatus.published,
+//                         tx: response.data.tx,
+//                         blockNumber,
+//                         cumulativeGasUsed,
+//                         success,
+//                     }));
+//                 }
+//             } else {
+//                 yield put(actionActions.actionUpdate({
+//                     id: response.request.actionId,
+//                     status: actionStatus.publishing,
+//                     tx: response.data.tx,
+//                 }));
+//             }
+//         }
+//     }
+// }
 
 function* registerChannelListeners () {
-    yield fork(watchDraftPublishChannel);
-    yield fork(watchDraftPublishUpdateChannel);
+    // yield fork(watchDraftPublishChannel);
+    // yield fork(watchDraftPublishUpdateChannel);
 }
 
 export function* watchDraftActions () {

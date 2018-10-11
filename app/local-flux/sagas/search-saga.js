@@ -186,11 +186,11 @@ function* watchSearchTagsChannel () {
 }
 
 export function* registerSearchListeners () {
-    yield fork(watchSearchQueryChannel);
-    yield fork(watchSearchProfilesChannel);
-    yield fork(watchSearchSyncEntriesChannel);
-    yield fork(watchSearchSyncTagsChannel);
-    yield fork(watchSearchTagsChannel);
+    // yield fork(watchSearchQueryChannel);
+    // yield fork(watchSearchProfilesChannel);
+    // yield fork(watchSearchSyncEntriesChannel);
+    // yield fork(watchSearchSyncTagsChannel);
+    // yield fork(watchSearchTagsChannel);
 }
 
 export function* watchSearchActions () {
@@ -203,6 +203,6 @@ export function* watchSearchActions () {
 }
 
 export function* registerWatchers () {
-    yield fork(registerSearchListeners);
+    // yield fork(registerSearchListeners);
     yield fork(watchSearchActions);
 }
