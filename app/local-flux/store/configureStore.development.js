@@ -32,6 +32,6 @@ export default function configureStore (initialState) {
             store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
         );
     }
-    self.redux__store = store;
+    global.redux__store = store;
     return store;
 }

@@ -27,8 +27,7 @@ describe('[Service] channel-request-service', () => {
         }
         // ChannelReqService.generateId = spy();
         ChannelReqService.sendRequest(testReq.module, testReq.method, testReq.data);
-        // expect(ChannelReqService.generateId.called).to.be.true;
-        console.log(ChannelReqService, 'req service');
+        // expect(ChannelReqService.generateId).to.be.called;
         expect(ChannelReqService.requestIds[testReq.method].length).to.equal(1);
     });
 });

@@ -192,15 +192,16 @@ function* watchIpfsLogsChannel () {
     }
 }
 
-function* watchIpfsConfigChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.ipfs.getConfig);
-        if (resp.error) {
-            yield put(actions.ipfsGetConfigError(resp.error));
-        } else {
-            yield put(actions.ipfsGetConfigSuccess(resp.data));
-        }
-    }
+function* watchIpfsConfigChannel (data) {
+    console.log('start an action based on response on another action', data);
+    // while (true) {
+    //     const resp = yield take(actionChannels.ipfs.getConfig);
+    //     if (resp.error) {
+    //         yield put(actions.ipfsGetConfigError(resp.error));
+    //     } else {
+    //         yield put(actions.ipfsGetConfigSuccess(resp.data));
+    //     }
+    // }
 }
 
 function* watchIpfsGetPortsChannel () {
@@ -416,7 +417,7 @@ export function* registerEProcListeners () {
     // yield fork(watchGethStartChannel);
     // yield fork(watchIpfsStartChannel);
     // yield fork(watchGethOptionsChannel);
-    // yield fork(watchIpfsConfigChannel);
+    yield takeEvery(`${IPFS_MODULE.getConfig}_SUCCESS`, watchIpfsConfigChannel);
     // yield fork(watchIpfsGetPortsChannel);
     // yield fork(watchIpfsSetPortsChannel);
     // yield fork(watchGethSyncStatusChannel);
