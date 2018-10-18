@@ -63,7 +63,7 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
         case actionTypes.commentDownvote:
         case actionTypes.commentUpvote:
             return pending.setIn(['commentVote', commentId], action.id);
-        case actionTypes.createTag:
+        case actionTypes.tagCreate:
             return pending.setIn([action.type, tag], action.id);
         case actionTypes.follow:
         case actionTypes.unfollow:
@@ -107,7 +107,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
         case actionTypes.commentDownvote:
         case actionTypes.commentUpvote:
             return pending.deleteIn(['commentVote', commentId]);
-        case actionTypes.createTag:
+        case actionTypes.tagCreate:
             return pending.deleteIn([action.type, tag]);
         case actionTypes.follow:
         case actionTypes.unfollow:

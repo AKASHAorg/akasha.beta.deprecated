@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { injectIntl } from 'react-intl';
 import { profileLogout } from '../../local-flux/actions/profile-actions';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
