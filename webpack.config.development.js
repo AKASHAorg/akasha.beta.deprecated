@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 const publicPath = `http://localhost:${port}/dist`;
 
 export default merge(baseConfig, {
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
     mode: 'development',
     entry: [
         'react-hot-loader/patch',
@@ -170,7 +170,7 @@ export default merge(baseConfig, {
         })
     ],
 
-    target: 'electron-renderer',
+    target: 'web',
     devServer: {
         port,
         hot: true,

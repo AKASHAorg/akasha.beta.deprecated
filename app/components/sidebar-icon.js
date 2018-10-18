@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
+import withRouter from 'react-router/withRouter';
+import Link from 'react-router-dom/Link';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
 import { Icon } from './';

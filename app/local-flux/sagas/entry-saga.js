@@ -689,7 +689,8 @@ function* watchEntryListIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.getEntryList);
         if (resp.error) {
-            yield put(actions.entryListIteratorError(resp.error));
+             // @todo: implement actions.entryListIteratorError
+            // yield put(actions.entryListIteratorError(resp.error));
         } else {
             const { entryId, ethAddress } = resp.data;
             const listName = resp.request[0].listName;

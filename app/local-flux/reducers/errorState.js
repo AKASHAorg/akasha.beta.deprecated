@@ -71,8 +71,8 @@ const errorState = createReducer(initialState, {
         state.merge({
             reportError: new Map()
         }),
-    [types.ETH_ADDRESS_CREATE_ERROR]: addNewError,
-    [types.FUND_FROM_FAUCET_ERROR]: addNewError,
+    // [types.ETH_ADDRESS_CREATE_ERROR]: addNewError,
+    // [types.FUND_FROM_FAUCET_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_SAVE_ERROR]: addNewError,
     [types.GETH_GET_OPTIONS_ERROR]: addNewError,
@@ -103,14 +103,14 @@ const errorState = createReducer(initialState, {
     [types.PROFILE_TRANSFORM_ESSENCE_ERROR]: addNewError,
     [types.PROFILE_UNFOLLOW_ERROR]: addNewError,
     [types.PROFILE_UPDATE_ERROR]: addNewError,
-    [types.PUBLISH_PROFILE_ERROR]: addNewError,
-    [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
+    // [types.PUBLISH_PROFILE_ERROR]: addNewError,
+    // [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
     [types.SEARCH_QUERY_ERROR]: addNewError,
     [types.SEARCH_MORE_QUERY_ERROR]: addNewError,
     // an error occured when saving temp profile to IndexedDb
     [types.TEMP_PROFILE_CREATE_ERROR]: addNewError,
     // error deleting temp profile from indexedDB.
-    [types.TEMP_PROFILE_DELETE_ERROR]: addNewError,
+    // [types.TEMP_PROFILE_DELETE_ERROR]: addNewError,
     // error getting temp profile from indexedDB
     [types.TEMP_PROFILE_GET_ERROR]: addNewError,
     // error updating temp profile to IndexedDB

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Modal, Popover } from 'antd';
 import { generalMessages, highlightMessages } from '../../locale-data/messages';

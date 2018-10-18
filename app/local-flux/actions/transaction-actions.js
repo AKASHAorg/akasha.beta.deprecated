@@ -17,8 +17,8 @@ export const transactionEmitMinedError = (error) => {
     return action(types.TRANSACTION_EMIT_MINED_ERROR, { error });
 };
 
-export const transactionEmitMinedSuccess = data =>
-    action(types.TRANSACTION_EMIT_MINED_SUCCESS, { data });
+// export const transactionEmitMinedSuccess = data =>
+//     action(types.TRANSACTION_EMIT_MINED_SUCCESS, { data });
 export const transactionGetStatus = (txs, ids) => action(types.TRANSACTION_GET_STATUS, { txs, ids });
 
 export const transactionGetStatusError = (error) => {
@@ -29,8 +29,8 @@ export const transactionGetStatusError = (error) => {
 
 export const transactionGetStatusSuccess = data =>
     action(types.TRANSACTION_GET_STATUS_SUCCESS, { data });
-export const transactionSavePendingError = (error) => {
-    error.code = 'TSPE01';
-    error.messageId = 'transactionSavePending';
-    return action(types.TRANSACTION_SAVE_PENDING_ERROR, { error });
-};
+// export const transactionSavePendingError = (error) => {
+//     error.code = 'TSPE01';
+//     error.messageId = 'transactionSavePending';
+//     return action(types.TRANSACTION_SAVE_PENDING_ERROR, { error });
+// };

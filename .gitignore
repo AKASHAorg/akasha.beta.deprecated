@@ -47,5 +47,7 @@ jsconfig.json
 dist
 main/**/*.js
 main/**/*.js.map
+desktop/**/*.js
+desktop/**/*.js.map
 app/locale-data/en-source.json
 app/locale-data/en.json
