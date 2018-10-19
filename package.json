@@ -34,7 +34,8 @@
     "package-all": "cross-env DEBUG=electron-builder,electron-builder:* -mwl",
     "release": "npm run build && cross-env DEBUG=electron-builder,electron-builder:* electron-builder",
     "generate-changelog": "standard-version",
-    "postinstall": "npm run flow-typed"
+    "postinstall": "npm run rebuild",
+    "rebuild": "electron-rebuild"
   },
   "betterScripts": {
     "start": {
@@ -122,7 +123,7 @@
     "css-modules-require-hook": "4.2.3",
     "cssnano": "4.1.5",
     "del": "3.0.0",
-    "devtron": "1.4.0",
+    "devtron": "^1.4.0",
     "dexie": "2.0.4",
     "draft-js": "0.10.5",
     "draft-js-anchor-plugin": "2.0.2",
@@ -130,9 +131,10 @@
     "draft-js-export-html": "1.2.0",
     "draft-js-image-plugin": "2.0.6",
     "draft-js-plugins-editor": "2.1.1",
-    "electron": "3.0.4",
+    "electron": "3.0.5",
     "electron-builder": "20.28.4",
     "electron-mocha": "6.0.4",
+    "electron-rebuild": "^1.8.2",
     "enzyme": "3.7.0",
     "eslint": "5.7.0",
     "eslint-config-airbnb": "17.1.0",
@@ -249,7 +251,6 @@
     "bluebird": "3.5.2",
     "bs58": "4.0.1",
     "compare-versions": "3.4.0",
-    "electron-debug": "2.0.0",
     "electron-devtools-installer": "2.2.4",
     "electron-log": "2.2.17",
     "electron-updater": "3.1.2",

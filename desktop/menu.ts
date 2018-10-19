@@ -1,4 +1,5 @@
 import { app, Menu, session, shell } from 'electron';
+import * as Promise from 'bluebird';
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -9,13 +10,16 @@ const installExtensions = async () => {
       'REDUX_DEVTOOLS',
     ];
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    for (const name of extensions) {
+    const load = [];
+    extensions.forEach(function (name) {
       try {
-        await installer.default(installer[name], forceDownload);
+        load.push(installer.default(installer[name], forceDownload));
       } catch (e) {
       } // eslint-disable-line
-    }
+    });
+    return Promise.all(load);
   }
+  return Promise.resolve();
 };
 
 export async function initMenu(mainWindow: any) {
