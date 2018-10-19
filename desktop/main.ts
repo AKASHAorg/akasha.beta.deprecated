@@ -91,9 +91,6 @@ const bootstrap = function () {
     appLogger.level = 'error';
   }
   const windowLogger = appLogger.child({ module: 'window' });
-  if (process.env.NODE_ENV === 'development') {
-    require('electron-debug')({ showDevTools: true });
-  }
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
