@@ -263,7 +263,8 @@
     "pino": "5.8.0",
     "prop-types": "15.6.2",
     "ramda": "0.25.0",
-    "request": "2.88.0"
+    "request": "2.88.0",
+    "search-index": "https://github.com/kenshyx/search-index"
   },
   "devEngines": {
     "npm": ">=6.x"
@@ -334,9 +335,6 @@
       "oneClick": false,
       "multiLanguageInstaller": true,
       "allowToChangeInstallationDirectory": true
-    },
-    "resolutions": {
-      "leveldown": "2.0.1"
     },
     "directories": {
       "buildResources": "resources",
