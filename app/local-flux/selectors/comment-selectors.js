@@ -1,18 +1,38 @@
+// @flow
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-export const selectComment = (state, id) => state.commentsState.getIn(['byId', id]);
+/*::
+    type CommentByIdProps = {
+        commentId: string
+    }
+    type CommentLastBlockProps = {
+        parent: string
+    }
+    type CommentIsPendingProps = {
+        context: string,
+        commentId: string
+    }
+ */
 
-export const selectCommentIsPending = (state, context, commentId) =>
-    state.commentsState.getIn(['flags', 'pendingComments', context, commentId]);
+export const selectCommentById = (state/*: Object */, props/*: CommentByIdProps */) =>
+    state.commentsState.getIn(['byId', props.commentId]);
 
-export const selectCommentLastBlock = (state, parent) => state.commentsState.getIn(['lastBlock', parent]);
+// @todo comment `context` param and avoid using confusing params
+export const selectCommentIsPending = (state/*: Object */, props/*: CommentIsPendingProps */) =>
+    state.commentsState.getIn(['flags', 'pendingComments', props.context, props.commentId]);
 
-export const selectCommentLastIndex = (state, parent) => state.commentsState.getIn(['lastIndex', parent]);
+export const selectCommentLastBlock = (state/*: Object */, props/*: CommentLastBlockProps */) =>
+    state.commentsState.getIn(['lastBlock', props.parent]);
 
-export const selectCommentVote = (state, commentId) => state.commentsState.getIn(['votes', commentId]);
+export const selectCommentLastIndex = (state/*: Object */, props/*: CommentLastBlockProps */) =>
+    state.commentsState.getIn(['lastIndex', props.parent]);
 
-export const selectEntryCommentsForParent = (state, entryId, parent) => {
+export const selectCommentVote = (state/*: Object */, props/*: CommentByIdProps */) =>
+    state.commentsState.getIn(['votes', props.commentId]);
+
+// @todo ---------------------- Refactor below --------------------------- 
+export const selectEntryCommentsForParent = (state/*: Object */, entryId, parent) => {
     const list = state.commentsState.getIn(['byParent', parent]) || new List();
     return list.map(id => selectComment(state, id)).filter(comm => comm.entryId === entryId);
 };
@@ -31,9 +51,6 @@ export const selectNewestCommentBlock = (state, parent) =>
     state.commentsState.getIn(['newestCommentBlock', parent]);
 
 export const selectFirstComment = state => state.commentsState.get('firstComm');
-
-export const selectHideCommentSettings = state =>
-    state.settingsState.getIn(['userSettings', 'hideCommentContent']);
 
 export const selectMoreComments = (state, parent) => state.commentsState.getIn(['moreComments', parent]);
 

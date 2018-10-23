@@ -1,8 +1,6 @@
-export const selectNotificationsPanel = state => state.appState.get('showNotificationsPanel');
+// @flow
 
-export const selectShowWallet = state => state.appState.get('showWallet');
-
-export const selectTransactionsLog = state => state.appState.get('showTransactionsLog');
-
-export const selectProfileEditToggle = state =>
-    state.appState.get('showProfileEditor');
+export const selectNotificationsPanel = (state/*: Object*/) => state.appState.get('showNotificationsPanel');
+export const selectShowWallet = (state/*: Object*/)=> state.appState.get('showWallet');
+export const selectTransactionsLog = (state/*: Object*/)=> state.appState.get('showTransactionsLog');
+export const selectProfileEditToggle = (state/*: Object*/)=> state.appState.get('showProfileEditor');

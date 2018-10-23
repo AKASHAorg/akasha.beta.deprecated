@@ -1,3 +1,4 @@
+// @flow
 import * as reduxSaga from 'redux-saga';
 import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/action-actions';
@@ -8,8 +9,7 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectAction, selectActionsHistory, selectBatchActions, selectLoggedEthAddress,
-    selectActionToPublish } from '../selectors';
+import { actionSelectors, profileSelectors } from '../selectors';
 import * as actionService from '../services/action-service';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -131,14 +131,14 @@ function hasEnoughBalance (actionType, balance, publishingCost, payload) {
 
 function* actionAdd ({ ethAddress, payload, actionType }) {
     if (actionType === actionTypes.faucet) {
-        const id = yield select(selectActionToPublish);
+        const id = yield select(actionSelectors.selectActionToPublish);
         yield put(actions.actionPublish(id)); // eslint-disable-line no-use-before-define
     }
     /**
      * Check if user has enough balance to create the action
      */
     const balance = yield select(state => state.profileState.get('balance'));
-    const publishingCost = yield select(state => state.profileState.get('publishingCost'));
+    const publishingCost = yield select(profileSelectors.selectPublishingCost);
     const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload || null);
     if ((hasBalance.eth && hasBalance.mana) || !balanceRequired(actionType)) {
         /**
@@ -169,9 +169,9 @@ function* actionDelete ({ id }) {
 }
 
 function* actionGetAllHistory ({ loadMore }) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
-        const offset = (yield select(selectActionsHistory)).size;
+        const offset = (yield select(actionSelectors.getActionHistory)).size;
         const resp = yield apply(
             actionService,
             actionService.getAllHistory,
@@ -185,7 +185,7 @@ function* actionGetAllHistory ({ loadMore }) {
 
 function* actionGetHistory ({ request }) {
     try {
-        const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(
             actionService,
             actionService.getActionsByType,
@@ -204,7 +204,7 @@ function* actionGetHistory ({ request }) {
  */
 function* actionGetPending () {
     try {
-        const loggedEthAddress = yield select(selectLoggedEthAddress);
+        const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(actionService, actionService.getPendingActions, [loggedEthAddress]);
         yield put(actions.actionGetPendingSuccess(data));
         if (data.length) {
@@ -230,17 +230,17 @@ function* actionGetPending () {
  *  - from checkAuthentication saga, whenever reauthentication is not needed (token is not expired)
  */
 function* actionPublish ({ id }) { // eslint-disable-line complexity
-    const action = yield select(state => selectAction(state, id));
+    const action = yield select(state => actionSelectors.selectActionById(state, id));
     const actionId = action.get('id');
     const payload = action.get('payload').toJS();
     if (action.get('type') === actionTypes.batch) {
-        const batchActions = yield select(selectBatchActions);
+        const batchActions = yield select(actionSelectors.selectBatchActions);
         for (let i = 0; i < batchActions.size; i++) {
             const act = batchActions.get(i);
             const publishAction = publishActions[act.get('type')];
             if (publishAction) {
                 yield put(publishAction({ actionId: act.get('id'), ...act.get('payload').toJS() }));
-                yield apply(reduxSaga, reduxSaga.delay, [200]);
+                yield call([reduxSaga, reduxSaga.delay], 200);
             }
         }
     } else {
@@ -256,7 +256,7 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
  * This is called from actionUpdate saga, when status is updated to "publishing" or "published"
  */
 function* actionSave (id) {
-    let action = yield select(state => selectAction(state, id));
+    let action = yield select(state => actionSelectors.selectActionById(state, id));
     // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
     if (action && action.status === actionStatus.published) {
@@ -279,9 +279,9 @@ function* actionSave (id) {
 
 function* actionPublished ({ receipt }) {
     const { blockNumber, cumulativeGasUsed, success, transactionHash } = receipt;
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
-    const action = yield select(state => selectAction(state, actionId)); // eslint-disable-line
+    const action = yield select(state => actionSelectors.selectActionById(state, actionId)); // eslint-disable-line
 
     if (action && action.get('ethAddress') === loggedEthAddress) {
         const status = actionStatus.published;
@@ -297,7 +297,7 @@ function* actionPublished ({ receipt }) {
  * Important: the "changes" object must contain the id of the action
  */
 function* actionUpdate ({ changes }) {
-    const action = yield select(state => selectAction(state, changes.id));
+    const action = yield select(state => actionSelectors.selectActionById(state, changes.id));
     if (changes.status === actionStatus.publishing) {
         yield fork(actionSave, changes.id);
     }
@@ -311,7 +311,7 @@ function* actionUpdate ({ changes }) {
 }
 
 function* actionUpdateClaim ({ data }) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         yield apply(
             actionService,
@@ -324,7 +324,7 @@ function* actionUpdateClaim ({ data }) {
 }
 
 function* actionUpdateClaimVote ({ data }) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         yield apply(
             actionService,
@@ -337,16 +337,16 @@ function* actionUpdateClaimVote ({ data }) {
 }
 
 // Action watchers
-
-export function* watchActionActions () {
-    yield takeEvery(types.ACTION_ADD, actionAdd);
-    yield takeEvery(types.ACTION_DELETE, actionDelete);
-    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory);
-    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
-    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
-    yield takeEvery(types.ACTION_PUBLISH, actionPublish);
-    yield takeEvery(types.ACTION_PUBLISHED, actionPublished);
-    yield takeEvery(types.ACTION_UPDATE, actionUpdate);
-    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim);
+// $FlowFixMe
+export function* watchActionActions () { // $FlowFixMe
+    yield takeEvery(types.ACTION_ADD, actionAdd); // $FlowFixMe
+    yield takeEvery(types.ACTION_DELETE, actionDelete); // $FlowFixMe
+    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory); // $FlowFixMe
+    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory); // $FlowFixMe
+    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending); // $FlowFixMe
+    yield takeEvery(types.ACTION_PUBLISH, actionPublish); // $FlowFixMe
+    yield takeEvery(types.ACTION_PUBLISHED, actionPublished); // $FlowFixMe
+    yield takeEvery(types.ACTION_UPDATE, actionUpdate); // $FlowFixMe
+    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim); // $FlowFixMe
     yield takeEvery(types.ACTION_UPDATE_CLAIM_VOTE, actionUpdateClaimVote);
 }

@@ -1,23 +1,19 @@
-
+// @flow
 import { Map } from 'immutable';
+import { selectEntriesById } from './entry-selectors';
 
-export const selectClaimableEntries = state => state.claimableState.get('entryList');
+export const selectClaimableLoading = (state/*: Object */)=> !!state.claimableState.get('entriesLoading').size;
+export const selectClaimableLoadingMore = (state/*: Object */)=> !!state.claimableState.get('entriesLoadingMore').size;
+export const selectClaimableMoreEntries = (state/*: Object */)=> state.claimableState.get('moreEntries');
+export const selectClaimableEntries = (state/*: Object */) => state.claimableState.get('entryList');
 
-export const selectClaimableEntriesById = (state) => {
-    const entryById = state.entryState.get('byId');
+/** getters (see ./README.md) */
+export const getClaimableEntriesCounter = (state/*: Object */)=> selectClaimableEntries(state).size;
+export const selectClaimableEntriesById = (state/*: Object */) => {
+    const entryById = selectEntriesById(state);
     let entries = new Map();
-    state.claimableState.get('entryList').forEach((claimableEntry) => {
+    selectClaimableEntries(state).forEach((claimableEntry) => {
         entries = entries.set(claimableEntry.entryId, entryById.get(claimableEntry.entryId));
     });
     return entries;
 };
-
-export const selectClaimableLoading = state => !!state.claimableState.get('entriesLoading').size;
-
-export const selectClaimableLoadingMore = state => !!state.claimableState.get('entriesLoadingMore').size;
-
-export const selectClaimableMoreEntries = state => state.claimableState.get('moreEntries');
-
-export const selectClaimableOffset = state => state.claimableState.get('entryList').size;
-
-

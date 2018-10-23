@@ -103,7 +103,7 @@ function* watchBootstrapHome () {
 }
 
 export default function* rootSaga () { // eslint-disable-line max-statements
-    createActionChannels();
+    // createActionChannels();
     yield call(loadAkashaDB);
     yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);

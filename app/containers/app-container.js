@@ -25,7 +25,7 @@ import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, Fauc
     Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
     CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
-import { selectLoggedEthAddress } from '../local-flux/selectors/index';
+import { profileSelectors } from '../local-flux/selectors';
 
 notification.config({
     top: 60,
@@ -286,7 +286,7 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         faucet: state.profileState.get('faucet'),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         needAuth: state.actionState.get('needAuth'),
         needEth: state.actionState.get('needEth'),
         needAeth: state.actionState.get('needAeth'),

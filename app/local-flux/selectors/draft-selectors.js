@@ -1,13 +1,25 @@
+// @flow
 
-export const selectDraftById = (state, draftId) => state.draftState.getIn(['drafts', draftId]);
+/*::
+    type DraftByIdProps = {
+        draftId: string
+    }
 
-export const selectDrafts = state => state.draftState.get('drafts');
+    type SelectionStateProps = {
+        draftId: string,
+        ethAddress: string
+    }
+ */
 
-export const selectDraftsLastBlock = state => state.draftState.getIn(['iterator', 'lastBlock']);
+export const selectDraftById = (state/*: Object */, props/*: DraftByIdProps */) => state.draftState.getIn(['drafts', props.draftId]);
 
-export const selectDraftsLastIndex = state => state.draftState.getIn(['iterator', 'lastIndex']);
+export const selectDrafts = (state/*: Object */) => state.draftState.get('drafts');
 
-export const selectDraftsTotalLoaded = state => state.draftState.getIn(['iterator', 'totalLoaded']);
+export const selectDraftsLastBlock = (state/*: Object */) => state.draftState.getIn(['iterator', 'lastBlock']);
 
-export const selectSelectionState = (state, draftId, ethAddress) =>
-    state.draftState.getIn(['selection', draftId, ethAddress]);
+export const selectDraftsLastIndex = (state/*: Object */) => state.draftState.getIn(['iterator', 'lastIndex']);
+
+export const selectDraftsTotalLoaded = (state/*: Object */) => state.draftState.getIn(['iterator', 'totalLoaded']);
+
+export const selectSelectionState = (state/*: Object */, props/*: SelectionStateProps */) =>
+    state.draftState.getIn(['selection', props.draftId, props.ethAddress]);

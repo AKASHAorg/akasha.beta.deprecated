@@ -13,8 +13,7 @@ import { generalMessages } from '../locale-data/messages';
 import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import { selectLoggedProfileData, selectLoggedProfile,
-    selectProfileEditToggle } from '../local-flux/selectors';
+import { profileSelectors, appSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class Sidebar extends Component {
@@ -40,7 +39,7 @@ class Sidebar extends Component {
             nextProps.draftsFetched !== props.draftsFetched ||
             nextProps.fetchingDrafts !== props.fetchingDrafts ||
             nextProps.isProfileEditToggled !== props.isProfileEditToggled ||
-            !nextProps.loggedProfileData.equals(props.loggedProfileData) ||
+            (nextProps.loggedProfileData && !nextProps.loggedProfileData.equals(props.loggedProfileData)) ||
             !nextProps.loggedProfile.equals(props.loggedProfile) ||
             equals(nextProps.location, props.location);
     }
@@ -309,9 +308,9 @@ class Sidebar extends Component {
                 onVisibleChange={this.handleVisibleChange}
               >
                 <Avatar
-                  firstName={loggedProfileData.get('firstName')}
-                  image={loggedProfileData.get('avatar')}
-                  lastName={loggedProfileData.get('lastName')}
+                  firstName={loggedProfileData && loggedProfileData.get('firstName')}
+                  image={loggedProfileData && loggedProfileData.get('avatar')}
+                  lastName={loggedProfileData && loggedProfileData.get('lastName')}
                   size="small"
                 />
               </Popover>
@@ -346,9 +345,9 @@ function mapStateToProps (state) {
         drafts: state.draftState.get('drafts'),
         draftsFetched: state.draftState.get('draftsFetched'),
         fetchingDrafts: state.draftState.get('fetchingDrafts'),
-        isProfileEditToggled: selectProfileEditToggle(state),
-        loggedProfile: selectLoggedProfile(state),
-        loggedProfileData: selectLoggedProfileData(state),
+        isProfileEditToggled: appSelectors.selectProfileEditToggle(state),
+        loggedProfile: profileSelectors.selectLoggedProfile(state),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
         userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
     };
 }
