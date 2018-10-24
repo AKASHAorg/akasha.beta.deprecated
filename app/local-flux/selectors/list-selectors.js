@@ -1,44 +1,65 @@
-import { List } from 'immutable';
-
-export const selectListEntryType = (state, id, entryId) => {
-    const entryIds = state.listState.getIn(['byId', id, 'entryIds']);
-    const entryIndex = entryIds.findIndex(ele => ele.entryId === entryId);
-    const entry = entryIds.get(entryIndex);
-    return entry.entryType;
-};
-
-export const selectListEntries = (state, value, limit) =>
-    (state.listState.getIn(['byId', value, 'entryIds']) || new List())
-        .slice(0, limit)
-        .map((ele) => {
-            const { entryId, entryType, authorEthAddress } = ele;
-            return { entryId, entryType, author: { ethAddress: authorEthAddress } };
-        })
-        .toJS();
-
-export const selectListNextEntries = (state, value, limit) => {
-    const startIndex = state.listState.getIn(['byId', value, 'startIndex']);
-    return state.listState
-        .getIn(['byId', value, 'entryIds'])
-        .slice(startIndex, startIndex + limit)
-        .map(ele => ({ entryId: ele.entryId, author: { ethAddress: ele.authorEthAddress } }))
-        .toJS();
-};
-
-export const selectLists = (state) => {
-    if (state.listState.get('search')) {
-        const searchResults = state.listState.get('searchResults');
-        return searchResults.map(id => state.listState.getIn(['byId', id]));
+// @flow
+import { List, Map } from 'immutable';
+import { createSelector } from 'reselect';
+/*::
+    type ListEntryTypeProps = {
+        listId: string,
+        entryId?: string
     }
-    return state.listState.get('byId').toList();
+    type ListEntriesProps = {
+        listId: string,
+        limit: number
+    }
+ */
+
+export const selectListById = (state/*: Object */, props/*: ListEntryTypeProps */) =>
+    state.listState.getIn(['byId', props.listId]);
+export const selectListEntryIds = (state/*: Object */, props/*: ListEntryTypeProps */) =>
+    selectListById(state, props).get('entryIds');
+export const selectListEntryIndex = (state/*: Object */, props/*: ListEntryTypeProps */) =>
+    selectListEntryIds(state, props).findIndex(listEntry => listEntry.entryId === props.entryId);
+export const selectLists = (state/*: Object */) => state.listState.get('byId').toList();
+export const selectListsNames = (state/*: Object */) => selectLists(state).map(list => list.get('name'));
+export const selectListsCount = (state/*: Object */) => selectLists(state).size;
+export const selectListSearchTerm = (state/*: Object */) => state.listState.get('search');
+export const selectListSearchResults = (state/*: Object */) => state.listState.get('searchResults');
+
+export const getListEntryType = createSelector(
+    [selectListEntryIds, selectListEntryIndex],
+    (entryIds/*: Object */, entryIndex/*: Number */) => {
+        return entryIds.get(entryIndex).entryType;
+    }
+);
+
+export const getListEntries = (state/*: Object */, props/*: ListEntriesProps */) => {
+    const listEntries = selectListEntryIds(state, {listId: props.listId}) || new List();
+    return listEntries.slice(0, props.limit)
+                .map(entry => {
+                    const { entryId, entryType, authorEthAddress } = entry;
+                    return { entryId, entryType, author: { ethAddress: authorEthAddress } };
+                });
 };
 
-export const selectListsAll = state => state.listState.get('byId').toList();
+export const getListNextEntries = createSelector(
+    [selectListById, (state/*: Object*/, props/*: ListEntriesProps */) => props.limit],
+    (list, limit) => {
+        const startIndex = list.get('startIndex');
+        const entryIds = list.get('entryIds');
+        return entryIds
+                .slice(startIndex, startIndex + limit)
+                .map((entry) => ({ entryId: entry.entryId, author: { ethAddress: entry.authorEthAddress } }))
+    });
 
-export const selectListsNames = state => state.listState.get('byId').toList().map(list => list.get('name'));
-
-export const selectListsCount = state => state.listState.get('byId').size;
-
-export const selectListSearch = state => state.listState.get('search');
-
-export const selectListById = (state, id) => state.listState.getIn(['byId', id]);
+export const getLists = createSelector(
+    [
+        selectListSearchTerm,
+        selectListSearchResults,
+        selectLists,
+        (state/*: Object */) => state,
+    ], (searchTerm, searchResults, lists, state) => {
+        if(searchTerm) {
+            searchResults.map((listId/*: string */) => selectListById(state, { listId }));
+        }
+        return lists;
+    }
+);

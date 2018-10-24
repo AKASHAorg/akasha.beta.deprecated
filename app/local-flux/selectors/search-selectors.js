@@ -13,6 +13,6 @@ export const entrySearchResultsSelector = (state/*: Object */) => state.searchSt
 
 
 export const getProfileSearchResults = (state/*: Object*/) =>
-    selectProfileSearchresults(state).map(ethAddress => selectProfileByEthAddress(state, ethAddress));
+    selectProfileSearchresults(state).map((ethAddress/*: string */) => selectProfileByEthAddress(state, { ethAddress }));
 
-export const selectSearchEntries = (state/*: Object */) => entrySearchResultsSelector(state).map(entryId => selectEntryById(state, entryId));
+export const selectSearchEntries = (state/*: Object */) => entrySearchResultsSelector(state).map((entryId/*: string */) => selectEntryById(state, { entryId }));

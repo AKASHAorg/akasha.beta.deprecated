@@ -1,5 +1,5 @@
+// @flow
 import { createSelector } from 'reselect';
 
-export const selectTagEntriesCount = state => state.tagState.get('entriesCount');
-
-export const selectTagExists = state => state.tagState.get('exists');
+export const selectTagEntriesCount = (state/*: Object */) => state.tagState.get('entriesCount');
+export const selectTagExists = (state/*: Object */) => state.tagState.get('exists');

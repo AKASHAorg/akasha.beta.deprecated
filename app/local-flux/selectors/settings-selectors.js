@@ -1,11 +1,14 @@
-export const selectGeneralSettings = state => state.settingsState.get('general');
-export const selectUserSettings = state => state.settingsState.get('userSettings');
+// @flow
 
-export const getNotificationsPreference = state =>
+/** slices */
+export const selectGeneralSettings = (state/*: Object */) => state.settingsState.get('general');
+export const selectUserSettings = (state/*: Object */) => state.settingsState.get('userSettings');
+
+/** Combos */
+export const getNotificationsPreference = (state/*: Object */) =>
     selectUserSettings(state).get('notificationsPreference');
 
-export const getEntryContentHidden = state =>
+export const getEntryContentHidden = (state/*: Object */) =>
     selectUserSettings(state).get('hideEntryContent');
 
-export const selectHideCommentSettings = state =>
-    state.settingsState.getIn(['userSettings', 'hideCommentContent']);
+export const getHideCommentSettings = (state/*: Object */) => selectUserSettings(state).get('hideCommentContent');

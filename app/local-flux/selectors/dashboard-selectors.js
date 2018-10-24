@@ -13,6 +13,12 @@ import { selectEntryById, selectPendingEntriesFlags } from './entry-selectors';
     type ColBlockProps = {
         columnId: string
     }
+    type DashboardIdByNameProps = {
+        name: string
+    }
+    type ColumnEntriesProps = {
+        columnId: string
+    }
  */
 
 export const selectDashboardsById = (state/*: Object */) => state.dashboardState.get('byId');
@@ -62,9 +68,9 @@ export const getAllDashboards = createSelector(
     (dashboardIds/*: List<string> */, dashboards/*: Object */) =>
         dashboardIds.map(id => dashboards.get(id))
 );
-export const getDashboardIdByName = (state/*: Object */, name/*: string */) =>
+export const getDashboardIdByName = (state/*: Object */, props/*: DashboardIdByNameProps */) =>
     selectDashboardsById(state)
-        .filter((dashboard/*: Object */) => dashboard.get('name') === name)
+        .filter((dashboard/*: Object */) => dashboard.get('name') === props.name)
         .map((dashboard/*: Object */) => dashboard.get('id'));
 
 // @todo Not sure how is this useful...
@@ -81,9 +87,9 @@ export const getDashboards = createSelector(
     }
 );
 
-export const getColumnEntries = (state/*: Object */, columnId/*: string */) =>
+export const getColumnEntries = (state/*: Object */, props/*: ColumnEntriesProps */) =>
     selectColumns(state)
-        .getIn([columnId, 'itemsList'])
+        .getIn([props.columnId, 'itemsList'])
         .map(entryId => selectEntryById(state, entryId));
 
 // @todo -> get rid of FLAAAG

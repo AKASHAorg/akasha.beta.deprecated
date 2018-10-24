@@ -1,1 +1,3 @@
-export const selectUnreadNotifications = state => state.notificationsState.get('unreadNotifications');
+// @flow
+export const selectUnreadNotifications = (state/*: Object */) =>
+    state.notificationsState.get('unreadNotifications');

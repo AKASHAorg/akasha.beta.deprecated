@@ -1,10 +1,33 @@
 // @flow
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
+import { List } from 'immutable';
+
+/*::
+    type EntryPendingCommentsProps = {
+        commentId: string
+    }
+    type PendingByEntryIdProps = {
+        entryId: string
+    }
+    type PendingByAkashaIdProps = {
+        akashaId: string
+    }
+    type ActionByIdProps = {
+        actionId: string
+    }
+    type ActionByTypeProps = {
+        actionType: string
+    }
+    type PendingByEthAddressProps = {
+        ethAddress: string
+    }
+*/
 
 /**
  * 'state slice' selectors (see ./README.md)
  */
-export const selectActionById = (state/*: Object*/, id/*: string*/)/*: string*/ => state.actionState.getIn(['byId', id]);
+export const selectActionById = (state/*: Object*/, props/*: ActionByIdProps*/)/*: string*/ =>
+    state.actionState.getIn(['byId', props.actionId]);
 export const selectActionHistory = (state/*: Object*/)/*: Object*/ => state.actionState.get('history');
 export const selectBatchActions = (state/*: Object*/)/*: Object*/ => state.actionState.get('batchActions');
 export const selectPendingActions = (state/*: Object*/)/*: Object*/ => state.actionState.get('pending');
@@ -22,19 +45,19 @@ export const selectPendingClaimVotes = (state/*: Object*/)/*: Object*/ => select
  * this will make state refactoring a breeze :)
  */
 export const getActionHistory = (state/*: Object*/)/*: Object*/ =>
-    selectActionHistory(state).map(id => selectActionById(state, id));
+    selectActionHistory(state).map(actionid => selectActionById(state, actionid));
 
 export const getBatchActions = (state/*: Object*/)/*: Array<Object>*/ =>
     selectBatchActions(state).map(actionId => selectActionById(state, actionId));
 
-export const getPendingActionByType = (state/*: Object*/, actionType/*: string*/) =>
-    selectPendingActions(state).get(actionType);
+export const getPendingActionByType = (state/*: Object*/, props/*: ActionByTypeProps*/) =>
+    selectPendingActions(state).get(props.actionType);
 
 export const getClaimableActions = (state/*: Object*/) =>
     selectClaimableActions(state).map(actionId => selectActionById(state, actionId));
 
 export const getNeedAuthAction = (state/*: Object*/) =>
-    selectActionById(state, selectNeedAuthAction(state));
+    selectActionById(state, { actionId: selectNeedAuthAction(state) });
 
 // @todo -> remove this flag
 export const getFetchingHistoryFlag = (state/*: Object*/) =>
@@ -47,20 +70,20 @@ export const getPublishingActions = (state/*: Object*/) =>
     selectPublishingActions(state).map(id => selectActionById(state, id));
 
 //@todo -> refactor all this flags
-export const getFollowIsPending = (state/*: Object*/, ethAddress/*: string*/)/*: Boolean*/ =>
-    !!selectPendingActions(state).getIn(['follow', ethAddress]);
+export const getFollowIsPending = (state/*: Object*/, props/*: PendingByEthAddressProps */)/*: Boolean*/ =>
+    !!selectPendingActions(state).getIn(['follow', props.ethAddress]);
 
 //@todo -> refactor all this flags
-export const getTipIsPending = (state/*: Object*/, akashaId/*: string*/)/*: Boolean*/ =>
-    !!selectPendingActions(state).getIn(['sendTip', akashaId]);
+export const getTipIsPending = (state/*: Object*/, props/*: PendingByAkashaIdProps*/)/*: Boolean*/ =>
+    !!selectPendingActions(state).getIn(['sendTip', props.akashaId]);
 
 //@todo -> refactor all this flags
 export const getPendingEssenceTransform = (state/*: Object*/) =>
     selectPendingActions(state).get('transformEssence');
 
 //@todo -> refactor all this flags
-export const getVoteIsPending = (state/*: Object*/, entryId/*: Object*/)/*: Boolean*/ =>
-    !!selectPendingActions(state).getIn(['entryVote', entryId]);
+export const getVoteIsPending = (state/*: Object*/, props/*: PendingByEntryIdProps*/)/*: Boolean*/ =>
+    !!selectPendingActions(state).getIn(['entryVote', props.entryId]);
 
 //@todo -> refactor all this flags
 export const getPendingBondAeth = (state/*: Object*/) =>
@@ -71,19 +94,19 @@ export const getPendingCycleAeth = (state/*: Object*/) =>
     selectPendingActions(state).get('cycleAeth');
 
 //@todo -> refactor all this flags
-export const getClaimIsPending = (state/*: Object*/, entryId/*: string*/)/*: Boolean*/ =>
-    !!selectPendingClaims(state).getIn(entryId);
+export const getClaimIsPending = (state/*: Object*/, props/*: PendingByEntryIdProps*/)/*: Boolean*/ =>
+    !!selectPendingClaims(state).getIn(props.entryId);
 
 //@todo -> refactor all this flags
-export const getPendingClaimVote = (state/*: Object*/, entryId/*: string*/) =>
-    !!selectPendingClaimVotes(state).get(entryId);
+export const getPendingClaimVote = (state/*: Object*/, props/*: PendingByEntryIdProps*/) =>
+    !!selectPendingClaimVotes(state).get(props.entryId);
 
 //@todo -> refactor all this flags
 export const getPendingVotes = (state/*: Object*/) =>
     selectPendingActions(state).get('entryVote');
 
+export const getEntryPendingComments = (state/*: Object*/, props/*: Object*/) =>
+    selectPendingActions(state).getIn(['comment', props.entryId]) || new List();
 
-/**
- * composed selectors (using createSelector)
- * 
- */
+export const getPendingCommentVote = (state/*: Object*/, props/*: Object*/) =>
+    selectPendingActions(state).getIn(['commentVote', props.commentId]);

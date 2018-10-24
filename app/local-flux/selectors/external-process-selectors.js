@@ -1,19 +1,15 @@
-export const selectGethStatus = state => state.externalProcState.getIn(['geth', 'status']);
-
-export const selectGethSyncStatus = state => state.externalProcState.getIn(['geth', 'syncStatus']);
-
-export const selectGethSyncActionId = state => state.externalProcState.getIn(['geth', 'syncActionId']);
-
-export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
-
-export const selectLastGethLog = state =>
+// @flow
+export const selectGethStatus = (state/*: Object */) => state.externalProcessState.getIn(['geth', 'status']);
+export const selectGethSyncStatus = (state/*: Object */) => state.externalProcState.getIn(['geth', 'syncStatus']);
+export const selectGethSyncActionId = (state/*: Object */) => state.externalProcState.getIn(['geth', 'syncActionId']);
+export const selectIpfsStatus = (state/*: Object */) => state.externalProcState.getIn(['ipfs', 'status']);
+export const selectLastGethLog = (state/*: Object */) =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
-
-export const selectLastIpfsLog = state =>
+export const selectLastIpfsLog = (state/*: Object */) =>
     state.externalProcState.getIn(['ipfs', 'lastLogTimestamp']);
 
 
-export const selectBaseUrl = state =>
-    state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
+export const getCurrentBlockNumber = (state/*: Object */) => selectGethStatus(state).get('blockNumber');
+export const getBaseUrl = (state /*: Object */) => state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
 
-export const selectBlockNumber = state => state.externalProcState.getIn(['geth', 'status', 'blockNr']);
+

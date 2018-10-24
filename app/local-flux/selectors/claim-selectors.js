@@ -9,7 +9,7 @@ export const selectClaimableEntries = (state/*: Object */) => state.claimableSta
 
 /** getters (see ./README.md) */
 export const getClaimableEntriesCounter = (state/*: Object */)=> selectClaimableEntries(state).size;
-export const selectClaimableEntriesById = (state/*: Object */) => {
+export const getClaimableEntriesById = (state/*: Object */) => {
     const entryById = selectEntriesById(state);
     let entries = new Map();
     selectClaimableEntries(state).forEach((claimableEntry) => {

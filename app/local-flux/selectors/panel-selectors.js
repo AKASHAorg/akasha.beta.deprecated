@@ -1,1 +1,2 @@
-export const selectActivePanel = state => state.panelState.get('activePanel');
+// @flow
+export const selectActivePanel = (state/*: Object */) => state.panelState.get('activePanel');

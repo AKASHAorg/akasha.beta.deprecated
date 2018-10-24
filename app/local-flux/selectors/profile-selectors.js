@@ -6,8 +6,21 @@ import { ProfileRecord } from '../reducers/records/profile-record';
 /**
  * state slice selectors (see ./README.md)
  */
-export const selectProfileByEthAddress = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['byEthAddress', ethAddress]);
+
+/*::
+    type ProfileEthProps = {
+        ethAddress: string
+    }
+    type ProfileFlagProps = {
+        flag: string
+    }
+    type PendingProfileProps = {
+        context: string
+    }
+ */
+
+export const selectProfileByEthAddress = (state/*: Object*/, props/*: ProfileEthProps*/) =>
+    state.profileState.getIn(['byEthAddress', props.ethAddress]);
 
 export const selectLocalProfiles = (state/*: Object*/) => state.profileState.get('localProfiles');
 
@@ -18,29 +31,29 @@ export const selectLoggedEthAddress = (state/*: Object*/)/*: string*/ =>
 
 export const selectAllFollowings = (state/*: Object*/) => state.profileState.get('allFollowings');
 
-export const selectProfileFlag = (state/*: Object*/, flag/*: string*/) =>
-    state.profileState.getIn(['flags', flag]);
+export const selectProfileFlag = (state/*: Object*/, props/*: ProfileFlagProps */) =>
+    state.profileState.getIn(['flags', props.flag]);
 
-export const selectFollowers = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['followers', ethAddress]);
+export const selectFollowers = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['followers', props.ethAddress]);
 
-export const selectFollowings = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['followings', ethAddress]);
+export const selectFollowings = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['followings', props.ethAddress]);
 
-export const selectIsFollower = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['isFollower', ethAddress]);
+export const selectIsFollower = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['isFollower', props.ethAddress]);
 
-export const selectLastFollower = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['lastFollower', ethAddress]);
+export const selectLastFollower = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['lastFollower', props.ethAddress]);
 
-export const selectLastFollowing = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['lastFollowing', ethAddress]);
+export const selectLastFollowing = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['lastFollowing', props.ethAddress]);
 
-export const selectMoreFollowers = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['moreFollowers', ethAddress]);
+export const selectMoreFollowers = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['moreFollowers', props.ethAddress]);
 
-export const selectMoreFollowings = (state/*: Object*/, ethAddress/*: string*/) =>
-    state.profileState.getIn(['moreFollowings', ethAddress]);
+export const selectMoreFollowings = (state/*: Object*/, props/*: ProfileEthProps */) =>
+    state.profileState.getIn(['moreFollowings', props.ethAddress]);
 
 export const selectProfileExists = (state/*: Object*/) =>
     state.profileState.get('exists');
@@ -64,47 +77,47 @@ export const selectPublishingCost = (state/*: Object*/) =>
  * 'getters' (see ./README.md)
  */
 export const getLocalProfiles = (state/*: Object*/) =>
-    selectLocalProfiles(state).map(ethAddress => selectProfileByEthAddress(state, ethAddress));
+    selectLocalProfiles(state).map((ethAddress/*: string */) => selectProfileByEthAddress(state, { ethAddress }));
 
 export const getLoggedProfileData = (state/*: Object*/)/*: Object*/ =>
-    selectProfileByEthAddress(state, selectLoggedEthAddress(state));
+    selectProfileByEthAddress(state, { ethAddress: selectLoggedEthAddress(state) });
 
-export const getFetchingFollowers = (state/*: Object*/, ethAddress/*: string*/) =>
-    selectProfileFlag(state, 'fetchingFollowers').get(ethAddress);
+export const getFetchingFollowers = (state/*: Object*/, props/*: ProfileEthProps*/) =>
+    selectProfileFlag(state, { flag: 'fetchingFollowers' }).get(props.ethAddress);
 
-export const getFetchingFollowings = (state/*: Object*/, ethAddress/*: string*/) =>
-    selectProfileFlag(state, 'fetchingFollowings').get(ethAddress);
+export const getFetchingFollowings = (state/*: Object*/, props/*: ProfileEthProps*/) =>
+    selectProfileFlag(state, { flag: 'fetchingFollowings' }).get(props.ethAddress);
 
-export const getFetchingMoreFollowers = (state/*: Object*/, ethAddress/*: string*/) =>
-    selectProfileFlag(state, 'fetchingMoreFollowers').get(ethAddress);
+export const getFetchingMoreFollowers = (state/*: Object*/, props/*: ProfileEthProps*/) =>
+    selectProfileFlag(state, { flag: 'fetchingMoreFollowers' }).get(props.ethAddress);
 
-export const getFetchingMoreFollowings = (state/*: Object*/, ethAddress/*: string*/) =>
-    selectProfileFlag(state, 'fetchingMoreFollowings').get(ethAddress);
+export const getFetchingMoreFollowings = (state/*: Object*/, props/*: ProfileEthProps*/) =>
+    selectProfileFlag(state, { flag: 'fetchingMoreFollowings' }).get(props.ethAddress);
 
-export const getFollowers = (state/*: Object*/, ethAddress/*: string*/) => {
-    const followers = selectFollowers(state, ethAddress);
+export const getFollowers = (state/*: Object*/, props/*: ProfileEthProps */) => {
+    const followers = selectFollowers(state, { ethAddress: props.ethAddress });
     if(followers) {
         return followers.map(ethAddr => selectProfileByEthAddress(state, ethAddr))
     }
     return new List();
 };
-export const getFollowings = (state/*: Object*/, ethAddress/*: string*/) => {
-    const followings = selectFollowings(state, ethAddress);
+export const getFollowings = (state/*: Object*/, props/*: ProfileEthProps */) => {
+    const followings = selectFollowings(state, { ethAddress: props.ethAddress });
     if (followings) {
         return followings.map(ethAddr => selectProfileByEthAddress(state, ethAddr));
     }
     return new List();
 };
-export const getFollowingsCounter = (state/*: Object*/, ethAddress/*: string*/) => {
-    const following = selectFollowings(state, ethAddress);
+export const getFollowingsCounter = (state/*: Object*/, props/*: ProfileEthProps */) => {
+    const following = selectFollowings(state, { ethAddress: props.ethAddress });
     return following ? following.size : null;
 };
-export const getFollowersCounter = (state/*: Object*/, ethAddress/*: string*/) => {
-    const followers = selectFollowers(state, ethAddress);
+export const getFollowersCounter = (state/*: Object*/, props/*: ProfileEthProps */) => {
+    const followers = selectFollowers(state, { ethAddress: props.ethAddress });
     return followers ? followers.size : null;
 };
-export const getPendingProfiles = (state/*: Object*/, context/*: string*/) =>
-    selectProfileFlag(state, 'pendingProfiles').get(context);
+export const getPendingProfiles = (state/*: Object*/, props/*: PendingProfileProps*/) =>
+    selectProfileFlag(state, { flag: 'pendingProfiles' }).get(props.context);
 
 export const getToken = (state/*: Object*/) => selectLoggedProfile(state).get('token');
 

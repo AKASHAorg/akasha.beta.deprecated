@@ -1,1 +1,2 @@
-export const selectAllLicenses = state => state.licenseState.get('byId');
+// @flow
+export const selectAllLicenses = (state/*: Object */) => state.licenseState.get('byId');
