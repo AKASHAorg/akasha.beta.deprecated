@@ -3,6 +3,7 @@ import {isEmpty} from 'ramda';
 import * as types from '../constants';
 import {createReducer} from './create-reducer';
 import { CommentAuthor, CommentRecord, CommentsState, ProfileComments } from './records';
+import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new CommentsState();
 const hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -78,7 +79,7 @@ const commentsState = createReducer(initialState, {
 
     [types.COMMENTS_CLEAN]: () => initialState,
 
-    [types.COMMENTS_GET_COMMENT]: (state, { context, entryId, commentId, author, parent }) => {
+    [`${COMMENTS_MODULE.getComment}`]: (state, { context, entryId, commentId, author, parent }) => {
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(commentId, true);
         if (state.getIn(['byId', commentId])) {
@@ -91,14 +92,14 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_GET_COMMENT_ERROR]: (state, { request }) => {
+    [`${COMMENTS_MODULE.getComment}_ERROR`]: (state, { request }) => {
         const { context, commentId } = request;
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(commentId, false);
         return state.setIn(['flags', 'pendingComments', context], pendingComments);        
     },
 
-    [types.COMMENTS_GET_COMMENT_SUCCESS]: (state, {data, request}) => {
+    [`${COMMENTS_MODULE.getComment}_SUCCESS`]: (state, {data, request}) => {
         let byId = state.get('byId');
         if (!data.parent || data.parent === hexZero) {
             data.parent = '0';
@@ -121,7 +122,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_GET_SCORE_SUCCESS]: (state, {data}) => {
+    [`${COMMENTS_MODULE.getScore}_SUCCESS`]: (state, {data}) => {
         const {commentId, score} = data;
         if (score === state.getIn(['byId', commentId, 'score'])) {
             return state;
@@ -135,7 +136,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_GET_VOTE_OF_SUCCESS]: (state, {data}) => {
+    [`${COMMENTS_MODULE.getVoteOf}_SUCCESS`]: (state, {data}) => {
         const votes = {};
         data.collection.forEach((res) => {
             votes[res.commentId] = res.vote;
@@ -143,13 +144,13 @@ const commentsState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [types.COMMENTS_ITERATOR]: (state, {parent}) =>
+    [`${COMMENTS_MODULE.commentsIterator}`]: (state, {parent}) =>
         state.setIn(['flags', 'fetchingComments', parent], true),
 
-    [types.COMMENTS_ITERATOR_ERROR]: (state, {request}) =>
+    [`${COMMENTS_MODULE.commentsIterator}_ERROR`]: (state, {request}) =>
         state.setIn(['flags', 'fetchingComments', request.parent], false),
 
-    [types.COMMENTS_ITERATOR_SUCCESS]: (state, {data, request}) => {
+    [`${COMMENTS_MODULE.commentsIterator}_SUCCESS`]: (state, {data, request}) => {
         let byId = state.get('byId');
         const { context, parent } = request;
         let newState = state;
@@ -250,7 +251,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH]: (state, {ipfsHashes, commentIds}) => {
+    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}`]: (state, {ipfsHashes, commentIds}) => {
         let byHash = state.get('byHash');
         let resolvingComments = state.getIn(['flags', 'resolvingComments']);
         ipfsHashes.forEach((hash, index) => {
@@ -263,10 +264,10 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH_ERROR]: (state, {data}) =>
+    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}_ERROR`]: (state, {data}) =>
         state.setIn(['flags', 'resolvingComments', data], false),
 
-    [types.COMMENTS_RESOLVE_IPFS_HASH_SUCCESS]: (state, {data}) => {
+    [`${COMMENTS_MODULE.resolveCommentsIpfsHash}_SUCCESS`]: (state, {data}) => {
         if (!data.ipfsHash || isEmpty(data)) {
             return state;
         }

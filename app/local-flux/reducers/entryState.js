@@ -4,6 +4,7 @@ import * as types from '../constants';
 import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
     EntryState, EntryVote, ProfileEntries } from './records';
 import { isEthAddress } from '../../utils/dataModule';
+import { ENTRY_MODULE, COMMENTS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new EntryState();
 
@@ -68,14 +69,14 @@ const entrySearchIteratorHandler = (state, { data }) => {
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.COMMENTS_GET_COUNT_SUCCESS]: (state, { data }) => {
+    [`${COMMENTS_MODULE.commentsCount}_SUCCESS`]: (state, { data }) => {
         if (state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
             return state.setIn(['fullEntry', 'commentsCount'], data.count);
         }
         return state;
     },
 
-    [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.canClaim}_SUCCESS`]: (state, { data }) => {
         const canClaim = {};
         data.collection.forEach((res) => {
             canClaim[res.entryId] = res.status;
@@ -83,7 +84,7 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['canClaim'], new Map(canClaim));
     },
 
-    [types.ENTRY_CAN_CLAIM_VOTE_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.canClaimVote}_SUCCESS`]: (state, { data }) => {
         const canClaimVote = {};
         data.collection.forEach((res) => {
             canClaimVote[res.entryId] = res.status;
@@ -98,7 +99,7 @@ const entryState = createReducer(initialState, {
             fullEntryLatestVersion: null
         }),
 
-    [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.getEntryBalance}_SUCCESS`]: (state, { data }) => {
         const balance = {};
         data.collection.forEach((res) => {
             balance[res.entryId] = new EntryBalance(res);
@@ -106,7 +107,7 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
-    [types.ENTRY_GET_END_PERIOD_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.getVoteEndPeriod}_SUCCESS`]: (state, { data }) => {
         let endPeriod = new Map();
         data.collection.forEach((res) => {
             endPeriod = endPeriod.set(res.entryId, res.endDate);
@@ -114,7 +115,7 @@ const entryState = createReducer(initialState, {
         return state.set('endPeriod', endPeriod);
     },
 
-    [types.ENTRY_GET_FULL]: (state, { asDraft, entryId, publishedDateOnly }) => {
+    [`${ENTRY_MODULE.getEntry}`]: (state, { asDraft, entryId, publishedDateOnly }) => {
         if (!asDraft && !publishedDateOnly) {
             return state.merge({
                 flags: state.get('flags').set('fetchingFullEntry', true),
@@ -124,9 +125,9 @@ const entryState = createReducer(initialState, {
         return state;
     },
 
-    [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
+    [`${ENTRY_MODULE.getEntry}_ERROR`]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
 
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data, request }) => {
+    [`${ENTRY_MODULE.getEntry}_SUCCESS`]: (state, { data, request }) => {
         if (!state.getIn(['flags', 'fetchingFullEntry'])) {
             return state;
         }
@@ -163,10 +164,10 @@ const entryState = createReducer(initialState, {
     //     return state.setIn(['fullEntry', 'versionsInfo', version], data.publishDate);
     // },
 
-    [types.ENTRY_GET_LATEST_VERSION_SUCCESS]: (state, { data = null }) =>
+    [`${ENTRY_MODULE.getLatestEntryVersion}_SUCCESS`]: (state, { data = null }) =>
         state.set('fullEntryLatestVersion', data),
 
-    [types.ENTRY_GET_SCORE_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.getScore}_SUCCESS`]: (state, { data }) => {
         const entry = state.getIn(['byId', data.entryId]);
         const oldFullEntry = state.get('fullEntry');
         const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
@@ -240,7 +241,7 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.getVoteOf}_SUCCESS`]: (state, { data }) => {
         const votes = {};
         data.collection.forEach((res) => {
             votes[res.entryId] = new EntryVote(res);
@@ -248,7 +249,7 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['votes'], new Map(votes));
     },
 
-    [types.ENTRY_GET_VOTE_RATIO_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.getVoteRatio}_SUCCESS`]: (state, { data }) => {
         const { entryId, upvoteRatio } = data;
         const currentFullEntryId = state.getIn(['fullEntry', 'entryId']);
         /** just to be sure that we are setting things for the correct entryId */
@@ -275,21 +276,21 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_PAGE_SHOW]: (state, { entryId, version = null }) =>
         state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
 
-    [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { entryId }) => {
+    [`${ENTRY_MODULE.resolveEntriesIpfsHash}`]: (state, { entryId }) => {
         if (entryId === state.getIn(['fullEntry', 'entryId'])) {
             return state.setIn(['flags', 'resolvingFullEntryHash'], true);
         }
         return state;
     },
 
-    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { request }) => {
+    [`${ENTRY_MODULE.resolveEntriesIpfsHash}_ERROR`]: (state, { request }) => {
         if (request.entryId === state.getIn(['fullEntry', 'entryId'])) {
             return state.setIn(['flags', 'resolvingFullEntryHash'], false);
         }
         return state;
     },
 
-    [types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
+    [`${ENTRY_MODULE.resolveEntriesIpfsHash}_SUCCESS`]: (state, { data, request }) => {
         if (data.entry && request.entryId === state.getIn(['fullEntry', 'entryId'])) {
             return state.merge({
                 flags: state.get('flags').set('resolvingFullEntryHash', false),
@@ -303,7 +304,7 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) => {
+    [`${ENTRY_MODULE.voteCost}_SUCCESS`]: (state, { data }) => {
         const voteCost = {};
         data.collection.forEach((res) => {
             voteCost[res.weight] = res.cost;

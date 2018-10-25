@@ -12,6 +12,7 @@ import {
     SettingsRecord,
     UserSettings
 } from './records';
+import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new SettingsRecord();
 
@@ -169,7 +170,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_GET_CONFIG_SUCCESS]: (state, action) => {
+    [`${IPFS_MODULE.getConfig}_SUCCESS`]: (state, action) => {
         const ipfsSettings = Object.assign({}, state.get('ipfs').toJS());
         if (ipfsSettings.ports) {
             delete ipfsSettings.ports;
@@ -188,7 +189,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_GET_PORTS_SUCCESS]: (state, {data}) => {
+    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, {data}) => {
         const ports = {
             apiPort: Number(data.apiPort),
             gatewayPort: Number(data.gatewayPort),

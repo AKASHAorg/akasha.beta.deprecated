@@ -1,17 +1,18 @@
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { NotificationsState } from './records';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new NotificationsState();
 
 const notificationsState = createReducer(initialState, {
     [types.NOTIFICATIONS_LOADED]: state => state.set('notificationsLoaded', true),
 
-    [types.NOTIFICATIONS_SUBSCRIBE]: state => state.set('fetchingNotifications', true),
+    [`${NOTIFICATIONS_MODULE.subscribe}`]: state => state.set('fetchingNotifications', true),
 
-    [types.NOTIFICATIONS_SUBSCRIBE_ERROR]: state => state.set('fetchingNotifications', false),
+    [`${NOTIFICATIONS_MODULE.subscribe}_ERROR`]: state => state.set('fetchingNotifications', false),
 
-    [types.NOTIFICATIONS_SUBSCRIBE_SUCCESS]: (state, { data, isPanelOpen }) => {
+    [`${NOTIFICATIONS_MODULE.subscribe}_SUCCESS`]: (state, { data, isPanelOpen }) => {
         if (data.watching) {
             return state.set('fetchingNotifications', false);
         }

@@ -3,6 +3,7 @@ import { fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { GethRecord, GethSyncStatus, IpfsRecord, LogRecord } from './records';
+import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = fromJS({
     geth: new GethRecord(),
@@ -42,10 +43,10 @@ const computeIpfsStatus = (record) => {
 };
 
 const eProcState = createReducer(initialState, {
-    [types.CLEAR_SYNC_STATUS]: state =>
+    [`${GETH_MODULE.start}`]: state =>
         state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
 
-    [types.GETH_START]: state =>
+    [`${GETH_MODULE_START}`]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 busyState: true,
@@ -56,7 +57,7 @@ const eProcState = createReducer(initialState, {
             })
         }),
 
-    [types.GETH_START_SUCCESS]: (state, { data, services }) => {
+    [`${GETH_MODULE.start}_SUCCESS`]: (state, { data, services }) => {
         const gethStatus = state.getIn(['geth', 'status']);
         // if geth was stopped and it is not upgrading, ignore this action
         if (gethStatus.get('stopped') && !gethStatus.get('upgrading') && !data.starting) {
@@ -75,13 +76,13 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.GETH_START_ERROR]: state =>
+    [`${GETH_MODULE.start}_ERROR`]: state =>
         state.setIn(['geth', 'flags', 'gethStarting'], false),
 
-    [types.GETH_STOP]: state =>
+    [`${GETH_MODULE.stop}`]: state =>
         state.setIn(['geth', 'flags', 'busyState'], true),
 
-    [types.GETH_STOP_SUCCESS]: (state, { data, services }) => {
+    [`${GETH_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
         if (state.getIn(['geth', 'status', 'upgrading'])) {
             return state;
         }
@@ -97,7 +98,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.GETH_GET_STATUS_SUCCESS]: (state, { data, services }) =>
+    [`${GETH_MODULE.gethStatus}_SUCCESS`]: (state, { data, services }) =>
         state.mergeIn(
             ['geth'],
             {
@@ -106,7 +107,7 @@ const eProcState = createReducer(initialState, {
             }
         ),
 
-    [types.IPFS_START]: state =>
+    [`${IPFS_MODULE.start}`]: state =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
                 busyState: true,
@@ -114,7 +115,7 @@ const eProcState = createReducer(initialState, {
             })
         }),
 
-    [types.IPFS_START_ERROR]: (state, action) => {
+    [`${IPFS_MODULE.start}_ERROR`]: (state, action) => {
         const ipfsStatus = computeIpfsStatus(action.data);
         return state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
@@ -124,7 +125,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_START_SUCCESS]: (state, { data, services }) => {
+    [`${IPFS_MODULE.start}_SUCCESS`]: (state, { data, services }) => {
         const status = Object.assign({}, data, services.ipfs);
         const ipfsStatus = computeIpfsStatus(status);
         return state.mergeIn(['ipfs'], {
@@ -135,14 +136,14 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_STOP]: state =>
+    [`${IPFS_MODULE.stop}`]: state =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
                 busyState: true
             }),
         }),
 
-    [types.IPFS_STOP_SUCCESS]: (state, { data, services }) => {
+    [`${IPFS_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
         const status = Object.assign({}, data, services.ipfs);
         let newStatus;
         if (state.getIn(['ipfs', 'status', 'upgrading'])) {
@@ -156,16 +157,16 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_GET_STATUS_SUCCESS]: (state, { data, services }) =>
+    [`${IPFS_MODULE.ipfsStatus}_SUCCESS`]: (state, { data, services }) =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).set('statusFetched', true),
             status: state.getIn(['ipfs', 'status']).merge(Object.assign({}, data, services.ipfs))
         }),
 
-    [types.IPFS_GET_PORTS]: state =>
+    [`${IPFS_MODULE.getPorts}`]: state =>
         state.setIn(['ipfs', 'flags', 'portsRequested'], true),
 
-    [types.IPFS_GET_PORTS_SUCCESS]: (state, { services }) =>
+    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { services }) =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false),
             status: state.getIn(['ipfs', 'status']).merge({
@@ -175,10 +176,10 @@ const eProcState = createReducer(initialState, {
             })
         }),
 
-    [types.IPFS_GET_PORTS_ERROR]: state =>
+    [`${IPFS_MODULE.getPorts}_ERROR`]: state =>
         state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
-    [types.GETH_GET_SYNC_STATUS_SUCCESS]: (state, { data, services }) => {
+    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data, services }) => {
         const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
         let syncActionId = oldSyncActionId;
         if (data.synced) {
@@ -193,34 +194,34 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.GETH_STOP_SYNC]: state =>
+    [`${GETH_MODULE_STOP_}`SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 3,
         }),
 
-    [types.GETH_PAUSE_SYNC]: state =>
+    [`${GETH_MODULE_PAUSE}`_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 2,
         }),
 
-    [types.GETH_RESUME_SYNC]: state =>
+    [`${GETH_MODULE_RESUM}`E_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 1
         }),
 
-    [types.GETH_RESET_BUSY]: state =>
+    [`${GETH_MODULE_RESET}`_BUSY]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 busyState: false
             })
         }),
 
-    [types.IPFS_RESET_BUSY]: state =>
+    [`${IPFS_MODULE}`_RESET_BUSY]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             busyState: false
         }),
 
-    [types.GETH_GET_LOGS_SUCCESS]: (state, { data }) => {
+    [`${GETH_MODULE.logs}_SUCCESS`]: (state, { data }) => {
         if (!data.length) {
             return state;
         }
@@ -233,7 +234,7 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_GET_LOGS_SUCCESS]: (state, { data }) => {
+    [`${IPFS_MODULE.logs}_SUCCESS`]: (state, { data }) => {
         if (!data.length) {
             return state;
         }
@@ -246,17 +247,17 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_SET_PORTS]: state =>
+    [`${IPFS_MODULE.setPorts}`]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             settingPorts: true
         }),
 
-    [types.IPFS_SET_PORTS_SUCCESS]: state =>
+    [`${IPFS_MODULE.setPorts}_SUCCESS`]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             settingPorts: false
         }),
 
-    [types.IPFS_SET_PORTS_ERROR]: state =>
+    [`${IPFS_MODULE.setPorts}_ERROR`]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             settingPorts: false
         }),
