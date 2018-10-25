@@ -14,7 +14,7 @@ export default merge(baseConfig, {
         'react-hot-loader/patch',
         `webpack-dev-server/client?http://localhost:${port}/`,
         'webpack/hot/only-dev-server',
-        path.join(__dirname, process.env.DARK_THEME ? 'app/index-dark.js' : 'app/index.js'),
+        path.join(__dirname, './app/index.js'),
     ],
 
     output: {
@@ -166,7 +166,7 @@ export default merge(baseConfig, {
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: 'app/hot-dev-app.html'
+            template: path.join(__dirname, './app/hot-dev-app.html')
         })
     ],
 

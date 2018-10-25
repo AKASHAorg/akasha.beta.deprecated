@@ -80,36 +80,41 @@ const bootstrap = function () {
     }
     const windowLogger = appLogger.child({ module: 'window' });
     electron_1.app.on('window-all-closed', () => {
-        if (process.platform !== 'darwin')
-            electron_1.app.quit();
+        electron_1.app.quit();
     });
-    const shouldQuit = electron_1.app.makeSingleInstance((commandLine, workingDirectory) => {
-        if (mainWindow) {
-            if (mainWindow.isMinimized())
-                mainWindow.restore();
-            mainWindow.focus();
-        }
-    });
-    if (shouldQuit) {
+    const gotTheLock = electron_1.app.requestSingleInstanceLock();
+    if (!gotTheLock) {
         electron_1.app.quit();
     }
-    electron_1.app.on('ready', () => {
-        console.time('total');
-        console.time('buildWindow');
-        process.on('uncaughtException', (err) => {
-            appLogger.error(err);
+    else {
+        electron_1.app.on('second-instance', (event, commandLine, workingDirectory) => {
+            if (mainWindow) {
+                if (mainWindow.isMinimized())
+                    mainWindow.restore();
+                mainWindow.focus();
+            }
         });
-        process.on('warning', (warning) => {
-            appLogger.warn(warning);
+        electron_1.app.on('ready', () => {
+            console.time('total');
+            console.time('buildWindow');
+            process.on('uncaughtException', (err) => {
+                appLogger.error(err);
+            });
+            process.on('warning', (warning) => {
+                appLogger.warn(warning);
+            });
+            process.on('SIGINT', stopServices);
+            process.on('SIGTERM', stopServices);
+            init_modules_1.default(sp_1.default, sp_1.getService, appLogger)
+                .then((modules) => {
+                appLogger.info('modules inited');
+                startBrowser(windowLogger);
+                appLogger.info('browser started');
+                watcher_1.default(modules, mainWindow.id, sp_1.getService, appLogger);
+                appLogger.info('ipc listening');
+            });
         });
-        process.on('SIGINT', stopServices);
-        process.on('SIGTERM', stopServices);
-        init_modules_1.default(sp_1.default, sp_1.getService, appLogger)
-            .then((modules) => {
-            startBrowser(windowLogger);
-            watcher_1.default(modules, mainWindow.id, sp_1.getService, appLogger);
-        });
-    });
+    }
 };
 exports.default = bootstrap;
 //# sourceMappingURL=main.js.map

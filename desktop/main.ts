@@ -93,38 +93,45 @@ const bootstrap = function () {
   const windowLogger = appLogger.child({ module: 'window' });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-  });
-  // prevent multiple instances of AKASHA
-  const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.focus();
-    }
-  });
-
-  if (shouldQuit) {
     app.quit();
-  }
-  app.on('ready', () => {
-    console.time('total');
-    console.time('buildWindow');
-    process.on('uncaughtException', (err: Error) => {
-      appLogger.error(err);
-    });
-    process.on('warning', (warning) => {
-      appLogger.warn(warning);
-    });
-    process.on('SIGINT', stopServices);
-    process.on('SIGTERM', stopServices);
-
-    // start app
-    initModules(sp, getService, appLogger)
-    .then((modules) => {
-      startBrowser(windowLogger);
-      startDataStream(modules, mainWindow.id, getService, appLogger);
-    });
   });
+
+  const gotTheLock = app.requestSingleInstanceLock();
+
+  if (!gotTheLock) {
+    app.quit();
+  } else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+      }
+    });
+
+    app.on('ready', () => {
+      console.time('total');
+      console.time('buildWindow');
+      process.on('uncaughtException', (err: Error) => {
+        appLogger.error(err);
+      });
+      process.on('warning', (warning) => {
+        appLogger.warn(warning);
+      });
+      process.on('SIGINT', stopServices);
+      process.on('SIGTERM', stopServices);
+
+      // start app
+      initModules(sp, getService, appLogger)
+        .then((modules) => {
+          appLogger.info('modules inited');
+          startBrowser(windowLogger);
+          appLogger.info('browser started');
+          startDataStream(modules, mainWindow.id, getService, appLogger);
+          appLogger.info('ipc listening');
+        });
+    });
+  }
+
 };
 
 export default bootstrap;
