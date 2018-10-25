@@ -33,32 +33,28 @@ function* notificationsLoaded () {
 }
 
 // Channel watchers
-function* watchNotificationsChannel () {
-    let notifLoadedTask;
-    let firstTime = true;
-    while (true) {
-        const resp = yield take(actionChannels.notifications.subscribe);
-        const loggedEthAddress = yield select(selectLoggedEthAddress);
-        if (resp.error) {
-            yield put(actions.notificationsSubscribeError(resp.error, resp.request));
-        } else if (loggedEthAddress === resp.request.profile.ethAddress) {
-            if (notifLoadedTask) {
-                yield cancel(notifLoadedTask);
-                notifLoadedTask = yield fork(notificationsLoaded);
-                firstTime = false;
-            }
-            if (firstTime) {
-                notifLoadedTask = yield fork(notificationsLoaded);
-            }
-            const isPanelOpen = yield select(selectNotificationsPanel);
-            yield put(actions.notificationsSubscribeSuccess(resp.data, isPanelOpen));
-        }
-    }
-}
-
-export function* registerNotificationsListeners () {
-    // yield fork(watchNotificationsChannel);
-}
+// function* watchNotificationsChannel () {
+//     let notifLoadedTask;
+//     let firstTime = true;
+//     while (true) {
+//         const resp = yield take(actionChannels.notifications.subscribe);
+//         const loggedEthAddress = yield select(selectLoggedEthAddress);
+//         if (resp.error) {
+//             yield put(actions.notificationsSubscribeError(resp.error, resp.request));
+//         } else if (loggedEthAddress === resp.request.profile.ethAddress) {
+//             if (notifLoadedTask) {
+//                 yield cancel(notifLoadedTask);
+//                 notifLoadedTask = yield fork(notificationsLoaded);
+//                 firstTime = false;
+//             }
+//             if (firstTime) {
+//                 notifLoadedTask = yield fork(notificationsLoaded);
+//             }
+//             const isPanelOpen = yield select(selectNotificationsPanel);
+//             yield put(actions.notificationsSubscribeSuccess(resp.data, isPanelOpen));
+//         }
+//     }
+// }
 
 export function* watchNotificationsActions () {
     yield takeEvery(types.NOTIFICATIONS_SUBSCRIBE, notificationsSubscribe);

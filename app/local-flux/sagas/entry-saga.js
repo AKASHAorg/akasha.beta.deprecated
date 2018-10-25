@@ -463,445 +463,423 @@ function* entryVoteCost () {
 
 // Channel watchers
 
-function* watchEntryCanClaimChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.canClaim);
-        if (resp.error) {
-            yield put(actions.entryCanClaimError(resp.error));
-        } else {
-            yield put(actions.entryCanClaimSuccess(resp.data));
-        }
-    }
-}
+// function* watchEntryCanClaimChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.canClaim);
+//         if (resp.error) {
+//             yield put(actions.entryCanClaimError(resp.error));
+//         } else {
+//             yield put(actions.entryCanClaimSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchEntryCanClaimVoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.canClaimVote);
-        if (resp.error) {
-            yield put(actions.entryCanClaimVoteError(resp.error));
-        } else {
-            yield put(actions.entryCanClaimVoteSuccess(resp.data));
-        }
-    }
-}
+// function* watchEntryCanClaimVoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.canClaimVote);
+//         if (resp.error) {
+//             yield put(actions.entryCanClaimVoteError(resp.error));
+//         } else {
+//             yield put(actions.entryCanClaimVoteSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchEntryClaimChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.claim);
-        const { actionId, entryId, entryTitle } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.entryClaimError({}, entryId, entryTitle));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchEntryClaimChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.claim);
+//         const { actionId, entryId, entryTitle } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.entryClaimError(resp.error, entryId, entryTitle));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.entryClaimError({}, entryId, entryTitle));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchEntryClaimVoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.claimVote);
-        const { actionId } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.entryClaimVoteError(resp.error, resp.request));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.entryClaimVoteError({}, resp.request));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchEntryClaimVoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.claimVote);
+//         const { actionId } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.entryClaimVoteError(resp.error, resp.request));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.entryClaimVoteError({}, resp.request));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchEntryDownvoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.downvote);
-        const { actionId, entryId, entryTitle } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.entryDownvoteError({}, entryId, entryTitle));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchEntryDownvoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.downvote);
+//         const { actionId, entryId, entryTitle } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.entryDownvoteError(resp.error, entryId, entryTitle));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.entryDownvoteError({}, entryId, entryTitle));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchEntryGetBalanceChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getEntryBalance);
-        const { collection } = resp.data;
-        if (resp.error) {
-            yield put(actions.entryGetBalanceError(resp.error));
-        } else {
-            if (resp.request.claimable) {
-                for (let i = 0; i < collection.length; i++) {
-                    const balance = collection[i];
-                    if (balance.claimed) {
-                        yield put(claimableActions.claimableDeleteEntry(balance.entryId));
-                    }
-                }
-            }
-            yield put(actions.entryGetBalanceSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* watchEntryGetBalanceChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getEntryBalance);
+//         const { collection } = resp.data;
+//         if (resp.error) {
+//             yield put(actions.entryGetBalanceError(resp.error));
+//         } else {
+//             if (resp.request.claimable) {
+//                 for (let i = 0; i < collection.length; i++) {
+//                     const balance = collection[i];
+//                     if (balance.claimed) {
+//                         yield put(claimableActions.claimableDeleteEntry(balance.entryId));
+//                     }
+//                 }
+//             }
+//             yield put(actions.entryGetBalanceSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 /* eslint-disable complexity */
 /* eslint-disable max-statements */
-function* watchEntryGetChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getEntry);
-        if (resp.error) {
-            if (resp.request.asDraft) {
-                yield put(actions.entryGetFullAsDraftError(resp.error));
-            } else if (resp.request.latestVersion) {
-                yield put(actions.entryGetLatestVersionError(resp.error));
-            } else if (resp.request.full) {
-                yield put(actions.entryGetFullError(resp.error));
-            } else {
-                yield put(actions.entryGetShortError(resp.error, resp.request));
-            }
-        } else if (resp.request.asDraft) {
-            yield put(actions.entryGetFullAsDraftSuccess({ ...resp.data, ...resp.request }));
-        } else if (resp.request.latestVersion && !resp.request.full) {
-            // TODO Use getLatestEntryVersion channel
-            const { content } = resp.data;
-            yield put(actions.entryGetLatestVersionSuccess(content && content.version));
-        } else if (resp.request.publishedDateOnly) {
-            yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
-        } else if (resp.request.full && !resp.request.asDraft) {
-            if (!resp.request.ethAddress) {
-                resp.request.ethAddress = resp.data.ethAddress;
-                yield put(profileActions.profileGetData({ ethAddress: resp.data.ethAddress }));
-            }
-            yield put(actions.entryGetFullSuccess(resp.data, resp.request));
-            yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
-            const version = resp.data.content && resp.data.content.version;
-            if (version && version > 0 && !resp.request.publishedDateOnly) {
-                for (let i = version; i >= 0; i -= 1) {
-                    yield put(actions.entryGetFull({
-                        version: i,
-                        entryId: resp.data.entryId,
-                        ethAddress: resp.request.ethAddress,
-                        publishedDateOnly: true
-                    }));
-                }
-            }
-        } else {
-            if(resp.request.includeVotes) {
-                yield put(actions.entryGetVoteOf([resp.request.entryId]));
-            }
-            yield put(actions.entryGetShortSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* watchEntryGetChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getEntry);
+//         if (resp.error) {
+//             if (resp.request.asDraft) {
+//                 yield put(actions.entryGetFullAsDraftError(resp.error));
+//             } else if (resp.request.latestVersion) {
+//                 yield put(actions.entryGetLatestVersionError(resp.error));
+//             } else if (resp.request.full) {
+//                 yield put(actions.entryGetFullError(resp.error));
+//             } else {
+//                 yield put(actions.entryGetShortError(resp.error, resp.request));
+//             }
+//         } else if (resp.request.asDraft) {
+//             yield put(actions.entryGetFullAsDraftSuccess({ ...resp.data, ...resp.request }));
+//         } else if (resp.request.latestVersion && !resp.request.full) {
+//             // TODO Use getLatestEntryVersion channel
+//             const { content } = resp.data;
+//             yield put(actions.entryGetLatestVersionSuccess(content && content.version));
+//         } else if (resp.request.publishedDateOnly) {
+//             yield put(actions.entryGetVersionPublishedDateSuccess(resp.data, resp.request));
+//         } else if (resp.request.full && !resp.request.asDraft) {
+//             if (!resp.request.ethAddress) {
+//                 resp.request.ethAddress = resp.data.ethAddress;
+//                 yield put(profileActions.profileGetData({ ethAddress: resp.data.ethAddress }));
+//             }
+//             yield put(actions.entryGetFullSuccess(resp.data, resp.request));
+//             yield fork(entryGetExtraOfEntry, resp.request.entryId, resp.request.ethAddress);
+//             const version = resp.data.content && resp.data.content.version;
+//             if (version && version > 0 && !resp.request.publishedDateOnly) {
+//                 for (let i = version; i >= 0; i -= 1) {
+//                     yield put(actions.entryGetFull({
+//                         version: i,
+//                         entryId: resp.data.entryId,
+//                         ethAddress: resp.request.ethAddress,
+//                         publishedDateOnly: true
+//                     }));
+//                 }
+//             }
+//         } else {
+//             if(resp.request.includeVotes) {
+//                 yield put(actions.entryGetVoteOf([resp.request.entryId]));
+//             }
+//             yield put(actions.entryGetShortSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 /* eslint-enable complexity */
 /* eslint-enable max-statements */
 
-function* watchEntryGetEndPeriodChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getVoteEndPeriod);
-        if (resp.error) {
-            yield put(actions.entryGetEndPeriodError(resp.error));
-        } else {
-            yield put(actions.entryGetEndPeriodSuccess(resp.data));
-        }
-    }
-}
+// function* watchEntryGetEndPeriodChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getVoteEndPeriod);
+//         if (resp.error) {
+//             yield put(actions.entryGetEndPeriodError(resp.error));
+//         } else {
+//             yield put(actions.entryGetEndPeriodSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchEntryGetScoreChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getScore);
-        if (resp.error) {
-            yield put(actions.entryGetScoreError(resp.error));
-        } else {
-            yield put(actions.entryGetScoreSuccess(resp.data));
-        }
-    }
-}
+// function* watchEntryGetScoreChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getScore);
+//         if (resp.error) {
+//             yield put(actions.entryGetScoreError(resp.error));
+//         } else {
+//             yield put(actions.entryGetScoreSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchEntryGetVoteOfChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getVoteOf);
-        const { collection } = resp.data;
-        if (resp.error) {
-            yield put(actions.entryGetVoteOfError(resp.error));
-        } else {
-            if (!resp.request.claimable) {
-                const voteEntries = [];
-                collection.forEach((vote) => {
-                    if (vote.vote !== '0') {
-                        voteEntries.push(vote.entryId);
-                    }
-                });
-                if (voteEntries.length) {
-                    yield put(actions.entryCanClaimVote(voteEntries));
-                }
-            } else {
-                for (let i = 0; i < collection.length; i++) {
-                    const vote = collection[i];
-                    if (vote.claimed) {
-                        yield put(claimableActions.claimableDeleteEntry(vote.entryId));
-                    }
-                }
-            }
-            yield put(actions.entryGetVoteOfSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* watchEntryGetVoteOfChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getVoteOf);
+//         const { collection } = resp.data;
+//         if (resp.error) {
+//             yield put(actions.entryGetVoteOfError(resp.error));
+//         } else {
+//             if (!resp.request.claimable) {
+//                 const voteEntries = [];
+//                 collection.forEach((vote) => {
+//                     if (vote.vote !== '0') {
+//                         voteEntries.push(vote.entryId);
+//                     }
+//                 });
+//                 if (voteEntries.length) {
+//                     yield put(actions.entryCanClaimVote(voteEntries));
+//                 }
+//             } else {
+//                 for (let i = 0; i < collection.length; i++) {
+//                     const vote = collection[i];
+//                     if (vote.claimed) {
+//                         yield put(claimableActions.claimableDeleteEntry(vote.entryId));
+//                     }
+//                 }
+//             }
+//             yield put(actions.entryGetVoteOfSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchEntryGetVoteRatioChannel () {
-    while (true) {
-        const response = yield take(actionChannels.entry.getVoteRatio);
-        if (response.error) {
-            yield put(actions.entryGetVoteRatioError(response.error));
-        } else {
-            yield put(actions.entryGetVoteRatioSuccess(response.data));
-        }
-    }
-}
+// function* watchEntryGetVoteRatioChannel () {
+//     while (true) {
+//         const response = yield take(actionChannels.entry.getVoteRatio);
+//         if (response.error) {
+//             yield put(actions.entryGetVoteRatioError(response.error));
+//         } else {
+//             yield put(actions.entryGetVoteRatioSuccess(response.data));
+//         }
+//     }
+// }
 
-function* watchEntryListIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getEntryList);
-        if (resp.error) {
-            yield put(actions.entryListIteratorError(resp.error));
-        } else {
-            const { entryId, ethAddress } = resp.data;
-            const listName = resp.request[0].listName;
-            const entryType = yield select(selectListEntryType, listName, entryId);
-            resp.data.entryType = entryType;
-            yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
-            yield fork(entryGetExtraOfEntry, entryId, ethAddress);
-        }
-    }
-}
+// function* watchEntryListIteratorChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getEntryList);
+//         if (resp.error) {
+//             yield put(actions.entryListIteratorError(resp.error));
+//         } else {
+//             const { entryId, ethAddress } = resp.data;
+//             const listName = resp.request[0].listName;
+//             const entryType = yield select(selectListEntryType, listName, entryId);
+//             resp.data.entryType = entryType;
+//             yield put(actions.entryListIteratorSuccess(resp.data, resp.request));
+//             yield fork(entryGetExtraOfEntry, entryId, ethAddress);
+//         }
+//     }
+// }
 
-function* watchEntryNewestIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.allStreamIterator);
-        yield fork(handleEntryNewestIteratorResponse, resp);
-    }
-}
+// function* watchEntryNewestIteratorChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.allStreamIterator);
+//         yield fork(handleEntryNewestIteratorResponse, resp);
+//     }
+// }
 
-function* handleEntryNewestIteratorResponse (resp) {
-    if (resp.error) {
-        if (resp.request.more) {
-            yield put(actions.entryMoreNewestIteratorError(resp.error, resp.request));
-        } else {
-            yield put(actions.entryNewestIteratorError(resp.error, resp.request));
-        }
-    } else {
-        const { columnId, reversed } = resp.request;
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId, null, resp.request.batching);
-        }
-        if (resp.request.more) {
-            yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
-        } else {
-            yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* handleEntryNewestIteratorResponse (resp) {
+//     if (resp.error) {
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreNewestIteratorError(resp.error, resp.request));
+//         } else {
+//             yield put(actions.entryNewestIteratorError(resp.error, resp.request));
+//         }
+//     } else {
+//         const { columnId, reversed } = resp.request;
+//         if (!reversed) {
+//             yield call(entryGetExtraOfList, resp.data.collection, columnId, null, resp.request.batching);
+//         }
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
+//         } else {
+//             yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchEntryProfileIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.entryProfileIterator);
-        yield fork(handleEntryProfileIteratorResponse, resp);
-    }
-}
+// function* watchEntryProfileIteratorChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.entryProfileIterator);
+//         yield fork(handleEntryProfileIteratorResponse, resp);
+//     }
+// }
 
-function* handleEntryProfileIteratorResponse (resp) { // eslint-disable-line max-statements, complexity
-    const { columnId, asDrafts, reversed } = resp.request;
-    if (resp.error) {
-        if (resp.request.more) {
-            yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
-        } else if (resp.request.asDrafts) {
-            yield put(draftActions.entriesGetAsDraftsError(resp.error, resp.request));
-        } else {
-            yield put(actions.entryProfileIteratorError(resp.error, resp.request));
-        }
-    } else if (resp.request.more) {
-        yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
-        yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
-    } else if (resp.request.asDrafts) {
-        const drafts = yield select(selectDrafts);
-        const noResults = !resp.data.collection.length;
-        const duplicatedResults = !noResults &&
-            resp.data.collection.every(entry => !!drafts.get(entry.entryId));
-        yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
-        const ethAddress = resp.request.ethAddress;
-        const incomingDrafts = resp.data.collection;
-        yield all(incomingDrafts.map(draft => put(actions.entryGetFull({
-            entryId: draft.entryId,
-            ethAddress,
-            asDraft: true
-        }))));
-        /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
-         * continue to iterate until at least one entry is found or the end of the chain is reached
-         */
-        if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
-            const args = { ...resp.request, value: resp.request.ethAddress };
-            yield fork(entryProfileIterator, args);
-        }
-        /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
-         * continue to iterate until at least one entry is found or the end of the chain is reached
-         */
-        if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
-            const args = { ...resp.request, value: resp.request.ethAddress };
-            yield fork(entryProfileIterator, args);
-        }
-    } else {
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
-        }
-        yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
-    }
-}
+// function* handleEntryProfileIteratorResponse (resp) { // eslint-disable-line max-statements, complexity
+//     const { columnId, asDrafts, reversed } = resp.request;
+//     if (resp.error) {
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
+//         } else if (resp.request.asDrafts) {
+//             yield put(draftActions.entriesGetAsDraftsError(resp.error, resp.request));
+//         } else {
+//             yield put(actions.entryProfileIteratorError(resp.error, resp.request));
+//         }
+//     } else if (resp.request.more) {
+//         yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+//         yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+//     } else if (resp.request.asDrafts) {
+//         const drafts = yield select(selectDrafts);
+//         const noResults = !resp.data.collection.length;
+//         const duplicatedResults = !noResults &&
+//             resp.data.collection.every(entry => !!drafts.get(entry.entryId));
+//         yield put(draftActions.entriesGetAsDraftsSuccess(resp.data, resp.request));
+//         const ethAddress = resp.request.ethAddress;
+//         const incomingDrafts = resp.data.collection;
+//         yield all(incomingDrafts.map(draft => put(actions.entryGetFull({
+//             entryId: draft.entryId,
+//             ethAddress,
+//             asDraft: true
+//         }))));
+//         /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
+//          * continue to iterate until at least one entry is found or the end of the chain is reached
+//          */
+//         if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
+//             const args = { ...resp.request, value: resp.request.ethAddress };
+//             yield fork(entryProfileIterator, args);
+//         }
+//         /* If the iterator is called with "entryType" filter and it returns no new entries, automatically
+//          * continue to iterate until at least one entry is found or the end of the chain is reached
+//          */
+//         if (resp.request.entryType != null && resp.data.lastBlock && (noResults || duplicatedResults)) {
+//             const args = { ...resp.request, value: resp.request.ethAddress };
+//             yield fork(entryProfileIterator, args);
+//         }
+//     } else {
+//         if (!reversed) {
+//             yield call(entryGetExtraOfList, resp.data.collection, columnId, asDrafts);
+//         }
+//         yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
+//     }
+// }
 
-function* watchEntryResolveIpfsHashChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
-        if (resp.error) {
-            yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
-        } else {
-            yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* watchEntryResolveIpfsHashChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
+//         if (resp.error) {
+//             yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+//         } else {
+//             yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchEntryStreamIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.followingStreamIterator);
-        yield fork(handleEntryStreamIteratorResponse, resp);
-    }
-}
+// function* watchEntryStreamIteratorChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.followingStreamIterator);
+//         yield fork(handleEntryStreamIteratorResponse, resp);
+//     }
+// }
 
-function* handleEntryStreamIteratorResponse (resp) {
-    if (resp.error) {
-        if (resp.request.more) {
-            yield put(actions.entryMoreStreamIteratorError(resp.error, resp.request));
-        } else {
-            yield put(actions.entryStreamIteratorError(resp.error, resp.request));
-        }
-    } else {
-        const { columnId, reversed } = resp.request;
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId, null, resp.request.batching);
-        }
-        if (resp.request.more) {
-            yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
-        } else {
-            yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* handleEntryStreamIteratorResponse (resp) {
+//     if (resp.error) {
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreStreamIteratorError(resp.error, resp.request));
+//         } else {
+//             yield put(actions.entryStreamIteratorError(resp.error, resp.request));
+//         }
+//     } else {
+//         const { columnId, reversed } = resp.request;
+//         if (!reversed) {
+//             yield call(entryGetExtraOfList, resp.data.collection, columnId, null, resp.request.batching);
+//         }
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
+//         } else {
+//             yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchEntryTagIteratorChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.entryTagIterator);
-        yield fork(handleEntryTagIteratorResponse, resp);
-    }
-}
+// function* watchEntryTagIteratorChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.entryTagIterator);
+//         yield fork(handleEntryTagIteratorResponse, resp);
+//     }
+// }
 
-function* handleEntryTagIteratorResponse (resp) {
-    if (resp.error) {
-        if (resp.request.more) {
-            yield put(actions.entryMoreTagIteratorError(resp.error, resp.request));
-        } else {
-            yield put(actions.entryTagIteratorError(resp.error, resp.request));
-        }
-    } else {
-        const { columnId, reversed, batching } = resp.request;
-        if (!reversed) {
-            yield call(entryGetExtraOfList, resp.data.collection, columnId, null, batching);
-        }
-        if (resp.request.more) {
-            yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
-        } else {
-            yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
-        }
-    }
-}
+// function* handleEntryTagIteratorResponse (resp) {
+//     if (resp.error) {
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreTagIteratorError(resp.error, resp.request));
+//         } else {
+//             yield put(actions.entryTagIteratorError(resp.error, resp.request));
+//         }
+//     } else {
+//         const { columnId, reversed, batching } = resp.request;
+//         if (!reversed) {
+//             yield call(entryGetExtraOfList, resp.data.collection, columnId, null, batching);
+//         }
+//         if (resp.request.more) {
+//             yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
+//         } else {
+//             yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
+//         }
+//     }
+// }
 
-function* watchEntryUpvoteChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.upvote);
-        const { actionId, entryId, entryTitle } = resp.request;
-        const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-        if (shouldApplyChanges) {
-            if (resp.error) {
-                yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
-                yield put(actionActions.actionDelete(actionId));
-            } else if (resp.data.receipt) {
-                yield put(actionActions.actionPublished(resp.data.receipt));
-                if (!resp.data.receipt.success) {
-                    yield put(actions.entryUpvoteError({}, entryId, entryTitle));
-                }
-            } else {
-                const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-                yield put(actionActions.actionUpdate(changes));
-            }
-        }
-    }
-}
+// function* watchEntryUpvoteChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.upvote);
+//         const { actionId, entryId, entryTitle } = resp.request;
+//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
+//         if (shouldApplyChanges) {
+//             if (resp.error) {
+//                 yield put(actions.entryUpvoteError(resp.error, entryId, entryTitle));
+//                 yield put(actionActions.actionDelete(actionId));
+//             } else if (resp.data.receipt) {
+//                 yield put(actionActions.actionPublished(resp.data.receipt));
+//                 if (!resp.data.receipt.success) {
+//                     yield put(actions.entryUpvoteError({}, entryId, entryTitle));
+//                 }
+//             } else {
+//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
+//                 yield put(actionActions.actionUpdate(changes));
+//             }
+//         }
+//     }
+// }
 
-function* watchEntryVoteCostChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.voteCost);
-        if (resp.error) {
-            yield put(actions.entryVoteCostError(resp.error));
-        } else {
-            yield put(actions.entryVoteCostSuccess(resp.data));
-        }
-    }
-}
-
-export function* registerEntryListeners () {
-    // yield fork(watchEntryCanClaimChannel);
-    // yield fork(watchEntryCanClaimVoteChannel);
-    // yield fork(watchEntryClaimChannel);
-    // yield fork(watchEntryClaimVoteChannel);
-    // yield fork(watchEntryDownvoteChannel);
-    // yield fork(watchEntryGetBalanceChannel);
-    // yield fork(watchEntryGetChannel);
-    // yield fork(watchEntryGetEndPeriodChannel);
-    // yield fork(watchEntryGetScoreChannel);
-    // yield fork(watchEntryGetVoteOfChannel);
-    // yield fork(watchEntryGetVoteRatioChannel);
-    // yield fork(watchEntryListIteratorChannel);
-    // yield fork(watchEntryNewestIteratorChannel);
-    // yield fork(watchEntryProfileIteratorChannel);
-    // yield fork(watchEntryResolveIpfsHashChannel);
-    // yield fork(watchEntryStreamIteratorChannel);
-    // yield fork(watchEntryTagIteratorChannel);
-    // yield fork(watchEntryUpvoteChannel);
-    // yield fork(watchEntryVoteCostChannel);
-}
+// function* watchEntryVoteCostChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.voteCost);
+//         if (resp.error) {
+//             yield put(actions.entryVoteCostError(resp.error));
+//         } else {
+//             yield put(actions.entryVoteCostSuccess(resp.data));
+//         }
+//     }
+// }
 
 export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_CAN_CLAIM, entryCanClaim);
@@ -933,11 +911,6 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);
     yield takeEvery(types.ENTRY_UPVOTE_SUCCESS, entryUpvoteSuccess);
     yield takeEvery(types.ENTRY_VOTE_COST, entryVoteCost);
-}
-
-export function* registerWatchers () {
-    // yield fork(registerEntryListeners);
-    yield fork(watchEntryActions);
 }
 
 /* eslint-enable no-use-before-define */

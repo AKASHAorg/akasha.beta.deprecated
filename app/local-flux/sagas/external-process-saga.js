@@ -231,52 +231,52 @@ function* watchIpfsSetPortsChannel () {
     }
 }
 
-function* watchGethOptionsChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.geth.options);
-        if (resp.error) {
-            yield put(actions.gethGetOptionsError(resp.error));
-        } else {
-            yield put(actions.gethGetOptionsSuccess(resp.data));
-        }
-    }
-}
+// function* watchGethOptionsChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.geth.options);
+//         if (resp.error) {
+//             yield put(actions.gethGetOptionsError(resp.error));
+//         } else {
+//             yield put(actions.gethGetOptionsSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchGethStartChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.geth.startService);
-        if (resp.error) {
-            yield put(actions.gethStartError(resp.data, resp.error));
-        } else {
-            const gethStatus = yield select(selectGethStatus);
-            const syncActionId = yield select(selectGethSyncActionId);
-            const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
-                (syncActionId === 1 || syncActionId === 0);
-            if (gethIsSyncing && !gethSyncInterval) {
-                yield call(gethGetSyncStatus);
-            }
-            yield put(actions.gethStartSuccess(resp.data, resp.services));
-        }
-        if (resp.error || resp.services.geth.process || resp.data.started) {
-            yield fork(gethResetBusyState);
-        }
-    }
-}
+// function* watchGethStartChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.geth.startService);
+//         if (resp.error) {
+//             yield put(actions.gethStartError(resp.data, resp.error));
+//         } else {
+//             const gethStatus = yield select(selectGethStatus);
+//             const syncActionId = yield select(selectGethSyncActionId);
+//             const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
+//                 (syncActionId === 1 || syncActionId === 0);
+//             if (gethIsSyncing && !gethSyncInterval) {
+//                 yield call(gethGetSyncStatus);
+//             }
+//             yield put(actions.gethStartSuccess(resp.data, resp.services));
+//         }
+//         if (resp.error || resp.services.geth.process || resp.data.started) {
+//             yield fork(gethResetBusyState);
+//         }
+//     }
+// }
 
-function* watchIpfsStartChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.ipfs.startService);
-        if (resp.error) {
-            yield put(actions.ipfsStartError(resp.data, resp.error));
-        } else {
-            yield put(actions.ipfsStartSuccess(resp.data, resp.services));
-            // if ((resp.data.started || resp.services.ipfs.process) && !resp.data.upgrading) {
-            //     yield call(ipfsGetPorts);
-            // }
-        }
-        yield fork(ipfsResetBusyState);
-    }
-}
+// function* watchIpfsStartChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.ipfs.startService);
+//         if (resp.error) {
+//             yield put(actions.ipfsStartError(resp.data, resp.error));
+//         } else {
+//             yield put(actions.ipfsStartSuccess(resp.data, resp.services));
+//             // if ((resp.data.started || resp.services.ipfs.process) && !resp.data.upgrading) {
+//             //     yield call(ipfsGetPorts);
+//             // }
+//         }
+//         yield fork(ipfsResetBusyState);
+//     }
+// }
 
 function* watchGethGetStatusChannel () {
     while (true) {

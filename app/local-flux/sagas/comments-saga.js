@@ -1,3 +1,4 @@
+// @flow
 import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import * as actionActions from '../actions/action-actions';
@@ -9,24 +10,23 @@ import * as actionStatus from '../../constants/action-status';
 import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
     selectNewCommentsBlock, selectProfile, selectToken, selectFullEntry } from '../selectors';
 
-const Channel = global.Channel;
 const COMMENT_FETCH_LIMIT = 50;
 const REPLIES_FETCH_LIMIT = 25;
 
 function* commentsCheckNew ({ entryId }) {
     const toBlock = yield select(selectNewCommentsBlock);
-    yield call(commentsIterator, { entryId, toBlock, reversed: true, checkNew: true }); // eslint-disable-line
+    // yield call([commentsIterator], { entryId, toBlock, reversed: true, checkNew: true }); // eslint-disable-line
 }
 
 function* commentsDownvote ({ actionId, commentId, entryId, weight }) {
-    const channel = Channel.server.comments.downvote;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
+    // const channel = Channel.server.comments.downvote;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
     const token = yield select(selectToken);
-    yield apply(
-        channel,
-        channel.send,
-        [{ actionId, token, commentId, entryId, weight }]
-    );
+    // yield apply(
+    //     channel,
+    //     channel.send,
+    //     [{ actionId, token, commentId, entryId, weight }]
+    // );
 }
 
 function* commentsDownvoteSuccess ({ data }) {
@@ -35,15 +35,15 @@ function* commentsDownvoteSuccess ({ data }) {
 }
 
 function* commentsGet ({ context, entryId, commentId, isParent }) {
-    const channel = Channel.server.comments.getComment;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ context, entryId, commentId, isParent }]);
+    // const channel = Channel.server.comments.getComment;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
+    // yield apply(channel, channel.send, [{ context, entryId, commentId, isParent }]);
 }
 
 function* commentsGetCount ({ entryId }) {
-    const channel = Channel.server.comments.commentsCount;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ entryId }]);
+    // const channel = Channel.server.comments.commentsCount;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
+    // yield apply(channel, channel.send, [{ entryId }]);
 }
 
 function* commentsGetExtra (collection, request) {
@@ -77,20 +77,20 @@ function* commentsGetExtra (collection, request) {
 }
 
 function* commentsGetScore ({ commentId }) {
-    const channel = Channel.server.comments.getScore;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [{ commentId }]);
+    // const channel = Channel.server.comments.getScore;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
+    // yield apply(channel, channel.send, [{ commentId }]);
 }
 
 function* commentsGetVoteOf ({ data }) {
-    const channel = Channel.server.comments.getVoteOf;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [data]);
+    // const channel = Channel.server.comments.getVoteOf;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
+    // yield apply(channel, channel.send, [data]);
 }
 
 function* commentsIterator ({ context, entryId, parent, reversed, toBlock, more, checkNew }) {
-    const channel = Channel.server.comments.commentsIterator;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
+    // const channel = Channel.server.comments.commentsIterator;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
     let block;
     if (toBlock) {
         block = toBlock;
@@ -99,31 +99,31 @@ function* commentsIterator ({ context, entryId, parent, reversed, toBlock, more,
     }
     const limit = parent === '0' ? COMMENT_FETCH_LIMIT : REPLIES_FETCH_LIMIT;
     const lastIndex = reversed ? '0' : undefined;
-    yield apply(
-        channel,
-        channel.send,
-        [{
-            context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew
-        }]
-    );
+    // yield apply(
+    //     channel,
+    //     channel.send,
+    //     [{
+    //         context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew
+    //     }]
+    // );
 }
 
 function* commentsMoreIterator ({ entryId, parent }) {
-    const channel = Channel.server.comments.commentsIterator;
+    // const channel = Channel.server.comments.commentsIterator;
     const toBlock = yield select(state => selectCommentLastBlock(state, parent));
     const lastIndex = yield select(state => selectCommentLastIndex(state, parent));
-    yield apply(
-        channel,
-        channel.send,
-        [{ entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }]
-    );
+    // yield apply(
+    //     channel,
+    //     channel.send,
+    //     [{ entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }]
+    // );
 }
 
 function* commentsPublish ({ actionId, ...payload }) {
-    const channel = Channel.server.comments.comment;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
+    // const channel = Channel.server.comments.comment;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ actionId, token, ...payload }]);
+    // yield apply(channel, channel.send, [{ actionId, token, ...payload }]);
 }
 
 function* commentsPublishSuccess () {
@@ -131,20 +131,20 @@ function* commentsPublishSuccess () {
 }
 
 function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) {
-    const channel = Channel.server.comments.resolveCommentsIpfsHash;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
-    yield apply(channel, channel.send, [ipfsHashes, commentIds]);
+    // const channel = Channel.server.comments.resolveCommentsIpfsHash;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
+    // yield apply(channel, channel.send, [ipfsHashes, commentIds]);
 }
 
 function* commentsUpvote ({ actionId, commentId, entryId, weight }) {
-    const channel = Channel.server.comments.upvote;
-    yield call(enableChannel, channel, Channel.client.comments.manager);
+    // const channel = Channel.server.comments.upvote;
+    // yield call(enableChannel, channel, Channel.client.comments.manager);
     const token = yield select(selectToken);
-    yield apply(
-        channel,
-        channel.send,
-        [{ actionId, token, commentId, entryId, weight }]
-    );
+    // yield apply(
+    //     channel,
+    //     channel.send,
+    //     [{ actionId, token, commentId, entryId, weight }]
+    // );
 }
 
 function* commentsUpvoteSuccess ({ data }) {
@@ -354,36 +354,34 @@ function* commentsVoteSuccess (commentId) {
 //     }
 // }
 
-export function* registerCommentsListeners () {
-    // yield fork(watchCommentsDownvoteChannel);
-    // yield fork(watchCommentsGetCommentChannel);
-    // yield fork(watchCommentsGetCountChannel);
-    // yield fork(watchCommentsGetScoreChannel);
-    // yield fork(watchCommentsGetVoteOfChannel);
-    // yield fork(watchCommentsIteratorChannel);
-    // yield fork(watchCommentsPublishChannel);
-    // yield fork(watchCommentsResolveIpfsHashChannel);
-    // yield fork(watchCommentsUpvoteChannel);
-}
-
+// $FlowFixMe
 export function* watchCommentsActions () {
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_DOWNVOTE, commentsDownvote);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_COMMENT, commentsGet);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_SCORE, commentsGetScore);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_VOTE_OF, commentsGetVoteOf);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_ITERATOR, commentsIterator);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_MORE_ITERATOR, commentsMoreIterator);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_PUBLISH, commentsPublish);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_PUBLISH_SUCCESS, commentsPublishSuccess);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_RESOLVE_IPFS_HASH, commentsResolveIpfsHash);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_UPVOTE, commentsUpvote);
+    // $FlowFixMe
     yield takeEvery(types.COMMENTS_UPVOTE_SUCCESS, commentsUpvoteSuccess);
-}
-
-export function* registerWatchers () {
-    // yield fork(registerCommentsListeners);
-    yield fork(watchCommentsActions);
 }

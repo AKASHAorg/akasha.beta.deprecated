@@ -45,81 +45,73 @@ function* tagSearch ({ tagName }) {
 }
 
 // Channel watchers
-function* watchTagCreateChannel () {
-    while (true) {
-        const response = yield take(actionChannels.tags.create);
-        if (response.error) {
-            yield put(actions.tagCreateError(response.error));
-        } else {
-            return yield put(actionActions.actionUpdate({
-                id: response.request.actionId,
-                status: actionStatus.publishing,
-                tx: response.data.tx
-            }));
-        }
-    }
-}
+// function* watchTagCreateChannel () {
+//     while (true) {
+//         const response = yield take(actionChannels.tags.create);
+//         if (response.error) {
+//             yield put(actions.tagCreateError(response.error));
+//         } else {
+//             return yield put(actionActions.actionUpdate({
+//                 id: response.request.actionId,
+//                 status: actionStatus.publishing,
+//                 tx: response.data.tx
+//             }));
+//         }
+//     }
+// }
 
-function* watchTagCanCreateChannel () {
-    while (true) {
-        const response = yield take(actionChannels.tags.canCreate);
-        if (response.error) {
-            yield put(actions.tagCanCreateError(response.error));
-        } else {
-            yield put(actions.tagCanCreateSuccess(response.data));
-        }
-    }
-}
+// function* watchTagCanCreateChannel () {
+//     while (true) {
+//         const response = yield take(actionChannels.tags.canCreate);
+//         if (response.error) {
+//             yield put(actions.tagCanCreateError(response.error));
+//         } else {
+//             yield put(actions.tagCanCreateSuccess(response.data));
+//         }
+//     }
+// }
 
-function* watchTagExistsChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tags.exists);
-        if (resp.error) {
-            yield put(actions.tagExistsError(resp.error, resp.request));
-        } else {
-            if (resp.request.addToDraft) {
-                yield put(draftActions.draftAddTagSuccess({ ...resp.data, draftId: resp.request.draftId }));
-            }
-            if (!resp.request.addToDraft) {
-                yield put(actions.tagExistsSuccess(resp.data));
-            }
-        }
-    }
-}
+// function* watchTagExistsChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tags.exists);
+//         if (resp.error) {
+//             yield put(actions.tagExistsError(resp.error, resp.request));
+//         } else {
+//             if (resp.request.addToDraft) {
+//                 yield put(draftActions.draftAddTagSuccess({ ...resp.data, draftId: resp.request.draftId }));
+//             }
+//             if (!resp.request.addToDraft) {
+//                 yield put(actions.tagExistsSuccess(resp.data));
+//             }
+//         }
+//     }
+// }
 
-function* watchTagGetEntriesCountChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.entry.getTagEntriesCount);
-        if (resp.error) {
-            yield put(actions.tagGetEntriesCountError(resp.error));
-        } else {
-            yield put(actions.tagGetEntriesCountSuccess(resp.data));
-        }
-    }
-}
+// function* watchTagGetEntriesCountChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.entry.getTagEntriesCount);
+//         if (resp.error) {
+//             yield put(actions.tagGetEntriesCountError(resp.error));
+//         } else {
+//             yield put(actions.tagGetEntriesCountSuccess(resp.data));
+//         }
+//     }
+// }
 
-function* watchTagSearchChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tags.searchTag);
-        if (resp.error) {
-            yield put(actions.tagSearchError(resp.error));
-        } else {
-            const query = yield select(state => state.tagState.get('searchQuery'));
-            if (query === resp.request.tagName) {
-                yield put(actions.tagSearchSuccess(resp.data.collection));
-                yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
-            }
-        }
-    }
-}
-
-export function* registerTagListeners () {
-    // yield fork(watchTagCreateChannel);
-    // yield fork(watchTagExistsChannel);
-    // yield fork(watchTagGetEntriesCountChannel);
-    // yield fork(watchTagSearchChannel);
-    // yield fork(watchTagCanCreateChannel);
-}
+// function* watchTagSearchChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tags.searchTag);
+//         if (resp.error) {
+//             yield put(actions.tagSearchError(resp.error));
+//         } else {
+//             const query = yield select(state => state.tagState.get('searchQuery'));
+//             if (query === resp.request.tagName) {
+//                 yield put(actions.tagSearchSuccess(resp.data.collection));
+//                 yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
+//             }
+//         }
+//     }
+// }
 
 export function* watchTagActions () {
     yield takeEvery(types.TAG_CREATE, tagCreate);

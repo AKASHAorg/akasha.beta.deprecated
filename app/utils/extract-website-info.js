@@ -7,13 +7,6 @@ import { isInternalLink } from './url-utils';
 //    content="meta.attributes.content.textContent"
 // />
 
-
-type ParserParams = {
-    url: string,
-    uploadImageToIpfs: ?boolean,
-    parseUrl: (url: string) => Object,
-};
-
 type AkashaParserResponse = {
     tags?: Array<Object>,
     status_code: number,
@@ -34,19 +27,18 @@ type AkashaParserResponse = {
  *   const websiteParser = new WebsiteParser('www.akasha.world')
  *   websiteParser.getInfo().then(info: Object);
  */
-class WebsiteParser extends ParserUtils<ParserParams> {
+class WebsiteParser {
     url: string;
     parsedUrl: Object;
     uploadImageToIpfs: Object;
     constructor (params: Object) {
-        super();
-        this.url = this.formatUrl(params.url);
+        this.url = ParserUtils.formatUrl(params.url);
         this.parsedUrl = ParserUtils.parseUrl(this.url);
         this.uploadImageToIpfs = params.uploadImageToIpfs;
     }
 
     requestWebsiteInfo = (url: string): Promise<AkashaParserResponse> =>
-        this.makeParserRequest(url).then((response) => {
+        ParserUtils.makeParserRequest(url).then((response) => {
             const { status_code } = response;
             if (status_code !== 200) {
                 const error = new Error('Request failed! Cannot generate card!');
@@ -54,13 +46,10 @@ class WebsiteParser extends ParserUtils<ParserParams> {
             }
             return response;
         });
-    /**
-     * filter data based on config Object => metaTagsPriority
-     */
-    filterData = (websiteData: AkashaParserResponse) => {
+    parseDescription = (websiteData: Object) => {
         let { title, description, body_description, body_image, tags } = websiteData;
         if (!tags) tags = [];
-        const descr = tags.reduce((descriptionObject, tagObj) => {
+        return tags.reduce((descriptionObject, tagObj) => {
             if(tagObj.property) {
                 descriptionObject[tagObj.property] = tagObj.content;
             } else if (tagObj.name) {
@@ -68,11 +57,14 @@ class WebsiteParser extends ParserUtils<ParserParams> {
             }
             return descriptionObject;
         }, {title, description, body_description, body_image});
-        let outputDescr = {};
+    }
+    parseTagsByPriority = (websiteData: Object) => {
+        const descr = this.parseDescription(websiteData);
+        let outputDescription = {};
         let currPriorities = {};
         metaTagsPriority.forEach(tagConf => {
-            if ((!outputDescr[tagConf.key] || !outputDescr[tagConf.key].length) && descr[tagConf.name]) {
-                outputDescr[tagConf.key] = descr[tagConf.name];
+            if ((!outputDescription[tagConf.key] || !outputDescription[tagConf.key].length) && outputDescription[tagConf.name]) {
+                outputDescription[tagConf.key] = descr[tagConf.name];
                 if (tagConf.priority) {
                     currPriorities[tagConf.key] = tagConf.priority;
                 }
@@ -82,22 +74,30 @@ class WebsiteParser extends ParserUtils<ParserParams> {
                 tagConf.priority &&
                 tagConf.priority < currPriorities[tagConf.key]
             ) {
-                outputDescr[tagConf.key] = descr[tagConf.name];
+                outputDescription[tagConf.key] = descr[tagConf.name];
                 currPriorities[tagConf.key] = tagConf.priority;
             }
         });
-        if(outputDescr.image) {
-            return this.resizeImage(this.getAbsoluteUrl(outputDescr.image, this.parsedUrl), {
+        return { outputDescription }
+    }
+    /**
+     * filter data based on config Object => metaTagsPriority
+     */
+    filterData = (websiteData: AkashaParserResponse) => {
+        const { outputDescription } = this.parseTagsByPriority(websiteData);
+        
+        if(outputDescription.image) {
+            return ParserUtils.resizeImage(ParserUtils.getAbsoluteUrl(outputDescription.image, this.parsedUrl), {
                 ipfsFile: true
             }).then(image => ({
-                ...outputDescr,
+                ...outputDescription,
                 image
             })).catch(() => ({
-                ...outputDescr,
+                ...outputDescription,
                 image: {}
             }));
         }
-        return Promise.resolve(outputDescr);
+        return Promise.resolve(outputDescription);
     }
 
     requestAkashaEntry = (entryId: string): Promise<Object> =>
@@ -128,6 +128,30 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         }
         return type;
     }
+    getInternalLinkInfoByEntryType = (resp: Object) => {
+        const entryType = this.getEntryType(resp.content);
+        switch (entryType) {
+            case 1:
+                return {
+                    url: resp.content.cardInfo.url,
+                    info: {
+                        title: resp.content.cardInfo.title,
+                        description: resp.content.cardInfo.description,
+                        image: resp.content.cardInfo.image
+                    }
+                }
+            // default is case 0/'text entry type'
+            default:
+                return {
+                    url: this.parsedUrl.href,
+                    info: {
+                        title: resp.content.title,
+                        description: resp.content.excerpt,
+                        image: resp.content.featuredImage
+                    }
+                }
+        }
+    }
     getInfo = () => {
         const { pathname } = this.parsedUrl;
         let extension = null;
@@ -137,30 +161,7 @@ class WebsiteParser extends ParserUtils<ParserParams> {
         if(isAkashaInternalLink) {
             const entryId = this.getEntryIdFromUrl();
             if (entryId) {
-                return this.requestAkashaEntry(entryId).then(resp => {
-                    const entryType = this.getEntryType(resp.content);
-                    switch (entryType) {
-                        case 1:
-                            return {
-                                url: resp.content.cardInfo.url,
-                                info: {
-                                    title: resp.content.cardInfo.title,
-                                    description: resp.content.cardInfo.description,
-                                    image: resp.content.cardInfo.image
-                                }
-                            }
-                        // default is case 0/'text entry type'
-                        default:
-                            return {
-                                url: this.parsedUrl.href,
-                                info: {
-                                    title: resp.content.title,
-                                    description: resp.content.excerpt,
-                                    image: resp.content.featuredImage
-                                }
-                            }
-                    }
-                });
+                return this.requestAkashaEntry(entryId).then(this.getInternalLinkInfoByEntryType);
             }
         }
 

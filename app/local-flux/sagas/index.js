@@ -30,19 +30,6 @@ import * as types from '../constants';
 import { loadAkashaDB } from '../services/db/dbs';
 import ChService from '../services/channel-request-service';
 
-function* registerListeners () {
-    yield fork(claimableSaga.registerClaimableListeners);    
-    yield fork(commentsSaga.registerCommentsListeners);
-    yield fork(licenseSaga.registerLicenseListeners);
-    yield fork(entrySaga.registerEntryListeners);
-    yield fork(externalProcSaga.registerEProcListeners);
-    yield fork(notificationsSaga.registerNotificationsListeners);
-    yield fork(profileSaga.registerProfileListeners);
-    yield fork(searchSaga.registerSearchListeners);
-    yield fork(tagSaga.registerTagListeners);
-    yield fork(transactionSaga.registerTransactionListeners);
-    yield fork(utilsSaga.registerUtilsListeners);
-}
 
 function* launchActions () {
     const timestamp = new Date().getTime();
@@ -105,7 +92,6 @@ function* watchBootstrapHome () {
 export default function* rootSaga () { // eslint-disable-line max-statements
     // createActionChannels();
     yield call(loadAkashaDB);
-    yield fork(registerListeners);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
     yield fork(claimableSaga.watchClaimableActions);    

@@ -325,13 +325,7 @@ function* draftRevert ({ data }) {
 //     }
 // }
 
-function* registerChannelListeners () {
-    // yield fork(watchDraftPublishChannel);
-    // yield fork(watchDraftPublishUpdateChannel);
-}
-
 export function* watchDraftActions () {
-    yield fork(registerChannelListeners);
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
     yield takeEvery(types.DRAFT_PUBLISH_SUCCESS, draftPublishSuccess);

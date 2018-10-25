@@ -82,7 +82,7 @@ const publishSuccessActions = {
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
-function balanceRequired (actionType) {
+function balanceRequired (actionType)/* : boolean */ {
     const balanceNotRequired = [actionTypes.faucet];
     if (balanceNotRequired.includes(actionType)) {
         return false;

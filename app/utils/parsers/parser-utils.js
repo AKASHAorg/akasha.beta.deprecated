@@ -5,37 +5,37 @@ import { uploadImage } from '../../local-flux/services/utils-service';
 
 const PARSER_URL = 'https://beta.akasha.world/fetch-link';
 
-class ParserUtils {
-    fetchRequestParams = {
+const ParserUtils = {
+    fetchRequestParams: {
         method: 'GET',
         mode: 'no-cors'
-    }
-    makeParserRequest = (url: string) => {
+    },
+    makeParserRequest: (url: string) => {
         const parserUrl = `${PARSER_URL}?url=${url.toString()}`;
         try {
             return fetch(parserUrl).then(resp => resp.json());
         } catch (ex) {
             return Promise.reject('Unexpected error!');
         }
-    }
+    },
 
-    getUrlQueryParams = (search: string) => new URLSearchParams(search)
+    getUrlQueryParams: (search: string) => new URLSearchParams(search),
 
-    getAbsoluteUrl = (url: string, parsedUrl: Object) : ?string => {
+    getAbsoluteUrl: (url: string, parsedUrl: Object) : string => {
         if (url) {
             return new URL(url, parsedUrl.href).href;
         }
         return '';
-    }
+    },
 
-    formatUrl = (url: string): string => {
+    formatUrl: (url: string): string => {
         if (!url.startsWith('http')) {
             return `http://${url}`;
         }
         return url;
-    }
+    },
 
-    static parseUrl = (url: string): Object => {
+    parseUrl: (url: string) => {
         const link = document.createElement('a');
         link.href = url;
         return {
@@ -47,9 +47,9 @@ class ParserUtils {
             search: link.search,
             href: link.href,
         };
-    }
+    },
 
-    resizeImage = (image:string, { ipfsFile }: Object): Promise<Object> => {
+    resizeImage: (image:string, { ipfsFile }: Object): Promise<Object> => {
         let filePromises = [];
 
         if (image.length) {
@@ -59,7 +59,7 @@ class ParserUtils {
         }
 
         return Promise.all(filePromises).then((results) => {
-            let promise = Promise.resolve();
+            let promise: Promise<Object> = Promise.resolve({});
             if (results[0]) {
                 promise = uploadImage(results[0]);
             }

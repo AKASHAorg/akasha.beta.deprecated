@@ -90,108 +90,100 @@ function* searchUpdateLastTagsBlock ({ type, blockNr }) {
 
 // Channel watchers
 
-function* watchSearchProfilesChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.findProfiles);
-        const { collection } = resp.data;
-        const query = yield select(selectSearchQuery);
-        const queryAutocomplete = yield select(selectSearchQueryAutocomplete);
-        const isValidResp = resp.request.autocomplete ?
-            queryAutocomplete === resp.request.text :
-            query === resp.request.text;
-        if (resp.error) {
-            yield put(actions.searchProfilesError(resp.error, resp.request));
-        } else if (collection && isValidResp) {
-            if (!resp.request.autocomplete) {
-                const ethAddresses = collection.map(res => res.ethAddress);
-                if (ethAddresses.length) {
-                    yield put(profileActions.profileIsFollower(ethAddresses));
-                }
-                for (let i = 0; i < collection.length; i++) {
-                    const { ethAddress } = collection[i];
-                    yield put(profileActions.profileGetData({ ethAddress, context: SEARCH }));
-                }
-                yield put(actions.searchProfilesSuccess(ethAddresses, resp.request));
-            } else {
-                const akashaIds = collection.map(profile => profile.akashaId);
-                yield put(actions.searchProfilesSuccess(akashaIds, resp.request));
-            }
-        }
-    }
-}
+// function* watchSearchProfilesChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.search.findProfiles);
+//         const { collection } = resp.data;
+//         const query = yield select(selectSearchQuery);
+//         const queryAutocomplete = yield select(selectSearchQueryAutocomplete);
+//         const isValidResp = resp.request.autocomplete ?
+//             queryAutocomplete === resp.request.text :
+//             query === resp.request.text;
+//         if (resp.error) {
+//             yield put(actions.searchProfilesError(resp.error, resp.request));
+//         } else if (collection && isValidResp) {
+//             if (!resp.request.autocomplete) {
+//                 const ethAddresses = collection.map(res => res.ethAddress);
+//                 if (ethAddresses.length) {
+//                     yield put(profileActions.profileIsFollower(ethAddresses));
+//                 }
+//                 for (let i = 0; i < collection.length; i++) {
+//                     const { ethAddress } = collection[i];
+//                     yield put(profileActions.profileGetData({ ethAddress, context: SEARCH }));
+//                 }
+//                 yield put(actions.searchProfilesSuccess(ethAddresses, resp.request));
+//             } else {
+//                 const akashaIds = collection.map(profile => profile.akashaId);
+//                 yield put(actions.searchProfilesSuccess(akashaIds, resp.request));
+//             }
+//         }
+//     }
+// }
 
-function* watchSearchQueryChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.query);
-        const query = yield select(selectSearchQuery);
-        if (resp.error) {
-            if (resp.request.offset) {
-                yield put(actions.searchMoreQueryError(resp.error, resp.request));
-            } else {
-                yield put(actions.searchQueryError(resp.error, resp.request));
-            }
-        } else if (resp.data.collection && resp.request.text === query) {
-            const collection = resp.data.collection.map(res => (
-                { entryId: res.entryId, author: { ethAddress: res.ethAddress } }
-            ));
-            if (resp.request.offset) {
-                yield put(actions.searchMoreQuerySuccess(resp.data, resp.request));
-                yield fork(entryGetExtraOfList, collection, SEARCH);
-            } else {
-                yield put(actions.searchQuerySuccess(resp.data, resp.request));
-                yield fork(entryGetExtraOfList, collection, SEARCH);
-            }
-        }
-    }
-}
+// function* watchSearchQueryChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.search.query);
+//         const query = yield select(selectSearchQuery);
+//         if (resp.error) {
+//             if (resp.request.offset) {
+//                 yield put(actions.searchMoreQueryError(resp.error, resp.request));
+//             } else {
+//                 yield put(actions.searchQueryError(resp.error, resp.request));
+//             }
+//         } else if (resp.data.collection && resp.request.text === query) {
+//             const collection = resp.data.collection.map(res => (
+//                 { entryId: res.entryId, author: { ethAddress: res.ethAddress } }
+//             ));
+//             if (resp.request.offset) {
+//                 yield put(actions.searchMoreQuerySuccess(resp.data, resp.request));
+//                 yield fork(entryGetExtraOfList, collection, SEARCH);
+//             } else {
+//                 yield put(actions.searchQuerySuccess(resp.data, resp.request));
+//                 yield fork(entryGetExtraOfList, collection, SEARCH);
+//             }
+//         }
+//     }
+// }
 
-function* watchSearchSyncEntriesChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.syncEntries);
-        if (resp.error) {
-            yield put(actions.searchSyncEntriesError(resp.error));
-        } else if (resp.data.done) {
-            const blockNr = resp.data.lastBlock;
-            const ethAddress = yield select(selectLoggedEthAddress);
-            yield fork(searchUpdateLastEntriesBlock, { ethAddress, blockNr });
-        }
-    }
-}
+// function* watchSearchSyncEntriesChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.search.syncEntries);
+//         if (resp.error) {
+//             yield put(actions.searchSyncEntriesError(resp.error));
+//         } else if (resp.data.done) {
+//             const blockNr = resp.data.lastBlock;
+//             const ethAddress = yield select(selectLoggedEthAddress);
+//             yield fork(searchUpdateLastEntriesBlock, { ethAddress, blockNr });
+//         }
+//     }
+// }
 
-function* watchSearchSyncTagsChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.syncTags);
-        if (resp.error) {
-            yield put(actions.searchSyncTagsError(resp.error));
-        } else if (resp.data.done) {
-            const blockNr = resp.data.lastBlock;
-            yield fork(searchUpdateLastTagsBlock, { type: 'tags', blockNr });
-        }
-    }
-}
+// function* watchSearchSyncTagsChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.search.syncTags);
+//         if (resp.error) {
+//             yield put(actions.searchSyncTagsError(resp.error));
+//         } else if (resp.data.done) {
+//             const blockNr = resp.data.lastBlock;
+//             yield fork(searchUpdateLastTagsBlock, { type: 'tags', blockNr });
+//         }
+//     }
+// }
 
-function* watchSearchTagsChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.findTags);
-        const query = yield select(selectSearchQuery);
-        if (resp.error) {
-            yield put(actions.searchTagsError(resp.error));
-        } else if (resp.data.collection && query === resp.request.text) {
-            yield put(actions.searchTagsSuccess(resp.data.collection));
-            if (!resp.request.autocomplete) {
-                yield put(tagActions.tagGetEntriesCount(resp.data.collection));
-            }
-        }
-    }
-}
-
-export function* registerSearchListeners () {
-    // yield fork(watchSearchQueryChannel);
-    // yield fork(watchSearchProfilesChannel);
-    // yield fork(watchSearchSyncEntriesChannel);
-    // yield fork(watchSearchSyncTagsChannel);
-    // yield fork(watchSearchTagsChannel);
-}
+// function* watchSearchTagsChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.search.findTags);
+//         const query = yield select(selectSearchQuery);
+//         if (resp.error) {
+//             yield put(actions.searchTagsError(resp.error));
+//         } else if (resp.data.collection && query === resp.request.text) {
+//             yield put(actions.searchTagsSuccess(resp.data.collection));
+//             if (!resp.request.autocomplete) {
+//                 yield put(tagActions.tagGetEntriesCount(resp.data.collection));
+//             }
+//         }
+//     }
+// }
 
 export function* watchSearchActions () {
     yield takeLatest(types.SEARCH_MORE_QUERY, searchMoreQuery);
@@ -202,7 +194,3 @@ export function* watchSearchActions () {
     yield takeEvery(types.SEARCH_TAGS, searchTags);
 }
 
-export function* registerWatchers () {
-    // yield fork(registerSearchListeners);
-    yield fork(watchSearchActions);
-}
