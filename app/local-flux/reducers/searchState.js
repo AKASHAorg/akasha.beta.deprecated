@@ -3,6 +3,7 @@ import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { entrySearchLimit } from '../../constants/iterator-limits';
 import { SearchRecord } from './records/search-record';
+import { SEARCH_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new SearchRecord();
 
@@ -36,7 +37,7 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').merge({ moreQueryPending: false })
         }),
 
-    [types.SEARCH_PROFILES]: (state, { query, autocomplete }) => {
+    [`${SEARCH_MODULE.findProfiles}`]: (state, { query, autocomplete }) => {
         if (autocomplete) {
             return state.merge({
                 flags: state.get('flags').set('autocompletePending', true),
@@ -51,14 +52,14 @@ const searchState = createReducer(initialState, {
         });
     },
 
-    [types.SEARCH_PROFILES_ERROR]: (state, { request }) => {
+    [`${SEARCH_MODULE.findProfiles}_ERROR`]: (state, { request }) => {
         if (request.autocomplete) {
             return state.setIn(['flags', 'autocompletePending'], false);
         }
         return state.setIn(['flags', 'queryPending'], false);
     },
 
-    [types.SEARCH_PROFILES_SUCCESS]: (state, { data, request }) => {
+    [`${SEARCH_MODULE.findProfiles}_SUCCESS`]: (state, { data, request }) => {
         if (request.autocomplete) {
             return state.merge({
                 flags: state.get('flags').set('autocompletePending', false),
@@ -71,7 +72,7 @@ const searchState = createReducer(initialState, {
         });
     },
 
-    [types.SEARCH_QUERY]: (state, { text }) =>
+    [`${SEARCH_MODULE.query}`]: (state, { text }) =>
         state.merge({
             currentPage: null,
             entryIds: new List(),
@@ -82,7 +83,7 @@ const searchState = createReducer(initialState, {
             totalPages: null,
         }),
 
-    [types.SEARCH_QUERY_SUCCESS]: (state, { data }) =>
+    [`${SEARCH_MODULE.query}_SUCCESS`]: (state, { data }) =>
         state.merge({
             currentPage: 1,
             entryIds: new List(getEntryIds(data.collection)),
@@ -92,12 +93,12 @@ const searchState = createReducer(initialState, {
             totalPages: Math.ceil(data.totalHits / entrySearchLimit),
         }),
 
-    [types.SEARCH_QUERY_ERROR]: state =>
+    [`${SEARCH_MODULE.query}_ERROR`]: state =>
         state.setIn(['flags', 'queryPending'], false),
 
     [types.SEARCH_RESET_RESULTS]: () => initialState,
 
-    [types.SEARCH_TAGS]: (state, { query }) =>
+    [`${SEARCH_MODULE.findTags}`]: (state, { query }) =>
         state.merge({
             flags: state.get('flags').merge({ queryPending: !!query.length, moreQueryPending: false }),
             query: query.toLowerCase(),
@@ -105,10 +106,10 @@ const searchState = createReducer(initialState, {
             tagResultsCount: 0
         }),
 
-    [types.SEARCH_TAGS_ERROR]: state =>
+    [`${SEARCH_MODULE.findTags}_ERROR`]: state =>
         state.setIn(['flags', 'queryPending'], false),
 
-    [types.SEARCH_TAGS_SUCCESS]: (state, { data }) =>
+    [`${SEARCH_MODULE.findTags}_SUCCESS`]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('queryPending', false),
             tags: new List(data),

@@ -14,6 +14,7 @@ import {
     ProfileState
 } from './records';
 import { balanceToNumber } from '../../utils/number-formatter';
+import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new ProfileState();
 
@@ -102,21 +103,21 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
 
-    [types.PROFILE_ESSENCE_ITERATOR]: (state) => {
+    [`${PROFILE_MODULE.essenceIterator}`]: (state) => {
         const flag = state.getIn(['essenceIterator', 'lastBlock']) ?
             'fetchingMoreEssenceIterator' :
             'fetchingEssenceIterator';
         return state.setIn(['flags', flag], true);
     },
 
-    [types.PROFILE_ESSENCE_ITERATOR_ERROR]: (state, { request }) => {
+    [`${PROFILE_MODULE.essenceIterator}_ERROR`]: (state, { request }) => {
         const flag = request.lastIndex ?
             'fetchingMoreEssenceIterator' :
             'fetchingEssenceIterator';
         return state.setIn(['flags', flag], false);
     },
 
-    [types.PROFILE_ESSENCE_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    [`${PROFILE_MODULE.essenceIterator}_SUCCESS`]: (state, { data, request }) => {
         let latestIterable = new List();
         const essenceEvents = state.get('essenceEvents');
         data.collection.forEach((event) => {
@@ -143,7 +144,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_EXISTS_SUCCESS]: (state, { data }) =>
+    [`${REGISTRY_MODULE.profileExists}_SUCCESS`]: (state, { data }) =>
         state.merge({
             exists: state.get('exists').set(data.akashaId, new ProfileExistsRecord(data))
         }),
@@ -153,7 +154,7 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_FAUCET_SUCCESS]: state => state.set('faucet', 'success'),
     [types.PROFILE_RESET_FAUCET]: state => state.set('faucet', null),
-    [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
+    [`${PROFILE_MODULE.followProfile}_SUCCESS`]: (state, { data }) => {
         const { ethAddress } = data;
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
@@ -187,13 +188,13 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_FOLLOWERS_ITERATOR]: (state, { ethAddress }) =>
+    [`${PROFILE_MODULE.followersIterator}`]: (state, { ethAddress }) =>
         state.setIn(['flags', 'fetchingFollowers', ethAddress], true),
 
-    [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: (state, { request }) =>
+    [`${PROFILE_MODULE.followersIterator}_ERROR`]: (state, { request }) =>
         state.setIn(['flags', 'fetchingFollowers', request.ethAddress], false),
 
-    [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    [`${PROFILE_MODULE.followersIterator}_SUCCESS`]: (state, { data, request }) => {
         const moreFollowers = data.lastBlock > 0;
         let followersList = new List();
         const last = {
@@ -212,13 +213,13 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_FOLLOWINGS_ITERATOR]: (state, { ethAddress }) =>
+    [`${PROFILE_MODULE.followingIterator}`]: (state, { ethAddress }) =>
         state.setIn(['flags', 'fetchingFollowings', ethAddress], true),
 
-    [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: (state, { request }) =>
+    [`${PROFILE_MODULE.followingIterator}_ERROR`]: (state, { request }) =>
         state.setIn(['flags', 'fetchingFollowings', request.ethAddress], false),
 
-    [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    [`${PROFILE_MODULE.followingIterator}_SUCCESS`]: (state, { data, request }) => {
         const moreFollowings = data.lastBlock > 0;
         let followingsList = new List();
         const last = {
@@ -237,7 +238,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_BALANCE_SUCCESS]: (state, { data }) => {
+    [`${PROFILE_MODULE.getBalance}_SUCCESS`]: (state, { data }) => {
         const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
         if (loggedEthAddress !== data.etherBase) {
             return state;
@@ -257,7 +258,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_DATA]: (state, { context, akashaId, ethAddress }) => {
+    [`${PROFILE_MODULE.profileData}`]: (state, { context, akashaId, ethAddress }) => {
         const flags = context ?
             state.get('flags').setIn(['pendingProfiles', context, ethAddress], true) :
             state.get('flags');
@@ -271,7 +272,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_DATA_ERROR]: (state, { request }) => {
+    [`${PROFILE_MODULE.profileData}_ERROR`]: (state, { request }) => {
         const { context, ethAddress } = request;
         if (!context) {
             return state;
@@ -279,7 +280,7 @@ const profileState = createReducer(initialState, {
         return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
     },
 
-    [types.PROFILE_GET_DATA_SUCCESS]: (state, { data, request }) => {
+    [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { data, request }) => {
         const { context, ethAddress, full } = request;
         if (!context) {
             return state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data, full));
@@ -290,7 +291,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_LIST]: (state, { ethAddresses }) => {
+    [`${PROFILE_MODULE.getProfileList}`]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
         ethAddresses.forEach((item) => {
             pendingListProfiles = pendingListProfiles.set(item.ethAddress, true);
@@ -298,7 +299,7 @@ const profileState = createReducer(initialState, {
         return state.setIn(['flags', 'pendingListProfiles'], pendingListProfiles);
     },
 
-    [types.PROFILE_GET_LIST_SUCCESS]: (state, { data }) => {
+    [`${PROFILE_MODULE.getProfileList}_SUCCESS`]: (state, { data }) => {
         if (data.done) {
             return state;
         }
@@ -384,7 +385,7 @@ const profileState = createReducer(initialState, {
         return state.set('isFollower', isFollower);
     },
 
-    [types.PROFILE_KARMA_RANKING]: state =>
+    [`${PROFILE_MODULE.karmaRanking}`]: state =>
         state.merge({
             flags: state.get('flags').set('karmaRankingPending', true),
             karmaRanking: new Map()
@@ -415,7 +416,7 @@ const profileState = createReducer(initialState, {
         return state;
     },
 
-    [types.PROFILE_KARMA_RANKING_SUCCESS]: (state, { data }) => {
+    [`${PROFILE_MODULE.karmaRanking}_SUCCESS`]: (state, { data }) => {
         const defaultState = getKarmaPopoverDefaultState(data.collection, data.myRanking);
         const first = ((defaultState[0].rank - 3) > -1) ? defaultState[0].rank - 3 : 0;
         const above = data.collection.slice(first, defaultState[0].rank);

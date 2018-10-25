@@ -28,7 +28,10 @@ function startDataStream(modules, windowId, getService) {
         const method = modules[args.module][args.method];
         console.log(modules[args.module]);
         if (!method) {
-            return ipcChannelMain.send({ args, error: { message: `Method ${args.method} not found on ${args.module} module` } });
+            return ipcChannelMain.send({
+                args,
+                error: { message: `Method ${args.method} not found on ${args.module} module` },
+            });
         }
         if (method.hasStream) {
             call = method.execute(args.payload, (err, data) => {

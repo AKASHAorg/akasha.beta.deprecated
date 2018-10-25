@@ -1,87 +1,34 @@
 import { action } from './helpers';
 import * as types from '../constants';
+import { ENTRY_MODULE, COMMENTS_MODULE } from '@akashaproject/common/constants';
 
-export const entryCanClaim = entryIds => action(types.ENTRY_CAN_CLAIM, { entryIds });
-export const entryCanClaimError = (error) => {
-    error.code = 'ECCE01';
-    error.messageId = 'entryCanClaim';
-    return action(types.ENTRY_CAN_CLAIM_ERROR, { error });
-};
-export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
+export const entryCanClaim = entryIds => action(`${ENTRY_MODULE.canClaim}`, { entryIds });
 
-export const entryCanClaimVote = entryIds => action(types.ENTRY_CAN_CLAIM_VOTE, { entryIds });
-export const entryCanClaimVoteError = (error) => {
-    error.code = 'ECCVE01';
-    error.messageId = 'entryCanClaimVote';
-    return action(types.ENTRY_CAN_CLAIM_VOTE_ERROR, { error });
-};
-export const entryCanClaimVoteSuccess = data => action(types.ENTRY_CAN_CLAIM_VOTE_SUCCESS, { data });
+export const entryCanClaimVote = entryIds => action(`${ENTRY_MODULE.canClaimVote}`, { entryIds });
 
 export const entryClaim = ({ actionId, entryId, entryTitle }) =>
-    action(types.ENTRY_CLAIM, { actionId, entryId, entryTitle });
-export const entryClaimError = (error, entryId, entryTitle) => {
-    error.code = 'ECE01';
-    error.messageId = 'entryClaim';
-    error.values = { entryTitle };
-    return action(types.ENTRY_CLAIM_ERROR, { error, entryId });
-};
-export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { data });
+    action(`${ENTRY_MODULE.claim}`, { actionId, entryId, entryTitle });
 
 export const entryClaimVote = ({ actionId, entryId, entryTitle }) =>
-    action(types.ENTRY_CLAIM_VOTE, { actionId, entryId, entryTitle });
-export const entryClaimVoteError = (error, request) => {
-    error.code = 'ECVE01';
-    error.messageId = 'entryClaimVote';
-    error.values = { entryTitle: request.entryTitle };
-    return action(types.ENTRY_CLAIM_ERROR, { error, request });
-};
-export const entryClaimVoteSuccess = data => action(types.ENTRY_CLAIM_VOTE_SUCCESS, { data });
+    action(`${ENTRY_MODULE.claimVote}`, { actionId, entryId, entryTitle });
 
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
 
 export const entryDownvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
-    action(types.ENTRY_DOWNVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
-
-export const entryDownvoteError = (error, entryId, entryTitle) => {
-    error.code = 'EDE01';
-    error.messageId = 'entryDownvote';
-    error.values = { entryTitle };
-    return action(types.ENTRY_DOWNVOTE_ERROR, { error, entryId });
-};
-export const entryDownvoteSuccess = data =>
-    action(types.ENTRY_DOWNVOTE_SUCCESS, { data });
+    action(`${ENTRY_MODULE.downVote}`, { actionId, entryId, entryTitle, ethAddress, weight, value });
 
 export const entryGetBalance = (entryIds, claimable) =>
-    action(types.ENTRY_GET_BALANCE, { entryIds, claimable });
-export const entryGetBalanceError = (error) => {
-    error.code = 'EGBE01';
-    error.messageId = 'entryGetBalance';
-    return action(types.ENTRY_GET_BALANCE_ERROR, { error });
-};
-export const entryGetBalanceSuccess = (data, request) =>
-    action(types.ENTRY_GET_BALANCE_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.getEntryBalance}`, { entryIds, claimable });
 
-export const entryGetEndPeriod = entryIds => action(types.ENTRY_GET_END_PERIOD, { entryIds });
-export const entryGetEndPeriodError = (error) => {
-    error.code = 'EGEPE01';
-    error.messageId = 'entryGetEndPeriod';
-    return action(types.ENTRY_GET_END_PERIOD_ERROR, { error });
-};
-export const entryGetEndPeriodSuccess = data => action(types.ENTRY_GET_END_PERIOD_SUCCESS, { data });
+export const entryGetEndPeriod = entryIds => action(`${ENTRY_MODULE.getVoteEndPeriod}`, { entryIds });
 
 export const entryGetFull = ({
     akashaId, entryId, ethAddress, version, asDraft,
     revert, publishedDateOnly, latestVersion
 }) =>
-    action(types.ENTRY_GET_FULL, {
+    action(`${ENTRY_MODULE.getEntry}`, {
         akashaId, entryId, ethAddress, version, asDraft, revert, publishedDateOnly, latestVersion
     });
-export const entryGetFullError = (error) => {
-    error.code = 'EGFE01';
-    error.messageId = 'entryGetFull';
-    return action(types.ENTRY_GET_FULL_ERROR, { error });
-};
-export const entryGetFullSuccess = (data, request) => action(types.ENTRY_GET_FULL_SUCCESS, { data, request });
 
 export const entryGetFullAsDraft = data => action(types.ENTRY_GET_FULL_AS_DRAFT, { data });
 export const entryGetFullAsDraftError = error => action(types.ENTRY_GET_FULL_AS_DRAFT_ERROR, { error });
@@ -93,51 +40,20 @@ export const entryGetVersionPublishedDateSuccess = (data, req) =>
 export const entryGetVersionPublishedDateError = error =>
     action(types.ENTRY_GET_VERSION_PUBLISHED_DATE_ERROR, { error });
 
-export const entryGetLatestVersion = entryId => action(types.ENTRY_GET_LATEST_VERSION, { entryId });
-export const entryGetLatestVersionError = (error) => {
-    error.code = 'EGLVE01';
-    error.messageId = 'entryGetLatestVersion';
-    action(types.ENTRY_GET_LATEST_VERSION_ERROR, { error });
-};
-export const entryGetLatestVersionSuccess = data =>
-    action(types.ENTRY_GET_LATEST_VERSION_SUCCESS, { data });
+export const entryGetLatestVersion = entryId => action(`${ENTRY_MODULE.getLatestEntryVersion}`, { entryId });
 
-export const entryGetScore = entryId => action(types.ENTRY_GET_SCORE, { entryId });
-export const entryGetScoreError = (error) => {
-    error.code = 'EGSE01';
-    error.messageId = 'entryGetScore';
-    return action(types.ENTRY_GET_SCORE_ERROR, { error });
-};
-export const entryGetScoreSuccess = data => action(types.ENTRY_GET_SCORE_SUCCESS, { data });
+export const entryGetScore = entryId => action(`${ENTRY_MODULE.getScore}`, { entryId });
 
 export const entryGetShort = ({ context, entryId, ethAddress, batching, includeVotes }) =>
-    action(types.ENTRY_GET_SHORT, { context, entryId, ethAddress, batching, includeVotes });
-export const entryGetShortError = (error, request) => {
-    error.code = 'EGSE02';
-    error.messageId = 'entryGetShort';
-    return action(types.ENTRY_GET_SHORT_ERROR, { error, request, batching: request.batching });
-};
-export const entryGetShortSuccess = (data, request) =>
-    action(types.ENTRY_GET_SHORT_SUCCESS, { data, request, batching: request.batching });
+    action(`${ENTRY_MODULE.getEntry}`, { context, entryId, ethAddress, batching, includeVotes });
 
 export const entryGetVoteOf = (entryIds, claimable) =>
-    action(types.ENTRY_GET_VOTE_OF, { entryIds, claimable });
-export const entryGetVoteOfError = (error) => {
-    error.code = 'EGVOE01';
-    error.messageId = 'entryGetVoteOf';
-    return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
-};
-export const entryGetVoteOfSuccess = (data, request) =>
-    action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.getVoteOf}`, { entryIds, claimable });
 
-export const entryGetVoteRatio = data => action(types.ENTRY_GET_VOTE_RATIO, { data });
-export const entryGetVoteRatioSuccess = data => action(types.ENTRY_GET_VOTE_RATIO_SUCCESS, { data });
-export const entryGetVoteRatioError = error => action(types.ENTRY_GET_VOTE_RATIO_ERROR, { error });
+export const entryGetVoteRatio = data => action(`${ENTRY_MODULE.getVoteRatio}`, { data });
 
 export const entryListIterator = column =>
-    action(types.ENTRY_LIST_ITERATOR, { column });
-export const entryListIteratorSuccess = (data, request) =>
-    action(types.ENTRY_LIST_ITERATOR_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.entryListIterator}`, { column });
 
 export const entryMoreListIterator = (column, batching) =>
     action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
@@ -209,50 +125,15 @@ export const entryProfileIteratorSuccess = (data, request) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, request });
 
 export const entryResolveIpfsHash = ({ entryId, ipfsHash }) =>
-    action(types.ENTRY_RESOLVE_IPFS_HASH, { entryId, ipfsHash });
-export const entryResolveIpfsHashError = (error, request) => {
-    error.code = 'ERIHE01';
-    error.messageId = 'entryResolveIpfsHash';
-    return action(types.ENTRY_RESOLVE_IPFS_HASH_ERROR, { error, request });
-};
-export const entryResolveIpfsHashSuccess = (data, request) =>
-    action(types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.resolveEntriesIpfsHash}`, { entryId, ipfsHash });
 
 export const entryStreamIterator = (column, batching) =>
-    action(types.ENTRY_STREAM_ITERATOR, { column, batching });
-export const entryStreamIteratorError = (error, request) => {
-    error.code = 'ESIE01';
-    error.messageId = 'entryStreamIterator';
-    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error, request });
-};
-export const entryStreamIteratorSuccess = (data, request) =>
-    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.allStreamIterator}`, { column, batching });
 
 export const entryTagIterator = (column, batching) =>
-    action(types.ENTRY_TAG_ITERATOR, { column, batching });
-export const entryTagIteratorError = (error, request) => {
-    error.code = 'ETIE01';
-    error.messageId = 'entryTagIterator';
-    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error, request });
-};
-export const entryTagIteratorSuccess = (data, request) =>
-    action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, request });
+    action(`${ENTRY_MODULE.entryTagIterator}`, { column, batching });
 
 export const entryUpvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
-    action(types.ENTRY_UPVOTE, { actionId, entryId, entryTitle, ethAddress, weight, value });
-export const entryUpvoteError = (error, entryId, entryTitle) => {
-    error.code = 'EUE01';
-    error.messageId = 'entryUpvote';
-    error.values = { entryTitle };
-    return action(types.ENTRY_UPVOTE_ERROR, { error, entryId });
-};
-export const entryUpvoteSuccess = data =>
-    action(types.ENTRY_UPVOTE_SUCCESS, { data });
+    action(`${ENTRY_MODULE.upVote}`, { actionId, entryId, entryTitle, ethAddress, weight, value });
 
-export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
-export const entryVoteCostError = (error) => {
-    error.code = 'EVCE01';
-    error.messageId = 'entryVoteCost';
-    return action(types.ENTRY_VOTE_COST_ERROR, { error });
-};
-export const entryVoteCostSuccess = data => action(types.ENTRY_VOTE_COST_SUCCESS, { data });
+export const entryVoteCost = () => action(`${ENTRY_MODULE.voteCost}`);
