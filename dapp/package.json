@@ -1,8 +1,9 @@
 {
-  "name": "d-web",
+  "name": "dapp",
   "version": "1.0.0",
   "dependencies": {
-    
+    "@akashaproject/auth-web3": "../channels/auth-web3",
+    "@akashaproject/geth-web3": "../channels/geth-web3"
   },
   "peerDependencies": {
     "@akashaproject/common": "^1.0.0",

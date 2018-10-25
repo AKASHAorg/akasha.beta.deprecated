@@ -13,11 +13,10 @@
     "lint": "eslint app *.js",
     "browser": "node server.js",
     "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
-    "hot-server-dark": "cross-env NODE_ENV=development DARK_THEME=1 node --max_old_space_size=4096  -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
-    "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
+    "hot-server-dark": "cross-env NODE_ENV=development DARK_THEME=1 node --max_old_space_size=4096  -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
     "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
-    "build-vendor": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.vendor.js --progress --profile --colors",
-    "build-renderer-dark": "cross-env NODE_ENV=production DARK_THEME=1 node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "build-vendor": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack.config.vendor.js --progress --profile --colors",
+    "build-renderer-dark": "cross-env NODE_ENV=production DARK_THEME=1 node --max-old-space-size=5096 --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build": "tsc -p tsconfig.json && npm run build-renderer && npm run build-renderer-dark",
     "build-lang": "babel ./app/utils/build-translations.js | node",
     "flow": "./node_modules/.bin/flow",
@@ -37,45 +36,9 @@
     "postinstall": "npm run rebuild",
     "rebuild": "electron-rebuild"
   },
-  "betterScripts": {
-    "start": {
-      "command": "cross-env electron ./",
-      "env": {
-        "NODE_ENV": "production"
-      }
-    },
-    "start-hot": {
-      "command": "cross-env HOT=1 electron -r babel-register -r babel-polyfill ./main",
-      "env": {
-        "HOT": 1,
-        "NODE_ENV": "development"
-      }
-    },
-    "package": {
-      "command": "node package.js",
-      "env": {
-        "NODE_ENV": "production"
-      }
-    },
-    "build": {
-      "command": "webpack --config webpack.config.production.js --progress --profile --colors",
-      "env": {
-        "NODE_ENV": "production"
-      }
-    },
-    "test": {
-      "command": "cross-env BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive test/**/*.spec.js",
-      "env": {
-        "NODE_ENV": "test"
-      }
-    }
-  },
-  "bin": {
-    "electron": "./node_modules/.bin/electron"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AkashaProject/dapp"
+    "url": "https://github.com/AkashaProject/akasha"
   },
   "author": {
     "name": "AKASHA International GmbH",
@@ -84,9 +47,9 @@
   },
   "license": "",
   "bugs": {
-    "url": "https://github.com/AkashaProject/dapp/issues"
+    "url": "https://github.com/AkashaProject/akasha/issues"
   },
-  "homepage": "https://github.com/AkashaProject/dapp#readme",
+  "homepage": "https://github.com/AkashaProject/akasha#readme",
   "devDependencies": {
     "@babel/cli": "7.1.2",
     "@babel/core": "7.1.2",

@@ -3,23 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const Promise = require("bluebird");
 const installExtensions = async () => {
-    if (process.env.NODE_ENV === 'development') {
-        const installer = require('electron-devtools-installer');
-        const extensions = [
-            'REACT_DEVELOPER_TOOLS',
-            'REDUX_DEVTOOLS',
-        ];
-        const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-        const load = [];
-        extensions.forEach(function (name) {
-            try {
-                load.push(installer.default(installer[name], forceDownload));
-            }
-            catch (e) {
-            }
-        });
-        return Promise.all(load);
-    }
     return Promise.resolve();
 };
 async function initMenu(mainWindow) {

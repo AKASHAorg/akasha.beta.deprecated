@@ -12,21 +12,25 @@ import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import { AppContainer } from './containers';
 import './styles/core.scss';
-import './styles/ant-vars/extract-default-theme.less';
+import(
+  process.env.DARK_THEME ?
+    './styles/ant-vars/extract-dark-theme.less' : './styles/ant-vars/extract-default-theme.less'
+  );
 
-export const history = getHistory();
-const store = configureStore();
-sagaMiddleware.run(rootSaga);
 
-
-render(
-  <Provider store={store} >
-    <ConnectedIntlProvider>
-      <Router history={history}>
-        <Route component={AppContainer} />
-      </Router>
-    </ConnectedIntlProvider>
-  </Provider>,
-  document.getElementById('root')
-);
-
+// @TODO: add context logger
+export const bootstrap = (web3Enabled = false, vault = false) => {
+  const history = getHistory();
+  const store = configureStore();
+  sagaMiddleware.run(rootSaga);
+  render(
+    <Provider store={store}>
+      <ConnectedIntlProvider>
+        <Router history={history}>
+          <Route render={(props) => <AppContainer unlocked={vault} web3={web3Enabled} {...props}/>}/>
+        </Router>
+      </ConnectedIntlProvider>
+    </Provider>,
+    document.getElementById('root')
+  )
+};
