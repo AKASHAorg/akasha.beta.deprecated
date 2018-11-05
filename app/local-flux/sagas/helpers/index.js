@@ -1,11 +1,11 @@
-import { eventChannel } from 'redux-saga';
-import { put, select, take } from 'redux-saga/effects';
-import { tap } from 'ramda';
-import { selectAction, selectLoggedEthAddress } from '../../selectors';
+// import { eventChannel } from 'redux-saga';
+// import { put, select, take } from 'redux-saga/effects';
+// import { tap } from 'ramda';
+// import { selectAction, selectLoggedEthAddress } from '../../selectors';
 
-const Channel = global.Channel;
-export const actionChannels = {};
-export const enabledChannels = [];
+// const Channel = global.Channel;
+// export const actionChannels = {};
+// export const enabledChannels = [];
 
 // this function creates an event channel from a given ipc client channel
 // export function createActionChannel (channel) {

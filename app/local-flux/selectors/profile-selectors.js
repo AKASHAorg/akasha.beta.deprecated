@@ -1,8 +1,5 @@
 // @flow
-import { createSelector } from 'reselect';
 import { List } from 'immutable';
-import { ProfileRecord } from '../reducers/records/profile-record';
-
 /**
  * state slice selectors (see ./README.md)
  */
@@ -77,7 +74,8 @@ export const selectPublishingCost = (state/*: Object*/) =>
  * 'getters' (see ./README.md)
  */
 export const getLocalProfiles = (state/*: Object*/) =>
-    selectLocalProfiles(state).map((ethAddress/*: string */) => selectProfileByEthAddress(state, { ethAddress }));
+    selectLocalProfiles(state).map((ethAddress/*: string */) =>
+        selectProfileByEthAddress(state, { ethAddress }));
 
 export const getLoggedProfileData = (state/*: Object*/)/*: Object*/ =>
     selectProfileByEthAddress(state, { ethAddress: selectLoggedEthAddress(state) });
@@ -123,12 +121,10 @@ export const getToken = (state/*: Object*/) => selectLoggedProfile(state).get('t
 
 export const getTokenExpiration = (state/*: Object*/) => selectLoggedProfile(state).get('expiration');
 
-export const getEssenceIterator = (state/*: Object*/) => {
-    return {
-        lastBlock: selectEssenceIterator(state).get('lastBlock'),
-        lastIndex: selectEssenceIterator(state).get('lastIndex')
-    };
-};
+export const getEssenceIterator = (state/*: Object*/) => ({
+    lastBlock: selectEssenceIterator(state).get('lastBlock'),
+    lastIndex: selectEssenceIterator(state).get('lastIndex')
+});
 
 export const getEthBalance = (state/*: Object*/) => selectBalance(state).get('eth');
 

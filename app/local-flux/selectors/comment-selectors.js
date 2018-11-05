@@ -61,7 +61,8 @@ export const selectNewestCommentBlock = (state/*: Object */, props/*: NewestComm
 
 export const selectFirstComment = (state/*: Object */) => state.commentsState.get('firstComm');
 
-export const selectMoreComments = (state/*: Object */, props/*: MoreCommentsProps */) => state.commentsState.getIn(['moreComments', props.parent]);
+export const selectMoreComments = (state/*: Object */, props/*: MoreCommentsProps */) =>
+    state.commentsState.getIn(['moreComments', props.parent]);
 
 export const selectResolvingComment = (state/*: Object */, props/*: ResolvingCommentProps */) =>
     selectCommentsFlags(state).get(['resolvingComments', props.commentId]);

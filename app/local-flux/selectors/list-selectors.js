@@ -1,5 +1,5 @@
 // @flow
-import { List, Map } from 'immutable';
+import { List } from 'immutable';
 import { createSelector } from 'reselect';
 /*::
     type ListEntryTypeProps = {
@@ -26,18 +26,17 @@ export const selectListSearchResults = (state/*: Object */) => state.listState.g
 
 export const getListEntryType = createSelector(
     [selectListEntryIds, selectListEntryIndex],
-    (entryIds/*: Object */, entryIndex/*: Number */) => {
-        return entryIds.get(entryIndex).entryType;
-    }
+    (entryIds/*: Object */, entryIndex/*: Number */) =>
+        entryIds.get(entryIndex).entryType
 );
 
 export const getListEntries = (state/*: Object */, props/*: ListEntriesProps */) => {
     const listEntries = selectListEntryIds(state, {listId: props.listId}) || new List();
     return listEntries.slice(0, props.limit)
-                .map(entry => {
-                    const { entryId, entryType, authorEthAddress } = entry;
-                    return { entryId, entryType, author: { ethAddress: authorEthAddress } };
-                });
+        .map(entry => {
+            const { entryId, entryType, authorEthAddress } = entry;
+            return { entryId, entryType, author: { ethAddress: authorEthAddress } };
+        });
 };
 
 export const getListNextEntries = createSelector(
@@ -46,8 +45,8 @@ export const getListNextEntries = createSelector(
         const startIndex = list.get('startIndex');
         const entryIds = list.get('entryIds');
         return entryIds
-                .slice(startIndex, startIndex + limit)
-                .map((entry) => ({ entryId: entry.entryId, author: { ethAddress: entry.authorEthAddress } }))
+            .slice(startIndex, startIndex + limit)
+            .map((entry) => ({ entryId: entry.entryId, author: { ethAddress: entry.authorEthAddress } }))
     });
 
 export const getLists = createSelector(

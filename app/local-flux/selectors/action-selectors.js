@@ -1,5 +1,4 @@
 // @flow
-import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
 /*::
@@ -36,8 +35,10 @@ export const selectClaimableActions = (state/*: Object*/)/*: Object*/ => state.a
 export const selectNeedAuthAction = (state/*: Object*/)/*: string*/ => state.actionState.get('needAuth');
 export const selectHistoryFlags = (state/*: Object*/)/*: Object*/ => state.actionState.get('flags');
 export const selectPublishingActions = (state/*: Object*/)/*: Object*/ => state.actionState.get('publishing');
-export const selectPendingClaims = (state/*: Object*/)/*: Object*/ => selectPendingActions(state).get('claim');
-export const selectPendingClaimVotes = (state/*: Object*/)/*: Object*/ => selectPendingActions(state).get('claimVote');
+export const selectPendingClaims = (state/*: Object*/)/*: Object*/ =>
+    selectPendingActions(state).get('claim');
+export const selectPendingClaimVotes = (state/*: Object*/)/*: Object*/ =>
+    selectPendingActions(state).get('claimVote');
 
 /** 
  * state "getters" (see ./README.md)

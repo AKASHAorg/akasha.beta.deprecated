@@ -1,387 +1,185 @@
 // @flow
-import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
-import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
-import * as actionActions from '../actions/action-actions';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/comments-actions';
 import * as appActions from '../actions/app-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as types from '../constants';
-import * as actionStatus from '../../constants/action-status';
-import { selectBlockNumber, selectCommentLastBlock, selectCommentLastIndex, selectLoggedEthAddress,
-    selectNewCommentsBlock, selectProfile, selectToken, selectFullEntry } from '../selectors';
+import { externalProcessSelectors, commentSelectors, profileSelectors } from '../selectors';
+import { COMMENTS_MODULE } from '@akashaproject/common/constants';
+import ChReqService from '../services/channel-request-service';
+
+/*::
+    import type { Saga, CallEffect } from 'redux-saga';
+    import type { CommentsCheckNewPayload 
+        } from '../../flow-typed/actions/comments-actions';
+ */
 
 const COMMENT_FETCH_LIMIT = 50;
 const REPLIES_FETCH_LIMIT = 25;
 
-function* commentsCheckNew ({ entryId }) {
-    const toBlock = yield select(selectNewCommentsBlock);
-    // yield call([commentsIterator], { entryId, toBlock, reversed: true, checkNew: true }); // eslint-disable-line
+function* commentsCheckNew ({ entryId }/*: CommentsCheckNewPayload */)/* : Saga<void> */ {
+    const toBlock = yield select(commentSelectors.selectNewCommentsBlock);
+    yield call(commentsIterator, { entryId, toBlock, reversed: true, checkNew: true, more: false, parent: null, context: null }); // eslint-disable-line
 }
 
-function* commentsDownvote ({ actionId, commentId, entryId, weight }) {
-    // const channel = Channel.server.comments.downvote;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    const token = yield select(selectToken);
-    // yield apply(
-    //     channel,
-    //     channel.send,
-    //     [{ actionId, token, commentId, entryId, weight }]
-    // );
+function* commentsDownvote ({ actionId, commentId, entryId, weight })/* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.downVote, {
+            actionId, token, commentId, entryId, weight
+        });
 }
 
-function* commentsDownvoteSuccess ({ data }) {
+function* commentsDownvoteSuccess ({ data })/* : Saga<void> */ {
     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsGet ({ context, entryId, commentId, isParent }) {
-    // const channel = Channel.server.comments.getComment;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    // yield apply(channel, channel.send, [{ context, entryId, commentId, isParent }]);
+function* commentsGet ({ context, entryId, commentId, isParent })/* : Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.getComment, {
+            context, entryId, commentId, isParent
+        });
 }
 
-function* commentsGetCount ({ entryId }) {
-    // const channel = Channel.server.comments.commentsCount;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    // yield apply(channel, channel.send, [{ entryId }]);
+function* commentsGetCount ({ entryId })/* : Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.commentsCount, {
+            entryId
+        });
 }
 
-function* commentsGetExtra (collection, request) {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
-    const commentIds = [];
-    const ethAddresses = [];
-    const ipfsHashes = [];
-    const voteOf = [];
-    collection.forEach((comment) => {
-        const { ethAddress } = comment.author;
-        if (!ethAddresses.includes(ethAddress)) {
-            ethAddresses.push(ethAddress);
-        }
-        ipfsHashes.push(comment.ipfsHash);
-        commentIds.push(comment.commentId);
-        voteOf.push({ commentId: comment.commentId, ethAddress: loggedEthAddress });
-    });
-    if (ipfsHashes.length) {
-        yield put(actions.commentsResolveIpfsHash(ipfsHashes, commentIds));
-        yield put(actions.commentsGetVoteOf(voteOf));
-    }
-    for (let i = 0; i < ethAddresses.length; i++) {
-        yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
-    }
-    const { entryId, parent } = request;
-    if (parent === '0') {
-        for (let i = 0; i < commentIds.length; i++) {
-            yield put(actions.commentsIterator({ entryId, parent: commentIds[i] }));
-        }
-    }
+// function* commentsGetExtra (collection, request)/* : Saga<void> */ {
+//     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
+//     const commentIds = [];
+//     const ethAddresses = [];
+//     const ipfsHashes = [];
+//     const voteOf = [];
+//     collection.forEach((comment) => {
+//         const { ethAddress } = comment.author;
+//         if (!ethAddresses.includes(ethAddress)) {
+//             ethAddresses.push(ethAddress);
+//         }
+//         ipfsHashes.push(comment.ipfsHash);
+//         commentIds.push(comment.commentId);
+//         voteOf.push({ commentId: comment.commentId, ethAddress: loggedEthAddress });
+//     });
+//     if (ipfsHashes.length) {
+//         yield put(actions.commentsResolveIpfsHash(ipfsHashes, commentIds));
+//         yield put(actions.commentsGetVoteOf(voteOf));
+//     }
+//     for (let i = 0; i < ethAddresses.length; i++) {
+//         yield put(profileActions.profileGetData({ ethAddress: ethAddresses[i] }));
+//     }
+//     const { entryId, parent } = request;
+//     if (parent === '0') {
+//         for (let i = 0; i < commentIds.length; i++) {
+//             yield put(actions.commentsIterator({ entryId, parent: commentIds[i] }));
+//         }
+//     }
+// }
+
+function* commentsGetScore ({ commentId })/* : Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.getScore,
+        { commentId }
+    );
 }
 
-function* commentsGetScore ({ commentId }) {
-    // const channel = Channel.server.comments.getScore;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    // yield apply(channel, channel.send, [{ commentId }]);
+function* commentsGetVoteOf ({ data })/* : Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.getVoteOf,
+        data
+    )
 }
 
-function* commentsGetVoteOf ({ data }) {
-    // const channel = Channel.server.comments.getVoteOf;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    // yield apply(channel, channel.send, [data]);
-}
-
-function* commentsIterator ({ context, entryId, parent, reversed, toBlock, more, checkNew }) {
-    // const channel = Channel.server.comments.commentsIterator;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
+function* commentsIterator (
+    { context, entryId, parent, reversed, toBlock, more, checkNew }
+)/* : Saga<void> */ {
     let block;
     if (toBlock) {
         block = toBlock;
     } else {
-        block = yield select(selectBlockNumber);
+        block = yield select(externalProcessSelectors.getCurrentBlockNumber);
     }
     const limit = parent === '0' ? COMMENT_FETCH_LIMIT : REPLIES_FETCH_LIMIT;
     const lastIndex = reversed ? '0' : undefined;
-    // yield apply(
-    //     channel,
-    //     channel.send,
-    //     [{
-    //         context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew
-    //     }]
-    // );
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator, {
+            context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew 
+        }
+    );
 }
 
-function* commentsMoreIterator ({ entryId, parent }) {
-    // const channel = Channel.server.comments.commentsIterator;
-    const toBlock = yield select(state => selectCommentLastBlock(state, parent));
-    const lastIndex = yield select(state => selectCommentLastIndex(state, parent));
-    // yield apply(
-    //     channel,
-    //     channel.send,
-    //     [{ entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }]
-    // );
+function* commentsMoreIterator ({ entryId, parent })/* : Saga<void> */ {
+    const toBlock = yield select(state => commentSelectors.selectCommentLastBlock(state, { parent }));
+    const lastIndex = yield select(state => commentSelectors.selectCommentLastIndex(state, { parent }));
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator,
+        { entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }
+    );
 }
 
-function* commentsPublish ({ actionId, ...payload }) {
-    // const channel = Channel.server.comments.comment;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    const token = yield select(selectToken);
-    // yield apply(channel, channel.send, [{ actionId, token, ...payload }]);
+function* commentsPublish ({ actionId, ...payload })/* : Saga<void> */ {
+    const token/* : string */ = yield select(profileSelectors.getToken);
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.comment,
+        { actionId, token, ...payload }
+    );
 }
 
-function* commentsPublishSuccess () {
+function* commentsPublishSuccess ()/* : Saga<void> */ {
     yield put(appActions.showNotification({ id: 'publishCommentSuccess', duration: 4 }));
 }
 
-function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) {
-    // const channel = Channel.server.comments.resolveCommentsIpfsHash;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    // yield apply(channel, channel.send, [ipfsHashes, commentIds]);
+function* commentsResolveIpfsHash ({ ipfsHashes, commentIds })/* : Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.resolveCommentsIpfsHash,
+        { ipfsHashes, commentIds }
+    )
 }
 
-function* commentsUpvote ({ actionId, commentId, entryId, weight }) {
-    // const channel = Channel.server.comments.upvote;
-    // yield call(enableChannel, channel, Channel.client.comments.manager);
-    const token = yield select(selectToken);
-    // yield apply(
-    //     channel,
-    //     channel.send,
-    //     [{ actionId, token, commentId, entryId, weight }]
-    // );
+function* commentsUpvote ({ actionId, commentId, entryId, weight })/* : Saga<void> */ {
+    const token/* : string */ = yield select(profileSelectors.getToken);
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        COMMENTS_MODULE, COMMENTS_MODULE.upvote,
+        { actionId, token, commentId, entryId, weight }
+    );
 }
 
-function* commentsUpvoteSuccess ({ data }) {
+function* commentsUpvoteSuccess ({ data })/* : Saga<void> */ {
     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({ id: 'upvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsVoteSuccess (commentId) {
-    const ethAddress = yield select(selectLoggedEthAddress);
+function* commentsVoteSuccess (commentId)/* : Saga<void> */ {
+    const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     yield put(actions.commentsGetScore(commentId));
     yield put(actions.commentsGetVoteOf([{ commentId, ethAddress }]));
 }
 
-// Channel watchers
-
-// function* watchCommentsDownvoteChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.downvote);
-//         const { actionId } = resp.request;
-//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-//         if (shouldApplyChanges) {
-//             if (resp.error) {
-//                 yield put(actions.commentsDownvoteError(resp.error, resp.request));
-//                 yield put(actionActions.actionDelete(actionId));
-//             } else if (resp.data.receipt) {
-//                 yield put(actionActions.actionPublished(resp.data.receipt));
-//                 if (!resp.data.receipt.success) {
-//                     yield put(actions.commentsDownvoteError({}, resp.request));
-//                 }
-//             } else {
-//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-//                 yield put(actionActions.actionUpdate(changes));
-//             }
-//         }
-//     }
-// }
-
-// function* watchCommentsGetCommentChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.getComment);
-//         if (resp.error) {
-//             yield put(actions.commentsGetCommentError(resp.error));
-//         } else {
-//             const { commentId, context, entryId, isParent } = resp.request;
-//             const { author, parent } = resp.data;
-//             if (context === 'commentPage') {
-//                 if (parent) {
-//                     yield put(actions.commentsGetComment({
-//                         context, entryId, commentId: parent, isParent: true
-//                     }));
-//                 } else if (!isParent) {
-//                     const context = 'commentPage';
-//                     yield put(actions.commentsIterator({ context, entryId, parent: commentId }));
-//                 }
-//             }
-//             const profile = yield select(state => selectProfile(state, author.ethAddress));
-//             if (context === 'commentPage' && !profile.ethAddress) {
-//                 yield put(profileActions.profileGetData({ ethAddress: author.ethAddress }));
-//             }
-//             yield put(actions.commentsGetCommentSuccess(resp.data, resp.request));
-//         }
-//     }
-// }
-
-// function* watchCommentsGetCountChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.commentsCount);
-//         if (resp.error) {
-//             yield put(actions.commentsGetCountError(resp.error));
-//         } else {
-//             yield put(actions.commentsGetCountSuccess(resp.data));
-//         }
-//     }
-// }
-
-// function* watchCommentsGetScoreChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.getScore);
-//         if (resp.error) {
-//             yield put(actions.commentsGetScoreError(resp.error));
-//         } else {
-//             yield put(actions.commentsGetScoreSuccess(resp.data));
-//         }
-//     }
-// }
-
-// function* watchCommentsGetVoteOfChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.getVoteOf);
-//         if (resp.error) {
-//             yield put(actions.commentsGetVoteOfError(resp.error));
-//         } else {
-//             yield put(actions.commentsGetVoteOfSuccess(resp.data));
-//         }
-//     }
-// }
-
-// function* watchCommentsIteratorChannel () { // eslint-disable-line max-statements, complexity
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.commentsIterator);
-//         const { checkNew, context, entryId, more, reversed } = resp.request;
-//         const fullEntry = yield select(selectFullEntry);
-//         if (context !== 'commentPage' && (!fullEntry || entryId !== fullEntry.entryId)) {
-//             continue; // eslint-disable-line no-continue
-//         }
-//         if (resp.error) {
-//             if (checkNew) {
-//                 yield put(actions.commentsCheckNewError(resp.error));
-//             } else if (more) {
-//                 yield put(actions.commentsMoreIteratorError(resp.error, resp.request));
-//             } else {
-//                 yield put(actions.commentsIteratorError(resp.error, resp.request));
-//             }
-//         } else if (checkNew) {
-//             const collection = [];
-//             const loggedEthAddress = yield select(selectLoggedEthAddress);
-//             resp.data.collection.forEach((comm) => {
-//                 if (comm.author.ethAddress !== loggedEthAddress) {
-//                     collection.push(comm);
-//                 }
-//             });
-//             resp.data.collection = collection;
-//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
-//             yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
-//         } else if (reversed) {
-//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
-//             yield put(actions.commentsIteratorReversedSuccess(resp.data, resp.request));
-//             // const byId = yield select(state => state.commentsState.get('byId'));
-//             // const loggedProfile = yield select(state =>
-//             //     state.profileState.getIn(['loggedProfile', 'profile']));
-//             // resp.data.collection = resp.data.collection.filter((comm) => {
-//             //     const { parent, profile } = comm.data;
-//             //     const isOwnComm = profile && profile.profile === loggedProfile;
-//             //     const isParentLoaded = parent === '0' || byId.get(parent);
-//             //     if (!isOwnComm && isParentLoaded) {
-//             //         return true;
-//             //     }
-//             //     return false;
-//             // });
-//             // yield put(actions.commentsCheckNewSuccess(resp.data, resp.request));
-//         } else {
-//             yield fork(commentsGetExtra, resp.data.collection, resp.request);
-//             if (more) {
-//                 yield put(actions.commentsMoreIteratorSuccess(resp.data, resp.request));
-//             } else {
-//                 yield put(actions.commentsIteratorSuccess(resp.data, resp.request));
-//             }
-//         }
-//     }
-// }
-
-// function* watchCommentsPublishChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.comment);
-//         const { entryId, commentId, receipt } = resp.data;
-//         const { actionId } = resp.request;
-//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-//         if (shouldApplyChanges) {
-//             if (resp.error) {
-//                 yield put(actions.commentsPublishError(resp.error));
-//             } else if (receipt) {
-//                 yield put(actionActions.actionPublished(receipt));
-//                 if (entryId && commentId) {
-//                     yield fork(commentsGet, { entryId, commentId });
-//                 }
-//                 if (!receipt.success) {
-//                     yield put(actions.commentsPublishError({}));
-//                 }
-//             } else {
-//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-//                 yield put(actionActions.actionUpdate(changes));
-//             }
-//         }
-//     }
-// }
-
-// function* watchCommentsResolveIpfsHashChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.resolveCommentsIpfsHash);
-//         if (resp.error) {
-//             yield put(actions.commentsResolveIpfsHashError(resp.error));
-//         } else {
-//             yield put(actions.commentsResolveIpfsHashSuccess(resp.data));
-//         }
-//     }
-// }
-
-// function* watchCommentsUpvoteChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.comments.upvote);
-//         const { actionId } = resp.request;
-//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-//         if (shouldApplyChanges) {
-//             if (resp.error) {
-//                 yield put(actions.commentsUpvoteError(resp.error, resp.request));
-//                 yield put(actionActions.actionDelete(actionId));
-//             } else if (resp.data.receipt) {
-//                 yield put(actionActions.actionPublished(resp.data.receipt));
-//                 if (!resp.data.receipt.success) {
-//                     yield put(actions.commentsUpvoteError({}, resp.request));
-//                 }
-//             } else {
-//                 const changes = { id: actionId, status: actionStatus.publishing, tx: resp.data.tx };
-//                 yield put(actionActions.actionUpdate(changes));
-//             }
-//         }
-//     }
-// }
-
-// $FlowFixMe
-export function* watchCommentsActions () {
-    // $FlowFixMe
+export function* watchCommentsActions ()/* : Saga<void> */ {
     yield takeEvery(types.COMMENTS_DOWNVOTE, commentsDownvote);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_COMMENT, commentsGet);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_SCORE, commentsGetScore);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_GET_VOTE_OF, commentsGetVoteOf);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_ITERATOR, commentsIterator);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_MORE_ITERATOR, commentsMoreIterator);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_PUBLISH, commentsPublish);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_PUBLISH_SUCCESS, commentsPublishSuccess);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_RESOLVE_IPFS_HASH, commentsResolveIpfsHash);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_UPVOTE, commentsUpvote);
-    // $FlowFixMe
     yield takeEvery(types.COMMENTS_UPVOTE_SUCCESS, commentsUpvoteSuccess);
 }

@@ -1,66 +1,69 @@
-import { apply, put, select, takeEvery } from 'redux-saga/effects';
+// @flow
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { Map } from 'immutable';
 import * as actions from '../actions/highlight-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
 import * as highlightService from '../services/highlight-service';
-import { selectLoggedEthAddress } from '../selectors';
+import { profileSelectors } from '../selectors';
 
-function* highlightDelete ({ id }) {
+/*::
+    import type { Saga } from 'redux-saga'; // eslint-disable-line
+*/
+
+function* highlightDelete ({ id })/* : Saga<void> */ {
     try {
-        yield apply(highlightService, highlightService.deleteHighlight, [id]);
+        yield call([highlightService, highlightService.deleteHighlight], id);
         yield put(actions.highlightDeleteSuccess(id));
     } catch (error) {
         yield put(actions.highlightDeleteError(error));
     }
 }
 
-function* highlightEditNotes ({ type, ...payload }) {
+function* highlightEditNotes ({ type, ...payload })/* : Saga<void> */ {
     try {
-        const highlight = yield apply(highlightService, highlightService.editNotes, [payload]);
+        const highlight = yield call([highlightService, highlightService.editNotes], payload);
         yield put(actions.highlightEditNotesSuccess(highlight));
     } catch (error) {
         yield put(actions.highlightEditNotesError(error));
     }
 }
 
-export function* highlightGetAll () {
+export function* highlightGetAll ()/* : Saga<void> */ {
     try {
-        const ethAddress = yield select(selectLoggedEthAddress);
-        const data = yield apply(highlightService, highlightService.getAll, [ethAddress]);
+        const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
+        const data = yield call([highlightService, highlightService.getAll], ethAddress);
         yield put(actions.highlightGetAllSuccess(data));
     } catch (error) {
         yield put(actions.highlightGetAllError(error));
     }
 }
 
-function* highlightSave ({ payload }) {
+function* highlightSave ({ payload })/* : Saga<void> */ {
     try {
-        const ethAddress = yield select(selectLoggedEthAddress);
-        const highlight = yield apply(
-            highlightService,
-            highlightService.saveHighlight,
-            [{ ethAddress, ...payload }]
+        const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
+        const highlight = yield call(
+            [highlightService, highlightService.saveHighlight],
+            { ethAddress, ...payload }
         );
         yield put(actions.highlightSaveSuccess(highlight));
         yield put(appActions.showNotification({
             id: 'highlightSaveSuccess',
             type: types.HIGHLIGHT_SAVE_SUCCESS,
-            values: new Map({ id: highlight.id })
+            values: Map({ id: highlight.id })
         }));
     } catch (error) {
         yield put(actions.highlightSaveError(error));
     }
 }
 
-function* highlightSearch ({ search }) {
+function* highlightSearch ({ search })/* : Saga<void> */ {
     try {
-        const ethAddress = yield select(selectLoggedEthAddress);
+        const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         search = search.toLowerCase();
-        const data = yield apply(
-            highlightService,
-            highlightService.searchHighlight,
-            [{ ethAddress, search }]
+        const data = yield call(
+            [highlightService, highlightService.searchHighlight],
+            { ethAddress, search }
         );
         yield put(actions.highlightSearchSuccess(data));
     } catch (error) {
@@ -68,7 +71,7 @@ function* highlightSearch ({ search }) {
     }
 }
 
-export function* watchHighlightActions () {
+export function* watchHighlightActions ()/* : Saga<void> */ {
     yield takeEvery(types.HIGHLIGHT_DELETE, highlightDelete);
     yield takeEvery(types.HIGHLIGHT_EDIT_NOTES, highlightEditNotes);
     yield takeEvery(types.HIGHLIGHT_SAVE, highlightSave);

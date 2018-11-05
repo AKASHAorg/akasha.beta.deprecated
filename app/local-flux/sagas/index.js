@@ -1,3 +1,4 @@
+// @flow
 import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
@@ -6,7 +7,6 @@ import * as eProcActions from '../actions/external-process-actions';
 import * as notificationsActions from '../actions/notifications-actions';
 import * as profileActions from '../actions/profile-actions';
 import { selectLoggedEthAddress } from '../selectors';
-import { createActionChannels } from './helpers';
 import * as actionSaga from './action-saga';
 import * as appSaga from './app-saga';
 import * as claimableSaga from './claimable-saga';
@@ -30,8 +30,9 @@ import * as types from '../constants';
 import { loadAkashaDB } from '../services/db/dbs';
 import ChService from '../services/channel-request-service';
 
+import type { Saga } from 'redux-saga'; // eslint-disable-line
 
-function* launchActions () {
+function* launchActions ()/* :Saga<void> */ {
     const timestamp = new Date().getTime();
     yield call([ChService, ChService.addResponseListener]);
     yield put(eProcActions.servicesSetTimestamp(timestamp));
@@ -79,18 +80,13 @@ function* bootstrapApp () {
     yield put(appActions.appReady());
 }
 
-function* bootstrapHome () {
+function* bootstrapHome ()/* : Saga<void> */ {
     // launch the necessary actions for the home/dashboard component
     yield call(launchHomeActions);
     yield put(appActions.bootstrapHomeSuccess());
 }
 
-function* watchBootstrapHome () {
-    yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
-}
-
-export default function* rootSaga () { // eslint-disable-line max-statements
-    // createActionChannels();
+export default function* rootSaga ()/* : Saga<void> */ { // eslint-disable-line max-statements
     yield call(loadAkashaDB);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
@@ -112,5 +108,5 @@ export default function* rootSaga () { // eslint-disable-line max-statements
     yield fork(transactionSaga.watchTransactionActions);
     yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
-    yield fork(watchBootstrapHome);
+    yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
 }

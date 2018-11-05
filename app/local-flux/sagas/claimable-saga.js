@@ -1,20 +1,23 @@
 // @flow
 import * as reduxSaga from 'redux-saga';
-import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
-import { actionChannels, enableChannel } from './helpers';
+import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/claimable-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as types from '../constants';
-import { selectBlockNumber, selectClaimableOffset, selectLoggedEthAddress,
-    selectPendingEntries, 
-    selectEntry} from '../selectors';
+import { externalProcessSelectors, profileSelectors, claimSelectors, entrySelectors } from '../selectors';
 import * as claimableService from '../services/claimable-service';
+import ChReqService from '../services/channel-request-service';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
+
+/*::
+    import type { Saga } from 'redux-saga';
+ */
 
 const CLAIMABLE_LIMIT = 10;
 const ENTRIES_LIMIT = 5;
 
-function* claimableDeleteEntry ({ entryId }) {
-    const ethAddress = yield select(selectLoggedEthAddress);
+function* claimableDeleteEntry ({ entryId })/* : Saga<void> */ {
+    const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         yield call([claimableService, claimableService.deleteEntry], { ethAddress, entryId });
         yield put(actions.claimableDeleteEntrySuccess({ entryId }));
@@ -23,9 +26,9 @@ function* claimableDeleteEntry ({ entryId }) {
     }
 }
 
-function* claimableGetEntries ({ more }) {
-    const ethAddress = yield select(selectLoggedEthAddress);
-    const offset = more ? yield select(selectClaimableOffset) : 0;
+function* claimableGetEntries ({ more })/* : Saga<void> */ {
+    const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
+    const offset = more ? yield select(claimSelectors.getClaimableEntriesCounter) : 0;
     yield call([reduxSaga, reduxSaga.delay], 500);    
     try {
         const data = yield call(
@@ -39,7 +42,7 @@ function* claimableGetEntries ({ more }) {
     }
 }
 
-function* claimableGetEntriesData (data) {
+function* claimableGetEntriesData (data)/* : Saga<void> */ {
     let allEntries = [];
     let ownEntries = [];
     let voteEntries = [];
@@ -54,9 +57,9 @@ function* claimableGetEntriesData (data) {
     });
     for (let i = 0; i < allEntries.length; i++) {
         const context = 'claimable';
-        const pendingEntries = yield select(state => selectPendingEntries(state, context));
+        const pendingEntries = yield select(state => entrySelectors.getPendingEntries(state, context));
         const isPending = pendingEntries && pendingEntries.get(allEntries[i]);
-        const entry = yield select(state => selectEntry(state, allEntries[i]));
+        const entry = yield select(state => entrySelectors.selectEntryById(state, allEntries[i]));
         if (!isPending && !entry) {
             yield put(entryActions.entryGetShort({ context, entryId: allEntries[i] }));
         } else {
@@ -73,74 +76,50 @@ function* claimableGetEntriesData (data) {
     }
 }
 
-function* claimableGetStatus () {
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+function* claimableGetStatus ()/* : Saga<void> */ {
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         const status = yield call([claimableService, claimableService.getStatus], loggedEthAddress);
         return status;
     } catch (error) {
-        console.error(error);
         yield put(actions.claimableGetStatusError({ error }));
     }
 }
 
-function* claimableIterator () {
-    // const channel = Channel.server.entry.myVotesIterator;
+function* claimableIterator ()/* : Saga<void> */ {
     const status = (yield call(claimableGetStatus)) || {};
     const { newestBlock, oldestBlock, newestIndex, oldestIndex } = status;
-    const ethAddress = yield select(selectLoggedEthAddress);
-
-    while (!(yield select(selectBlockNumber))) {
+    const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
+    // whoooohw... :(
+    while (!(yield select(externalProcessSelectors.getCurrentBlockNumber))) {
         yield call([reduxSaga, reduxSaga.delay], 1000);
     }
-    // yield call(enableChannel, channel, Channel.client.entry.manager);
+    
     if (oldestBlock === 0) {
-        // yield apply(
-        //     channel,
-        //     channel.send,
-        //     [{ ethAddress, toBlock: newestBlock, lastIndex: newestIndex, limit: CLAIMABLE_LIMIT, reversed: true }]
-        // );
+        yield call(
+            [ChReqService, ChReqService.sendRequest],
+            ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
+                ethAddress,
+                toBlock: newestBlock,
+                lastIndex: newestIndex,
+                limit: CLAIMABLE_LIMIT,
+                reversed: true
+            });
     } else {
-        const toBlock = oldestBlock || (yield select(selectBlockNumber));
-        // yield apply(
-        //     channel,
-        //     channel.send,
-        //     [{ ethAddress, toBlock, lastIndex: oldestIndex, limit: CLAIMABLE_LIMIT }]
-        // );
+        const toBlock = oldestBlock || (yield select(profileSelectors.getCurrentBlockNumber));
+        yield call(
+            [ChReqService, ChReqService.sendRequest],
+            ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
+                ethAddress,
+                toBlock,
+                lastIndex: oldestIndex,
+                limit: CLAIMABLE_LIMIT,
+            });
     }
 }
 
-function* claimableSaveEntries ({ data, request }) {
-    try {
-        const newStatus = yield apply(claimableService, claimableService.saveEntries, [data, request]);
-        return newStatus;
-    } catch (error) {
-        yield put(actions.claimableSaveEntriesError(error));
-    }
-}
-
-// function* watchClaimableIteratorChannel () {
-//     while (true) {
-//         const resp = yield take(actionChannels.entry.myVotesIterator);
-//         const { ethAddress, limit, reversed } = resp.request;
-//         const loggedEthAddress = yield select(selectLoggedEthAddress);        
-//         if (resp.error) {
-//             yield put(actions.claimableIteratorError(resp.error));
-//         } else if (loggedEthAddress === ethAddress) {
-//             const status = yield call(claimableSaveEntries, { data: resp.data, request: resp.request });
-//             const syncedNormal = status.oldestBlock === 0;
-//             const syncedReversed = reversed && resp.data.collection.length !== limit;
-//             if (!syncedNormal || !syncedReversed) {
-//                 yield apply(reduxSaga, reduxSaga.delay, [1000]);
-//                 yield call(claimableIterator);
-//             }
-//         }
-//     }
-// }
-
-// $FlowFixMe
-export function* watchClaimableActions () { //$FlowFixMe
-    yield takeEvery(types.CLAIMABLE_DELETE_ENTRY, claimableDeleteEntry);// $FlowFixMe
-    yield takeEvery(types.CLAIMABLE_GET_ENTRIES, claimableGetEntries);// $FlowFixMe
-    yield takeEvery(types.CLAIMABLE_ITERATOR, claimableIterator);// $FlowFixMe
+export function* watchClaimableActions ()/* : Saga<void> */ {
+    yield takeEvery(types.CLAIMABLE_DELETE_ENTRY, claimableDeleteEntry);
+    yield takeEvery(types.CLAIMABLE_GET_ENTRIES, claimableGetEntries);
+    yield takeEvery(types.CLAIMABLE_ITERATOR, claimableIterator);
 }
