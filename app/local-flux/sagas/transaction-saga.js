@@ -4,7 +4,9 @@ import { TX_MODULE } from '@akashaproject/common/constants';
 import * as types from '../constants';
 import ChReqService from '../services/channel-request-service';
 
-import type { Saga } from 'redux-saga';
+/*::
+    import type { Saga } from 'redux-saga';
+ */
 
 /*::
     type TxGetStatus = {
