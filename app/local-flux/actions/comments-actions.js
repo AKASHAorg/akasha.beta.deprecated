@@ -1,8 +1,14 @@
+//@flow
 import * as types from '../constants';
 import { action } from './helpers';
 import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
-export const commentsCheckNew = ({ entryId }) => action(types.COMMENTS_CHECK_NEW, { entryId });
+/*::
+    import type { CommentsCheckNewPayload } from '../../flow-typed/actions/comments-actions';
+*/
+
+export const commentsCheckNew = (payload/* : CommentsCheckNewPayload */) =>
+    action(types.COMMENTS_CHECK_NEW, payload);
 
 export const commentsCheckNewError = (error) => {
     error.code = 'CCNE01';

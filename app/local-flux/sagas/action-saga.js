@@ -15,6 +15,10 @@ import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { balanceToNumber } from '../../utils/number-formatter';
 
+/*::
+    import type { Saga } from 'redux-saga';
+ */
+
 const ACTION_HISTORY_LIMIT = 20;
 
 /**
@@ -82,7 +86,7 @@ const publishSuccessActions = {
     [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
-function balanceRequired (actionType) {
+function balanceRequired (actionType)/* : boolean */ {
     const balanceNotRequired = [actionTypes.faucet];
     if (balanceNotRequired.includes(actionType)) {
         return false;
@@ -90,6 +94,21 @@ function balanceRequired (actionType) {
     return true;
 }
 
+function checkHasMana (actionType, remainingMana, costs) {
+    switch (actionType) {
+        case actionTypes.draftPublish:
+            return (remainingMana >= costs.entryPublishingCost);
+        case actionTypes.comment:
+            return (remainingMana >= costs.commentPublishingCost);
+        case actionTypes.commentUpvote:
+        case actionTypes.commentDownvote:
+        case actionTypes.entryUpvote:
+        case actionTypes.entryDownvote:
+            return (remainingMana >= costs.costByWeight);
+        default:
+            return true;
+    }
+}
 function hasEnoughBalance (actionType, balance, publishingCost, payload) {
     const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
     const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);
@@ -101,24 +120,12 @@ function hasEnoughBalance (actionType, balance, publishingCost, payload) {
             5
         );
     }
-    let hasMana;
-    switch (actionType) {
-        case actionTypes.draftPublish:
-            hasMana = remainingMana >= entryPublishingCost;
-            break;
-        case actionTypes.comment:
-            hasMana = remainingMana >= commentPublishingCost;
-            break;
-        case actionTypes.commentUpvote:
-        case actionTypes.commentDownvote:
-        case actionTypes.entryUpvote:
-        case actionTypes.entryDownvote:
-            hasMana = remainingMana >= costByWeight;
-            break;
-        default:
-            hasMana = true;
-            break;
-    }
+    const hasMana = checkHasMana(actionType, remainingMana, {
+        entryPublishingCost,
+        commentPublishingCost,
+        costByWeight
+    });
+    
     const ethCost = actionType === actionTypes.batch && payload && payload.actions ?
         0.005 * payload.actions.length :
         0.01;
@@ -129,7 +136,7 @@ function hasEnoughBalance (actionType, balance, publishingCost, payload) {
     };
 }
 
-function* actionAdd ({ ethAddress, payload, actionType }) {
+function* actionAdd ({ ethAddress, payload, actionType })/* : Saga<void> */ {
     if (actionType === actionTypes.faucet) {
         const id = yield select(actionSelectors.selectActionToPublish);
         yield put(actions.actionPublish(id)); // eslint-disable-line no-use-before-define
@@ -160,7 +167,7 @@ function* actionAdd ({ ethAddress, payload, actionType }) {
     }
 }
 
-function* actionDelete ({ id }) {
+function* actionDelete ({ id })/* : Saga<void> */ {
     try {
         yield apply(actionService, actionService.deleteAction, [id]);
     } catch (error) {
@@ -168,7 +175,7 @@ function* actionDelete ({ id }) {
     }
 }
 
-function* actionGetAllHistory ({ loadMore }) {
+function* actionGetAllHistory ({ loadMore })/* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         const offset = (yield select(actionSelectors.getActionHistory)).size;
@@ -183,7 +190,7 @@ function* actionGetAllHistory ({ loadMore }) {
     }
 }
 
-function* actionGetHistory ({ request }) {
+function* actionGetHistory ({ request })/* : Saga<void> */ {
     try {
         const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(
@@ -202,7 +209,7 @@ function* actionGetHistory ({ request }) {
  * Then dispatch transactionGetStatus to check if the pending transactions were mined;
  * This is called from bootstrapHome saga (after initial login and on refresh);
  */
-function* actionGetPending () {
+function* actionGetPending ()/* : Saga<void> */ {
     try {
         const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(actionService, actionService.getPendingActions, [loggedEthAddress]);
@@ -229,7 +236,7 @@ function* actionGetPending () {
  *  - from watchProfileLoginChannel, after a successful reauthentication;
  *  - from checkAuthentication saga, whenever reauthentication is not needed (token is not expired)
  */
-function* actionPublish ({ id }) { // eslint-disable-line complexity
+function* actionPublish ({ id })/* : Saga<void> */ { // eslint-disable-line complexity
     const action = yield select(state => actionSelectors.selectActionById(state, id));
     const actionId = action.get('id');
     const payload = action.get('payload').toJS();
@@ -255,7 +262,7 @@ function* actionPublish ({ id }) { // eslint-disable-line complexity
  * Save action in local DB
  * This is called from actionUpdate saga, when status is updated to "publishing" or "published"
  */
-function* actionSave (id) {
+function* actionSave (id)/* : Saga<void> */ {
     let action = yield select(state => actionSelectors.selectActionById(state, id));
     // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
@@ -277,7 +284,7 @@ function* actionSave (id) {
     }
 }
 
-function* actionPublished ({ receipt }) {
+function* actionPublished ({ receipt })/* : Saga<void> */ {
     const { blockNumber, cumulativeGasUsed, success, transactionHash } = receipt;
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
@@ -296,7 +303,7 @@ function* actionPublished ({ receipt }) {
  * React to action updates, depending on the new action status
  * Important: the "changes" object must contain the id of the action
  */
-function* actionUpdate ({ changes }) {
+function* actionUpdate ({ changes })/* : Saga<void> */ {
     const action = yield select(state => actionSelectors.selectActionById(state, changes.id));
     if (changes.status === actionStatus.publishing) {
         yield fork(actionSave, changes.id);
@@ -310,7 +317,7 @@ function* actionUpdate ({ changes }) {
     }
 }
 
-function* actionUpdateClaim ({ data }) {
+function* actionUpdateClaim ({ data })/* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         yield apply(
@@ -323,7 +330,7 @@ function* actionUpdateClaim ({ data }) {
     }
 }
 
-function* actionUpdateClaimVote ({ data }) {
+function* actionUpdateClaimVote ({ data })/* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         yield apply(
@@ -336,17 +343,15 @@ function* actionUpdateClaimVote ({ data }) {
     }
 }
 
-// Action watchers
-// $FlowFixMe
-export function* watchActionActions () { // $FlowFixMe
-    yield takeEvery(types.ACTION_ADD, actionAdd); // $FlowFixMe
-    yield takeEvery(types.ACTION_DELETE, actionDelete); // $FlowFixMe
-    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory); // $FlowFixMe
-    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory); // $FlowFixMe
-    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending); // $FlowFixMe
-    yield takeEvery(types.ACTION_PUBLISH, actionPublish); // $FlowFixMe
-    yield takeEvery(types.ACTION_PUBLISHED, actionPublished); // $FlowFixMe
-    yield takeEvery(types.ACTION_UPDATE, actionUpdate); // $FlowFixMe
-    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim); // $FlowFixMe
+export function* watchActionActions ()/* : Saga<void> */ {
+    yield takeEvery(types.ACTION_ADD, actionAdd); 
+    yield takeEvery(types.ACTION_DELETE, actionDelete); 
+    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory); 
+    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory); 
+    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending); 
+    yield takeEvery(types.ACTION_PUBLISH, actionPublish); 
+    yield takeEvery(types.ACTION_PUBLISHED, actionPublished); 
+    yield takeEvery(types.ACTION_UPDATE, actionUpdate); 
+    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim); 
     yield takeEvery(types.ACTION_UPDATE_CLAIM_VOTE, actionUpdateClaimVote);
 }

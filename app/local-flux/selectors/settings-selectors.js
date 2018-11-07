@@ -11,4 +11,5 @@ export const getNotificationsPreference = (state/*: Object */) =>
 export const getEntryContentHidden = (state/*: Object */) =>
     selectUserSettings(state).get('hideEntryContent');
 
-export const getHideCommentSettings = (state/*: Object */) => selectUserSettings(state).get('hideCommentContent');
+export const getHideCommentSettings = (state/*: Object */) =>
+    selectUserSettings(state).get('hideCommentContent');

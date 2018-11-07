@@ -2,8 +2,10 @@
 import { Map } from 'immutable';
 import { selectEntriesById } from './entry-selectors';
 
-export const selectClaimableLoading = (state/*: Object */)=> !!state.claimableState.get('entriesLoading').size;
-export const selectClaimableLoadingMore = (state/*: Object */)=> !!state.claimableState.get('entriesLoadingMore').size;
+export const selectClaimableLoading = (state/*: Object */)=>
+    !!state.claimableState.get('entriesLoading').size;
+export const selectClaimableLoadingMore = (state/*: Object */)=>
+    !!state.claimableState.get('entriesLoadingMore').size;
 export const selectClaimableMoreEntries = (state/*: Object */)=> state.claimableState.get('moreEntries');
 export const selectClaimableEntries = (state/*: Object */) => state.claimableState.get('entryList');
 

@@ -1,9 +1,9 @@
-import { call, fork, put, select, takeEvery, takeLatest, take, throttle } from 'redux-saga/effects';
+// @flow
+import { call, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
 import { DraftModel } from '../reducers/models';
-import { actionChannels, enableChannel, isLoggedProfileRequest } from './helpers';
 import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount, extractExcerpt } from '../../utils/dataModule';
@@ -12,16 +12,19 @@ import * as types from '../constants';
 import * as claimableActions from '../actions/claimable-actions';
 import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
-import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
-import * as actionStatus from '../../constants/action-status';
-import * as eProcActions from '../actions/external-process-actions';
 import * as tagActions from '../actions/tag-actions';
+import ChReqService from '../services/channel-request-service';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
+
 
 const { EditorState, SelectionState } = DraftJS;
-const { Channel } = self;
 /**
  * Draft saga
+ */
+
+/*:: 
+    import type { Saga } from 'redux-saga';
  */
 
 /**
@@ -29,7 +32,7 @@ const { Channel } = self;
  * the trick is to split selectionState from editorState
  * and to keep them synced
  */
-function* draftCreate ({ data }) {
+function* draftCreate ({ data })/* : Saga<void> */ {
     const newEditorState = EditorState.createEmpty();
     const firstKey = newEditorState.getCurrentContent().getFirstBlock().getKey();
     const newSelectionState = SelectionState.createEmpty(firstKey);
@@ -50,14 +53,14 @@ function* draftCreate ({ data }) {
     }));
 }
 
-function* draftAddTag ({ data }) {
+function* draftAddTag ({ data })/* : Saga<void> */ {
     yield put(tagActions.tagExists({ tagName: data.tagName, addToDraft: true, draftId: data.draftId }));
 }
 
 /**
  * get all drafts.
  */
-function* draftsGet ({ data }) {
+function* draftsGet ({ data })/* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftsGet], data.ethAddress);
         let drafts = new Map();
@@ -80,7 +83,6 @@ function* draftsGet ({ data }) {
         }
         yield put(draftActions.draftsGetSuccess({ drafts }));
     } catch (ex) {
-        console.error(ex);
         yield put(draftActions.draftsGetError({ error: ex }));
     }
 }
@@ -88,7 +90,7 @@ function* draftsGet ({ data }) {
 /**
  * save draft to db every x seconds
  */
-function* draftAutoSave ({ data }) {
+function* draftAutoSave ({ data })/* : Saga<void> */ {
     yield put(draftActions.draftAutosave(data.draft));
     /**
      * prepare data to save in db
@@ -103,7 +105,6 @@ function* draftAutoSave ({ data }) {
         const response = yield call([draftService, draftService.draftCreateOrUpdate], { draft: dataToSave });
         yield put(draftActions.draftAutosaveSuccess(response));
     } catch (ex) {
-        console.error(ex, 'exception thrown');
         yield put(draftActions.draftAutosaveError(
             { error: ex },
             data.draft.id,
@@ -112,7 +113,7 @@ function* draftAutoSave ({ data }) {
     }
 }
 
-function* draftUpdate ({ data }) {
+function* draftUpdate ({ data })/* : Saga<void> */ {
     const draftObj = data;
     const draft = data.content.get('draft');
     if (draftObj.getIn(['content', 'entryType']) !== 'link') {
@@ -128,7 +129,7 @@ function* draftUpdate ({ data }) {
     }
 }
 
-function* draftsGetCount ({ data }) {
+function* draftsGetCount ({ data })/* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftsGetCount], {
             ethAddress: data.ethAddress
@@ -139,7 +140,7 @@ function* draftsGetCount ({ data }) {
     }
 }
 
-function* draftDelete ({ data }) {
+function* draftDelete ({ data })/* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftDelete], { draftId: data.draftId });
         yield put(draftActions.draftDeleteSuccess({ draftId: response }));
@@ -148,8 +149,7 @@ function* draftDelete ({ data }) {
     }
 }
 /* eslint-disable max-statements */
-function* draftPublish ({ actionId, draft }) {
-    const channel = Channel.server.entry.publish;
+function* draftPublish ({ actionId, draft })/* : Saga<void> */ {
     const { id } = draft;
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
@@ -167,7 +167,6 @@ function* draftPublish ({ actionId, draft }) {
                 draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;                
             }
         }
-        yield call(enableChannel, channel, Channel.client.entry.manager);
         if (
             draftToPublish.content.entryType === 'article' &&
             isEmpty(draftToPublish.content.featuredImage)
@@ -180,20 +179,21 @@ function* draftPublish ({ actionId, draft }) {
         ) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
-        yield call([channel, channel.send], {
-            actionId,
-            id,
-            token,
-            tags: draftFromState.tags.keySeq().toJS(),
-            content: draftToPublish.content,
-            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType),
-        });
+        yield call(
+            [ChReqService, ChReqService.sendRequest],
+            ENTRY_MODULE, ENTRY_MODULE.publish, {
+                actionId, id, token,
+                tags: draftFromState.tags.keySeq().toJS(),
+                content: draftToPublish.content,
+                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
+            }
+        );
     } catch (ex) {
         yield put(draftActions.draftPublishError(ex));
     }
 }
 /* eslint-enable max-statements */
-function* draftPublishSuccess ({ data }) {
+function* draftPublishSuccess ({ data })/* : Saga<void> */ {
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));
     const isUpdate = data.draft.id.startsWith('0x');
     yield put(appActions.showNotification({
@@ -204,8 +204,7 @@ function* draftPublishSuccess ({ data }) {
     yield put(claimableActions.claimableIterator());    
 }
 
-function* draftPublishUpdate ({ actionId, draft }) {
-    const channel = Channel.server.entry.editEntry;
+function* draftPublishUpdate ({ actionId, draft })/* : Saga<void> */ {
     const { id } = draft;
     const draftFromState = yield select(state => selectDraftById(state, id));
     const token = yield select(selectToken);
@@ -215,22 +214,24 @@ function* draftPublishUpdate ({ actionId, draft }) {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
         );
-        yield call(enableChannel, channel, Channel.client.entry.manager);
-        yield call([channel, channel.send], {
-            ethAddress,
-            actionId,
-            entryId: id,
-            token,
-            tags: draftFromState.tags.keySeq().toJS(),
-            content: draftToPublish.content,
-            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
-        });
+        yield call(
+            [ChReqService, ChReqService.sendRequest],
+            ENTRY_MODULE, ENTRY_MODULE.editEntry, {
+                ethAddress,
+                actionId,
+                entryId: id,
+                token,
+                tags: draftFromState.tags.keySeq().toJS(),
+                content: draftToPublish.content,
+                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
+            }
+        );
     } catch (ex) {
         yield put(draftActions.draftPublishUpdateError(ex));
     }
 }
 
-function* draftRevert ({ data }) {
+function* draftRevert ({ data })/* : Saga<void> */ {
     const { id } = data;
     try {
         const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
@@ -240,98 +241,7 @@ function* draftRevert ({ data }) {
     }
 }
 
-// function* watchDraftPublishChannel () {
-//     while (true) {
-//         const response = yield take(actionChannels.entry.publish);
-//         const { actionId } = response.request;
-//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-//         if (shouldApplyChanges) {
-//             if (response.error) {
-//                 yield put(draftActions.draftPublishError(
-//                     response.error,
-//                     response.request.id
-//                 ));
-//             } else if (response.data.receipt) {
-//                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-//                 if (!response.data.receipt.success) {
-//                     yield put(draftActions.draftPublishError({}, response.request.id));
-//                 } else {
-//                     yield put(eProcActions.gethGetStatusSuccess({
-//                         blockNr: blockNumber
-//                     }, {
-//                         geth: {}
-//                     }));
-//                     yield put(actionActions.actionUpdate({
-//                         id: response.request.actionId,
-//                         status: actionStatus.published,
-//                         tx: response.data.tx,
-//                         blockNumber,
-//                         cumulativeGasUsed,
-//                         success,
-//                         payload: { entryId: response.data.entryId }
-//                     }));
-//                 }
-//             } else {
-//                 const loggedEthAddress = yield select(selectLoggedEthAddress);
-//                 yield put(actionActions.actionUpdate({
-//                     id: response.request.actionId,
-//                     status: actionStatus.publishing,
-//                     tx: response.data.tx,
-//                     payload: { ethAddress: loggedEthAddress }
-//                 }));
-//             }
-//         }
-//     }
-// }
-
-// function* watchDraftPublishUpdateChannel () {
-//     while (true) {
-//         const response = yield take(actionChannels.entry.editEntry);
-//         const { actionId } = response.request;
-//         const shouldApplyChanges = yield call(isLoggedProfileRequest, actionId);
-//         if (shouldApplyChanges) {
-//             if (response.error) {
-//                 yield put(draftActions.draftPublishUpdateError(
-//                     response.error,
-//                     response.request.id
-//                 ));
-//             } else if (response.data.receipt) {
-//                 const { blockNumber, cumulativeGasUsed, success } = response.data.receipt;
-//                 if (!response.data.receipt.success) {
-//                     yield put(draftActions.draftPublishUpdateError({}, response.request.id));
-//                 } else {
-//                     yield put(eProcActions.gethGetStatusSuccess({
-//                         blockNr: blockNumber
-//                     }, {
-//                         geth: {}
-//                     }));
-//                     yield put(actionActions.actionUpdate({
-//                         id: response.request.actionId,
-//                         status: actionStatus.published,
-//                         tx: response.data.tx,
-//                         blockNumber,
-//                         cumulativeGasUsed,
-//                         success,
-//                     }));
-//                 }
-//             } else {
-//                 yield put(actionActions.actionUpdate({
-//                     id: response.request.actionId,
-//                     status: actionStatus.publishing,
-//                     tx: response.data.tx,
-//                 }));
-//             }
-//         }
-//     }
-// }
-
-function* registerChannelListeners () {
-    // yield fork(watchDraftPublishChannel);
-    // yield fork(watchDraftPublishUpdateChannel);
-}
-
-export function* watchDraftActions () {
-    yield fork(registerChannelListeners);
+export function* watchDraftActions ()/* : Saga<void> */ {
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
     yield takeEvery(types.DRAFT_PUBLISH_SUCCESS, draftPublishSuccess);

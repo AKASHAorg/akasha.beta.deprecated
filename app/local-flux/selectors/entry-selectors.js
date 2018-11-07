@@ -21,24 +21,34 @@ import { List } from 'immutable';
  */
 
 export const selectEntriesById = (state/*: Object */) => state.entryState.get('byId');
-export const selectEntryById = (state/*: Object */, props/*: EntryByIdProps*/) => state.entryState.getIn(['byId', props.entryId]);
-export const selectEntryEndPeriod = (state/*: Object */) => state.entryState.get('endPeriod');
-export const selectPendingEntriesFlags = (state/*: Object */) => state.entryState.getIn(['flags', 'pendingEntries']);
-export const selectEntryFlag = (state/*: Object */, props/*: EntryFlagProps*/) => state.entryState.getIn(['flags', props.flag]);
-export const selectEntryVote = (state/*: Object */, props/*: EntryByIdProps */) => state.entryState.getIn(['votes', props.entryId]);
+export const selectEntryById = (state/*: Object */, props/*: EntryByIdProps*/) =>
+    state.entryState.getIn(['byId', props.entryId]);
+export const selectEntryEndPeriod = (state/*: Object */) =>
+    state.entryState.get('endPeriod');
+export const selectPendingEntriesFlags = (state/*: Object */) =>
+    state.entryState.getIn(['flags', 'pendingEntries']);
+export const selectEntryFlag = (state/*: Object */, props/*: EntryFlagProps*/) =>
+    state.entryState.getIn(['flags', props.flag]);
+export const selectEntryVote = (state/*: Object */, props/*: EntryByIdProps */) =>
+    state.entryState.getIn(['votes', props.entryId]);
 export const selectFullEntry = (state/*: Object */) => state.entryState.get('fullEntry');
 export const selectAllProfileEntries = (state/*: Object */, props/*: AllProfileEntriesProps */) =>
     state.entryState.getIn(['profileEntries', props.ethAddress])
 export const selectLastStreamBlock = (state/*: Object */) => state.entryState.get('lastStreamBlock');
 export const selectVoteCost = (state/*: Object */) => state.entryState.get('voteCostByWeight');
-export const selectEntryBalance = (state/*: Object */, props/*: EntryByIdProps*/) => state.entryState.getIn(['balance', props.entryId]);
-export const selectEntryCanClaim = (state/*: Object */, props/*: EntryByIdProps*/) => state.entryState.getIn(['canClaim', props.entryId]);
-export const selectEntryCanClaimVote = (state/*: Object */, props/*: EntryByIdProps*/) => state.entryState.getIn(['canClaimVote', props.entryId]);
+export const selectEntryBalance = (state/*: Object */, props/*: EntryByIdProps*/) =>
+    state.entryState.getIn(['balance', props.entryId]);
+export const selectEntryCanClaim = (state/*: Object */, props/*: EntryByIdProps*/) =>
+    state.entryState.getIn(['canClaim', props.entryId]);
+export const selectEntryCanClaimVote = (state/*: Object */, props/*: EntryByIdProps*/) =>
+    state.entryState.getIn(['canClaimVote', props.entryId]);
 
 /** getters (see ./README.md) */
 
 // @todo add a comment for context param.
-export const getPendingEntries = (state/*: Object */, props/*: PendingEntriesProps*/) => selectPendingEntriesFlags(state).get(props.context);
+// @param context <string> - eg. 'claimable'
+export const getPendingEntries = (state/*: Object */, props/*: PendingEntriesProps*/) =>
+    selectPendingEntriesFlags(state).get(props.context);
 export const getProfileEntries = (state/*: Object */, props/*: ProfileEntriesProps*/) =>
     (selectAllProfileEntries(state, { ethAddress: props.ethAddress }).get('entryIds') || new List())
         .map((entryId/*: string */) => selectEntryById(state, { entryId }));

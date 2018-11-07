@@ -1,60 +1,30 @@
-import { apply, fork, put, take, takeEvery } from 'redux-saga/effects';
-import { actionChannels } from './helpers';
-import * as actionActions from '../actions/action-actions';
-import * as actions from '../actions/transaction-actions';
+// @flow
+import { call, takeEvery } from 'redux-saga/effects';
+import { TX_MODULE } from '@akashaproject/common/constants';
 import * as types from '../constants';
-import * as actionStatus from '../../constants/action-status';
+import ChReqService from '../services/channel-request-service';
 
-const Channel = global.Channel;
+/*::
+    import type { Saga } from 'redux-saga';
+ */
 
-export function* transactionGetStatus ({ txs, ids }) {
-    const channel = Channel.server.tx.getTransaction;
-    yield apply(channel, channel.send, [{ transactionHash: txs, actionIds: ids }]);
-}
-
-function* watchTransactionGetStatus () {
-    yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
-}
-
-function* watchTransactionGetStatusChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.tx.getTransaction);
-        if (resp.error) {
-            yield put(actions.transactionGetStatusError(resp.error));
-        } else {
-            const updates = [];
-            const actionIds = [];
-            resp.data.forEach((tx, index) => {
-                if (!tx) {
-                    actionIds.push(resp.request.actionIds[index]);
-                }
-                if (tx && tx.blockNumber) {
-                    const { blockNumber, cumulativeGasUsed, success } = tx;
-                    const id = resp.request.actionIds[index];
-                    const changes = {
-                        id,
-                        blockNumber,
-                        cumulativeGasUsed,
-                        status: actionStatus.published,
-                        success
-                    };
-                    updates.push(changes);
-                }
-            });
-            for (let i = 0; i < updates.length; i++) {
-                yield put(actionActions.actionUpdate(updates[i]));
-            }
-            for (let i = 0; i < actionIds.length; i++) {
-                yield put(actionActions.actionDelete(actionIds[i]));
-            }
-        }
+/*::
+    type TxGetStatus = {
+        txs: string,
+        ids: Array<string>
     }
+ */
+
+export function* transactionGetStatus ({ txs, ids }/* : TxGetStatus */)/* :Saga<void> */ {
+    yield call(
+        [ChReqService, ChReqService.sendRequest],
+        TX_MODULE, TX_MODULE.getTransaction, {
+            transactionHash: txs,
+            actionIds: ids
+        }
+    )
 }
 
-export function* registerTransactionListeners () {
-    // yield fork(watchTransactionGetStatusChannel);
-}
-
-export function* watchTransactionActions () {
-    // yield fork(watchTransactionGetStatus);
+export function* watchTransactionActions ()/* : Saga<void> */ {
+    yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
 }

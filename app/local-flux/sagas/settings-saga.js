@@ -1,14 +1,19 @@
-import { all, apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+//@flow
+import { all, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
-import { selectLoggedEthAddress } from '../selectors';
+import { profileSelectors } from '../selectors';
 import * as settingsService from '../services/settings-service';
 
-export function* generalSettingsRequest () {
+/*::
+    import type { Saga } from 'redux-saga';
+ */
+
+export function* generalSettingsRequest ()/* :Saga<void> */ {
     yield put(actions.generalSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.generalSettingsRequest);
+        const resp = yield call([settingsService, settingsService.generalSettingsRequest]);
         localStorage.setItem('theme', resp.darkTheme ? '1' : '0');
         yield put(actions.generalSettingsSuccess(resp));
     } catch (error) {
@@ -16,35 +21,35 @@ export function* generalSettingsRequest () {
     }
 }
 
-export function* gethSettingsRequest () {
+export function* gethSettingsRequest ()/* :Saga<void> */ {
     yield put(actions.gethSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.gethSettingsRequest);
+        const resp = yield call([settingsService, settingsService.gethSettingsRequest]);
         yield put(actions.gethSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.gethSettingsError({ message: error.toString() }));
     }
 }
 
-export function* ipfsSettingsRequest () {
+export function* ipfsSettingsRequest ()/* :Saga<void> */ {
     yield put(actions.ipfsSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.ipfsSettingsRequest);
+        const resp = yield call([settingsService, settingsService.ipfsSettingsRequest]);
         yield put(actions.ipfsSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.ipfsSettingsError({ message: error.toString() }));
     }
 }
 
-export function* getSettings () {
+export function* getSettings ()/* :Saga<void> */ {
     yield fork(generalSettingsRequest);
     yield fork(gethSettingsRequest);
     yield fork(ipfsSettingsRequest);
 }
 
-export function* saveGeneralSettings ({ type, ...payload }) {
+export function* saveGeneralSettings ({ type, ...payload })/* :Saga<void> */ {
     try {
-        const resp = yield apply(settingsService, settingsService.generalSettingsSave, [payload]);
+        const resp = yield call([settingsService, settingsService.generalSettingsSave], payload);
         yield put(actions.saveGeneralSettingsSuccess(resp));
         localStorage.setItem('theme', payload.darkTheme ? '1' : '0');
     } catch (error) {
@@ -52,9 +57,9 @@ export function* saveGeneralSettings ({ type, ...payload }) {
     }
 }
 
-export function* gethSaveSettings (payload, showNotification) {
+export function* gethSaveSettings ({ payload, showNotification })/* :Saga<void> */ {
     try {
-        const resp = yield apply(settingsService, settingsService.gethSettingsSave, [payload]);
+        const resp = yield call([settingsService, settingsService.gethSettingsSave], payload);
         yield put(actions.gethSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
@@ -67,10 +72,10 @@ export function* gethSaveSettings (payload, showNotification) {
     }
 }
 
-export function* ipfsSaveSettings (payload, showNotification) {
+export function* ipfsSaveSettings ({ payload, showNotification })/* :Saga<void> */ {
     try {
         const { ports, ...rest } = payload;
-        const resp = yield apply(settingsService, settingsService.ipfsSettingsSave, [rest]);
+        const resp = yield call([settingsService, settingsService.ipfsSettingsSave], rest);
         yield put(actions.ipfsSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
@@ -83,30 +88,31 @@ export function* ipfsSaveSettings (payload, showNotification) {
     }
 }
 
-function* saveConfiguration (action) {
+function* saveConfiguration ({ payload })/* :Saga<void> */ {
     yield all([
-        call(gethSaveSettings, action.payload.geth),
-        call(ipfsSaveSettings, action.payload.ipfs)
+        call(gethSaveSettings, payload.geth),
+        call(ipfsSaveSettings, payload.ipfs)
     ]);
     yield call(saveGeneralSettings, { configurationSaved: true });
 }
 
-export function* userSettingsRequest (ethAddress) {
+export function* userSettingsRequest ({ ethAddress })/* :Saga<void> */ {
     try {
         if (!ethAddress) {
-            ethAddress = yield select(selectLoggedEthAddress);
+            ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         }
-        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [ethAddress]);
+        const resp = yield call([settingsService, settingsService.userSettingsRequest], ethAddress);
         yield put(actions.userSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.userSettingsError({ message: error.toString() }));
     }
 }
 
-function* userSettingsSave (ethAddress, payload) {
+function* userSettingsSave ({ ethAddress, payload })/* :Saga<void> */ {
     try {
-        const resp = yield apply(
-            settingsService, settingsService.userSettingsSave, [ethAddress, payload]
+        const resp = yield call(
+            [settingsService, settingsService.userSettingsSave],
+            ethAddress, payload
         );
         yield put(actions.userSettingsSaveSuccess(resp));
     } catch (error) {
@@ -114,10 +120,10 @@ function* userSettingsSave (ethAddress, payload) {
     }
 }
 
-function* userSettingsAddTrustedDomain ({ ethAddress, domain }) {
+function* userSettingsAddTrustedDomain ({ ethAddress, domain })/* :Saga<void> */ {
     try {
-        const resp = yield apply(
-            settingsService, settingsService.userSettingsAddTrustedDomain, [ethAddress, domain]
+        const resp = yield call(
+            [settingsService, settingsService.userSettingsAddTrustedDomain], ethAddress, domain
         );
         yield put(actions.userSettingsAddTrustedDomainSuccess(resp));
     } catch (error) {
@@ -125,56 +131,12 @@ function* userSettingsAddTrustedDomain ({ ethAddress, domain }) {
     }
 }
 
-// WATCHERS
-
-function* watchGeneralSettingsSave () {
-    while (true) {
-        const action = yield take(types.GENERAL_SETTINGS_SAVE);
-        yield fork(saveGeneralSettings, action.payload);
-    }
-}
-
-function* watchGethSaveSettings () {
-    while (true) {
-        const action = yield take(types.GETH_SAVE_SETTINGS);
-        yield fork(gethSaveSettings, action.payload, action.showNotification);
-    }
-}
-
-function* watchIpfsSettingsSave () {
-    while (true) {
-        const action = yield take(types.IPFS_SAVE_SETTINGS);
-        yield fork(ipfsSaveSettings, action.payload, action.showNotification);
-    }
-}
-
-function* watchSaveConfiguration () {
-    while (true) {
-        const action = yield take(types.SAVE_CONFIGURATION);
-        yield fork(saveConfiguration, action);
-    }
-}
-
-function* watchUserSettingsRequest () {
-    while (true) {
-        const action = yield take(types.USER_SETTINGS_REQUEST);
-        yield fork(userSettingsRequest, action.ethAddress);
-    }
-}
-
-function* watchUserSettingsSave () {
-    while (true) {
-        const action = yield take(types.USER_SETTINGS_SAVE);
-        yield fork(userSettingsSave, action.ethAddress, action.payload);
-    }
-}
-
-export function* watchSettingsActions () {
-    // yield fork(watchSaveConfiguration);
-    // yield fork(watchGeneralSettingsSave);
-    // yield fork(watchGethSaveSettings);
-    // yield fork(watchIpfsSettingsSave);
-    // yield fork(watchUserSettingsRequest);
-    // yield fork(watchUserSettingsSave);
+export function* watchSettingsActions ()/* : Saga<void> */ {
+    yield takeEvery(types.USER_SETTINGS_SAVE, userSettingsSave);
+    yield takeEvery(types.USER_SETTINGS_REQUEST, userSettingsRequest);
+    yield takeEvery(types.SAVE_CONFIGURATION, saveConfiguration);
+    yield takeEvery(types.IPFS_SAVE_SETTINGS, ipfsSaveSettings);
+    yield takeEvery(types.GETH_SAVE_SETTINGS, gethSaveSettings);
+    yield takeEvery(types.GENERAL_SETTINGS_SAVE, saveGeneralSettings);
     yield takeEvery(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN, userSettingsAddTrustedDomain);
 }
