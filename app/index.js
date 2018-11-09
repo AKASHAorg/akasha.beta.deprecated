@@ -19,15 +19,21 @@ import(
 
 
 // @TODO: add context logger
-export const bootstrap = (web3Enabled = false, vault = false) => {
+export const bootstrap = (web3Enabled = false, vault = false, channel, logger) => {
   const history = getHistory();
   const store = configureStore();
+  const MainContext = React.createContext({logger, channel});
   sagaMiddleware.run(rootSaga);
   render(
     <Provider store={store}>
       <ConnectedIntlProvider>
         <Router history={history}>
-          <Route render={(props) => <AppContainer unlocked={vault} web3={web3Enabled} {...props}/>}/>
+          <Route render={(props) =>
+            (
+              <MainContext.Consumer>
+                <AppContainer unlocked={vault} web3={web3Enabled} {...props}/>
+              </MainContext.Consumer>
+            )}/>
         </Router>
       </ConnectedIntlProvider>
     </Provider>,

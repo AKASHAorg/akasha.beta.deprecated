@@ -82,15 +82,6 @@ const startBrowser = function (logger) {
 };
 
 const bootstrap = function () {
-  const appLogger = pino(pino.destination(join(app.getPath('userData'), 'app.log')));
-  // default logging lvl is info
-  if (process.env.AKASHA_LOG_LEVEL) {
-    appLogger.level = process.env.AKASHA_LOG_LEVEL;
-  } else if (!process.env.HOT) {
-    // production logs
-    appLogger.level = 'error';
-  }
-  const windowLogger = appLogger.child({ module: 'window' });
 
   app.on('window-all-closed', () => {
     app.quit();
@@ -111,6 +102,15 @@ const bootstrap = function () {
     app.on('ready', () => {
       console.time('total');
       console.time('buildWindow');
+      const appLogger = pino(pino.destination(join(app.getPath('userData'), 'app.log')));
+      // default logging lvl is info
+      if (process.env.AKASHA_LOG_LEVEL) {
+        appLogger.level = process.env.AKASHA_LOG_LEVEL;
+      } else if (!process.env.HOT) {
+        // production logs
+        appLogger.level = 'error';
+      }
+      const windowLogger = appLogger.child({ module: 'window' });
       process.on('uncaughtException', (err: Error) => {
         appLogger.error(err);
       });
