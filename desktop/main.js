@@ -71,14 +71,6 @@ const startBrowser = function (logger) {
     });
 };
 const bootstrap = function () {
-    const appLogger = pino(pino.destination(path_1.join(electron_1.app.getPath('userData'), 'app.log')));
-    if (process.env.AKASHA_LOG_LEVEL) {
-        appLogger.level = process.env.AKASHA_LOG_LEVEL;
-    }
-    else if (!process.env.HOT) {
-        appLogger.level = 'error';
-    }
-    const windowLogger = appLogger.child({ module: 'window' });
     electron_1.app.on('window-all-closed', () => {
         electron_1.app.quit();
     });
@@ -97,6 +89,14 @@ const bootstrap = function () {
         electron_1.app.on('ready', () => {
             console.time('total');
             console.time('buildWindow');
+            const appLogger = pino(pino.destination(path_1.join(electron_1.app.getPath('userData'), 'app.log')));
+            if (process.env.AKASHA_LOG_LEVEL) {
+                appLogger.level = process.env.AKASHA_LOG_LEVEL;
+            }
+            else if (!process.env.HOT) {
+                appLogger.level = 'error';
+            }
+            const windowLogger = appLogger.child({ module: 'window' });
             process.on('uncaughtException', (err) => {
                 appLogger.error(err);
             });

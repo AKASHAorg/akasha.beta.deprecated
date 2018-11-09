@@ -16,6 +16,6 @@
         "emitDecoratorMetadata": true,
         "typeRoots": ["node_modules/@types"]
     },
-    "include": ["desktop", "channels"],
+    "include": ["desktop", "channels", "dapp"],
     "exclude": ["node_modules"]
 }

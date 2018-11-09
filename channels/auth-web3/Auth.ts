@@ -14,16 +14,16 @@ export default function init(sp, getService) {
     public login(acc: string, timer: number = 30, registering = false) {
       const arr = new Uint32Array(32);
       return randomBytesAsync(arr)
-      .then((buff: Buffer) => {
-        const token = addHexPrefix(buff.toString('hex'));
-        const expiration = new Date();
-        getService(CORE_MODULE.RESPONSES).gethStatus.akashaKey = acc;
-        expiration.setMinutes(expiration.getMinutes() + timer);
-        getService(CORE_MODULE.WEB3_API).instance.eth.defaultAccount = acc;
+        .then((buff: Buffer) => {
+          const token = addHexPrefix(buff.toString('hex'));
+          const expiration = new Date();
+          getService(CORE_MODULE.RESPONSES).gethStatus.akashaKey = acc;
+          expiration.setMinutes(expiration.getMinutes() + timer);
+          getService(CORE_MODULE.WEB3_API).instance.eth.defaultAccount = acc;
 
-        return { token, expiration, ethAddress: acc };
-        // });
-      });
+          return { token, expiration, ethAddress: acc };
+          // });
+        });
     }
 
     public logout() {
@@ -47,25 +47,25 @@ export default function init(sp, getService) {
      */
     public signData(data: {}, token: string) {
       return this.isLogged(token)
-      .then(function (logged) {
-        if (!logged) {
-          throw new Error('Token is not valid!');
-        }
-        return getService(CORE_MODULE.WEB3_API).instance.eth.sendTransactionAsync(data);
-      });
+        .then(function (logged) {
+          if (!logged) {
+            throw new Error('Token is not valid!');
+          }
+          return getService(CORE_MODULE.WEB3_API).instance.eth.sendTransactionAsync(data);
+        });
     }
 
     public signMessage(data: {}, token: string) {
       const web3Api = getService(CORE_MODULE.WEB3_API);
       return this.isLogged(token)
-      .then(function (logged) {
-        if (!logged) {
-          throw new Error('Token is not valid!');
-        }
-        return web3Api.instance
-        .personal
-        .signAsync(data, web3Api.instance.eth.defaultAccount);
-      });
+        .then(function (logged) {
+          if (!logged) {
+            throw new Error('Token is not valid!');
+          }
+          return web3Api.instance
+            .personal
+            .signAsync(data, web3Api.instance.eth.defaultAccount);
+        });
     }
 
     /**

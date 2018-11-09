@@ -17,6 +17,7 @@ import searchModule from '@akashaproject/search';
 import { init } from '@akashaproject/search/indexes';
 import tagsModule from '@akashaproject/tags';
 import txModule from '@akashaproject/tx';
+import { DEFAULT_IPFS_CONFIG } from './config/settings';
 
 const bootstrap = async function bootstrap(serviceProvider, gS, logger) {
   core.init();
@@ -38,6 +39,8 @@ const bootstrap = async function bootstrap(serviceProvider, gS, logger) {
     return { Validator: jsonSchemaWeb3 };
   };
   const ipfsLogger = logger.child({ module: 'ipfs' });
+  IpfsConnector.getInstance().setOption('config', DEFAULT_IPFS_CONFIG);
+  IpfsConnector.getInstance().setOption('repo', 'ipfs#akasha-beta');
   // @TODO: reimplement web3 regen
   // gS(CORE_MODULE.WEB3_API).instance = GethConnector.getInstance().web3;
   gS(CORE_MODULE.IPFS_API).instance = IpfsConnector.getInstance();
