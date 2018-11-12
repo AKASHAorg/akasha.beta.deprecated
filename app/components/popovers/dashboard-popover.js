@@ -8,7 +8,8 @@ import { toggleNewDashboardModal } from '../../local-flux/actions/app-actions';
 import { entryNewestIteratorSuccess } from '../../local-flux/actions/entry-actions';
 import { dashboardAdd, dashboardDelete,
     dashboardRename, dashboardReorder } from '../../local-flux/actions/dashboard-actions';
-import { selectActiveDashboardId, selectAllDashboards, selectActiveDashboard } from '../../local-flux/selectors';
+import { selectActiveDashboardId, getAllDashboards, getActiveDashboard,
+    selectEntriesById, selectNewDashboard, getRenamingDashboard } from '../../local-flux/selectors';
 import { DashboardPopoverRow, Icon } from '../';
 
 
@@ -202,13 +203,12 @@ DashboardPopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboard(state),
-        entries: state.entryState.get('byId'),
-        dashboards: selectAllDashboards(state),
+        activeDashboard: getActiveDashboard(state),
+        entries: selectEntriesById(state),
+        dashboards: getAllDashboards(state),
         activeDashboardId: selectActiveDashboardId(state),
-        lists: state.listState.get('byName'),
-        newDashboard: state.dashboardState.get('newDashboard'),
-        renamingDashboard: state.dashboardState.getIn(['flags', 'renamingDashboard'])
+        newDashboard:selectNewDashboard(state),
+        renamingDashboard: getRenamingDashboard(state)
     };
 }
 

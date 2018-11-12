@@ -18,6 +18,7 @@ import { ProfileRecord } from '../reducers/records/profile-record';
         context: string
     }
  */
+export const selectProfilesByEthAddress = (state/*: Object*/) => state.profileState.get('byEthAddress');
 
 export const selectProfileByEthAddress = (state/*: Object*/, props/*: ProfileEthProps*/) =>
     state.profileState.getIn(['byEthAddress', props.ethAddress]);
@@ -61,6 +62,9 @@ export const selectProfileExists = (state/*: Object*/) =>
 export const selectEssenceIterator = (state/*: Object*/) =>
     state.profileState.get('essenceIterator');
 
+export const selectEssenceEvents = (state/*: Object*/) =>
+    state.profileState.get('essenceEvents');
+
 export const selectCyclingStates = (state/*: Object*/) =>
     state.profileState.get('cyclingStates');
 
@@ -72,6 +76,18 @@ export const selectBurnedMana = (state/*: Object*/) =>
 
 export const selectPublishingCost = (state/*: Object*/) =>
     state.profileState.get('publishingCost');
+
+export const selectLoginErrors = (state/*: Object*/) =>
+    state.profileState.get('loginErrors');
+
+export const selectFaucet = (state/*: Object*/) =>
+    state.profileState.get('faucet');
+
+export const selectKarmaRanking = (state/*: Object*/) =>
+    state.profileState.get('karmaRanking');
+
+export const selectCanCreateTags = (state/*: Object*/) =>
+    state.profileState.get('canCreateTags');
 
 /**
  * 'getters' (see ./README.md)

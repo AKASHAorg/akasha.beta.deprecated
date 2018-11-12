@@ -14,7 +14,7 @@ import { isEthAddress } from '../../utils/dataModule';
 import ChannelReqService from '../services/channel-request-service';
 
 import {
-    selectBaseUrl, selectBlockNumber, selectEssenceIterator, selectLoggedEthAddress, selectNeedAuthAction,
+    getBaseUrl, selectBlockNumber, selectEssenceIterator, selectLoggedEthAddress, selectNeedAuthAction,
     selectProfileEditToggle, selectToken, selectAllFollowings } from '../selectors';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
@@ -1016,7 +1016,7 @@ function* watchProfileResolveIpfsHashChannel () {
         if (resp.error) {
             yield put(actions.profileResolveIpfsHashError(resp.error, resp.request));
         } else if (resp.data.profile) {
-            const baseUrl = yield select(selectBaseUrl);
+            const baseUrl = yield select(getBaseUrl);
             if (resp.data.profile.avatar) {
                 resp.data.profile.avatar = `${baseUrl}/${resp.data.profile.avatar}`;
             }

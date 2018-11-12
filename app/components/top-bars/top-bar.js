@@ -9,8 +9,9 @@ import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../
 import { showNotificationsPanel, showTransactionsLog, toggleAethWallet,
     toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
-    selectLoggedProfileData, selectNotificationsPanel, selectPublishingActions, selectShowWallet,
-    selectTransactionsLog, selectUnreadNotifications, selectCyclingStates } from '../../local-flux/selectors';
+    getLoggedProfileData, selectNotificationsPanel, selectPublishingActions, selectShowWallet,
+    selectTransactionsLog, selectUnreadNotifications, selectCyclingStates,
+    selectNotificationsLoaded } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -90,8 +91,8 @@ const mapStateToProps = state => ({
     fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
     hasPendingActions: !!selectPublishingActions(state).size,
     loggedProfile: selectLoggedProfile(state),
-    loggedProfileData: selectLoggedProfileData(state),
-    notificationsLoaded: state.notificationsState.get('notificationsLoaded'),
+    loggedProfileData: getLoggedProfileData(state),
+    notificationsLoaded: selectNotificationsLoaded(state),
     notificationsPanelOpen: selectNotificationsPanel(state),
     showWallet: selectShowWallet(state),
     transactionsLogOpen: selectTransactionsLog(state),

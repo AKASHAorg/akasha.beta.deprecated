@@ -9,9 +9,10 @@ import * as actionTypes from '../../constants/action-types';
 import { Icon, ListPopover, ShareLinkModal, VotesModal, VotePopover } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
-import { selectBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryCanClaimVote, selectEntryVote,
-    selectLists, selectListsAll, selectListSearch, selectLoggedEthAddress, selectPendingClaim,
-    selectPendingClaimVote, selectPendingVote, selectProfile } from '../../local-flux/selectors';
+import { getCurrentBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryCanClaimVote, selectEntryVote,
+    getLists, selectLists, selectListSearchTerm, selectLoggedEthAddress, getClaimIsPending,
+    getPendingClaimVote, getVoteIsPending, selectProfileByEthAddress,
+    getEntryAuthorEthAddress } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
@@ -406,19 +407,19 @@ function mapStateToProps (state, ownProps) {
     const entry = ownProps.entry;
     const loggedEthAddress = selectLoggedEthAddress(state);
     return {
-        author: selectProfile(state, entry.getIn(['author', 'ethAddress'])),
-        blockNr: selectBlockNumber(state),
+        author: selectProfileByEthAddress(state, entry.getIn(['author', 'ethAddress'])),
+        blockNr: getCurrentBlockNumber(state),
         canClaim: selectEntryCanClaim(state, entry.get('entryId')),
         canClaimVote: selectEntryCanClaimVote(state, entry.get('entryId')),
-        claimPending: selectPendingClaim(state, entry.get('entryId')),
-        claimVotePending: selectPendingClaimVote(state, entry.get('entryId')),
+        claimPending: getClaimIsPending(state),
+        claimVotePending: getPendingClaimVote(state),
         entryBalance: selectEntryBalance(state, entry.get('entryId')),
-        isOwnEntry: loggedEthAddress === entry.getIn(['author', 'ethAddress']),
-        lists: selectLists(state),
-        listsAll: selectListsAll(state),
-        listSearchKeyword: selectListSearch(state),
+        isOwnEntry: loggedEthAddress === getEntryAuthorEthAddress(state),
+        lists: getLists(state),
+        listsAll: selectLists(state),
+        listSearchKeyword: selectListSearchTerm(state),
         loggedEthAddress,
-        votePending: selectPendingVote(state, entry.get('entryId')),
+        votePending: getVoteIsPending(state, entry.get('entryId')),
         vote: selectEntryVote(state, entry.get('entryId'))
     };
 }

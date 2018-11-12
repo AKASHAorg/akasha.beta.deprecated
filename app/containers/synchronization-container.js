@@ -4,20 +4,24 @@ import { clearSyncStatus, gethGetSyncStatus, gethPauseSync, gethResumeSync, geth
     ipfsStop } from '../local-flux/actions/external-process-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Sync } from '../components';
+import { getConfigurationSaved } from '../local-flux/selectors/settings-selectors';
+import { getGethBusyState, getGethStarting, selectGethStatus, getGethStatusFetched, selectGethSyncStatus,
+    getIpfsBusyState, getIpfsPortsRequested, selectIpfsStatus, getIpfsStatusFetched,
+    selectGethSyncActionId } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     return {
-        configurationSaved: state.settingsState.getIn(['general', 'configurationSaved']),
-        gethBusyState: state.externalProcState.getIn(['geth', 'flags', 'busyState']),
-        gethStarting: state.externalProcState.getIn(['geth', 'gethStarting']),
-        gethStatus: state.externalProcState.getIn(['geth', 'status']),
-        gethStatusFetched: state.externalProcState.getIn(['geth', 'flags', 'statusFetched']),        
-        gethSyncStatus: state.externalProcState.getIn(['geth', 'syncStatus']),
-        ipfsBusyState: state.externalProcState.getIn(['ipfs', 'flags', 'busyState']),
-        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'portsRequested']),
-        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
-        ipfsStatusFetched: state.externalProcState.getIn(['ipfs', 'flags', 'statusFetched']),        
-        syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
+        configurationSaved: getConfigurationSaved(state),
+        gethBusyState: getGethBusyState(state),
+        gethStarting: getGethStarting(state),
+        gethStatus: selectGethStatus(state),
+        gethStatusFetched: getGethStatusFetched(state),        
+        gethSyncStatus: selectGethSyncStatus(state),
+        ipfsBusyState: getIpfsBusyState(state),
+        ipfsPortsRequested: getIpfsPortsRequested(state),
+        ipfsStatus: selectIpfsStatus(state),
+        ipfsStatusFetched: getIpfsStatusFetched(state),        
+        syncActionId: selectGethSyncActionId(state),
     };
 }
 

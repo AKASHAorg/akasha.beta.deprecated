@@ -9,7 +9,7 @@ import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/
 import { userSettingsClear, userSettingsRequest,
     userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { selectGethStatus, selectIpfsStatus, selectLoggedEthAddress,
-    selectProfileFlag } from '../../local-flux/selectors';
+    selectProfileFlag, selectLoginErrors, getPasswordPreference } from '../../local-flux/selectors';
 import { Input, RememberPassphrase } from '../';
 
 const FormItem = Form.Item;
@@ -185,9 +185,9 @@ function mapStateToProps (state) {
         gethStatus: selectGethStatus(state),
         ipfsStatus: selectIpfsStatus(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        loginErrors: state.profileState.get('loginErrors'),
+        loginErrors: selectLoginErrors(state),
         loginPending: selectProfileFlag(state, 'loginPending'),
-        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
+        passwordPreference: getPasswordPreference(state),
     };
 }
 

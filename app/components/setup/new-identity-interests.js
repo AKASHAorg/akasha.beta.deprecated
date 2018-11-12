@@ -13,6 +13,7 @@ import { dashboardMessages, generalMessages, searchMessages,
 import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
+import { selectDashboardsById, getFirstDashboardReady, getTagSearchPending } from '../../local-flux/selectors';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -135,12 +136,12 @@ NewIdentityInterests.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const firstDashboard = state.dashboardState.get('byId').first(); 
+    const firstDashboard = selectDashboardsById(state).first(); 
     return {
         entriesCount: selectTagEntriesCount(state),
-        fetchingTags: state.tagState.getIn(['flags', 'searchPending']),
+        fetchingTags: getTagSearchPending(state),
         firstDashboardId: firstDashboard && firstDashboard.get('id'),
-        firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
+        firstDashboardReady: getFirstDashboardReady(state),
         profileInterests: state.profileState.get('interests'),
         tags: selectTagSearchResults(state)
     };

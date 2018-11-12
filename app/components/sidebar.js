@@ -15,6 +15,9 @@ import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { profileSelectors, appSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
+import { getActiveDashboard } from '../local-flux/selectors/dashboard-selectors';
+import { selectDrafts, selectDraftsFetched, selectFetchingDrafts } from '../local-flux/selectors/draft-selectors';
+import { getUserDefaultLicence } from '../local-flux/selectors/settings-selectors';
 
 class Sidebar extends Component {
     state = {
@@ -340,15 +343,15 @@ Sidebar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: state.dashboardState.get('activeDashboard'),
-        draftsCount: state.draftState.get('draftsCount'),
-        drafts: state.draftState.get('drafts'),
-        draftsFetched: state.draftState.get('draftsFetched'),
-        fetchingDrafts: state.draftState.get('fetchingDrafts'),
-        isProfileEditToggled: appSelectors.selectProfileEditToggle(state),
-        loggedProfile: profileSelectors.selectLoggedProfile(state),
-        loggedProfileData: profileSelectors.getLoggedProfileData(state),
-        userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
+        activeDashboard: getActiveDashboard(state),
+        draftsCount: selectDraftsCount(state),
+        drafts: selectDrafts(state),
+        draftsFetched: selectDraftsFetched(state),
+        fetchingDrafts: selectFetchingDrafts(state),
+        isProfileEditToggled: selectProfileEditToggle(state),
+        loggedProfile: selectLoggedProfile(state),
+        loggedProfileData: getLoggedProfileData(state),
+        userSelectedLicense: getUserDefaultLicence(state )
     };
 }
 

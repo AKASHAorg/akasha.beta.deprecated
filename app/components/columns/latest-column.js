@@ -9,7 +9,7 @@ import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreNewestIterator,
     entryNewestIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries } from '../../local-flux/selectors';
+import { getColumnEntries } from '../../local-flux/selectors';
 
 const DELAY = 60000;
 
@@ -102,7 +102,7 @@ LatestColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entriesList: selectColumnEntries(state, ownProps.column.get('id'))
+        entriesList: getColumnEntries(state, ownProps.column.get('id'))
     };
 }
 

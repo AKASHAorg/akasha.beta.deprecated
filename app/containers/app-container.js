@@ -25,7 +25,8 @@ import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, Fauc
     Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
     CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
-import { profileSelectors } from '../local-flux/selectors';
+import { selectNeedAuthAction, selectNeedEth, selectNeedAeth, selectNeedMana,
+    selectActiveDashboardId, selectFaucet} from '../local-flux/selectors';
 
 notification.config({
     top: 60,
@@ -282,15 +283,15 @@ AppContainer.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: state.dashboardState.get('activeDashboard'),
+        activeDashboard: selectActiveDashboardId(state),
         appState: state.appState,
         errorState: state.errorState,
-        faucet: state.profileState.get('faucet'),
-        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
-        needAuth: state.actionState.get('needAuth'),
-        needEth: state.actionState.get('needEth'),
-        needAeth: state.actionState.get('needAeth'),
-        needMana: state.actionState.get('needMana'),
+        faucet: selectFaucet(state),
+        loggedEthAddress: selectLoggedEthAddress(state),
+        needAuth: selectNeedAuthAction(state),
+        needEth: selectNeedEth(state),
+        needAeth: selectNeedAeth(state),
+        needMana: selectNeedMana(state),
     };
 }
 

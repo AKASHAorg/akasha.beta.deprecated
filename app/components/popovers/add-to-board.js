@@ -9,7 +9,7 @@ import { Icon } from '../';
 import * as columnTypes from '../../constants/columns';
 import { dashboardDelete, dashboardSearch, dashboardToggleProfileColumn,
     dashboardToggleTagColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectColumns, selectDashboards, selectDashboardSearch } from '../../local-flux/selectors';
+import { selectColumnsById, getDashboards, selectDashboardSearch } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 
 class AddToBoard extends Component {
@@ -142,8 +142,8 @@ AddToBoard.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        columns: selectColumns(state),
-        dashboards: selectDashboards(state),
+        columns: selectColumnsById(state),
+        dashboards: getDashboards(state),
         search: selectDashboardSearch(state),
     };
 }

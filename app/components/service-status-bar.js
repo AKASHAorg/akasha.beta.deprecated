@@ -8,7 +8,8 @@ import { generalMessages, settingsMessages } from '../locale-data/messages';
 import { appSettingsToggle, toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
-import { settingsSelectors } from '../local-flux/selectors';
+import { getGethStarting, selectGeneralSettings,
+    selectGethStatus, getIpfsStarting, selectIpfsStatus } from '../local-flux/selectors';
 import { Icon } from './';
 
 const { Option } = Select;
@@ -168,11 +169,11 @@ ServiceStatusBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        generalSettings: settingsSelectors.selectGeneralSettings(state),
-        gethStarting: state.externalProcState.getIn(['geth', 'flags', 'gethStarting']),
-        gethStatus: state.externalProcState.getIn(['geth', 'status']),
-        ipfsStarting: state.externalProcState.getIn(['ipfs', 'flags', 'ipfsStarting']),
-        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        generalSettings: selectGeneralSettings(state),
+        gethStarting: getGethStarting(state),
+        gethStatus: selectGethStatus(state),
+        ipfsStarting: getIpfsStarting(state),
+        ipfsStatus: selectIpfsStatus(state),
     };
 }
 

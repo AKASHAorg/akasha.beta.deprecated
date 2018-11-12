@@ -7,6 +7,7 @@ import { settingsMessages } from '../../locale-data/messages';
 import { showNotification } from '../../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../../local-flux/actions/settings-actions';
 import { reloadPage } from '../../local-flux/actions/utils-actions';
+import { selectGeneralSettings } from '../../local-flux/selectors';
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -116,7 +117,7 @@ AppPreferences.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        generalSettings: state.settingsState.get('general')
+        generalSettings: selectGeneralSettings(state)
     };
 }
 

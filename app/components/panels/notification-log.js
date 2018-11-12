@@ -9,8 +9,8 @@ import { Icon, ProfilePopover, Avatar } from '../';
 import * as notificationEvents from '../../constants/notification-events';
 import { entryGetShort } from '../../local-flux/actions/entry-actions';
 import { profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { selectEntry, selectLoggedEthAddress, selectPendingEntries, selectPendingProfiles,
-    selectProfile } from '../../local-flux/selectors';
+import { selectEntryById, selectLoggedEthAddress, getPendingEntries, getPendingProfiles,
+    selectProfileByEthAddress } from '../../local-flux/selectors';
 import { generalMessages, notificationMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -176,14 +176,14 @@ function mapStateToProps (state, ownProps) {
     const { notification } = ownProps;
     const ethAddress = getEthAddress(notification);
     const entryId = notification.payload.entryId;
-    const pendingEntries = entryId && selectPendingEntries(state, 'notifications');
-    const pendingProfiles = selectPendingProfiles(state, 'notifications');
+    const pendingEntries = entryId && getPendingEntries(state, 'notifications');
+    const pendingProfiles = getPendingProfiles(state, 'notifications');
     return {
-        entry: selectEntry(state, entryId),
+        entry: selectEntryById(state, entryId),
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingEntry: entryId && pendingEntries && pendingEntries.get(entryId),
         pendingProfile: pendingProfiles && pendingProfiles.get(ethAddress),
-        profile: selectProfile(state, ethAddress),
+        profile: selectProfileByEthAddress(state, ethAddress),
     };
 }
 

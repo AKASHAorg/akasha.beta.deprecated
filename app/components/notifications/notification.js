@@ -8,6 +8,7 @@ import { notificationMessages } from '../../locale-data/messages';
 import { hideNotification, notificationDisplay } from '../../local-flux/actions/app-actions';
 import { highlightEditNotes } from '../../local-flux/actions/highlight-actions';
 import { NotificationHighlightNote } from '../';
+import { selectNotifications, selectDisplayedNotifications } from '../../local-flux/selectors';
 
 class Notification extends Component {
     componentWillReceiveProps (nextProps) {
@@ -70,8 +71,8 @@ Notification.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        notifications: state.appState.get('notifications'),
-        displayedNotifications: state.appState.get('displayedNotifications')
+        notifications: selectNotifications(state),
+        displayedNotifications: selectDisplayedNotifications(state)
     };
 }
 

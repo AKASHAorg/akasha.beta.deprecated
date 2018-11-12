@@ -15,8 +15,8 @@ import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { toggleOutsideNavigation, fullSizeImageAdd } from '../../local-flux/actions/app-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
-import { selectBlockNumber, selectComment, selectCommentVote, selectHideCommentSettings,
-    selectLoggedEthAddress, selectPendingCommentVote, selectProfile,
+import { getCurrentBlockNumber, selectCommentById, selectCommentVote, getHideCommentSettings,
+    selectLoggedEthAddress, getPendingCommentVote, selectProfileByEthAddress,
     selectResolvingComment } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
@@ -413,18 +413,18 @@ Comment.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const { commentId, context } = ownProps;
-    const comment = selectComment(state, commentId);
+    const comment = selectCommentById(state, commentId);
     const resolvingComment = state.commentsState.getIn(['flags', 'pendingComments', context, commentId]) ||
         selectResolvingComment(state, comment.ipfsHash);
     return {
-        author: selectProfile(state, comment.author.ethAddress),
-        blockNr: selectBlockNumber(state),
+        author: selectProfileByEthAddress(state, comment.author.ethAddress),
+        blockNr: getCurrentBlockNumber(state),
         comment,
-        hideCommentSettings: selectHideCommentSettings(state),
+        hideCommentSettings: getHideCommentSettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
         resolvingComment,
         vote: selectCommentVote(state, commentId),
-        votePending: !!selectPendingCommentVote(state, commentId)
+        votePending: !!getPendingCommentVote(state, commentId)
     };
 }
 

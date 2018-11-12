@@ -6,7 +6,7 @@ import Masonry from 'react-masonry-component';
 import { Input } from 'antd';
 import { Icon, ListCard, NewListBtn } from '../';
 import { listDelete, listSearch } from '../../local-flux/actions/list-actions';
-import { selectLists, selectListSearch } from '../../local-flux/selectors';
+import { selectLists, selectListSearchTerm } from '../../local-flux/selectors';
 import { searchMessages } from '../../locale-data/messages';
 
 class Lists extends Component {
@@ -70,7 +70,7 @@ Lists.propTypes = {
 function mapStateToProps (state) {
     return {
         lists: selectLists(state),
-        search: selectListSearch(state),
+        search: selectListSearchTerm(state),
     };
 }
 

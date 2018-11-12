@@ -7,17 +7,17 @@ import { entryCleanFull, entryGetFull, entryGetLatestVersion,
     entryResolveIpfsHash } from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
 import { toggleOutsideNavigation, fullSizeImageAdd } from '../local-flux/actions/app-actions';
-import { selectBaseUrl, selectLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
+import { getBaseUrl, getLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');
     return {
-        baseUrl: selectBaseUrl(state),
+        baseUrl: getBaseUrl(state),
         entry,
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         latestVersion: state.entryState.get('fullEntryLatestVersion'),
         licenses: state.licenseState.get('byId'),
-        loggedProfileData: selectLoggedProfileData(state),
+        loggedProfileData: getLoggedProfileData(state),
         newComments: state.commentsState.getIn(['newComments', 'comments']),
         pendingComments: selectPendingComments(state, entry && entry.get('entryId')),
         resolvingIpfsHash: state.entryState.getIn(['flags', 'resolvingFullEntryHash'])

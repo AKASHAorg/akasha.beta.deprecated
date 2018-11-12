@@ -6,8 +6,8 @@ import { Button, Form, Popover, Progress, Tooltip } from 'antd';
 import { Icon, PieChart, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectBalance, selectLoggedEthAddress, selectManaBurned, selectPendingBondAeth,
-    selectPendingCycleAeth } from '../../local-flux/selectors';
+import { selectBalance, selectLoggedEthAddress, selectBurnedMana, getPendingBondAeth,
+    getPendingCycleAeth } from '../../local-flux/selectors';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 
@@ -203,9 +203,9 @@ function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        manaBurned: selectManaBurned(state),
-        pendingBondAeth: selectPendingBondAeth(state),
-        pendingCycleAeth: selectPendingCycleAeth(state),
+        manaBurned: selectBurnedMana(state),
+        pendingBondAeth: getPendingBondAeth(state),
+        pendingCycleAeth: getPendingCycleAeth(state),
     };
 }
 

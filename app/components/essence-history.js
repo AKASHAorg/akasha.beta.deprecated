@@ -12,6 +12,8 @@ import { profileEssenceIterator, profileGetBalance,
 import { selectBalance } from '../local-flux/selectors';
 import { generalMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
+import { selectEntriesById, getPendingEntries, selectEssenceIterator,
+    selectEssenceEvents, selectProfileFlag } from '../local-flux/selectors';
 
 class EssenceHistory extends Component {
     componentDidMount () {
@@ -144,12 +146,12 @@ EssenceHistory.propTypes = {
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        entries: state.entryState.get('byId'),
-        essenceEvents: state.profileState.get('essenceEvents'),
-        essenceIterator: state.profileState.get('essenceIterator'),
-        loadingLogs: state.profileState.getIn(['flags', 'fetchingEssenceIterator']),
-        loadingMoreLogs: state.profileState.getIn(['flags', 'fetchingMoreEssenceIterator']),
-        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', 'essenceEvents']),
+        entries: selectEntriesById(state),
+        essenceEvents: selectEssenceEvents(state),
+        essenceIterator: selectEssenceIterator(state),
+        loadingLogs: selectProfileFlag(state, 'fetchingEssenceIterator'),
+        loadingMoreLogs: selectProfileFlag(state, 'fetchingMoreEssenceIterator'),
+        pendingEntries: getPendingEntries(state, 'essenceEvents'),
     };
 }
 

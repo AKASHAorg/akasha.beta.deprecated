@@ -10,6 +10,7 @@ export const selectHighlightById = (state/*: Object */, props/*: HighlightByIdPr
     state.highlightState.getIn(['byId', props.highlightId]);
 export const selectHighlightsSearchResults = (state/*: Object */) => state.highlightState.get('searchResults');
 export const selectHighlightsSearchTerm = (state/*: Object */) => state.highlightState.get('search');
+export const selectHighlightsEditing = (state/*: Object */) => state.highlightState.get('editing');
 export const selectHighlightsCount = (state/*: Object */) => selectHighlights(state).size;
 
 

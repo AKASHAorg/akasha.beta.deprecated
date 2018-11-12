@@ -7,8 +7,8 @@ import { Card } from 'antd';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryGetShort } from '../../local-flux/actions/entry-actions';
 import { profileGetData } from '../../local-flux/actions/profile-actions';
-import { selectComment, selectEntry, selectLoggedEthAddress, selectPendingComments, selectPendingEntries,
-    selectProfile } from '../../local-flux/selectors';
+import { selectCommentById, selectEntryById, selectLoggedEthAddress, getEntryPendingComments, getPendingEntries,
+    selectProfileByEthAddress } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { CommentThread, EntryCardHeader } from '../';
 
@@ -186,18 +186,18 @@ CommentPage.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     let { entryId, commentId } = ownProps.match.params;
-    const comment = selectComment(state, commentId);
-    const entry = selectEntry(state, entryId);
+    const comment = selectCommentById(state, commentId);
+    const entry = selectEntryById(state, entryId);
     const parentComment = comment && comment.parent !== '0' ? selectComment(state, comment.parent) : null;
     return {
         comment,
-        commentAuthor: comment && selectProfile(state, comment.author.ethAddress),
+        commentAuthor: comment && selectProfileByEthAddress(state, comment.author.ethAddress),
         entry,
-        entryAuthor: entry && selectProfile(state, entry.author.ethAddress),
+        entryAuthor: entry && selectProfileByEthAddress(state, entry.author.ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
         parentComment,
-        pendingComments: selectPendingComments(state, entryId),
-        pendingEntries: selectPendingEntries(state, 'commentPage'),
+        pendingComments: getEntryPendingComments(state, entryId),
+        pendingEntries: getPendingEntries(state, 'commentPage'),
     };
 }
 

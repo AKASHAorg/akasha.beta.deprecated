@@ -8,8 +8,9 @@ import { showPreview } from '../local-flux/actions/app-actions';
 import { dashboardSearch } from '../local-flux/actions/dashboard-actions';
 import { searchMoreQuery, searchProfiles, searchQuery, searchResetResults,
     searchTags } from '../local-flux/actions/search-actions';
-import { selectSearchEntries, selectSearchEntryOffset, selectSearchProfiles, selectSearchQuery,
-    selectSearchTags, selectTagEntriesCount } from '../local-flux/selectors';
+import { selectEntrySearchResults, selectSearchEntryOffset, selectProfileSearchResults, selectSearchQuery,
+    selectTagSearchResults, selectTagEntriesCount, getSearchQueryPending, getSearchMoreQueryPending,
+    selectSearchResultsCount } from '../local-flux/selectors';
 import { generalMessages, searchMessages } from '../locale-data/messages';
 import { SEARCH } from '../constants/context-types';
 
@@ -161,15 +162,15 @@ SearchPage.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        entries: selectSearchEntries(state),
-        fetchingResults: state.searchState.getIn(['flags', 'queryPending']),
-        fetchingMoreResults: state.searchState.getIn(['flags', 'moreQueryPending']),
-        profiles: selectSearchProfiles(state),
+        entries: selectEntrySearchResults(state),
+        fetchingResults: getSearchQueryPending(state),
+        fetchingMoreResults: getSearchMoreQueryPending(state),
+        profiles: selectProfileSearchResults(state),
         query: selectSearchQuery(state),
-        resultsCount: state.searchState.get('resultsCount'),
+        resultsCount: selectSearchResultsCount(state),
         searchOffset: selectSearchEntryOffset(state),
         tagEntriesCount: selectTagEntriesCount(state),
-        tags: selectSearchTags(state)
+        tags: selectTagSearchResults(state)
     };
 }
 
