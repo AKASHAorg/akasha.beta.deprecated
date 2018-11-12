@@ -15,3 +15,5 @@ export * as profileSelectors from './profile-selectors';
 export * as searchSelectors from './search-selectors';
 export * as settingsSelectors from './settings-selectors';
 export * as tagSelectors from './tag-selectors';
+export * as tempProfileSelectors from './temp-profile-selectors';
+export * as utilsSelectors from './utils-selectors';

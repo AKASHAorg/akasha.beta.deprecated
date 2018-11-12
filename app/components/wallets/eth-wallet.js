@@ -9,7 +9,7 @@ import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { selectActionsHistory, selectBalance, selectLoggedEthAddress,
+import { getActionHistory, selectBalance, selectLoggedEthAddress,
     selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
@@ -131,7 +131,7 @@ function mapStateToProps (state) {
         loggedEthAddress: selectLoggedEthAddress(state),
         pendingTransfer: selectPendingActionByType(state, transferEth),
         profileResults: selectProfileSearchResults(state),
-        sentTransactions: selectActionsHistory(state)
+        sentTransactions: getActionHistory(state)
     };
 }
 

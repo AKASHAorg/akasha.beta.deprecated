@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { setupMessages } from '../../locale-data/messages';
+import { getThemeSettings, selectIsLightSync } from '../../local-flux/selectors';
 
 const StartScreen = (props) => {
     const { darkTheme, lightSync, intl } = props;
@@ -30,8 +31,8 @@ StartScreen.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
-        lightSync: state.appState.get('isLightSync'),
+        darkTheme: getThemeSettings(state),
+        lightSync: selectIsLightSync(state),
     };
 }
 

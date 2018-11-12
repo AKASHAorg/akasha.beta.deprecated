@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { showPreview } from '../../local-flux/actions/app-actions';
 import { dashboardSearch } from '../../local-flux/actions/dashboard-actions';
-import { selectAllDashboards } from '../../local-flux/selectors';
+import { getAllDashboards } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { AddToBoard, NewDashboardForm } from '../';
 
@@ -156,7 +156,7 @@ TagPopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        dashboards: selectAllDashboards(state),
+        dashboards: getAllDashboards(state),
     };
 }
 

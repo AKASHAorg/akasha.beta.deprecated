@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Input, Popover } from 'antd';
 import { listAdd } from '../../local-flux/actions/list-actions';
-import { selectListsAll } from '../../local-flux/selectors';
+import { selectLists } from '../../local-flux/selectors';
 import { listMessages } from '../../locale-data/messages/list-messages';
 import { generalMessages } from '../../locale-data/messages/general-messages';
 
@@ -148,7 +148,7 @@ NewListBtn.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        lists: selectListsAll(state)
+        lists: selectLists(state)
     };
 }
 

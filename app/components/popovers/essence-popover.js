@@ -10,7 +10,7 @@ import { claimableGetEntries } from '../../local-flux/actions/claimable-actions'
 import { profileEssenceIterator, profileGetBalance,
     profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
 import { selectBalance, selectLoggedEthAddress,
-    selectPendingTransformEssence } from '../../local-flux/selectors';
+    getPendingEssenceTransform } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 
@@ -146,7 +146,7 @@ function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        pendingTransformEssence: selectPendingTransformEssence(state),
+        pendingTransformEssence: getPendingEssenceTransform(state),
     };
 }
 

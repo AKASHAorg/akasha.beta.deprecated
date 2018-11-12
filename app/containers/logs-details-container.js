@@ -2,9 +2,10 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { LogsDetails } from '../components';
 import { gethStartLogger, gethStopLogger } from '../local-flux/actions/external-process-actions';
+import { selectGethLogs } from '../local-flux/selectors';
 
 const mapStateToProps = state => ({
-    gethLogs: state.externalProcState.getIn(['geth', 'logs'])
+    gethLogs: selectGethLogs(state)
 });
 
 export default connect(

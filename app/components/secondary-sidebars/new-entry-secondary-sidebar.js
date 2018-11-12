@@ -11,6 +11,9 @@ import { draftsGetCount, draftsGet, draftDelete, draftCreate,
     draftResetIterator, draftRevertToVersion } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { tagCanCreate } from '../../local-flux/actions/tag-actions';
+import { selectLoggedEthAddress } from '../../local-flux/selectors/profile-selectors';
+import { selectDraftsList, selectDraftsCount, selectDraftsFetched, selectDrafts, selectDraftsResolvingEntries,
+    getDraftsMoreEntries, getUserDefaultLicence } from '../../local-flux/selectors';
 
 const { confirm } = Modal;
 const shallowEquals = (a, b) => Object.keys(a).every(key => a[key] === b[key]);
@@ -519,14 +522,14 @@ NewEntrySecondarySidebar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    draftList: state.draftState.get('draftList'),
-    draftsCount: state.draftState.get('draftsCount'),
-    ethAddress: state.profileState.getIn(['loggedProfile', 'ethAddress']),
-    draftsFetched: state.draftState.get('draftsFetched'),
-    drafts: state.draftState.get('drafts'),
-    moreEntries: state.draftState.getIn(['iterator', 'moreEntries']),
-    resolvingEntries: state.draftState.get('resolvingEntries'),
-    userSelectedLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
+    draftList: selectDraftsList(state),
+    draftsCount: selectDraftsCount(state),
+    ethAddress: selectLoggedEthAddress(state),
+    draftsFetched: selectDraftsFetched(state),
+    drafts: selectDrafts(state),
+    moreEntries: getDraftsMoreEntries(state),
+    resolvingEntries: selectDraftsResolvingEntries(state),
+    userSelectedLicence: getUserDefaultLicence(state),
 });
 
 export default connect(

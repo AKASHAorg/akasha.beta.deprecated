@@ -7,10 +7,12 @@ import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectNeedAuthAction, selectProfileFlag, selectTokenExpiration } from '../../local-flux/selectors';
+import { selectNeedAuthAction, selectProfileFlag, getTokenExpiration } from '../../local-flux/selectors';
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Input, RememberPassphrase } from '../';
 import { getDisplayName } from '../../utils/dataModule';
+import { selectLoggedProfile, selectLoginErrors } from '../../local-flux/selectors/profile-selectors';
+import { getPasswordPreference } from '../../local-flux/selectors/settings-selectors';
 
 const FormItem = Form.Item;
 
@@ -229,10 +231,10 @@ function mapStateToProps (state) {
     return {
         action: selectNeedAuthAction(state),
         loginPending: selectProfileFlag(state, 'loginPending'),
-        loggedProfile: state.profileState.get('loggedProfile'),
-        loginErrors: state.profileState.get('loginErrors'),
-        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
-        tokenExpiration: selectTokenExpiration(state),
+        loggedProfile: selectLoggedProfile(state),
+        loginErrors: selectLoginErrors(state),
+        passwordPreference: getPasswordPreference(state),
+        tokenExpiration: getTokenExpiration(state),
     };
 }
 

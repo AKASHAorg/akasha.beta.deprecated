@@ -6,6 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Icon } from '../';
 import { fullSizeImageDelete } from '../../local-flux/actions/app-actions';
 import { entryMessages } from '../../locale-data/messages';
+import { selectFullSizeImages } from '../../local-flux/selectors';
 
 class FullSizeImageViewer extends Component {
     constructor (props) {
@@ -157,7 +158,7 @@ FullSizeImageViewer.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    fullSizeImages: state.appState.get('fullSizeImages'),
+    fullSizeImages: selectFullSizeImages(state),
 });
 
 export default connect(

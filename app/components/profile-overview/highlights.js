@@ -12,7 +12,8 @@ import { highlightDelete, highlightEditNotes, highlightSearch,
     highlightToggleEditing, highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
 import { profileGetList } from '../../local-flux/actions/profile-actions';
 import { ProfileRecord } from '../../local-flux/reducers/records';
-import { selectHighlights, selectHighlightSearch } from '../../local-flux/selectors';
+import { selectHighlights, selectHighlightsEditing, selectHighlightSearchTerm,
+    selectProfilesByEthAddress } from '../../local-flux/selectors';
 
 class Highlights extends Component {
     componentDidMount () {
@@ -106,10 +107,10 @@ Highlights.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        editing: state.highlightState.get('editing'),
+        editing: selectHighlightsEditing(state),
         highlights: selectHighlights(state),
-        profiles: state.profileState.get('byEthAddress'),
-        search: selectHighlightSearch(state),
+        profiles: selectProfilesByEthAddress(state),
+        search: selectHighlightSearchTerm(state),
     };
 }
 

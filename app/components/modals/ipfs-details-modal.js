@@ -9,6 +9,8 @@ import { ipfsGetPorts, ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 import { Icon, InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
+import { getIpfsStarting, selectIpfsStatus, selectIpfsLogs, selectIpfs,
+    getIpfsPortsRequested, getIpfsBusyState } from '../../local-flux/selectors';
 
 const { TabPane } = Tabs;
 const SETTINGS = 'SETTINGS';
@@ -250,12 +252,12 @@ IpfsDetailsModal.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        ipfsStarting: state.externalProcState.getIn(['ipfs', 'flags', 'ipfsStarting']),
-        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
-        ipfsLogs: state.externalProcState.getIn(['ipfs', 'logs']),
-        ipfsSettings: state.settingsState.get('ipfs'),
-        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'flags', 'portsRequested']),
-        ipfsBusyState: state.externalProcState.getIn(['ipfs', 'flags', 'busyState']),
+        ipfsStarting: getIpfsStarting(state),
+        ipfsStatus: selectIpfsStatus(state),
+        ipfsLogs: selectIpfsLogs(state),
+        ipfsSettings: selectIpfs(state),
+        ipfsPortsRequested: getIpfsPortsRequested(state),
+        ipfsBusyState: getIpfsBusyState(state),
     };
 }
 

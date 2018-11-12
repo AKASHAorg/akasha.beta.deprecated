@@ -10,9 +10,10 @@ import { Avatar, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 import { profileKarmaRanking, profileKarmaRankingLoadMore,
     profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { selectLoggedProfileData } from '../../local-flux/selectors';
+import { getLoggedProfileData } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
+import { selectAllFollowings, selectProfilesByEthAddress, selectKarmaRanking, selectProfileFlag } from '../../local-flux/selectors/profile-selectors';
 
 const DEFAULT = 'default';
 const LEADERBOARD = 'leaderboard';
@@ -354,11 +355,11 @@ KarmaPopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        allFollowings: state.profileState.get('allFollowings'),
-        loggedProfileData: selectLoggedProfileData(state),
-        profiles: state.profileState.get('byEthAddress'),
-        karmaRanking: state.profileState.get('karmaRanking'),
-        karmaRankingPending: state.profileState.getIn(['flags', 'karmaRankingPending'])
+        allFollowings: selectAllFollowings(state),
+        loggedProfileData: getLoggedProfileData(state),
+        profiles: selectProfilesByEthAddress(state),
+        karmaRanking: selectKarmaRanking(state),
+        karmaRankingPending:selectProfileFlag(state, 'karmaRankingPending')
     };
 }
 

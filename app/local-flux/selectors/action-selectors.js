@@ -33,6 +33,9 @@ export const selectPendingActions = (state/*: Object*/)/*: Object*/ => state.act
 export const selectActionToPublish = (state/*: Object*/)/*: Object*/ => state.actionState.get('toPublish');
 export const selectClaimableActions = (state/*: Object*/)/*: Object*/ => state.actionState.get('claimable');
 export const selectNeedAuthAction = (state/*: Object*/)/*: string*/ => state.actionState.get('needAuth');
+export const selectNeedAeth = (state/*: Object*/)/*: string*/ => state.actionState.get('needAeth');
+export const selectNeedEth = (state/*: Object*/)/*: string*/ => state.actionState.get('needEth');
+export const selectNeedMana = (state/*: Object*/)/*: string*/ => state.actionState.get('needMana');
 export const selectHistoryFlags = (state/*: Object*/)/*: Object*/ => state.actionState.get('flags');
 export const selectPublishingActions = (state/*: Object*/)/*: Object*/ => state.actionState.get('publishing');
 export const selectPendingClaims = (state/*: Object*/)/*: Object*/ =>

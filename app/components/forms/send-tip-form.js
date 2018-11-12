@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { selectBalance, selectLoggedEthAddress,
-    selectPendingTip } from '../../local-flux/selectors';
+    getTipIsPending } from '../../local-flux/selectors';
 import { balanceToNumber } from '../../utils/number-formatter';
 import * as actionTypes from '../../constants/action-types';
 
@@ -192,7 +192,7 @@ function mapStateToProps (state, ownProps) {
     return {
         balance: selectBalance(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        tipPending: selectPendingTip(state, profile.ethAddress)
+        tipPending: getTipIsPending(state, profile.ethAddress)
     };
 }
 

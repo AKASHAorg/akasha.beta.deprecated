@@ -8,6 +8,8 @@ export const selectClaimableLoadingMore = (state/*: Object */)=>
     !!state.claimableState.get('entriesLoadingMore').size;
 export const selectClaimableMoreEntries = (state/*: Object */)=> state.claimableState.get('moreEntries');
 export const selectClaimableEntries = (state/*: Object */) => state.claimableState.get('entryList');
+export const selectClaimableFetchingEntries = (state/*: Object */) => state.claimableState.get('fetchingEntries');
+export const selectClaimableFetchingMoreEntries = (state/*: Object */) => state.claimableState.get('fetchingMoreEntries');
 
 /** getters (see ./README.md) */
 export const getClaimableEntriesCounter = (state/*: Object */)=> selectClaimableEntries(state).size;
