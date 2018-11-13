@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/withRouter';
 import DraftJS from 'draft-js';
 import { Tooltip, Icon } from 'antd';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,

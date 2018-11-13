@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Select, Tooltip } from 'antd';
 import serviceState from '../constants/serviceState';
 import { generalMessages, settingsMessages } from '../locale-data/messages';
-import { appSettingsToggle, toggleGethDetailsModal,
+import { toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { selectGeneralSettings } from '../local-flux/selectors';
@@ -180,7 +180,7 @@ export { ServiceStatusBar };
 export default connect(
     mapStateToProps,
     {
-        appSettingsToggle,
+        // appSettingsToggle,
         saveGeneralSettings,
         toggleGethDetails: toggleGethDetailsModal,
         toggleIpfsDetails: toggleIpfsDetailsModal

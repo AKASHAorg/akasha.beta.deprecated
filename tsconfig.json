@@ -13,10 +13,9 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "experimentalDecorators": true,
-        "rootDir": "main",
         "emitDecoratorMetadata": true,
-        "typeRoots": ["node_modules/@types"],
-        "outDir": "dist/main"
+        "typeRoots": ["node_modules/@types"]
     },
-    "exclude": ["node_modules"]
+    "include": ["desktop", "channels"],
+    "exclude": ["node_modules", "dapp"]
 }

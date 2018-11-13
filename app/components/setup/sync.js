@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import Redirect from 'react-router-dom/Redirect';
 import { injectIntl } from 'react-intl';
 import { Button, Icon } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';

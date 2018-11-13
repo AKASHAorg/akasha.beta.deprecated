@@ -11,7 +11,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // @TODO extract akasha themes in separated files
 export default merge(baseConfig, {
     devtool: 'source-map',
-    entry: [process.env.DARK_THEME ? './app/index-dark.js': './app/index.js'],
+    entry: [path.join(__dirname, './app/index.js')],
 
     output: {
         path: path.join(__dirname, 'dist')
@@ -143,7 +143,7 @@ export default merge(baseConfig, {
          */
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: 'app/app.template.html',
+            template: path.join(__dirname, './app/app.template.html'),
             inject: true
         })
     ],

@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
+import withRouter from 'react-router/withRouter';
+import Route from 'react-router-dom/Route';
+import Switch from 'react-router-dom/Switch';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
