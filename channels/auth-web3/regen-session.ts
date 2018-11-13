@@ -3,7 +3,7 @@ import { AUTH_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data: { token: string }) {
-    const session = getService(AUTH_MODULE.auth).regenSession(data.token);
+    const session = (getService(AUTH_MODULE.auth)).regenSession(data.token);
     return { session };
   });
 

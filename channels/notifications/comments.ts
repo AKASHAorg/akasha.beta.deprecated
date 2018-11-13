@@ -20,7 +20,7 @@ export default function init(sp, getService) {
 
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, watchComments, { throwError: true });
-    const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const entriesCache = getService(NOTIFICATIONS_MODULE.entriesCache);
     const queue = getService(NOTIFICATIONS_MODULE.queue);

@@ -1,5 +1,6 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { COMMON_MODULE, CORE_MODULE,
+  ENTRY_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 
 const followingStreamIteratorS = {
   id: '/followingStreamIterator',
@@ -21,7 +22,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, followingStreamIteratorS, { throwError: true });
 
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const web3Api = getService(CORE_MODULE.WEB3_API);
 
@@ -56,11 +57,11 @@ export default function init(sp, getService) {
       .execute({ ethAddress: event.args.author });
 
       collection.push({
+        tags,
+        author,
         entryType: captureIndex.results.length ?
           captureIndex.results[0].args.entryType.toNumber() : -1,
         entryId: event.args.entryId,
-        tags,
-        author,
       });
       if (collection.length === maxResults) {
         break;

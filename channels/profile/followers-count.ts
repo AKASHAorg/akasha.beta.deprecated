@@ -16,10 +16,10 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getFollowersCountSchema, { throwError: true });
 
-    const address = yield getService(COMMON_MODULE.profileHelpers)
+    const address = yield (getService(COMMON_MODULE.profileHelpers))
     .profileAddress(data);
 
-    const count = yield getService(CORE_MODULE.CONTRACTS).instance
+    const count = yield (getService(CORE_MODULE.CONTRACTS)).instance
     .Feed.totalFollowers(address);
 
     return { count: count.toString(10), akashaId: data.akashaId };

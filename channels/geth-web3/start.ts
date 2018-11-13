@@ -23,7 +23,7 @@ export default function init(sp, getService) {
     // gethStatus.ethKey = accounts[0];
     // }
     // }
-    yield getService(CORE_MODULE.CONTRACTS).init();
+    yield (getService(CORE_MODULE.CONTRACTS)).init();
     return { started: connected };
   });
   const startService = { execute, name: 'startService' };

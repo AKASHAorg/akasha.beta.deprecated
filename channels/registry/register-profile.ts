@@ -42,17 +42,17 @@ export default function init(sp, getService) {
 
     const [hash, fn, digest] = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
 
-    const txData = getService(CORE_MODULE.CONTRACTS).instance
+    const txData = (getService(CORE_MODULE.CONTRACTS)).instance
     .ProfileRegistrar
     .register.request(normalisedId, data.donationsEnabled, hash, fn, digest, {
       gas: 400000,
       from: data.ethAddress,
     });
 
-    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    const receipt = yield (getService(CORE_MODULE.CONTRACTS))
     .send(txData, data.token, cb);
 
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    return { receipt };
   });
 
   const registerProfile = { execute, name: 'registerProfile', hasStream: true };

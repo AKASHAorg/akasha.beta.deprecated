@@ -1,19 +1,17 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const ethereumjs_util_1 = require("ethereumjs-util");
-const check_id_format_1 = require("./check-id-format");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
+import { unpad } from 'ethereumjs-util';
+import { checkIdFormatSchema } from './check-id-format';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, check_id_format_1.checkIdFormatSchema, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, checkIdFormatSchema, { throwError: true });
         let normalisedId;
         let exists;
         let idValid;
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         try {
-            normalisedId = getService(constants_1.COMMON_MODULE.profileHelpers)
+            normalisedId = getService(COMMON_MODULE.profileHelpers)
                 .normaliseId(data.akashaId);
             const idHash = yield contracts.instance.ProfileRegistrar.hash(normalisedId);
             exists = yield contracts.instance.ProfileResolver.addr(idHash);
@@ -24,14 +22,13 @@ function init(sp, getService) {
             exists = '0x0';
             idValid = false;
         }
-        return { exists: !!ethereumjs_util_1.unpad(exists), idValid, akashaId: data.akashaId, normalisedId };
+        return { idValid, normalisedId, exists: !!unpad(exists), akashaId: data.akashaId };
     });
     const profileExists = { execute, name: 'profileExists' };
     const service = function () {
         return profileExists;
     };
-    sp().service(constants_1.REGISTRY_MODULE.profileExists, service);
+    sp().service(REGISTRY_MODULE.profileExists, service);
     return profileExists;
 }
-exports.default = init;
 //# sourceMappingURL=profile-exists.js.map

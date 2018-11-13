@@ -1,13 +1,1 @@
-{
-  "version": 3,
-  "file": "index.js",
-  "sourceRoot": "",
-  "sources": [
-    "index.ts"
-  ],
-  "names": [],
-  "mappings": ";;AAAA,iCAA+B;AAE/B,CAAC,KAAK;IACJ,MAAM,cAAS,EAAE,CAAC;AACpB,CAAC,CAAC,EAAE,CAAC",
-  "sourcesContent": [
-    "import bootstrap from './main';\n\n(async function () {\n  await bootstrap();\n})();\n"
-  ]
-}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;;;;;;AAAA,OAAO,SAAS,MAAM,QAAQ,CAAC;AAE/B,CAAC;;QACC,MAAM,SAAS,EAAE,CAAC;IACpB,CAAC;CAAA,CAAC,EAAE,CAAC","sourcesContent":["import bootstrap from './main';\n\n(async function () {\n  await bootstrap();\n})();\n"]}

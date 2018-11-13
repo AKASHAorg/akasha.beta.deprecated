@@ -19,7 +19,7 @@ export default function init(sp, getService) {
       v.validate(data, toggleDonations, { throwError: true });
       const contracts = getService(CORE_MODULE.CONTRACTS);
 
-      const currentProfile = yield getService(PROFILE_MODULE.getCurrentProfile).execute();
+      const currentProfile = yield (getService(PROFILE_MODULE.getCurrentProfile)).execute();
       if (!currentProfile.raw) {
         throw new Error('Need to register an akashaId to access this setting.');
       }
@@ -28,10 +28,9 @@ export default function init(sp, getService) {
       .ProfileResolver
       .toggleDonations
       .request(currentProfile.raw, data.status, { gas: 200000 });
-      const transaction = yield contracts.send(txData, data.token, cb);
+      const receipt = yield contracts.send(txData, data.token, cb);
       return {
-        tx: transaction.tx,
-        receipt: transaction.receipt,
+        receipt,
       };
     });
 

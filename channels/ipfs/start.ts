@@ -40,7 +40,7 @@ export default function init(sp, getService) {
     //     });
     // }
 
-    getService(CORE_MODULE.SETTINGS)
+    (getService(CORE_MODULE.SETTINGS))
     .set(GENERAL_SETTINGS.BASE_URL, 'https://gateway.ipfs.io/ipfs/');
 
     return { started: true };

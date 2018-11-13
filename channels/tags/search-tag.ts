@@ -21,7 +21,7 @@ export default function init(sp, getService) {
     const stash = getService(CORE_MODULE.STASH);
 
     if (!stash.mixed.hasFull(cacheKey)) {
-      const filter = getService(CORE_MODULE.CONTRACTS)
+      const filter = (getService(CORE_MODULE.CONTRACTS))
       .instance.Tags.TagCreate({}, { fromBlock: 0, toBlock: 'latest' });
 
       yield Promise

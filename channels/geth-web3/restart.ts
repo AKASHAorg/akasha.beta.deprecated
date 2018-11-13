@@ -3,9 +3,9 @@ import { GETH_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
-    yield getService(GETH_MODULE.stop).execute();
+    yield (getService(GETH_MODULE.stop)).execute();
     yield Promise.delay(500);
-    return getService(GETH_MODULE.startService).execute();
+    return (getService(GETH_MODULE.startService)).execute();
   });
   const restartService = { execute, name: 'restartService' };
   const service = function () {

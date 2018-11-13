@@ -33,7 +33,7 @@ export default function init(sp, getService) {
     const resolveProfile = getService(PROFILE_MODULE.resolveProfile);
     const getShortProfile = getService(PROFILE_MODULE.getShortProfile);
 
-    const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     if (data.ethAddress) {
       const resolved = yield resolveEthAddress.execute({ ethAddress: data.ethAddress });
       akashaId = resolved.akashaId;

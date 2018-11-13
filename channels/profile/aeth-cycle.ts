@@ -24,10 +24,10 @@ export default function init(sp, getService) {
     const txData = getService(CORE_MODULE.CONTRACTS)
     .instance.AETH.cycleAeth.request(bnAmount, { gas: 160000 });
 
-    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    const receipt = yield getService(CORE_MODULE.CONTRACTS)
     .send(txData, data.token, cb);
 
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    return { receipt };
   });
   const cycleAeth = { execute, name: 'cycleAeth', hasStream: true };
   const service = function () {

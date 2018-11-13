@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const indexes_1 = require("./indexes");
-exports.flushSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, SEARCH_MODULE } from '@akashaproject/common/constants';
+import { dbs } from './indexes';
+export const flushSchema = {
     id: '/flush',
     type: 'object',
     properties: {
@@ -12,15 +10,15 @@ exports.flushSchema = {
     required: ['target'],
 };
 const modules = ['entry', 'tags', 'profiles'];
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.flushSchema, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, flushSchema, { throwError: true });
         if (modules.indexOf(data.target) === -1) {
             throw new Error('target is not recognized');
         }
-        indexes_1.dbs[data.target].searchIndex.flush(function (err) {
+        dbs[data.target].searchIndex.flush(function (err) {
             if (err) {
                 return cb(err);
             }
@@ -32,8 +30,7 @@ function init(sp, getService) {
     const service = function () {
         return flush;
     };
-    sp().service(constants_1.SEARCH_MODULE.flush, service);
+    sp().service(SEARCH_MODULE.flush, service);
     return flush;
 }
-exports.default = init;
 //# sourceMappingURL=clear-index.js.map

@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     v.validate(data, getEntryIpfsHashS, { throwError: true });
 
     let ipfsHash;
-    const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const [fn, digestSize, hash] = yield getService(CORE_MODULE.CONTRACTS)
     .instance.Entries.getEntry(ethAddress, data.entryId);
     if (!!unpad(hash)) {

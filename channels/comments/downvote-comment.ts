@@ -28,8 +28,8 @@ export default function init(sp, getService) {
     const txData = contracts.instance
     .Votes.voteComment
     .request(data.weight, data.entryId, data.commentId, true, { gas: 250000 });
-    const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    const receipt = yield contracts.send(txData, data.token, cb);
+    return { receipt };
   });
 
   const downVote = { execute, name: 'downvote', hasStream: true };

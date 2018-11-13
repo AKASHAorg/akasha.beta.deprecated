@@ -27,7 +27,7 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const contracts = getService(CORE_MODULE.CONTRACTS);
 
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const lastBlock = yield web3Api.instance.eth.getBlockNumberAsync();
     const toBlock = (!data.lastBlock) ? lastBlock : data.lastBlock;
     const totalFollowers = yield contracts.instance.Feed.totalFollowers(address);

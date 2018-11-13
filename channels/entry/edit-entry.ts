@@ -33,26 +33,26 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, update, { throwError: true });
 
-    let ipfsEntry = new getService(ENTRY_MODULE.ipfsEntryHelper).IpfsEntry();
+    let ipfsEntry = new (getService(ENTRY_MODULE.ipfsEntryHelper)).IpfsEntry();
     const contracts = getService(CORE_MODULE.CONTRACTS);
-    const [fn, digestSize, hash] = yield contracts.instance
-    .Entries.getEntry(data.ethAddress, data.entryId);
+    const [fn, digestSize, hash] = yield contracts
+      .instance.Entries.getEntry(data.ethAddress, data.entryId);
 
     if (!unpad(hash)) {
       throw new Error(`entryId: ${data.entryId} published by ${data.ethAddress} does not exits`);
     }
 
-    const ipfsHashPublished = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
+    const ipfsHashPublished = (getService(COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
     const ipfsHash = yield ipfsEntry
     .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
-    const decodedHash = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
+    const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;
     ipfsEntry = null;
     const txData = contracts.instance.Entries.edit.request(data.entryId, ...decodedHash);
-    const transaction = yield contracts.send(txData, data.token, cb);
+    const receipt = yield contracts.send(txData, data.token, cb);
 
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    return { receipt };
   });
 
   const editEntry = { execute, name: 'editEntry', hasStream: true };

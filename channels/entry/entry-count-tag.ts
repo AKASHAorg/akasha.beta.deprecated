@@ -21,7 +21,7 @@ export default function init(sp, getService) {
       return contracts.instance.Tags
       .totalEntries(tag)
       .then((count) => {
-        return { count: count.toString(10), tag };
+        return { tag, count: count.toString(10) };
       });
     });
     const collection = yield Promise.all(requests);

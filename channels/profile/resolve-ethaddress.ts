@@ -27,7 +27,7 @@ export default function init(sp, getService) {
     }
 
     const akashaId = (profileHex) ? web3Api.instance.toUtf8(resolved[0]) : '';
-    return { ethAddress: data.ethAddress, akashaId, raw: profileHex };
+    return { akashaId, ethAddress: data.ethAddress, raw: profileHex };
   });
 
   const getByAddress = { execute, name: 'getByAddress' };

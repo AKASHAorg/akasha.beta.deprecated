@@ -15,7 +15,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkFormatSchema, { throwError: true });
 
-    const status = yield getService(CORE_MODULE.CONTRACTS)
+    const status = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Tags.checkFormat(data.tagName);
     return { status, tagName: data.tagName };
   });

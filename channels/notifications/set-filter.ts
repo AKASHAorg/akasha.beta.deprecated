@@ -46,19 +46,19 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
 
     const blockNr = (data.blockNr) ?
-      data.blockNr : yield web3Api.instance.eth.getBlockNumberAsync();
+      data.blockNr : yield web3Api.instance.eth.getBlockNumber();
 
-    const myProfile = yield getService(PROFILE_MODULE.getCurrentProfile).execute();
+    const myProfile = yield (getService(PROFILE_MODULE.getCurrentProfile)).execute();
     let objectFilter = {};
     let temp;
     filter.setBlockNr(blockNr);
     if (!data.profiles.length) {
-      temp = yield getService(PROFILE_MODULE.followingIterator)
+      temp = yield (getService(PROFILE_MODULE.followingIterator))
       .execute({ lastBlock: blockNr, limit: 500 });
 
       data.profiles = temp.collection;
 
-      getService(CORE_MODULE.STASH)
+      (getService(CORE_MODULE.STASH))
       .mixed.setFull(PROFILE_MODULE.followingIterator, temp.collection);
     }
     data.profiles.forEach((profileAddress) => {

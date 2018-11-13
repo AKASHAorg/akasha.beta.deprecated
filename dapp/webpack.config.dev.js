@@ -3,9 +3,13 @@ import devConf from '../webpack.config.development';
 import path from 'path';
 
 const port = process.env.PORT || 3000;
-const publicPath = `http://localhost:${port}/dist`;
+const publicPath = `https://localhost:${port}/dist`;
 
-export default merge(devConf, {
+const conf = merge.smartStrategy({
+  entry: 'replace',
+  output: 'replace',
+  devServer: 'replace'
+})(devConf, {
   entry: [
     'react-hot-loader/patch',
     `webpack-dev-server/client?https://localhost:${port}/`,
@@ -30,5 +34,8 @@ export default merge(devConf, {
     contentBase: path.join(__dirname, 'dist'),
     https: true,
     publicPath,
+    host: 'localhost'
   },
 });
+
+export default conf;

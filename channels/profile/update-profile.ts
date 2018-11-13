@@ -40,7 +40,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, updateProfileData, { throwError: true });
 
-    const ipfsHash = yield getService(COMMON_MODULE.profileHelpers)
+    const ipfsHash = yield (getService(COMMON_MODULE.profileHelpers))
     .ipfsCreateProfile(data.ipfs);
 
     console.log('mainipfsHash', ipfsHash);
@@ -55,8 +55,8 @@ export default function init(sp, getService) {
       currentProfile.raw,
       ...decodedHash,
     );
-    const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    const receipt = yield contracts.send(txData, data.token, cb);
+    return { receipt };
   });
 
   const updateProfileDatas = { execute, name: 'updateProfileData', hasStream: true };

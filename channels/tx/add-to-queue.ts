@@ -20,9 +20,9 @@ export default function init(sp, getService) {
     v.validate(data, addToQueueSchema, { throwError: true });
 
     data.forEach((hash) => {
-      getService(CORE_MODULE.WEB3_HELPER).addTxToWatch(hash.tx, false);
+      (getService(CORE_MODULE.WEB3_HELPER)).addTxToWatch(hash.tx, false);
     });
-    getService(CORE_MODULE.WEB3_HELPER).startTxWatch();
+    (getService(CORE_MODULE.WEB3_HELPER)).startTxWatch();
     return { watching: getService(CORE_MODULE.WEB3_HELPER).watching };
   });
 

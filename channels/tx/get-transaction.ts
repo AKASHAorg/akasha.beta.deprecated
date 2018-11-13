@@ -23,7 +23,7 @@ export default function init(sp, getService) {
     const requests = data.transactionHash.map((txHash) => {
       return web3Api
       .instance.eth
-      .getTransactionReceiptAsync(txHash).then((receipt) => {
+      .getTransactionReceipt(txHash).then((receipt) => {
         if (receipt) {
           return Object.assign(
             {},
@@ -31,7 +31,7 @@ export default function init(sp, getService) {
             { success: receipt.status === '0x1' });
         }
         return web3Api.instance.eth
-        .getTransactionAsync(txHash)
+        .getTransaction(txHash)
         .then((txHashData) => {
           if (txHashData) {
             return { transactionHash: txHash, blockNumber: null };

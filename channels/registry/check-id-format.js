@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.checkIdFormatSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
+export const checkIdFormatSchema = {
     id: '/checkIdFormat',
     type: 'object',
     properties: {
@@ -10,11 +8,11 @@ exports.checkIdFormatSchema = {
     },
     required: ['akashaId'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.checkIdFormatSchema, { throwError: true });
-        const idValid = yield getService(constants_1.CORE_MODULE.CONTRACTS)
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, checkIdFormatSchema, { throwError: true });
+        const idValid = yield (getService(CORE_MODULE.CONTRACTS))
             .instance.ProfileRegistrar.check_format(data.akashaId);
         return { idValid, akashaId: data.akashaId };
     });
@@ -22,8 +20,7 @@ function init(sp, getService) {
     const service = function () {
         return checkIdFormat;
     };
-    sp().service(constants_1.REGISTRY_MODULE.checkIdFormat, service);
+    sp().service(REGISTRY_MODULE.checkIdFormat, service);
     return checkIdFormat;
 }
-exports.default = init;
 //# sourceMappingURL=check-id-format.js.map

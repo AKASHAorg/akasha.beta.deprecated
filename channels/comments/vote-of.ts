@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { COMMENTS_MODULE, COMMON_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
 
-export const getVoteOf = {
+export const getVoteOfSchema = {
   id: '/getVoteOf',
   type: 'array',
   items: {
@@ -21,8 +21,8 @@ export default function init(sp, getService) {
   const execute = Promise.coroutine(
     function* (data: { commentId: string, akashaId?: string, ethAddress?: string }[]) {
       const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-      v.validate(data, getVoteOf, { throwError: true });
-      const profileAddress = getService(COMMON_MODULE.profileHelpers).profileAddress;
+      v.validate(data, getVoteOfSchema, { throwError: true });
+      const profileAddress = (getService(COMMON_MODULE.profileHelpers)).profileAddress;
       const contracts = getService(CORE_MODULE.CONTRACTS);
       const requests = data.map((req) => {
         return profileAddress(req).then((ethAddress) => {

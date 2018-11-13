@@ -21,7 +21,7 @@ export default function init(sp, getService) {
 
     const profileData = getService(PROFILE_MODULE.profileData);
     const pool = data.map((profile) => {
-      return profileData.execute(profile, cb).then((profileData) => cb(null, profileData));
+      return profileData.execute(profile, cb).then(profileData => cb(null, profileData));
     });
     yield Promise.all(pool);
     return { done: true };
