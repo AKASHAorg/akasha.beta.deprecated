@@ -1,14 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { isInternalLink } from '../../../utils/url-utils';
 
 const LinkDecorator = (passedProps) => {
-    const { onOutsideNavigation } = passedProps;
+    const { onOutsideNavigation, history } = passedProps;
     const Link = (props) => {
         const contentState = props.contentState;
         const { url } = contentState.getEntity(props.entityKey).getData();
         const onNavigation = (ev) => {
             ev.preventDefault();
-            onOutsideNavigation(url);
+            if (isInternalLink(url)) {
+                const internalUrl = `/${url.replace('/#', '')}`
+                history.push(internalUrl);
+            } else {
+                onOutsideNavigation(url);
+            }
         };
         return (
           <a

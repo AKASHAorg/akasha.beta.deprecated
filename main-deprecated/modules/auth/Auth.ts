@@ -1,4 +1,4 @@
-import { Cipher, createCipheriv, createDecipheriv, Decipher, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
 // import { takeLast }from 'ramda';
 import {

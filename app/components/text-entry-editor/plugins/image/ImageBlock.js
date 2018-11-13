@@ -7,7 +7,6 @@ import {
     ImageSizeMedium,
     ImageSizeLarge } from '../../../../components/svg';
 import { SvgIcon, Icon, LazyImageLoader } from '../../../../components';
-import { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
 
