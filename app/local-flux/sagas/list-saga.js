@@ -30,9 +30,10 @@ function* listDelete ({ id }) {
 
 function* listDeleteEntry ({ id, entryId }) {
     try {
-        const ethAddress = yield select(selectLoggedEthAddress);
-        const list = yield apply(listService, listService.deleteEntry, [{ ethAddress, id, entryId }]);
-        yield put(actions.listDeleteEntrySuccess(list));
+        // @todo: rewrite this, it seems that listService.deleteEntry is not implemented
+        // const ethAddress = yield select(selectLoggedEthAddress);
+        // const list = yield apply(listService, listService.deleteEntry, [{ ethAddress, id, entryId }]);
+        // yield put(actions.listDeleteEntrySuccess(list));
     } catch (error) {
         yield put(actions.listDeleteEntryError(error));
     }

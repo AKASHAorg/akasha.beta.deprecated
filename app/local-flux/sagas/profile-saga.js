@@ -858,7 +858,7 @@ function* watchProfileGetByAddressChannel () {
             if (akashaId) {
                 yield put(actions.profileGetData({ akashaId, full: true }));
             } else {
-                yield put(actions.isFollower(resp.data.ethAddress));
+                yield put(actions.profileIsFollower(resp.data.ethAddress));
             }
         }
     }

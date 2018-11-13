@@ -4,7 +4,7 @@ export { ClaimableEntry, ClaimableState } from './claimable-record';
 export { CommentAuthor, CommentData, CommentRecord, CommentsState, ProfileComments } from './comments-record';
 export { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
 export { DraftContent, Draft, DraftsIterator, CardInfo } from './draft-record';
-export { EntryAuthor, EntryBalance, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
+export { EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
     EntryState, EntryVote, ProfileEntries } from './entry-record';
 export { ErrorRecord, ErrorState } from './error-record';
 export { GethRecord, GethStatus, GethSyncStatus } from './geth-record';

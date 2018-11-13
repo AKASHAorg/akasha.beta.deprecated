@@ -155,13 +155,13 @@ export const profileGetDataError = (error, request) => {
 export const profileGetDataSuccess = (data, request) =>
     action(types.PROFILE_GET_DATA_SUCCESS, { data, request, batching: request.batching });
 
-export const profileGetEntrySyncBlockError = (error) => {
-    error.code = 'PGESBE01';
-    return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
-};
-
-export const profileGetEntrySyncBlockSuccess = block =>
-    action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
+// export const profileGetEntrySyncBlockError = (error) => {
+//     error.code = 'PGESBE01';
+//     return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
+// };
+//
+// export const profileGetEntrySyncBlockSuccess = block =>
+//     action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
 
 export const profileGetList = ethAddresses =>
     action(types.PROFILE_GET_LIST, { ethAddresses });

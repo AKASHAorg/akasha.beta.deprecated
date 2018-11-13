@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { Avatar } from 'antd';
 import { getInitials } from '../../utils/dataModule';
 import { selectBaseUrl } from '../../local-flux/selectors/index';

@@ -1,0 +1,14 @@
+{
+  "name": "dapp",
+  "version": "1.0.0",
+  "dependencies": {
+    "@akashaproject/auth-web3": "../channels/auth-web3",
+    "@akashaproject/geth-web3": "../channels/geth-web3",
+    "web3": "1.0.0-beta.36"
+  },
+  "peerDependencies": {
+    "@akashaproject/common": "^1.0.0",
+    "@akashaproject/core": "^1.0.0",
+    "@akashaproject/ipfs-js-connector": "^1.0.26"
+  }
+}

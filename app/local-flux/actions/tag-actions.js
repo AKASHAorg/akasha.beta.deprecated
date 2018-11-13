@@ -33,5 +33,5 @@ export const tagSearchError = error => action(types.TAG_SEARCH_ERROR, { error })
 
 export const tagSearchSuccess = data => action(types.TAG_SEARCH_SUCCESS, { data });
 
-export const tagSearchMoreSuccess = (tags, tagCount) =>
-    action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });
+// export const tagSearchMoreSuccess = (tags, tagCount) =>
+//     action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });

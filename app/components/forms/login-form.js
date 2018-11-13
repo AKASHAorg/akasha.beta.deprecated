@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Tooltip, Icon } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';

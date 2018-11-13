@@ -5,7 +5,7 @@ import * as tagActions from '../actions/tag-actions';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import { SEARCH } from '../../constants/context-types';
-import { entrySearchLimit, autocompleteLimit,
+import { entrySearchLimit, profileAutocompleteLimit as autocompleteLimit,
     profileSearchLimit, tagSearchLimit } from '../../constants/iterator-limits';
 import { entryGetExtraOfList } from './entry-saga';
 import { selectSearchEntryOffset, selectSearchQuery, selectSearchQueryAutocomplete,
