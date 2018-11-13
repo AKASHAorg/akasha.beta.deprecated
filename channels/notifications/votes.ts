@@ -22,7 +22,7 @@ export default function init(sp, getService) {
     const entriesCache = getService(NOTIFICATIONS_MODULE.entriesCache);
     const queue = getService(NOTIFICATIONS_MODULE.queue);
 
-    const ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     if (!entriesCache.getAll().length) {
       const fetchedEntries = yield contracts
       .fromEvent(

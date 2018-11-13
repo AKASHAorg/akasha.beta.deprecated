@@ -52,7 +52,7 @@ export default function init(sp, getService) {
       return profile.ethAddress === web3Api.instance.eth.defaultAccount;
     });
 
-    return { collection: rankedCollection, myRanking };
+    return { myRanking, collection: rankedCollection };
   });
   const karmaRanking = { execute, name: 'karmaRanking' };
   const service = function () {

@@ -10,6 +10,9 @@ let appLogger;
 let duplexChannel;
 
 const startApp = (web3, vault) => {
+  if (!appLogger || !duplexChannel) {
+    throw new Error('Must set appLogger and duplexChannel before starting');
+  }
   if (!web3) {
     return bootstrap(false, false);
   }
@@ -21,7 +24,7 @@ const startApp = (web3, vault) => {
 
   // must refactor this
   // web3Helper.setChannel(getChannels().client.tx.emitMined);
-
+  console.log(duplexChannel);
   bootstrap(true, !!vault.length, duplexChannel.ipcChannelUI, appLogger.child({ module: 'UI' }));
 };
 

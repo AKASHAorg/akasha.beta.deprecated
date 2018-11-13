@@ -17,7 +17,8 @@ export default function init(sp, getService) {
     v.validate(data, getScore, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const score = yield contracts.instance.Votes.getRecord(data.entryId);
-    const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote,
+    const fetched = yield contracts.fromEvent(
+      contracts.instance.Votes.Vote,
       { target: data.entryId, voteType: 0 }, 0, 10000, { lastIndex: 0, reversed: true });
     const downVotes = [];
     fetched.results.forEach((event) => {

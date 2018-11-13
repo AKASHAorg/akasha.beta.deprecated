@@ -17,8 +17,8 @@ export default function init(sp, getService) {
     // check if current used node is synchronized
     public inSync() {
       const rules = [
-        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncingAsync(),
-        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCountAsync(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
+        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
       ];
 
       return Promise.all(rules).then((data) => {
@@ -28,9 +28,9 @@ export default function init(sp, getService) {
         }
 
         if (!data[0] && data[1] > 0) {
-          return getService(CORE_MODULE.WEB3_API).instance
+          return (getService(CORE_MODULE.WEB3_API)).instance
           .eth
-          .getBlockAsync('latest')
+          .getBlock('latest')
           .then((latestBlock: any): any => {
             if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
               this.syncing = false;

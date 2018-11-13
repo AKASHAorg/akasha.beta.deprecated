@@ -17,9 +17,9 @@ export default function init(sp, getService) {
         .then((buff: Buffer) => {
           const token = addHexPrefix(buff.toString('hex'));
           const expiration = new Date();
-          getService(CORE_MODULE.RESPONSES).gethStatus.akashaKey = acc;
+          (getService(CORE_MODULE.RESPONSES)).gethStatus.akashaKey = acc;
           expiration.setMinutes(expiration.getMinutes() + timer);
-          getService(CORE_MODULE.WEB3_API).instance.eth.defaultAccount = acc;
+          (getService(CORE_MODULE.WEB3_API)).instance.eth.defaultAccount = acc;
 
           return { token, expiration, ethAddress: acc };
           // });
@@ -51,7 +51,7 @@ export default function init(sp, getService) {
           if (!logged) {
             throw new Error('Token is not valid!');
           }
-          return getService(CORE_MODULE.WEB3_API).instance.eth.sendTransactionAsync(data);
+          return (getService(CORE_MODULE.WEB3_API)).instance.eth.sendTransaction(data);
         });
     }
 
@@ -64,7 +64,7 @@ export default function init(sp, getService) {
           }
           return web3Api.instance
             .personal
-            .signAsync(data, web3Api.instance.eth.defaultAccount);
+            .sign(data, web3Api.instance.eth.defaultAccount);
         });
     }
 
@@ -73,8 +73,8 @@ export default function init(sp, getService) {
      * @private
      */
     private _flushSession() {
-      getService(CORE_MODULE.RESPONSES).gethStatus.akashaKey = '';
-      getService(CORE_MODULE.RESPONSES).gethStatus.shouldLogout = false;
+      (getService(CORE_MODULE.RESPONSES)).gethStatus.akashaKey = '';
+      (getService(CORE_MODULE.RESPONSES)).gethStatus.shouldLogout = false;
       console.log('flushed session');
     }
   }

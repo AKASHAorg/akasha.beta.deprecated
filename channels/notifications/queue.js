@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const ramda_1 = require("ramda");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import { contains, uniq } from 'ramda';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     class Notifications {
         constructor() {
             this.queue = [];
@@ -13,7 +11,7 @@ function init(sp, getService) {
             if (this.timeout) {
                 clearTimeout(this.timeout);
             }
-            if (notification && !ramda_1.contains(notification, this.queue)) {
+            if (notification && !contains(notification, this.queue)) {
                 this.queue.push(notification);
             }
             this.timeout = setTimeout(() => {
@@ -25,7 +23,7 @@ function init(sp, getService) {
             this.queue.length = 0;
         }
         emit(cb) {
-            this.queue = ramda_1.uniq(this.queue);
+            this.queue = uniq(this.queue);
             const count = (this.queue.length > this.BATCH_SIZE) ?
                 this.BATCH_SIZE : this.queue.length;
             for (let i = 0; i < count; i++) {
@@ -40,8 +38,7 @@ function init(sp, getService) {
     const service = function () {
         return queue;
     };
-    sp().service(constants_1.NOTIFICATIONS_MODULE.queue, service);
+    sp().service(NOTIFICATIONS_MODULE.queue, service);
     return queue;
 }
-exports.default = init;
 //# sourceMappingURL=queue.js.map

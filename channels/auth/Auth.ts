@@ -31,7 +31,7 @@ export default function init(sp, getService) {
           return Promise.reject(new Error('Incorrect password format'));
         }
         const transformed = Buffer.from(pass).toString('utf8');
-        return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
+        return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
         .web3
         .personal
         .newAccountAsync(transformed)
@@ -46,7 +46,7 @@ export default function init(sp, getService) {
 
     public login(acc: string, pass: any | Uint8Array, timer: number = 1) {
 
-      return getService(CORE_MODULE.WEB3_HELPER)
+      return (getService(CORE_MODULE.WEB3_HELPER))
       .hasKey(acc)
       .then((found) => {
         if (!found) {
@@ -64,9 +64,9 @@ export default function init(sp, getService) {
           const expiration = new Date();
           const clientToken = hashPersonalMessage(buff);
           expiration.setMinutes(expiration.getMinutes() + timer);
-          getService(CORE_MODULE.GETH_CONNECTOR)
+          (getService(CORE_MODULE.GETH_CONNECTOR))
           .getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
-          getService(CORE_MODULE.GETH_CONNECTOR)
+          (getService(CORE_MODULE.GETH_CONNECTOR))
           .getInstance().web3.eth.defaultAccount = acc;
           this.session = {
             expiration,
@@ -85,7 +85,7 @@ export default function init(sp, getService) {
 
     public logout() {
       if (this.session) {
-        getService(CORE_MODULE.GETH_CONNECTOR)
+        (getService(CORE_MODULE.GETH_CONNECTOR))
         .getInstance().web3.personal.lockAccountAsync(this.session.address);
       }
       this.flushSession();
@@ -117,19 +117,19 @@ export default function init(sp, getService) {
     }
 
     public signData(data: {}, token: string) {
-      return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
+      return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
       .web3
       .personal
       .sendTransactionAsync(data, this.read(token).toString('utf8'));
     }
 
     public signMessage(data: {}, token: string) {
-      return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
+      return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
       .web3
       .personal
       .signAsync(
         data,
-        getService(CORE_MODULE.GETH_CONNECTOR).getInstance().web3.eth.defaultAccount,
+        (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance().web3.eth.defaultAccount,
         this.read(token).toString('utf8'));
     }
 
@@ -177,7 +177,7 @@ export default function init(sp, getService) {
     }
 
     signSession(hash: string, account: string, password: string) {
-      return getService(CORE_MODULE.GETH_CONNECTOR).getInstance()
+      return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
       .web3
       .personal
       .signAsync(hash, account, password);

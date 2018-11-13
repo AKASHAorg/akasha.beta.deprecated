@@ -16,7 +16,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getScoreS, { throwError: true });
 
-    const score = yield getService(CORE_MODULE.CONTRACTS)
+    const score = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Votes.getRecord(data.entryId);
 
     return { score: (score[1]).toString(10), entryId: data.entryId };

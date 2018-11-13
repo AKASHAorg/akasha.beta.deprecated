@@ -1,23 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const ethereumjs_util_1 = require("ethereumjs-util");
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.randomBytesAsync = Promise.promisify(window.crypto.getRandomValues);
-function init(sp, getService) {
+import { addHexPrefix } from 'ethereumjs-util';
+import * as Promise from 'bluebird';
+import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
+export const randomBytesAsync = Promise.promisify(window.crypto.getRandomValues);
+export default function init(sp, getService) {
     class Auth {
         regenSession(token) {
             return true;
         }
         login(acc, timer = 30, registering = false) {
             const arr = new Uint32Array(32);
-            return exports.randomBytesAsync(arr)
+            return randomBytesAsync(arr)
                 .then((buff) => {
-                const token = ethereumjs_util_1.addHexPrefix(buff.toString('hex'));
+                const token = addHexPrefix(buff.toString('hex'));
                 const expiration = new Date();
-                getService(constants_1.CORE_MODULE.RESPONSES).gethStatus.akashaKey = acc;
+                (getService(CORE_MODULE.RESPONSES)).gethStatus.akashaKey = acc;
                 expiration.setMinutes(expiration.getMinutes() + timer);
-                getService(constants_1.CORE_MODULE.WEB3_API).instance.eth.defaultAccount = acc;
+                (getService(CORE_MODULE.WEB3_API)).instance.eth.defaultAccount = acc;
                 return { token, expiration, ethAddress: acc };
             });
         }
@@ -33,11 +31,11 @@ function init(sp, getService) {
                 if (!logged) {
                     throw new Error('Token is not valid!');
                 }
-                return getService(constants_1.CORE_MODULE.WEB3_API).instance.eth.sendTransactionAsync(data);
+                return (getService(CORE_MODULE.WEB3_API)).instance.eth.sendTransaction(data);
             });
         }
         signMessage(data, token) {
-            const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+            const web3Api = getService(CORE_MODULE.WEB3_API);
             return this.isLogged(token)
                 .then(function (logged) {
                 if (!logged) {
@@ -45,12 +43,12 @@ function init(sp, getService) {
                 }
                 return web3Api.instance
                     .personal
-                    .signAsync(data, web3Api.instance.eth.defaultAccount);
+                    .sign(data, web3Api.instance.eth.defaultAccount);
             });
         }
         _flushSession() {
-            getService(constants_1.CORE_MODULE.RESPONSES).gethStatus.akashaKey = '';
-            getService(constants_1.CORE_MODULE.RESPONSES).gethStatus.shouldLogout = false;
+            (getService(CORE_MODULE.RESPONSES)).gethStatus.akashaKey = '';
+            (getService(CORE_MODULE.RESPONSES)).gethStatus.shouldLogout = false;
             console.log('flushed session');
         }
     }
@@ -58,7 +56,6 @@ function init(sp, getService) {
     const service = function () {
         return auth;
     };
-    sp().service(constants_1.AUTH_MODULE.auth, service);
+    sp().service(AUTH_MODULE.auth, service);
 }
-exports.default = init;
 //# sourceMappingURL=Auth.js.map

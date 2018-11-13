@@ -88,7 +88,7 @@ export default function init(sp, getService) {
     const lastLog = data.reversed ? head(sortedResults) : last(sortedResults);
     const [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] : [0, 0];
 
-    return { collection: sortedResults, lastBlock, lastIndex };
+    return {  lastBlock, lastIndex, collection: sortedResults };
   });
 
   const myVotesIterator = { execute, name: 'myVotesIterator' };

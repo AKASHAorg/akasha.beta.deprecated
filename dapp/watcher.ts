@@ -20,7 +20,7 @@ export default function startDataStream(modules, windowId, getService, logger) {
       windowId,
       channelName: 'mainChannel',
     });
-  const ipcChannelUI = new DuplexChannel(CORE_MODULE.DATA);
+  const ipcChannelUI = new DuplexChannel(CORE_MODULE.DATA, { channelName: 'uiChannel' });
   // double link
   ipcChannelMain.bind(ipcChannelUI.subject);
   ipcChannelUI.bind(ipcChannelMain.subject);

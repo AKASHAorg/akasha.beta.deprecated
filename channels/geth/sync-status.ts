@@ -3,10 +3,10 @@ import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
-    const state = yield getService(CORE_MODULE.WEB3_HELPER).inSync();
+    const state = yield (getService(CORE_MODULE.WEB3_HELPER)).inSync();
     if (!state.length) {
-      if (!getService(CORE_MODULE.CONTRACTS).instance) {
-        yield getService(CORE_MODULE.CONTRACTS)
+      if (!(getService(CORE_MODULE.CONTRACTS)).instance) {
+        yield (getService(CORE_MODULE.CONTRACTS))
         .init().then(() => console.log('contracts init'));
       }
       return { synced: true };

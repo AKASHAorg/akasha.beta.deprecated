@@ -42,7 +42,7 @@ export default function init(sp, getService) {
             return Promise.resolve({});
           }
           const mediaData = this._normalizeImage(content.featuredImage[imSize].src);
-          return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+          return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
           .add(content.featuredImage[imSize].src, true, is(String, mediaData))
           .then((obj) => {
             return {
@@ -60,7 +60,7 @@ export default function init(sp, getService) {
             sizes.forEach((record) => {
               Object.assign(LINK, record);
             });
-            return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api.add(LINK);
+            return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api.add(LINK);
           }).then((obj) => {
             this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
           }),
@@ -75,12 +75,12 @@ export default function init(sp, getService) {
       }
 
       ipfsApiRequests.push(
-        getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+        (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
         .add(content.excerpt)
         .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
 
       if (previous && previous.hash) {
-        getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+        (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
         .getStats(previous.hash)
         .then((stats) => {
           this.entryLinks.push(
@@ -91,7 +91,7 @@ export default function init(sp, getService) {
       return Promise.all(ipfsApiRequests)
       .then(() => this._uploadMediaDraft())
       .then((parts) => {
-        return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+        return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
         .createNode(
           {
             draftParts: parts,
@@ -109,7 +109,7 @@ export default function init(sp, getService) {
     }
 
     edit(content: any, tags: any[], entryType: number, previousHash) {
-      return getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+      return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
       .get(previousHash)
       .then((data) => {
         if (content.hasOwnProperty('version')) {

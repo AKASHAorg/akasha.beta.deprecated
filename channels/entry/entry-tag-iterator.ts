@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, entryTagIteratorS, { throwError: true });
 
-    const entryCount = yield getService(CORE_MODULE.CONTRACTS)
+    const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Tags.totalEntries(data.tagName);
 
     let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;

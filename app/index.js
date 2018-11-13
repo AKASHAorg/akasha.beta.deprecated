@@ -12,13 +12,9 @@ import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import { AppContainer } from './containers';
 import './styles/core.scss';
-import(
-  process.env.DARK_THEME ?
-    './styles/ant-vars/extract-dark-theme.less' : './styles/ant-vars/extract-default-theme.less'
-  );
+import './styles/ant-vars/extract-default-theme.less';
 
 
-// @TODO: add context logger
 export const bootstrap = (web3Enabled = false, vault = false, channel, logger) => {
   const history = getHistory();
   const store = configureStore();

@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        const state = yield getService(constants_1.CORE_MODULE.WEB3_HELPER).inSync();
+        const state = yield (getService(CORE_MODULE.WEB3_HELPER)).inSync();
         if (!state.length) {
             return { synced: true };
         }
@@ -17,8 +15,7 @@ function init(sp, getService) {
     const service = function () {
         return syncStatus;
     };
-    sp().service(constants_1.GETH_MODULE.syncStatus, service);
+    sp().service(GETH_MODULE.syncStatus, service);
     return syncStatus;
 }
-exports.default = init;
 //# sourceMappingURL=sync-status.js.map

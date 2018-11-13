@@ -35,7 +35,7 @@ export default function init(sp, getService) {
       });
     });
     const lastBlock = yield web3Api.instance.eth.getBlockNumberAsync();
-    return { done: true, lastBlock };
+    return { lastBlock, done: true };
   });
 
   const syncTags = { execute, name: 'syncTags' };

@@ -20,10 +20,10 @@ export default function init(sp, getService) {
     const txData = getService(CORE_MODULE.CONTRACTS)
     .instance.AETH.freeAeth.request({ gas: 1000000 });
 
-    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    const receipt = yield getService(CORE_MODULE.CONTRACTS)
     .send(txData, data.token, cb);
 
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    return { receipt };
   });
   const freeAeth = { execute, name: 'freeAeth', hasStream: true };
   const service = function () {

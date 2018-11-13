@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     v.validate(data, allStreamIteratorS, { throwError: true });
 
     const maxResults = data.limit || 5;
-    return getService(ENTRY_MODULE.helpers).fetchFromPublish(Object.assign({}, data, {
+    return (getService(ENTRY_MODULE.helpers)).fetchFromPublish(Object.assign({}, data, {
       limit: maxResults,
       args: {},
       reversed: data.reversed || false,

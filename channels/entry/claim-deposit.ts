@@ -17,8 +17,8 @@ export default function init(sp, getService) {
     v.validate(data, claimS, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.Entries.claim.request(data.entryId, { gas: 200000 });
-    const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    const receipt = yield contracts.send(txData, data.token, cb);
+    return { receipt };
   });
 
   const claim = { execute, name: 'claim', hasStream: true };

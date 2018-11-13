@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.existsSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
+export const existsSchema = {
     id: '/existsSchema',
     type: 'object',
     properties: {
@@ -10,11 +8,11 @@ exports.existsSchema = {
     },
     required: ['tagName'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.existsSchema, { throwError: true });
-        const exists = yield getService(constants_1.CORE_MODULE.CONTRACTS)
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, existsSchema, { throwError: true });
+        const exists = yield (getService(CORE_MODULE.CONTRACTS))
             .instance.Tags.exists(data.tagName);
         return { exists, tagName: data.tagName };
     });
@@ -22,8 +20,7 @@ function init(sp, getService) {
     const service = function () {
         return existsTag;
     };
-    sp().service(constants_1.TAGS_MODULE.existsTag, service);
+    sp().service(TAGS_MODULE.existsTag, service);
     return existsTag;
 }
-exports.default = init;
 //# sourceMappingURL=exists-tag.js.map

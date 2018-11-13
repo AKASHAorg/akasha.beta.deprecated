@@ -19,22 +19,21 @@ export default function init(sp, getService) {
     v.validate(data, commentS, { throwError: true });
 
     const contracts = getService(CORE_MODULE.CONTRACTS);
-    const ipfsHash = yield getService(COMMENTS_MODULE.commentIpfs).create(data.content);
-    const decodedHash = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
+    const ipfsHash = yield (getService(COMMENTS_MODULE.commentIpfs)).create(data.content);
+    const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     const replyTo = data.parent || '0';
     const txData = contracts.instance
     .Comments.publish.request(
       data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
 
-    const transaction = yield contracts.send(txData, data.token, cb);
+    const receipt = yield contracts.send(txData, data.token, cb);
     let commentId = null;
-    const receipt = transaction.receipt;
     // in the future extract this should be dynamic @TODO
     if (receipt.logs && receipt.logs.length > 1) {
       const log = receipt.logs[receipt.logs.length - 1];
       commentId = log.topics.length > 3 ? log.data : null;
     }
-    return { tx: transaction.tx, receipt: transaction.receipt, commentId, entryId: data.entryId };
+    return { commentId, receipt, entryId: data.entryId };
   });
 
   const comment = { execute, name: 'comment', hasStream: true };

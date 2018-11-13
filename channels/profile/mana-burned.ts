@@ -18,7 +18,7 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const BN = web3Api.instance.BigNumber;
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const totalEntries = yield contracts.instance.Entries.getEntryCount(address);
     const entryCost = yield contracts.instance.Entries.required_essence();
     const totalEntriesMana = entryCost.times(new BN(totalEntries));

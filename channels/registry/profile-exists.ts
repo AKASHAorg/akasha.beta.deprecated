@@ -25,7 +25,7 @@ export default function init(sp, getService) {
       idValid = false;
     }
 
-    return { exists: !!unpad(exists), idValid, akashaId: data.akashaId, normalisedId };
+    return { idValid, normalisedId, exists: !!unpad(exists),  akashaId: data.akashaId };
   });
 
   const profileExists = { execute, name: 'profileExists' };

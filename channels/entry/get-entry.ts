@@ -92,19 +92,18 @@ export default function init(sp, getService) {
 
     const cCount = yield getService(COMMENTS_MODULE.commentsCount).execute([data.entryId]);
     return {
+      ethAddress,
+      claimed,
+      ipfsHash,
       [GENERAL_SETTINGS.BASE_URL]: getService(CORE_MODULE.SETTINGS)
       .get(GENERAL_SETTINGS.BASE_URL),
-
-      ethAddress,
       totalVotes: totalVotes.toString(10),
       score: score.toString(10),
       publishDate: (endPeriod.minus(votingPeriod)).toNumber(),
       endPeriod: endPeriod.toNumber(),
       totalKarma: (web3Api.instance.fromWei(totalKarma, 'ether')).toString(10),
       content: entry,
-      claimed,
       commentsCount: cCount.collection.length ? cCount.collection[0].count : 0,
-      ipfsHash,
     };
   });
 

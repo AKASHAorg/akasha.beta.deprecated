@@ -3,8 +3,8 @@ import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
-    const blockNr = getService(CORE_MODULE.WEB3_API).instance.isConnected() ?
-      yield getService(CORE_MODULE.WEB3_API).instance.eth.getBlockNumberAsync() : false;
+    const blockNr = (getService(CORE_MODULE.WEB3_API)).instance.isConnected() ?
+      yield (getService(CORE_MODULE.WEB3_API)).instance.eth.getBlockNumber() : false;
     return { blockNr };
   });
   const status = { execute, name: 'status' };

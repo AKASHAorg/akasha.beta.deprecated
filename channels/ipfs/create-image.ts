@@ -11,7 +11,7 @@ export default function init(sp, getService) {
     const requests = data.map((hash) => {
       return getService(CORE_MODULE.IPFS_CONNECTOR)
       .getInstance().api.getFile(hash).then((uintData) => {
-        return { data: uintData, hash };
+        return { hash, data: uintData };
       });
     });
     const collection = yield Promise.all(requests);

@@ -25,9 +25,9 @@ export default function init(sp, getService) {
 
     const collection = [];
     const maxResults = data.limit || 5;
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const toBlock = (!data.lastBlock) ?
-      yield getService(CORE_MODULE.WEB3_API)
+      yield (getService(CORE_MODULE.WEB3_API))
       .instance.eth.getBlockNumberAsync() : data.lastBlock;
 
     const contracts = getService(CORE_MODULE.CONTRACTS);

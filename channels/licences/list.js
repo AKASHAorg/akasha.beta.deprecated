@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.licences = [
+export const licences = [
     {
         id: '1',
         parent: null,
@@ -138,10 +136,9 @@ exports.licences = [
         ],
     },
 ];
-function getLicence(id) {
-    return exports.licences.find((element) => {
+export function getLicence(id) {
+    return licences.find((element) => {
         return element.id === id + '';
     });
 }
-exports.getLicence = getLicence;
 //# sourceMappingURL=list.js.map

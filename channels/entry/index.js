@@ -1,101 +1,99 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const entry_count_profile_1 = require("./entry-count-profile");
-const entry_count_tag_1 = require("./entry-count-tag");
-const entry_tag_iterator_1 = require("./entry-tag-iterator");
-const entry_profile_iterator_1 = require("./entry-profile-iterator");
-const get_entry_1 = require("./get-entry");
-const publish_entry_1 = require("./publish-entry");
-const can_claim_1 = require("./can-claim");
-const claim_deposit_1 = require("./claim-deposit");
-const downvote_entry_1 = require("./downvote-entry");
-const entry_score_1 = require("./entry-score");
-const upvote_entry_1 = require("./upvote-entry");
-const vote_cost_1 = require("./vote-cost");
-const get_vote_of_1 = require("./get-vote-of");
-const votes_iterator_1 = require("./votes-iterator");
-const get_entry_balance_1 = require("./get-entry-balance");
-const get_entry_list_1 = require("./get-entry-list");
-const edit_entry_1 = require("./edit-entry");
-const following_stream_iterator_1 = require("./following-stream-iterator");
-const all_stream_iterator_1 = require("./all-stream-iterator");
-const get_latest_entry_version_1 = require("./get-latest-entry-version");
-const get_entry_ipfs_hash_1 = require("./get-entry-ipfs-hash");
-const resolve_entries_ipfs_hash_1 = require("./resolve-entries-ipfs-hash");
-const can_claim_vote_1 = require("./can-claim-vote");
-const claim_vote_1 = require("./claim-vote");
-const vote_ratio_1 = require("./vote-ratio");
-const vote_endperiod_1 = require("./vote-endperiod");
-const my_votes_iterator_1 = require("./my-votes-iterator");
-const sync_entries_1 = require("./sync-entries");
-const helpers_1 = require("./helpers");
-const ipfs_1 = require("./ipfs");
-const constants_1 = require("@akashaproject/common/constants");
+import entryCountProfileInit from './entry-count-profile';
+import entryCountTagInit from './entry-count-tag';
+import entryTagIteratorInit from './entry-tag-iterator';
+import entryProfileIteratorInit from './entry-profile-iterator';
+import getEntryInit from './get-entry';
+import publishEntryInit from './publish-entry';
+import canClaimInit from './can-claim';
+import claimDepositInit from './claim-deposit';
+import downVoteEntryInit from './downvote-entry';
+import entryScoreInit from './entry-score';
+import upVoteEntryInit from './upvote-entry';
+import voteCostInit from './vote-cost';
+import getVoteOfInit from './get-vote-of';
+import votesIteratorInit from './votes-iterator';
+import getEntryBalanceInit from './get-entry-balance';
+import getEntryListInit from './get-entry-list';
+import editEntryInit from './edit-entry';
+import followingStreamIteratorInit from './following-stream-iterator';
+import allStreamIteratorInit from './all-stream-iterator';
+import getLatestEntryVersionInit from './get-latest-entry-version';
+import getEntryIpfsHashInit from './get-entry-ipfs-hash';
+import resolveEntriesIpfsHashInit from './resolve-entries-ipfs-hash';
+import canClaimVoteInit from './can-claim-vote';
+import claimVoteInit from './claim-vote';
+import voteRatioInit from './vote-ratio';
+import getVoteEndPeriodInit from './vote-endperiod';
+import myVotesIteratorInit from './my-votes-iterator';
+import syncEntriesInit from './sync-entries';
+import helpersInit from './helpers';
+import ipfsInit from './ipfs';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
 const init = function init(sp, getService) {
-    helpers_1.default(sp, getService);
-    ipfs_1.default(sp, getService);
-    const entryCountProfile = entry_count_profile_1.default(sp, getService);
-    const entryCountTag = entry_count_tag_1.default(sp, getService);
-    const entryTagIterator = entry_tag_iterator_1.default(sp, getService);
-    const entryProfileIterator = entry_profile_iterator_1.default(sp, getService);
-    const getEntry = get_entry_1.default(sp, getService);
-    const publishEntry = publish_entry_1.default(sp, getService);
-    const canClaim = can_claim_1.default(sp, getService);
-    const claimDeposit = claim_deposit_1.default(sp, getService);
-    const downVoteEntry = downvote_entry_1.default(sp, getService);
-    const entryScore = entry_score_1.default(sp, getService);
-    const upVoteEntry = upvote_entry_1.default(sp, getService);
-    const voteCost = vote_cost_1.default(sp, getService);
-    const getVoteOf = get_vote_of_1.default(sp, getService);
-    const votesIterator = votes_iterator_1.default(sp, getService);
-    const getEntryBalance = get_entry_balance_1.default(sp, getService);
-    const getEntryList = get_entry_list_1.default(sp, getService);
-    const editEntry = edit_entry_1.default(sp, getService);
-    const followingStreamIterator = following_stream_iterator_1.default(sp, getService);
-    const allStreamIterator = all_stream_iterator_1.default(sp, getService);
-    const getLatestEntryVersion = get_latest_entry_version_1.default(sp, getService);
-    const getEntryIpfsHash = get_entry_ipfs_hash_1.default(sp, getService);
-    const resolveEntriesIpfsHash = resolve_entries_ipfs_hash_1.default(sp, getService);
-    const canClaimVote = can_claim_vote_1.default(sp, getService);
-    const claimVote = claim_vote_1.default(sp, getService);
-    const voteRatio = vote_ratio_1.default(sp, getService);
-    const getVoteEndPeriod = vote_endperiod_1.default(sp, getService);
-    const myVotesIterator = my_votes_iterator_1.default(sp, getService);
-    const syncEntries = sync_entries_1.default(sp, getService);
+    helpersInit(sp, getService);
+    ipfsInit(sp, getService);
+    const entryCountProfile = entryCountProfileInit(sp, getService);
+    const entryCountTag = entryCountTagInit(sp, getService);
+    const entryTagIterator = entryTagIteratorInit(sp, getService);
+    const entryProfileIterator = entryProfileIteratorInit(sp, getService);
+    const getEntry = getEntryInit(sp, getService);
+    const publishEntry = publishEntryInit(sp, getService);
+    const canClaim = canClaimInit(sp, getService);
+    const claimDeposit = claimDepositInit(sp, getService);
+    const downVoteEntry = downVoteEntryInit(sp, getService);
+    const entryScore = entryScoreInit(sp, getService);
+    const upVoteEntry = upVoteEntryInit(sp, getService);
+    const voteCost = voteCostInit(sp, getService);
+    const getVoteOf = getVoteOfInit(sp, getService);
+    const votesIterator = votesIteratorInit(sp, getService);
+    const getEntryBalance = getEntryBalanceInit(sp, getService);
+    const getEntryList = getEntryListInit(sp, getService);
+    const editEntry = editEntryInit(sp, getService);
+    const followingStreamIterator = followingStreamIteratorInit(sp, getService);
+    const allStreamIterator = allStreamIteratorInit(sp, getService);
+    const getLatestEntryVersion = getLatestEntryVersionInit(sp, getService);
+    const getEntryIpfsHash = getEntryIpfsHashInit(sp, getService);
+    const resolveEntriesIpfsHash = resolveEntriesIpfsHashInit(sp, getService);
+    const canClaimVote = canClaimVoteInit(sp, getService);
+    const claimVote = claimVoteInit(sp, getService);
+    const voteRatio = voteRatioInit(sp, getService);
+    const getVoteEndPeriod = getVoteEndPeriodInit(sp, getService);
+    const myVotesIterator = myVotesIteratorInit(sp, getService);
+    const syncEntries = syncEntriesInit(sp, getService);
     return {
-        [constants_1.ENTRY_MODULE.getProfileEntriesCount]: entryCountProfile,
-        [constants_1.ENTRY_MODULE.getTagEntriesCount]: entryCountTag,
-        [constants_1.ENTRY_MODULE.entryTagIterator]: entryTagIterator,
-        [constants_1.ENTRY_MODULE.entryProfileIterator]: entryProfileIterator,
-        [constants_1.ENTRY_MODULE.getEntry]: getEntry,
-        [constants_1.ENTRY_MODULE.publish]: publishEntry,
-        [constants_1.ENTRY_MODULE.canClaim]: canClaim,
-        [constants_1.ENTRY_MODULE.claim]: claimDeposit,
-        [constants_1.ENTRY_MODULE.downVote]: downVoteEntry,
-        [constants_1.ENTRY_MODULE.getScore]: entryScore,
-        [constants_1.ENTRY_MODULE.upVote]: upVoteEntry,
-        [constants_1.ENTRY_MODULE.voteCost]: voteCost,
-        [constants_1.ENTRY_MODULE.getVoteOf]: getVoteOf,
-        [constants_1.ENTRY_MODULE.votesIterator]: votesIterator,
-        [constants_1.ENTRY_MODULE.getEntryBalance]: getEntryBalance,
-        [constants_1.ENTRY_MODULE.getEntryList]: getEntryList,
-        [constants_1.ENTRY_MODULE.editEntry]: editEntry,
-        [constants_1.ENTRY_MODULE.followingStreamIterator]: followingStreamIterator,
-        [constants_1.ENTRY_MODULE.allStreamIterator]: allStreamIterator,
-        [constants_1.ENTRY_MODULE.getLatestEntryVersion]: getLatestEntryVersion,
-        [constants_1.ENTRY_MODULE.getEntryIpfsHash]: getEntryIpfsHash,
-        [constants_1.ENTRY_MODULE.resolveEntriesIpfsHash]: resolveEntriesIpfsHash,
-        [constants_1.ENTRY_MODULE.canClaimVote]: canClaimVote,
-        [constants_1.ENTRY_MODULE.claimVote]: claimVote,
-        [constants_1.ENTRY_MODULE.getVoteRatio]: voteRatio,
-        [constants_1.ENTRY_MODULE.getVoteEndPeriod]: getVoteEndPeriod,
-        [constants_1.ENTRY_MODULE.myVotesIterator]: myVotesIterator,
-        [constants_1.ENTRY_MODULE.syncEntries]: syncEntries,
+        [ENTRY_MODULE.getProfileEntriesCount]: entryCountProfile,
+        [ENTRY_MODULE.getTagEntriesCount]: entryCountTag,
+        [ENTRY_MODULE.entryTagIterator]: entryTagIterator,
+        [ENTRY_MODULE.entryProfileIterator]: entryProfileIterator,
+        [ENTRY_MODULE.getEntry]: getEntry,
+        [ENTRY_MODULE.publish]: publishEntry,
+        [ENTRY_MODULE.canClaim]: canClaim,
+        [ENTRY_MODULE.claim]: claimDeposit,
+        [ENTRY_MODULE.downVote]: downVoteEntry,
+        [ENTRY_MODULE.getScore]: entryScore,
+        [ENTRY_MODULE.upVote]: upVoteEntry,
+        [ENTRY_MODULE.voteCost]: voteCost,
+        [ENTRY_MODULE.getVoteOf]: getVoteOf,
+        [ENTRY_MODULE.votesIterator]: votesIterator,
+        [ENTRY_MODULE.getEntryBalance]: getEntryBalance,
+        [ENTRY_MODULE.getEntryList]: getEntryList,
+        [ENTRY_MODULE.editEntry]: editEntry,
+        [ENTRY_MODULE.followingStreamIterator]: followingStreamIterator,
+        [ENTRY_MODULE.allStreamIterator]: allStreamIterator,
+        [ENTRY_MODULE.getLatestEntryVersion]: getLatestEntryVersion,
+        [ENTRY_MODULE.getEntryIpfsHash]: getEntryIpfsHash,
+        [ENTRY_MODULE.resolveEntriesIpfsHash]: resolveEntriesIpfsHash,
+        [ENTRY_MODULE.canClaimVote]: canClaimVote,
+        [ENTRY_MODULE.claimVote]: claimVote,
+        [ENTRY_MODULE.getVoteRatio]: voteRatio,
+        [ENTRY_MODULE.getVoteEndPeriod]: getVoteEndPeriod,
+        [ENTRY_MODULE.myVotesIterator]: myVotesIterator,
+        [ENTRY_MODULE.syncEntries]: syncEntries,
     };
 };
 const app = {
     init,
-    moduleName: constants_1.ENTRY_MODULE.$name,
+    moduleName: ENTRY_MODULE.$name,
 };
-exports.default = app;
+export default app;
 //# sourceMappingURL=index.js.map

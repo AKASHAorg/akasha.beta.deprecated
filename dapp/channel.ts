@@ -7,7 +7,6 @@ export default class DuplexChannel extends ApiListener {
   public observer: Observer<any>;
   protected windowId;
 
-
   constructor(channel: string, opts?: { channelName?: string, windowId?: string }) {
     super(channel, opts.channelName);
     this.subject = new Subject();

@@ -26,10 +26,10 @@ export default function init(sp, getService) {
     const timeStamp = new Date().getTime() / 1000;
     const requests = data.entryId.map((id) => {
       return contracts.instance.Votes
-      .canClaimEntry(id, timeStamp)
-      .then((status) => {
-        return { entryId: id, status };
-      });
+        .canClaimEntry(id, timeStamp)
+        .then((status) => {
+          return { status, entryId: id };
+        });
     });
     const collection = yield Promise.all(requests);
     return { collection };
