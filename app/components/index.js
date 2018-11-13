@@ -1,5 +1,3 @@
-import startScreen from "./setup/start-screen";
-
 /* eslint-disable import/no-named-as-default */
 export AddImage from './comment/add-image';
 export AddToBoard from './popovers/add-to-board';

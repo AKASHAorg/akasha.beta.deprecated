@@ -1,0 +1,62 @@
+import React from 'react';
+import { IntlProvider } from 'react-intl';
+import { List } from 'immutable';
+import { spy } from 'sinon';
+import chai from 'chai';
+import { shallow } from 'enzyme';
+// import { Auth, PanelContainerFooter, ProfilesList } from '../../../app/components';
+import { setupMessages } from '../../../app/locale-data/messages';
+
+const { expect } = chai;
+
+describe('Auth component tests', () => {
+    // let props;
+    // let mountedComp;
+    // const intlProvider = new IntlProvider({ locale: 'en' }, {});
+    // const { intl } = intlProvider.getChildContext();
+    // const mountComp = () => {
+    //     if (!mountedComp) {
+    //         mountedComp = shallow(<Auth {...props} />, { context: { muiTheme } });
+    //     }
+    //     return mountedComp;
+    // };
+    beforeEach(() => {
+        // props = {
+        //     backupKeysRequest: spy(),
+        //     backupPending: false,
+        //     fetchingProfileList: false,
+        //     history: { push: spy() },
+        //     intl,
+        //     localProfilesFetched: false,
+        // };
+        // mountedComp = undefined;
+    });
+
+    describe('with default props', () => {
+        it('should render the ProfilesList', () => {
+            // expect(mountComp().find(ProfilesList).length).to.equal(1,
+            //     'ProfilesList was not rendered');
+        });
+        it('should render the PanelContainerFooter', () => {
+            // expect(mountComp().find(PanelContainerFooter).length).to.equal(1,
+            //     'PanelContainerFooter was not rendered');
+        });
+        it('should render the PanelContainerFooter actions', () => {
+            // expect(mountComp().find(RaisedButton).length).to.equal(2,
+            //     'there are not 2 RaisedButton rendered');
+            // expect(mountComp().find(PanelContainerFooter).children().length).to.equal(2,
+            //     'PanelContainerFooter does not have 2 children');
+        });
+        it('should call backupKeysRequest', () => {
+            // const backupButton = mountComp().find(RaisedButton).first();
+            // backupButton.simulate('click');
+            // expect(props.backupKeysRequest.calledOnce).to.be.true;
+        });
+        it('should navigate to "new-identity" route', () => {
+            // const newIdButton = mountComp().find(RaisedButton).at(1);
+            // newIdButton.simulate('click');
+            // expect(props.history.push.callCount).to.equal(1, '');
+            // expect(props.history.push.calledWith('/new-identity')).to.be.true;
+        });
+    });
+});

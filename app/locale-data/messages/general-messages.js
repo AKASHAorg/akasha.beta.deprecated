@@ -918,5 +918,15 @@ const generalMessages = defineMessages({
         description: 'decline',
         defaultMessage: 'Decline'
     },
+    cannotLoginGethStopped: {
+        id: 'app.general.cannotLoginGethStopped',
+        description: 'message to show on login screen when geth is stopped',
+        defaultMessage: 'Cannot login! Geth service is stopped.'
+    },
+    cannotLoginIpfsStopped: {
+        id: 'app.general.cannotLoginIpfsStopped',
+        description: 'message to show on login when ipfs is stopped',
+        defaultMessage: 'Cannot login! IPFS service is stopped.'
+    }
 });
 export { generalMessages };

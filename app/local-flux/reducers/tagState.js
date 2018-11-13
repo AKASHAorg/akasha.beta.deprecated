@@ -9,8 +9,8 @@ const initialState = new TagRecord();
 const tagState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
-    [types.TAG_EXISTS]: (state, { tagName }) =>
-        state.setIn(['flags', 'existsPending', tagName], true),
+    [types.TAG_EXISTS]: (state, { data }) =>
+        state.setIn(['flags', 'existsPending', data.tagName], true),
 
     [types.TAG_EXISTS_ERROR]: (state, { request }) =>
         state.setIn(['flags', 'existsPending', request.tagName], false),
