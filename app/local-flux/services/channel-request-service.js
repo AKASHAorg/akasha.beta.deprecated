@@ -45,14 +45,14 @@ export default {
                     // remove requestId and process data
                     this.removeRequestId(reqId, method);
                 }
-                    // keep the requestId and process data
-                    const action = this.processResponse(response);
-                    /**
-                     * dispatch action
-                     * action = { type: String, data: Object }
-                     */
-                    console.info(`%cDispatching [${action.type}]`, 'color: blue; font-weight: bold', action.data);
-                    store.dispatch(action);
+                // keep the requestId and process data
+                const action = this.processResponse(response);
+                /**
+                    * dispatch action
+                    * action = { type: String, data: Object }
+                    */
+                console.info(`%cDispatching [${action.type}]`, 'color: blue; font-weight: bold', action.data);
+                store.dispatch(action);
             } else {
                 console.warn('a request without requestId has been made. Please add a requestId to', module, method);
             }

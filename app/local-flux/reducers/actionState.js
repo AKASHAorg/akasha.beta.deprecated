@@ -1,3 +1,4 @@
+// @flow
 import { fromJS, List } from 'immutable';
 import { ActionRecord, ActionState } from './records';
 import * as actionStatus from '../../constants/action-status';
@@ -96,9 +97,7 @@ const removePendingAction = (pending, action) => { // eslint-disable-line comple
             return pending.setIn([action.type, entryId], false);
         case actionTypes.comment: {
             const pendingEntry = pending.getIn([action.type, entryId]);
-            pendingComments = pendingEntry && pendingEntry.filter((comm) => {
-                return comm.id !== action.id;
-            });
+            pendingComments = pendingEntry && pendingEntry.filter((comm) => comm.id !== action.id);
             return pending.setIn([action.type, entryId], pendingComments);
         }
         case actionTypes.entryDownvote:
