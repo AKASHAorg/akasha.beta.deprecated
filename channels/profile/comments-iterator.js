@@ -24,7 +24,7 @@ export default function init(sp, getService) {
         const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
         const toBlock = (!data.lastBlock) ?
             yield (getService(CORE_MODULE.WEB3_API))
-                .instance.eth.getBlockNumberAsync() : data.lastBlock;
+                .instance.eth.getBlockNumber() : data.lastBlock;
         const contracts = getService(CORE_MODULE.CONTRACTS);
         const fetched = yield contracts.fromEvent(contracts.instance.Comments.Publish, { author: address }, toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
         for (const event of fetched.results) {

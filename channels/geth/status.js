@@ -4,7 +4,7 @@ export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
         const gethConnector = getService(CORE_MODULE.GETH_CONNECTOR);
         const blockNr = gethConnector.getInstance().serviceStatus.api ?
-            yield gethConnector.getInstance().web3.eth.getBlockNumberAsync() : null;
+            yield gethConnector.getInstance().web3.eth.getBlockNumber() : null;
         return { blockNr };
     });
     const status = { execute, name: 'status' };

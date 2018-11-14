@@ -15,7 +15,7 @@ export default function init(sp, getService) {
                 return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
                     .web3
                     .personal
-                    .newAccountAsync(transformed)
+                    .newAccount(transformed)
                     .then((address) => {
                     return address;
                 });
@@ -44,7 +44,7 @@ export default function init(sp, getService) {
                     const clientToken = hashPersonalMessage(buff);
                     expiration.setMinutes(expiration.getMinutes() + timer);
                     (getService(CORE_MODULE.GETH_CONNECTOR))
-                        .getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
+                        .getInstance().web3.personal.lockAccount(acc).then(() => null);
                     (getService(CORE_MODULE.GETH_CONNECTOR))
                         .getInstance().web3.eth.defaultAccount = acc;
                     this.session = {
@@ -64,7 +64,7 @@ export default function init(sp, getService) {
         logout() {
             if (this.session) {
                 (getService(CORE_MODULE.GETH_CONNECTOR))
-                    .getInstance().web3.personal.lockAccountAsync(this.session.address);
+                    .getInstance().web3.personal.lockAccount(this.session.address);
             }
             this.flushSession();
         }
@@ -92,13 +92,13 @@ export default function init(sp, getService) {
             return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
-                .sendTransactionAsync(data, this.read(token).toString('utf8'));
+                .sendTransaction(data, this.read(token).toString('utf8'));
         }
         signMessage(data, token) {
             return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
-                .signAsync(data, (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance().web3.eth.defaultAccount, this.read(token).toString('utf8'));
+                .sign(data, (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance().web3.eth.defaultAccount, this.read(token).toString('utf8'));
         }
         generateRandom() {
             return randomBytesAsync(16).then((buff) => {
@@ -140,7 +140,7 @@ export default function init(sp, getService) {
             return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
-                .signAsync(hash, account, password);
+                .sign(hash, account, password);
         }
     }
     const auth = new Auth();

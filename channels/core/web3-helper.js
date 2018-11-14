@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE } from '@akashaproject/common/constants';
+import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     class Web3Helper {
         constructor() {
@@ -9,6 +9,7 @@ export default function init(sp, getService) {
         }
         setChannel(channel) {
             this.channel = channel;
+            this.args = buildCall(TX_MODULE, TX_MODULE.emitMined, {});
         }
         inSync() {
             const rules = [
@@ -59,7 +60,7 @@ export default function init(sp, getService) {
                 }
                 for (const hash of this.getCurrentTxQueue()) {
                     currentQueue.push(getService(CORE_MODULE.WEB3_API).instance
-                        .eth.getTransactionReceiptAsync(hash));
+                        .eth.getTransactionReceipt(hash));
                 }
                 Promise.all(currentQueue).then((receipt) => {
                     receipt.forEach((tx) => {
@@ -76,6 +77,7 @@ export default function init(sp, getService) {
                                     hasEvents: !!(tx.logs.length),
                                     watching: this.watching,
                                 },
+                                args: this.args,
                             });
                         }
                     });
@@ -86,7 +88,7 @@ export default function init(sp, getService) {
         hasKey(address) {
             return getService(CORE_MODULE.WEB3_API).instance
                 .eth
-                .getAccountsAsync()
+                .getAccounts()
                 .then((list) => {
                 return list.indexOf(address) !== -1;
             });

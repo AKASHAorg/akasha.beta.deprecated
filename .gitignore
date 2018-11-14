@@ -49,5 +49,7 @@ main/**/*.js
 main/**/*.js.map
 desktop/**/*.js
 desktop/**/*.js.map
+dapp/**/*.js
+dapp/**/*.js.map
 app/locale-data/en-source.json
 app/locale-data/en.json

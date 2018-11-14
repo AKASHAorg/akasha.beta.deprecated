@@ -23,7 +23,7 @@ export default function init(sp, getService) {
 
     const unit = (data.unit) ? data.unit : 'ether';
     const fromWei = web3Api.instance.fromWei;
-    const weiAmount = yield web3Api.instance.eth.getBalanceAsync(etherBase);
+    const weiAmount = yield web3Api.instance.eth.getBalance(etherBase);
     const [free, bonded, cycling] = yield contracts
     .instance.AETH.getTokenRecords(etherBase);
 
