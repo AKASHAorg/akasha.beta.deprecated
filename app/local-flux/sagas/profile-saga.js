@@ -12,8 +12,16 @@ import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { isEthAddress } from '../../utils/dataModule';
+<<<<<<< HEAD
 import ChReqService from '../services/channel-request-service';
 import { profileSelectors, externalProcessSelectors, actionSelectors, appSelectors } from '../selectors';
+=======
+import ChannelReqService from '../services/channel-request-service';
+
+import {
+    getBaseUrl, selectBlockNumber, selectEssenceIterator, selectLoggedEthAddress, selectNeedAuthAction,
+    selectProfileEditToggle, selectToken, selectAllFollowings } from '../selectors';
+>>>>>>> 0ae9fbe569069e2830a24d54ee1f8b34548c2b25
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { getDisplayName } from '../../utils/dataModule';
