@@ -3,7 +3,7 @@ import * as types from '../constants';
 import { action } from './helpers';
 
 /*::
-    import type { CommentsCheckNewPayload } from '../../flow-typed/actions/comments-actions';
+    import type { CommentsCheckNewPayload } from '../../flow-types/actions/comments-actions';
 */
 
 export const commentsCheckNew = (payload/* : CommentsCheckNewPayload */) =>
