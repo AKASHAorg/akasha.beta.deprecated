@@ -27,7 +27,7 @@ export default function init(sp, getService) {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const toBlock = (!data.lastBlock) ?
-      yield web3Api.instance.eth.getBlockNumberAsync() : data.lastBlock;
+      yield web3Api.instance.eth.getBlockNumber() : data.lastBlock;
     const fetched = yield contracts.fromEvent(
       contracts.instance.Essence.CollectEssence,
       { receiver: address },

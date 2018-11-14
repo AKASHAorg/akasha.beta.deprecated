@@ -6,7 +6,7 @@ export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const resolveEth = getService(PROFILE_MODULE.getByAddress);
-    const accounts = yield web3Api.instance.eth.getAccountsAsync();
+    const accounts = yield web3Api.instance.eth.getAccounts();
     if (!accounts || !accounts.length) {
       return { collection: [] };
     }

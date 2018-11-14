@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Link from 'react-router-dom/Link';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router-dom/withRouter';
 import DraftJS from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import classNames from 'classnames';
