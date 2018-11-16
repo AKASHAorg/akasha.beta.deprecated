@@ -8,27 +8,28 @@ class GenericApi {
   }
 
 }
+
 export abstract class ApiListener extends GenericApi {
   public pipe: any;
   public subscribers: Map<any, any>;
+  readonly listenerCount: number;
 
   protected constructor(channel: string, channelName?: string) {
     super(channel, channelName);
   }
+
   abstract send(data: {}): any | void;
 
-  abstract on(listener : Function);
+  abstract on(listener: Function);
 
   abstract once(listener: Function);
 
   abstract removeListener(listener: Function);
 
   abstract removeAllListeners();
-
-  readonly listenerCount: number;
 }
 
-export interface ApiRequest{
+export interface ApiRequest {
 
   enable();
 

@@ -18,7 +18,7 @@ export default function init(sp, getService) {
       }
       this.timeout = setTimeout(() => {
         this.emit(cb);
-      },                        this.COLLECT_TIME);
+      }, this.COLLECT_TIME);
     }
 
     public clear() {

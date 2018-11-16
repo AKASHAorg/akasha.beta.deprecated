@@ -12,15 +12,15 @@ const getScoreS = {
 
 export default function init(sp, getService) {
   const execute = Promise
-  .coroutine(function* (data: { entryId: string }) {
-    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-    v.validate(data, getScoreS, { throwError: true });
+    .coroutine(function* (data: { entryId: string }) {
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+      v.validate(data, getScoreS, { throwError: true });
 
-    const score = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Votes.getRecord(data.entryId);
+      const score = yield (getService(CORE_MODULE.CONTRACTS))
+        .instance.Votes.getRecord(data.entryId);
 
-    return { score: (score[1]).toString(10), entryId: data.entryId };
-  });
+      return { score: (score[1]).toString(10), entryId: data.entryId };
+    });
 
   const getScore = { execute, name: 'getScore' };
   const service = function () {

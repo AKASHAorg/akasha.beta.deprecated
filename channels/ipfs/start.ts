@@ -14,9 +14,9 @@ export default function init(sp, getService) {
     }
 
     ipfsConnector.getInstance()
-    .setIpfsFolder(data.hasOwnProperty('storagePath') ?
-      data.storagePath :
-      getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.IPFS_DEFAULT_PATH));
+      .setIpfsFolder(data.hasOwnProperty('storagePath') ?
+        data.storagePath :
+        getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.IPFS_DEFAULT_PATH));
 
     yield ipfsConnector.getInstance().start(isEmpty(ipfsProvider.instance) ?
       null : ipfsProvider.instance);
@@ -41,7 +41,7 @@ export default function init(sp, getService) {
     // }
 
     (getService(CORE_MODULE.SETTINGS))
-    .set(GENERAL_SETTINGS.BASE_URL, 'https://gateway.ipfs.io/ipfs/');
+      .set(GENERAL_SETTINGS.BASE_URL, 'https://gateway.ipfs.io/ipfs/');
 
     return { started: true };
   });

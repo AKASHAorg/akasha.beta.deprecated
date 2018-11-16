@@ -1,7 +1,6 @@
 import * as Promise from 'bluebird';
 import { unpad } from 'ethereumjs-util';
-import { COMMENTS_MODULE, COMMON_MODULE,
-  CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { COMMENTS_MODULE, COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(

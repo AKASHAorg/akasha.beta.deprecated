@@ -18,10 +18,10 @@ export default function init(sp, getService) {
       const web3Api = getService(CORE_MODULE.WEB3_API);
       const requests = data.map((w) => {
         return contracts.instance.Votes.getEssenceCost(w)
-        .then((cost) => {
-          const ethCost = web3Api.instance.fromWei(cost, 'ether');
-          return { cost: ethCost.toString(10), weight: w };
-        });
+          .then((cost) => {
+            const ethCost = web3Api.instance.fromWei(cost, 'ether');
+            return { cost: ethCost.toString(10), weight: w };
+          });
       });
 
       const collection = yield Promise.all(requests);

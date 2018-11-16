@@ -44,7 +44,7 @@ export default function init(sp, getService) {
 
     const ipfsHashPublished = (getService(COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
     const ipfsHash = yield ipfsEntry
-    .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
+      .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
     const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;

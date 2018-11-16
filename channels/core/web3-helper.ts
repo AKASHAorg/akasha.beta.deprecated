@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
+import { buildCall, CORE_MODULE, TX_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   class Web3Helper {
@@ -19,8 +19,8 @@ export default function init(sp, getService) {
     // check if current used node is synchronized
     public inSync() {
       const rules = [
-        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
-        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.isSyncing(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.net.getPeerCount(),
       ];
 
       return Promise.all(rules).then((data) => {
@@ -31,15 +31,15 @@ export default function init(sp, getService) {
 
         if (!data[0] && data[1] > 0) {
           return (getService(CORE_MODULE.WEB3_API)).instance
-          .eth
-          .getBlock('latest')
-          .then((latestBlock: any): any => {
-            if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
-              this.syncing = false;
-              return [];
-            }
-            return [data[1]];
-          });
+            .eth
+            .getBlock('latest')
+            .then((latestBlock: any): any => {
+              if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
+                this.syncing = false;
+                return [];
+              }
+              return [data[1]];
+            });
         }
 
         return [data[1]];
@@ -74,7 +74,7 @@ export default function init(sp, getService) {
         for (const hash of this.getCurrentTxQueue()) {
           currentQueue.push(
             getService(CORE_MODULE.WEB3_API).instance
-            .eth.getTransactionReceipt(hash),
+              .eth.getTransactionReceipt(hash),
           );
         }
         Promise.all(currentQueue).then((receipt: any[]) => {
@@ -105,11 +105,11 @@ export default function init(sp, getService) {
     // check if local node has access to provided address
     public hasKey(address: string) {
       return getService(CORE_MODULE.WEB3_API).instance
-      .eth
-      .getAccounts()
-      .then((list: string[]) => {
-        return list.indexOf(address) !== -1;
-      });
+        .eth
+        .getAccounts()
+        .then((list: string[]) => {
+          return list.indexOf(address) !== -1;
+        });
     }
 
     public stopTxWatch() {

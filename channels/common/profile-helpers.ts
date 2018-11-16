@@ -17,8 +17,8 @@ export default function init(sp, getService) {
     let profileAddress;
     if (data.akashaId) {
       const nameHash = yield contracts
-      .instance.ProfileRegistrar
-      .hash(normaliseId(data.akashaId));
+        .instance.ProfileRegistrar
+        .hash(normaliseId(data.akashaId));
 
       profileAddress = yield contracts.instance.ProfileResolver.addr(nameHash);
     } else if (data.ethAddress) {
@@ -34,7 +34,7 @@ export default function init(sp, getService) {
   const resolveEthAddress = blPromise.coroutine(function* (ethAddress: string) {
     const nameHash = yield contracts.instance.ProfileResolver.reverse(ethAddress);
     if (!!unpad(nameHash)) {
-      const [akashaId, , ] = yield contracts.instance.ProfileResolver.resolve(nameHash);
+      const [akashaId, ] = yield contracts.instance.ProfileResolver.resolve(nameHash);
       return { akashaId: normaliseId(web3Api.instance.toUtf8(akashaId)), ethAddress };
     }
     return { ethAddress };
@@ -54,21 +54,21 @@ export default function init(sp, getService) {
       PROFILE_CONSTANTS.LINKS,
     ];
     const root = yield ipfsConnector.getInstance()
-    .api.add({ firstName: data.firstName, lastName: data.lastName });
+      .api.add({ firstName: data.firstName, lastName: data.lastName });
 
     targetHash = root.hash;
     while (i < simpleLinks.length) {
       if (!isEmpty(data[simpleLinks[i]]) && data[simpleLinks[i]]) {
         tmp = yield ipfsConnector.getInstance()
-        .api
-        .add(
-          data[simpleLinks[i]],
-          simpleLinks[i] === PROFILE_CONSTANTS.AVATAR,
-          (simpleLinks[i] === PROFILE_CONSTANTS.AVATAR) &&
-          is(String, data[simpleLinks[i]]));
+          .api
+          .add(
+            data[simpleLinks[i]],
+            simpleLinks[i] === PROFILE_CONSTANTS.AVATAR,
+            (simpleLinks[i] === PROFILE_CONSTANTS.AVATAR) &&
+            is(String, data[simpleLinks[i]]));
         saved = yield ipfsConnector.getInstance()
-        .api
-        .addLink({ name: simpleLinks[i], size: tmp.size, hash: tmp.hash }, targetHash);
+          .api
+          .addLink({ name: simpleLinks[i], size: tmp.size, hash: tmp.hash }, targetHash);
         targetHash = saved.multihash;
       }
       i++;
@@ -78,11 +78,11 @@ export default function init(sp, getService) {
       keys = Object.keys(data.backgroundImage).sort();
       pool = keys.map((media: string) => {
         return ipfsConnector
-        .getInstance()
-        .api
-        .add(
-          data.backgroundImage[media].src,
-          true, is(String, data.backgroundImage[media].src));
+          .getInstance()
+          .api
+          .add(
+            data.backgroundImage[media].src,
+            true, is(String, data.backgroundImage[media].src));
       });
 
       tmp = yield Promise.all(pool).then(

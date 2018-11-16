@@ -7,7 +7,7 @@ export default function init(sp, getService) {
     if (!state.length) {
       if (!(getService(CORE_MODULE.CONTRACTS)).instance) {
         yield (getService(CORE_MODULE.CONTRACTS))
-        .init().then(() => console.log('contracts init'));
+          .init().then(() => console.log('contracts init'));
       }
       return { synced: true };
     }

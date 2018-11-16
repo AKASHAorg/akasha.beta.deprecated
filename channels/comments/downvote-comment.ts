@@ -26,8 +26,8 @@ export default function init(sp, getService) {
     }
 
     const txData = contracts.instance
-    .Votes.voteComment
-    .request(data.weight, data.entryId, data.commentId, true, { gas: 250000 });
+      .Votes.voteComment
+      .request(data.weight, data.entryId, data.commentId, true, { gas: 250000 });
     const receipt = yield contracts.send(txData, data.token, cb);
     return { receipt };
   });

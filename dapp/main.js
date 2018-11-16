@@ -7,8 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import sp, { getService } from '@akashaproject/core/sp';
-import { CORE_MODULE } from '@akashaproject/common/constants';
-import { bootstrap } from '../app/index';
+import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 import initModules from './init-modules';
 import registerWeb3Provider from './register-web3-provider';
 import * as pino from 'pino';
@@ -20,14 +19,16 @@ const startApp = (web3, vault) => {
         throw new Error('Must set appLogger and duplexChannel before starting');
     }
     if (!web3) {
-        return bootstrap(false, false);
     }
     getService(CORE_MODULE.WEB3_API).instance = web3;
     if (vault.length) {
         getService(CORE_MODULE.WEB3_API).instance.eth.defaultAccount = vault[0];
     }
     console.log(duplexChannel);
-    bootstrap(true, !!vault.length, duplexChannel.ipcChannelUI, appLogger.child({ module: 'UI' }));
+    getService(GETH_MODULE.startService).execute().then(() => {
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        console.log(contracts, 'contracts');
+    });
 };
 const bootstrapApp = function () {
     return __awaiter(this, void 0, void 0, function* () {
@@ -42,6 +43,7 @@ const bootstrapApp = function () {
             .then((modules) => {
             appLogger.info('modules inited');
             duplexChannel = startDataStream(modules, 'workerId', getService, appLogger);
+            getService(CORE_MODULE.WEB3_HELPER).setChannel(duplexChannel.ipcChannelMain);
             appLogger.info('api listening');
         });
         registerWeb3Provider(startApp);

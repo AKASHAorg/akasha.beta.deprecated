@@ -5,7 +5,7 @@ export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
 
     const ports = yield (getService(CORE_MODULE.IPFS_CONNECTOR))
-    .getInstance().getPorts();
+      .getInstance().getPorts();
 
     return {
       apiPort: ports.api,

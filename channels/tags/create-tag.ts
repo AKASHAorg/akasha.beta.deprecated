@@ -17,9 +17,9 @@ export default function init(sp, getService) {
     v.validate(data, createSchema, { throwError: true });
 
     const txData = yield getService(CORE_MODULE.CONTRACTS)
-    .instance.Tags.add.request(data.tagName);
+      .instance.Tags.add.request(data.tagName);
     const receipt = yield getService(CORE_MODULE.CONTRACTS)
-    .send(txData, data.token, cb);
+      .send(txData, data.token, cb);
     return { receipt, tagName: data.tagName };
   });
   const createTag = { execute, name: 'create', hasStream: true };

@@ -42,9 +42,9 @@ export default function init(sp, getService) {
     }
     const filter = { voter: etherBase, voteType: 0 };
     const fetched = yield contracts
-    .fromEvent(
-      contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
-      { lastIndex: data.lastIndex, reversed: data.reversed || false });
+      .fromEvent(
+        contracts.instance.Votes.Vote, filter, data.toBlock, maxResults,
+        { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (const event of fetched.results) {
       const weight = (event.args.weight).toString(10);
 
@@ -68,9 +68,9 @@ export default function init(sp, getService) {
     }
 
     const fetchedEntries = yield contracts
-    .fromEvent(
-      contracts.instance.Entries.Publish, { author: etherBase }, data.toBlock,
-      entryMaxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
+      .fromEvent(
+        contracts.instance.Entries.Publish, { author: etherBase }, data.toBlock,
+        entryMaxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
     for (const event of fetchedEntries.results) {
       collection.push({
         entryId: event.args.entryId,
@@ -88,7 +88,7 @@ export default function init(sp, getService) {
     const lastLog = data.reversed ? head(sortedResults) : last(sortedResults);
     const [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] : [0, 0];
 
-    return {  lastBlock, lastIndex, collection: sortedResults };
+    return { lastBlock, lastIndex, collection: sortedResults };
   });
 
   const myVotesIterator = { execute, name: 'myVotesIterator' };

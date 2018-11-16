@@ -25,9 +25,9 @@ export const findAuthor = function init(sp, getService) {
 
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const ev = yield contracts
-    .fromEvent(
-      contracts.instance.Entries.Publish, { entryId },
-      0, 1, { reversed: true, lastIndex: 0 });
+      .fromEvent(
+        contracts.instance.Entries.Publish, { entryId },
+        0, 1, { reversed: true, lastIndex: 0 });
 
     if (!ev.results.length) {
       throw new Error('EntryId ' + entryId + ' could not be found.');
@@ -58,7 +58,7 @@ export default function init(sp, getService) {
     }
 
     const [fn, digestSize, hash] = yield contracts.instance
-    .Entries.getEntry(ethAddress, data.entryId);
+      .Entries.getEntry(ethAddress, data.entryId);
 
     let ipfsHash;
     const st = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
@@ -67,7 +67,7 @@ export default function init(sp, getService) {
       ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
       entry = (data.full || data.version) ?
         yield getFullContent(ipfsHash, data.version)
-        .timeout(st).catch(() => null) :
+          .timeout(st).catch(() => null) :
         yield getShortContent(ipfsHash).timeout(st);
 
       if (entry) {
@@ -88,7 +88,7 @@ export default function init(sp, getService) {
     }
 
     const [totalVotes, score, endPeriod, totalKarma, claimed] = yield contracts.instance
-    .Votes.getRecord(data.entryId);
+      .Votes.getRecord(data.entryId);
 
     const cCount = yield getService(COMMENTS_MODULE.commentsCount).execute([data.entryId]);
     return {
@@ -96,7 +96,7 @@ export default function init(sp, getService) {
       claimed,
       ipfsHash,
       [GENERAL_SETTINGS.BASE_URL]: getService(CORE_MODULE.SETTINGS)
-      .get(GENERAL_SETTINGS.BASE_URL),
+        .get(GENERAL_SETTINGS.BASE_URL),
       totalVotes: totalVotes.toString(10),
       score: score.toString(10),
       publishDate: (endPeriod.minus(votingPeriod)).toNumber(),

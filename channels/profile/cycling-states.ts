@@ -18,7 +18,7 @@ export default function init(sp, getService) {
     v.validate(data, cyclingStatesSchema, { throwError: true });
 
     const address = yield (getService(COMMON_MODULE.profileHelpers))
-    .profileAddress(data);
+      .profileAddress(data);
 
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const contracts = getService(CORE_MODULE.CONTRACTS);

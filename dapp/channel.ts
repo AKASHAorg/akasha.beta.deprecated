@@ -14,12 +14,12 @@ export default class DuplexChannel extends ApiListener {
     this.windowId = opts.windowId;
   }
 
-  public bind(observer: Observer<any>) {
-    this.observer = observer;
-  }
-
   get listenerCount() {
     return this.subject.observers.length || this.subscribers.size;
+  }
+
+  public bind(observer: Observer<any>) {
+    this.observer = observer;
   }
 
   public on(listener: Function) {

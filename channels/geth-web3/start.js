@@ -2,11 +2,11 @@ import * as Promise from 'bluebird';
 import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        let connected = web3Api.instance.isConnected();
-        connected = web3Api.instance.isConnected();
+        const helper = getService(CORE_MODULE.WEB3_HELPER);
+        const status = yield helper.inSync();
+        console.log('status', status);
         yield (getService(CORE_MODULE.CONTRACTS)).init();
-        return { started: connected };
+        return { started: !!status.length };
     });
     const startService = { execute, name: 'startService' };
     const service = function () {

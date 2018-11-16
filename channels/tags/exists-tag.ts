@@ -17,7 +17,7 @@ export default function init(sp, getService) {
     v.validate(data, existsSchema, { throwError: true });
 
     const exists = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.exists(data.tagName);
+      .instance.Tags.exists(data.tagName);
     return { exists, tagName: data.tagName };
   });
 

@@ -41,7 +41,7 @@ export default function init(sp, getService) {
     v.validate(data, updateProfileData, { throwError: true });
 
     const ipfsHash = yield (getService(COMMON_MODULE.profileHelpers))
-    .ipfsCreateProfile(data.ipfs);
+      .ipfsCreateProfile(data.ipfs);
 
     console.log('mainipfsHash', ipfsHash);
     const decodedHash = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
@@ -51,10 +51,10 @@ export default function init(sp, getService) {
     }
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.ProfileResolver
-    .setHash.request(
-      currentProfile.raw,
-      ...decodedHash,
-    );
+      .setHash.request(
+        currentProfile.raw,
+        ...decodedHash,
+      );
     const receipt = yield contracts.send(txData, data.token, cb);
     return { receipt };
   });

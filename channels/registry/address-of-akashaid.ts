@@ -22,9 +22,9 @@ export default function init(sp, getService) {
     const batch = data.map(
       (profile) => {
         return (getService(CORE_MODULE.CONTRACTS)).instance
-        .ProfileResolver.addr(profile.akashaId).then((address) => {
-          return { address: unpad(address), akashaId: profile.akashaId };
-        });
+          .ProfileResolver.addr(profile.akashaId).then((address) => {
+            return { address: unpad(address), akashaId: profile.akashaId };
+          });
       },
     );
     const collection = yield Promise.all(batch);

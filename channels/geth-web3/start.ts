@@ -3,12 +3,12 @@ import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
-    const web3Api = getService(CORE_MODULE.WEB3_API);
-    let connected = web3Api.instance.isConnected();
-    // @TODO: reimplement this at app lvl
+    const helper = getService(CORE_MODULE.WEB3_HELPER);
+    const status = yield helper.inSync();
+    // @TODO: reimplement this at app lvls
     // if (!connected) {
     // web3Api.instance = regenWeb3();
-    connected = web3Api.instance.isConnected();
+    // connected = web3Api.instance.isConnected();
     // }
     // if (connected) {
     //     gethStatus.process = true;
@@ -23,8 +23,9 @@ export default function init(sp, getService) {
     // gethStatus.ethKey = accounts[0];
     // }
     // }
+    console.log('status', status);
     yield (getService(CORE_MODULE.CONTRACTS)).init();
-    return { started: connected };
+    return { started: !!status.length };
   });
   const startService = { execute, name: 'startService' };
   const service = function () {

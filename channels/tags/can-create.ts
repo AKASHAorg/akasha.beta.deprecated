@@ -15,7 +15,7 @@ export default function init(sp, getService) {
     v.validate(data, canCreateSchema, { throwError: true });
 
     const can = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.canCreate(data.ethAddress);
+      .instance.Tags.canCreate(data.ethAddress);
     return { can };
   });
 

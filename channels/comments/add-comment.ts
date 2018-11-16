@@ -23,8 +23,8 @@ export default function init(sp, getService) {
     const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     const replyTo = data.parent || '0';
     const txData = contracts.instance
-    .Comments.publish.request(
-      data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
+      .Comments.publish.request(
+        data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
 
     const receipt = yield contracts.send(txData, data.token, cb);
     let commentId = null;

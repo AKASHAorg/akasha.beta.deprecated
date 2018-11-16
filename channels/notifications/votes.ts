@@ -25,9 +25,9 @@ export default function init(sp, getService) {
     const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     if (!entriesCache.getAll().length) {
       const fetchedEntries = yield contracts
-      .fromEvent(
-        contracts.instance.Entries.Publish, { author: ethAddress }, 0,
-        1000, { lastIndex: 0, reversed: true });
+        .fromEvent(
+          contracts.instance.Entries.Publish, { author: ethAddress }, 0,
+          1000, { lastIndex: 0, reversed: true });
       for (const event of fetchedEntries.results) {
         yield entriesCache.push(event.args.entryId);
       }

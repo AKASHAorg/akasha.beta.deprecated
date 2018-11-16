@@ -3,10 +3,10 @@ import { CORE_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   const execute = Promise
-  .coroutine(function* (data) {
-    return (getService(CORE_MODULE.IPFS_CONNECTOR))
-    .getInstance().setPorts(data.ports, data.restart);
-  });
+    .coroutine(function* (data) {
+      return (getService(CORE_MODULE.IPFS_CONNECTOR))
+        .getInstance().setPorts(data.ports, data.restart);
+    });
 
   const setPorts = { execute, name: 'setPorts' };
   const service = function () {

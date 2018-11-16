@@ -41,8 +41,6 @@ const bootstrap = async function bootstrap(serviceProvider, gS, logger) {
   const ipfsLogger = logger.child({ module: 'ipfs' });
   IpfsConnector.getInstance().setOption('config', DEFAULT_IPFS_CONFIG);
   IpfsConnector.getInstance().setOption('repo', 'ipfs#akasha-beta');
-  // @TODO: reimplement web3 regen
-  // gS(CORE_MODULE.WEB3_API).instance = GethConnector.getInstance().web3;
   gS(CORE_MODULE.IPFS_API).instance = IpfsConnector.getInstance();
 
   IpfsConnector.getInstance().setLogger(ipfsLogger);

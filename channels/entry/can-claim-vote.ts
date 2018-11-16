@@ -28,10 +28,10 @@ export default function init(sp, getService) {
       const contracts = getService(CORE_MODULE.CONTRACTS);
       const requests = data.entries.map((id) => {
         return contracts.instance.Votes
-        .canClaimEntryVote(id, data.ethAddress, timeStamp)
-        .then((status) => {
-          return { status, entryId: id };
-        });
+          .canClaimEntryVote(id, data.ethAddress, timeStamp)
+          .then((status) => {
+            return { status, entryId: id };
+          });
       });
       const collection = yield Promise.all(requests);
       return { collection };

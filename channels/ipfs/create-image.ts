@@ -10,9 +10,9 @@ export default function init(sp, getService) {
   const execute = Promise.coroutine(function* (data: string[]) {
     const requests = data.map((hash) => {
       return getService(CORE_MODULE.IPFS_CONNECTOR)
-      .getInstance().api.getFile(hash).then((uintData) => {
-        return { hash, data: uintData };
-      });
+        .getInstance().api.getFile(hash).then((uintData) => {
+          return { hash, data: uintData };
+        });
     });
     const collection = yield Promise.all(requests);
     const response = collection.map((record) => {
