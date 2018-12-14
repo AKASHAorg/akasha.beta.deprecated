@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { COMMENTS_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
 const commentsCountS = {
     id: '/commentsCount',
     type: 'array',
@@ -11,15 +9,15 @@ const commentsCountS = {
     uniqueItems: true,
     minItems: 1,
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, commentsCountS, { throwError: true });
         const collection = [];
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         for (const entryId of data) {
             const count = yield contracts.instance.Comments.totalComments(entryId);
-            collection.push({ count: count.toNumber(), entryId });
+            collection.push({ entryId, count: count.toNumber() });
         }
         return { collection };
     });
@@ -27,8 +25,7 @@ function init(sp, getService) {
     const service = function () {
         return commentsCount;
     };
-    sp().service(constants_1.COMMENTS_MODULE.commentsCount, service);
+    sp().service(COMMENTS_MODULE.commentsCount, service);
     return commentsCount;
 }
-exports.default = init;
 //# sourceMappingURL=comments-count.js.map

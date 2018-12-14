@@ -12,5 +12,5 @@ export const tagGetEntriesCount = tags => action(`${TAGS_MODULE.tagCount}`, { ta
 
 export const tagSearch = tagName => action(`${TAGS_MODULE.searchTag}`, { tagName });
 
-export const tagSearchMoreSuccess = (tags, tagCount) =>
-    action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });
+// export const tagSearchMoreSuccess = (tags, tagCount) =>
+//     action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });

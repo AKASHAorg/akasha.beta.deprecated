@@ -20,8 +20,8 @@ export default function init(sp, getService) {
 
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, entryProfileIteratorS, { throwError: true });
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
-    const entryCount = yield getService(CORE_MODULE.CONTRACTS)
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+    const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Entries.getEntryCount(address);
 
     let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;

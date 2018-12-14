@@ -89,7 +89,7 @@ export default function init(sp, getService) {
       isNil(data.settings.votes) ||
       data.settings.votes) && !installedFilters.votes) {
 
-      installedFilters.votes = yield getService(NOTIFICATIONS_MODULE.votes)
+      installedFilters.votes = yield (getService(NOTIFICATIONS_MODULE.votes))
       .execute(watchFilter, cb);
     }
 

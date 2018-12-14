@@ -24,10 +24,10 @@ export default function init(sp, getService) {
     }
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.Votes
-    .voteComment.request(data.weight, data.entryId, data.commentId, false, { gas: 300000 });
-    const transaction = yield contracts.send(txData, data.token, cb);
+      .voteComment.request(data.weight, data.entryId, data.commentId, false, { gas: 300000 });
+    const receipt = yield contracts.send(txData, data.token, cb);
 
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    return { receipt };
   });
 
   const upvote = { execute, name: 'upvote', hasStream: true };

@@ -16,8 +16,8 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getProfileEntriesCountS, { throwError: true });
 
-    const address = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
-    const count = yield getService(CORE_MODULE.CONTRACTS)
+    const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+    const count = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Entries.getEntryCount(address);
     return { count: count.toString(10) };
   });

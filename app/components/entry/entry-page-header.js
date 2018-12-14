@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import { Tooltip, Popover } from 'antd';
@@ -219,7 +219,7 @@ class EntryPageHeader extends Component {
 
 EntryPageHeader.propTypes = {
     author: PropTypes.shape(),
-    containerRef: PropTypes.shape().isRequired,
+    containerRef: PropTypes.shape(),
     entry: PropTypes.shape(),
     entryGetFull: PropTypes.func,
     existingDraft: PropTypes.shape(),

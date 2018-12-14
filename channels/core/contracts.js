@@ -1,55 +1,37 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const BlPromise = require("bluebird");
-const hash = require("object-hash");
-const initContracts = require("@akashaproject/contracts.js");
-const ramda_1 = require("ramda");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import * as BlPromise from 'bluebird';
+import * as hash from 'object-hash';
+import * as initContracts from '@akashaproject/contracts.js';
+import { descend, filter, head, isNil, last, prop, sortWith, take, uniq } from 'ramda';
+import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     class Contracts {
         constructor() {
             this.watchers = [];
         }
-        static watchTx(tx) {
-            const timeout = 300000;
-            const start = new Date().getTime();
-            return new BlPromise((resolve, reject) => {
-                const getReceipt = function () {
-                    getService(constants_1.CORE_MODULE.WEB3_API)
-                        .instance
-                        .eth.getTransactionReceipt(tx, (err, receipt) => {
-                        if (receipt != null) {
-                            return resolve({
-                                tx,
-                                receipt: {
-                                    gasUsed: receipt.gasUsed,
-                                    cumulativeGasUsed: receipt.cumulativeGasUsed,
-                                    transactionHash: receipt.transactionHash,
-                                    blockNumber: receipt.blockNumber,
-                                    success: receipt.status === '0x1',
-                                    logs: receipt.logs,
-                                },
-                            });
-                        }
-                        if (new Date().getTime() - start > timeout) {
-                            return reject(new Error('Tx: ' + tx + ' timed out'));
-                        }
-                        setTimeout(getReceipt, 2000);
-                    });
-                };
-                getReceipt();
+        init() {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.instance = yield initContracts(getService(CORE_MODULE.WEB3_API).instance.currentProvider);
             });
-        }
-        async init() {
-            this.instance = await initContracts(getService(constants_1.CORE_MODULE.WEB3_API).instance.currentProvider);
         }
         reset() {
             this.instance = null;
         }
-        async send(data, token, cb) {
-            const tx = await getService(constants_1.AUTH_MODULE.auth).signData(data.params[0], token);
-            cb(null, { tx });
-            return Contracts.watchTx(tx);
+        send(data, token, cb) {
+            return (getService(AUTH_MODULE.auth)).signData(data.params[0], token)
+                .once('transactionHash', function (txHash) {
+                cb(null, { tx: txHash });
+            })
+                .once('error', function (error) {
+                cb(error);
+            });
         }
         createWatcher(ethEvent, args, fromBlock) {
             const currentWatcher = ethEvent(args, { fromBlock });
@@ -67,9 +49,9 @@ function init(sp, getService) {
         fromEvent(ethEvent, args, toBlock, limit, options) {
             const step = 5300;
             const hashedEvent = hash(Array.from(arguments));
-            if (getService(constants_1.CORE_MODULE.STASH).eventCache.hasFull(hashedEvent) &&
+            if (getService(CORE_MODULE.STASH).eventCache.hasFull(hashedEvent) &&
                 !options.reversed) {
-                return Promise.resolve(getService(constants_1.CORE_MODULE.STASH).eventCache.getFull(hashedEvent));
+                return Promise.resolve(getService(CORE_MODULE.STASH).eventCache.getFull(hashedEvent));
             }
             return new Promise((resolve, reject) => {
                 let results = [];
@@ -91,20 +73,20 @@ function init(sp, getService) {
                         if (err) {
                             return reject(err);
                         }
-                        const filteredData = (!ramda_1.isNil(options.lastIndex))
-                            ? ramda_1.filter(filterIndex, data) : data;
-                        results = ramda_1.uniq(results.concat(filteredData));
+                        const filteredData = (!isNil(options.lastIndex))
+                            ? filter(filterIndex, data) : data;
+                        results = uniq(results.concat(filteredData));
                         if (results.length < limit && fromBlock > 0 && !options.reversed) {
                             if (!options.stopOnFirst || !results.length) {
                                 return fetch(fromBlock);
                             }
                         }
-                        const sortedResults = ramda_1.take(limit, ramda_1.sortWith([
-                            ramda_1.descend(ramda_1.prop('blockNumber')),
-                            ramda_1.descend(ramda_1.prop('logIndex')),
+                        const sortedResults = take(limit, sortWith([
+                            descend(prop('blockNumber')),
+                            descend(prop('logIndex')),
                         ], results));
                         const lastLog = options.reversed ?
-                            ramda_1.head(sortedResults) : ramda_1.last(sortedResults);
+                            head(sortedResults) : last(sortedResults);
                         const lastIndex = lastLog ? lastLog.logIndex : 0;
                         let lastBlock;
                         if (options.reversed) {
@@ -116,7 +98,7 @@ function init(sp, getService) {
                                     lastLog.blockNumber : 0 : 0;
                         }
                         const result = { results: sortedResults, fromBlock: lastBlock, lastIndex };
-                        getService(constants_1.CORE_MODULE.STASH).eventCache.setFull(hashedEvent, result);
+                        getService(CORE_MODULE.STASH).eventCache.setFull(hashedEvent, result);
                         return resolve(result);
                     });
                 };
@@ -126,19 +108,19 @@ function init(sp, getService) {
         fromEventFilter(ethEvent, args, toBlock, limit, options, aditionalFilter) {
             const step = 8300;
             const hashedEvent = hash(Array.from(arguments));
-            if (getService(constants_1.CORE_MODULE.STASH).eventCache.hasFull(hashedEvent) &&
+            if (getService(CORE_MODULE.STASH).eventCache.hasFull(hashedEvent) &&
                 !options.reversed) {
-                return Promise.resolve(getService(constants_1.CORE_MODULE.STASH).eventCache.getFull(hashedEvent));
+                return Promise.resolve(getService(CORE_MODULE.STASH).eventCache.getFull(hashedEvent));
             }
             return new Promise((resolve, reject) => {
                 let results = [];
                 let filterIndex;
                 if (!options.reversed) {
-                    filterIndex = (record) => record.blockNumber < toBlock ||
+                    filterIndex = record => record.blockNumber < toBlock ||
                         (record.blockNumber === toBlock && record.logIndex < options.lastIndex);
                 }
                 else {
-                    filterIndex = (record) => record.blockNumber > toBlock;
+                    filterIndex = record => record.blockNumber > toBlock;
                 }
                 const fetch = (to) => {
                     let fromBlock = (options.reversed) ? toBlock : to - step;
@@ -153,17 +135,17 @@ function init(sp, getService) {
                         if (err) {
                             return reject(err);
                         }
-                        const filteredData = ramda_1.filter(aditionalFilter, ramda_1.filter(filterIndex, data));
-                        results = ramda_1.uniq(results.concat(filteredData));
+                        const filteredData = filter(aditionalFilter, filter(filterIndex, data));
+                        results = uniq(results.concat(filteredData));
                         if (results.length < limit && fromBlock > 0 && !options.reversed) {
                             return fetch(fromBlock);
                         }
-                        const sortedResults = ramda_1.take(limit, ramda_1.sortWith([
-                            ramda_1.descend(ramda_1.prop('blockNumber')),
-                            ramda_1.descend(ramda_1.prop('logIndex')),
+                        const sortedResults = take(limit, sortWith([
+                            descend(prop('blockNumber')),
+                            descend(prop('logIndex')),
                         ], results));
                         const lastLog = options.reversed ?
-                            ramda_1.head(sortedResults) : ramda_1.last(sortedResults);
+                            head(sortedResults) : last(sortedResults);
                         const lastIndex = lastLog ? lastLog.logIndex : 0;
                         let lastBlock;
                         if (options.reversed) {
@@ -175,7 +157,7 @@ function init(sp, getService) {
                                     lastLog.blockNumber : 0 : 0;
                         }
                         const result = { results: sortedResults, fromBlock: lastBlock, lastIndex };
-                        getService(constants_1.CORE_MODULE.STASH).eventCache.setFull(hashedEvent, result);
+                        getService(CORE_MODULE.STASH).eventCache.setFull(hashedEvent, result);
                         return resolve(result);
                     });
                 };
@@ -187,7 +169,6 @@ function init(sp, getService) {
     const service = function () {
         return contracts;
     };
-    sp().service(constants_1.CORE_MODULE.CONTRACTS, service);
+    sp().service(CORE_MODULE.CONTRACTS, service);
 }
-exports.default = init;
 //# sourceMappingURL=contracts.js.map

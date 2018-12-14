@@ -1,7 +1,7 @@
 //@flow
 import { call, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as types from '../constants';
-import { entrySearchLimit, autocompleteLimit,
+import { entrySearchLimit, profileAutocompleteLimit as autocompleteLimit,
     profileSearchLimit, tagSearchLimit } from '../../constants/iterator-limits';
 import { searchSelectors, profileSelectors } from '../selectors';
 import * as searchService from '../services/search-service';

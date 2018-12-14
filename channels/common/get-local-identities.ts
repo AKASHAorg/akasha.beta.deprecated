@@ -5,8 +5,8 @@ import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from './constants';
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
     const web3Api = getService(CORE_MODULE.WEB3_API);
-    const resolveEth = getService(PROFILE_MODULE.resolveEthAddress);
-    const accounts = yield web3Api.instance.eth.getAccountsAsync();
+    const resolveEth = getService(PROFILE_MODULE.getByAddress);
+    const accounts = yield web3Api.instance.eth.getAccounts();
     if (!accounts || !accounts.length) {
       return { collection: [] };
     }

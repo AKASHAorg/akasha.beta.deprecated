@@ -4,7 +4,7 @@ import { CORE_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
 
-    const ports = yield getService(CORE_MODULE.IPFS_CONNECTOR)
+    const ports = yield (getService(CORE_MODULE.IPFS_CONNECTOR))
     .getInstance().getPorts();
 
     return {

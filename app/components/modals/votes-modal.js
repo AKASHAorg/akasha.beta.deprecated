@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { Modal } from 'antd';
 import classNames from 'classnames';
 import { entryMessages } from '../../locale-data/messages';

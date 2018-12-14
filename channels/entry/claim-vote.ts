@@ -18,8 +18,8 @@ export default function init(sp, getService) {
 
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const txData = contracts.instance.Votes.claimKarmaVote.request(data.entryId, { gas: 200000 });
-    const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    const receipt = yield contracts.send(txData, data.token, cb);
+    return { receipt };
   });
 
   const claimVote = { execute, name: 'claimVote', hasStream: true };

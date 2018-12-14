@@ -5,7 +5,10 @@ import { injectIntl } from 'react-intl';
 import { notification, Modal } from 'antd';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import Redirect from 'react-router-dom/Redirect';
+import Route from 'react-router-dom/Route';
+import Switch from 'react-router-dom/Switch';
+import { hot } from 'react-hot-loader'
 import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
     toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
     navCounterIncrement, showNotification } from '../local-flux/actions/app-actions';
@@ -20,7 +23,7 @@ import { DashboardPage, EntryPageContainer, SearchPage, NewTextEntryPage, NewLin
 import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, FaucetAndManafyModal,
     NavigateAwayModal, DataLoader, ErrorNotification, GethDetailsModal, Highlights, IpfsDetailsModal,
     Lists, ListEntries, MyEntries, NavigationModal, NewEntrySecondarySidebar, Notification,
-    NotificationsPanel, NewDashboardModal, PageContent, PreviewPanel, ProfileOverview,
+    NotificationsPanel, NewDashboardModal, PageContent, PreviewPanel,
     ProfileOverviewSecondarySidebar, ProfilePage, ProfileEdit, SecondarySidebar, SetupPages, Sidebar,
     Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
     CustomDragLayer } from '../components';
@@ -295,7 +298,7 @@ function mapStateToProps (state) {
 }
 
 export { AppContainer };
-export default DragDropContext(HTML5Backend)(connect(
+export default hot(module)(DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
         userSettingsAddTrustedDomain,
@@ -314,4 +317,4 @@ export default DragDropContext(HTML5Backend)(connect(
         reloadPage,
         showNotification
     }
-)(injectIntl(AppContainer)));
+)(injectIntl(AppContainer))));

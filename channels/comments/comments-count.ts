@@ -19,7 +19,7 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     for (const entryId of data) {
       const count = yield contracts.instance.Comments.totalComments(entryId);
-      collection.push({ count: count.toNumber(), entryId });
+      collection.push({ entryId, count: count.toNumber() });
     }
 
     return { collection };

@@ -21,7 +21,7 @@ export default function init(sp, getService) {
   .coroutine(function* (data: { ipfsHash: string[], full?: string }, cb: any) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, resolveEntriesIpfsHashS, { throwError: true });
-    const SHORT_WAIT_TIME = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
+    const SHORT_WAIT_TIME = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.OP_WAIT_TIME);
     const { getFullContent, getShortContent } = getService(ENTRY_MODULE.ipfs);
     const fetchData = (data.full) ? getFullContent : getShortContent;
     data.ipfsHash.forEach((ipfsHash) => {
@@ -31,7 +31,7 @@ export default function init(sp, getService) {
         cb(null, { entry, ipfsHash });
       })
       .catch((err) => {
-        cb({ message: err.message, ipfsHash });
+        cb({ ipfsHash, message: err.message });
       });
     });
     return {};

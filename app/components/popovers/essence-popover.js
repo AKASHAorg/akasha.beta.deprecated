@@ -118,7 +118,7 @@ class EssencePopover extends Component {
             trigger="click"
             visible={this.state.popoverVisible}
           >
-            <Tooltip placement="topLeft" title={tooltip} mouseEnterDelay={0.3}>
+            <Tooltip placement="right" title={tooltip} mouseEnterDelay={0.3}>
               <Progress
                 className="essence-popover__progress"
                 format={() => <Icon className="essence-popover__icon" type="essence" />}

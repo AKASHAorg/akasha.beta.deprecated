@@ -47,8 +47,8 @@ export default function init(sp, getService) {
       const [fn, digestSize, hash] = yield contracts.instance
       .Entries.getEntry(data.author, data.entryId);
       if (!!unpad(hash)) {
-        const ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
-        const entry = yield getService(ENTRY_MODULE.ipfs)
+        const ipfsHash = (getService(COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
+        const entry = yield (getService(ENTRY_MODULE.ipfs))
         .getShortContent(ipfsHash).timeout(40000);
 
         dbs.entry.searchIndex.concurrentAdd(

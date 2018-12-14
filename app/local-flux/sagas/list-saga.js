@@ -35,9 +35,10 @@ function* listDelete ({ id })/* : Saga<void> */ {
 
 function* listDeleteEntry ({ id, entryId })/* : Saga<void> */ {
     try {
-        const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-        const list = yield call([listService, listService.deleteEntry], { ethAddress, id, entryId });
-        yield put(actions.listDeleteEntrySuccess(list));
+        // @todo: rewrite this, it seems that listService.deleteEntry is not implemented
+        // const ethAddress = yield select(selectLoggedEthAddress);
+        // const list = yield apply(listService, listService.deleteEntry, [{ ethAddress, id, entryId }]);
+        // yield put(actions.listDeleteEntrySuccess(list));
     } catch (error) {
         yield put(actions.listDeleteEntryError(error));
     }

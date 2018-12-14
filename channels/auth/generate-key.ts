@@ -20,7 +20,7 @@ export default function init(sp, getService) {
     if (!(Buffer.from(data.password)).equals(Buffer.from(data.password1))) {
       throw new Error('auth:generate-key:pwdm');
     }
-    const address = yield getService(AUTH_MODULE.auth).generateKey(data.password);
+    const address = yield (getService(AUTH_MODULE.auth)).generateKey(data.password);
     return { address };
   });
 

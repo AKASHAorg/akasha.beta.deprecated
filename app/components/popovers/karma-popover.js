@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import Waypoint from 'react-waypoint';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import classNames from 'classnames';
 import { Card, Popover, Progress, Spin, Tooltip } from 'antd';
 import { Avatar, Icon } from '../';
@@ -322,7 +322,7 @@ class KarmaPopover extends Component {
             visible={this.state.popoverVisible}
           >
             <Tooltip
-              placement="topLeft"
+              placement="right"
               title={tooltip}
             >
               <Progress

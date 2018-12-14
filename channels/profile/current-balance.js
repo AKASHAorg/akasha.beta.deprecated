@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.getBalanceSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+export const getBalanceSchema = {
     id: '/getBalance',
     type: 'object',
     properties: {
@@ -10,18 +8,18 @@ exports.getBalanceSchema = {
         unit: { type: 'string' },
     },
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.getBalanceSchema, { throwError: true });
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, getBalanceSchema, { throwError: true });
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         const etherBase = (data.ethAddress) ?
             data.ethAddress : web3Api.instance.eth.defaultAccount;
         const unit = (data.unit) ? data.unit : 'ether';
         const fromWei = web3Api.instance.fromWei;
-        const weiAmount = yield web3Api.instance.eth.getBalanceAsync(etherBase);
+        const weiAmount = yield web3Api.instance.eth.getBalance(etherBase);
         const [free, bonded, cycling] = yield contracts
             .instance.AETH.getTokenRecords(etherBase);
         const [manaTotal, manaSpent, manaRemaining] = yield contracts.instance.Essence.mana(etherBase);
@@ -55,8 +53,7 @@ function init(sp, getService) {
     const service = function () {
         return currentBalance;
     };
-    sp().service(constants_1.PROFILE_MODULE.getBalance, service);
+    sp().service(PROFILE_MODULE.getBalance, service);
     return currentBalance;
 }
-exports.default = init;
 //# sourceMappingURL=current-balance.js.map

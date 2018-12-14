@@ -55,9 +55,8 @@ export default function init(sp, getService) {
     ipfsEntry = null;
     delete data.content;
     delete data.tags;
-    const transaction = yield contracts.send(txData, data.token, cb);
+    const receipt = yield contracts.send(txData, data.token, cb);
     let entryId = null;
-    const receipt = transaction.receipt;
     // in the future extract this should be dynamic @TODO
     if (receipt.logs && receipt.logs.length > 2) {
       const log = receipt.logs[receipt.logs.length - 1];
@@ -65,7 +64,7 @@ export default function init(sp, getService) {
     }
 
     yield getService(NOTIFICATIONS_MODULE.entriesCache).push(entryId);
-    return { tx: transaction.tx, receipt: transaction.receipt, entryId };
+    return { entryId, receipt };
   });
 
   const publish = { execute, name: 'publish', hasStream: true };

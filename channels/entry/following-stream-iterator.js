@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 const followingStreamIteratorS = {
     id: '/followingStreamIterator',
     type: 'object',
@@ -15,14 +13,14 @@ const followingStreamIteratorS = {
     },
     required: ['toBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, followingStreamIteratorS, { throwError: true });
-        const address = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const web3Api = getService(CORE_MODULE.WEB3_API);
         const fetchedFollow = yield contracts.fromEvent(contracts.instance.Feed.Follow, { follower: address }, 0, 1000, { reversed: true });
         const followList = fetchedFollow.results.map((res) => {
             return res.args.followed;
@@ -40,14 +38,14 @@ function init(sp, getService) {
             const tags = captureIndex.results.map(function (ev) {
                 return web3Api.instance.toUtf8(ev.args.tagName);
             });
-            const author = yield getService(constants_1.PROFILE_MODULE.getByAddress)
+            const author = yield getService(PROFILE_MODULE.getByAddress)
                 .execute({ ethAddress: event.args.author });
             collection.push({
+                tags,
+                author,
                 entryType: captureIndex.results.length ?
                     captureIndex.results[0].args.entryType.toNumber() : -1,
                 entryId: event.args.entryId,
-                tags,
-                author,
             });
             if (collection.length === maxResults) {
                 break;
@@ -59,8 +57,7 @@ function init(sp, getService) {
     const service = function () {
         return followingStreamIterator;
     };
-    sp().service(constants_1.ENTRY_MODULE.followingStreamIterator, service);
+    sp().service(ENTRY_MODULE.followingStreamIterator, service);
     return followingStreamIterator;
 }
-exports.default = init;
 //# sourceMappingURL=following-stream-iterator.js.map

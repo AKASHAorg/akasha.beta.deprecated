@@ -1,21 +1,25 @@
 import { app, Menu, session, shell } from 'electron';
+import * as Promise from 'bluebird';
 
 const installExtensions = async () => {
-  if (process.env.NODE_ENV === 'development') {
-    const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
-
-    const extensions = [
-      'REACT_DEVELOPER_TOOLS',
-      'REDUX_DEVTOOLS',
-    ];
-    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    for (const name of extensions) {
-      try {
-        await installer.default(installer[name], forceDownload);
-      } catch (e) {
-      } // eslint-disable-line
-    }
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+  //
+  //   const extensions = [
+  //     'REACT_DEVELOPER_TOOLS',
+  //     'REDUX_DEVTOOLS',
+  //   ];
+  //   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  //   const load = [];
+  //   extensions.forEach(function (name) {
+  //     try {
+  //       load.push(installer.default(installer[name], forceDownload));
+  //     } catch (e) {
+  //     } // eslint-disable-line
+  //   });
+  //   return Promise.all(load);
+  // }
+  return Promise.resolve();
 };
 
 export async function initMenu(mainWindow: any) {

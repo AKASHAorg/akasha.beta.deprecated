@@ -14,7 +14,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, canCreateSchema, { throwError: true });
 
-    const can = yield getService(CORE_MODULE.CONTRACTS)
+    const can = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Tags.canCreate(data.ethAddress);
     return { can };
   });

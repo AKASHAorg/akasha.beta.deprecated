@@ -43,11 +43,11 @@ export default function init(sp, getService) {
         ({ tags, author, entryType } = mixed.getFull(key));
       }
       collection.push({
+        tags,
+        author,
         entryType,
         entryId: event.args.entryId,
         blockNumber: event.blockNumber,
-        tags,
-        author,
       });
       if (collection.length === data.limit) {
         break;
@@ -96,11 +96,11 @@ export default function init(sp, getService) {
         ({ tags, author, entryType } = mixed.getFull(key));
       }
       collection.push({
+        tags,
+        author,
         entryType,
         entryId: event.args.entryId,
         blockNumber: event.blockNumber,
-        tags,
-        author,
       });
       if (collection.length === data.limit) {
         break;

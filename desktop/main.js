@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const pino = require("pino");
 const sp_1 = require("@akashaproject/core/sp");
 const init_modules_1 = require("./init-modules");
 const path_1 = require("path");
@@ -20,7 +21,7 @@ const stopServices = () => {
     mainWindow.hide();
     shutDown().delay(800).finally(() => process.exit(0));
 };
-const startBrowser = function () {
+const startBrowser = function (logger) {
     const viewHtml = path_1.resolve(__dirname, '../..');
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1280,
@@ -42,15 +43,15 @@ const startBrowser = function () {
     });
     mainWindowState.manage(mainWindow);
     console.timeEnd('buildWindow');
-    mainWindow.loadURL(process.env.HOT ? `http://localhost:3000/dist/index.html` :
+    mainWindow.loadURL(process.env.HOT ? 'http://localhost:3000/dist/index.html' :
         `file://${viewHtml}/dist/index.html`);
     mainWindow.once('close', (ev) => {
         ev.preventDefault();
         stopServices();
     });
     menu_1.initMenu(mainWindow)
-        .then(() => console.info('Menu init -> done.'))
-        .catch(error => console.error(error));
+        .then(() => logger.info('Menu init -> done.'))
+        .catch(error => logger.error(error));
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         mainWindow.focus();
@@ -66,44 +67,54 @@ const startBrowser = function () {
     mainWindow.webContents.on('will-navigate', openDefault);
     mainWindow.webContents.on('new-window', openDefault);
     mainWindow.on('unresponsive', () => {
-        console.error('APP is unresponsive');
+        logger.error('APP is unresponsive');
     });
 };
 const bootstrap = function () {
-    if (process.env.NODE_ENV === 'development') {
-        require('electron-debug')({ showDevTools: true });
-    }
     electron_1.app.on('window-all-closed', () => {
-        if (process.platform !== 'darwin')
-            electron_1.app.quit();
+        electron_1.app.quit();
     });
-    const shouldQuit = electron_1.app.makeSingleInstance((commandLine, workingDirectory) => {
-        if (mainWindow) {
-            if (mainWindow.isMinimized())
-                mainWindow.restore();
-            mainWindow.focus();
-        }
-    });
-    if (shouldQuit) {
+    const gotTheLock = electron_1.app.requestSingleInstanceLock();
+    if (!gotTheLock) {
         electron_1.app.quit();
     }
-    electron_1.app.on('ready', () => {
-        console.time('total');
-        console.time('buildWindow');
-        process.on('uncaughtException', (err) => {
-            console.error(`uncaughtException ${err.message} ${err.stack}`);
+    else {
+        electron_1.app.on('second-instance', (event, commandLine, workingDirectory) => {
+            if (mainWindow) {
+                if (mainWindow.isMinimized())
+                    mainWindow.restore();
+                mainWindow.focus();
+            }
         });
-        process.on('warning', (warning) => {
-            console.warn(warning);
+        electron_1.app.on('ready', () => {
+            console.time('total');
+            console.time('buildWindow');
+            const appLogger = pino(pino.destination(path_1.join(electron_1.app.getPath('userData'), 'app.log')));
+            if (process.env.AKASHA_LOG_LEVEL) {
+                appLogger.level = process.env.AKASHA_LOG_LEVEL;
+            }
+            else if (!process.env.HOT) {
+                appLogger.level = 'error';
+            }
+            const windowLogger = appLogger.child({ module: 'window' });
+            process.on('uncaughtException', (err) => {
+                appLogger.error(err);
+            });
+            process.on('warning', (warning) => {
+                appLogger.warn(warning);
+            });
+            process.on('SIGINT', stopServices);
+            process.on('SIGTERM', stopServices);
+            init_modules_1.default(sp_1.default, sp_1.getService, appLogger)
+                .then((modules) => {
+                appLogger.info('modules inited');
+                startBrowser(windowLogger);
+                appLogger.info('browser started');
+                watcher_1.default(modules, mainWindow.id, sp_1.getService, appLogger);
+                appLogger.info('ipc listening');
+            });
         });
-        process.on('SIGINT', stopServices);
-        process.on('SIGTERM', stopServices);
-        init_modules_1.default(sp_1.default, sp_1.getService)
-            .then((modules) => {
-            startBrowser();
-            watcher_1.default(modules, mainWindow.id, sp_1.getService);
-        });
-    });
+    }
 };
 exports.default = bootstrap;
 //# sourceMappingURL=main.js.map

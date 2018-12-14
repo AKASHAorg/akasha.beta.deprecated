@@ -20,6 +20,8 @@
     "@akashaproject/registry": "^1.0.0",
     "@akashaproject/search": "^1.0.0",
     "@akashaproject/tags": "^1.0.0",
-    "@akashaproject/tx": "^1.0.0"
+    "@akashaproject/tx": "^1.0.0",
+    "bluebird": "*",
+    "pino": "*"
   }
 }

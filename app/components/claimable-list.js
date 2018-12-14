@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { List } from 'immutable';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -27,13 +27,13 @@ class ClaimableList extends Component {
             !canClaimVote.equals(this.props.canClaimVote) ||
             !claimableEntries.equals(this.props.claimableEntries) ||
             claimableLoading !== this.props.claimableLoading ||
-            claimableLoadingMore !== this.props.claimableLoadingMore ||            
+            claimableLoadingMore !== this.props.claimableLoadingMore ||
             !entryBalance.equals(this.props.entryBalance) ||
             !entries.equals(this.props.entries) ||
             !entryVotes.equals(this.props.entryVotes) ||
             fetchingEntries !== this.props.fetchingEntries ||
             fetchingMoreEntries !== this.props.fetchingMoreEntries ||
-            moreClaimableEntries !== this.props.moreClaimableEntries ||                        
+            moreClaimableEntries !== this.props.moreClaimableEntries ||
             !pendingClaim.equals(this.props.pendingClaim) ||
             !pendingClaimVote.equals(this.props.pendingClaimVote)
         ) {
@@ -62,7 +62,7 @@ class ClaimableList extends Component {
         const actions = [];
         if (claimableActions.size === 1) {
             const { entryId, isVote } = claimableActions.first().toJS();
-            const entryTitle = entries.getIn([entryId, 'content', 'title']);          
+            const entryTitle = entries.getIn([entryId, 'content', 'title']);
             const payload = { entryId, entryTitle };
             const type = isVote ? actionTypes.claimVote : actionTypes.claim;
             this.props.actionAdd(loggedEthAddress, type, payload);
@@ -70,7 +70,7 @@ class ClaimableList extends Component {
         }
         claimableActions.forEach((claimableAction) => {
             const { entryId, isVote } = claimableAction.toJS();
-            const entryTitle = entries.getIn([entryId, 'content', 'title']);            
+            const entryTitle = entries.getIn([entryId, 'content', 'title']);
             const payload = { entryId, entryTitle };
             const type = isVote ? actionTypes.claimVote : actionTypes.claim;
             actions.push({ ethAddress: loggedEthAddress, actionType: type, payload });
@@ -82,7 +82,7 @@ class ClaimableList extends Component {
         const { claimableEntries, entryBalance, entries, entryVotes, intl, loggedEthAddress, pendingClaim,
             pendingClaimVote } = this.props;
         const { entryId, isVote } = claimableEntry.toJS();
-        const entryTitle = entries.getIn([entryId, 'content', 'title']);
+        let entryTitle = entries.getIn([entryId, 'content', 'title']);
         const className = classNames('claimable-list__row', {
             'claimable-list__row_last': index === (claimableEntries.size - 1)
         });
@@ -110,7 +110,6 @@ class ClaimableList extends Component {
                 intl.formatMessage(entryMessages.cannotClaimVote) :
                 intl.formatMessage(entryMessages.cannotClaimEntry);
         }
-
         return (
           <div className={className} key={entryId}>
             <div className="claimable-list__entry-info">
@@ -141,7 +140,7 @@ class ClaimableList extends Component {
               {!isActive &&
                 <Tooltip arrowPointAtCenter title={buttonTooltip}>
                   <Button
-                    disabled={loading || !entryTitle || !this.canCollect(claimableEntry)}
+                    disabled={loading || !this.canCollect(claimableEntry)}
                     loading={loading}
                     onClick={onCollect}
                     size="small"
@@ -188,7 +187,7 @@ class ClaimableList extends Component {
         const claimPending = pendingClaim.find(claim => !!claim);
         const claimVotePending = pendingClaimVote.find(claim => !!claim);
         const collectAllDisabled = claimPending || claimVotePending || !collectableEntries.size ||
-            claimableLoading || claimableLoadingMore;
+            claimableLoading;
 
         return (
           <div className="claimable-list">
@@ -260,12 +259,12 @@ ClaimableList.propTypes = {
     claimableEntries: PropTypes.shape().isRequired,
     claimableGetEntries: PropTypes.func.isRequired,
     claimableLoading: PropTypes.bool,
-    claimableLoadingMore: PropTypes.bool,    
+    claimableLoadingMore: PropTypes.bool,
     entries: PropTypes.shape().isRequired,
     entryBalance: PropTypes.shape().isRequired,
     entryVotes: PropTypes.shape().isRequired,
     fetchingEntries: PropTypes.bool,
-    fetchingMoreEntries: PropTypes.bool,    
+    fetchingMoreEntries: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     moreClaimableEntries: PropTypes.bool,
@@ -281,12 +280,12 @@ function mapStateToProps (state) {
         canClaimVote: state.entryState.get('canClaimVote'),
         claimableEntries: selectClaimableEntries(state),
         claimableLoading: selectClaimableLoading(state),
-        claimableLoadingMore: selectClaimableLoadingMore(state),        
+        claimableLoadingMore: selectClaimableLoadingMore(state),
         entries: selectClaimableEntriesById(state),
         entryBalance: state.entryState.get('balance'),
         entryVotes: state.entryState.get('votes'),
         fetchingEntries: state.claimableState.get('fetchingEntries'),
-        fetchingMoreEntries: state.claimableState.get('fetchingMoreEntries'),        
+        fetchingMoreEntries: state.claimableState.get('fetchingMoreEntries'),
         loggedEthAddress: selectLoggedEthAddress(state),
         moreClaimableEntries: selectClaimableMoreEntries(state),
         pendingClaim: selectPendingClaims(state),

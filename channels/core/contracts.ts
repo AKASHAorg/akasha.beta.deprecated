@@ -10,40 +10,6 @@ export default function init(sp, getService) {
     public instance: any;
     public watchers: any[] = [];
 
-    public static watchTx(tx: string) {
-      const timeout = 300000;
-      const start = new Date().getTime();
-      return new BlPromise((resolve, reject) => {
-        const getReceipt = function () {
-          getService(CORE_MODULE.WEB3_API)
-          .instance
-          .eth.getTransactionReceipt(tx, (err, receipt) => {
-            if (receipt != null) {
-              return resolve({
-                tx,
-                receipt: {
-                  gasUsed: receipt.gasUsed,
-                  cumulativeGasUsed: receipt.cumulativeGasUsed,
-                  transactionHash: receipt.transactionHash,
-                  blockNumber: receipt.blockNumber,
-                  success: receipt.status === '0x1',
-                  logs: receipt.logs,
-                },
-              });
-            }
-
-            if (new Date().getTime() - start > timeout) {
-              return reject(new Error('Tx: ' + tx + ' timed out'));
-            }
-
-            setTimeout(getReceipt, 2000);
-          });
-
-        };
-        getReceipt();
-      });
-    }
-
     /**
      * Init web3 contract js bindings
      */
@@ -57,10 +23,14 @@ export default function init(sp, getService) {
     }
 
     // send transaction and watch status
-    public async send(data: any, token: string, cb) {
-      const tx = await getService(AUTH_MODULE.auth).signData(data.params[0], token);
-      cb(null, { tx });
-      return Contracts.watchTx(tx);
+    public send(data: any, token: string, cb) {
+      return (getService(AUTH_MODULE.auth)).signData(data.params[0], token)
+        .once('transactionHash', function (txHash) {
+          cb(null, { tx: txHash });
+        })
+        .once('error', function (error) {
+          cb(error);
+        });
     }
 
     public createWatcher(ethEvent: any, args: any, fromBlock: number) {
@@ -165,10 +135,10 @@ export default function init(sp, getService) {
         let results = [];
         let filterIndex;
         if (!options.reversed) {
-          filterIndex = (record) => record.blockNumber < toBlock ||
+          filterIndex = record => record.blockNumber < toBlock ||
             (record.blockNumber === toBlock && record.logIndex < options.lastIndex);
         } else {
-          filterIndex = (record) => record.blockNumber > toBlock;
+          filterIndex = record => record.blockNumber > toBlock;
         }
         const fetch = (to) => {
           let fromBlock = (options.reversed) ? toBlock : to - step;

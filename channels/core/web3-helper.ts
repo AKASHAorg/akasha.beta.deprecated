@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { CORE_MODULE } from '@akashaproject/common/constants';
+import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
 
 export default function init(sp, getService) {
   class Web3Helper {
@@ -8,17 +8,19 @@ export default function init(sp, getService) {
     public syncing: boolean = true;
     public watching = false;
     private channel: any;
+    private args: any;
 
     // ex: rx.js channel with send method
     public setChannel(channel: any) {
       this.channel = channel;
+      this.args = buildCall(TX_MODULE, TX_MODULE.emitMined, {});
     }
 
     // check if current used node is synchronized
     public inSync() {
       const rules = [
-        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncingAsync(),
-        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCountAsync(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
+        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
       ];
 
       return Promise.all(rules).then((data) => {
@@ -28,9 +30,9 @@ export default function init(sp, getService) {
         }
 
         if (!data[0] && data[1] > 0) {
-          return getService(CORE_MODULE.WEB3_API).instance
+          return (getService(CORE_MODULE.WEB3_API)).instance
           .eth
-          .getBlockAsync('latest')
+          .getBlock('latest')
           .then((latestBlock: any): any => {
             if ((latestBlock.timestamp + 60 * 2) > timeStamp) {
               this.syncing = false;
@@ -72,7 +74,7 @@ export default function init(sp, getService) {
         for (const hash of this.getCurrentTxQueue()) {
           currentQueue.push(
             getService(CORE_MODULE.WEB3_API).instance
-            .eth.getTransactionReceiptAsync(hash),
+            .eth.getTransactionReceipt(hash),
           );
         }
         Promise.all(currentQueue).then((receipt: any[]) => {
@@ -91,6 +93,7 @@ export default function init(sp, getService) {
                   hasEvents: !!(tx.logs.length),
                   watching: this.watching,
                 },
+                args: this.args,
               });
             }
           });
@@ -103,7 +106,7 @@ export default function init(sp, getService) {
     public hasKey(address: string) {
       return getService(CORE_MODULE.WEB3_API).instance
       .eth
-      .getAccountsAsync()
+      .getAccounts()
       .then((list: string[]) => {
         return list.indexOf(address) !== -1;
       });

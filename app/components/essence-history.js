@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import Waypoint from 'react-waypoint';
 import classNames from 'classnames';
 import { Spin } from 'antd';

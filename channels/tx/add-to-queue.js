@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.addToQueueSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, TX_MODULE } from '@akashaproject/common/constants';
+export const addToQueueSchema = {
     id: '/addToQueue',
     type: 'array',
     items: {
@@ -13,22 +11,21 @@ exports.addToQueueSchema = {
         required: ['tx'],
     },
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.addToQueueSchema, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, addToQueueSchema, { throwError: true });
         data.forEach((hash) => {
-            getService(constants_1.CORE_MODULE.WEB3_HELPER).addTxToWatch(hash.tx, false);
+            (getService(CORE_MODULE.WEB3_HELPER)).addTxToWatch(hash.tx, false);
         });
-        getService(constants_1.CORE_MODULE.WEB3_HELPER).startTxWatch();
-        return { watching: getService(constants_1.CORE_MODULE.WEB3_HELPER).watching };
+        (getService(CORE_MODULE.WEB3_HELPER)).startTxWatch();
+        return { watching: getService(CORE_MODULE.WEB3_HELPER).watching };
     });
     const addToQueue = { execute, name: 'addToQueue' };
     const service = function () {
         return addToQueue;
     };
-    sp().service(constants_1.TX_MODULE.addToQueue, service);
+    sp().service(TX_MODULE.addToQueue, service);
     return addToQueue;
 }
-exports.default = init;
 //# sourceMappingURL=add-to-queue.js.map

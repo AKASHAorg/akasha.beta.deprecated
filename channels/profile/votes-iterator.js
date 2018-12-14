@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.votesIterator = {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+export const votesIterator = {
     id: '/votesIterator',
     type: 'object',
     properties: {
@@ -15,17 +13,17 @@ exports.votesIterator = {
     },
     required: ['lastBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.votesIterator, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, votesIterator, { throwError: true });
         const collection = [];
         const maxResults = data.limit || 5;
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
-        const address = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
         const toBlock = (!data.lastBlock) ?
-            yield web3Api.instance.eth.getBlockNumberAsync() : data.lastBlock;
+            yield web3Api.instance.eth.getBlockNumber() : data.lastBlock;
         const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, { voter: address, voteType: data.voteType }, toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
         for (const event of fetched.results) {
             collection.push({
@@ -48,8 +46,7 @@ function init(sp, getService) {
     const service = function () {
         return votesIteratorService;
     };
-    sp().service(constants_1.PROFILE_MODULE.votesIterator, service);
+    sp().service(PROFILE_MODULE.votesIterator, service);
     return votesIteratorService;
 }
-exports.default = init;
 //# sourceMappingURL=votes-iterator.js.map

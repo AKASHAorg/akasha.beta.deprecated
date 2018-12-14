@@ -1,11 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     const execute = Promise
         .coroutine(function* () {
-        const ipfsConnector = getService(constants_1.CORE_MODULE.IPFS_CONNECTOR);
+        const ipfsConnector = getService(CORE_MODULE.IPFS_CONNECTOR);
         return {
             apiPort: (ipfsConnector.getInstance().config.config.Addresses.API) ?
                 ipfsConnector.getInstance().config.config.Addresses.API.split('/').pop() : '',
@@ -16,8 +14,7 @@ function init(sp, getService) {
     const service = function () {
         return getConfig;
     };
-    sp().service(constants_1.IPFS_MODULE.getConfig, service);
+    sp().service(IPFS_MODULE.getConfig, service);
     return getConfig;
 }
-exports.default = init;
 //# sourceMappingURL=get-config.js.map

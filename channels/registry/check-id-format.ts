@@ -15,7 +15,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkIdFormatSchema, { throwError: true });
 
-    const idValid = yield getService(CORE_MODULE.CONTRACTS)
+    const idValid = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.ProfileRegistrar.check_format(data.akashaId);
     return { idValid, akashaId: data.akashaId };
   });

@@ -1,22 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
+const Promise = require("bluebird");
 const installExtensions = async () => {
-    if (process.env.NODE_ENV === 'development') {
-        const installer = require('electron-devtools-installer');
-        const extensions = [
-            'REACT_DEVELOPER_TOOLS',
-            'REDUX_DEVTOOLS',
-        ];
-        const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-        for (const name of extensions) {
-            try {
-                await installer.default(installer[name], forceDownload);
-            }
-            catch (e) {
-            }
-        }
-    }
+    return Promise.resolve();
 };
 async function initMenu(mainWindow) {
     await installExtensions();

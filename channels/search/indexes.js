@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
+import * as Promise from 'bluebird';
 const searchIndex = require('search-index');
-const constants_1 = require("@akashaproject/common/constants");
-exports.dbs = {
+import { CORE_MODULE } from '@akashaproject/common/constants';
+export const dbs = {
     entry: {
         path: 'beta-entry-index',
         additional: {
@@ -45,18 +43,17 @@ class StorageIndex {
             .fromCallback(cb => searchIndex(this.options, cb));
     }
 }
-function default_1(sp) {
+export default function (sp) {
     const dbService = function () {
-        return exports.dbs;
+        return dbs;
     };
-    sp().service(constants_1.CORE_MODULE.DB_INDEX, dbService);
-    return { init: exports.init };
+    sp().service(CORE_MODULE.DB_INDEX, dbService);
+    return { init };
 }
-exports.default = default_1;
-exports.init = function init(prefix) {
-    const waitFor = Object.keys(exports.dbs).map((index) => {
-        return new StorageIndex(exports.dbs[index].path, { prefix, additional: exports.dbs[index].additional }).init()
-            .then(si => exports.dbs[index].searchIndex = si);
+export const init = function init(prefix) {
+    const waitFor = Object.keys(dbs).map((index) => {
+        return new StorageIndex(dbs[index].path, { prefix, additional: dbs[index].additional }).init()
+            .then(si => dbs[index].searchIndex = si);
     });
     return Promise.all(waitFor);
 };

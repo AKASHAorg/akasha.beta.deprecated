@@ -16,7 +16,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getTagsCreatedSchema, { throwError: true });
 
-    const event = yield getService(CORE_MODULE.CONTRACTS)
+    const event = yield (getService(CORE_MODULE.CONTRACTS))
     .instance.Tags.TagCreate(data);
     const collection = yield event.get();
     return { collection };

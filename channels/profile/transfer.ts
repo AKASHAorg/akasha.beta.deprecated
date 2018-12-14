@@ -26,7 +26,7 @@ export default function init(sp, getService) {
       if (data.tokenAmount && data.value) {
         throw new Error('Can only send eth or aeth token individually, not combined');
       }
-      const address = yield getService(COMMON_MODULE.profileHelpers)
+      const address = yield (getService(COMMON_MODULE.profileHelpers))
       .profileAddress(data);
 
       const tokenAmount = web3Api.instance.toWei(data.tokenAmount || 0, 'ether');
@@ -39,10 +39,9 @@ export default function init(sp, getService) {
         txData = web3Api.instance.eth
         .sendTransaction.request({ to: address, value: ethAmount, gas: 50000 });
       }
-      const transaction = yield contracts.send(txData, data.token, cb);
+      const receipt = yield contracts.send(txData, data.token, cb);
       return {
-        tx: transaction.tx,
-        receipt: transaction.receipt,
+        receipt,
         receiver: address,
         akashaId: data.akashaId,
       };

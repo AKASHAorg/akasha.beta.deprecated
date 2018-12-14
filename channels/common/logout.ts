@@ -3,8 +3,8 @@ import { AUTH_MODULE, COMMON_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from '.
 
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
-    yield getService(CORE_MODULE.CONTRACTS).stopAllWatchers();
-    yield getService(NOTIFICATIONS_MODULE.subscribe).execute(
+    yield (getService(CORE_MODULE.CONTRACTS)).stopAllWatchers();
+    yield (getService(NOTIFICATIONS_MODULE.subscribe)).execute(
       {
         settings: { feed: false, donations: false, comments: false, votes: false },
         profile: {}, fromBlock: 0,
@@ -12,7 +12,7 @@ export default function init(sp, getService) {
       () => {
       });
 
-    getService(AUTH_MODULE.auth).logout();
+    (getService(AUTH_MODULE.auth)).logout();
     return { done: true };
   });
 

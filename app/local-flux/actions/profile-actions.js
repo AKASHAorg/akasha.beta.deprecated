@@ -77,13 +77,13 @@ export const profileGetByAddress = ethAddress => action(`${PROFILE_MODULE.getByA
 export const profileGetData = ({ akashaId, context, ethAddress, full, batching }) =>
     action(`${PROFILE_MODULE.profileData}`, { akashaId, context, ethAddress, full, batching });
 
-export const profileGetEntrySyncBlockError = (error) => {
-    error.code = 'PGESBE01';
-    return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
-};
-
-export const profileGetEntrySyncBlockSuccess = block =>
-    action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
+// export const profileGetEntrySyncBlockError = (error) => {
+//     error.code = 'PGESBE01';
+//     return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
+// };
+//
+// export const profileGetEntrySyncBlockSuccess = block =>
+//     action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
 
 export const profileGetList = ethAddresses =>
     action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });

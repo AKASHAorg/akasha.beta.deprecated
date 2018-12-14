@@ -23,8 +23,8 @@ export default function init(sp, getService) {
     const txData = contracts.instance.Essence.transformEssence
     .request(bnAmount, { gas: 100000 });
 
-    const transaction = yield contracts.send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt };
+    const receipt = yield contracts.send(txData, data.token, cb);
+    return { receipt };
   });
   const transformEssenceService = { execute, name: 'transformEssence', hasStream: true };
   const service = function () {

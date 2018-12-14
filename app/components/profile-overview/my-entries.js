@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectLoggedEthAddress, selectProfileEntries } from '../../local-flux/selectors';
+import { selectLoggedEthAddress, selectProfileLoggedEntries } from '../../local-flux/selectors';
 import { EntryList } from '../';
 
-class Highlights extends Component {
+class MyEntries extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
         this.props.entryProfileIterator({ id: 'profileEntries', value: ethAddress });
@@ -38,7 +38,7 @@ class Highlights extends Component {
     }
 }
 
-Highlights.propTypes = {
+MyEntries.propTypes = {
     entryMoreProfileIterator: PropTypes.func,
     entryProfileIterator: PropTypes.func,
     ethAddress: PropTypes.string,
@@ -54,7 +54,7 @@ function mapStateToProps (state) {
         ethAddress,
         fetchingMoreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingMoreEntries']),
         fetchingProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingEntries']),
-        profileEntries: selectProfileEntries(state, ethAddress),
+        profileEntries: selectProfileLoggedEntries(state, ethAddress),
         profiles: state.profileState.get('byEthAddress'),
         moreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'moreEntries']),
     };
@@ -66,4 +66,4 @@ export default connect(
         entryMoreProfileIterator,
         entryProfileIterator
     }
-)(injectIntl(Highlights));
+)(injectIntl(MyEntries));

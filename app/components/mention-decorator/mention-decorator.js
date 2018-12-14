@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ProfileHoverCard } from '../../components';
+// import { ProfileHoverCard } from '../../components';
 
 // const Channel = global.Channel;
 // const existsClient = Channel.client.registry.profileExists;
@@ -148,12 +148,12 @@ class MentionComponent extends Component {
               {children}
             </span>
             {nonEditable && this.state.exists &&
-              <ProfileHoverCard
+{/*              <ProfileHoverCard
                 anchorHovered={this.state.anchorHovered}
                 anchorNode={this.container}
                 loading={this.state.fetchingData}
                 profile={this.state.profileData || {}}
-              />
+              />*/}
             }
           </div>
         );

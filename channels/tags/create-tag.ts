@@ -18,9 +18,9 @@ export default function init(sp, getService) {
 
     const txData = yield getService(CORE_MODULE.CONTRACTS)
     .instance.Tags.add.request(data.tagName);
-    const transaction = yield getService(CORE_MODULE.CONTRACTS)
+    const receipt = yield getService(CORE_MODULE.CONTRACTS)
     .send(txData, data.token, cb);
-    return { tx: transaction.tx, receipt: transaction.receipt, tagName: data.tagName };
+    return { receipt, tagName: data.tagName };
   });
   const createTag = { execute, name: 'create', hasStream: true };
   const service = function () {

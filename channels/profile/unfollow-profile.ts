@@ -8,15 +8,15 @@ export default function init(sp, getService) {
     v.validate(data, followProfileSchema, { throwError: true });
     const contracts = getService(CORE_MODULE.CONTRACTS);
 
-    const address = yield getService(COMMON_MODULE.profileHelpers)
+    const address = yield (getService(COMMON_MODULE.profileHelpers))
     .profileAddress(data);
 
     const txData = contracts.instance.Feed
     .unFollow.request(address, { gas: 400000 });
 
-    const transaction = yield contracts.send(txData, data.token, cb);
+    const receipt = yield contracts.send(txData, data.token, cb);
     getService(CORE_MODULE.STASH).mixed.flush();
-    return { tx: transaction.tx, receipt: transaction.receipt, akashaId: data.akashaId };
+    return { receipt, akashaId: data.akashaId };
   });
 
   const unFollowProfile = { execute, name: 'unFollowProfile', hasStream: true };

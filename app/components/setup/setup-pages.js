@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import Route from 'react-router-dom/Route';
 import { AuthContainer, ConfigurationContainer, NewIdentityContainer,
     SynchronizationContainer } from '../../containers';
 import { NewIdentityInterests, ProfileComplete, SetupHeader, SetupHeaderSplit } from '../';

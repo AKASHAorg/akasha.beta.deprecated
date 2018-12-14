@@ -1,43 +1,41 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const comments_1 = require("./comments");
-const donations_1 = require("./donations");
-const entries_1 = require("./entries");
-const exclude_filter_1 = require("./exclude-filter");
-const feed_1 = require("./feed");
-const include_filter_1 = require("./include-filter");
-const queue_1 = require("./queue");
-const set_filter_1 = require("./set-filter");
-const subscribe_1 = require("./subscribe");
-const votes_1 = require("./votes");
-const constants_1 = require("@akashaproject/common/constants");
+import commentInit from './comments';
+import donationsInit from './donations';
+import entriesInit from './entries';
+import excludeFilterInit from './exclude-filter';
+import feedInit from './feed';
+import includeFilterInit from './include-filter';
+import queueInit from './queue';
+import setFilterInit from './set-filter';
+import subscribeInit from './subscribe';
+import votesInit from './votes';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 const init = function init(sp, getService) {
-    const comment = comments_1.default(sp, getService);
-    const donations = donations_1.default(sp, getService);
-    const entries = entries_1.default(sp, getService);
-    const excludeFilter = exclude_filter_1.default(sp, getService);
-    const feed = feed_1.default(sp, getService);
-    const includeFilter = include_filter_1.default(sp, getService);
-    const queue = queue_1.default(sp, getService);
-    const setFilter = set_filter_1.default(sp, getService);
-    const subscribe = subscribe_1.default(sp, getService);
-    const votes = votes_1.default(sp, getService);
+    const comment = commentInit(sp, getService);
+    const donations = donationsInit(sp, getService);
+    const entries = entriesInit(sp, getService);
+    const excludeFilter = excludeFilterInit(sp, getService);
+    const feed = feedInit(sp, getService);
+    const includeFilter = includeFilterInit(sp, getService);
+    const queue = queueInit(sp, getService);
+    const setFilter = setFilterInit(sp, getService);
+    const subscribe = subscribeInit(sp, getService);
+    const votes = votesInit(sp, getService);
     return {
-        [constants_1.NOTIFICATIONS_MODULE.comments]: comment,
-        [constants_1.NOTIFICATIONS_MODULE.donations]: donations,
-        [constants_1.NOTIFICATIONS_MODULE.entriesCache]: entries,
-        [constants_1.NOTIFICATIONS_MODULE.excludeFilter]: excludeFilter,
-        [constants_1.NOTIFICATIONS_MODULE.feed]: feed,
-        [constants_1.NOTIFICATIONS_MODULE.includeFilter]: includeFilter,
-        [constants_1.NOTIFICATIONS_MODULE.queue]: queue,
-        [constants_1.NOTIFICATIONS_MODULE.setFilter]: setFilter,
-        [constants_1.NOTIFICATIONS_MODULE.subscribe]: subscribe,
-        [constants_1.NOTIFICATIONS_MODULE.votes]: votes,
+        [NOTIFICATIONS_MODULE.comments]: comment,
+        [NOTIFICATIONS_MODULE.donations]: donations,
+        [NOTIFICATIONS_MODULE.entriesCache]: entries,
+        [NOTIFICATIONS_MODULE.excludeFilter]: excludeFilter,
+        [NOTIFICATIONS_MODULE.feed]: feed,
+        [NOTIFICATIONS_MODULE.includeFilter]: includeFilter,
+        [NOTIFICATIONS_MODULE.queue]: queue,
+        [NOTIFICATIONS_MODULE.setFilter]: setFilter,
+        [NOTIFICATIONS_MODULE.subscribe]: subscribe,
+        [NOTIFICATIONS_MODULE.votes]: votes,
     };
 };
 const app = {
     init,
-    moduleName: constants_1.NOTIFICATIONS_MODULE.$name,
+    moduleName: NOTIFICATIONS_MODULE.$name,
 };
-exports.default = app;
+export default app;
 //# sourceMappingURL=index.js.map

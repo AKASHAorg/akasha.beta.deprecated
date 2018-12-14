@@ -31,12 +31,12 @@ export default function init(sp, getService) {
         return contracts.instance.Votes.getRecord(id).then((result) => {
           const [totalVotes, score, endPeriod, totalKarma, claimed] = result;
           collection.push({
+            claimed,
             entryId: id,
             totalVotes: totalVotes.toString(10),
             score: score.toString(10),
             endPeriod: (new Date(endPeriod.toNumber() * 1000)).toISOString(),
             totalKarma: (web3Api.instance.fromWei(totalKarma, 'ether')).toString(10),
-            claimed,
           });
         });
       });

@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const ethereumjs_util_1 = require("ethereumjs-util");
-exports.essenceIteratorSchema = {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { addHexPrefix, unpad } from 'ethereumjs-util';
+export const essenceIteratorSchema = {
     id: '/essenceIterator',
     type: 'object',
     properties: {
@@ -16,22 +14,22 @@ exports.essenceIteratorSchema = {
     },
     required: ['lastBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.essenceIteratorSchema, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, essenceIteratorSchema, { throwError: true });
         const collection = [];
         const maxResults = data.limit || 5;
-        const address = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         const toBlock = (!data.lastBlock) ?
-            yield web3Api.instance.eth.getBlockNumberAsync() : data.lastBlock;
+            yield web3Api.instance.eth.getBlockNumber() : data.lastBlock;
         const fetched = yield contracts.fromEvent(contracts.instance.Essence.CollectEssence, { receiver: address }, toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
         for (const event of fetched.results) {
             collection.push({
                 amount: (web3Api.instance.fromWei(event.args.amount, 'ether')).toFormat(5),
-                action: web3Api.instance.toUtf8(ethereumjs_util_1.addHexPrefix(ethereumjs_util_1.unpad(event.args.action))),
+                action: web3Api.instance.toUtf8(addHexPrefix(unpad(event.args.action))),
                 sourceId: event.args.source,
                 blockNumber: event.blockNumber,
             });
@@ -48,8 +46,7 @@ function init(sp, getService) {
     const service = function () {
         return essenceIterator;
     };
-    sp().service(constants_1.PROFILE_MODULE.essenceIterator, service);
+    sp().service(PROFILE_MODULE.essenceIterator, service);
     return essenceIterator;
 }
-exports.default = init;
 //# sourceMappingURL=essence-iterator.js.map

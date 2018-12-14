@@ -159,14 +159,10 @@ function* draftPublish ({ actionId, draft })/* : Saga<void> */ {
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
         );
         draftToPublish.content.wordCount = getWordCount(draftFromState.content.draft.getCurrentContent());
-        if (draftToPublish.content.entryType === 'link' && draftToPublish.content.excerpt.length === 0) {
-            const text = draftFromState.getIn(['content', 'draft']).getCurrentContent().getPlainText();
-            if (text.length) {
-                draftToPublish.content.excerpt = text.slice(0, 120);
-            } else {
-                draftToPublish.content.excerpt = draftToPublish.content.cardInfo.title;                
-            }
-        }
+        /**
+         * Do not add any excerpt to link entries if it's not defined
+         * See issue: #238 on /Community
+         */
         if (
             draftToPublish.content.entryType === 'article' &&
             isEmpty(draftToPublish.content.featuredImage)
@@ -201,7 +197,7 @@ function* draftPublishSuccess ({ data })/* : Saga<void> */ {
         duration: 4,
         values: { title: data.draft.title }
     }));
-    yield put(claimableActions.claimableIterator());    
+    yield put(claimableActions.claimableIterator());
 }
 
 function* draftPublishUpdate ({ actionId, draft })/* : Saga<void> */ {

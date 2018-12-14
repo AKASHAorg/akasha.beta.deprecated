@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { profileMessages } from '../../locale-data/messages';

@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const indexes_1 = require("./indexes");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { SEARCH_MODULE } from '@akashaproject/common/constants';
+import { dbs } from './indexes';
+export default function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
         const collection = [];
@@ -15,7 +13,7 @@ function init(sp, getService) {
             limit: pageSize,
             type: 'ID',
         };
-        indexes_1.dbs.profiles.searchIndex.match(options)
+        dbs.profiles.searchIndex.match(options)
             .on('data', (data) => {
             collection.push({ akashaId: data.token, ethAddress: data.documents[0] });
         })
@@ -28,8 +26,7 @@ function init(sp, getService) {
     const service = function () {
         return findProfiles;
     };
-    sp().service(constants_1.SEARCH_MODULE.findProfiles, service);
+    sp().service(SEARCH_MODULE.findProfiles, service);
     return findProfiles;
 }
-exports.default = init;
 //# sourceMappingURL=find-profiles.js.map

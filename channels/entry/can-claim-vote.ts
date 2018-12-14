@@ -30,7 +30,7 @@ export default function init(sp, getService) {
         return contracts.instance.Votes
         .canClaimEntryVote(id, data.ethAddress, timeStamp)
         .then((status) => {
-          return { entryId: id, status };
+          return { status, entryId: id };
         });
       });
       const collection = yield Promise.all(requests);

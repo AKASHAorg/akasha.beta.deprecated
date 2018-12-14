@@ -96,7 +96,7 @@ const commentsState = createReducer(initialState, {
         const { context, commentId } = request;
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(commentId, false);
-        return state.setIn(['flags', 'pendingComments', context], pendingComments);        
+        return state.setIn(['flags', 'pendingComments', context], pendingComments);
     },
 
     [`${COMMENTS_MODULE.getComment}_SUCCESS`]: (state, {data, request}) => {
@@ -199,7 +199,9 @@ const commentsState = createReducer(initialState, {
             newestCommentBlock: state.get('newestCommentBlock').set(parent, data.lastBlock)
         });
     },
-
+    [types.COMMENTS_PUBLISH_SUCCESS]: (state) => {
+        return state;
+    },
     [types.COMMENTS_LOAD_NEW]: (state) => {
         const newComments = state.getIn(['newComments', 'comments']);
         if (!newComments.size) {

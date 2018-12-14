@@ -17,7 +17,7 @@ export default function init(sp, getService) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, cyclingStatesSchema, { throwError: true });
 
-    const address = yield getService(COMMON_MODULE.profileHelpers)
+    const address = yield (getService(COMMON_MODULE.profileHelpers))
     .profileAddress(data);
 
     const web3Api = getService(CORE_MODULE.WEB3_API);
@@ -43,7 +43,7 @@ export default function init(sp, getService) {
 
     const sorted = sortWith([ascend(prop('unlockDate')), ascend(prop('amount'))], collection);
     const now = new Date().getTime() / 1000;
-    const rule = (state) => state.unlockDate < now;
+    const rule = state => state.unlockDate < now;
     const available = filter(rule, sorted);
     const totalAvailable = available.reduce(
       (acc, curr) => {

@@ -14,9 +14,8 @@
     "superagent": "^3.8.3"
   },
   "peerDependencies": {
-    "@akashaproject/common": "^1.0.0",
     "bluebird": "^3.5.1",
-    "ethereumjs-util": "^5.2.0",
+    "ethereumjs-util": "^6.0.0",
     "ramda": "^0.25.0",
     "safe-buffer": "^5.1.2"
   }

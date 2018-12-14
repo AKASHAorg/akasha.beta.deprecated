@@ -26,7 +26,7 @@ const execute = Promise.coroutine(function* (data: { tagName: string, limit: num
 
     if (!mixed.hasFull(cacheKey)) {
         const filter = contracts.instance.Tags.TagCreate({}, { fromBlock: 0, toBlock: 'latest' });
-        yield Promise.fromCallback((cb) => filter.get(cb)).then((collection) => {
+        yield Promise.fromCallback((cb) => filter.get(cb)).then((collection: any) => {
             const tags = collection.map((el) => {
                return  GethConnector.getInstance().web3.toUtf8(el.args.tag);
             });

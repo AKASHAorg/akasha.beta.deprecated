@@ -1,40 +1,38 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const create_image_1 = require("./create-image");
-const get_config_1 = require("./get-config");
-const get_ports_1 = require("./get-ports");
-const logs_1 = require("./logs");
-const resolve_1 = require("./resolve");
-const set_ports_1 = require("./set-ports");
-const start_1 = require("./start");
-const status_1 = require("./status");
-const stop_1 = require("./stop");
-const constants_1 = require("@akashaproject/common/constants");
+import createImageInit from './create-image';
+import getConfigInit from './get-config';
+import getPortsInit from './get-ports';
+import logsInit from './logs';
+import resolveInit from './resolve';
+import setPortsInit from './set-ports';
+import startInit from './start';
+import statusInit from './status';
+import stopInit from './stop';
+import { IPFS_MODULE } from '@akashaproject/common/constants';
 const init = function init(sp, getService) {
-    const createImage = create_image_1.default(sp, getService);
-    const getConfig = get_config_1.default(sp, getService);
-    const getPorts = get_ports_1.default(sp, getService);
-    const logs = logs_1.default(sp, getService);
-    const resolve = resolve_1.default(sp, getService);
-    const setPorts = set_ports_1.default(sp, getService);
-    const start = start_1.default(sp, getService);
-    const status = status_1.default(sp, getService);
-    const stop = stop_1.default(sp, getService);
+    const createImage = createImageInit(sp, getService);
+    const getConfig = getConfigInit(sp, getService);
+    const getPorts = getPortsInit(sp, getService);
+    const logs = logsInit(sp, getService);
+    const resolve = resolveInit(sp, getService);
+    const setPorts = setPortsInit(sp, getService);
+    const start = startInit(sp, getService);
+    const status = statusInit(sp, getService);
+    const stop = stopInit(sp, getService);
     return {
-        [constants_1.IPFS_MODULE.createImage]: createImage,
-        [constants_1.IPFS_MODULE.getConfig]: getConfig,
-        [constants_1.IPFS_MODULE.getPorts]: getPorts,
-        [constants_1.IPFS_MODULE.logs]: logs,
-        [constants_1.IPFS_MODULE.resolve]: resolve,
-        [constants_1.IPFS_MODULE.setPorts]: setPorts,
-        [constants_1.IPFS_MODULE.startService]: start,
-        [constants_1.IPFS_MODULE.status]: status,
-        [constants_1.IPFS_MODULE.stopService]: stop,
+        [IPFS_MODULE.createImage]: createImage,
+        [IPFS_MODULE.getConfig]: getConfig,
+        [IPFS_MODULE.getPorts]: getPorts,
+        [IPFS_MODULE.logs]: logs,
+        [IPFS_MODULE.resolve]: resolve,
+        [IPFS_MODULE.setPorts]: setPorts,
+        [IPFS_MODULE.startService]: start,
+        [IPFS_MODULE.status]: status,
+        [IPFS_MODULE.stopService]: stop,
     };
 };
 const app = {
     init,
-    moduleName: constants_1.IPFS_MODULE.$name,
+    moduleName: IPFS_MODULE.$name,
 };
-exports.default = app;
+export default app;
 //# sourceMappingURL=index.js.map

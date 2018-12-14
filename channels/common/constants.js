@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CORE_MODULE = Object.freeze({
+export const CORE_MODULE = Object.freeze({
     VALIDATOR_SCHEMA: 'VALIDATOR_SCHEMA',
     WEB3_HELPER: 'WEB3_HELPER',
     WEB3_API: 'WEB3_API',
@@ -19,19 +17,19 @@ exports.CORE_MODULE = Object.freeze({
     IPC: 'IPC',
     $name: 'core',
 });
-exports.AUTH_MODULE = Object.freeze({
+export const AUTH_MODULE = Object.freeze({
     auth: 'auth_AUTH',
     generateEthKey: 'generateEthKey_AUTH',
     regenSession: 'regenSession_AUTH',
     $name: 'auth',
 });
-exports.TX_MODULE = Object.freeze({
+export const TX_MODULE = Object.freeze({
     addToQueue: 'addToQueue',
     emitMined: 'emitMined',
     getTransaction: 'getTransaction',
     $name: 'tx',
 });
-exports.TAGS_MODULE = Object.freeze({
+export const TAGS_MODULE = Object.freeze({
     canCreate: 'canCreateTag',
     checkFormat: 'checkTagFormat',
     createTag: 'createTag',
@@ -43,14 +41,14 @@ exports.TAGS_MODULE = Object.freeze({
     syncTags: 'syncTags',
     $name: 'tags',
 });
-exports.SEARCH_MODULE = Object.freeze({
+export const SEARCH_MODULE = Object.freeze({
     query: 'query_SEARCH',
     flush: 'flush_SEARCH',
     findTags: 'findTags_SEARCH',
     findProfiles: 'findProfiles_SEARCH',
     $name: 'search',
 });
-exports.COMMON_MODULE = Object.freeze({
+export const COMMON_MODULE = Object.freeze({
     profileHelpers: 'profile_common_helpers',
     ipfsHelpers: 'ipfs_common_helpers',
     getLocalIdentities: 'getLocalIdentities_AUTH',
@@ -59,7 +57,7 @@ exports.COMMON_MODULE = Object.freeze({
     requestEther: 'requestEther_AUTH',
     $name: 'common',
 });
-exports.REGISTRY_MODULE = Object.freeze({
+export const REGISTRY_MODULE = Object.freeze({
     addressOf: 'addressOf_R',
     checkIdFormat: 'checkIdFormat_R',
     fetchRegistered: 'fetchRegistered_R',
@@ -67,11 +65,11 @@ exports.REGISTRY_MODULE = Object.freeze({
     registerProfile: 'registerProfile_R',
     $name: 'registry',
 });
-exports.PINNER_MODULE = Object.freeze({
+export const PINNER_MODULE = Object.freeze({
     pin: 'pin_P',
     $name: 'pinner',
 });
-exports.NOTIFICATIONS_MODULE = Object.freeze({
+export const NOTIFICATIONS_MODULE = Object.freeze({
     entriesCache: 'entriesCache_No',
     queue: 'queue_No',
     comments: 'comments_No',
@@ -84,12 +82,12 @@ exports.NOTIFICATIONS_MODULE = Object.freeze({
     subscribe: 'subscribe_No',
     $name: 'notifications',
 });
-exports.LICENCE_MODULE = Object.freeze({
+export const LICENCE_MODULE = Object.freeze({
     getLicenceById: 'getLicenceById_Li',
     getLicences: 'getLicences_Li',
     $name: 'licences',
 });
-exports.IPFS_MODULE = Object.freeze({
+export const IPFS_MODULE = Object.freeze({
     createImage: 'createImage_ip',
     getConfig: 'getConfig_ip',
     getPorts: 'getPorts_ip',
@@ -101,7 +99,7 @@ exports.IPFS_MODULE = Object.freeze({
     stopService: 'stopService_ip',
     $name: 'ipfs',
 });
-exports.GETH_MODULE = Object.freeze({
+export const GETH_MODULE = Object.freeze({
     options: 'options_geth',
     stop: 'stop_geth',
     restartService: 'restartService_geth',
@@ -111,7 +109,7 @@ exports.GETH_MODULE = Object.freeze({
     logs: 'logs_geth',
     $name: 'geth',
 });
-exports.PROFILE_MODULE = Object.freeze({
+export const PROFILE_MODULE = Object.freeze({
     getByAddress: 'getByAddress_P',
     profileData: 'profileData_P',
     resolveEthAddress: 'resolveEthAddress_P',
@@ -147,7 +145,7 @@ exports.PROFILE_MODULE = Object.freeze({
     karmaRanking: 'karmaRanking_P',
     $name: 'profile',
 });
-exports.GENERAL_SETTINGS = Object.freeze({
+export const GENERAL_SETTINGS = Object.freeze({
     OP_WAIT_TIME: 'OP_WAIT_TIME',
     BASE_URL: 'BASE_URL',
     FULL_WAIT_TIME: 'FULL_WAIT_TIME',
@@ -155,13 +153,13 @@ exports.GENERAL_SETTINGS = Object.freeze({
     FAUCET_URL: 'FAUCET_URL',
     FAUCET_TOKEN: 'FAUCET_TOKEN',
 });
-exports.PROFILE_CONSTANTS = Object.freeze({
+export const PROFILE_CONSTANTS = Object.freeze({
     AVATAR: 'avatar',
     LINKS: 'links',
     ABOUT: 'about',
     BACKGROUND_IMAGE: 'backgroundImage',
 });
-exports.PROFILE_SCHEMA = Object.freeze({
+export const PROFILE_SCHEMA = Object.freeze({
     id: '/profileSchema',
     type: 'object',
     properties: {
@@ -195,7 +193,7 @@ exports.PROFILE_SCHEMA = Object.freeze({
         },
     },
 });
-exports.IMG_SIZE_SCHEMA = Object.freeze({
+export const IMG_SIZE_SCHEMA = Object.freeze({
     id: '/imgSize',
     type: 'object',
     properties: {
@@ -205,7 +203,7 @@ exports.IMG_SIZE_SCHEMA = Object.freeze({
     },
     required: ['src', 'width', 'height'],
 });
-exports.ENTRY_MODULE = Object.freeze({
+export const ENTRY_MODULE = Object.freeze({
     helpers: 'helpers_entry',
     allStreamIterator: 'allStreamIterator_entry',
     buildFilter: 'buildFilter_entry',
@@ -243,7 +241,7 @@ exports.ENTRY_MODULE = Object.freeze({
     votesIterator: 'votesIterator_entry',
     $name: 'entry',
 });
-exports.COMMENTS_MODULE = Object.freeze({
+export const COMMENTS_MODULE = Object.freeze({
     comment: 'comment_comments',
     commentsCount: 'commentsCount_comments',
     commentIpfs: 'commentIpfs_comments',
@@ -257,28 +255,28 @@ exports.COMMENTS_MODULE = Object.freeze({
     getVoteOf: 'getVoteOf_comments',
     $name: 'comments',
 });
-exports.buildCall = function (module, method, data) {
+export const buildCall = function (module, method, data) {
     return { method, module: module.$name, payload: data };
 };
-exports.default = {
-    CORE_MODULE: exports.CORE_MODULE,
-    AUTH_MODULE: exports.AUTH_MODULE,
-    TX_MODULE: exports.TX_MODULE,
-    TAGS_MODULE: exports.TAGS_MODULE,
-    SEARCH_MODULE: exports.SEARCH_MODULE,
-    COMMON_MODULE: exports.COMMON_MODULE,
-    REGISTRY_MODULE: exports.REGISTRY_MODULE,
-    PINNER_MODULE: exports.PINNER_MODULE,
-    NOTIFICATIONS_MODULE: exports.NOTIFICATIONS_MODULE,
-    LICENCE_MODULE: exports.LICENCE_MODULE,
-    IPFS_MODULE: exports.IPFS_MODULE,
-    GETH_MODULE: exports.GETH_MODULE,
-    PROFILE_MODULE: exports.PROFILE_MODULE,
-    GENERAL_SETTINGS: exports.GENERAL_SETTINGS,
-    PROFILE_CONSTANTS: exports.PROFILE_CONSTANTS,
-    PROFILE_SCHEMA: exports.PROFILE_SCHEMA,
-    IMG_SIZE_SCHEMA: exports.IMG_SIZE_SCHEMA,
-    ENTRY_MODULE: exports.ENTRY_MODULE,
-    COMMENTS_MODULE: exports.COMMENTS_MODULE,
+export default {
+    CORE_MODULE,
+    AUTH_MODULE,
+    TX_MODULE,
+    TAGS_MODULE,
+    SEARCH_MODULE,
+    COMMON_MODULE,
+    REGISTRY_MODULE,
+    PINNER_MODULE,
+    NOTIFICATIONS_MODULE,
+    LICENCE_MODULE,
+    IPFS_MODULE,
+    GETH_MODULE,
+    PROFILE_MODULE,
+    GENERAL_SETTINGS,
+    PROFILE_CONSTANTS,
+    PROFILE_SCHEMA,
+    IMG_SIZE_SCHEMA,
+    ENTRY_MODULE,
+    COMMENTS_MODULE,
 };
 //# sourceMappingURL=constants.js.map
