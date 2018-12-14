@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { Tooltip } from 'antd';
 import { Icon } from '../';
 import * as actionTypes from '../../constants/action-types';
@@ -11,10 +11,7 @@ import { getDisplayName } from '../../utils/dataModule';
 class TransactionLog extends Component {
     shouldComponentUpdate (nextProps) {
         const { action } = nextProps;
-        if (!action.equals(this.props.action)) {
-            return true;
-        }
-        return false;
+        return (!action.equals(this.props.action));
     }
 
     getExtraInfo = () => { // eslint-disable-line complexity

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/withRouter';
 import { Button, Form, Modal } from 'antd';
 import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';

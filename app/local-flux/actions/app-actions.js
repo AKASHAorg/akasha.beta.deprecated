@@ -22,7 +22,7 @@ export const navBackCounterReset = () => action(types.NAV_BACK_COUNTER_RESET);
 export const notificationDisplay = notification => action(types.NOTIFICATION_DISPLAY, { notification });
 
 // for publishing to blockchain
-export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
+// export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 
 export const profileEditToggle = () => action(types.PROFILE_EDIT_TOGGLE);
 

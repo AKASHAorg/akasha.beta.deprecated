@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Checkbox, Modal } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
 import { isInternalLink } from '../../utils/url-utils';
-import { parseUrl } from '../../utils/parsers/parser-utils';
+import ParserUtils from '../../utils/parsers/parser-utils';
 
 class NavigateAway extends Component {
     state = {
@@ -29,7 +29,7 @@ class NavigateAway extends Component {
 
     handleOk = () => {
         const { userSettingsAddTrustedDomain, navigation, onClick, loggedEthAddress } = this.props;
-        const domain = parseUrl(navigation.get('url')).hostname;
+        const domain = ParserUtils.parseUrl(navigation.get('url')).hostname;
         if (this.state.trustedDomain) {
             userSettingsAddTrustedDomain(loggedEthAddress, domain);
         }

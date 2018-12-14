@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { routerReducer as routing } from 'react-router-redux';
+// import { routerReducer as routing } from 'react-router';
 import actionState from './actionState';
 import appState from './appState';
 import claimableState from './claimableState';
@@ -40,7 +40,7 @@ const rootReducer = combineReducers({
     tagState,
     tempProfileState,
     utilsState,
-    router: routing,
+    // router: routing,
 });
 
 export default rootReducer;

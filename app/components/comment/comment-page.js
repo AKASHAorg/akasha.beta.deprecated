@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import Link from 'react-router-dom/Link';
 import { injectIntl } from 'react-intl';
 import { Card } from 'antd';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';

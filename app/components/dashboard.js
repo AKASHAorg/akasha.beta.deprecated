@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map, List } from 'immutable';
 import { equals } from 'ramda';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DropTarget } from 'react-dnd';
