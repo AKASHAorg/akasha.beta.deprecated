@@ -3,7 +3,7 @@ import { call, select, takeEvery } from 'redux-saga/effects';
 import * as types from '../constants';
 import { profileSelectors, settingsSelectors, externalProcessSelectors } from '../selectors';
 import * as profileService from '../services/profile-service';
-import { NOTIFICATION_MODULE } from '@akashaproject/common/constants';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 import ChReqService from '../services/channel-request-service';
 
 /*::
@@ -23,7 +23,7 @@ function* notificationsSubscribe ({ notificationsPreferences })/* : Saga<void> *
     const payload = { settings, profile: { ethAddress }, fromBlock };
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        NOTIFICATION_MODULE, NOTIFICATION_MODULE.subscribe,
+        NOTIFICATIONS_MODULE, NOTIFICATIONS_MODULE.subscribe,
         payload
     );
 }
@@ -34,5 +34,5 @@ function* notificationsLoaded () {
 }
 
 export function* watchNotificationsActions ()/* : Saga<void> */ {
-    yield takeEvery(types.NOTIFICATIONS_SUBSCRIBE, notificationsSubscribe);
+    yield takeEvery(NOTIFICATIONS_MODULE.subscribe, notificationsSubscribe);
 }

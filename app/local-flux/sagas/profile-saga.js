@@ -156,7 +156,7 @@ function* profileFaucet ({ actionId, ethAddress, withNotification })/* : Saga<vo
     }
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        AUTH_MODULE, AUTH_MODULE.requestEther,
+        COMMON_MODULE, COMMON_MODULE.requestEther,
         { address: ethAddress, actionId, withNotification }
     );
 }
@@ -229,7 +229,7 @@ function* profileGetBalance ({ unit = 'ether' })/* : Saga<void> */ {
 function* profileGetByAddress ({ ethAddress })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        REGISTRY_MODULE, REGISTRY_MODULE.getByAddress,
+        PROFILE_MODULE, PROFILE_MODULE.getByAddress,
         { ethAddress }
     );
 }
@@ -237,7 +237,7 @@ function* profileGetByAddress ({ ethAddress })/* : Saga<void> */ {
 function* profileGetData ({ akashaId, context, ethAddress, full = false, batching })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.getProfileData,
+        PROFILE_MODULE, PROFILE_MODULE.profileData,
         { akashaId, context, ethAddress, full, batching }
     );
 }
@@ -264,14 +264,14 @@ function* profileGetList ({ ethAddresses })/* : Saga<void> */ {
 }
 
 function* profileGetLocal ({ polling })/* : Saga<void> */ {
+    // yield call(
+    //     [ChReqService, ChReqService.sendRequest],
+    //     UTILS_MODULE, UTILS_MODULE.checkUpdate,
+    //     {}
+    // );
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        UTILS_MODULE, UTILS_MODULE.checkUpdate,
-        {}
-    );
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        AUTH_MODULE, AUTH_MODULE.getLocalIdentities,
+        COMMON_MODULE, COMMON_MODULE.getLocalIdentities,
         { polling }
     );
 }
@@ -444,13 +444,13 @@ function* profileSaveLogged (loggedProfile)/* : Saga<void> */ {
     }
 }
 
-function* profileSendTip ({ actionId, akashaId, ethAddress, receiver, value, tokenAmount })/* : Saga<void> */ {
-    const channel = Channel.server.profile.tip;
-    yield call(enableChannel, channel, Channel.client.profile.manager);
+function* profileSendTip ({
+    actionId, akashaId, ethAddress, receiver, value, tokenAmount
+})/* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.tip,
+        PROFILE_MODULE, PROFILE_MODULE.sendTip,
         {
             token,
             actionId,
@@ -498,7 +498,7 @@ function* profileToggleDonationsSuccess ()/* : Saga<void> */ {
     }));
 }
 
-function* profileTransferAeth ({ actionId, akashaId, ethAddress, tokenAmount })/* : Saga<void> */ {
+function* profileTransferToken ({ actionId, akashaId, ethAddress, tokenAmount })/* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
     yield call(
         [ChReqService, ChReqService.sendRequest],
@@ -661,56 +661,56 @@ function* profileRegisterSuccess (payload)/* : Saga<void> */ {
 }
 
 export function* watchProfileActions ()/* : Saga<void> */ { // eslint-disable-line max-statements
-    yield takeEvery(types.PROFILE_AETH_TRANSFERS_ITERATOR, profileAethTransfersIterator);
-    yield takeEvery(types.PROFILE_BOND_AETH, profileBondAeth);
-    yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
-    yield takeLatest(types.PROFILE_COMMENTS_ITERATOR, profileCommentsIterator);    
-    yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
-    yield takeEvery(types.PROFILE_CYCLE_AETH, profileCycleAeth);
-    yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
-    yield takeEvery(types.PROFILE_CYCLING_STATES, profileCyclingStates);
+    yield takeEvery(PROFILE_MODULE.transfersIterator, profileAethTransfersIterator);
+    yield takeEvery(PROFILE_MODULE.bondAeth, profileBondAeth);
+    // yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
+    yield takeLatest(PROFILE_MODULE.commentsIterator, profileCommentsIterator);    
+    yield takeLatest(AUTH_MODULE.generateEthKey, profileCreateEthAddress);
+    yield takeEvery(PROFILE_MODULE.cycleAeth, profileCycleAeth);
+    // yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
+    yield takeEvery(PROFILE_MODULE.cyclingStates, profileCyclingStates);
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
-    yield takeEvery(types.PROFILE_ESSENCE_ITERATOR, profileEssenceIterator);
-    yield takeLatest(types.PROFILE_EXISTS, profileExists);
-    yield takeEvery(types.PROFILE_FAUCET, profileFaucet);
-    yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
-    yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
-    yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
-    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
-    yield takeEvery(types.PROFILE_FREE_AETH, profileFreeAeth);
-    yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
-    yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
-    yield takeEvery(types.PROFILE_GET_BY_ADDRESS, profileGetByAddress);
-    yield takeEvery(types.PROFILE_GET_DATA, profileGetData);
-    yield takeLatest(types.PROFILE_GET_LIST, profileGetList);
-    yield takeLatest(types.PROFILE_GET_LOCAL, profileGetLocal);
+    yield takeEvery(PROFILE_MODULE.essenceIterator, profileEssenceIterator);
+    yield takeLatest(REGISTRY_MODULE.profileExists, profileExists);
+    yield takeEvery(COMMON_MODULE.requestEther, profileFaucet);
+    yield takeEvery(PROFILE_MODULE.followProfile, profileFollow);
+    // yield takeEvery(types.PROFILE_FOLLOW_SUCCESS, profileFollowSuccess);
+    yield takeEvery(PROFILE_MODULE.followersIterator, profileFollowersIterator);
+    yield takeEvery(PROFILE_MODULE.followingIterator, profileFollowingsIterator);
+    yield takeEvery(PROFILE_MODULE.freeAeth, profileFreeAeth);
+    // yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
+    yield takeLatest(PROFILE_MODULE.getBalance, profileGetBalance);
+    yield takeEvery(PROFILE_MODULE.getByAddress, profileGetByAddress);
+    yield takeEvery(PROFILE_MODULE.profileData, profileGetData);
+    yield takeLatest(PROFILE_MODULE.getProfileList, profileGetList);
+    yield takeLatest(COMMON_MODULE.getLocalIdentities, profileGetLocal);
     yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
     yield takeLatest(types.PROFILE_GET_LOGGED_SUCCESS, profileGetPublishingCost);
-    yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
-    yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
-    yield takeEvery(types.PROFILE_KARMA_RANKING, profileKarmaRanking);
-    yield takeLatest(types.PROFILE_LOGIN, profileLogin);
-    yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
-    yield takeEvery(types.PROFILE_MANA_BURNED, profileManaBurned);
-    yield takeEvery(types.PROFILE_MORE_COMMENTS_ITERATOR, profileMoreCommentsIterator);    
-    yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
-    yield takeEvery(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
-    yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
+    // yield takeLatest(types.PROFILE_GET_PUBLISHING_COST, profileGetPublishingCost);
+    yield takeEvery(PROFILE_MODULE.isFollower, profileIsFollower);
+    yield takeEvery(PROFILE_MODULE.karmaRanking, profileKarmaRanking);
+    yield takeLatest(COMMON_MODULE.login, profileLogin);
+    yield takeLatest(COMMON_MODULE.logout, profileLogout);
+    yield takeEvery(PROFILE_MODULE.manaBurned, profileManaBurned);
+    yield takeEvery(PROFILE_MODULE.commentsIterator, profileMoreCommentsIterator);    
+    yield takeEvery(PROFILE_MODULE.followersIterator, profileMoreFollowersIterator);
+    yield takeEvery(PROFILE_MODULE.followingIterator, profileMoreFollowingsIterator);
+    yield takeEvery(PROFILE_MODULE.resolveProfileIpfsHash, profileResolveIpfsHash);
     yield takeEvery(types.PROFILE_SAVE_LAST_BLOCK_NR, profileSaveLastBlockNr);
-    yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
-    yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
-    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS, profileToggleDonations);
-    yield takeEvery(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, profileToggleDonationsSuccess);
-    yield takeEvery(types.PROFILE_TRANSFER_AETH, profileTransferAeth);
-    yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
-    yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
-    yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
-    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE, profileTransformEssence);
-    yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, profileTransformEssenceSuccess);
-    yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
-    yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
-    yield takeEvery(types.PROFILE_UPDATE, profileUpdate);
-    yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
-    yield takeEvery(types.PROFILE_REGISTER, profileRegister);
-    yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
+    yield takeEvery(PROFILE_MODULE.sendTip, profileSendTip);
+    // yield takeEvery(types.PROFILE_SEND_TIP_SUCCESS, profileSendTipSuccess);
+    yield takeEvery(PROFILE_MODULE.toggleDonations, profileToggleDonations);
+    // yield takeEvery(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, profileToggleDonationsSuccess);
+    yield takeEvery(PROFILE_MODULE.transfer, profileTransferToken);
+    // yield takeEvery(types.PROFILE_TRANSFER_AETH_SUCCESS, profileTransferAethSuccess);
+    // yield takeEvery(types.PROFILE_TRANSFER_ETH, profileTransferEth);
+    // yield takeEvery(types.PROFILE_TRANSFER_ETH_SUCCESS, profileTransferEthSuccess);
+    yield takeEvery(PROFILE_MODULE.transformEssence, profileTransformEssence);
+    // yield takeEvery(types.PROFILE_TRANSFORM_ESSENCE_SUCCESS, profileTransformEssenceSuccess);
+    yield takeEvery(PROFILE_MODULE.unFollowProfile, profileUnfollow);
+    // yield takeEvery(types.PROFILE_UNFOLLOW_SUCCESS, profileUnfollowSuccess);
+    yield takeEvery(PROFILE_MODULE.updateProfileData, profileUpdate);
+    // yield takeEvery(types.PROFILE_UPDATE_SUCCESS, profileUpdateSuccess);
+    yield takeEvery(REGISTRY_MODULE.registerProfile, profileRegister);
+    // yield takeEvery(types.PROFILE_REGISTER_SUCCESS, profileRegisterSuccess);
 }

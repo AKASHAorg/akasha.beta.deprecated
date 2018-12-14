@@ -24,7 +24,7 @@
 //     );
 // }
 
-export function* watchUtilsActions ()/* : Saga<void>  */{
-    // yield takeEvery(types.BACKUP_KEYS_REQUEST, backupKeysRequest);
-    // yield takeEvery(types.RELOAD_PAGE, reloadPage);
-}
+// export function* watchUtilsActions ()/* : Saga<void>  */{
+//      yield takeEvery(types.BACKUP_KEYS_REQUEST, backupKeysRequest);
+//      yield takeEvery(types.RELOAD_PAGE, reloadPage);
+// }

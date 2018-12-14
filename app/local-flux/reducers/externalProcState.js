@@ -43,10 +43,10 @@ const computeIpfsStatus = (record) => {
 };
 
 const eProcState = createReducer(initialState, {
-    [`${GETH_MODULE.start}`]: state =>
+    [types.CLEAR_SYNC_STATUS]: state =>
         state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
 
-    [`${GETH_MODULE_START}`]: state =>
+    [`${GETH_MODULE.start}`]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 busyState: true,
@@ -194,29 +194,29 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE_STOP_}`SYNC]: state =>
+    [types.GETH_STOP_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 3,
         }),
 
-    [`${GETH_MODULE_PAUSE}`_SYNC]: state =>
+    [types.GET_PAUSE_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 2,
         }),
 
-    [`${GETH_MODULE_RESUM}`E_SYNC]: state =>
+    [types.GETH_RESUME_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 1
         }),
 
-    [`${GETH_MODULE_RESET}`_BUSY]: state =>
+    [types.GETH_RESET_BUSY]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 busyState: false
             })
         }),
 
-    [`${IPFS_MODULE}`_RESET_BUSY]: state =>
+    [types.IPFS_RESET_BUSY]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             busyState: false
         }),
@@ -267,7 +267,6 @@ const eProcState = createReducer(initialState, {
             geth: state.get('geth').set('lastLogTimestamp', timestamp),
             ipfs: state.get('ipfs').set('lastLogTimestamp', timestamp)
         }),
-
 });
 
 export default eProcState;

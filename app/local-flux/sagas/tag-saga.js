@@ -30,8 +30,8 @@ function* tagGetEntriesCount ({ tags })/* : Saga<void> */ {
 }
 
 export function* watchTagActions ()/* : Saga<void> */ {
-    yield takeEvery(types.TAG_CREATE, tagCreate);
-    yield takeEvery(types.TAG_EXISTS, tagExists);
-    yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
-    yield takeLatest(types.TAG_CAN_CREATE, tagCanCreateCheck);
+    yield takeEvery(TAGS_MODULE.createTag, tagCreate);
+    yield takeEvery(TAGS_MODULE.existsTag, tagExists);
+    yield takeEvery(ENTRY_MODULE.getTagEntriesCount, tagGetEntriesCount);
+    yield takeLatest(TAGS_MODULE.canCreate, tagCanCreateCheck);
 }

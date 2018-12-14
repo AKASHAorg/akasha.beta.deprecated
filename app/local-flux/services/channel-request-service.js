@@ -1,7 +1,6 @@
 // @flow
 import { buildCall } from '@akashaproject/common/constants';
 import { put } from 'redux-saga/effects';
-import { isEmpty } from 'ramda';
 import { genId } from '../../utils/dataModule';
 import store from '../store/configureStore';
 
@@ -10,12 +9,8 @@ export default {
     requestIds: {
         // [methodName]: [requestId, requestId...]
     },
-    sendRequest (module: Object, methodName: string, data: Object) {
-        let { reqId } = data;
-        // generate a request id if it's missing
-        if(!reqId) {
-            reqId = this.generateId();
-        }
+    sendRequest (module/* : Object */, methodName/* : string */, data/* : Object */) {
+        const reqId/* : string */ = data.reqId;
         const channel = this.getIPCChannel();
         const reqObject = buildCall(module, methodName, { reqId, ...data });
 
@@ -30,6 +25,9 @@ export default {
     },
     generateId (): string {
         return genId();
+    },
+    setIPCChannel (channel) {
+        this.IPC = channel;
     },
     getIPCChannel () {
         return global.IPC
@@ -72,7 +70,6 @@ export default {
             type: `${method}_SUCCESS`,
             data
         };
-
     },
     removeResponseListener () {
         // remove response listener and all requestIds

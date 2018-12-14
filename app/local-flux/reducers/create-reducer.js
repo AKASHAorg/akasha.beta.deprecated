@@ -1,6 +1,4 @@
-const addRequestToState = (state) => {
-    console.log(state, 'the state');
-}
+
 export function createReducer (initialState, handlers) {
     return function createdReducer (state = initialState, action) {
         if(!action.type) {
@@ -11,7 +9,7 @@ export function createReducer (initialState, handlers) {
         if (handlers.hasOwnProperty(action.type)) {
             return handlers[action.type](state, action);
         } else if (
-            action.type.endWith('_REQUEST') &&
+            action.type.endsWith('_REQUEST') &&
             handlers.hasOwnProperty('GENERIC_REQUEST_SUCCESS')
         ) {
             /**
@@ -20,7 +18,7 @@ export function createReducer (initialState, handlers) {
              */
             return handlers['GENERIC_REQUEST_SUCCESS'](state, action);
         } else if (
-            action.type.endWith('_REQUEST_ERROR') &&
+            action.type.endsWith('_REQUEST_ERROR') &&
             handlers.hasOwnProperty('GENERIC_REQUEST_ERROR')
         ) {
             /**
@@ -29,7 +27,7 @@ export function createReducer (initialState, handlers) {
              */
             return handlers['GENERIC_REQUEST_ERROR'](state, action);
         } else if(
-            action.type.endWith('_REQUEST_END') &&
+            action.type.endsWith('_REQUEST_END') &&
             handlers.hasOwnProperty('GENERIC_REQUEST_END_SUCCESS')
         ) {
             /**

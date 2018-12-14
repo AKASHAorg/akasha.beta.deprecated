@@ -5,9 +5,10 @@ import { entrySearchLimit, autocompleteLimit,
     profileSearchLimit, tagSearchLimit } from '../../constants/iterator-limits';
 import { searchSelectors, profileSelectors } from '../selectors';
 import * as searchService from '../services/search-service';
-import { SEARCH_MODULE } from '@akashaproject/common/constants';
+import { SEARCH_MODULE, TAGS_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 import ChReqService from '../services/channel-request-service';
 
+import { deprecatedTypeWarning } from './helpers';
 /*::
     import type { Saga } from 'redux-saga';
  */
@@ -76,7 +77,7 @@ function* searchSyncTags ()/* : Saga<void> */ {
     fromBlock = fromBlock || 0;
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        SEARCH_MODULE, SEARCH_MODULE.syncTags,
+        TAGS_MODULE, TAGS_MODULE.syncTags,
         { fromBlock }
     )
 }
@@ -117,11 +118,11 @@ function* searchUpdateLastTagsBlock ({ type, blockNr })/* : Saga<void> */ {
 }
 
 export function* watchSearchActions ()/* : Saga<void> */ {
-    yield takeLatest(types.SEARCH_MORE_QUERY, searchMoreQuery);
-    yield takeLatest(types.SEARCH_QUERY, searchQuery);
-    yield takeEvery(types.SEARCH_PROFILES, searchProfiles);
-    yield takeLatest(types.SEARCH_SYNC_ENTRIES, searchSyncEntries);
-    yield takeLatest(types.SEARCH_SYNC_TAGS, searchSyncTags);
-    yield takeEvery(types.SEARCH_TAGS, searchTags);
+    yield takeLatest(types.SEARCH_MORE_QUERY, deprecatedTypeWarning('SEARCH_MODULE.query'))
+    yield takeLatest(SEARCH_MODULE.query, searchQuery);
+    yield takeEvery(SEARCH_MODULE.findProfiles, searchProfiles);
+    yield takeLatest(ENTRY_MODULE.syncEntries, searchSyncEntries);
+    yield takeLatest(TAGS_MODULE.syncTags, searchSyncTags);
+    yield takeEvery(TAGS_MODULE.searchTag, searchTags);
 }
 

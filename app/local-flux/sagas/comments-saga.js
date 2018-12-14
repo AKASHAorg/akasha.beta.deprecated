@@ -168,18 +168,18 @@ function* commentsVoteSuccess (commentId)/* : Saga<void> */ {
 }
 
 export function* watchCommentsActions ()/* : Saga<void> */ {
-    yield takeEvery(types.COMMENTS_DOWNVOTE, commentsDownvote);
-    yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
+    yield takeEvery(COMMENTS_MODULE.downVote, commentsDownvote);
+    // yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);
-    yield takeEvery(types.COMMENTS_GET_COMMENT, commentsGet);
-    yield takeEvery(types.COMMENTS_GET_COUNT, commentsGetCount);
-    yield takeEvery(types.COMMENTS_GET_SCORE, commentsGetScore);
-    yield takeEvery(types.COMMENTS_GET_VOTE_OF, commentsGetVoteOf);
-    yield takeEvery(types.COMMENTS_ITERATOR, commentsIterator);
+    yield takeEvery(COMMENTS_MODULE.getComment, commentsGet);
+    yield takeEvery(COMMENTS_MODULE.commentsCount, commentsGetCount);
+    yield takeEvery(COMMENTS_MODULE.getScore, commentsGetScore);
+    yield takeEvery(COMMENTS_MODULE.getVoteOf, commentsGetVoteOf);
+    yield takeEvery(COMMENTS_MODULE.commentsIterator, commentsIterator);
     yield takeEvery(types.COMMENTS_MORE_ITERATOR, commentsMoreIterator);
-    yield takeEvery(types.COMMENTS_PUBLISH, commentsPublish);
-    yield takeEvery(types.COMMENTS_PUBLISH_SUCCESS, commentsPublishSuccess);
-    yield takeEvery(types.COMMENTS_RESOLVE_IPFS_HASH, commentsResolveIpfsHash);
-    yield takeEvery(types.COMMENTS_UPVOTE, commentsUpvote);
-    yield takeEvery(types.COMMENTS_UPVOTE_SUCCESS, commentsUpvoteSuccess);
+    yield takeEvery(COMMENTS_MODULE.comment, commentsPublish);
+    // yield takeEvery(types.COMMENTS_PUBLISH_SUCCESS, commentsPublishSuccess);
+    yield takeEvery(COMMENTS_MODULE.resolveCommentsIpfsHash, commentsResolveIpfsHash);
+    yield takeEvery(COMMENTS_MODULE.upvote, commentsUpvote);
+    // yield takeEvery(types.COMMENTS_UPVOTE_SUCCESS, commentsUpvoteSuccess);
 }

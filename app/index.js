@@ -58,7 +58,7 @@ render(
   <Provider store={store} >
     <ConnectedIntlProvider>
       <ConnectedRouter history={history}>
-        <Route component={AppContainer} />
+        {/* <Route component={AppContainer} /> */}
       </ConnectedRouter>
     </ConnectedIntlProvider>
   </Provider>,

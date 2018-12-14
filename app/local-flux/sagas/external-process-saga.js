@@ -112,33 +112,33 @@ function* gethGetSyncStatus ()/* :Saga<void> */ {
 
 function* watchGethToggleLogger ()/* :Saga<void> */ {
     while (true) {
-        yield take(types.GETH_START_LOGGER);
+        yield take(GETH_MODULE.logs);
         const task = yield fork(gethStartLogger);
-        yield take(types.GETH_STOP_LOGGER);
+        yield take(GETH_MODULE.logs);
         yield cancel(task);
     }
 }
 
 function* watchIpfsToggleLogger ()/* :Saga<void> */ {
     while (true) {
-        yield take(types.IPFS_START_LOGGER);
+        yield take(IPFS_MODULE.logs);
         const task = yield fork(ipfsStartLogger);
-        yield take(types.IPFS_STOP_LOGGER);
+        yield take(IPFS_MODULE.logs);
         yield cancel(task);
     }
 }
 
 export function* watchEProcActions ()/* :Saga<void> */ {
-    yield takeLatest(types.GETH_START, gethStart);
-    yield takeLatest(types.IPFS_START, ipfsStart);
-    yield takeEvery(types.GETH_GET_STATUS, gethGetStatus);
-    yield takeEvery(types.IPFS_GET_STATUS, ipfsGetStatus)
-    yield takeEvery(types.GETH_GET_SYNC_STATUS, gethGetSyncStatus)
-    yield takeLatest(types.GETH_STOP, gethStop)
-    yield takeLatest(types.IPFS_STOP, ipfsStop);
+    yield takeLatest(GETH_MODULE.startService, gethStart);
+    yield takeLatest(IPFS_MODULE.startService, ipfsStart);
+    yield takeEvery(GETH_MODULE.status, gethGetStatus);
+    yield takeEvery(IPFS_MODULE.status, ipfsGetStatus);
+    yield takeEvery(GETH_MODULE.syncStatus, gethGetSyncStatus);
+    yield takeLatest(GETH_MODULE.stop, gethStop);
+    yield takeLatest(IPFS_MODULE.stopService, ipfsStop);
     yield fork(watchGethToggleLogger);
     yield fork(watchIpfsToggleLogger);
-    yield takeLatest(types.IPFS_SET_PORTS, ipfsSetPorts);
-    yield takeEvery(types.IPFS_GET_PORTS, ipfsGetPorts);
+    yield takeLatest(IPFS_MODULE.setPorts, ipfsSetPorts);
+    yield takeEvery(IPFS_MODULE.getPorts, ipfsGetPorts);
     // yield takeEvery(`${IPFS_MODULE.getConfig}_SUCCESS`, watchIpfsConfigChannel);
 }

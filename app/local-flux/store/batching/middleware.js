@@ -5,6 +5,9 @@ const shouldBatch = (action) => action && action.batching;
 
 export default () => next => (action) => {
     const resolved = next(action);
+    if (!action.type) {
+        console.error("Action", action, "has undefined type");
+    }
     if (State.notify && !shouldBatch(action)) {
         State.notify();
     } else {

@@ -482,35 +482,35 @@ function* entryVoteCost ()/* : Saga<void> */ {
 }
 
 export function* watchEntryActions ()/* : Saga<void> */ { // eslint-disable-line max-statements
-    yield takeEvery(types.ENTRY_CAN_CLAIM, entryCanClaim);
-    yield takeEvery(types.ENTRY_CAN_CLAIM_VOTE, entryCanClaimVote);
-    yield takeEvery(types.ENTRY_CLAIM, entryClaim);
-    yield takeEvery(types.ENTRY_CLAIM_SUCCESS, entryClaimSuccess);
-    yield takeEvery(types.ENTRY_CLAIM_VOTE, entryClaimVote);
-    yield takeEvery(types.ENTRY_CLAIM_VOTE_SUCCESS, entryClaimVoteSuccess);
-    yield takeEvery(types.ENTRY_DOWNVOTE, entryDownvote);
-    yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
-    yield takeEvery(types.ENTRY_GET_BALANCE, entryGetBalance);
-    yield takeEvery(types.ENTRY_GET_END_PERIOD, entryGetEndPeriod);
-    yield takeEvery(types.ENTRY_GET_FULL, entryGetFull);
-    yield takeLatest(types.ENTRY_GET_LATEST_VERSION, entryGetLatestVersion);
-    yield takeEvery(types.ENTRY_GET_SCORE, entryGetScore);
-    yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);
-    yield takeEvery(types.ENTRY_GET_VOTE_OF, entryGetVoteOf);
-    yield takeEvery(types.ENTRY_LIST_ITERATOR, entryListIterator);
-    yield takeEvery(types.ENTRY_MORE_LIST_ITERATOR, entryMoreListIterator);
-    yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
-    yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
-    yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);
-    yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
-    yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
-    yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
-    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
-    yield takeEvery(types.ENTRY_STREAM_ITERATOR, entryStreamIterator);
-    yield takeEvery(types.ENTRY_TAG_ITERATOR, entryTagIterator);
-    yield takeEvery(types.ENTRY_UPVOTE, entryUpvote);
-    yield takeEvery(types.ENTRY_UPVOTE_SUCCESS, entryUpvoteSuccess);
-    yield takeEvery(types.ENTRY_VOTE_COST, entryVoteCost);
+    yield takeEvery(ENTRY_MODULE.canClaim, entryCanClaim);
+    yield takeEvery(ENTRY_MODULE.canClaimVote, entryCanClaimVote);
+    yield takeEvery(ENTRY_MODULE.claim, entryClaim);
+    // yield takeEvery(types.ENTRY_CLAIM_SUCCESS, entryClaimSuccess);
+    yield takeEvery(ENTRY_MODULE.claimVote, entryClaimVote);
+    // yield takeEvery(types.ENTRY_CLAIM_VOTE_SUCCESS, entryClaimVoteSuccess);
+    yield takeEvery(ENTRY_MODULE.downVote, entryDownvote);
+    // yield takeEvery(types.ENTRY_DOWNVOTE_SUCCESS, entryDownvoteSuccess);
+    yield takeEvery(ENTRY_MODULE.getEntryBalance, entryGetBalance);
+    yield takeEvery(ENTRY_MODULE.getVoteEndPeriod, entryGetEndPeriod);
+    yield takeEvery(ENTRY_MODULE.getEntry, entryGetFull);
+    yield takeLatest(ENTRY_MODULE.getLatestEntryVersion, entryGetLatestVersion);
+    yield takeEvery(ENTRY_MODULE.getScore, entryGetScore);
+    // yield takeEvery(types.ENTRY_GET_SHORT, entryGetShort);
+    yield takeEvery(ENTRY_MODULE.getVoteOf, entryGetVoteOf);
+    yield takeEvery(ENTRY_MODULE.getEntryList, entryListIterator);
+    // yield takeEvery(types.ENTRY_MORE_LIST_ITERATOR, entryMoreListIterator);
+    // yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
+    // yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
+    // yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);
+    // yield takeEvery(types.ENTRY_MORE_TAG_ITERATOR, entryMoreTagIterator);
+    // yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
+    yield takeEvery(ENTRY_MODULE.entryProfileIterator, entryProfileIterator);
+    yield takeEvery(ENTRY_MODULE.resolveEntriesIpfsHash, entryResolveIpfsHash);
+    yield takeEvery(ENTRY_MODULE.allStreamIterator, entryStreamIterator);
+    yield takeEvery(ENTRY_MODULE.entryTagIterator, entryTagIterator);
+    yield takeEvery(ENTRY_MODULE.upVote, entryUpvote);
+    // yield takeEvery(types.ENTRY_UPVOTE_SUCCESS, entryUpvoteSuccess);
+    yield takeEvery(ENTRY_MODULE.voteCost, entryVoteCost);
 }
 
 /* eslint-enable no-use-before-define */

@@ -58,7 +58,7 @@ const addPendingAction = (pending, action) => { // eslint-disable-line complexit
             // in a List instead of a Map
             pendingComments = pending.getIn([action.type, entryId]);
             if (!pendingComments) {
-                return pending.setIn([action.type, entryId], new List([createAction(action)]));
+                return pending.setIn([action.type, entryId], List([createAction(action)]));
             }
             return pending.setIn([action.type, entryId], pendingComments.push(createAction(action)));
         case actionTypes.commentDownvote:

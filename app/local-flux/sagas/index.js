@@ -106,7 +106,7 @@ export default function* rootSaga ()/* : Saga<void> */ { // eslint-disable-line 
     yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(transactionSaga.watchTransactionActions);
-    yield fork(utilsSaga.watchUtilsActions);
+    // yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
     yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
 }
