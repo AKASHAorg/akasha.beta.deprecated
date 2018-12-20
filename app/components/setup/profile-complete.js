@@ -8,10 +8,12 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileExists } from '../../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileUpdate,
     tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
-import { selectBalance, selectLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
+import { selectBalance, getLoggedProfileData, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { setupMessages } from '../../locale-data/messages';
 import * as actionTypes from '../../constants/action-types';
 import { ProfileCompleteForm } from '../';
+import { selectFaucet, selectProfileExists, selectTempProfile, getFirstDashboardReady,
+    getBaseUrl } from '../../local-flux/selectors';
 
 class ProfileComplete extends Component {
     state = {
@@ -171,13 +173,13 @@ ProfileComplete.propTypes = {
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        faucet: state.profileState.get('faucet'),
-        ipfsBaseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+        faucet: selectFaucet(state),
+        ipfsBaseUrl: getBaseUrl(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
-        loggedProfileData: selectLoggedProfileData(state),
-        profileExistsData: state.profileState.get('exists'),
-        tempProfile: state.tempProfileState.get('tempProfile')
+        firstDashboardReady: getFirstDashboardReady(state),
+        loggedProfileData: getLoggedProfileData(state),
+        profileExistsData: selectProfileExists(state),
+        tempProfile: selectTempProfile(state)
     };
 }
 

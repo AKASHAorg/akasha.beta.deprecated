@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Link from 'react-router-dom/Link';
 import { Avatar } from 'antd';
 import { getInitials } from '../../utils/dataModule';
-import { selectBaseUrl } from '../../local-flux/selectors/index';
+import { getBaseUrl } from '../../local-flux/selectors/index';
 
 const AvatarPresenter = (props) => { // eslint-disable-line
     const { baseUrl, className, ethAddress, firstName, lastName, link, onClick, size } = props;
@@ -72,7 +72,7 @@ AvatarPresenter.defaultProps = {
 
 function mapStateToProps (state) {
     return {
-        baseUrl: selectBaseUrl(state)
+        baseUrl: getBaseUrl(state)
     };
 }
 

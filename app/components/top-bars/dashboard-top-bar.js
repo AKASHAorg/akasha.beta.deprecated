@@ -6,8 +6,8 @@ import { Tooltip } from 'antd';
 import { symmetricDifference, pick } from 'ramda';
 import * as columnTypes from '../../constants/columns';
 import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
-import { selectActiveDashboard, selectActiveDashboardId,
-    selectActiveDashboardColumns } from '../../local-flux/selectors';
+import { getActiveDashboard, selectActiveDashboardId,
+    getActiveDashboardColumns, selectLists } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
 import { DashboardPopover, Navigation, PlusSquareIcon, TopBarIcon } from '../';
@@ -119,10 +119,10 @@ DashboardTopBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboard(state),
+        activeDashboard: getActiveDashboard(state),
         activeDashboardId: selectActiveDashboardId(state),
-        columns: selectActiveDashboardColumns(state),
-        lists: state.listState.get('byId')
+        columns: getActiveDashboardColumns(state),
+        lists: selectLists(state)
     };
 }
 

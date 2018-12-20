@@ -10,7 +10,7 @@ import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flu
 import { profileAethTransfersIterator, profileCyclingStates,
     profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { selectActionsHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
+import { getActionHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
     selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
@@ -326,7 +326,7 @@ function mapStateToProps (state) {
         pendingTransfer: selectPendingActionByType(state, actionTypes.transferAeth),
         pendingTransformEssence: selectPendingActionByType(state, actionTypes.transformEssence),
         profileResults: selectProfileSearchResults(state),
-        sentTransactions: selectActionsHistory(state)
+        sentTransactions: getActionHistory(state)
     };
 }
 

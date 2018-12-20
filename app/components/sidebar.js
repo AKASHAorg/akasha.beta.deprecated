@@ -13,7 +13,7 @@ import { generalMessages } from '../locale-data/messages';
 import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import { profileSelectors } from '../local-flux/selectors';
+import { profileSelectors, dashboardSelectors, draftSelectors, settingsSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class Sidebar extends Component {
@@ -343,15 +343,15 @@ Sidebar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: state.dashboardState.get('activeDashboard'),
-        draftsCount: state.draftState.get('draftsCount'),
-        drafts: state.draftState.get('drafts'),
-        draftsFetched: state.draftState.get('draftsFetched'),
-        fetchingDrafts: state.draftState.get('fetchingDrafts'),
+        activeDashboard: dashboardSelectors.getActiveDashboard(state),
+        draftsCount: draftSelectors.selectDraftsCount(state),
+        drafts: draftSelectors.selectDrafts(state),
+        draftsFetched: draftSelectors.selectDraftsFetched(state),
+        fetchingDrafts: draftSelectors.selectFetchingDrafts(state),
         isProfileEditToggled: profileSelectors.selectProfileEditToggle(state),
         loggedProfile: profileSelectors.selectLoggedProfile(state),
         loggedProfileData: profileSelectors.getLoggedProfileData(state),
-        userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])
+        userSelectedLicense: settingsSelectors.getUserDefaultLicence(state )
     };
 }
 

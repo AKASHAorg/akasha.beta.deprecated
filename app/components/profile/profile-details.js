@@ -9,8 +9,8 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle, toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
-import { selectBaseUrl, selectIsFollower, selectLoggedEthAddress, selectPendingFollow, selectPendingTip,
-    selectProfile } from '../../local-flux/selectors';
+import { getBaseUrl, selectIsFollower, selectLoggedEthAddress, getFollowIsPending, getTipIsPending,
+    selectProfileByEthAddress } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { formatBalance } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
@@ -274,12 +274,12 @@ ProfileDetails.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        baseUrl: selectBaseUrl(state),
-        followPending: selectPendingFollow(state, ethAddress),
+        baseUrl: getBaseUrl(state),
+        followPending: getFollowIsPending(state, ethAddress),
         isFollower: selectIsFollower(state, ethAddress),
         loggedEthAddress: selectLoggedEthAddress(state),
-        profileData: selectProfile(state, ethAddress),
-        tipPending: selectPendingTip(state, ethAddress)
+        profileData: selectProfileByEthAddress(state, ethAddress),
+        tipPending: getTipIsPending(state, ethAddress)
     };
 }
 

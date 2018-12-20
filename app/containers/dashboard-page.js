@@ -7,7 +7,10 @@ import { Dashboard, DataLoader } from '../components';
 import { toggleNewDashboardModal } from '../local-flux/actions/app-actions';
 import { dashboardHideTutorial, dashboardSetActive,
     dashboardUpdateNewColumn, dashboardReorderColumn } from '../local-flux/actions/dashboard-actions';
-import { selectEntryFlag, selectFullEntry, selectColumnPendingEntries } from '../local-flux/selectors';
+import { selectEntryFlag, selectFullEntry, getDashboardColumnPendingEntries,
+    selectActiveDashboardId, selectColumns, selectHomeReady, getThemeSettings,
+    selectDashboardsById, getFirstDashboardReady, selectNewColumn,
+    selectEntryPageOverlay } from '../local-flux/selectors';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
 class DashboardPage extends Component {
@@ -139,16 +142,16 @@ DashboardPage.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: state.dashboardState.get('activeDashboard'),
-        columns: state.dashboardState.get('columnById'),
-        darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
-        dashboards: state.dashboardState.get('byId'),
-        entryPageOverlay: state.entryState.get('entryPageOverlay'),
-        firstDashboardReady: state.dashboardState.getIn(['flags', 'firstDashboardReady']),
-        homeReady: state.appState.get('homeReady'),
+        activeDashboard: selectActiveDashboardId(state),
+        columns: selectColumns(state),
+        darkTheme: getThemeSettings(state),
+        dashboards: selectDashboardsById(state),
+        entryPageOverlay: selectEntryPageOverlay(state),
+        firstDashboardReady: getFirstDashboardReady(state),
+        homeReady: selectHomeReady(state),
         isHidden: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
-        newColumn: state.dashboardState.get('newColumn'),
-        pendingEntries: selectColumnPendingEntries(state, state.dashboardState.get('activeDashboard')),
+        newColumn: selectNewColumn(state),
+        pendingEntries: getDashboardColumnPendingEntries(state, selectActiveDashboardId(state)),
     };
 }
 

@@ -7,7 +7,7 @@ import { ColumnHeader, ProfileList } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { profileFollowersIterator,
     profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
-import { selectFetchingFollowers, selectFetchingMoreFollowers, selectFollowers,
+import { getFetchingFollowers, getFetchingMoreFollowers, selectFollowers,
     selectMoreFollowers } from '../../local-flux/selectors';
 
 class ProfileFollowersColumn extends Component {
@@ -77,8 +77,8 @@ ProfileFollowersColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        fetchingFollowers: selectFetchingFollowers(state, ethAddress),
-        fetchingMoreFollowers: selectFetchingMoreFollowers(state, ethAddress),
+        fetchingFollowers: getFetchingFollowers(state, ethAddress),
+        fetchingMoreFollowers: getFetchingMoreFollowers(state, ethAddress),
         followers: selectFollowers(state, ethAddress),
         moreFollowers: selectMoreFollowers(state, ethAddress),
     };

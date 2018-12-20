@@ -8,7 +8,13 @@ import { fromJS } from 'immutable';
 import { DataLoader, EditorFooter, NoDraftsPlaceholder, PublishOptionsPanel, TextEntryEditor, TagEditor,
     WebsiteInfoCard } from '../components';
 import { genId } from '../utils/dataModule';
-import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile, getBaseUrl,
+    getThemeSettings, selectDrafts, selectDraftsFetched,
+    selectAllLicenses, selectDraftsResolvingEntries,
+    selectDraftsSelection, selectShowSecondarySidebar,
+    selectTagSearchResults, selectTagSearchResultsCount,
+    getUserDefaultLicence, getPendingActionByType,
+    selectCanCreateTags} from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
 import { draftAddTag, draftRemoveTag, draftCreate, draftUpdate,
@@ -524,22 +530,20 @@ NewLinkEntryPage.propTypes = {
 };
 const mapStateToProps = (state, ownProps) => ({
     loggedProfile: selectLoggedProfile(state),
-    baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
-    darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
+    baseUrl: getBaseUrl(state),
+    darkTheme: getThemeSettings(state),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
-    draftAddTag: PropTypes.func,
-    draftRemoveTag: PropTypes.func,
-    drafts: state.draftState.get('drafts'),
-    draftsFetched: state.draftState.get('draftsFetched'),
-    licences: state.licenseState.get('byId'),
-    resolvingEntries: state.draftState.get('resolvingEntries'),
-    selectionState: state.draftState.get('selection'),
-    showSecondarySidebar: state.appState.get('showSecondarySidebar'),
-    tagSuggestions: state.searchState.get('tags'),
-    tagSuggestionsCount: state.searchState.get('tagResultsCount'),
-    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicense']),
-    pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
-    canCreateTags: state.profileState.get('canCreateTags'),
+    drafts: selectDrafts(state),
+    draftsFetched: selectDraftsFetched(state),
+    licences: selectAllLicenses(state),
+    resolvingEntries: selectDraftsResolvingEntries(state),
+    selectionState: selectDraftsSelection(state),
+    showSecondarySidebar: selectShowSecondarySidebar(state),
+    tagSuggestions: selectTagSearchResults(state),
+    tagSuggestionsCount: selectTagSearchResultsCount(state),
+    userDefaultLicence: getUserDefaultLicence(state),
+    pendingFaucetTx: getPendingActionByType(state, 'faucet'),
+    canCreateTags: selectCanCreateTags(state),
 });
 
 export default connect(

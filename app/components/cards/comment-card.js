@@ -14,9 +14,9 @@ import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryPageShow } from '../../local-flux/actions/entry-actions';
 import { ProfileRecord } from '../../local-flux/reducers/records';
-import { selectComment, selectCommentIsPending, selectCommentVote, selectEntry,
-    selectPendingCommentVote, selectProfile, selectBlockNumber, selectBaseUrl,
-    selectHideCommentSettings, selectLoggedEthAddress } from '../../local-flux/selectors';
+import { selectCommentById, selectCommentIsPending, selectCommentVote, selectEntryById,
+    getPendingCommentVote, selectProfileByEthAddress, getCurrentBlockNumber, getBaseUrl,
+    getHideCommentSettings, selectLoggedEthAddress } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
@@ -380,19 +380,19 @@ CommentCard.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const comment = selectComment(state, ownProps.itemId);
+    const comment = selectCommentById(state, ownProps.itemId);
     const entryId = comment.entryId;
     return {
-        author: selectProfile(state, comment.author.ethAddress),
-        baseUrl: selectBaseUrl(state),
-        blockNr: selectBlockNumber(state),
+        author: selectProfileByEthAddress(state, comment.author.ethAddress),
+        baseUrl: getBaseUrl(state),
+        blockNr: getCurrentBlockNumber(state),
         comment,
-        entry: selectEntry(state, entryId),
-        hideCommentSettings: selectHideCommentSettings(state),
+        entry: selectEntryById(state, entryId),
+        hideCommentSettings: getHideCommentSettings(state),
         isPending: selectCommentIsPending(state, ownProps.contextId, ownProps.itemId),
         loggedEthAddress: selectLoggedEthAddress(state),        
         vote: selectCommentVote(state, ownProps.itemId),
-        votePending: !!selectPendingCommentVote(state, ownProps.itemId)
+        votePending: !!getPendingCommentVote(state, ownProps.itemId)
     };
 }
 

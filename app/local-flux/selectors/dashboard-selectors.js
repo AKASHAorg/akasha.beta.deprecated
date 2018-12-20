@@ -25,6 +25,9 @@ export const selectDashboardsById = (state/*: Object */) => state.dashboardState
 export const selectDashboardById = (state/*: Object */, props/*: DashboardByIdProps */) =>
     state.dashboardState.getIn(['byId', props.dashboardId]);
 export const selectActiveDashboardId = (state/*: Object */) => state.dashboardState.get('activeDashboard');
+export const selectNewDashboard = (state/*: Object */) => state.dashboardState.get('newDashboard');
+export const selectDashboardFlags = (state/*: Object */) => state.dashboardState.get('flags');
+
 export const selectColumnById = (state/*: Object */, props/*: ColumnByIdProps */) =>
     state.dashboardState.getIn(['columnById', props.columnId]);
 export const selectColumns = (state/*: Object */) => state.dashboardState.get('columnById');
@@ -103,6 +106,9 @@ export const getDashboardColumnsPendingEntries = createSelector(
         }
         return new Map();
     });
+
+export const getRenamingDashboard = (state/*: Object */) => selectDashboardFlags(state).get('renamingDashboard');
+export const getFirstDashboardReady = (state/*: Object */) => selectDashboardFlags(state).get('firstDashboardReady');
 
 // export const selectNewColumnEntries = (state) => {
 //     const entryIds = state.dashboardState.getIn(['columnById', 'newColumn', 'entries']);

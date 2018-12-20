@@ -9,6 +9,8 @@ import { generalMessages } from '../../locale-data/messages';
 import { navCounterDecrement, navCounterIncrement,
     toggleNavigationModal } from '../../local-flux/actions/app-actions';
 import { Icon } from '../';
+import { selectNavigationBackCounter } from '../../local-flux/selectors';
+import { selectNavigationForwardCounter } from '../../local-flux/selectors/app-selectors';
 
 class Navigation extends Component {
     goBack = (disableBack) => {
@@ -78,8 +80,8 @@ Navigation.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    navigationBackCounter: state.appState.get('navigationBackCounter'),
-    navigationForwardCounter: state.appState.get('navigationForwardCounter')
+    navigationBackCounter: selectNavigationBackCounter(state),
+    navigationForwardCounter: selectNavigationForwardCounter(state)
 });
 
 export default connect(

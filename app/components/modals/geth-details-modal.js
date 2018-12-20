@@ -9,6 +9,8 @@ import { gethPauseSync, gethResumeSync, gethStart, gethStartLogger, gethStop,
     gethStopLogger } from '../../local-flux/actions/external-process-actions';
 import { gethSaveSettings } from '../../local-flux/actions/settings-actions';
 import { GethCacheSelect, Input, LogsList, PathInputField, ServiceDetailsModal } from '../index';
+import { getGethBusyState, selectGethLogs, selectGeth, getGethStarting,
+    selectGethStatus, selectGethSyncStatus, selectGethSyncActionId } from '../../local-flux/selectors';
 
 const { TabPane } = Tabs;
 
@@ -178,13 +180,13 @@ GethDetailsModal.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        gethBusyState: state.externalProcState.getIn(['geth', 'flags', 'busyState']),
-        gethLogs: state.externalProcState.getIn(['geth', 'logs']),
-        gethSettings: state.settingsState.get('geth'),
-        gethStarting: state.externalProcState.getIn(['geth', 'flags', 'gethStarting']),
-        gethStatus: state.externalProcState.getIn(['geth', 'status']),
-        gethSyncStatus: state.externalProcState.getIn(['geth', 'syncStatus']),
-        syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
+        gethBusyState: getGethBusyState(state),
+        gethLogs: selectGethLogs(state),
+        gethSettings: selectGeth(state),
+        gethStarting: getGethStarting(state),
+        gethStatus: selectGethStatus(state),
+        gethSyncStatus: selectGethSyncStatus(state),
+        syncActionId: selectGethSyncActionId(state),
     };
 }
 

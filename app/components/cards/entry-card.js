@@ -10,8 +10,8 @@ import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '
 import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { entryGetShort, entryPageShow } from '../../local-flux/actions/entry-actions';
 import { ProfileRecord } from '../../local-flux/reducers/records';
-import { selectBaseUrl, selectBlockNumber, selectEntry, selectHideEntrySettings, selectLoggedEthAddress,
-    selectProfile } from '../../local-flux/selectors';
+import { getBaseUrl, getCurrentBlockNumber, selectEntryById, getHideEntrySettings, selectLoggedEthAddress,
+    selectProfileByEthAddress } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
 import { isLinkToAkashaWeb, extractEntryUrl } from '../../utils/url-utils';
@@ -297,14 +297,14 @@ EntryCard.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const entry = ownProps.entry || selectEntry(state, ownProps.itemId);
+    const entry = ownProps.entry || selectEntryById(state, ownProps.itemId);
     const ethAddress = entry.author.ethAddress;
     return {
-        author: selectProfile(state, ethAddress),
-        baseUrl: selectBaseUrl(state),
-        blockNr: selectBlockNumber(state),
+        author: selectProfileByEthAddress(state, ethAddress),
+        baseUrl: getBaseUrl(state),
+        blockNr: getCurrentBlockNumber(state),
         entry,
-        hideEntrySettings: selectHideEntrySettings(state),
+        hideEntrySettings: getHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
     };
 }

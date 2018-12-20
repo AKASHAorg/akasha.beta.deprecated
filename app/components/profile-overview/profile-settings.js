@@ -7,8 +7,8 @@ import { Button, Checkbox, Form, InputNumber, Input, Modal, Select, Switch, Tool
 import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { selectActionPending, selectAllLicenses, selectLoggedEthAddress,
-    selectLoggedProfileData } from '../../local-flux/selectors';
+import { getPendingActionByType, selectAllLicenses, selectLoggedEthAddress,
+    getLoggedProfileData, getSavingUserSettings, selectUserSettings } from '../../local-flux/selectors';
 import { formMessages, settingsMessages, generalMessages, profileMessages,
     searchMessages } from '../../locale-data/messages';
 import { Icon, RememberPassphraseSelect } from '../';
@@ -520,10 +520,10 @@ function mapStateToProps (state) {
     return {
         licenses: selectAllLicenses(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        loggedProfileData: selectLoggedProfileData(state),
-        pendingToggleDonations: selectActionPending(state, toggleDonations),
-        savingUserSettings: state.settingsState.getIn(['flags', 'savingUserSettings']),
-        userSettings: state.settingsState.get('userSettings')
+        loggedProfileData: getLoggedProfileData(state),
+        pendingToggleDonations: getPendingActionByType(state, toggleDonations),
+        savingUserSettings: getSavingUserSettings(state),
+        userSettings: selectUserSettings(state)
     };
 }
 

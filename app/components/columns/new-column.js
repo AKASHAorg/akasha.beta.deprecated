@@ -11,8 +11,8 @@ import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
 import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
     entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults, searchTags } from '../../local-flux/actions/search-actions';
-import { selectActiveDashboard, selectColumn, selectColumnEntries, selectListsAll, selectNewColumn,
-    selectProfileSearchResults, selectTagSearchResults } from '../../local-flux/selectors';
+import { selectActiveDashboard, selectActiveDashboardId, selectColumnById, getColumnEntries, selectLists, selectNewColumn,
+    selectProfileSearchResults, selectTagSearchResults, selectEntriesById } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages, listMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { Icon, NewSearchColumn, NewSelectColumn } from '../';
@@ -391,12 +391,12 @@ NewColumn.propTypes = {
 function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
-        activeDashboardId: state.dashboardState.get('activeDashboard'),
-        column: selectColumn(state, 'newColumn'),
-        lists: selectListsAll(state),
+        activeDashboardId: selectActiveDashboardId(state),
+        column: selectColumnById(state, 'newColumn'),
+        lists: selectLists(state),
         newColumn: selectNewColumn(state),
-        previewEntries: selectColumnEntries(state, 'newColumn'),
-        entries: state.entryState.get('byId'),
+        previewEntries: getColumnEntries(state, 'newColumn'),
+        entries:selectEntriesById(state),
         profileResults: selectProfileSearchResults(state),
         tagResults: selectTagSearchResults(state)
     };

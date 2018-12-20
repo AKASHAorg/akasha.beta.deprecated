@@ -15,7 +15,11 @@ import { searchResetResults, searchTags } from '../local-flux/actions/search-act
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { tagExists } from '../local-flux/actions/tag-actions';
 import { entryMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile } from '../local-flux/selectors';
+import { selectDraftById, selectLoggedProfile, getThemeSettings, selectAllLicenses,
+    getBaseUrl, selectDrafts, selectDraftsFetched, getPendingActionByType,
+    selectShowSecondarySidebar, selectDraftsSelection, selectDraftsResolvingEntries,
+    selectTagSearchResults, selectTagSearchResultsCount, getUserDefaultLicence,
+    selectCanCreateTags} from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -464,21 +468,21 @@ NewEntryPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-    baseUrl: state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']),
+    baseUrl: getBaseUrl(state),
     draftObj: selectDraftById(state, ownProps.match.params.draftId),
-    drafts: state.draftState.get('drafts'),
-    draftsFetched: state.draftState.get('draftsFetched'),
-    darkTheme: state.settingsState.getIn(['general', 'darkTheme']),
-    licences: state.licenseState.get('byId'),
+    drafts: selectDrafts(state),
+    draftsFetched: selectDraftsFetched(state),
+    darkTheme: getThemeSettings(state),
+    licences: selectAllLicenses(state),
     loggedProfile: selectLoggedProfile(state),
-    selectionState: state.draftState.get('selection'),
-    resolvingEntries: state.draftState.get('resolvingEntries'),
-    showSecondarySidebar: state.appState.get('showSecondarySidebar'),
-    tagSuggestions: state.searchState.get('tags'),
-    tagSuggestionsCount: state.searchState.get('tagResultsCount'),
-    userDefaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
-    pendingFaucetTx: state.actionState.getIn(['pending', 'faucet']),
-    canCreateTags: state.profileState.get('canCreateTags'),
+    selectionState: selectDraftsSelection(state),
+    resolvingEntries: selectDraftsResolvingEntries(state),
+    showSecondarySidebar: selectShowSecondarySidebar(state),
+    tagSuggestions: selectTagSearchResults(state),
+    tagSuggestionsCount: selectTagSearchResultsCount(state),
+    userDefaultLicence: getUserDefaultLicence(state),
+    pendingFaucetTx: getPendingActionByType(state, 'faucet'),
+    canCreateTags: selectCanCreateTags(state),
 });
 
 export default connect(

@@ -8,8 +8,9 @@ import Waypoint from 'react-waypoint';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { selectAllPendingClaims, selectAllPendingVotes, selectBaseUrl, selectHideEntrySettings,
-    selectLoggedEthAddress } from '../local-flux/selectors';
+import { selectPendingClaims, getBaseUrl, getHideEntrySettings, getPendingEntries,
+    selectLoggedEthAddress, selectDrafts, selectSearchQuery, getCanClaimPendingEntry,
+    getCurrentBlockNumber, getFetchingEntryBalance} from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
@@ -168,18 +169,18 @@ EntryList.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        baseUrl: selectBaseUrl(state),
-        blockNr: state.externalProcState.getIn(['geth', 'status', 'blockNr']),
-        canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
-        drafts: state.draftState.get('drafts'),
-        fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        hideEntrySettings: selectHideEntrySettings(state),
+        baseUrl: getBaseUrl(state),
+        blockNr: getCurrentBlockNumber(state),
+        canClaimPending: getCanClaimPendingEntry(state),
+        drafts: selectDrafts(state),
+        fetchingEntryBalance: getFetchingEntryBalance(state),
+        hideEntrySettings: getHideEntrySettings(state),
         loggedEthAddress: selectLoggedEthAddress(state),
-        pendingClaims: selectAllPendingClaims(state),
-        pendingEntries: state.entryState.getIn(['flags', 'pendingEntries', ownProps.contextId]),
-        pendingVotes: selectAllPendingVotes(state),
-        profiles: state.profileState.get('byEthAddress'),
-        searchQuery: state.searchState.get('query'),
+        pendingClaims: selectPendingClaims(state),
+        pendingEntries: getPendingEntries(state, ownProps.contextId),
+        pendingVotes: getPendingActionByType(state, 'entryVote'),
+        profiles: selectProfilesByEthAddress(state),
+        searchQuery: selectSearchQuery(state),
     };
 }
 

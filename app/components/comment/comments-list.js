@@ -6,8 +6,8 @@ import { Spin } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader, OptimisticComment } from '../';
 import { commentsIterator } from '../../local-flux/actions/comments-actions';
-import { selectCommentsFlag, selectEntryCommentsForParent, selectLoggedProfileData,
-    selectPendingComments } from '../../local-flux/selectors';
+import { getCommentsFlag, selectEntryCommentsByParent, getLoggedProfileData,
+    getEntryPendingComments } from '../../local-flux/selectors';
 
 class CommentList extends Component {
     state = {
@@ -157,15 +157,15 @@ function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');
     const entryId = entry && entry.entryId;
     return {
-        comments: selectEntryCommentsForParent(state, entryId, '0'),
+        comments: selectEntryCommentsByParent(state, entryId, '0'),
         commentsCount: entry && entry.commentsCount,
         commentsFetched: state.commentsState.getIn(['flags', 'commentsFetched', 'entryPage']),
         entryId,
-        fetchingComments: selectCommentsFlag(state, 'fetchingComments', '0'),
-        fetchingMoreComments: selectCommentsFlag(state, 'fetchingMoreComments', '0'),
-        loggedProfileData: selectLoggedProfileData(state),
+        fetchingComments: getCommentsFlag(state, 'fetchingComments', '0'),
+        fetchingMoreComments: getCommentsFlag(state, 'fetchingMoreComments', '0'),
+        loggedProfileData: getLoggedProfileData(state),
         moreComments: state.commentsState.getIn(['moreComments', '0']),
-        pendingComments: selectPendingComments(state, entryId),
+        pendingComments: getEntryPendingComments(state, entryId),
     };
 }
 
