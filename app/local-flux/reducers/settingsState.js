@@ -150,25 +150,25 @@ const settingsState = createReducer(initialState, {
             general: state.get('general').merge(data)
         }),
 
-    [types.GETH_GET_OPTIONS_SUCCESS]: (state, action) => {
-        const gethSettings = Object.assign({}, state.get('geth').toJS());
-        const initialSettings = new GethSettings().toJS();
+    // [types.GETH_GET_OPTIONS_SUCCESS]: (state, action) => {
+    //     const gethSettings = Object.assign({}, state.get('geth').toJS());
+    //     const initialSettings = new GethSettings().toJS();
 
-        Object.keys(gethSettings).forEach((key) => {
-            if (gethSettings[key] === initialSettings[key]) {
-                gethSettings[key] = action.data[key];
-            }
-        });
+    //     Object.keys(gethSettings).forEach((key) => {
+    //         if (gethSettings[key] === initialSettings[key]) {
+    //             gethSettings[key] = action.data[key];
+    //         }
+    //     });
 
-        if (!action.data.syncmode) {
-            gethSettings.syncmode = initialSettings.syncmode;
-        }
+    //     if (!action.data.syncmode) {
+    //         gethSettings.syncmode = initialSettings.syncmode;
+    //     }
 
-        return state.merge({
-            geth: new GethSettings(gethSettings),
-            defaultGethSettings: new GethSettings(action.data)
-        });
-    },
+    //     return state.merge({
+    //         geth: new GethSettings(gethSettings),
+    //         defaultGethSettings: new GethSettings(action.data)
+    //     });
+    // },
 
     [`${IPFS_MODULE.getConfig}_SUCCESS`]: (state, action) => {
         const ipfsSettings = Object.assign({}, state.get('ipfs').toJS());
@@ -202,12 +202,12 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_RESET_PORTS]: state =>
-        state.merge({
-            ipfs: state.get('ipfs').merge({
-                ports: new PortsRecord()
-            })
-        }),
+    // [types.IPFS_RESET_PORTS]: state =>
+    //     state.merge({
+    //         ipfs: state.get('ipfs').merge({
+    //             ports: new PortsRecord()
+    //         })
+    //     }),
 
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('userSettings', new UserSettings()),

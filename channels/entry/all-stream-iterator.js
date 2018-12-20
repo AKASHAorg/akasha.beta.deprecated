@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const allStreamIteratorS = {
     id: '/allStreamIterator',
     type: 'object',
@@ -11,12 +13,12 @@ const allStreamIteratorS = {
     },
     required: ['toBlock'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, allStreamIteratorS, { throwError: true });
         const maxResults = data.limit || 5;
-        return (getService(ENTRY_MODULE.helpers)).fetchFromPublish(Object.assign({}, data, {
+        return (getService(constants_1.ENTRY_MODULE.helpers)).fetchFromPublish(Object.assign({}, data, {
             limit: maxResults,
             args: {},
             reversed: data.reversed || false,
@@ -26,7 +28,8 @@ export default function init(sp, getService) {
     const service = function () {
         return allStreamIterator;
     };
-    sp().service(ENTRY_MODULE.allStreamIterator, service);
+    sp().service(constants_1.ENTRY_MODULE.allStreamIterator, service);
     return allStreamIterator;
 }
+exports.default = init;
 //# sourceMappingURL=all-stream-iterator.js.map

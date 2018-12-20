@@ -4,7 +4,7 @@ import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
 import { DraftModel } from '../reducers/models';
-import { selectToken, selectDraftById, selectLoggedEthAddress } from '../selectors';
+import { profileSelectors, draftSelectors } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount, extractExcerpt } from '../../utils/dataModule';
 import { extractImageFromContent } from '../../utils/imageUtils';
@@ -151,8 +151,8 @@ function* draftDelete ({ data })/* : Saga<void> */ {
 /* eslint-disable max-statements */
 function* draftPublish ({ actionId, draft })/* : Saga<void> */ {
     const { id } = draft;
-    const draftFromState = yield select(state => selectDraftById(state, id));
-    const token = yield select(selectToken);
+    const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
+    const token = yield select(profileSelectors.getToken);
     const draftToPublish = draftFromState.toJS();
     try {
         draftToPublish.content.draft = JSON.parse(
@@ -202,9 +202,9 @@ function* draftPublishSuccess ({ data })/* : Saga<void> */ {
 
 function* draftPublishUpdate ({ actionId, draft })/* : Saga<void> */ {
     const { id } = draft;
-    const draftFromState = yield select(state => selectDraftById(state, id));
-    const token = yield select(selectToken);
-    const ethAddress = yield select(selectLoggedEthAddress);
+    const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
+    const token = yield select(profileSelectors.getToken);
+    const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const draftToPublish = draftFromState.toJS();
     try {
         draftToPublish.content.draft = JSON.parse(

@@ -2,20 +2,20 @@
 import { apply, call, put, fork, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import { COMMON_MODULE, PROFILE_MODULE, AUTH_MODULE,
     REGISTRY_MODULE, UTILS_MODULE } from '@akashaproject/common/constants';
-import * as actionActions from '../actions/action-actions';
+// import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
-import * as commentsActions from '../actions/comments-actions';
-import * as entryActions from '../actions/entry-actions';
+// import * as commentsActions from '../actions/comments-actions';
+// import * as entryActions from '../actions/entry-actions';
 import * as actions from '../actions/profile-actions';
-import * as searchActions from '../actions/search-actions';
+// import * as searchActions from '../actions/search-actions';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
 import { isEthAddress } from '../../utils/dataModule';
 import ChReqService from '../services/channel-request-service';
-import { profileSelectors, externalProcessSelectors, actionSelectors, appSelectors } from '../selectors';
-import * as actionStatus from '../../constants/action-status';
-import * as actionTypes from '../../constants/action-types';
+import { profileSelectors, externalProcessSelectors, appSelectors } from '../selectors';
+// import * as actionStatus from '../../constants/action-status';
+// import * as actionTypes from '../../constants/action-types';
 import { getDisplayName } from '../../utils/dataModule';
 
 /*::

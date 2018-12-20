@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export const updateProfileData = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.updateProfileData = {
     id: '/updateProfileData',
     type: 'object',
     properties: {
@@ -31,19 +33,19 @@ export const updateProfileData = {
     },
     required: ['ipfs', 'token'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, updateProfileData, { throwError: true });
-        const ipfsHash = yield (getService(COMMON_MODULE.profileHelpers))
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.updateProfileData, { throwError: true });
+        const ipfsHash = yield (getService(constants_1.COMMON_MODULE.profileHelpers))
             .ipfsCreateProfile(data.ipfs);
         console.log('mainipfsHash', ipfsHash);
-        const decodedHash = getService(COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
-        const currentProfile = yield getService(PROFILE_MODULE.getCurrentProfile).execute();
+        const decodedHash = getService(constants_1.COMMON_MODULE.ipfsHelpers).decodeHash(ipfsHash);
+        const currentProfile = yield getService(constants_1.PROFILE_MODULE.getCurrentProfile).execute();
         if (!currentProfile.raw) {
             throw new Error('No profile found to update');
         }
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const txData = contracts.instance.ProfileResolver
             .setHash.request(currentProfile.raw, ...decodedHash);
         const receipt = yield contracts.send(txData, data.token, cb);
@@ -53,7 +55,8 @@ export default function init(sp, getService) {
     const service = function () {
         return updateProfileDatas;
     };
-    sp().service(PROFILE_MODULE.updateProfileData, service);
+    sp().service(constants_1.PROFILE_MODULE.updateProfileData, service);
     return updateProfileDatas;
 }
+exports.default = init;
 //# sourceMappingURL=update-profile.js.map

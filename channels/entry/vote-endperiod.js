@@ -1,16 +1,18 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const voteEndPeriod = {
     id: '/voteEndPeriod',
     type: 'array',
     items: { type: 'string' },
     minItems: 1,
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, voteEndPeriod, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const collection = [];
         for (let i = 0; i < data.length; i++) {
             const record = yield contracts.instance.Votes.getRecord(data[i]);
@@ -22,7 +24,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getVoteEndPeriod;
     };
-    sp().service(ENTRY_MODULE.getVoteEndPeriod, service);
+    sp().service(constants_1.ENTRY_MODULE.getVoteEndPeriod, service);
     return getVoteEndPeriod;
 }
+exports.default = init;
 //# sourceMappingURL=vote-endperiod.js.map

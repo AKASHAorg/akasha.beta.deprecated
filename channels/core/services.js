@@ -1,5 +1,7 @@
-import { CORE_MODULE } from '@akashaproject/common/constants';
-export default function init(sp) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp) {
     class Service {
         get instance() {
             if (!this.serviceInstance) {
@@ -23,8 +25,9 @@ export default function init(sp) {
     const serviceIP = function () {
         return ipfsProvider;
     };
-    sp().service(CORE_MODULE.WEB3_API, serviceW);
-    sp().service(CORE_MODULE.IPFS_API, serviceIA);
-    sp().service(CORE_MODULE.IPFS_PROVIDER, serviceIP);
+    sp().service(constants_1.CORE_MODULE.WEB3_API, serviceW);
+    sp().service(constants_1.CORE_MODULE.IPFS_API, serviceIA);
+    sp().service(constants_1.CORE_MODULE.IPFS_PROVIDER, serviceIP);
 }
+exports.default = init;
 //# sourceMappingURL=services.js.map

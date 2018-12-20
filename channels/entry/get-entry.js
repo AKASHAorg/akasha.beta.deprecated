@@ -1,7 +1,9 @@
-import * as Promise from 'bluebird';
-import { unpad } from 'ethereumjs-util';
-import { COMMENTS_MODULE, COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, GENERAL_SETTINGS, } from '@akashaproject/common/constants';
-export const getEntry = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const ethereumjs_util_1 = require("ethereumjs-util");
+const constants_1 = require("@akashaproject/common/constants");
+exports.getEntry = {
     id: '/getEntry',
     type: 'object',
     properties: {
@@ -12,9 +14,9 @@ export const getEntry = {
     },
     required: ['entryId'],
 };
-export const findAuthor = function init(sp, getService) {
+exports.findAuthor = function init(sp, getService) {
     const registered = Promise.coroutine(function* (entryId) {
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const ev = yield contracts
             .fromEvent(contracts.instance.Entries.Publish, { entryId }, 0, 1, { reversed: true, lastIndex: 0 });
         if (!ev.results.length) {
@@ -22,29 +24,29 @@ export const findAuthor = function init(sp, getService) {
         }
         return ev.results[0].args.author;
     });
-    sp().service(ENTRY_MODULE.findAuthor, { execute: registered });
+    sp().service(constants_1.ENTRY_MODULE.findAuthor, { execute: registered });
 };
-export default function init(sp, getService) {
-    findAuthor(sp, getService);
+function init(sp, getService) {
+    exports.findAuthor(sp, getService);
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, getEntry, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.getEntry, { throwError: true });
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
         let entry;
-        let ethAddress = yield getService(COMMON_MODULE.profileHelpers).profileAddress(data);
-        const { getFullContent, getShortContent } = getService(ENTRY_MODULE.ipfs);
+        let ethAddress = yield getService(constants_1.COMMON_MODULE.profileHelpers).profileAddress(data);
+        const { getFullContent, getShortContent } = getService(constants_1.ENTRY_MODULE.ipfs);
         const votingPeriod = yield contracts.instance.Entries.voting_period();
         if (!ethAddress) {
-            ethAddress = yield getService(ENTRY_MODULE.findAuthor).execute(data.entryId);
+            ethAddress = yield getService(constants_1.ENTRY_MODULE.findAuthor).execute(data.entryId);
         }
         const [fn, digestSize, hash] = yield contracts.instance
             .Entries.getEntry(ethAddress, data.entryId);
         let ipfsHash;
-        const st = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
-        const dbs = getService(CORE_MODULE.DB_INDEX);
-        if (!!unpad(hash)) {
-            ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
+        const st = getService(constants_1.CORE_MODULE.SETTINGS).get(constants_1.GENERAL_SETTINGS.OP_WAIT_TIME);
+        const dbs = getService(constants_1.CORE_MODULE.DB_INDEX);
+        if (!!ethereumjs_util_1.unpad(hash)) {
+            ipfsHash = getService(constants_1.COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
             entry = (data.full || data.version) ?
                 yield getFullContent(ipfsHash, data.version)
                     .timeout(st).catch(() => null) :
@@ -65,13 +67,13 @@ export default function init(sp, getService) {
         }
         const [totalVotes, score, endPeriod, totalKarma, claimed] = yield contracts.instance
             .Votes.getRecord(data.entryId);
-        const cCount = yield getService(COMMENTS_MODULE.commentsCount).execute([data.entryId]);
+        const cCount = yield getService(constants_1.COMMENTS_MODULE.commentsCount).execute([data.entryId]);
         return {
             ethAddress,
             claimed,
             ipfsHash,
-            [GENERAL_SETTINGS.BASE_URL]: getService(CORE_MODULE.SETTINGS)
-                .get(GENERAL_SETTINGS.BASE_URL),
+            [constants_1.GENERAL_SETTINGS.BASE_URL]: getService(constants_1.CORE_MODULE.SETTINGS)
+                .get(constants_1.GENERAL_SETTINGS.BASE_URL),
             totalVotes: totalVotes.toString(10),
             score: score.toString(10),
             publishDate: (endPeriod.minus(votingPeriod)).toNumber(),
@@ -85,7 +87,8 @@ export default function init(sp, getService) {
     const service = function () {
         return registered;
     };
-    sp().service(ENTRY_MODULE.getEntry, service);
+    sp().service(constants_1.ENTRY_MODULE.getEntry, service);
     return registered;
 }
+exports.default = init;
 //# sourceMappingURL=get-entry.js.map

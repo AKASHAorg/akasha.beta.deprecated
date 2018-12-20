@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { COMMENTS_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const removeCommentS = {
     id: '/removeComment',
     type: 'object',
@@ -11,11 +13,11 @@ const removeCommentS = {
     },
     required: ['ethAddress', 'entryId', 'token', 'commentId'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, removeCommentS, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const txData = yield contracts.instance.Comments
             .deleteComment.request(data.entryId, data.ethAddress, data.commentId, { gas: 250000 });
         const receipt = yield contracts.send(txData, data.token, cb);
@@ -25,7 +27,8 @@ export default function init(sp, getService) {
     const service = function () {
         return removeComment;
     };
-    sp().service(COMMENTS_MODULE.removeComment, service);
+    sp().service(constants_1.COMMENTS_MODULE.removeComment, service);
     return removeComment;
 }
+exports.default = init;
 //# sourceMappingURL=remove-comment.js.map

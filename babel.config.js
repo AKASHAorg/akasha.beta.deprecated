@@ -14,6 +14,7 @@ module.exports = {
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-transform-runtime',
+    '@babel/plugin-proposal-export-namespace-from',
   ],
   'env': {
     'development': {

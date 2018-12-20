@@ -181,65 +181,65 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_SHORT]: (state, { entryId, context, ethAddress }) => {
-        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
-        pendingEntries = pendingEntries.set(entryId, true);
-        let byId = state.get('byId');
-        if (!byId.get(entryId)) {
-            const newEntry = createEntryWithAuthor({ author: { ethAddress }, entryId });
-            byId = byId.set(entryId, newEntry);
-        }
-        return state.merge({
-            byId,
-            flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
-        });
-    },
+    // [types.ENTRY_GET_SHORT]: (state, { entryId, context, ethAddress }) => {
+    //     let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+    //     pendingEntries = pendingEntries.set(entryId, true);
+    //     let byId = state.get('byId');
+    //     if (!byId.get(entryId)) {
+    //         const newEntry = createEntryWithAuthor({ author: { ethAddress }, entryId });
+    //         byId = byId.set(entryId, newEntry);
+    //     }
+    //     return state.merge({
+    //         byId,
+    //         flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
+    //     });
+    // },
 
-    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
-        const { entryId, context } = request;
-        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
-        pendingEntries = pendingEntries.set(entryId, false);
-        return state.setIn(['flags', 'pendingEntries', context], pendingEntries);
-    },
+    // [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+    //     const { entryId, context } = request;
+    //     let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+    //     pendingEntries = pendingEntries.set(entryId, false);
+    //     return state.setIn(['flags', 'pendingEntries', context], pendingEntries);
+    // },
 
-    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
-        const { entryId, context } = request;
-        if (!state.getIn(['byId', entryId])) {
-            return state;
-        }
-        data.entryId = entryId;
-        let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
-        pendingEntries = pendingEntries.set(entryId, false);
-        let newEntryRecord;
-        try {
-            newEntryRecord = createEntryRecord(data);
-        } catch (ex) {
-            console.warn('entry:', data, 'error:', ex);
-            newEntryRecord = new EntryRecord();
-        }
-        const newEntry = state.getIn(['byId', entryId]).mergeWith((old, newVal, key) => {
-            if (key === 'author') {
-                if (!old.ethAddress) {
-                    return { ethAddress: data.ethAddress };
-                }
-                return old;
-            }
-            if (key === 'entryType' && old === -1) {
-                if (data.content.cardInfo.url) {
-                    return 1;
-                }
-                return 0;
-            } else if (key === 'entryType' && old > -1) {
-                return old;
-            }
-            return newVal;
-        }, newEntryRecord);
+    // [types.ENTRY_GET_SHORT_SUCCESS]: (state, { data, request }) => {
+    //     const { entryId, context } = request;
+    //     if (!state.getIn(['byId', entryId])) {
+    //         return state;
+    //     }
+    //     data.entryId = entryId;
+    //     let pendingEntries = state.getIn(['flags', 'pendingEntries', context]) || new Map();
+    //     pendingEntries = pendingEntries.set(entryId, false);
+    //     let newEntryRecord;
+    //     try {
+    //         newEntryRecord = createEntryRecord(data);
+    //     } catch (ex) {
+    //         console.warn('entry:', data, 'error:', ex);
+    //         newEntryRecord = new EntryRecord();
+    //     }
+    //     const newEntry = state.getIn(['byId', entryId]).mergeWith((old, newVal, key) => {
+    //         if (key === 'author') {
+    //             if (!old.ethAddress) {
+    //                 return { ethAddress: data.ethAddress };
+    //             }
+    //             return old;
+    //         }
+    //         if (key === 'entryType' && old === -1) {
+    //             if (data.content.cardInfo.url) {
+    //                 return 1;
+    //             }
+    //             return 0;
+    //         } else if (key === 'entryType' && old > -1) {
+    //             return old;
+    //         }
+    //         return newVal;
+    //     }, newEntryRecord);
 
-        return state.merge({
-            byId: state.get('byId').set(entryId, newEntry),
-            flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
-        });
-    },
+    //     return state.merge({
+    //         byId: state.get('byId').set(entryId, newEntry),
+    //         flags: state.get('flags').setIn(['pendingEntries', context], pendingEntries)
+    //     });
+    // },
 
     [`${ENTRY_MODULE.getVoteOf}_SUCCESS`]: (state, { data }) => {
         const votes = {};
@@ -259,7 +259,7 @@ const entryState = createReducer(initialState, {
         return state;
     },
 
-    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
+    // [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
@@ -300,9 +300,9 @@ const entryState = createReducer(initialState, {
         return state;
     },
 
-    [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
+    // [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+    // [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [`${ENTRY_MODULE.voteCost}_SUCCESS`]: (state, { data }) => {
         const voteCost = {};
@@ -319,7 +319,7 @@ const entryState = createReducer(initialState, {
 
     [types.SEARCH_MORE_QUERY_SUCCESS]: entrySearchIteratorHandler,
 
-    [types.SEARCH_QUERY_SUCCESS]: entrySearchIteratorHandler
+    // [types.SEARCH_QUERY_SUCCESS]: entrySearchIteratorHandler
 });
 
 export default entryState;

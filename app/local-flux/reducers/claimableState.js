@@ -63,33 +63,33 @@ const claimableState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
-        const { entryId } = request;
-        const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
+    // [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+    //     const { entryId } = request;
+    //     const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
         
-        if (index !== -1) {
-            return state.merge({
-                entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
-                entriesLoadingMore: state.get('entriesLoadingMore')
-                    .filter(id => id !== entryId),
-            });
-        }
-        return state;
-    },
+    //     if (index !== -1) {
+    //         return state.merge({
+    //             entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
+    //             entriesLoadingMore: state.get('entriesLoadingMore')
+    //                 .filter(id => id !== entryId),
+    //         });
+    //     }
+    //     return state;
+    // },
 
-    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
-        const { entryId } = request;
-        const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
+    // [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
+    //     const { entryId } = request;
+    //     const index = state.get('entryList').findIndex(entry => entry.entryId === entryId);
         
-        if (index !== -1) {
-            return state.merge({
-                entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
-                entriesLoadingMore: state.get('entriesLoadingMore')
-                    .filter(id => id !== entryId),                
-            });
-        }
-        return state;
-    },
+    //     if (index !== -1) {
+    //         return state.merge({
+    //             entriesLoading: state.get('entriesLoading').filter(id => id !== entryId),
+    //             entriesLoadingMore: state.get('entriesLoadingMore')
+    //                 .filter(id => id !== entryId),                
+    //         });
+    //     }
+    //     return state;
+    // },
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 });

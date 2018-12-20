@@ -1,15 +1,17 @@
-import * as Promise from 'bluebird';
-import { uniq } from 'ramda';
-import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from './constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const ramda_1 = require("ramda");
+const constants_1 = require("./constants");
+function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        const resolveEth = getService(PROFILE_MODULE.getByAddress);
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const resolveEth = getService(constants_1.PROFILE_MODULE.getByAddress);
         const accounts = yield web3Api.instance.eth.getAccounts();
         if (!accounts || !accounts.length) {
             return { collection: [] };
         }
-        const profiles = uniq(accounts).map((address) => {
+        const profiles = ramda_1.uniq(accounts).map((address) => {
             return resolveEth.execute({ ethAddress: address });
         });
         const collection = yield Promise.all(profiles);
@@ -19,7 +21,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getLocalIdentities;
     };
-    sp().service(COMMON_MODULE.getLocalIdentities, service);
+    sp().service(constants_1.COMMON_MODULE.getLocalIdentities, service);
     return getLocalIdentities;
 }
+exports.default = init;
 //# sourceMappingURL=get-local-identities.js.map

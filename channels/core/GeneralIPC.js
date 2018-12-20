@@ -1,5 +1,7 @@
-import ModuleEmitter from './ModuleEmitter';
-export default class GeneralIPC extends ModuleEmitter {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ModuleEmitter_1 = require("./ModuleEmitter");
+class GeneralIPC extends ModuleEmitter_1.default {
     constructor(formatter) {
         super();
         this.addFormatter(formatter);
@@ -22,4 +24,5 @@ export default class GeneralIPC extends ModuleEmitter {
         this.manager();
     }
 }
+exports.default = GeneralIPC;
 //# sourceMappingURL=GeneralIPC.js.map

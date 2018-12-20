@@ -1,26 +1,28 @@
-import fetchRegisteredInit from './fetch-registered';
-import profileExistsInit from './profile-exists';
-import registerProfileInit from './register-profile';
-import addressOfInit from './address-of-akashaid';
-import checkIdFormatInit from './check-id-format';
-import { REGISTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fetch_registered_1 = require("./fetch-registered");
+const profile_exists_1 = require("./profile-exists");
+const register_profile_1 = require("./register-profile");
+const address_of_akashaid_1 = require("./address-of-akashaid");
+const check_id_format_1 = require("./check-id-format");
+const constants_1 = require("@akashaproject/common/constants");
 const init = function init(sp, getService) {
-    const fetchRegistered = fetchRegisteredInit(sp, getService);
-    const profileExists = profileExistsInit(sp, getService);
-    const checkIdFormat = checkIdFormatInit(sp, getService);
-    const registerProfile = registerProfileInit(sp, getService);
-    const addressOf = addressOfInit(sp, getService);
+    const fetchRegistered = fetch_registered_1.default(sp, getService);
+    const profileExists = profile_exists_1.default(sp, getService);
+    const checkIdFormat = check_id_format_1.default(sp, getService);
+    const registerProfile = register_profile_1.default(sp, getService);
+    const addressOf = address_of_akashaid_1.default(sp, getService);
     return {
-        [REGISTRY_MODULE.fetchRegistered]: fetchRegistered,
-        [REGISTRY_MODULE.profileExists]: profileExists,
-        [REGISTRY_MODULE.checkIdFormat]: checkIdFormat,
-        [REGISTRY_MODULE.registerProfile]: registerProfile,
-        [REGISTRY_MODULE.addressOf]: addressOf,
+        [constants_1.REGISTRY_MODULE.fetchRegistered]: fetchRegistered,
+        [constants_1.REGISTRY_MODULE.profileExists]: profileExists,
+        [constants_1.REGISTRY_MODULE.checkIdFormat]: checkIdFormat,
+        [constants_1.REGISTRY_MODULE.registerProfile]: registerProfile,
+        [constants_1.REGISTRY_MODULE.addressOf]: addressOf,
     };
 };
 const app = {
     init,
-    moduleName: REGISTRY_MODULE.$name,
+    moduleName: constants_1.REGISTRY_MODULE.$name,
 };
-export default app;
+exports.default = app;
 //# sourceMappingURL=index.js.map

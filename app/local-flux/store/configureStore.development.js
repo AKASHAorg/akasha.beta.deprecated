@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { persistState } from 'redux-devtools';
+// import { persistState } from 'redux-devtools';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
 import batchedSubscribeMiddleware from './batching/middleware';

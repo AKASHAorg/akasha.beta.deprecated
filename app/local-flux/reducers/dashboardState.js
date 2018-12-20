@@ -57,7 +57,7 @@ const entryIteratorSuccess = (state, { data, type, request }) => {
     }
 
     const entryIds = data.collection.map(entry => entry.entryId);
-    const moreItems = type === types.ENTRY_LIST_ITERATOR_SUCCESS ?
+    const moreItems = type/* type === types.ENTRY_LIST_ITERATOR_SUCCESS */ ?
         request.limit === data.collection.length :
         !!data.lastBlock;
     return state.mergeIn(['columnById', request.columnId], {
@@ -340,9 +340,9 @@ const dashboardState = createReducer(initialState, {
     [types.DASHBOARD_UPDATE_NEW_COLUMN]: (state, { changes }) =>
         state.mergeIn([columnTypes.newColumn], changes || NewColumnRecord()),
 
-    [types.ENTRY_LIST_ITERATOR]: itemIterator,
+    // [types.ENTRY_LIST_ITERATOR]: itemIterator,
 
-    [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorSuccess,
+    // [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
     [types.ENTRY_MORE_LIST_ITERATOR]: itemMoreIterator,
 
@@ -384,50 +384,50 @@ const dashboardState = createReducer(initialState, {
 
     [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_STREAM_ITERATOR]: itemIterator,
+    // [types.ENTRY_STREAM_ITERATOR]: itemIterator,
 
-    [types.ENTRY_STREAM_ITERATOR_ERROR]: itemIteratorError,
+    // [types.ENTRY_STREAM_ITERATOR_ERROR]: itemIteratorError,
 
-    [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorSuccess,
+    // [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_TAG_ITERATOR]: itemIterator,
+    // [types.ENTRY_TAG_ITERATOR]: itemIterator,
 
-    [types.ENTRY_TAG_ITERATOR_ERROR]: itemIteratorError,
+    // [types.ENTRY_TAG_ITERATOR_ERROR]: itemIteratorError,
 
-    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
+    // [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
-        const { context, entryId } = request;
-        if (
-            context &&
-            state.getIn(['columnById', context, 'newItems']) &&
-            state.getIn(['columnById', context, 'newItems']).includes(entryId)
-        ) {
-            let mState = state.deleteIn(
-                ['columnById', context, 'newItems'],
-                state.getIn(['columnById', context, 'newItems']).indexOf(entryId)
-            )
-            mState = mState.mergeIn(['columnById', context], {
-                itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
-            });
-            return mState;
-        }
-        return state;
-    },
-    [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
-        const { context, entryId } = request;
-        if (context &&
-            state.getIn(['columnById', context, 'newItems']) &&
-            state.getIn(['columnById', context, 'newItems']).includes(entryId)
-        ) {
-            let mState = state.deleteIn(['columnById', context, 'newItems'], entryId)
-            mState = mState.mergeIn(['columnById', context], {
-                itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
-            });
-            return mState;
-        }
-        return state;
-    },
+    // [types.ENTRY_GET_SHORT_SUCCESS]: (state, { request }) => {
+    //     const { context, entryId } = request;
+    //     if (
+    //         context &&
+    //         state.getIn(['columnById', context, 'newItems']) &&
+    //         state.getIn(['columnById', context, 'newItems']).includes(entryId)
+    //     ) {
+    //         let mState = state.deleteIn(
+    //             ['columnById', context, 'newItems'],
+    //             state.getIn(['columnById', context, 'newItems']).indexOf(entryId)
+    //         )
+    //         mState = mState.mergeIn(['columnById', context], {
+    //             itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
+    //         });
+    //         return mState;
+    //     }
+    //     return state;
+    // },
+    // [types.ENTRY_GET_SHORT_ERROR]: (state, { request }) => {
+    //     const { context, entryId } = request;
+    //     if (context &&
+    //         state.getIn(['columnById', context, 'newItems']) &&
+    //         state.getIn(['columnById', context, 'newItems']).includes(entryId)
+    //     ) {
+    //         let mState = state.deleteIn(['columnById', context, 'newItems'], entryId)
+    //         mState = mState.mergeIn(['columnById', context], {
+    //             itemsList: state.getIn(['columnById', context, 'itemsList']).unshift(entryId)
+    //         });
+    //         return mState;
+    //     }
+    //     return state;
+    // },
     [types.HIDE_PREVIEW]: state =>
         state.setIn(['columnById', 'previewColumn'], new ColumnRecord()),
 
@@ -457,40 +457,40 @@ const dashboardState = createReducer(initialState, {
         return state;
     },
 
-    [types.PROFILE_COMMENTS_ITERATOR]: itemIterator,
+    // [types.PROFILE_COMMENTS_ITERATOR]: itemIterator,
 
-    [types.PROFILE_COMMENTS_ITERATOR_ERROR]: itemIteratorError,
+    // [types.PROFILE_COMMENTS_ITERATOR_ERROR]: itemIteratorError,
 
-    [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-            return state;
-        }
+    // [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    //     if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
+    //         return state;
+    //     }
     
-        const commentIds = data.collection.map(comm => comm.commentId);
-        const moreItems = !!data.lastBlock;
-        return state.mergeIn(['columnById', request.columnId], {
-            itemsList: List(commentIds),
-            firstBlock: request.lastBlock + 1,
-            flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-                fetchingItems: false,
-                moreItems
-            }),
-            lastBlock: data.lastBlock,
-            lastIndex: data.lastIndex
-        });
-    },
+    //     const commentIds = data.collection.map(comm => comm.commentId);
+    //     const moreItems = !!data.lastBlock;
+    //     return state.mergeIn(['columnById', request.columnId], {
+    //         itemsList: List(commentIds),
+    //         firstBlock: request.lastBlock + 1,
+    //         flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
+    //             fetchingItems: false,
+    //             moreItems
+    //         }),
+    //         lastBlock: data.lastBlock,
+    //         lastIndex: data.lastIndex
+    //     });
+    // },
 
-    [types.PROFILE_FOLLOWERS_ITERATOR]: itemIterator,
+    // [types.PROFILE_FOLLOWERS_ITERATOR]: itemIterator,
 
-    [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: itemIteratorError,
+    // [types.PROFILE_FOLLOWERS_ITERATOR_ERROR]: itemIteratorError,
 
-    [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: profileIteratorSuccess,
+    // [types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS]: profileIteratorSuccess,
     
-    [types.PROFILE_FOLLOWINGS_ITERATOR]: itemIterator,
+    // [types.PROFILE_FOLLOWINGS_ITERATOR]: itemIterator,
     
-    [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: itemIteratorError,
+    // [types.PROFILE_FOLLOWINGS_ITERATOR_ERROR]: itemIteratorError,
 
-    [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: profileIteratorSuccess,    
+    // [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: profileIteratorSuccess,    
 
     [types.PROFILE_MORE_COMMENTS_ITERATOR]: itemMoreIterator,
 

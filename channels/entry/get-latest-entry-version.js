@@ -1,9 +1,11 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const entryEth = yield getService(ENTRY_MODULE.getEntryIpfsHash).execute(data);
-        const entryIpfs = yield getService(CORE_MODULE.IPFS_CONNECTOR)
+        const entryEth = yield getService(constants_1.ENTRY_MODULE.getEntryIpfsHash).execute(data);
+        const entryIpfs = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
             .getInstance().api.get(entryEth.ipfsHash);
         const version = entryIpfs.version || null;
         return { version };
@@ -12,7 +14,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getLatestEntryVersion;
     };
-    sp().service(ENTRY_MODULE.getLatestEntryVersion, service);
+    sp().service(constants_1.ENTRY_MODULE.getLatestEntryVersion, service);
     return getLatestEntryVersion;
 }
+exports.default = init;
 //# sourceMappingURL=get-latest-entry-version.js.map

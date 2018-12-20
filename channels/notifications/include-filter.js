@@ -1,11 +1,13 @@
-import * as Promise from 'bluebird';
-import { filter } from './set-filter';
-import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const set_filter_1 = require("./set-filter");
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data) {
         data.profiles.forEach((profileAddress) => {
-            filter.appendAddress(profileAddress);
+            set_filter_1.filter.appendAddress(profileAddress);
         });
         return Promise.resolve({ profiles: data.profiles });
     });
@@ -13,7 +15,8 @@ export default function init(sp, getService) {
     const service = function () {
         return includeFilter;
     };
-    sp().service(NOTIFICATIONS_MODULE.includeFilter, service);
+    sp().service(constants_1.NOTIFICATIONS_MODULE.includeFilter, service);
     return includeFilter;
 }
+exports.default = init;
 //# sourceMappingURL=include-filter.js.map

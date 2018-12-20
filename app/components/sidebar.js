@@ -13,7 +13,7 @@ import { generalMessages } from '../locale-data/messages';
 import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import { profileSelectors, appSelectors } from '../local-flux/selectors';
+import { profileSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class Sidebar extends Component {
@@ -195,7 +195,10 @@ class Sidebar extends Component {
                 onClick={this._handleMyDraftsClick}
               >
                 <Icon type="draft" className="sidebar__entry-menu-buttons_draft-button-icon" />
-                <span className="sidebar__entry-menu-buttons_draft-button-label">{intl.formatMessage(entryMessages.gotoMyDrafts)}</span>
+                <span
+                  className="sidebar__entry-menu-buttons_draft-button-label">
+                  {intl.formatMessage(entryMessages.gotoMyDrafts)}
+                </span>
               </div>
             </div>
           </div>
@@ -345,7 +348,7 @@ function mapStateToProps (state) {
         drafts: state.draftState.get('drafts'),
         draftsFetched: state.draftState.get('draftsFetched'),
         fetchingDrafts: state.draftState.get('fetchingDrafts'),
-        isProfileEditToggled: appSelectors.selectProfileEditToggle(state),
+        isProfileEditToggled: profileSelectors.selectProfileEditToggle(state),
         loggedProfile: profileSelectors.selectLoggedProfile(state),
         loggedProfileData: profileSelectors.getLoggedProfileData(state),
         userSelectedLicense: state.settingsState.getIn(['userSettings', 'defaultLicense'])

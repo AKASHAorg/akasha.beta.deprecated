@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export const freeAethSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.freeAethSchema = {
     id: '/freeAeth',
     type: 'object',
     properties: {
@@ -8,14 +10,14 @@ export const freeAethSchema = {
     },
     required: ['token'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, freeAethSchema, { throwError: true });
-        const txData = getService(CORE_MODULE.CONTRACTS)
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.freeAethSchema, { throwError: true });
+        const txData = getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.AETH.freeAeth.request({ gas: 1000000 });
-        const receipt = yield getService(CORE_MODULE.CONTRACTS)
+        const receipt = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .send(txData, data.token, cb);
         return { receipt };
     });
@@ -23,7 +25,8 @@ export default function init(sp, getService) {
     const service = function () {
         return freeAeth;
     };
-    sp().service(PROFILE_MODULE.freeAeth, service);
+    sp().service(constants_1.PROFILE_MODULE.freeAeth, service);
     return freeAeth;
 }
+exports.default = init;
 //# sourceMappingURL=aeth-free.js.map

@@ -1,7 +1,9 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-import { unpad } from 'ethereumjs-util';
-export const getByAddressSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+const ethereumjs_util_1 = require("ethereumjs-util");
+exports.getByAddressSchema = {
     id: '/getByAddress',
     type: 'object',
     properties: {
@@ -9,15 +11,15 @@ export const getByAddressSchema = {
     },
     required: ['ethAddress'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, getByAddressSchema, { throwError: true });
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.getByAddressSchema, { throwError: true });
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         let resolved;
         let profileHex = yield contracts.instance.ProfileResolver.reverse(data.ethAddress);
-        if (!unpad(profileHex)) {
+        if (!ethereumjs_util_1.unpad(profileHex)) {
             profileHex = null;
         }
         else {
@@ -30,7 +32,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getByAddress;
     };
-    sp().service(PROFILE_MODULE.getByAddress, service);
+    sp().service(constants_1.PROFILE_MODULE.getByAddress, service);
     return getByAddress;
 }
+exports.default = init;
 //# sourceMappingURL=resolve-ethaddress.js.map

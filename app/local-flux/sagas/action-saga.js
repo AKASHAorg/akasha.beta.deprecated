@@ -64,9 +64,9 @@ const publishSuccessActions = {
     [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
     [actionTypes.claim]: entryActions.entryClaimSuccess,
     [actionTypes.claimVote]: entryActions.entryClaimVoteSuccess,
-    [actionTypes.comment]: commentsActions.commentsPublishSuccess,
-    [actionTypes.commentDownvote]: commentsActions.commentsDownvoteSuccess,
-    [actionTypes.commentUpvote]: commentsActions.commentsUpvoteSuccess,
+    // [actionTypes.comment]: commentsActions.commentsPublishSuccess,
+    // [actionTypes.commentDownvote]: commentsActions.commentsDownvoteSuccess,
+    // [actionTypes.commentUpvote]: commentsActions.commentsUpvoteSuccess,
     [actionTypes.cycleAeth]: profileActions.profileCycleAethSuccess,
     [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
     [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
@@ -95,18 +95,10 @@ function balanceRequired (actionType)/* : boolean */ {
 }
 
 function checkHasMana (actionType, remainingMana, costs) {
-    switch (actionType) {
-        case actionTypes.draftPublish:
-            return (remainingMana >= costs.entryPublishingCost);
-        case actionTypes.comment:
-            return (remainingMana >= costs.commentPublishingCost);
-        case actionTypes.commentUpvote:
-        case actionTypes.commentDownvote:
-        case actionTypes.entryUpvote:
-        case actionTypes.entryDownvote:
-            return (remainingMana >= costs.costByWeight);
-        default:
-            return true;
+    if (actionType === actionTypes.draftPublish || actionType === actionTypes.comment) {
+        return (remainingMana >= costs.commentPublishingCost);
+    } else {
+        return (remainingMana >= costs.costByWeight);
     }
 }
 function hasEnoughBalance (actionType, balance, publishingCost, payload) {

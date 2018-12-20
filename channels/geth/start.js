@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const startServiceS = {
     id: '/startService',
     type: 'object',
@@ -9,11 +11,11 @@ const startServiceS = {
         cache: { type: 'number' },
     },
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, startServiceS, { throwError: true });
-        const gethConnector = getService(CORE_MODULE.GETH_CONNECTOR);
+        const gethConnector = getService(constants_1.CORE_MODULE.GETH_CONNECTOR);
         if (gethConnector.getInstance().serviceStatus.process) {
             throw new Error('Geth is already running');
         }
@@ -26,7 +28,8 @@ export default function init(sp, getService) {
     const service = function () {
         return startService;
     };
-    sp().service(GETH_MODULE.startService, service);
+    sp().service(constants_1.GETH_MODULE.startService, service);
     return startService;
 }
+exports.default = init;
 //# sourceMappingURL=start.js.map

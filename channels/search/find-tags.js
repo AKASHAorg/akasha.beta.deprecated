@@ -1,7 +1,9 @@
-import * as Promise from 'bluebird';
-import { SEARCH_MODULE } from '@akashaproject/common/constants';
-import { dbs } from './indexes';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+const indexes_1 = require("./indexes");
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
         const collection = [];
@@ -13,7 +15,7 @@ export default function init(sp, getService) {
             limit: pageSize,
             type: 'simple',
         };
-        dbs.tags
+        indexes_1.dbs.tags
             .searchIndex
             .match(options)
             .on('data', (data) => {
@@ -28,7 +30,8 @@ export default function init(sp, getService) {
     const service = function () {
         return findTags;
     };
-    sp().service(SEARCH_MODULE.findTags, service);
+    sp().service(constants_1.SEARCH_MODULE.findTags, service);
     return findTags;
 }
+exports.default = init;
 //# sourceMappingURL=find-tags.js.map

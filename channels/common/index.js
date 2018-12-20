@@ -1,27 +1,29 @@
-import ipfsHelpersInit from './ipfs-helpers';
-import profileHelpersInit from './profile-helpers';
-import getLocalIdentitiesInit from './get-local-identities';
-import loginInit from './login';
-import logoutInit from './logout';
-import requestAethInit from './request-aeth';
-import { COMMON_MODULE } from './constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ipfs_helpers_1 = require("./ipfs-helpers");
+const profile_helpers_1 = require("./profile-helpers");
+const get_local_identities_1 = require("./get-local-identities");
+const login_1 = require("./login");
+const logout_1 = require("./logout");
+const request_aeth_1 = require("./request-aeth");
+const constants_1 = require("./constants");
 const init = function init(sp, getService) {
-    ipfsHelpersInit(sp);
-    profileHelpersInit(sp, getService);
-    const getLocalIdentities = getLocalIdentitiesInit(sp, getService);
-    const login = loginInit(sp, getService);
-    const logout = logoutInit(sp, getService);
-    const requestAeth = requestAethInit(sp, getService);
+    ipfs_helpers_1.default(sp);
+    profile_helpers_1.default(sp, getService);
+    const getLocalIdentities = get_local_identities_1.default(sp, getService);
+    const login = login_1.default(sp, getService);
+    const logout = logout_1.default(sp, getService);
+    const requestAeth = request_aeth_1.default(sp, getService);
     return {
-        [COMMON_MODULE.getLocalIdentities]: getLocalIdentities,
-        [COMMON_MODULE.login]: login,
-        [COMMON_MODULE.logout]: logout,
-        [COMMON_MODULE.requestEther]: requestAeth,
+        [constants_1.COMMON_MODULE.getLocalIdentities]: getLocalIdentities,
+        [constants_1.COMMON_MODULE.login]: login,
+        [constants_1.COMMON_MODULE.logout]: logout,
+        [constants_1.COMMON_MODULE.requestEther]: requestAeth,
     };
 };
 const app = {
     init,
-    moduleName: COMMON_MODULE.$name,
+    moduleName: constants_1.COMMON_MODULE.$name,
 };
-export default app;
+exports.default = app;
 //# sourceMappingURL=index.js.map

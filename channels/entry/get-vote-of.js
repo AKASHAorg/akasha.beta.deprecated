@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
-export const getVoteOfS = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.getVoteOfS = {
     id: '/getVoteOf',
     type: 'object',
     properties: {
@@ -21,13 +23,13 @@ export const getVoteOfS = {
     },
     required: ['list'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, getVoteOfS, { throwError: true });
-        const profileAddress = getService(COMMON_MODULE).profileAddress;
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.getVoteOfS, { throwError: true });
+        const profileAddress = getService(constants_1.COMMON_MODULE).profileAddress;
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
         const requests = data.list.map((req) => {
             return profileAddress(req).then((ethAddress) => {
                 return Promise.all([
@@ -45,7 +47,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getVoteOf;
     };
-    sp().service(ENTRY_MODULE.getVoteOf, service);
+    sp().service(constants_1.ENTRY_MODULE.getVoteOf, service);
     return getVoteOf;
 }
+exports.default = init;
 //# sourceMappingURL=get-vote-of.js.map

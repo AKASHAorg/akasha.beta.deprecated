@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const getScore = {
     id: '/getScore',
     type: 'object',
@@ -8,12 +10,12 @@ const getScore = {
     },
     required: ['entryId'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, getScore, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const score = yield contracts.instance.Votes.getRecord(data.entryId);
         const fetched = yield contracts.fromEvent(contracts.instance.Votes.Vote, { target: data.entryId, voteType: 0 }, 0, 10000, { lastIndex: 0, reversed: true });
         const downVotes = [];
@@ -37,7 +39,8 @@ export default function init(sp, getService) {
     const service = function () {
         return getVoteRatio;
     };
-    sp().service(ENTRY_MODULE.getVoteRatio, service);
+    sp().service(constants_1.ENTRY_MODULE.getVoteRatio, service);
     return getVoteRatio;
 }
+exports.default = init;
 //# sourceMappingURL=vote-ratio.js.map

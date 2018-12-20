@@ -73,11 +73,11 @@ const profileState = createReducer(initialState, {
         }
         return state;
     },
-    [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
-        state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
+    // [types.ENTRY_GET_FULL_SUCCESS]: (state, { request }) =>
+    //     state.set('byId', addProfileData(state.get('byId'), { ethAddress: request.ethAddress })),
 
-    [types.PROFILE_ALL_FOLLOWINGS]: (state, { following }) =>
-        state.set('allFollowings', following),
+    // [types.PROFILE_ALL_FOLLOWINGS]: (state, { following }) =>
+    //     state.set('allFollowings', following),
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
@@ -96,9 +96,9 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS]: state =>
         state.setIn(['flags', 'ethAddressPending'], false),
 
-    [types.PROFILE_CYCLING_STATES_SUCCESS]: (state, { data }) => {
-        return state.mergeIn(['cyclingStates'], data);
-    },
+    // [types.PROFILE_CYCLING_STATES_SUCCESS]: (state, { data }) => {
+    //     return state.mergeIn(['cyclingStates'], data);
+    // },
 
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
@@ -376,14 +376,14 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_GET_PUBLISHING_COST_SUCCESS]: (state, { data }) =>
         state.set('publishingCost', fromJS(data)),
 
-    [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
-        let isFollower = state.get('isFollower');
-        data.collection.forEach((resp) => {
-            const { addressFollowing, result } = resp;
-            isFollower = isFollower.set(addressFollowing, result);
-        });
-        return state.set('isFollower', isFollower);
-    },
+    // [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
+    //     let isFollower = state.get('isFollower');
+    //     data.collection.forEach((resp) => {
+    //         const { addressFollowing, result } = resp;
+    //         isFollower = isFollower.set(addressFollowing, result);
+    //     });
+    //     return state.set('isFollower', isFollower);
+    // },
 
     [`${PROFILE_MODULE.karmaRanking}`]: state =>
         state.merge({
@@ -453,12 +453,12 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 
-    [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
-        const comments = balanceToNumber(data.comments.manaCost);
-        const entriesTotal = balanceToNumber(data.entries.manaCost);
-        const votes = balanceToNumber(data.votes.manaCost);
-        return state.mergeIn(['manaBurned'], { comments, entriesTotal, votes });
-    },
+    // [types.PROFILE_MANA_BURNED_SUCCESS]: (state, { data }) => {
+    //     const comments = balanceToNumber(data.comments.manaCost);
+    //     const entriesTotal = balanceToNumber(data.entries.manaCost);
+    //     const votes = balanceToNumber(data.votes.manaCost);
+    //     return state.mergeIn(['manaBurned'], { comments, entriesTotal, votes });
+    // },
 
     [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: (state, { ethAddress }) =>
         state.setIn(['flags', 'fetchingMoreFollowers', ethAddress], true),
@@ -527,23 +527,23 @@ const profileState = createReducer(initialState, {
         essenceIterator: new EssenceIterator()
     }),
 
-    [types.PROFILE_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
-        let newHashes = new Map();
-        ipfsHash.forEach((hash) => { newHashes = newHashes.set(hash, true); });
-        return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
-    },
+    // [types.PROFILE_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
+    //     let newHashes = new Map();
+    //     ipfsHash.forEach((hash) => { newHashes = newHashes.set(hash, true); });
+    //     return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
+    // },
 
-    [types.PROFILE_RESOLVE_IPFS_HASH_ERROR]: (state, { error, request }) =>
-        state.setIn(['flags', 'resolvingIpfsHash', request.columnId, error.ipfsHash], false),
+    // [types.PROFILE_RESOLVE_IPFS_HASH_ERROR]: (state, { error, request }) =>
+    //     state.setIn(['flags', 'resolvingIpfsHash', request.columnId, error.ipfsHash], false),
 
-    [types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
-        const index = request.ipfsHash.indexOf(data.ipfsHash);
-        const akashaId = request.akashaIds[index];
-        return state.merge({
-            flags: state.get('flags').setIn(['resolvingIpfsHash', request.columnId, data.ipfsHash], false),
-            byId: state.get('byId').mergeIn([akashaId], data.profile)
-        });
-    },
+    // [types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, request }) => {
+    //     const index = request.ipfsHash.indexOf(data.ipfsHash);
+    //     const akashaId = request.akashaIds[index];
+    //     return state.merge({
+    //         flags: state.get('flags').setIn(['resolvingIpfsHash', request.columnId, data.ipfsHash], false),
+    //         byId: state.get('byId').mergeIn([akashaId], data.profile)
+    //     });
+    // },
 
     [types.PROFILE_TOGGLE_INTEREST]: (state, { interest, interestType }) => {
         const interestState = state.getIn(['interests', interestType]);
@@ -553,41 +553,41 @@ const profileState = createReducer(initialState, {
         return state.setIn(['interests', interestType], newList);
     },
 
-    [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
-        const { ethAddress } = data;
-        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
-        const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
-        const followingCount = loggedProfile.get('followingCount');
-        const profile = state.getIn(['byEthAddress', ethAddress]);
-        const oldFollowers = state.get('followers');
-        const oldFollowings = state.get('followings');
-        const followersList = oldFollowers.get(ethAddress);
-        const followingsList = oldFollowings.get(loggedEthAddress);
-        const followers = followersList ?
-            oldFollowers.set(ethAddress, followersList.filter(id => id !== loggedEthAddress)) :
-            oldFollowers;
-        const followings = followingsList ?
-            oldFollowings.set(loggedEthAddress, followingsList.filter(id => id !== ethAddress)) :
-            oldFollowings;
-        const allFollowings = state.get('allFollowings');
-        if (allFollowings.indexOf(ethAddress) > -1) {
-            allFollowings.splice(allFollowings.indexOf(ethAddress), 1);
-        }
-        return state.merge({
-            allFollowings,
-            byEthAddress: state.get('byEthAddress').merge({
-                [ethAddress]: profile ?
-                    profile.set('followersCount', +profile.get('followersCount') - 1) :
-                    undefined,
-                [loggedEthAddress]: loggedProfile.set('followingCount', +followingCount - 1)
-            }),
-            followers,
-            followings,
-            isFollower: state.get('isFollower').set(ethAddress, false)
-        });
-    },
-    [types.TAG_CAN_CREATE_SUCCESS]: (state, data) =>
-        state.set('canCreateTags', data.data.can),
+    // [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
+    //     const { ethAddress } = data;
+    //     const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
+    //     const loggedProfile = state.getIn(['byEthAddress', loggedEthAddress]);
+    //     const followingCount = loggedProfile.get('followingCount');
+    //     const profile = state.getIn(['byEthAddress', ethAddress]);
+    //     const oldFollowers = state.get('followers');
+    //     const oldFollowings = state.get('followings');
+    //     const followersList = oldFollowers.get(ethAddress);
+    //     const followingsList = oldFollowings.get(loggedEthAddress);
+    //     const followers = followersList ?
+    //         oldFollowers.set(ethAddress, followersList.filter(id => id !== loggedEthAddress)) :
+    //         oldFollowers;
+    //     const followings = followingsList ?
+    //         oldFollowings.set(loggedEthAddress, followingsList.filter(id => id !== ethAddress)) :
+    //         oldFollowings;
+    //     const allFollowings = state.get('allFollowings');
+    //     if (allFollowings.indexOf(ethAddress) > -1) {
+    //         allFollowings.splice(allFollowings.indexOf(ethAddress), 1);
+    //     }
+    //     return state.merge({
+    //         allFollowings,
+    //         byEthAddress: state.get('byEthAddress').merge({
+    //             [ethAddress]: profile ?
+    //                 profile.set('followersCount', +profile.get('followersCount') - 1) :
+    //                 undefined,
+    //             [loggedEthAddress]: loggedProfile.set('followingCount', +followingCount - 1)
+    //         }),
+    //         followers,
+    //         followings,
+    //         isFollower: state.get('isFollower').set(ethAddress, false)
+    //     });
+    // },
+    // [types.TAG_CAN_CREATE_SUCCESS]: (state, data) =>
+    //     state.set('canCreateTags', data.data.can),
 });
 
 export default profileState;

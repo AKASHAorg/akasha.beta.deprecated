@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE, GENERAL_SETTINGS } from '@akashaproject/common/constants';
-export const resolveEntriesIpfsHashS = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.resolveEntriesIpfsHashS = {
     id: '/resolveEntriesIpfsHash',
     type: 'object',
     properties: {
@@ -14,13 +16,13 @@ export const resolveEntriesIpfsHashS = {
     },
     required: ['ipfsHash'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, resolveEntriesIpfsHashS, { throwError: true });
-        const SHORT_WAIT_TIME = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.OP_WAIT_TIME);
-        const { getFullContent, getShortContent } = getService(ENTRY_MODULE.ipfs);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.resolveEntriesIpfsHashS, { throwError: true });
+        const SHORT_WAIT_TIME = (getService(constants_1.CORE_MODULE.SETTINGS)).get(constants_1.GENERAL_SETTINGS.OP_WAIT_TIME);
+        const { getFullContent, getShortContent } = getService(constants_1.ENTRY_MODULE.ipfs);
         const fetchData = (data.full) ? getFullContent : getShortContent;
         data.ipfsHash.forEach((ipfsHash) => {
             fetchData(ipfsHash, false)
@@ -38,7 +40,8 @@ export default function init(sp, getService) {
     const service = function () {
         return resolveEntriesIpfsHash;
     };
-    sp().service(ENTRY_MODULE.resolveEntriesIpfsHash, service);
+    sp().service(constants_1.ENTRY_MODULE.resolveEntriesIpfsHash, service);
     return resolveEntriesIpfsHash;
 }
+exports.default = init;
 //# sourceMappingURL=resolve-entries-ipfs-hash.js.map

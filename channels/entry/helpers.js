@@ -1,11 +1,13 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp, getService) {
     const cacheKey = 'ENTRY-TAG';
     const calcKey = (id) => `${cacheKey}-${id}`;
-    const contracts = getService(CORE_MODULE.CONTRACTS);
-    const mixed = getService(CORE_MODULE.STASH).mixed;
-    const web3Api = getService(CORE_MODULE.WEB3_API);
+    const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+    const mixed = getService(constants_1.CORE_MODULE.STASH).mixed;
+    const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
     const fetchFromPublish = Promise.coroutine(function* (data) {
         const collection = [];
         const fetched = yield contracts
@@ -21,7 +23,7 @@ export default function init(sp, getService) {
                 tags = captureIndex.results.map(function (ev) {
                     return web3Api.instance.toUtf8(ev.args.tagName);
                 });
-                author = yield getService(PROFILE_MODULE.resolveEthAddress)
+                author = yield getService(constants_1.PROFILE_MODULE.resolveEthAddress)
                     .execute({ ethAddress: event.args.author });
                 entryType = captureIndex.results.length ?
                     captureIndex.results[0].args.entryType.toNumber() : -1;
@@ -60,7 +62,7 @@ export default function init(sp, getService) {
                     return web3Api.instance.toUtf8(ev.args.tagName);
                 });
                 author = fetchedPublish.results.length ?
-                    yield getService(PROFILE_MODULE.resolveEthAddress)
+                    yield getService(constants_1.PROFILE_MODULE.resolveEthAddress)
                         .execute({ ethAddress: fetchedPublish.results[0].args.author }) :
                     { ethAddress: null };
                 entryType = event.args.entryType.toNumber();
@@ -85,7 +87,8 @@ export default function init(sp, getService) {
     const service = function () {
         return service;
     };
-    sp().service(ENTRY_MODULE.helpers, service);
+    sp().service(constants_1.ENTRY_MODULE.helpers, service);
     return helpers;
 }
+exports.default = init;
 //# sourceMappingURL=helpers.js.map

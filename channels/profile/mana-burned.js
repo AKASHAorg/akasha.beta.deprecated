@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export const manaBurnedSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.manaBurnedSchema = {
     id: '/manaBurned',
     type: 'object',
     properties: {
@@ -8,14 +10,14 @@ export const manaBurnedSchema = {
         ethAddress: { type: 'string', format: 'address' },
     },
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, manaBurnedSchema, { throwError: true });
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.manaBurnedSchema, { throwError: true });
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const BN = web3Api.instance.BigNumber;
-        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const address = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
         const totalEntries = yield contracts.instance.Entries.getEntryCount(address);
         const entryCost = yield contracts.instance.Entries.required_essence();
         const totalEntriesMana = entryCost.times(new BN(totalEntries));
@@ -44,7 +46,8 @@ export default function init(sp, getService) {
     const service = function () {
         return manaBurned;
     };
-    sp().service(PROFILE_MODULE.manaBurned, service);
+    sp().service(constants_1.PROFILE_MODULE.manaBurned, service);
     return manaBurned;
 }
+exports.default = init;
 //# sourceMappingURL=mana-burned.js.map

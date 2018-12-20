@@ -316,33 +316,33 @@ const actionState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_AETH_TRANSFERS_ITERATOR]: state =>
-        state.setIn(['flags', 'fetchingAethTransfers'], true),
+    // [types.PROFILE_AETH_TRANSFERS_ITERATOR]: state =>
+    //     state.setIn(['flags', 'fetchingAethTransfers'], true),
 
-    [types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR]: state =>
-        state.setIn(['flags', 'fetchingAethTransfers'], false),
+    // [types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR]: state =>
+    //     state.setIn(['flags', 'fetchingAethTransfers'], false),
 
-    [types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS]: (state, { data }) => {
-        const type = actionTypes.receiveAeth;
-        const fetchingHistory = state.getIn(['flags', 'fetchingHistory']);
-        let byId = state.get('byId');
-        let list = fetchingHistory ? new List() : state.get('history');
-        data.collection.forEach((event, index) => {
-            const id = `${event.blockNumber}-${event.from.ethAddress}-${type}-${index}`;
-            const payload = fromJS({ amount: event.amount });
-            const action = new ActionRecord({ blockNumber: event.blockNumber, id, success: true, type })
-                .set('payload', payload);
-            if (!byId.get(action.id)) {
-                byId = byId.set(action.id, action);
-                list = list.push(action.id);
-            }
-        });
-        return state.merge({
-            byId,
-            flags: state.get('flags').set('fetchingAethTransfers', false),
-            history: sortByBlockNr(byId, list),
-        });
-    },
+    // [types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS]: (state, { data }) => {
+    //     const type = actionTypes.receiveAeth;
+    //     const fetchingHistory = state.getIn(['flags', 'fetchingHistory']);
+    //     let byId = state.get('byId');
+    //     let list = fetchingHistory ? new List() : state.get('history');
+    //     data.collection.forEach((event, index) => {
+    //         const id = `${event.blockNumber}-${event.from.ethAddress}-${type}-${index}`;
+    //         const payload = fromJS({ amount: event.amount });
+    //         const action = new ActionRecord({ blockNumber: event.blockNumber, id, success: true, type })
+    //             .set('payload', payload);
+    //         if (!byId.get(action.id)) {
+    //             byId = byId.set(action.id, action);
+    //             list = list.push(action.id);
+    //         }
+    //     });
+    //     return state.merge({
+    //         byId,
+    //         flags: state.get('flags').set('fetchingAethTransfers', false),
+    //         history: sortByBlockNr(byId, list),
+    //     });
+    // },
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });

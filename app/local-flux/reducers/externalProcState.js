@@ -194,32 +194,32 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [types.GETH_STOP_SYNC]: state =>
-        state.mergeIn(['geth'], {
-            syncActionId: 3,
-        }),
+    // [types.GETH_STOP_SYNC]: state =>
+    //     state.mergeIn(['geth'], {
+    //         syncActionId: 3,
+    //     }),
 
-    [types.GET_PAUSE_SYNC]: state =>
-        state.mergeIn(['geth'], {
-            syncActionId: 2,
-        }),
+    // [types.GET_PAUSE_SYNC]: state =>
+    //     state.mergeIn(['geth'], {
+    //         syncActionId: 2,
+    //     }),
 
     [types.GETH_RESUME_SYNC]: state =>
         state.mergeIn(['geth'], {
             syncActionId: 1
         }),
 
-    [types.GETH_RESET_BUSY]: state =>
-        state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                busyState: false
-            })
-        }),
+    // [types.GETH_RESET_BUSY]: state =>
+    //     state.mergeIn(['geth'], {
+    //         flags: state.getIn(['geth', 'flags']).merge({
+    //             busyState: false
+    //         })
+    //     }),
 
-    [types.IPFS_RESET_BUSY]: state =>
-        state.mergeIn(['ipfs', 'flags'], {
-            busyState: false
-        }),
+    // [types.IPFS_RESET_BUSY]: state =>
+    //     state.mergeIn(['ipfs', 'flags'], {
+    //         busyState: false
+    //     }),
 
     [`${GETH_MODULE.logs}_SUCCESS`]: (state, { data }) => {
         if (!data.length) {

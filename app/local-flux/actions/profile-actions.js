@@ -2,18 +2,18 @@ import { action } from './helpers';
 import * as types from '../constants';
 import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
 
-export const profileAethTransfersIterator = () => action(types.PROFILE_AETH_TRANSFERS_ITERATOR);
+// export const profileAethTransfersIterator = () => action(types.PROFILE_AETH_TRANSFERS_ITERATOR);
 
-export const profileAethTransfersIteratorError = (error) => {
-    error.code = 'PATIE01';
-    error.messageId = 'profileAethTransfersIterator';
-    return action(types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR, { error });
-};
+// export const profileAethTransfersIteratorError = (error) => {
+//     error.code = 'PATIE01';
+//     error.messageId = 'profileAethTransfersIterator';
+//     return action(types.PROFILE_AETH_TRANSFERS_ITERATOR_ERROR, { error });
+// };
 
-export const profileAethTransfersIteratorSuccess = data =>
-    action(types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS, { data });
+// export const profileAethTransfersIteratorSuccess = data =>
+//     action(types.PROFILE_AETH_TRANSFERS_ITERATOR_SUCCESS, { data });
 
-export const profileAllFollowings = following => action(types.PROFILE_ALL_FOLLOWINGS, { following });
+// export const profileAllFollowings = following => action(types.PROFILE_ALL_FOLLOWINGS, { following });
 
 export const profileBondAeth = ({ actionId, amount }) =>
     action(`${PROFILE_MODULE.bondAeth}`, { actionId, amount });

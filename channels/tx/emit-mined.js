@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, TX_MODULE } from '@akashaproject/common/constants';
-export const emitMinedSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.emitMinedSchema = {
     id: '/emitMined',
     type: 'object',
     properties: {
@@ -8,11 +10,11 @@ export const emitMinedSchema = {
     },
     required: ['watch'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, emitMinedSchema, { throwError: true });
-        const web3Helper = getService(CORE_MODULE.WEB3_HELPER);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.emitMinedSchema, { throwError: true });
+        const web3Helper = getService(constants_1.CORE_MODULE.WEB3_HELPER);
         (data.watch) ? web3Helper.startTxWatch() : web3Helper.stopTxWatch();
         return { watching: web3Helper.watching };
     });
@@ -20,7 +22,8 @@ export default function init(sp, getService) {
     const service = function () {
         return emitMined;
     };
-    sp().service(TX_MODULE.emitMined, service);
+    sp().service(constants_1.TX_MODULE.emitMined, service);
     return emitMined;
 }
+exports.default = init;
 //# sourceMappingURL=emit-mined.js.map

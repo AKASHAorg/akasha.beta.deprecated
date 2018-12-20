@@ -199,9 +199,9 @@ const commentsState = createReducer(initialState, {
             newestCommentBlock: state.get('newestCommentBlock').set(parent, data.lastBlock)
         });
     },
-    [types.COMMENTS_PUBLISH_SUCCESS]: (state) => {
-        return state;
-    },
+    // [types.COMMENTS_PUBLISH_SUCCESS]: (state) => {
+    //     return state;
+    // },
     [types.COMMENTS_LOAD_NEW]: (state) => {
         const newComments = state.getIn(['newComments', 'comments']);
         if (!newComments.size) {
@@ -280,28 +280,28 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_GET_FULL]: state => state.setIn(['flags', 'commentsFetched', 'entryPage'], false),
+    // [types.ENTRY_GET_FULL]: state => state.setIn(['flags', 'commentsFetched', 'entryPage'], false),
 
-    [types.PROFILE_COMMENTS_ITERATOR]: (state, { column }) =>
-        state.setIn(['profileComments', column.value], new ProfileComments({ fetchingComments: true })),
+    // [types.PROFILE_COMMENTS_ITERATOR]: (state, { column }) =>
+    //     state.setIn(['profileComments', column.value], new ProfileComments({ fetchingComments: true })),
 
-    [types.PROFILE_COMMENTS_ITERATOR_ERROR]: (state, { request }) =>
-        state.setIn(
-            ['profileComments', request.ethAddress],
-            new ProfileComments({ fetchingComments: false })
-        ),
+    // [types.PROFILE_COMMENTS_ITERATOR_ERROR]: (state, { request }) =>
+    //     state.setIn(
+    //         ['profileComments', request.ethAddress],
+    //         new ProfileComments({ fetchingComments: false })
+    //     ),
 
-    [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
-        const { ethAddress } = request;
-        const commentIds = data.collection.map(result => result.commentId);
-        return state.mergeIn(['profileComments', ethAddress], {
-            commentIds: new List(commentIds),
-            fetchingComments: false,
-            lastBlock: data.lastBlock,
-            lastIndex: data.lastIndex,
-            moreComments: !!data.lastBlock
-        });
-    },
+    // [types.PROFILE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
+    //     const { ethAddress } = request;
+    //     const commentIds = data.collection.map(result => result.commentId);
+    //     return state.mergeIn(['profileComments', ethAddress], {
+    //         commentIds: new List(commentIds),
+    //         fetchingComments: false,
+    //         lastBlock: data.lastBlock,
+    //         lastIndex: data.lastIndex,
+    //         moreComments: !!data.lastBlock
+    //     });
+    // },
 });
 
 export default commentsState;

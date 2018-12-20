@@ -1,20 +1,22 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
-export const createImage = function createImage(data, type = 'image/jpg') {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.createImage = function createImage(data, type = 'image/jpg') {
     const blob = new Blob([data], { type });
     return URL.createObjectURL(blob);
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
         const requests = data.map((hash) => {
-            return getService(CORE_MODULE.IPFS_CONNECTOR)
+            return getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
                 .getInstance().api.getFile(hash).then((uintData) => {
                 return { hash, data: uintData };
             });
         });
         const collection = yield Promise.all(requests);
         const response = collection.map((record) => {
-            return { [record.hash]: createImage(record.data) };
+            return { [record.hash]: exports.createImage(record.data) };
         });
         return { collection: response };
     });
@@ -22,7 +24,8 @@ export default function init(sp, getService) {
     const service = function () {
         return createImages;
     };
-    sp().service(IPFS_MODULE.createImage, service);
+    sp().service(constants_1.IPFS_MODULE.createImage, service);
     return createImages;
 }
+exports.default = init;
 //# sourceMappingURL=create-image.js.map
