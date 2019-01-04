@@ -1,17 +1,19 @@
-import * as Promise from 'bluebird';
-import { contains, isNil } from 'ramda';
-import { CORE_MODULE, NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const ramda_1 = require("ramda");
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp, getService) {
     class EntriesCache {
         constructor() {
             this.published = [];
             this.canVote = [];
         }
         push(entryId) {
-            if (contains(entryId, this.published) || isNil(entryId)) {
+            if (ramda_1.contains(entryId, this.published) || ramda_1.isNil(entryId)) {
                 return Promise.resolve();
             }
-            return (getService(CORE_MODULE.CONTRACTS)).instance
+            return (getService(constants_1.CORE_MODULE.CONTRACTS)).instance
                 .Votes
                 .getRecord(entryId)
                 .then((record) => {
@@ -41,7 +43,8 @@ export default function init(sp, getService) {
     const service = function () {
         return entriesCache;
     };
-    sp().service(NOTIFICATIONS_MODULE.entriesCache, service);
+    sp().service(constants_1.NOTIFICATIONS_MODULE.entriesCache, service);
     return entriesCache;
 }
+exports.default = init;
 //# sourceMappingURL=entries.js.map

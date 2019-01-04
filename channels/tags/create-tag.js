@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
-export const createSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.createSchema = {
     id: '/create',
     type: 'object',
     properties: {
@@ -9,13 +11,13 @@ export const createSchema = {
     },
     required: ['tagName', 'token'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, createSchema, { throwError: true });
-        const txData = yield getService(CORE_MODULE.CONTRACTS)
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.createSchema, { throwError: true });
+        const txData = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .instance.Tags.add.request(data.tagName);
-        const receipt = yield getService(CORE_MODULE.CONTRACTS)
+        const receipt = yield getService(constants_1.CORE_MODULE.CONTRACTS)
             .send(txData, data.token, cb);
         return { receipt, tagName: data.tagName };
     });
@@ -23,7 +25,8 @@ export default function init(sp, getService) {
     const service = function () {
         return createTag;
     };
-    sp().service(TAGS_MODULE.createTag, service);
+    sp().service(constants_1.TAGS_MODULE.createTag, service);
     return createTag;
 }
+exports.default = init;
 //# sourceMappingURL=create-tag.js.map

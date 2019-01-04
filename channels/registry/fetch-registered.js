@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
-export const fetchRegisteredSchema = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.fetchRegisteredSchema = {
     id: '/fetchRegistered',
     type: 'object',
     properties: {
@@ -9,14 +11,14 @@ export const fetchRegisteredSchema = {
     },
     required: ['toBlock'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, fetchRegisteredSchema, { throwError: true });
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.fetchRegisteredSchema, { throwError: true });
         const collection = [];
         const maxResults = data.limit || 5;
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
         const fetched = yield contracts.fromEvent(contracts.instance.ProfileRegistrar.Register, {}, data.toBlock, maxResults, {});
         for (const event of fetched.results) {
             collection.push({ akashaId: web3Api.instance.toUtf8(event.args.label) });
@@ -27,7 +29,8 @@ export default function init(sp, getService) {
     const service = function () {
         return fetchRegistered;
     };
-    sp().service(REGISTRY_MODULE.fetchRegistered, service);
+    sp().service(constants_1.REGISTRY_MODULE.fetchRegistered, service);
     return fetchRegistered;
 }
+exports.default = init;
 //# sourceMappingURL=fetch-registered.js.map

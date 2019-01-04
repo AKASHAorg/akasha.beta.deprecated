@@ -1,18 +1,20 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { Buffer } from 'safe-buffer';
-import { addHexPrefix, bufferToHex, ecrecover, fromRpcSig, hashPersonalMessage, pubToAddress, toBuffer, } from 'ethereumjs-util';
-import * as Promise from 'bluebird';
-import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
-export const randomBytesAsync = Promise.promisify(randomBytes);
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
+const safe_buffer_1 = require("safe-buffer");
+const ethereumjs_util_1 = require("ethereumjs-util");
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
+function init(sp, getService) {
     class Auth {
         generateKey(pass) {
             try {
-                if (!Buffer.isBuffer(pass)) {
+                if (!safe_buffer_1.Buffer.isBuffer(pass)) {
                     return Promise.reject(new Error('Incorrect password format'));
                 }
-                const transformed = Buffer.from(pass).toString('utf8');
-                return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
+                const transformed = safe_buffer_1.Buffer.from(pass).toString('utf8');
+                return (getService(constants_1.CORE_MODULE.GETH_CONNECTOR)).getInstance()
                     .web3
                     .personal
                     .newAccount(transformed)
@@ -25,7 +27,7 @@ export default function init(sp, getService) {
             }
         }
         login(acc, pass, timer = 1) {
-            return (getService(CORE_MODULE.WEB3_HELPER))
+            return (getService(constants_1.CORE_MODULE.WEB3_HELPER))
                 .hasKey(acc)
                 .then((found) => {
                 if (!found) {
@@ -34,28 +36,28 @@ export default function init(sp, getService) {
                 return this.encrypt(pass);
             })
                 .then(() => {
-                return randomBytesAsync(64);
+                return exports.randomBytesAsync(64);
             })
                 .then((buff) => {
-                const token = addHexPrefix(buff.toString('hex'));
-                return this.signSession(token, acc, Buffer.from(pass).toString('utf8'))
+                const token = ethereumjs_util_1.addHexPrefix(buff.toString('hex'));
+                return this.signSession(token, acc, safe_buffer_1.Buffer.from(pass).toString('utf8'))
                     .then((signedString) => {
                     const expiration = new Date();
-                    const clientToken = hashPersonalMessage(buff);
+                    const clientToken = ethereumjs_util_1.hashPersonalMessage(buff);
                     expiration.setMinutes(expiration.getMinutes() + timer);
-                    (getService(CORE_MODULE.GETH_CONNECTOR))
+                    (getService(constants_1.CORE_MODULE.GETH_CONNECTOR))
                         .getInstance().web3.personal.lockAccount(acc).then(() => null);
-                    (getService(CORE_MODULE.GETH_CONNECTOR))
+                    (getService(constants_1.CORE_MODULE.GETH_CONNECTOR))
                         .getInstance().web3.eth.defaultAccount = acc;
                     this.session = {
                         expiration,
                         address: acc,
-                        vrs: fromRpcSig(signedString),
+                        vrs: ethereumjs_util_1.fromRpcSig(signedString),
                     };
                     this.task = setTimeout(() => this.flushSession(), 1000 * 60 * timer);
                     return {
                         expiration,
-                        token: addHexPrefix(clientToken.toString('hex')),
+                        token: ethereumjs_util_1.addHexPrefix(clientToken.toString('hex')),
                         ethAddress: acc,
                     };
                 });
@@ -63,7 +65,7 @@ export default function init(sp, getService) {
         }
         logout() {
             if (this.session) {
-                (getService(CORE_MODULE.GETH_CONNECTOR))
+                (getService(constants_1.CORE_MODULE.GETH_CONNECTOR))
                     .getInstance().web3.personal.lockAccount(this.session.address);
             }
             this.flushSession();
@@ -80,32 +82,32 @@ export default function init(sp, getService) {
             }
             const { v, r, s } = this.session.vrs;
             try {
-                pubKey = bufferToHex(ecrecover(toBuffer(token), v, r, s));
-                ethAddr = pubToAddress(pubKey);
-                return bufferToHex(ethAddr) === this.session.address;
+                pubKey = ethereumjs_util_1.bufferToHex(ethereumjs_util_1.ecrecover(ethereumjs_util_1.toBuffer(token), v, r, s));
+                ethAddr = ethereumjs_util_1.pubToAddress(pubKey);
+                return ethereumjs_util_1.bufferToHex(ethAddr) === this.session.address;
             }
             catch (err) {
                 return false;
             }
         }
         signData(data, token) {
-            return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
+            return (getService(constants_1.CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
                 .sendTransaction(data, this.read(token).toString('utf8'));
         }
         signMessage(data, token) {
-            return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
+            return (getService(constants_1.CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
-                .sign(data, (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance().web3.eth.defaultAccount, this.read(token).toString('utf8'));
+                .sign(data, (getService(constants_1.CORE_MODULE.GETH_CONNECTOR)).getInstance().web3.eth.defaultAccount, this.read(token).toString('utf8'));
         }
         generateRandom() {
-            return randomBytesAsync(16).then((buff) => {
-                return randomBytesAsync(16).then((iv) => {
-                    const extraData = randomBytes(8);
-                    this.cipher = createCipheriv('aes-256-gcm', buff.toString('hex'), iv);
-                    this.decipher = createDecipheriv('aes-256-gcm', buff.toString('hex'), iv);
+            return exports.randomBytesAsync(16).then((buff) => {
+                return exports.randomBytesAsync(16).then((iv) => {
+                    const extraData = crypto_1.randomBytes(8);
+                    this.cipher = crypto_1.createCipheriv('aes-256-gcm', buff.toString('hex'), iv);
+                    this.decipher = crypto_1.createDecipheriv('aes-256-gcm', buff.toString('hex'), iv);
                     this.cipher.setAAD(extraData);
                     this.decipher.setAAD(extraData);
                     return true;
@@ -113,9 +115,9 @@ export default function init(sp, getService) {
             });
         }
         encrypt(key) {
-            const keyTr = Buffer.from(key);
+            const keyTr = safe_buffer_1.Buffer.from(key);
             return this.generateRandom().then(() => {
-                this.encrypted = Buffer.concat([this.cipher.update(keyTr), this.cipher.final()]);
+                this.encrypted = safe_buffer_1.Buffer.concat([this.cipher.update(keyTr), this.cipher.final()]);
                 return true;
             });
         }
@@ -124,7 +126,7 @@ export default function init(sp, getService) {
                 throw new Error('Token is not valid');
             }
             this.decipher.setAuthTag(this.cipher.getAuthTag());
-            const result = Buffer.concat([this.decipher.update(this.encrypted), this.decipher.final()]);
+            const result = safe_buffer_1.Buffer.concat([this.decipher.update(this.encrypted), this.decipher.final()]);
             this.encrypt(result);
             return result;
         }
@@ -137,7 +139,7 @@ export default function init(sp, getService) {
             console.log('flushed session');
         }
         signSession(hash, account, password) {
-            return (getService(CORE_MODULE.GETH_CONNECTOR)).getInstance()
+            return (getService(constants_1.CORE_MODULE.GETH_CONNECTOR)).getInstance()
                 .web3
                 .personal
                 .sign(hash, account, password);
@@ -147,6 +149,7 @@ export default function init(sp, getService) {
     const service = function () {
         return auth;
     };
-    sp().service(AUTH_MODULE.auth, service);
+    sp().service(constants_1.AUTH_MODULE.auth, service);
 }
+exports.default = init;
 //# sourceMappingURL=Auth.js.map

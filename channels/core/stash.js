@@ -1,6 +1,8 @@
-import * as LRU from 'lru-cache';
-import { CORE_MODULE } from '@akashaproject/common/constants';
-export default function init(sp) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const LRU = require("lru-cache");
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp) {
     class Entries {
         constructor() {
             this.options = { max: 64, maxAge: 1000 * 60 * 60 };
@@ -60,6 +62,7 @@ export default function init(sp) {
     const service = function () {
         return stash;
     };
-    sp().service(CORE_MODULE.STASH, service);
+    sp().service(constants_1.CORE_MODULE.STASH, service);
 }
+exports.default = init;
 //# sourceMappingURL=stash.js.map

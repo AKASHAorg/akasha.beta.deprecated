@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export const transformEssence = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.transformEssence = {
     id: '/transformEssence',
     type: 'object',
     properties: {
@@ -9,12 +11,12 @@ export const transformEssence = {
     },
     required: ['amount', 'token'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, transformEssence, { throwError: true });
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.transformEssence, { throwError: true });
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const bnAmount = web3Api.instance.toWei(data.amount, 'ether');
         const txData = contracts.instance.Essence.transformEssence
             .request(bnAmount, { gas: 100000 });
@@ -25,7 +27,8 @@ export default function init(sp, getService) {
     const service = function () {
         return transformEssenceService;
     };
-    sp().service(PROFILE_MODULE.transformEssence, service);
+    sp().service(constants_1.PROFILE_MODULE.transformEssence, service);
     return transformEssenceService;
 }
+exports.default = init;
 //# sourceMappingURL=transform-essence.js.map

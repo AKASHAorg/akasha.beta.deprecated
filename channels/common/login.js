@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { AUTH_MODULE, COMMON_MODULE, CORE_MODULE } from './constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("./constants");
 const loginS = {
     id: '/loginWeb',
     type: 'object',
@@ -9,17 +11,18 @@ const loginS = {
     },
     required: ['ethAddress'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, loginS, { throwError: true });
-        return getService(AUTH_MODULE.auth).login(data.ethAddress, data.rememberTime);
+        return getService(constants_1.AUTH_MODULE.auth).login(data.ethAddress, data.rememberTime);
     });
     const login = { execute, name: 'login' };
     const service = function () {
         return login;
     };
-    sp().service(COMMON_MODULE.login, service);
+    sp().service(constants_1.COMMON_MODULE.login, service);
     return login;
 }
+exports.default = init;
 //# sourceMappingURL=login.js.map

@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const entryTagIteratorS = {
     id: '/entryTagIterator',
     type: 'object',
@@ -12,11 +14,11 @@ const entryTagIteratorS = {
     },
     required: ['toBlock', 'tagName'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, entryTagIteratorS, { throwError: true });
-        const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
+        const entryCount = yield (getService(constants_1.CORE_MODULE.CONTRACTS))
             .instance.Tags.totalEntries(data.tagName);
         let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
         if (maxResults > entryCount.toNumber()) {
@@ -31,7 +33,7 @@ export default function init(sp, getService) {
                 maxResults = entryCount - data.totalLoaded;
             }
         }
-        return getService(ENTRY_MODULE.helpers)
+        return getService(constants_1.ENTRY_MODULE.helpers)
             .fetchFromTagIndex(Object.assign({}, data, {
             limit: maxResults,
             args: { tagName: data.tagName },
@@ -42,7 +44,8 @@ export default function init(sp, getService) {
     const service = function () {
         return entryTagIterator;
     };
-    sp().service(ENTRY_MODULE.entryTagIterator, service);
+    sp().service(constants_1.ENTRY_MODULE.entryTagIterator, service);
     return entryTagIterator;
 }
+exports.default = init;
 //# sourceMappingURL=entry-tag-iterator.js.map

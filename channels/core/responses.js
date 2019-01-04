@@ -1,5 +1,7 @@
-import { CORE_MODULE, GENERAL_SETTINGS } from '@akashaproject/common/constants';
-export default function init(sp, getService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("@akashaproject/common/constants");
+function init(sp, getService) {
     class GethStatus {
         constructor() {
             this.shouldLogout = false;
@@ -30,7 +32,7 @@ export default function init(sp, getService) {
             this.gethVersion = nr;
         }
         get ethKey() {
-            getService(CORE_MODULE.WEB3_API).instance.eth.getAccounts((err, accList) => {
+            getService(constants_1.CORE_MODULE.WEB3_API).instance.eth.getAccounts((err, accList) => {
                 if (err) {
                     throw err;
                 }
@@ -63,13 +65,13 @@ export default function init(sp, getService) {
     }
     const gethStatus = new GethStatus();
     const mainResponse = (rawData, request) => {
-        const generalSettings = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
+        const generalSettings = getService(constants_1.CORE_MODULE.SETTINGS).get(constants_1.GENERAL_SETTINGS.OP_WAIT_TIME);
         if (rawData.error) {
             return {
                 data: {},
                 services: {
-                    ipfs: Object.assign(getService(CORE_MODULE.IPFS_API).instance.serviceStatus, {
-                        [GENERAL_SETTINGS.BASE_URL]: generalSettings.get(GENERAL_SETTINGS.BASE_URL),
+                    ipfs: Object.assign(getService(constants_1.CORE_MODULE.IPFS_API).instance.serviceStatus, {
+                        [constants_1.GENERAL_SETTINGS.BASE_URL]: generalSettings.get(constants_1.GENERAL_SETTINGS.BASE_URL),
                     }),
                     geth: {
                         process: gethStatus.process,
@@ -87,7 +89,7 @@ export default function init(sp, getService) {
         return {
             data: rawData,
             services: {
-                ipfs: Object.assign(getService(CORE_MODULE.IPFS_API).instance.serviceStatus, { [GENERAL_SETTINGS.BASE_URL]: generalSettings.get(GENERAL_SETTINGS.BASE_URL) }),
+                ipfs: Object.assign(getService(constants_1.CORE_MODULE.IPFS_API).instance.serviceStatus, { [constants_1.GENERAL_SETTINGS.BASE_URL]: generalSettings.get(constants_1.GENERAL_SETTINGS.BASE_URL) }),
                 geth: {
                     process: gethStatus.process,
                     api: gethStatus.api,
@@ -104,6 +106,7 @@ export default function init(sp, getService) {
     const service = function () {
         return emitResponse;
     };
-    sp().service(CORE_MODULE.RESPONSES, service);
+    sp().service(constants_1.CORE_MODULE.RESPONSES, service);
 }
+exports.default = init;
 //# sourceMappingURL=responses.js.map

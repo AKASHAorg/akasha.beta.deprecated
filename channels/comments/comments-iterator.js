@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { COMMENTS_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const commentsIteratorS = {
     id: '/commentsIterator',
     type: 'object',
@@ -13,11 +15,11 @@ const commentsIteratorS = {
     },
     required: ['entryId', 'toBlock'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const fetchComment = getService(COMMENTS_MODULE.getComment);
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const fetchComment = getService(constants_1.COMMENTS_MODULE.getComment);
         v.validate(data, commentsIteratorS, { throwError: true });
         const collection = [];
         if (data.more) {
@@ -44,7 +46,8 @@ export default function init(sp, getService) {
     const service = function () {
         return commentsIterator;
     };
-    sp().service(COMMENTS_MODULE.commentsIterator, service);
+    sp().service(constants_1.COMMENTS_MODULE.commentsIterator, service);
     return commentsIterator;
 }
+exports.default = init;
 //# sourceMappingURL=comments-iterator.js.map

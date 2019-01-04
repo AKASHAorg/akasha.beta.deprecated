@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const canClaimS = {
     id: '/canClaim',
     type: 'object',
@@ -15,11 +17,11 @@ const canClaimS = {
     },
     required: ['entryId'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, canClaimS, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const timeStamp = new Date().getTime() / 1000;
         const requests = data.entryId.map((id) => {
             return contracts.instance.Votes
@@ -35,7 +37,8 @@ export default function init(sp, getService) {
     const service = function () {
         return canClaim;
     };
-    sp().service(ENTRY_MODULE.canClaim, service);
+    sp().service(constants_1.ENTRY_MODULE.canClaim, service);
     return canClaim;
 }
+exports.default = init;
 //# sourceMappingURL=can-claim.js.map

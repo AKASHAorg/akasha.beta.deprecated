@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
-export const toggleDonations = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.toggleDonations = {
     id: '/toggleDonations',
     type: 'object',
     properties: {
@@ -9,12 +11,12 @@ export const toggleDonations = {
     },
     required: ['token', 'status'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, toggleDonations, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const currentProfile = yield (getService(PROFILE_MODULE.getCurrentProfile)).execute();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.toggleDonations, { throwError: true });
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const currentProfile = yield (getService(constants_1.PROFILE_MODULE.getCurrentProfile)).execute();
         if (!currentProfile.raw) {
             throw new Error('Need to register an akashaId to access this setting.');
         }
@@ -31,7 +33,8 @@ export default function init(sp, getService) {
     const service = function () {
         return toggleDonationsService;
     };
-    sp().service(PROFILE_MODULE.toggleDonations, service);
+    sp().service(constants_1.PROFILE_MODULE.toggleDonations, service);
     return toggleDonationsService;
 }
+exports.default = init;
 //# sourceMappingURL=toggle-donations.js.map

@@ -1,6 +1,8 @@
-import * as Promise from 'bluebird';
-import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
-export const downvote = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
+exports.downvote = {
     id: '/downvote',
     type: 'object',
     properties: {
@@ -11,14 +13,14 @@ export const downvote = {
     },
     required: ['entryId', 'token', 'ethAddress', 'weight'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, downvote, { throwError: true });
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, exports.downvote, { throwError: true });
         if (data.weight < 1 || data.weight > 10) {
             throw new Error('Vote weight value must be between 1-10');
         }
-        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
         const txData = contracts.instance.Votes
             .voteEntry.request(data.weight, data.entryId, true, data.ethAddress, { gas: 250000 });
         const receipt = yield contracts.send(txData, data.token, cb);
@@ -28,7 +30,8 @@ export default function init(sp, getService) {
     const service = function () {
         return downVote;
     };
-    sp().service(ENTRY_MODULE.downVote, service);
+    sp().service(constants_1.ENTRY_MODULE.downVote, service);
     return downVote;
 }
+exports.default = init;
 //# sourceMappingURL=downvote-entry.js.map

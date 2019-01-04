@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { COMMENTS_MODULE, COMMON_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const commentS = {
     id: '/comment',
     type: 'object',
@@ -11,13 +13,13 @@ const commentS = {
     },
     required: ['ethAddress', 'entryId', 'token'],
 };
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, commentS, { throwError: true });
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const ipfsHash = yield (getService(COMMENTS_MODULE.commentIpfs)).create(data.content);
-        const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const ipfsHash = yield (getService(constants_1.COMMENTS_MODULE.commentIpfs)).create(data.content);
+        const decodedHash = (getService(constants_1.COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
         const replyTo = data.parent || '0';
         const txData = contracts.instance
             .Comments.publish.request(data.entryId, data.ethAddress, replyTo, ...decodedHash, { gas: 250000 });
@@ -33,7 +35,8 @@ export default function init(sp, getService) {
     const service = function () {
         return comment;
     };
-    sp().service(COMMENTS_MODULE.comment, service);
+    sp().service(constants_1.COMMENTS_MODULE.comment, service);
     return comment;
 }
+exports.default = init;
 //# sourceMappingURL=add-comment.js.map

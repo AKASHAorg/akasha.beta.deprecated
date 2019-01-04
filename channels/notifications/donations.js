@@ -1,5 +1,7 @@
-import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const constants_1 = require("@akashaproject/common/constants");
 const watchDonate = {
     id: '/watchDonate',
     type: 'object',
@@ -10,15 +12,15 @@ const watchDonate = {
     },
 };
 const EVENT_TYPE = 'DONATION_EVENT';
-export default function init(sp, getService) {
+function init(sp, getService) {
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, watchDonate, { throwError: true });
-        const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
-        const web3Api = getService(CORE_MODULE.WEB3_API);
-        const contracts = getService(CORE_MODULE.CONTRACTS);
-        const queue = getService(NOTIFICATIONS_MODULE.queue);
+        const ethAddress = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
+        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const queue = getService(constants_1.NOTIFICATIONS_MODULE.queue);
         const donateEvent = contracts
             .createWatcher(contracts.instance.AETH.Donate, { to: ethAddress }, data.fromBlock);
         donateEvent.watch((err, ev) => {
@@ -40,7 +42,8 @@ export default function init(sp, getService) {
     const service = function () {
         return execute;
     };
-    sp().service(NOTIFICATIONS_MODULE.donations, service);
+    sp().service(constants_1.NOTIFICATIONS_MODULE.donations, service);
     return execute;
 }
+exports.default = init;
 //# sourceMappingURL=donations.js.map
