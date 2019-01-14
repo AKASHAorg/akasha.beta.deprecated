@@ -1,20 +1,11 @@
 import {List, Map} from 'immutable';
-import {isEmpty} from 'ramda';
+import { isEmpty } from 'ramda';
 import * as types from '../constants';
-import {createReducer} from './create-reducer';
-import { CommentAuthor, CommentRecord, CommentsState, ProfileComments } from './records';
+import { createReducer } from './utils';
+import CommentsStateModel from './state-models/comments-state-model';
 import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new CommentsState();
-const hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
-
-const createCommentWithAuthor = (record) => {
-    const comment = Object.assign({}, record);
-    if (!comment.parent || comment.parent === hexZero) {
-        comment.parent = '0';
-    }
-    return new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
-};
+const initialState = new CommentsStateModel();
 
 // const iteratorHandler = (state, collection) => {
 //     let byId = state.get('byId');
@@ -34,27 +25,6 @@ const createCommentWithAuthor = (record) => {
 //     return { byId, firstComm, lastComm };
 // };
 
-const sortByScore = (byId, list = new List()) => {
-    return list.sort((a, b) => {
-        const commA = byId.get(a);
-        const commB = byId.get(b);
-
-        if (commA.score > commB.score) {
-            return -1;
-        }
-        if (commA.score < commB.score) {
-            return 1;
-        }
-        if (commA.publishDate > commB.publishDate) {
-            return -1;
-        }
-        if (commA.publishDate < commB.publishDate) {
-            return 1;
-        }
-        return 0;
-    });
-};
-
 const commentsState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,
 
@@ -67,7 +37,7 @@ const commentsState = createReducer(initialState, {
         let comments = state.getIn(['newComments', 'comments']);
         collection.forEach((comm) => {
             comm.entryId = request.entryId;
-            const comment = createCommentWithAuthor(comm);
+            const comment = state.createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             comments = comments.push(comm.commentId);
         });
@@ -85,7 +55,7 @@ const commentsState = createReducer(initialState, {
         if (state.getIn(['byId', commentId])) {
             return state.setIn(['flags', 'pendingComments', context], pendingComments);
         }
-        const comm = createCommentWithAuthor({ entryId, commentId, author, parent });
+        const comm = state.createCommentWithAuthor({ entryId, commentId, author, parent });
         return state.merge({
             byId: state.get('byId').set(commentId, comm),
             flags: state.get('flags').setIn(['pendingComments', context], pendingComments)
@@ -101,17 +71,17 @@ const commentsState = createReducer(initialState, {
 
     [`${COMMENTS_MODULE.getComment}_SUCCESS`]: (state, {data, request}) => {
         let byId = state.get('byId');
-        if (!data.parent || data.parent === hexZero) {
+        if (!data.parent || data.parent === state.hexZero) {
             data.parent = '0';
         }
         data.entryId = request.entryId;
         data.commentId = request.commentId;
         const { context } = request;
         let list = state.getIn(['byParent', data.parent]) || new List();
-        const comment = createCommentWithAuthor(data);
+        const comment = state.createCommentWithAuthor(data);
         byId = byId.set(data.commentId, comment);
         list = list.includes(data.commentId) ? list : list.push(data.commentId);
-        list = sortByScore(byId, list);
+        list = state.sortByScore(byId, list);
         let pendingComments = state.getIn(['flags', 'pendingComments', context]) || new Map();
         pendingComments = pendingComments.set(data.commentId, false);
 
@@ -129,7 +99,7 @@ const commentsState = createReducer(initialState, {
         }
         const byId = state.get('byId').setIn([commentId, 'score'], score);
         const parent = byId.getIn([commentId, 'parent']);
-        const list = sortByScore(byId, state.getIn(['byParent', parent]));
+        const list = state.sortByScore(byId, state.getIn(['byParent', parent]));
         return state.merge({
             byId,
             byParent: state.get('byParent').set(parent, list)
@@ -155,15 +125,15 @@ const commentsState = createReducer(initialState, {
         const { context, parent } = request;
         let newState = state;
         data.collection.forEach((comm) => {
-            if (!comm.parent || comm.parent === hexZero) {
+            if (!comm.parent || comm.parent === state.hexZero) {
                 comm.parent = '0';
             }
             let list = newState.getIn(['byParent', comm.parent]) || new List();
             comm.entryId = request.entryId;
-            const comment = createCommentWithAuthor(comm);
+            const comment = state.createCommentWithAuthor(comm);
             byId = newState.get('byId').set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
-            list = sortByScore(byId, list);
+            list = state.sortByScore(byId, list);
             newState = newState.merge({
                 byId: byId,
                 byParent: newState.get('byParent').set(comm.parent, list)
@@ -186,11 +156,11 @@ const commentsState = createReducer(initialState, {
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
             comm.entryId = request.entryId;
-            const comment = createCommentWithAuthor(comm);
+            const comment = state.createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
         });
-        list = sortByScore(byId, list);
+        list = state.sortByScore(byId, list);
 
         return state.merge({
             byId,
@@ -213,10 +183,10 @@ const commentsState = createReducer(initialState, {
         newComments.forEach((id) => {
             const comment = state.getIn(['byId', id]);
             let parent = comment.get('parent');
-            if (!parent || parent === hexZero) {
+            if (!parent || parent === state.hexZero) {
                 parent = '0';
             }
-            const list = sortByScore(byId, byParent.get(parent).push(id));
+            const list = state.sortByScore(byId, byParent.get(parent).push(id));
             byParent = byParent.set(parent, list);
             newestCommentBlock = newestCommentBlock.set(parent, state.getIn(['newComments', 'lastBlock']));
         });
@@ -239,7 +209,7 @@ const commentsState = createReducer(initialState, {
         let list = state.getIn(['byParent', parent]) || new List();
         data.collection.forEach((comm) => {
             comm.entryId = request.entryId;
-            const comment = createCommentWithAuthor(comm);
+            const comment = state.createCommentWithAuthor(comm);
             byId = byId.set(comm.commentId, comment);
             list = list.includes(comm.commentId) ? list : list.push(comm.commentId);
         });

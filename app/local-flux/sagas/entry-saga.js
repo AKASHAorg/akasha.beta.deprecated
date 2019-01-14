@@ -256,7 +256,7 @@ function* entryListIterator ({ column, batching })/* : Saga<void> */ {
     const { id, value, limit = ENTRY_LIST_ITERATOR_LIMIT } = column;
     const collection = yield select(state => listSelectors.getListEntries(state, { listId: value, limit }));
     yield call(entryGetExtraOfList, collection, id, null, batching);
-    yield put(actions.entryListIteratorSuccess({ collection }, { columnId: id, value, limit }));
+    // yield put(actions.entryListIteratorSuccess({ collection }, { columnId: id, value, limit }));
 }
 
 // function* entryMoreListIterator ({ column, batching })/* : Saga<void> */ {

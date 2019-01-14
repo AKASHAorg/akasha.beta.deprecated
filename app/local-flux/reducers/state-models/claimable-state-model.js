@@ -11,7 +11,9 @@ export const ClaimableState = Record({
     entriesLoading: List(),
     entriesLoadingMore: List(),    
     entryList: List(),
-    fetchingEntries: false,
-    fetchingMoreEntries: false,
     moreEntries: null,
 });
+
+export default class ClaimableStateModel extends ClaimableState {
+
+}

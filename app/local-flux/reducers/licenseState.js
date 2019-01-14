@@ -1,9 +1,8 @@
-import { LicenseState, LicenseDescription } from './records';
-import * as types from '../constants';
-import { createReducer } from './create-reducer';
+import LicenseStateModel, { LicenseDescription } from './state-models/license-state-model';
+import { createReducer } from './utils';
 import { LICENCE_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new LicenseState();
+const initialState = new LicenseStateModel();
 
 const licenseState = createReducer(initialState, {
     [`${LICENCE_MODULE.getLicences}_SUCCESS`]: (state, { data }) => {

@@ -1,16 +1,11 @@
 import { List, Map } from 'immutable';
-import { AppRecord, NotificationRecord, PreviewRecord } from './records';
+import AppStateModel, { NotificationRecord, PreviewRecord } from './state-models/app-state-model';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
+import { createReducer } from './utils';
 
-const initialState = new AppRecord();
+const initialState = new AppStateModel();
 
 const appState = createReducer(initialState, {
-    [types.APP_READY]: state =>
-        state.set('appReady', true),
-
-    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
-        state.set('homeReady', true),
 
     [types.FULL_SIZE_IMAGE_ADD]: (state, { data }) => state.set('fullSizeImages', new Map(data)),
 
@@ -130,6 +125,16 @@ const appState = createReducer(initialState, {
             url,
             isTrusted: true
         }),
+
+    [types.BACKUP_KEYS_ERROR]: state =>
+        state.setIn(['flags', 'backupPending'], false),
+
+    [types.BACKUP_KEYS_REQUEST]: state =>
+        state.setIn(['flags', 'backupPending'], true),
+
+    [types.BACKUP_KEYS_SUCCESS]: state =>
+        state.setIn(['flags', 'backupPending'], false),
+
     '@@router/LOCATION_CHANGE': (state, { payload }) => {
         const { pathname } = payload;
         const whitelistRoutes = ['/draft', '/profileoverview'];

@@ -1,9 +1,9 @@
 import { List } from 'immutable';
-import { ClaimableEntry, ClaimableState } from './records';
+import ClaimableStateModel, { ClaimableEntry } from './state-models/claimable-state-model';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
+import { createReducer } from './utils';
 
-const initialState = new ClaimableState();
+const initialState = new ClaimableStateModel();
 
 const claimableState = createReducer(initialState, {
 

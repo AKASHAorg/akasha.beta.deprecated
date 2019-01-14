@@ -1,9 +1,9 @@
 import { List } from 'immutable';
-import { createReducer } from './create-reducer';
+import { createReducer } from './utils';
 import * as types from '../constants';
-import { HighlightRecord, HighlightState } from './records';
+import HighlightStateModel, { HighlightRecord } from './state-models/highlight-state-model';
 
-const initialState = new HighlightState();
+const initialState = new HighlightStateModel();
 
 const highlightState = createReducer(initialState, {
     [types.HIGHLIGHT_DELETE_SUCCESS]: (state, { id }) =>

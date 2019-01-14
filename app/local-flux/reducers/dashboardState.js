@@ -1,172 +1,12 @@
 // @flow
 import { List } from 'immutable';
-import { differenceWith } from 'ramda';
-import * as types from '../constants';
-import { createReducer } from './create-reducer';
-import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
+import { createReducer } from './utils';
+import DashboardStateModel, { ColumnRecord, NewColumnRecord } from './state-models/dashboard-state-model';
 import * as columnTypes from '../../constants/columns';
-const initialState = new DashboardState();
+import * as types from '../constants';
 
-const itemIterator = (state, { column }) => {
-    const { id, value, reversed } = column;
-    if (reversed || !id) {
-        return state;
-    }
-    if (!state.getIn(['columnById', id])) {
-        const newColumn = (new ColumnRecord({ id, value })).setIn(['flags', 'fetchingItems'], true);
-        return state.setIn(['columnById', id], newColumn);
-    }
-    if (id === columnTypes.newColumn) {
-        return state.mergeIn(['columnById', id], {
-            flags: state.getIn(['columnById', id, 'flags']).set('fetchingItems', true),
-            value,
-            id
-        });
-    }
-    return state.mergeIn(['columnById', id], {
-        flags: state.getIn(['columnById', id, 'flags']).set('fetchingItems', true),
-        itemsList: List(),
-        value
-    });
-};
 
-const itemIteratorError = (state, { request }) => {
-    if (request.reversed || !request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingItems: false });
-};
-
-const entryIteratorSuccess = (state, { data, type, request }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-
-    if (request.reversed) {
-        const diffFn = (x, y) => x === y;
-        const diffArr = differenceWith(
-            diffFn,
-            data.collection.map(entry => entry.entryId),
-            state.getIn(['columnById', request.columnId, 'newItems']).toJS()
-        );
-        return state.mergeIn(['columnById', request.columnId], {
-            newItems: state.getIn(['columnById', request.columnId, 'newItems']).unshift(...diffArr),
-            firstBlock: data.lastBlock,
-            firstIndex: data.lastIndex,
-        });
-    }
-
-    const entryIds = data.collection.map(entry => entry.entryId);
-    const moreItems = type/* type === types.ENTRY_LIST_ITERATOR_SUCCESS */ ?
-        request.limit === data.collection.length :
-        !!data.lastBlock;
-    return state.mergeIn(['columnById', request.columnId], {
-        itemsList: List(entryIds),
-        firstBlock: request.toBlock + 1,
-        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingItems: false,
-            moreItems
-        }),
-        lastBlock: data.lastBlock,
-        lastIndex: data.lastIndex
-    });
-};
-
-const profileIteratorSuccess = (state, { data, request }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-
-    const ethAddresses = data.collection.map(profile => profile.ethAddress);
-    return state.mergeIn(['columnById', request.columnId], {
-        itemsList: List(ethAddresses),
-        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingItems: false,
-            moreItems: !!data.lastBlock
-        }),
-        lastBlock: data.lastBlock,
-        lastIndex: data.lastIndex
-    });
-};
-
-const itemMoreIterator = (state, { column }) => {
-    const { id } = column;
-    if (!id || !state.getIn(['columnById', id])) {
-        return state;
-    }
-    return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreItems: true });
-};
-
-const itemMoreIteratorError = (state, { request }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-    return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingMoreItems: false });
-};
-
-const entryMoreIteratorSuccess = (state, { data, request, type }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-    /**
-     * In some cases this action is fired as a result of a previous fetch
-     * for example: user rapidly refreshes a column...
-     * To prevent that, make sure we already have something in itemsList
-     */
-    if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
-        return state;
-    }
-    const column = state.getIn(['columnById', request.columnId]);    
-    if (request.columnId === columnTypes.profileEntries && column.value &&
-        request.ethAddress !== column.value) {
-        return state;
-    }
-
-    const newIds = data.collection.map(entry => entry.entryId);
-    const moreItems = type === types.ENTRY_MORE_LIST_ITERATOR_SUCCESS ?
-        request.limit === data.collection.length :
-        !!data.lastBlock;
-    return state.mergeIn(['columnById', request.columnId], {
-        itemsList: state.getIn(['columnById', request.columnId, 'itemsList']).push(...newIds),
-        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingMoreItems: false,
-            moreItems
-        }),
-        lastBlock: data.lastBlock || null,
-        lastIndex: data.lastIndex
-    });
-};
-
-const profileMoreIteratorSuccess = (state, { data, request }) => {
-    if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
-        return state;
-    }
-    /**
-     * In some cases this action is fired as a result of a previous fetch
-     * for example: user rapidly refreshes a column...
-     * To prevent that, make sure we already have something in itemsList
-     */
-    if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
-        return state;
-    }
-
-    const newIds = data.collection.map(profile => profile.ethAddress);
-    return state.mergeIn(['columnById', request.columnId], {
-        itemsList: state.getIn(['columnById', request.columnId, 'itemsList']).push(...newIds),
-        flags: state.getIn(['columnById', request.columnId, 'flags']).merge({
-            fetchingMoreItems: false,
-            moreItems: !!data.lastBlock,
-        }),
-        lastBlock: data.lastBlock || null,
-        lastIndex: data.lastIndex
-    });
-};
-
-const createDashboardRecord = (data) => {
-    let dashboard = new DashboardRecord(data);
-    dashboard = dashboard.set('columns', List(dashboard.columns.map(col => col.id)));
-    return dashboard;
-};
+const initialState = new DashboardStateModel();
 
 const dashboardState = createReducer(initialState, {
 
@@ -198,7 +38,7 @@ const dashboardState = createReducer(initialState, {
         return state.merge({
             activeDashboard: data.id,
             allDashboards: state.get('allDashboards').push(data.id),
-            byId: state.get('byId').set(data.id, createDashboardRecord(data)),
+            byId: state.get('byId').set(data.id, state.createDashboardRecord(data)),
             columnById,
         });
     },
@@ -209,7 +49,7 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_DELETE_COLUMN_SUCCESS]: (state, { data }) => {
         const { id } = data.dashboard;
-        const byId = state.get('byId').set(id, createDashboardRecord(data.dashboard));
+        const byId = state.get('byId').set(id, state.createDashboardRecord(data.dashboard));
         return state.merge({
             byId,
             columnById: state.get('columnById').delete(data.columnId),
@@ -238,7 +78,7 @@ const dashboardState = createReducer(initialState, {
                     columnById = columnById.set(column.id, new ColumnRecord(column));
                 }
             });
-            byId = byId.set(dashboard.id, createDashboardRecord(dashboard));
+            byId = byId.set(dashboard.id, state.createDashboardRecord(dashboard));
             allDashboards = allDashboards.push(dashboard.id);
         });
         return state.merge({
@@ -312,7 +152,7 @@ const dashboardState = createReducer(initialState, {
                 columnById = columnById.set(column.id, new ColumnRecord(column));
             }
         });
-        byId = byId.set(data.id, createDashboardRecord(data));
+        byId = byId.set(data.id, state.createDashboardRecord(data));
         return state.merge({
             byId,
             columnById,
@@ -327,7 +167,7 @@ const dashboardState = createReducer(initialState, {
                 columnById = columnById.set(column.id, new ColumnRecord(column));
             }
         });
-        byId = byId.set(data.id, createDashboardRecord(data));
+        byId = byId.set(data.id, state.createDashboardRecord(data));
         return state.merge({
             byId,
             columnById,
@@ -344,45 +184,45 @@ const dashboardState = createReducer(initialState, {
 
     // [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
-    [types.ENTRY_MORE_LIST_ITERATOR]: itemMoreIterator,
+    [types.ENTRY_MORE_LIST_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: (state) => state.entryMoreIteratorSuccess(state),
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR]: itemMoreIterator,
+    [types.ENTRY_MORE_NEWEST_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.ENTRY_MORE_NEWEST_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: (state) => state.entryMoreIteratorSuccess(state),
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR]: itemMoreIterator,
+    [types.ENTRY_MORE_PROFILE_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.ENTRY_MORE_PROFILE_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: (state) => state.entryMoreIteratorSuccess(state),
 
-    [types.ENTRY_MORE_STREAM_ITERATOR]: itemMoreIterator,
+    [types.ENTRY_MORE_STREAM_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.ENTRY_MORE_STREAM_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.ENTRY_MORE_STREAM_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: (state) => state.entryMoreIteratorSuccess(state),
 
-    [types.ENTRY_MORE_TAG_ITERATOR]: itemMoreIterator,
+    [types.ENTRY_MORE_TAG_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.ENTRY_MORE_TAG_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.ENTRY_MORE_TAG_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: (state) => state.entryMoreIteratorSuccess(state),
 
-    [types.ENTRY_NEWEST_ITERATOR]: itemIterator,
+    [types.ENTRY_NEWEST_ITERATOR]: (state) => state.itemIterator(state),
 
-    [types.ENTRY_NEWEST_ITERATOR_ERROR]: itemIteratorError,
+    [types.ENTRY_NEWEST_ITERATOR_ERROR]: (state) => state.itemIteratorError(state),
 
-    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorSuccess,
+    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: (state) => state.entryIteratorSuccess(state),
 
-    [types.ENTRY_PROFILE_ITERATOR]: itemIterator,
+    [types.ENTRY_PROFILE_ITERATOR]: (state) => state.itemIterator(state),
 
-    [types.ENTRY_PROFILE_ITERATOR_ERROR]: itemIteratorError,
+    [types.ENTRY_PROFILE_ITERATOR_ERROR]: (state) => state.itemIteratorError(state),
 
-    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorSuccess,
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state) => state.entryIteratorSuccess(state),
 
     // [types.ENTRY_STREAM_ITERATOR]: itemIterator,
 
@@ -492,9 +332,9 @@ const dashboardState = createReducer(initialState, {
 
     // [types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS]: profileIteratorSuccess,    
 
-    [types.PROFILE_MORE_COMMENTS_ITERATOR]: itemMoreIterator,
+    [types.PROFILE_MORE_COMMENTS_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR]: itemMoreIteratorError,    
+    [types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),    
 
     [types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS]: (state, { data, request }) => {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
@@ -522,17 +362,17 @@ const dashboardState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: itemMoreIterator,
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR]: (state) => state.itemMoreIterator(state),
 
-    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS]: profileMoreIteratorSuccess,
+    [types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state) => state.profileMoreIteratorSuccess(state),
 
-    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR]: itemMoreIterator,
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR]: (state) => state.itemMoreIterator(state),
     
-    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR]: itemMoreIteratorError,
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR]: (state) => state.itemMoreIteratorError(state),
 
-    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: profileMoreIteratorSuccess, 
+    [types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS]: (state) => state.profileMoreIteratorSuccess(state), 
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState,
 

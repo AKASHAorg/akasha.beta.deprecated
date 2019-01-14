@@ -12,7 +12,11 @@ export const LicenseDescription = Record({
     parent: null,
 });
 
-export const LicenseState = Record({
+const LicenseState = Record({
     allIds: new Set(),
     byId: new Map(),
 });
+
+export default class LicenseStateModel extends LicenseState {
+    
+}

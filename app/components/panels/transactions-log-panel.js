@@ -9,10 +9,12 @@ import { DataLoader, TransactionLog } from '../';
 import { actionClearHistory, actionGetAllHistory } from '../../local-flux/actions/action-actions';
 import { hideTransactionsLog } from '../../local-flux/actions/app-actions';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import { getActionsHistory, getFetchingHistoryFlag, getFetchingMoreHistoryFlag, selectLoggedEthAddress,
+import { getActionsHistory, selectLoggedEthAddress,
     selectPublishingActions, getThemeSettings } from '../../local-flux/selectors';
 import clickAway from '../../utils/clickAway';
-import { getFetchingHistoryFlag, getFetchingMoreHistoryFlag } from '../../local-flux/selectors/action-selectors';
+import {
+    getFetchingHistoryFlag, getFetchingMoreHistoryFlag
+} from '../../local-flux/selectors/action-selectors';
 
 const PENDING = 'pending';
 const HISTORY = 'history';

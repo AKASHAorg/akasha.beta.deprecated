@@ -1,61 +1,14 @@
-import {List} from 'immutable';
 import * as types from '../constants';
-import {createReducer} from './create-reducer';
-import {
+import { createReducer } from './utils';
+import SettingsStateModel, {
     GeneralSettings,
     GethSettings,
-    HiddenContent,
     IpfsSettings,
-    NotificationsPreference,
-    PasswordPreference,
     PortsRecord,
-    SettingsRecord,
-    UserSettings
-} from './records';
+    UserSettings } from './state-models/settings-state-model';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new SettingsRecord();
-
-const getUserSettings = (state, record) => {
-    const data = Object.assign({}, record);
-    const preference = new PasswordPreference(data.passwordPreference);
-    const hideComment = new HiddenContent(data.hideCommentContent);
-    const hideEntry = new HiddenContent(data.hideEntryContent);
-    const notifPreferences = new NotificationsPreference(data.notificationsPreference);
-    if (!data.defaultLicense) {
-        data.defaultLicense = state.getIn(['userSettings', 'defaultLicense']);
-    }
-    if (data.trustedDomains) {
-        data.trustedDomains = new List(data.trustedDomains);
-    }
-    return new UserSettings(data).merge({
-        hideCommentContent: hideComment,
-        hideEntryContent: hideEntry,
-        notificationsPreference: notifPreferences,
-        passwordPreference: preference
-    });
-};
-
-const mergeUserSettings = (state, record) => {
-    const data = Object.assign({}, record);
-    const changes = {};
-    if (data.passwordPreference) {
-        changes.passwordPreference = new PasswordPreference(data.passwordPreference);
-    }
-    if (data.hideCommentContent) {
-        changes.hideCommentContent = new HiddenContent(data.hideCommentContent);
-    }
-    if (data.hideEntryContent) {
-        changes.hideEntryContent = new HiddenContent(data.hideEntryContent);
-    }
-    if (data.notificationsPreference) {
-        changes.notificationsPreference = new NotificationsPreference(data.notificationsPreference);
-    }
-    if (data.trustedDomains) {
-        changes.trustedDomains = new List(data.trustedDomains);
-    }
-    return state.get('userSettings').merge(data).merge(changes);
-};
+const initialState = new SettingsStateModel();
 
 const settingsState = createReducer(initialState, {
 
@@ -212,14 +165,8 @@ const settingsState = createReducer(initialState, {
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('userSettings', new UserSettings()),
 
-    [types.USER_SETTINGS_CLEAR]: state =>
-        state.set('userSettings', new UserSettings()),
-
-    [types.USER_SETTINGS_REQUEST]: state =>
-        state.set('userSettings', new UserSettings()),
-
     [types.USER_SETTINGS_SUCCESS]: (state, {data}) =>
-        state.set('userSettings', getUserSettings(state, data)),
+        state.set('userSettings', state.getUserSettings(state, data)),
 
     [types.USER_SETTINGS_SAVE]: state =>
         state.setIn(['flags', 'savingUserSettings'], true),
@@ -230,18 +177,13 @@ const settingsState = createReducer(initialState, {
     [types.USER_SETTINGS_SAVE_SUCCESS]: (state, {data}) =>
         state.merge({
             flags: state.get('flags').set('savingUserSettings', false),
-            userSettings: mergeUserSettings(state, data)
+            userSettings: state.mergeUserSettings(state, data)
         }),
 
     [types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS]: (state, {data}) =>
         state.merge({
-            userSettings: mergeUserSettings(state, data)
-        }),
-
-    [types.CLEAN_STORE]: state =>
-        state.merge({
-            userSettings: new UserSettings()
-        }),
+            userSettings: state.mergeUserSettings(state, data)
+        })
 });
 
 export default settingsState;

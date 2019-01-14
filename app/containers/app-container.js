@@ -28,8 +28,9 @@ import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, Fauc
     Terms, TopBar, TransactionsLogPanel, ProfileSettings, WalletPanel, FullSizeImageViewer,
     CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
-import { selectNeedAuthAction, selectNeedEth, selectNeedAeth, selectNeedMana,
-    selectActiveDashboardId, selectFaucet} from '../local-flux/selectors';
+import { dashboardSelectors, actionSelectors, profileSelectors } from '../local-flux/selectors';
+// import { selectNeedAuthAction, selectNeedEth, selectNeedAeth, selectNeedMana,
+//     selectActiveDashboardId, selectFaucet} from '../local-flux/selectors';
 
 notification.config({
     top: 60,
@@ -143,10 +144,9 @@ class AppContainer extends Component {
         const showWallet = appState.get('showWallet');
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
         const needFunds = needEth || needAeth || needMana;
-
         return (
           <div className="flex-center-x app-container__root">
-            <DataLoader flag={!appState.get('appReady')} size="large" style={{ paddingTop: '100px' }}>
+            <DataLoader flag={false} size="large" style={{ paddingTop: '100px' }}>
               <div className="container fill-height app-container">
                 <AppErrorBoundary
                   reloadPage={this.props.reloadPage}
@@ -156,7 +156,7 @@ class AppContainer extends Component {
                   {isInternalLink(location.pathname) && <Redirect to={removePrefix(location.pathname)} />}
                   {!location.pathname.startsWith('/setup') &&
                     <DataLoader
-                      flag={!appState.get('homeReady')}
+                      flag={false}
                       size="large"
                       style={{ paddingTop: '100px' }}
                     >
@@ -171,7 +171,7 @@ class AppContainer extends Component {
                         <PageContent showSecondarySidebar={appState.get('showSecondarySidebar')}>
                           <Route exact path="/@:akashaId" component={ProfilePage} />
                           {/* <Route exact path="/0x:ethAddress" component={ProfilePage} /> */}
-                          <Route path="/profileoverview/overview" component={ProfileOverview} />
+                          {/* <Route path="/profileoverview/overview" component={ProfileOverview} /> */}
                           <Route path="/profileoverview/myentries" component={MyEntries} />
                           <Route path="/profileoverview/highlights" component={Highlights} />
                           <Route exact path="/profileoverview/lists" component={Lists} />
@@ -286,15 +286,15 @@ AppContainer.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboardId(state),
+        activeDashboard: dashboardSelectors.selectActiveDashboardId(state),
         appState: state.appState,
         errorState: state.errorState,
-        faucet: selectFaucet(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        needAuth: selectNeedAuthAction(state),
-        needEth: selectNeedEth(state),
-        needAeth: selectNeedAeth(state),
-        needMana: selectNeedMana(state),
+        faucet: profileSelectors.selectFaucet(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        needAuth: actionSelectors.getNeedAuthAction(state),
+        needEth: actionSelectors.selectNeedEth(state),
+        needAeth: actionSelectors.selectNeedAeth(state),
+        needMana: actionSelectors.selectNeedMana(state),
     };
 }
 

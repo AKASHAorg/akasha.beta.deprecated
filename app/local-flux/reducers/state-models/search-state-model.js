@@ -14,3 +14,9 @@ export const SearchRecord = Record({
     tags: new List(),
     totalPages: null,
 });
+
+export default class SearchStateModel extends SearchRecord {
+    getEntryIds = (entries) =>
+        entries.map(entry => entry.entryId);
+    
+}

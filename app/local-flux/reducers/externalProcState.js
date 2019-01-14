@@ -1,46 +1,11 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { fromJS } from 'immutable';
-import { createReducer } from './create-reducer';
+import { createReducer } from './utils';
 import * as types from '../constants';
-import { GethRecord, GethSyncStatus, IpfsRecord, LogRecord } from './records';
+import ExternalProcessStateModel, { GethSyncStatus,
+    LogRecord } from './state-models/external-process-state-model';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
-const initialState = fromJS({
-    geth: new GethRecord(),
-    ipfs: new IpfsRecord()
-});
-
-const computeGethStatus = (status) => {
-    const newStatus = Object.assign({}, status);
-    if (newStatus.started) {
-        newStatus.message = null;
-        newStatus.starting = null;
-    }
-    if (newStatus.starting || newStatus.process || newStatus.api) {
-        newStatus.downloading = null;
-        newStatus.stopped = null;
-    }
-    if (newStatus.downloading) {
-        newStatus.upgrading = null;
-    }
-    if (newStatus.stopped) {
-        newStatus.starting = false;
-        newStatus.started = false;
-    }
-    return newStatus;
-};
-
-const computeIpfsStatus = (record) => {
-    const newStatus = Object.assign({}, record);
-    if (newStatus.started || newStatus.process) {
-        newStatus.downloading = null;
-        newStatus.starting = false;
-    }
-    if (newStatus.downloading) {
-        newStatus.upgrading = null;
-    }
-    return newStatus;
-};
+const initialState = new ExternalProcessStateModel();
 
 const eProcState = createReducer(initialState, {
     [types.CLEAR_SYNC_STATUS]: state =>
@@ -65,7 +30,7 @@ const eProcState = createReducer(initialState, {
         }
         const syncActionId = state.getIn(['geth', 'syncActionId']) === 4 ? 4 : 1;
         const status = Object.assign({}, data, services.geth);
-        const newStatus = computeGethStatus(status);
+        const newStatus = state.computeGethStatus(status);
         return state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 gethStarting: false,
@@ -90,7 +55,7 @@ const eProcState = createReducer(initialState, {
         const syncActionId = oldSyncActionId === 2 ? oldSyncActionId : 3;
         // action.data.upgrading = state.getIn(['geth', 'status', 'upgrading']) || null;
         const status = Object.assign({}, data, services.geth);
-        const newStatus = computeGethStatus(status);
+        const newStatus = state.computeGethStatus(status);
 
         return state.mergeIn(['geth'], {
             status: state.getIn(['geth', 'status']).merge(newStatus),
@@ -116,7 +81,7 @@ const eProcState = createReducer(initialState, {
         }),
 
     [`${IPFS_MODULE.start}_ERROR`]: (state, action) => {
-        const ipfsStatus = computeIpfsStatus(action.data);
+        const ipfsStatus = state.computeIpfsStatus(action.data);
         return state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
                 ipfsStarting: false,
@@ -127,7 +92,7 @@ const eProcState = createReducer(initialState, {
 
     [`${IPFS_MODULE.start}_SUCCESS`]: (state, { data, services }) => {
         const status = Object.assign({}, data, services.ipfs);
-        const ipfsStatus = computeIpfsStatus(status);
+        const ipfsStatus = state.computeIpfsStatus(status);
         return state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
                 ipfsStarting: false,

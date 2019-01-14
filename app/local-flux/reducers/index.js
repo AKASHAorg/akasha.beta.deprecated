@@ -17,8 +17,8 @@ import profileState from './profileState';
 import searchState from './searchState';
 import settingsState from './settingsState';
 import tagState from './tagState';
-import tempProfileState from './temp-profile-state';
-import utilsState from './utilsState';
+// import tempProfileState from './temp-profile-state'; (merged with profilestate)
+// import utilsState from './utilsState'; (merged with appState)
 
 const rootReducer = combineReducers({
     actionState,
@@ -38,8 +38,8 @@ const rootReducer = combineReducers({
     searchState,
     settingsState,
     tagState,
-    tempProfileState,
-    utilsState,
+    // tempProfileState (merged with profilestate),
+    // utilsState, (merged with appState)
     // router: routing,
 });
 

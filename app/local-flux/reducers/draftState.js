@@ -1,48 +1,22 @@
 import { editorStateFromRaw } from 'megadraft';
-import { DraftModel } from './models';
-import { createReducer } from './create-reducer';
+import DraftStateModel, { DraftsIterator, MetaInfo } from './state-models/draft-state-model';
+import { createReducer } from './utils';
 import { entryTypes } from '../../constants/entry-types';
-import { DraftsIterator, MetaInfo } from './records/draft-record';
 import * as types from '../constants';
 
-const initialState = new DraftModel();
-
-const determineEntryType = (content) => {
-    if (content.cardInfo && content.cardInfo.url) {
-        return 'link';
-    }
-    return 'article';
-};
-
-export const sortByDate = (drafts, list) =>
-    list.sort((a, b) => {
-        const draftA = drafts.get(a);
-        const draftB = drafts.get(b);
-        const timestampA = draftA.getIn(['meta', 'updated']) || draftA.getIn(['meta', 'created']);
-        const timestampB = draftB.getIn(['meta', 'updated']) || draftB.getIn(['meta', 'created']);
-        if (!timestampA) {
-            return -1;
-        }
-        if (new Date(timestampA) > new Date(timestampB)) {
-            return -1;
-        }
-        if (new Date(timestampA) < new Date(timestampB)) {
-            return 1;
-        }
-        return 0;
-    });
+const initialState = new DraftStateModel();
 
 const draftState = createReducer(initialState, {
     [types.DRAFT_CREATE_SUCCESS]: (state, { data }) =>
         state.merge({
             draftList: state.get('draftList').unshift(data.id),
-            drafts: state.get('drafts').set(data.id, DraftModel.createDraft(data)),
+            drafts: state.get('drafts').set(data.id, state.createDraft(data)),
             selection: state.get('selection').setIn([data.id, data.ethAddress], data.selectionState)
         }),
 
     [types.DRAFT_UPDATE_SUCCESS]: (state, { data }) =>
         state.merge({
-            draftList: sortByDate(state.get('drafts'), state.get('draftList')),
+            draftList: state.sortByDate(state.get('drafts'), state.get('draftList')),
             drafts: state.get('drafts').updateIn([data.draft.id], draft =>
                 draft.merge(data.draft).set('saved', false)),
             selection: state.get('selection').setIn(
@@ -63,7 +37,7 @@ const draftState = createReducer(initialState, {
             let list = stateMap
                 .get('draftList')
                 .concat(ids);
-            list = sortByDate(stateMap.get('drafts'), list);
+            list = state.sortByDate(stateMap.get('drafts'), list);
             stateMap.set('draftList', list);
         }),
 
@@ -159,12 +133,12 @@ const draftState = createReducer(initialState, {
                  * if entry is not in store, add it
                  */
                 if (!mState.getIn(['drafts', entry.entryId])) {
-                    mState.setIn(['drafts', entry.entryId], DraftModel.createDraft({
+                    mState.setIn(['drafts', entry.entryId], state.createDraft({
                         content: {
                             ...entry.content,
                             entryType: entryTypes[entry.entryType],
                         },
-                        tags: DraftModel.addExistingTags(entry.tags),
+                        tags: state.addExistingTags(entry.tags),
                         onChain: true
                     }));
                 } else {
@@ -193,8 +167,8 @@ const draftState = createReducer(initialState, {
         const existingDraft = state.getIn(['drafts', entryId]);
         return state.withMutations((mState) => {
             if ((existingDraft && !existingDraft.get('localChanges') && content) || data.revert) {
-                const { draftParts, tags, ...newDraftContent } = content;
-                mState.mergeIn(['drafts', entryId], DraftModel.createDraft({
+                const { draftParts, tags, ...newDraftContent } = content; // eslint-disable-line
+                mState.mergeIn(['drafts', entryId], state.createDraft({
                     ...existingDraft.toJS(),
                     content: {
                         ...newDraftContent,
@@ -204,17 +178,17 @@ const draftState = createReducer(initialState, {
                             content.version,
                         entryType: content.entryType > -1 ?
                             entryTypes[content.entryType] :
-                            determineEntryType(content),
+                            state.determineEntryType(content),
                     },
                     saved: false,
                     localChanges: false,
-                    tags: DraftModel.addExistingTags(tags),
+                    tags: state.addExistingTags(tags),
                     id: entryId,
                     meta: new MetaInfo({ created: new Date(publishDate * 1000) })
                 }));
                 if (!mState.get('draftList').includes(entryId)) {
                     let newList = mState.get('draftList').push(entryId);
-                    newList = sortByDate(mState.get('drafts'), newList);
+                    newList = state.sortByDate(mState.get('drafts'), newList);
                     mState.set('draftList', newList);
                 }
             }

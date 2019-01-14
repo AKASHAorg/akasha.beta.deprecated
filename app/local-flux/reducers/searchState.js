@@ -1,15 +1,11 @@
 import { List } from 'immutable';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
+import { createReducer } from './utils';
 import { entrySearchLimit } from '../../constants/iterator-limits';
-import { SearchRecord } from './records/search-record';
+import SearchStateModel from './state-models/search-state-model';
 import { SEARCH_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new SearchRecord();
-
-function getEntryIds (entries) {
-    return entries.map(entry => entry.entryId);
-}
+const initialState = new SearchStateModel();
 
 const searchState = createReducer(initialState, {
     [types.SEARCH_MORE_QUERY]: state =>
@@ -86,7 +82,7 @@ const searchState = createReducer(initialState, {
     [`${SEARCH_MODULE.query}_SUCCESS`]: (state, { data }) =>
         state.merge({
             currentPage: 1,
-            entryIds: new List(getEntryIds(data.collection)),
+            entryIds: new List(state.getEntryIds(data.collection)),
             flags: state.get('flags').merge({ queryPending: false }),
             offset: data.collection.length,
             resultsCount: data.totalHits,

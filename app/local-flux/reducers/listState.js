@@ -1,17 +1,9 @@
 import { List } from 'immutable';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
-import { ListRecord, ListState } from './records';
+import { createReducer } from './utils';
+import ListStateModel from './state-models/list-state-model';
 
-const initialState = new ListState();
-
-const createListRecord = (record) => {
-    const list = Object.assign({}, record);
-    if (list.entryIds && !List.isList(list.entryIds)) {
-        list.entryIds = new List(list.entryIds);
-    }
-    return new ListRecord(list);
-};
+const initialState = new ListStateModel();
 
 const listState = createReducer(initialState, {
     // [types.ENTRY_LIST_ITERATOR_SUCCESS]: (state, { data, request }) => {
@@ -34,25 +26,25 @@ const listState = createReducer(initialState, {
     },
 
     [types.LIST_ADD_SUCCESS]: (state, { data }) =>
-        state.setIn(['byId', data.id], createListRecord(data)),
+        state.setIn(['byId', data.id], state.createListRecord(data)),
 
     [types.LIST_DELETE_SUCCESS]: (state, { id }) =>
         state.deleteIn(['byId', id]),
 
     [types.LIST_DELETE_ENTRY_SUCCESS]: (state, { data }) =>
-        state.setIn(['byId', data.id], createListRecord(data)),
+        state.setIn(['byId', data.id], state.createListRecord(data)),
 
     [types.LIST_EDIT_SUCCESS]: (state, { data }) => {
         const byId = state.get('byId');
         const oldList = byId.filter(list => list.id === data.id).first();
         const newState = state.deleteIn(['byId', oldList.get('id')]);
-        return newState.setIn(['byId', data.id], createListRecord(data));
+        return newState.setIn(['byId', data.id], state.createListRecord(data));
     },
 
     [types.LIST_GET_ALL_SUCCESS]: (state, { data }) => {
         let byId = state.get('byId');
         data.forEach((list) => {
-            byId = byId.set(list.id, createListRecord(list));
+            byId = byId.set(list.id, state.createListRecord(list));
         });
         return state.set('byId', byId);
     },
@@ -72,7 +64,7 @@ const listState = createReducer(initialState, {
         }),
 
     [types.LIST_TOGGLE_ENTRY_SUCCESS]: (state, { data }) =>
-        state.setIn(['byId', data.id], createListRecord({...data, startIndex: data.entryIds.length})),
+        state.setIn(['byId', data.id], state.createListRecord({...data, startIndex: data.entryIds.length})),
 
     [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });

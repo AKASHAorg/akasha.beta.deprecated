@@ -1,129 +1,19 @@
 // @flow
-import { fromJS, List } from 'immutable';
-import { ActionRecord, ActionState } from './records';
+import { List } from 'immutable';
+import ActionStateModel from './state-models/action-state-model';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import * as types from '../constants';
-import { createReducer } from './create-reducer';
+import { createReducer, genTimeBasedID } from './utils';
 
-const initialState = new ActionState();
-
-const createAction = (action) => {
-    // convert the payload object to an immutable map
-    const payload = fromJS(action.payload);
-    return new ActionRecord(action).set('payload', payload);
-};
-
-export const sortByBlockNr = (byId, list, reverse) =>
-    list.sort((a, b) => {
-        const actionA = byId.get(a);
-        const actionB = byId.get(b);
-
-        if (!actionB.blockNumber) {
-            return reverse ? -1 : 1;
-        }
-        if (!actionA.blockNumber || actionA.blockNumber > actionB.blockNumber) {
-            return reverse ? 1 : -1;
-        }
-        if (actionA.blockNumber < actionB.blockNumber) {
-            return reverse ? -1 : 1;
-        }
-        return 0;
-    });
-
-const addPendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { commentId, entryId, ethAddress, tag } = action.payload;
-    let pendingComments;
-    switch (action.type) {
-        case actionTypes.bondAeth:
-        case actionTypes.faucet:
-        case actionTypes.freeAeth:
-        case actionTypes.toggleDonations:
-        case actionTypes.transferAeth:
-        case actionTypes.transferEth:
-        case actionTypes.transformEssence:
-        case actionTypes.profileRegister:
-        case actionTypes.profileUpdate:
-            return pending.set(action.type, true);
-        case actionTypes.cycleAeth:
-            return pending.set(action.type, action.payload.amount);
-        case actionTypes.claim:
-        case actionTypes.claimVote:
-            return pending.setIn([action.type, entryId], true);
-        case actionTypes.entryDownvote:
-        case actionTypes.entryUpvote:
-            return pending.setIn(['entryVote', entryId], action.id);
-        case actionTypes.comment:
-            // Pending comments do not have a unique id, so they will be stored
-            // in a List instead of a Map
-            pendingComments = pending.getIn([action.type, entryId]);
-            if (!pendingComments) {
-                return pending.setIn([action.type, entryId], List([createAction(action)]));
-            }
-            return pending.setIn([action.type, entryId], pendingComments.push(createAction(action)));
-        case actionTypes.commentDownvote:
-        case actionTypes.commentUpvote:
-            return pending.setIn(['commentVote', commentId], action.id);
-        case actionTypes.tagCreate:
-            return pending.setIn([action.type, tag], action.id);
-        case actionTypes.follow:
-        case actionTypes.unfollow:
-            return pending.setIn(['follow', ethAddress], action.id);
-        case actionTypes.sendTip:
-            return pending.setIn([action.type, ethAddress], action.id);
-        default:
-            return pending;
-    }
-};
-
-const removePendingAction = (pending, action) => { // eslint-disable-line complexity
-    const { commentId, entryId, ethAddress, tag } = action.payload;
-    let pendingComments;
-    switch (action.type) {
-        case actionTypes.bondAeth:
-        case actionTypes.faucet:
-        case actionTypes.freeAeth:
-        case actionTypes.toggleDonations:
-        case actionTypes.transferAeth:
-        case actionTypes.transferEth:
-        case actionTypes.transformEssence:
-        case actionTypes.profileRegister:
-        case actionTypes.profileUpdate:
-            return pending.set(action.type, false);
-        case actionTypes.cycleAeth:
-            return pending.set(action.type, null);
-        case actionTypes.claim:
-        case actionTypes.claimVote:
-            return pending.setIn([action.type, entryId], false);
-        case actionTypes.comment: {
-            const pendingEntry = pending.getIn([action.type, entryId]);
-            pendingComments = pendingEntry && pendingEntry.filter((comm) => comm.id !== action.id);
-            return pending.setIn([action.type, entryId], pendingComments);
-        }
-        case actionTypes.entryDownvote:
-        case actionTypes.entryUpvote:
-            return pending.deleteIn(['entryVote', entryId]);
-        case actionTypes.commentDownvote:
-        case actionTypes.commentUpvote:
-            return pending.deleteIn(['commentVote', commentId]);
-        case actionTypes.tagCreate:
-            return pending.deleteIn([action.type, tag]);
-        case actionTypes.follow:
-        case actionTypes.unfollow:
-            return pending.deleteIn(['follow', ethAddress]);
-        case actionTypes.sendTip:
-            return pending.deleteIn([action.type, ethAddress]);
-        default:
-            return pending;
-    }
-};
+const initialState = new ActionStateModel();
 
 const actionState = createReducer(initialState, {
     [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
         if (actionType === actionTypes.faucet) {
-            const id = `${new Date().getTime()}-${actionType}`;
+            const id = genTimeBasedID(null, actionType);
             const status = actionStatus.toPublish;
-            const action = createAction({ id, ethAddress, payload, status, type: actionType });
+            const action = state.createAction({ id, ethAddress, payload, status, type: actionType });
             return state.merge({
                 byId: state.get('byId').set(id, action),
                 [status]: id,
@@ -133,9 +23,9 @@ const actionState = createReducer(initialState, {
     },
     [types.ACTION_ADD_NO_FUNDS]: (state, action) => {
         const { ethAddress, payload, actionType, needEth, needAeth, needMana } = action;
-        const id = `${new Date().getTime()}-${actionType}`;
+        const id = genTimeBasedID(null, actionType);
         const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
-        const publishAction = createAction({ id, ethAddress, payload, status, type: actionType });
+        const publishAction = state.createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, publishAction),
             [status]: id,
@@ -148,9 +38,9 @@ const actionState = createReducer(initialState, {
         if (actionType === actionTypes.faucet) {
             return state;
         }
-        const id = `${new Date().getTime()}-${actionType}`;
+        const id = genTimeBasedID(null, actionType);
         const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
-        const action = createAction({ id, ethAddress, payload, status, type: actionType });
+        const action = state.createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, action),
             [status]: id,
@@ -171,7 +61,7 @@ const actionState = createReducer(initialState, {
         if (!action) {
             return state;
         }
-        const pending = removePendingAction(state.get('pending'), action.toJS());
+        const pending = state.state.removePendingAction(state.get('pending'), action.toJS());
         return state.merge({
             byId: state.get('byId').delete(id),
             needAuth: needAuth === id ? null : needAuth,
@@ -197,7 +87,7 @@ const actionState = createReducer(initialState, {
         let byId = state.get('byId');
         let history = request.loadMore ? state.get('history') : new List();
         data.forEach((action) => {
-            byId = byId.set(action.id, createAction(action));
+            byId = byId.set(action.id, state.createAction(action));
             history = history.push(action.id);
         });
         const flags = request.loadMore ?
@@ -220,14 +110,14 @@ const actionState = createReducer(initialState, {
         const fetchingAethTransfers = state.getIn(['flags', 'fetchingAethTransfers']);
         let list = fetchingAethTransfers ? new List() : state.get('history');
         data.forEach((action) => {
-            byId = byId.set(action.id, createAction(action));
+            byId = byId.set(action.id, state.createAction(action));
             list = list.push(action.id);
         });
         return state.merge({
             byId,
             flags: state.get('flags').set('fetchingHistory', false),
-            history: sortByBlockNr(byId, list),
-            historyTypes: new List(request)
+            history: state.sortByBlockNr(byId, list),
+            historyTypes: List(request)
         });
     },
 
@@ -236,8 +126,8 @@ const actionState = createReducer(initialState, {
         let pending = state.get('pending');
         let publishing = new List();
         data.forEach((action) => {
-            byId = byId.set(action.id, createAction(action));
-            pending = addPendingAction(pending, action);
+            byId = byId.set(action.id, state.createAction(action));
+            pending = state.addPendingAction(pending, action);
             publishing = publishing.push(action.id);
         });
         return state.merge({
@@ -267,7 +157,7 @@ const actionState = createReducer(initialState, {
                 const { ethAddress, actionType, payload } = actionData.toJS();
                 const actionId = `${new Date().getTime()}-${actionType}-${index}`;
                 const status = actionStatus.publishing;
-                const newAction = createAction({
+                const newAction = state.createAction({
                     id: actionId,
                     ethAddress,
                     payload,
@@ -275,14 +165,14 @@ const actionState = createReducer(initialState, {
                     type: actionType
                 });
                 byId = byId.set(actionId, newAction);
-                pending = addPendingAction(pending, newAction.toJS());
+                pending = state.addPendingAction(pending, newAction.toJS());
                 batchActions = batchActions.push(actionId);
             });
             return state.merge({ batchActions, byId, needAuth: null, pending });
         }
         return state.merge({
             needAuth: null,
-            pending: addPendingAction(pending, action.toJS())
+            pending: state.addPendingAction(pending, action.toJS())
         });
     },
     [types.ACTION_UPDATE]: (state, { changes }) => {
@@ -304,7 +194,7 @@ const actionState = createReducer(initialState, {
                 history = history.unshift(newAction.id);
             }
         } else if (changes.status === actionStatus.published) {
-            pending = removePendingAction(pending, newAction.toJS());
+            pending = state.removePendingAction(pending, newAction.toJS());
             publishing = publishing.filter(id => id !== changes.id);
         }
         return state.merge({

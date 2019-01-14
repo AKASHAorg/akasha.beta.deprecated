@@ -1,8 +1,7 @@
 // @flow
 import { buildCall } from '@akashaproject/common/constants';
-import { put } from 'redux-saga/effects';
 import { genId } from '../../utils/dataModule';
-import store from '../store/configureStore';
+import storeConfig from '../store/configureStore';
 
 
 export default {
@@ -17,16 +16,22 @@ export default {
         this.addRequestId(reqId, methodName);
         try {
             channel.send(reqObject);
-            store.dispatch({ type: `${methodName}_REQUEST`, data: { methodName, ...reqObject } });
+            storeConfig.then((config) => {
+                const store = config.default();
+                store.dispatch({ type: `${methodName}_REQUEST`, data: { methodName, ...reqObject } });
+            });
         } catch (ex) {
-            store.dispatch({ type: `${methodName}_REQUEST_ERROR`, data: { methodName, ...ex } });
+            storeConfig.then((config) => {
+                const store = config.default();
+                store.dispatch({ type: `${methodName}_REQUEST_ERROR`, data: { methodName, ...ex } });
+            });
             this.removeRequestId(reqId, methodName);
         }
     },
     generateId (): string {
         return genId();
     },
-    setIPCChannel (channel) {
+    setIPCChannel (channel/*: Object */) {
         this.IPC = channel;
     },
     getIPCChannel () {
@@ -49,17 +54,20 @@ export default {
                     * dispatch action
                     * action = { type: String, data: Object }
                     */
-                console.info(`%cDispatching [${action.type}]`, 'color: blue; font-weight: bold', action.data);
-                store.dispatch(action);
+                console.info(`%cDispatching [${action.type}]`, 'color: blue; font-weight: bold', action.data); // eslint-disable-line
+                storeConfig.then((config) => {
+                    const store = config.default();
+                    store.dispatch(action);
+                })
             } else {
-                console.warn('a request without requestId has been made. Please add a requestId to', module, method);
+                console.warn('a request without requestId has been made. Please add a requestId to', module, method); // eslint-disable-line
             }
         });
     },
     processResponse (response: Object) {
         // determine the appropiate action base on requestId and data
         const { args, data, error } = response;
-        const { method, payload } = args;
+        const { method } = args;
         if(error) {
             return {
                 type: `${method}_ERROR`,

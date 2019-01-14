@@ -14,8 +14,6 @@ export const PreviewRecord = Record({
 });
 
 export const AppRecord = Record({
-    appReady: false,
-    homeReady: false,
     isLightSync: false,
     notifications: new List(),
     navigationBackCounter: 0,
@@ -40,3 +38,7 @@ export const AppRecord = Record({
     showTransactionsLog: false,
     showWallet: null,
 });
+
+export default class AppStateModel extends AppRecord {
+    
+}

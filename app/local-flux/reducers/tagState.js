@@ -1,11 +1,11 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { List } from 'immutable';
 import * as types from '../constants';
-import { TagRecord } from './records';
-import { createReducer } from './create-reducer';
+import TagStateModel from './state-models/tag-state-model';
+import { createReducer } from './utils';
 import { TAGS_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new TagRecord();
+const initialState = new TagStateModel();
 
 const tagState = createReducer(initialState, {
     [types.CLEAN_STORE]: () => initialState,

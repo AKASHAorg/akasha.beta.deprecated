@@ -62,8 +62,8 @@ const publishActions = {
  */
 const publishSuccessActions = {
     [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
-    [actionTypes.claim]: entryActions.entryClaimSuccess,
-    [actionTypes.claimVote]: entryActions.entryClaimVoteSuccess,
+    // [actionTypes.claim]: entryActions.entryClaimSuccess,
+    // [actionTypes.claimVote]: entryActions.entryClaimVoteSuccess,
     // [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     // [actionTypes.commentDownvote]: commentsActions.commentsDownvoteSuccess,
     // [actionTypes.commentUpvote]: commentsActions.commentsUpvoteSuccess,
@@ -71,8 +71,8 @@ const publishSuccessActions = {
     [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
     [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
-    [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
-    [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
+    // [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
+    // [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.faucet]: profileActions.profileFaucetSuccess,
     [actionTypes.follow]: profileActions.profileFollowSuccess,
     [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,

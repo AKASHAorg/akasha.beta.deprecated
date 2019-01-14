@@ -13,9 +13,13 @@ export const HighlightRecord = Record({
     timestamp: null
 });
 
-export const HighlightState = Record({
+const HighlightState = Record({
     byId: new Map(),
     editing: null,
     search: null,
     searchResults: new List()
 });
+
+export default class HighlightStateModel extends HighlightState {
+    
+}

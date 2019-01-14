@@ -1,69 +1,15 @@
-import { List, Map, Record, Collection, fromJS } from 'immutable';
+import { List, Map, Collection, fromJS } from 'immutable';
 import * as types from '../constants';
 import * as actionTypes from '../../constants/action-types';
-import { createReducer } from './create-reducer';
-import {
-    AethBalance,
-    Balance,
-    ErrorRecord,
-    EssenceBalance,
-    LoggedProfile,
-    ManaBalance,
-    ProfileExistsRecord,
-    ProfileRecord,
-    ProfileState
-} from './records';
+import { createReducer } from './utils';
+import ProfileStateModel, { AethBalance, Balance, ErrorRecord,
+    EssenceBalance, EssenceEvent, EssenceIterator, LoggedProfile, ManaBalance,
+    ProfileExistsRecord, ProfileRecord } from './state-models/profile-state-model';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
+import { genId } from '../../utils/dataModule';
 
-const initialState = new ProfileState();
-
-const EssenceEvent = Record({
-    amount: null,
-    action: '',
-    sourceId: '',
-    blockNumber: null
-});
-const EssenceIterator = Record({ lastBlock: null, lastIndex: null });
-const addProfileData = (byEthAddress, { ...profileData }, full) => {
-    if (!profileData) {
-        return byEthAddress;
-    }
-    profileData.followersCount = Number(profileData.followersCount);
-    profileData.followingCount = Number(profileData.followingCount);
-
-    const oldProfile = byEthAddress.get(profileData.ethAddress);
-    if (!full && oldProfile) {
-        profileData.backgroundImage = oldProfile.get('backgroundImage');
-        profileData.links = oldProfile.get('links');
-    }
-    if (oldProfile) {
-        /*
-        * Prevent data from being overwriten if the new response is an unresolved profile
-        */
-        profileData.avatar = profileData.avatar || oldProfile.get('avatar');
-        profileData.firstName = profileData.firstName || oldProfile.get('firstName');
-        profileData.lastName = profileData.lastName || oldProfile.get('lastName');
-    }
-    return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
-};
-
-const getKarmaPopoverDefaultState = (collection, myRanking) => {
-    let defaultState = [];
-    if (collection.length < 4) {
-        return collection;
-    }
-    if (collection.length) {
-        if (myRanking === 0) {
-            defaultState = collection.slice(myRanking, myRanking + 3);
-        } else if (myRanking === collection.length - 1) {
-            defaultState = collection.slice(myRanking - 2);
-        } else {
-            defaultState = collection.slice(myRanking - 1, myRanking + 2);
-        }
-    }
-    return defaultState;
-};
+const initialState = new ProfileStateModel();
 
 const profileState = createReducer(initialState, {
 
@@ -283,10 +229,10 @@ const profileState = createReducer(initialState, {
     [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { data, request }) => {
         const { context, ethAddress, full } = request;
         if (!context) {
-            return state.set('byEthAddress', addProfileData(state.get('byEthAddress'), data, full));
+            return state.set('byEthAddress', state.addProfileData(state.get('byEthAddress'), data, full));
         }
         return state.merge({
-            byEthAddress: addProfileData(state.get('byEthAddress'), data, full),
+            byEthAddress: state.addProfileData(state.get('byEthAddress'), data, full),
             flags: state.get('flags').setIn(['pendingProfiles', context, ethAddress], false)
         });
     },
@@ -304,7 +250,7 @@ const profileState = createReducer(initialState, {
             return state;
         }
         return state.merge({
-            byEthAddress: addProfileData(state.get('byEthAddress'), data),
+            byEthAddress: state.addProfileData(state.get('byEthAddress'), data),
             flags: state.get('flags').setIn(['pendingListProfiles', data.ethAddress], false)
         });
     },
@@ -390,7 +336,7 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('karmaRankingPending', true),
             karmaRanking: new Map()
         }),
-
+    // waaaw...
     [types.PROFILE_KARMA_RANKING_LOAD_MORE]: (state, { data }) => {
         const collection = state.getIn(['karmaRanking', 'collection']);
         let above = state.getIn(['karmaRanking', 'above']);
@@ -417,7 +363,7 @@ const profileState = createReducer(initialState, {
     },
 
     [`${PROFILE_MODULE.karmaRanking}_SUCCESS`]: (state, { data }) => {
-        const defaultState = getKarmaPopoverDefaultState(data.collection, data.myRanking);
+        const defaultState = state.getKarmaPopoverDefaultState(data.collection, data.myRanking);
         const first = ((defaultState[0].rank - 3) > -1) ? defaultState[0].rank - 3 : 0;
         const above = data.collection.slice(first, defaultState[0].rank);
         const below = (defaultState[defaultState.length - 1].rank === data.collection.length - 1) ?
@@ -588,6 +534,30 @@ const profileState = createReducer(initialState, {
     // },
     // [types.TAG_CAN_CREATE_SUCCESS]: (state, data) =>
     //     state.set('canCreateTags', data.data.can),
+    [types.TEMP_PROFILE_GET_SUCCESS]: (state, { data }) => {
+        const { ...tempProfile } = data;
+        if (!tempProfile) {
+            return state;
+        }
+        return state.merge({
+            tempProfile: state.get('tempProfile').merge(state.createTempProfile(tempProfile))
+        });
+    },
+
+    // create a new temp profile for updates
+    [types.SET_TEMP_PROFILE]: (state, { data }) =>
+        state.merge({
+            tempProfile: state.profileToTempProfile({
+                localId: genId(),
+                ...data.toJS()
+            })
+        }),
+
+    [types.TEMP_PROFILE_UPDATE]: (state, { data }) =>
+        state.mergeIn(['tempProfile'], data),
+
+
+    [types.TEMP_PROFILE_DELETE]: state => state.clear()
 });
 
 export default profileState;

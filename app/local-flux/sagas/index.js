@@ -25,7 +25,7 @@ import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
-import * as utilsSaga from './utils-saga';
+// import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
 import { loadAkashaDB } from '../services/db/dbs';
 import ChService from '../services/channel-request-service';

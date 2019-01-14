@@ -7,3 +7,7 @@ const Flags = Record({
 export const UtilsState = Record({
     flags: new Flags(),
 });
+
+export default class UtilsStateModel extends UtilsState {
+    
+}

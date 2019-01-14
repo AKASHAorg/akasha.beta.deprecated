@@ -1,69 +1,10 @@
-import { List, Map, fromJS } from 'immutable';
-import { createReducer } from './create-reducer';
+import { Map } from 'immutable';
+import { createReducer } from './utils';
 import * as types from '../constants';
-import { CardInfo, EntryAuthor, EntryBalance, EntryContent, EntryPageOverlay, EntryRecord,
-    EntryState, EntryVote, ProfileEntries } from './records';
-import { isEthAddress } from '../../utils/dataModule';
+import EntryStateModel, { EntryBalance, EntryPageOverlay, EntryVote } from './state-models/entry-state-model';
 import { ENTRY_MODULE, COMMENTS_MODULE } from '@akashaproject/common/constants';
 
-const initialState = new EntryState();
-
-const createEntryRecord = entry =>
-    new EntryRecord(entry).withMutations((mEntry) => {
-        if (entry.content) {
-            let cardInfo = new CardInfo();
-            let title = entry.content.title;
-            if (entry.content.cardInfo) {
-                cardInfo = cardInfo.merge(fromJS(entry.content.cardInfo));
-                title = title || entry.content.cardInfo.title;
-            }
-            mEntry.set('content', new EntryContent({
-                ...entry.content,
-                cardInfo,
-                title
-            }));
-        }
-    });
-
-const createEntryContent = (record) => {
-    const content = Object.assign({}, record);
-    let cardInfo = new CardInfo();
-    let title = content.title;
-    if (content.cardInfo) {
-        cardInfo = cardInfo.merge(fromJS(content.cardInfo));
-        title = title || content.cardInfo.title;
-    }
-    return new EntryContent({
-        ...content,
-        cardInfo,
-        title
-    });
-};
-
-const createEntryWithAuthor = entry =>
-    new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
-
-const entryIteratorHandler = (state, { data, request }) => {
-    if (!request) {
-        return state;
-    }
-    let byId = state.get('byId');
-    data.collection.forEach((entry) => {
-        if (!state.get('byId').has(entry.entryId)) {
-            const newEntry = createEntryWithAuthor(entry);
-            byId = byId.set(entry.entryId, newEntry);
-        }
-    });
-    return state.set('byId', byId);
-};
-
-const entrySearchIteratorHandler = (state, { data }) => {
-    const collection = data.collection.map(res => ({
-        entryId: res.entryId,
-        author: { ethAddress: res.ethAddress }
-    }));
-    return entryIteratorHandler(state, { data: { collection } });
-};
+const initialState = new EntryStateModel();
 
 /**
  * State of the entries and drafts
@@ -119,7 +60,7 @@ const entryState = createReducer(initialState, {
         if (!asDraft && !publishedDateOnly) {
             return state.merge({
                 flags: state.get('flags').set('fetchingFullEntry', true),
-                fullEntry: createEntryRecord({ entryId })
+                fullEntry: state.createEntryRecord({ entryId })
             });
         }
         return state;
@@ -154,7 +95,8 @@ const entryState = createReducer(initialState, {
         return state.merge({
             byId,
             flags: state.get('flags').set('fetchingFullEntry', false),
-            fullEntry: createEntryRecord({ entryType, ...data }).setIn(['author', 'ethAddress'], ethAddress),
+            fullEntry: state.createEntryRecord({ entryType, ...data })
+                .setIn(['author', 'ethAddress'], ethAddress),
             fullEntryLatestVersion: latestVersion
         });
     },
@@ -261,15 +203,15 @@ const entryState = createReducer(initialState, {
 
     // [types.ENTRY_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_MORE_LIST_ITERATOR_SUCCESS]: (state) =>  state.entryIteratorHandler(state),
 
-    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: (state) =>  state.entryIteratorHandler(state),
 
-    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: (state) =>  state.entryIteratorHandler(state),
 
-    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: (state) =>  state.entryIteratorHandler(state),
 
-    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: (state) =>  state.entryIteratorHandler(state),
 
     [types.ENTRY_PAGE_HIDE]: state => state.set('entryPageOverlay', new EntryPageOverlay()),
 
@@ -294,7 +236,7 @@ const entryState = createReducer(initialState, {
         if (data.entry && request.entryId === state.getIn(['fullEntry', 'entryId'])) {
             return state.merge({
                 flags: state.get('flags').set('resolvingFullEntryHash', false),
-                fullEntry: state.get('fullEntry').set('content', createEntryContent(data.entry))
+                fullEntry: state.get('fullEntry').set('content', state.createEntryContent(data.entry))
             });
         }
         return state;
@@ -317,7 +259,7 @@ const entryState = createReducer(initialState, {
     [types.PROFILE_RESET_COLUMNS]: (state, { ethAddress }) =>
         state.deleteIn(['profileEntries', ethAddress]),
 
-    [types.SEARCH_MORE_QUERY_SUCCESS]: entrySearchIteratorHandler,
+    [types.SEARCH_MORE_QUERY_SUCCESS]: (state) =>  state.entrySearchIteratorHandler(state),
 
     // [types.SEARCH_QUERY_SUCCESS]: entrySearchIteratorHandler
 });
