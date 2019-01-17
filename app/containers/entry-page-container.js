@@ -7,20 +7,21 @@ import { entryCleanFull, entryGetFull, entryGetLatestVersion,
     entryResolveIpfsHash } from '../local-flux/actions/entry-actions';
 import { highlightSave } from '../local-flux/actions/highlight-actions';
 import { toggleOutsideNavigation, fullSizeImageAdd } from '../local-flux/actions/app-actions';
-import { getBaseUrl, getLoggedProfileData, selectPendingComments } from '../local-flux/selectors';
+import { actionSelectors, commentSelectors, entrySelectors, externalProcessSelectors,
+    profileSelectors, licenseSelectors } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     const entry = state.entryState.get('fullEntry');
     return {
-        baseUrl: getBaseUrl(state),
+        baseUrl: externalProcessSelectors.getBaseUrl(state),
         entry,
-        fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
-        latestVersion: state.entryState.get('fullEntryLatestVersion'),
-        licenses: state.licenseState.get('byId'),
-        loggedProfileData: getLoggedProfileData(state),
-        newComments: state.commentsState.getIn(['newComments', 'comments']),
-        pendingComments: selectPendingComments(state, entry && entry.get('entryId')),
-        resolvingIpfsHash: state.entryState.getIn(['flags', 'resolvingFullEntryHash'])
+        fetchingFullEntry: entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
+        latestVersion: entrySelectors.selectFullEntryLatestVersion(state),
+        licenses: licenseSelectors.selectAllLicenses(state),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
+        newComments: commentSelectors.getNewComments(state),
+        pendingComments: actionSelectors.getEntryPendingComments(state, entry && entry.get('entryId')),
+        resolvingIpfsHash: entrySelectors.selectEntryFlag(state, 'resolvingFullEntryHash')
     };
 }
 

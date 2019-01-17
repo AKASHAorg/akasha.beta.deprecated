@@ -6,7 +6,7 @@ import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
-import { getProfileEntries, getProfileEntriesFlags } from '../../local-flux/selectors';
+import { entrySelectors } from '../../local-flux/selectors';
 
 class ProfileEntriesColumn extends Component {
     firstCallDone = false;
@@ -75,9 +75,9 @@ ProfileEntriesColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     const { fetchingEntries, fetchingMoreEntries, moreEntries } =
-        getProfileEntriesFlags(state, ethAddress);
+        entrySelectors.getProfileEntriesFlags(state, ethAddress);
     return {
-        entriesList: getProfileEntries(state, ethAddress),
+        entriesList: entrySelectors.getProfileEntries(state, ethAddress),
         fetchingEntries,
         fetchingMoreEntries,
         moreEntries

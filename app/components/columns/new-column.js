@@ -11,8 +11,7 @@ import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
 import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
     entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults, searchTags } from '../../local-flux/actions/search-actions';
-import { selectActiveDashboard, selectActiveDashboardId, selectColumnById, getColumnEntries, selectLists, selectNewColumn,
-    selectProfileSearchResults, selectTagSearchResults, selectEntriesById } from '../../local-flux/selectors';
+import { dashboardSelectors, entrySelectors, listSelectors, searchSelectors } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages, listMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { Icon, NewSearchColumn, NewSelectColumn } from '../';
@@ -390,15 +389,15 @@ NewColumn.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboard(state),
-        activeDashboardId: selectActiveDashboardId(state),
-        column: selectColumnById(state, 'newColumn'),
-        lists: selectLists(state),
-        newColumn: selectNewColumn(state),
-        previewEntries: getColumnEntries(state, 'newColumn'),
-        entries:selectEntriesById(state),
-        profileResults: selectProfileSearchResults(state),
-        tagResults: selectTagSearchResults(state)
+        activeDashboard: dashboardSelectors.selectActiveDashboard(state),
+        activeDashboardId: dashboardSelectors.selectActiveDashboardId(state),
+        column: dashboardSelectors.selectColumnById(state, 'newColumn'),
+        lists: listSelectors.selectLists(state),
+        newColumn: dashboardSelectors.selectNewColumn(state),
+        previewEntries: dashboardSelectors.getColumnEntries(state, 'newColumn'),
+        entries: entrySelectors.selectEntriesById(state),
+        profileResults: searchSelectors.selectProfileSearchResults(state),
+        tagResults: searchSelectors.selectTagSearchResults(state)
     };
 }
 

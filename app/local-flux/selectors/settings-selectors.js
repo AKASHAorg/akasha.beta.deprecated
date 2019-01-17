@@ -30,3 +30,5 @@ export const getThemeSettings = (state/*: Object */) => selectGeneralSettings(st
 export const getConfigurationSaved = (state/*: Object */) => selectGeneralSettings(state).get('configurationSaved');
 
 export const getSavingUserSettings = (state/*: Object */) => selectSettingsFlags(state).get('savingUserSettings');
+
+export const getGethSyncModeSettings = (state/*: Object */) => selectGethSettings(state).get('syncmode');

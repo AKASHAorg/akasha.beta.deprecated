@@ -9,8 +9,7 @@ import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { getActionHistory, selectBalance, selectLoggedEthAddress,
-    selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 
@@ -127,11 +126,11 @@ EthWallet.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingTransfer: selectPendingActionByType(state, transferEth),
-        profileResults: selectProfileSearchResults(state),
-        sentTransactions: getActionHistory(state)
+        balance: profileSelectors.selectBalance(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingTransfer: actionSelectors.selectPendingActionByType(state, transferEth),
+        profileResults: actionSelectors.selectProfileSearchResults(state),
+        sentTransactions: actionSelectors.getActionHistory(state)
     };
 }
 

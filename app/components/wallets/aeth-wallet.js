@@ -10,8 +10,7 @@ import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flu
 import { profileAethTransfersIterator, profileCyclingStates,
     profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { getActionHistory, selectBalance, selectCyclingStates, selectLoggedEthAddress,
-    selectPendingActionByType, selectProfileSearchResults } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
@@ -317,16 +316,16 @@ AethWallet.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
-        cyclingStates: selectCyclingStates(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingBondAeth: selectPendingActionByType(state, actionTypes.bondAeth),
-        pendingCycleAeth: selectPendingActionByType(state, actionTypes.cycleAeth),
-        pendingFreeAeth: selectPendingActionByType(state, actionTypes.freeAeth),
-        pendingTransfer: selectPendingActionByType(state, actionTypes.transferAeth),
-        pendingTransformEssence: selectPendingActionByType(state, actionTypes.transformEssence),
-        profileResults: selectProfileSearchResults(state),
-        sentTransactions: getActionHistory(state)
+        balance: profileSelectors.selectBalance(state),
+        cyclingStates: profileSelectors.selectCyclingStates(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingBondAeth: actionSelectors.selectPendingActionByType(state, actionTypes.bondAeth),
+        pendingCycleAeth: actionSelectors.selectPendingActionByType(state, actionTypes.cycleAeth),
+        pendingFreeAeth: actionSelectors.selectPendingActionByType(state, actionTypes.freeAeth),
+        pendingTransfer: actionSelectors.selectPendingActionByType(state, actionTypes.transferAeth),
+        pendingTransformEssence: actionSelectors.selectPendingActionByType(state, actionTypes.transformEssence),
+        profileResults: searchSelectors.selectProfileSearchResults(state),
+        sentTransactions: actionSelectors.getActionHistory(state)
     };
 }
 

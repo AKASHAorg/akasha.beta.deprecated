@@ -9,10 +9,9 @@ import { Avatar, Icon, ProfilePopover, ShareLinkModal } from '../';
 import { entryTypes } from '../../constants/entry-types';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-actions';
-import { selectFullEntry, selectLoggedEthAddress, selectProfileByEthAddress } from '../../local-flux/selectors';
+import { entrySelectors, draftSelectors, profileSelectors } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
-import { getEntryAuthorEthAddress, selectDrafts, selectFullEntryLatestVersion } from '../../local-flux/selectors/entry-selectors';
 
 class EntryPageHeader extends Component {
     state = {
@@ -233,17 +232,17 @@ EntryPageHeader.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const entry = selectFullEntry(state);
-    const ethAddress = entry && getEntryAuthorEthAddress(state);
-    const drafts = selectDrafts(state);
+    const entry = entrySelectors.selectFullEntry(state);
+    const ethAddress = entry && entrySelectors.getEntryAuthorEthAddress(state);
+    const drafts = draftSelectors.selectDrafts(state);
     const existingDraft = entry &&
         drafts.find(draft => draft.get('entryId') === entry.get('entryId'));
     return {
-        author: selectProfileByEthAddress(state, ethAddress),
+        author: profileSelectors.selectProfileByEthAddress(state, ethAddress),
         entry,
         existingDraft,
-        loggedEthAddress: selectLoggedEthAddress(state),
-        latestVersion: selectFullEntryLatestVersion(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        latestVersion: entrySelectors.selectFullEntryLatestVersion(state),
     };
 }
 

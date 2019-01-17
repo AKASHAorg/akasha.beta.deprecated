@@ -9,8 +9,7 @@ import { Icon, ProfilePopover, Avatar } from '../';
 import * as notificationEvents from '../../constants/notification-events';
 import { entryGetShort } from '../../local-flux/actions/entry-actions';
 import { profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { selectEntryById, selectLoggedEthAddress, getPendingEntries, getPendingProfiles,
-    selectProfileByEthAddress } from '../../local-flux/selectors';
+import { entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import { generalMessages, notificationMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -176,14 +175,14 @@ function mapStateToProps (state, ownProps) {
     const { notification } = ownProps;
     const ethAddress = getEthAddress(notification);
     const entryId = notification.payload.entryId;
-    const pendingEntries = entryId && getPendingEntries(state, 'notifications');
-    const pendingProfiles = getPendingProfiles(state, 'notifications');
+    const pendingEntries = entryId && entrySelectors.getPendingEntries(state, 'notifications');
+    const pendingProfiles = profileSelectors.getPendingProfiles(state, 'notifications');
     return {
-        entry: selectEntryById(state, entryId),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        entry: entrySelectors.selectEntryById(state, entryId),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         pendingEntry: entryId && pendingEntries && pendingEntries.get(entryId),
         pendingProfile: pendingProfiles && pendingProfiles.get(ethAddress),
-        profile: selectProfileByEthAddress(state, ethAddress),
+        profile: profileSelectors.selectProfileByEthAddress(state, ethAddress),
     };
 }
 

@@ -13,7 +13,7 @@ import { profileKarmaRanking, profileKarmaRankingLoadMore,
 import { getLoggedProfileData } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
-import { selectAllFollowings, selectProfilesByEthAddress, selectKarmaRanking, selectProfileFlag } from '../../local-flux/selectors/profile-selectors';
+import { profileSelectors } from '../../local-flux/selectors';
 
 const DEFAULT = 'default';
 const LEADERBOARD = 'leaderboard';
@@ -355,11 +355,11 @@ KarmaPopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        allFollowings: selectAllFollowings(state),
-        loggedProfileData: getLoggedProfileData(state),
-        profiles: selectProfilesByEthAddress(state),
-        karmaRanking: selectKarmaRanking(state),
-        karmaRankingPending:selectProfileFlag(state, 'karmaRankingPending')
+        allFollowings: profileSelectors.selectAllFollowings(state),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
+        profiles: profileSelectors.selectProfilesByEthAddress(state),
+        karmaRanking: profileSelectors.selectKarmaRanking(state),
+        karmaRankingPending: profileSelectors.selectProfileFlag(state, 'karmaRankingPending')
     };
 }
 

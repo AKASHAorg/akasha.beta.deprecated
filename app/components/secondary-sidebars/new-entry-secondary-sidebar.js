@@ -11,9 +11,7 @@ import { draftsGetCount, draftsGet, draftDelete, draftCreate,
     draftResetIterator, draftRevertToVersion } from '../../local-flux/actions/draft-actions';
 import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { tagCanCreate } from '../../local-flux/actions/tag-actions';
-import { selectLoggedEthAddress } from '../../local-flux/selectors/profile-selectors';
-import { selectDraftsList, selectDraftsCount, selectDraftsFetched, selectDrafts, selectDraftsResolvingEntries,
-    getDraftsMoreEntries, getUserDefaultLicence } from '../../local-flux/selectors';
+import { draftSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
 
 const { confirm } = Modal;
 const shallowEquals = (a, b) => Object.keys(a).every(key => a[key] === b[key]);
@@ -522,14 +520,14 @@ NewEntrySecondarySidebar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    draftList: selectDraftsList(state),
-    draftsCount: selectDraftsCount(state),
-    ethAddress: selectLoggedEthAddress(state),
-    draftsFetched: selectDraftsFetched(state),
-    drafts: selectDrafts(state),
-    moreEntries: getDraftsMoreEntries(state),
-    resolvingEntries: selectDraftsResolvingEntries(state),
-    userSelectedLicence: getUserDefaultLicence(state),
+    draftList: draftSelectors.selectDraftsList(state),
+    draftsCount: draftSelectors.selectDraftsCount(state),
+    ethAddress: profileSelectors.selectLoggedEthAddress(state),
+    draftsFetched: draftSelectors.selectDraftsFetched(state),
+    drafts: draftSelectors.selectDrafts(state),
+    moreEntries: draftSelectors.getDraftsMoreEntries(state),
+    resolvingEntries: draftSelectors.selectDraftsResolvingEntries(state),
+    userSelectedLicence: settingsSelectors.getUserDefaultLicence(state),
 });
 
 export default connect(

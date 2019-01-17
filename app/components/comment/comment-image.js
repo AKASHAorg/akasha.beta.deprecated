@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import { connect } from 'react-redux';
 import { Button, Icon } from 'antd';
 import classNames from 'classnames';
-import { getBaseUrl } from '../../local-flux/selectors';
+import { externalProcessSelectors } from '../../local-flux/selectors';
 import clickAway from '../../utils/clickAway';
 import { findClosestMatch, getBestAvailableImage } from '../../utils/imageUtils';
 
@@ -126,7 +126,7 @@ CommentImage.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        baseUrl: getBaseUrl(state)
+        baseUrl: externalProcessSelectors.getBaseUrl(state)
     };
 }
 

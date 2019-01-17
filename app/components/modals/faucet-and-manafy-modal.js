@@ -11,8 +11,7 @@ import { NoEth, NoMana } from '../';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import { generalMessages } from '../../locale-data/messages';
-import { getPendingActionByType, selectPendingActions, selectNeedAeth, selectNeedEth,
-    selectNeedMana, selectFaucet } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors } from '../../local-flux/selectors';
 
 class FaucetAndManafyModal extends Component {
     _getModalContent = () => {
@@ -134,13 +133,13 @@ FaucetAndManafyModal.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        loggedEthAddress: selectLoggedEthAddress(state),
-        needEth: selectNeedEth(state),
-        needAeth: selectNeedAeth(state),
-        needMana: selectNeedMana(state),
-        pendingActions: selectPendingActions(state),
-        faucetRequested: selectFaucet(state),
-        faucetPending: getPendingActionByType(state, 'faucet'),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        needEth: actionSelectors.selectNeedEth(state),
+        needAeth: actionSelectors.selectNeedAeth(state),
+        needMana: actionSelectors.selectNeedMana(state),
+        pendingActions: actionSelectors.selectPendingActions(state),
+        faucetRequested: profileSelectors.selectFaucet(state),
+        faucetPending: actionSelectors.getPendingActionByType(state, 'faucet'),
     };
 }
 

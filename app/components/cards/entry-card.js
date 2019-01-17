@@ -9,9 +9,9 @@ import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
 import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { entryGetShort, entryPageShow } from '../../local-flux/actions/entry-actions';
-import { ProfileRecord } from '../../local-flux/reducers/records';
-import { getBaseUrl, getCurrentBlockNumber, selectEntryById, getHideEntrySettings, selectLoggedEthAddress,
-    selectProfileByEthAddress } from '../../local-flux/selectors';
+import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
+import { externalProcessSelectors, entrySelectors, profileSelectors,
+  settingsSelectors } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
 import { isLinkToAkashaWeb, extractEntryUrl } from '../../utils/url-utils';
@@ -297,15 +297,15 @@ EntryCard.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const entry = ownProps.entry || selectEntryById(state, ownProps.itemId);
+    const entry = ownProps.entry || entrySelectors.selectEntryById(state, ownProps.itemId);
     const ethAddress = entry.author.ethAddress;
     return {
-        author: selectProfileByEthAddress(state, ethAddress),
-        baseUrl: getBaseUrl(state),
-        blockNr: getCurrentBlockNumber(state),
+        author: profileSelectors.selectProfileByEthAddress(state, ethAddress),
+        baseUrl: externalProcessSelectors.getBaseUrl(state),
+        blockNr: externalProcessSelectors.getCurrentBlockNumber(state),
         entry,
-        hideEntrySettings: getHideEntrySettings(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        hideEntrySettings: settingsSelectors.getHideEntrySettings(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
     };
 }
 

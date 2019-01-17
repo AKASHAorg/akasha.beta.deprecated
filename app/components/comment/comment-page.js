@@ -7,8 +7,8 @@ import { Card } from 'antd';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryGetShort } from '../../local-flux/actions/entry-actions';
 import { profileGetData } from '../../local-flux/actions/profile-actions';
-import { selectCommentById, selectEntryById, selectLoggedEthAddress, getEntryPendingComments, getPendingEntries,
-    selectProfileByEthAddress } from '../../local-flux/selectors';
+import { actionSelectors, commentSelectors, entrySelectors,
+  profileSelectors } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { CommentThread, EntryCardHeader } from '../';
 
@@ -186,18 +186,18 @@ CommentPage.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     let { entryId, commentId } = ownProps.match.params;
-    const comment = selectCommentById(state, commentId);
-    const entry = selectEntryById(state, entryId);
-    const parentComment = comment && comment.parent !== '0' ? selectComment(state, comment.parent) : null;
+    const comment = commentSelectors.selectCommentById(state, commentId);
+    const entry = entrySelectors.selectEntryById(state, entryId);
+    const parentComment = comment && comment.parent !== '0' ? commentSelectors.selectComment(state, comment.parent) : null;
     return {
         comment,
-        commentAuthor: comment && selectProfileByEthAddress(state, comment.author.ethAddress),
+        commentAuthor: comment && profileSelectors.selectProfileByEthAddress(state, comment.author.ethAddress),
         entry,
-        entryAuthor: entry && selectProfileByEthAddress(state, entry.author.ethAddress),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        entryAuthor: entry && profileSelectors.selectProfileByEthAddress(state, entry.author.ethAddress),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         parentComment,
-        pendingComments: getEntryPendingComments(state, entryId),
-        pendingEntries: getPendingEntries(state, 'commentPage'),
+        pendingComments: actionSelectors.getEntryPendingComments(state, entryId),
+        pendingEntries: entrySelectors.getPendingEntries(state, 'commentPage'),
     };
 }
 

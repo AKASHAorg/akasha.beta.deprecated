@@ -6,8 +6,8 @@ import { Spin } from 'antd';
 import { entryMessages } from '../../locale-data/messages';
 import { CommentThread, DataLoader, OptimisticComment } from '../';
 import { commentsIterator } from '../../local-flux/actions/comments-actions';
-import { getCommentsFlag, selectEntryCommentsByParent, getLoggedProfileData,
-    getEntryPendingComments } from '../../local-flux/selectors';
+import { actionSelectors, commentSelectors, entrySelectors,
+    profileSelectors } from '../../local-flux/selectors';
 
 class CommentList extends Component {
     state = {
@@ -154,18 +154,18 @@ CommentList.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const entry = state.entryState.get('fullEntry');
+    const entry = entrySelectors.selectFullEntry(state);
     const entryId = entry && entry.entryId;
     return {
-        comments: selectEntryCommentsByParent(state, entryId, '0'),
+        comments: commentSelectors.selectEntryCommentsByParent(state, entryId, '0'),
         commentsCount: entry && entry.commentsCount,
-        commentsFetched: state.commentsState.getIn(['flags', 'commentsFetched', 'entryPage']),
+        commentsFetched: commentSelectors.getCommentsFlag(state, 'commentsFetched', 'entryPage'),
         entryId,
-        fetchingComments: getCommentsFlag(state, 'fetchingComments', '0'),
-        fetchingMoreComments: getCommentsFlag(state, 'fetchingMoreComments', '0'),
-        loggedProfileData: getLoggedProfileData(state),
-        moreComments: state.commentsState.getIn(['moreComments', '0']),
-        pendingComments: getEntryPendingComments(state, entryId),
+        fetchingComments: commentSelectors.getCommentsFlag(state, 'fetchingComments', '0'),
+        fetchingMoreComments: commentSelectors.getCommentsFlag(state, 'fetchingMoreComments', '0'),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
+        moreComments: commentSelectors.selectMoreComments(state, '0'),
+        pendingComments: actionSelectors.getEntryPendingComments(state, entryId),
     };
 }
 

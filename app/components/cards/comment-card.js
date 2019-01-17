@@ -13,10 +13,9 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryPageShow } from '../../local-flux/actions/entry-actions';
-import { ProfileRecord } from '../../local-flux/reducers/records';
-import { selectCommentById, selectCommentIsPending, selectCommentVote, selectEntryById,
-    getPendingCommentVote, selectProfileByEthAddress, getCurrentBlockNumber, getBaseUrl,
-    getHideCommentSettings, selectLoggedEthAddress } from '../../local-flux/selectors';
+import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
+import { actionSelectors, commentSelectors, entrySelectors, externalProcessSelectors,
+  profileSelectors, settingsSelectors } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
@@ -380,19 +379,19 @@ CommentCard.propTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const comment = selectCommentById(state, ownProps.itemId);
+    const comment = commentSelectors.selectCommentById(state, ownProps.itemId);
     const entryId = comment.entryId;
     return {
-        author: selectProfileByEthAddress(state, comment.author.ethAddress),
-        baseUrl: getBaseUrl(state),
-        blockNr: getCurrentBlockNumber(state),
+        author: profileSelectors.selectProfileByEthAddress(state, comment.author.ethAddress),
+        baseUrl: externalProcessSelectors.getBaseUrl(state),
+        blockNr: externalProcessSelectors.getCurrentBlockNumber(state),
         comment,
-        entry: selectEntryById(state, entryId),
-        hideCommentSettings: getHideCommentSettings(state),
-        isPending: selectCommentIsPending(state, ownProps.contextId, ownProps.itemId),
-        loggedEthAddress: selectLoggedEthAddress(state),        
-        vote: selectCommentVote(state, ownProps.itemId),
-        votePending: !!getPendingCommentVote(state, ownProps.itemId)
+        entry: entrySelectors.selectEntryById(state, entryId),
+        hideCommentSettings: settingsSelectors.getHideCommentSettings(state),
+        isPending: commentSelectors.selectCommentIsPending(state, ownProps.contextId, ownProps.itemId),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),        
+        vote: commentSelectors.selectCommentVote(state, ownProps.itemId),
+        votePending: !!actionSelectors.getPendingCommentVote(state, ownProps.itemId)
     };
 }
 

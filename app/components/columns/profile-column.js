@@ -9,8 +9,8 @@ import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { getColumnEntries, selectProfileExists,
-    selectProfileSearchResults } from '../../local-flux/selectors';
+import { dashboardSelectors, profileSelectors,
+    searchSelectors} from '../../local-flux/selectors';
 
 const DELAY = 60000;
 
@@ -136,9 +136,9 @@ ProfileColumn.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        entriesList: getColumnEntries(state, ownProps.column.get('id')),
-        profileExists: selectProfileExists(state),
-        profileResults: selectProfileSearchResults(state),
+        entriesList: dashboardSelectors.getColumnEntries(state, ownProps.column.get('id')),
+        profileExists: profileSelectors.selectProfileExists(state),
+        profileResults: searchSelectors.selectProfileSearchResults(state),
     };
 }
 

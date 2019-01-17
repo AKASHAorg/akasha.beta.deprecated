@@ -9,8 +9,7 @@ import { actionAdd } from '../../local-flux/actions/action-actions';
 import { claimableGetEntries } from '../../local-flux/actions/claimable-actions';
 import { profileEssenceIterator, profileGetBalance,
     profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
-import { selectBalance, selectLoggedEthAddress,
-    getPendingEssenceTransform } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 
@@ -144,9 +143,9 @@ EssencePopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingTransformEssence: getPendingEssenceTransform(state),
+        balance: profileSelectors.selectBalance(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingTransformEssence: actionSelectors.getPendingEssenceTransform(state),
     };
 }
 

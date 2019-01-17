@@ -6,7 +6,7 @@ import { Button, Form, Input } from 'antd';
 import * as columnTypes from '../../constants/columns';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import { dashboardAdd } from '../../local-flux/actions/dashboard-actions';
-import { getAllDashboards } from '../../local-flux/selectors';
+import { dashboardSelectors } from '../../local-flux/selectors';
 
 const FormItem = Form.Item;
 
@@ -122,7 +122,7 @@ NewDashboardForm.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        dashboards: getAllDashboards(state)
+        dashboards: dashboardSelectors.getAllDashboards(state)
     };
 }
 

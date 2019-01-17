@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Button, Form, Popover, Slider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { getManaBalance, selectVoteCost } from '../../local-flux/selectors';
+import { profileSelectors, entrySelectors } from '../../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Icon } from '../';
 
@@ -221,8 +221,8 @@ VotePopover.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        mana: getManaBalance(state),
-        voteCost: selectVoteCost(state)
+        mana: profileSelectors.getManaBalance(state),
+        voteCost: entrySelectors.selectVoteCost(state)
     };
 }
 

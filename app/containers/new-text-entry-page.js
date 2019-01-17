@@ -15,11 +15,9 @@ import { searchResetResults, searchTags } from '../local-flux/actions/search-act
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { tagExists } from '../local-flux/actions/tag-actions';
 import { entryMessages } from '../locale-data/messages';
-import { selectDraftById, selectLoggedProfile, getThemeSettings, selectAllLicenses,
-    getBaseUrl, selectDrafts, selectDraftsFetched, getPendingActionByType,
-    selectShowSecondarySidebar, selectDraftsSelection, selectDraftsResolvingEntries,
-    selectTagSearchResults, selectTagSearchResultsCount, getUserDefaultLicence,
-    selectCanCreateTags} from '../local-flux/selectors';
+import { actionSelectors, appSelectors,draftSelectors, externalProcessSelectors,
+        licenseSelectors, profileSelectors, searchSelectors,
+        settingsSelectors } from '../local-flux/selectors';
 import * as actionTypes from '../constants/action-types';
 
 const { EditorState } = DraftJS;
@@ -468,21 +466,21 @@ NewEntryPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-    baseUrl: getBaseUrl(state),
-    draftObj: selectDraftById(state, ownProps.match.params.draftId),
-    drafts: selectDrafts(state),
-    draftsFetched: selectDraftsFetched(state),
-    darkTheme: getThemeSettings(state),
-    licences: selectAllLicenses(state),
-    loggedProfile: selectLoggedProfile(state),
-    selectionState: selectDraftsSelection(state),
-    resolvingEntries: selectDraftsResolvingEntries(state),
-    showSecondarySidebar: selectShowSecondarySidebar(state),
-    tagSuggestions: selectTagSearchResults(state),
-    tagSuggestionsCount: selectTagSearchResultsCount(state),
-    userDefaultLicence: getUserDefaultLicence(state),
-    pendingFaucetTx: getPendingActionByType(state, 'faucet'),
-    canCreateTags: selectCanCreateTags(state),
+    baseUrl: externalProcessSelectors.getBaseUrl(state),
+    draftObj: draftSelectors.selectDraftById(state, ownProps.match.params.draftId),
+    drafts: draftSelectors.selectDrafts(state),
+    draftsFetched: draftSelectors.selectDraftsFetched(state),
+    darkTheme: settingsSelectors.getThemeSettings(state),
+    licences: licenseSelectors.selectAllLicenses(state),
+    loggedProfile: profileSelectors.selectLoggedProfile(state),
+    selectionState: draftSelectors.selectDraftsSelection(state),
+    resolvingEntries: draftSelectors.selectDraftsResolvingEntries(state),
+    showSecondarySidebar: appSelectors.selectShowSecondarySidebar(state),
+    tagSuggestions: searchSelectors.selectTagSearchResults(state),
+    tagSuggestionsCount: searchSelectors.selectTagSearchResultsCount(state),
+    userDefaultLicence: licenseSelectors.getUserDefaultLicence(state),
+    pendingFaucetTx: actionSelectors.getPendingActionByType(state, 'faucet'),
+    canCreateTags: profileSelectors.selectCanCreateTags(state),
 });
 
 export default connect(

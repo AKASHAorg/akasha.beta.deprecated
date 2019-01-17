@@ -56,6 +56,9 @@ export const selectMoreFollowings = (state/*: Object*/, props/*: ProfileEthProps
 export const selectProfileExists = (state/*: Object*/) =>
     state.profileState.get('exists');
 
+export const selectProfileInterests = (state/*: Object*/) =>
+    state.profileState.get('interests');
+
 export const selectEssenceIterator = (state/*: Object*/) =>
     state.profileState.get('essenceIterator');
 

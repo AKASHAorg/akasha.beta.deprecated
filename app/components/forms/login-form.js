@@ -8,8 +8,7 @@ import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
     userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectGethStatus, selectIpfsStatus, selectLoggedEthAddress,
-    selectProfileFlag, selectLoginErrors, getPasswordPreference } from '../../local-flux/selectors';
+import { externalProcessSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
 import { Input, RememberPassphrase } from '../';
 
 const FormItem = Form.Item;
@@ -205,12 +204,12 @@ LoginForm.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        gethStatus: selectGethStatus(state),
-        ipfsStatus: selectIpfsStatus(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        loginErrors: selectLoginErrors(state),
-        loginPending: selectProfileFlag(state, 'loginPending'),
-        passwordPreference: getPasswordPreference(state),
+        gethStatus: externalProcessSelectors.selectGethStatus(state),
+        ipfsStatus: externalProcessSelectors.selectIpfsStatus(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        loginErrors: profileSelectors.selectLoginErrors(state),
+        loginPending: profileSelectors.selectProfileFlag(state, 'loginPending'),
+        passwordPreference: settingsSelectors.getPasswordPreference(state),
     };
 }
 

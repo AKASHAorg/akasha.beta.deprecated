@@ -8,13 +8,9 @@ import { fromJS } from 'immutable';
 import { DataLoader, EditorFooter, NoDraftsPlaceholder, PublishOptionsPanel, TextEntryEditor, TagEditor,
     WebsiteInfoCard } from '../components';
 import { genId } from '../utils/dataModule';
-import { selectDraftById, selectLoggedProfile, getBaseUrl,
-    getThemeSettings, selectDrafts, selectDraftsFetched,
-    selectAllLicenses, selectDraftsResolvingEntries,
-    selectDraftsSelection, selectShowSecondarySidebar,
-    selectTagSearchResults, selectTagSearchResultsCount,
-    getUserDefaultLicence, getPendingActionByType,
-    selectCanCreateTags} from '../local-flux/selectors';
+import { actionSelectors, appSelectors,draftSelectors, externalProcessSelectors,
+    licenseSelectors, profileSelectors, searchSelectors,
+    settingsSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages';
 import { WebsiteParser } from '../utils/extract-website-info';
 import { draftAddTag, draftRemoveTag, draftCreate, draftUpdate,
@@ -529,21 +525,21 @@ NewLinkEntryPage.propTypes = {
     canCreateTags: PropTypes.bool,
 };
 const mapStateToProps = (state, ownProps) => ({
-    loggedProfile: selectLoggedProfile(state),
-    baseUrl: getBaseUrl(state),
-    darkTheme: getThemeSettings(state),
-    draftObj: selectDraftById(state, ownProps.match.params.draftId),
-    drafts: selectDrafts(state),
-    draftsFetched: selectDraftsFetched(state),
-    licences: selectAllLicenses(state),
-    resolvingEntries: selectDraftsResolvingEntries(state),
-    selectionState: selectDraftsSelection(state),
-    showSecondarySidebar: selectShowSecondarySidebar(state),
-    tagSuggestions: selectTagSearchResults(state),
-    tagSuggestionsCount: selectTagSearchResultsCount(state),
-    userDefaultLicence: getUserDefaultLicence(state),
-    pendingFaucetTx: getPendingActionByType(state, 'faucet'),
-    canCreateTags: selectCanCreateTags(state),
+    loggedProfile: profileSelectors.selectLoggedProfile(state),
+    baseUrl: externalProcessSelectors.getBaseUrl(state),
+    darkTheme: settingsSelectors.getThemeSettings(state),
+    draftObj: draftSelectors.selectDraftById(state, ownProps.match.params.draftId),
+    drafts: draftSelectors.selectDrafts(state),
+    draftsFetched: draftSelectors.selectDraftsFetched(state),
+    licences: licenseSelectors.selectAllLicenses(state),
+    resolvingEntries: draftSelectors.selectDraftsResolvingEntries(state),
+    selectionState: draftSelectors.selectDraftsSelection(state),
+    showSecondarySidebar: appSelectors.selectShowSecondarySidebar(state),
+    tagSuggestions: searchSelectors.selectTagSearchResults(state),
+    tagSuggestionsCount: searchSelectors.selectTagSearchResultsCount(state),
+    userDefaultLicence: licenseSelectors.getUserDefaultLicence(state),
+    pendingFaucetTx: actionSelectors.getPendingActionByType(state, 'faucet'),
+    canCreateTags: profileSelectors.selectCanCreateTags(state),
 });
 
 export default connect(

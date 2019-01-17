@@ -7,7 +7,7 @@ export * as draftSelectors from './draft-selectors';
 export * as entrySelectors from './entry-selectors';
 export * as externalProcessSelectors from './external-process-selectors';
 export * as highlightsSelectors from './highlights-selectors';
-export * as licenceSelectors from './license-selectors';
+export * as licenseSelectors from './license-selectors';
 export * as listSelectors from './list-selectors';
 export * as notificationSelectors from './notification-selectors';
 export * as panelSelectors from './panel-selectors';

@@ -8,9 +8,9 @@ import Waypoint from 'react-waypoint';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { selectPendingClaims, getBaseUrl, getHideEntrySettings, getPendingEntries,
-    selectLoggedEthAddress, selectDrafts, selectSearchQuery, getCanClaimPendingEntry,
-    getCurrentBlockNumber, getFetchingEntryBalance} from '../local-flux/selectors';
+import { actionSelectors, externalProcessSelectors, settingsSelectors,
+  profileSelectors, draftSelectors, searchSelectors, entrySelectors
+  } from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
@@ -169,18 +169,18 @@ EntryList.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        baseUrl: getBaseUrl(state),
-        blockNr: getCurrentBlockNumber(state),
-        canClaimPending: getCanClaimPendingEntry(state),
-        drafts: selectDrafts(state),
-        fetchingEntryBalance: getFetchingEntryBalance(state),
-        hideEntrySettings: getHideEntrySettings(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingClaims: selectPendingClaims(state),
-        pendingEntries: getPendingEntries(state, ownProps.contextId),
-        pendingVotes: getPendingActionByType(state, 'entryVote'),
-        profiles: selectProfilesByEthAddress(state),
-        searchQuery: selectSearchQuery(state),
+        baseUrl: externalProcessSelectors.getBaseUrl(state),
+        blockNr: externalProcessSelectors.getCurrentBlockNumber(state),
+        canClaimPending: entrySelectors.getCanClaimPendingEntry(state),
+        drafts: draftSelectors.selectDrafts(state),
+        fetchingEntryBalance: entrySelectors.getFetchingEntryBalance(state),
+        hideEntrySettings: settingsSelectors.getHideEntrySettings(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingClaims: actionSelectors.selectPendingClaims(state),
+        pendingEntries: entrySelectors.getPendingEntries(state, ownProps.contextId),
+        pendingVotes: actionSelectors.getPendingActionByType(state, 'entryVote'),
+        profiles: profileSelectors.selectProfilesByEthAddress(state),
+        searchQuery: searchSelectors.selectSearchQuery(state),
     };
 }
 

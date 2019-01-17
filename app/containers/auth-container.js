@@ -3,20 +3,20 @@ import { injectIntl } from 'react-intl';
 import { profileClearLocal, profileDeleteLogged,
     profileGetLocal } from '../local-flux/actions/profile-actions';
 import { backupKeysRequest } from '../local-flux/actions/utils-actions';
-import { selectLocalProfiles, selectProfileFlag, selectGethStatus, selectIpfsStatus,
-    getPasswordPreference, getBackupPendingFlag } from '../local-flux/selectors';
+import { externalProcessSelectors, profileSelectors, utilsSelectors,
+    settingsSelectors } from '../local-flux/selectors';
 import { Auth } from '../components';
 
 function mapStateToProps (state) {
     return {
-        backupPending: getBackupPendingFlag(state),
-        fetchingProfileList: selectProfileFlag(state, 'fetchingProfileList'),
-        gethStatus: selectGethStatus(state),
-        localProfiles: selectLocalProfiles(state),
-        localProfilesFetched: selectProfileFlag(state, 'localProfilesFetched'),
-        ipfsStatus: selectIpfsStatus(state),
-        passwordPreference: getPasswordPreference(state),
-        pendingListProfiles: selectProfileFlag(state, 'pendingListProfiles'),
+        backupPending: utilsSelectors.getBackupPendingFlag(state),
+        fetchingProfileList: profileSelectors.selectProfileFlag(state, 'fetchingProfileList'),
+        gethStatus: externalProcessSelectors.selectGethStatus(state),
+        localProfiles: profileSelectors.selectLocalProfiles(state),
+        localProfilesFetched: profileSelectors.selectProfileFlag(state, 'localProfilesFetched'),
+        ipfsStatus: externalProcessSelectors.selectIpfsStatus(state),
+        passwordPreference: settingsSelectors.getPasswordPreference(state),
+        pendingListProfiles: profileSelectors.selectProfileFlag(state, 'pendingListProfiles'),
     };
 }
 

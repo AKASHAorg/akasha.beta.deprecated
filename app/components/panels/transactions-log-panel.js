@@ -9,12 +9,8 @@ import { DataLoader, TransactionLog } from '../';
 import { actionClearHistory, actionGetAllHistory } from '../../local-flux/actions/action-actions';
 import { hideTransactionsLog } from '../../local-flux/actions/app-actions';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import { getActionsHistory, selectLoggedEthAddress,
-    selectPublishingActions, getThemeSettings } from '../../local-flux/selectors';
+import {actionSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
 import clickAway from '../../utils/clickAway';
-import {
-    getFetchingHistoryFlag, getFetchingMoreHistoryFlag
-} from '../../local-flux/selectors/action-selectors';
 
 const PENDING = 'pending';
 const HISTORY = 'history';
@@ -184,12 +180,12 @@ TransactionsLogPanel.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        darkTheme: getThemeSettings(state),
-        fetchingHistory: getFetchingHistoryFlag(state),
-        fetchingMoreHistory: getFetchingMoreHistoryFlag(state),
-        historyActions: getActionsHistory(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingActions: selectPublishingActions(state),
+        darkTheme: settingsSelectors.getThemeSettings(state),
+        fetchingHistory: actionSelectors.getFetchingHistoryFlag(state),
+        fetchingMoreHistory: actionSelectors.getFetchingMoreHistoryFlag(state),
+        historyActions: actionSelectors.getActionsHistory(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingActions: actionSelectors.selectPublishingActions(state),
     };
 }
 

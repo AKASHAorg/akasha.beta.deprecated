@@ -7,8 +7,8 @@ import { Button, Checkbox, Form, InputNumber, Input, Modal, Select, Switch, Tool
 import { toggleDonations } from '../../constants/action-types';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { getPendingActionByType, selectAllLicenses, selectLoggedEthAddress,
-    getLoggedProfileData, getSavingUserSettings, selectUserSettings } from '../../local-flux/selectors';
+import { actionSelectors, licenseSelectors, profileSelectors,
+    settingsSelectors } from '../../local-flux/selectors';
 import { formMessages, settingsMessages, generalMessages, profileMessages,
     searchMessages } from '../../locale-data/messages';
 import { Icon, RememberPassphraseSelect } from '../';
@@ -518,12 +518,12 @@ ProfileSettings.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        licenses: selectAllLicenses(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        loggedProfileData: getLoggedProfileData(state),
-        pendingToggleDonations: getPendingActionByType(state, toggleDonations),
-        savingUserSettings: getSavingUserSettings(state),
-        userSettings: selectUserSettings(state)
+        licenses: licenseSelectors.selectAllLicenses(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
+        pendingToggleDonations: actionSelectors.getPendingActionByType(state, toggleDonations),
+        savingUserSettings: settingsSelectors.getSavingUserSettings(state),
+        userSettings: settingsSelectors.selectUserSettings(state)
     };
 }
 

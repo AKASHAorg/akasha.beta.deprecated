@@ -8,7 +8,7 @@ import { ColumnHeader, EntryList } from '../';
 import { entryMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
-import { getColumnEntries, selectLists } from '../../local-flux/selectors';
+import { dashboardSelectors, listSelectors } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages/dashboard-messages';
 
 class ListColumn extends Component {
@@ -107,8 +107,8 @@ ListColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
-        entries: getColumnEntries(state, columnId),
-        lists: selectLists(state)
+        entries: dashboardSelectors.getColumnEntries(state, columnId),
+        lists: listSelectors.selectLists(state)
     };
 }
 

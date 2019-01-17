@@ -6,7 +6,7 @@ import * as claimableActions from '../actions/claimable-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import * as notificationsActions from '../actions/notifications-actions';
 import * as profileActions from '../actions/profile-actions';
-import { selectLoggedEthAddress } from '../selectors';
+import { profileSelectors } from '../selectors';
 import * as actionSaga from './action-saga';
 import * as appSaga from './app-saga';
 import * as claimableSaga from './claimable-saga';
@@ -60,7 +60,7 @@ function* launchHomeActions () {
     yield fork(highlightSaga.highlightGetAll);
     yield fork(listSaga.listGetAll);
     yield fork(getUserSettings);
-    const loggedEthAddress = yield select(selectLoggedEthAddress);
+    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     if (loggedEthAddress) {
         yield put(actionActions.actionGetPending());
         yield put(claimableActions.claimableIterator());

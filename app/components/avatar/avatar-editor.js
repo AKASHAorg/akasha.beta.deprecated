@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { Icon } from '../';
 import { generalMessages } from '../../locale-data/messages/general-messages';
-import { getBaseUrl } from '../../local-flux/selectors/index';
+import { externalProcessSelectors } from '../../local-flux/selectors';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -276,7 +276,7 @@ AvatarEditr.defaultProps = {
 
 function mapStateToProps (state) {
     return {
-        baseUrl: getBaseUrl(state)
+        baseUrl: externalProcessSelectors.getBaseUrl(state)
     };
 }
 

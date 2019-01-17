@@ -11,9 +11,8 @@ import { searchMessages } from '../../locale-data/messages';
 import { highlightDelete, highlightEditNotes, highlightSearch,
     highlightToggleEditing, highlightToggleNoteEditable } from '../../local-flux/actions/highlight-actions';
 import { profileGetList } from '../../local-flux/actions/profile-actions';
-import { ProfileRecord } from '../../local-flux/reducers/records';
-import { selectHighlights, selectHighlightsEditing, selectHighlightSearchTerm,
-    selectProfilesByEthAddress } from '../../local-flux/selectors';
+import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
+import { highlightsSelectors, profileSelectors } from '../../local-flux/selectors';
 
 class Highlights extends Component {
     componentDidMount () {
@@ -107,10 +106,10 @@ Highlights.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        editing: selectHighlightsEditing(state),
-        highlights: selectHighlights(state),
-        profiles: selectProfilesByEthAddress(state),
-        search: selectHighlightSearchTerm(state),
+        editing: highlightsSelectors.selectHighlightsEditing(state),
+        highlights: highlightsSelectors.selectHighlights(state),
+        profiles: profileSelectors.selectProfilesByEthAddress(state),
+        search: highlightsSelectors.selectHighlightSearchTerm(state),
     };
 }
 

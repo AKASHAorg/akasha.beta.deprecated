@@ -9,10 +9,8 @@ import classNames from 'classnames';
 import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
 import { showNotificationsPanel, showTransactionsLog, toggleAethWallet,
     toggleEthWallet } from '../../local-flux/actions/app-actions';
-import { selectBalance, selectEntryFlag, selectFullEntry, selectLoggedProfile,
-    getLoggedProfileData, selectNotificationsPanel, selectPublishingActions, selectShowWallet,
-    selectTransactionsLog, selectUnreadNotifications, selectCyclingStates,
-    selectNotificationsLoaded } from '../../local-flux/selectors';
+import { actionSelectors, appSelectors, entrySelectors, profileSelectors,
+    notificationSelectors } from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -87,17 +85,17 @@ TopBar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    balance: selectBalance(state),
-    cyclingStates: selectCyclingStates(state),
-    fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
-    hasPendingActions: !!selectPublishingActions(state).size,
-    loggedProfile: selectLoggedProfile(state),
-    loggedProfileData: getLoggedProfileData(state),
-    notificationsLoaded: selectNotificationsLoaded(state),
-    notificationsPanelOpen: selectNotificationsPanel(state),
-    showWallet: selectShowWallet(state),
-    transactionsLogOpen: selectTransactionsLog(state),
-    unreadNotifications: selectUnreadNotifications(state)
+    balance: profileSelectors.selectbalance(state),
+    cyclingStates: profileSelectors.selectCyclingStates(state),
+    fullEntry: !!entrySelectors.selectFullEntry(state) || !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
+    hasPendingActions: !!actionSelectors.selectPublishingActions(state).size,
+    loggedProfile: profileSelectors.selectLoggedProfile(state),
+    loggedProfileData: profileSelectors.getLoggedProfileData(state),
+    notificationsLoaded: notificationSelectors.selectNotificationsLoaded(state),
+    notificationsPanelOpen: appSelectors.selectNotificationsPanel(state),
+    showWallet: appSelectors.selectShowWallet(state),
+    transactionsLogOpen: appSelectors.selectTransactionsLog(state),
+    unreadNotifications: notificationSelectors.selectUnreadNotifications(state)
 });
 
 export default connect(

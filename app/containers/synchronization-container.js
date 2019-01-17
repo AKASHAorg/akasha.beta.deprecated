@@ -4,24 +4,22 @@ import { clearSyncStatus, gethGetSyncStatus, gethPauseSync, gethResumeSync, geth
     ipfsStop } from '../local-flux/actions/external-process-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Sync } from '../components';
-import { getConfigurationSaved } from '../local-flux/selectors/settings-selectors';
-import { getGethBusyState, getGethStarting, selectGethStatus, getGethStatusFetched, selectGethSyncStatus,
-    getIpfsBusyState, getIpfsPortsRequested, selectIpfsStatus, getIpfsStatusFetched,
-    selectGethSyncActionId } from '../local-flux/selectors';
+import { externalProcessSelectors, settingsSelectors } from '../local-flux/selectors';
+
 
 function mapStateToProps (state) {
     return {
-        configurationSaved: getConfigurationSaved(state),
-        gethBusyState: getGethBusyState(state),
-        gethStarting: getGethStarting(state),
-        gethStatus: selectGethStatus(state),
-        gethStatusFetched: getGethStatusFetched(state),        
-        gethSyncStatus: selectGethSyncStatus(state),
-        ipfsBusyState: getIpfsBusyState(state),
-        ipfsPortsRequested: getIpfsPortsRequested(state),
-        ipfsStatus: selectIpfsStatus(state),
-        ipfsStatusFetched: getIpfsStatusFetched(state),        
-        syncActionId: selectGethSyncActionId(state),
+        configurationSaved: settingsSelectors.getConfigurationSaved(state),
+        gethBusyState: externalProcessSelectors.getGethBusyState(state),
+        gethStarting: externalProcessSelectors.getGethStarting(state),
+        gethStatus: externalProcessSelectors.selectGethStatus(state),
+        gethStatusFetched: externalProcessSelectors.getGethStatusFetched(state),        
+        gethSyncStatus: externalProcessSelectors.selectGethSyncStatus(state),
+        ipfsBusyState: externalProcessSelectors.getIpfsBusyState(state),
+        ipfsPortsRequested: externalProcessSelectors.getIpfsPortsRequested(state),
+        ipfsStatus: externalProcessSelectors.selectIpfsStatus(state),
+        ipfsStatusFetched: externalProcessSelectors.getIpfsStatusFetched(state),        
+        syncActionId: externalProcessSelectors.selectGethSyncActionId(state),
     };
 }
 

@@ -2,16 +2,15 @@ import { connect } from 'react-redux';
 import { saveConfiguration } from '../local-flux/actions/settings-actions';
 import { toggleLightSyncMode } from '../local-flux/actions/app-actions';
 import { Configuration } from '../components';
-import { getConfigurationSaved, selectDefaultGethSettings, selectDefaultIpfsSettings,
-    selectGethSettings, selectIpfsSettings } from '../local-flux/selectors';
+import { settingsSelectors } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     return {
-        configurationSaved: getConfigurationSaved(state),
-        defaultGethSettings: selectDefaultGethSettings(state),
-        defaultIpfsSettings: selectDefaultIpfsSettings(state),
-        gethSettings: selectGethSettings(state),
-        ipfsSettings: selectIpfsSettings(state),
+        configurationSaved: settingsSelectors.getConfigurationSaved(state),
+        defaultGethSettings: settingsSelectors.selectDefaultGethSettings(state),
+        defaultIpfsSettings: settingsSelectors.selectDefaultIpfsSettings(state),
+        gethSettings: settingsSelectors.selectGethSettings(state),
+        ipfsSettings: settingsSelectors.selectIpfsSettings(state),
     };
 }
 

@@ -5,9 +5,8 @@ import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
-import { selectEntryById, selectEntryCommentsByParent, selectFullEntry, getLoggedProfileData,
-    selectMoreComments, selectProfileByEthAddress, getEntryAuthorEthAddress,
-    getEntryTitle } from '../../local-flux/selectors';
+import { commentSelectors, entrySelectors,
+    profileSelectors } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 
@@ -175,15 +174,15 @@ CommentThread.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { comment, entryId } = ownProps;
     const entry = entryId ?
-        selectEntryById(state, entryId) :
-        selectFullEntry(state);
+        entrySelectors.selectEntryById(state, entryId) :
+        entrySelectors.selectFullEntry(state);
     return {
-        author: selectProfileByEthAddress(state, comment.author.ethAddress),
-        entryTitle: getEntryTitle(state),
-        ethAddress: getEntryAuthorEthAddress(state),
-        loggedProfileData: getLoggedProfileData(state),
-        moreReplies: selectMoreComments(state, comment.commentId),
-        replies: selectEntryCommentsByParent(state, entryId, comment.commentId),
+        author: profileSelectors.selectProfileByEthAddress(state, comment.author.ethAddress),
+        entryTitle: entrySelectors.getEntryTitle(state),
+        ethAddress: entrySelectors.getEntryAuthorEthAddress(state),
+        loggedProfileData: profileSelectors.getLoggedProfileData(state),
+        moreReplies: commentSelectors.selectMoreComments(state, comment.commentId),
+        replies: commentSelectors.selectEntryCommentsByParent(state, entryId, comment.commentId),
     };
 }
 

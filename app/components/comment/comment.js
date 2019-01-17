@@ -16,9 +16,8 @@ import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { toggleOutsideNavigation, fullSizeImageAdd } from '../../local-flux/actions/app-actions';
 import { commentsResolveIpfsHash } from '../../local-flux/actions/comments-actions';
-import { getCurrentBlockNumber, selectCommentById, selectCommentVote, getHideCommentSettings,
-    selectLoggedEthAddress, getPendingCommentVote, selectProfileByEthAddress,
-    selectResolvingComment } from '../../local-flux/selectors';
+import { actionSelectors, externalProcessSelectors, commentSelectors, settingsSelectors,
+  profileSelectors } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
@@ -416,18 +415,18 @@ Comment.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const { commentId, context } = ownProps;
-    const comment = selectCommentById(state, commentId);
+    const comment = commentSelectors.selectCommentById(state, commentId);
     const resolvingComment = state.commentsState.getIn(['flags', 'pendingComments', context, commentId]) ||
-        selectResolvingComment(state, comment.ipfsHash);
+        commentSelectors.selectResolvingComment(state, comment.ipfsHash);
     return {
-        author: selectProfileByEthAddress(state, comment.author.ethAddress),
-        blockNr: getCurrentBlockNumber(state),
+        author: profileSelectors.selectProfileByEthAddress(state, comment.author.ethAddress),
+        blockNr: externalProcessSelectors.getCurrentBlockNumber(state),
         comment,
-        hideCommentSettings: getHideCommentSettings(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        hideCommentSettings: settingsSelectors.getHideCommentSettings(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         resolvingComment,
-        vote: selectCommentVote(state, commentId),
-        votePending: !!getPendingCommentVote(state, commentId)
+        vote: commentSelectors.selectCommentVote(state, commentId),
+        votePending: !!actionSelectors.getPendingCommentVote(state, commentId)
     };
 }
 

@@ -7,10 +7,7 @@ import { Dashboard, DataLoader } from '../components';
 import { toggleNewDashboardModal } from '../local-flux/actions/app-actions';
 import { dashboardHideTutorial, dashboardSetActive,
     dashboardUpdateNewColumn, dashboardReorderColumn } from '../local-flux/actions/dashboard-actions';
-import { selectEntryFlag, selectFullEntry, getDashboardColumnPendingEntries,
-    selectActiveDashboardId, selectColumns, selectHomeReady, getThemeSettings,
-    selectDashboardsById, getFirstDashboardReady, selectNewColumn,
-    selectEntryPageOverlay } from '../local-flux/selectors';
+import { appSelectors, entrySelectors, dashboardSelectors, settingsSelectors } from '../local-flux/selectors';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
 class DashboardPage extends Component {
@@ -142,16 +139,16 @@ DashboardPage.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboardId(state),
-        columns: selectColumns(state),
-        darkTheme: getThemeSettings(state),
-        dashboards: selectDashboardsById(state),
-        entryPageOverlay: selectEntryPageOverlay(state),
-        firstDashboardReady: getFirstDashboardReady(state),
-        homeReady: selectHomeReady(state),
-        isHidden: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
-        newColumn: selectNewColumn(state),
-        pendingEntries: getDashboardColumnPendingEntries(state, selectActiveDashboardId(state)),
+        activeDashboard: dashboardSelectors.selectActiveDashboardId(state),
+        columns: dashboardSelectors.selectColumns(state),
+        darkTheme: settingsSelectors.getThemeSettings(state),
+        dashboards: dashboardSelectors.selectDashboardsById(state),
+        entryPageOverlay: entrySelectors.selectEntryPageOverlay(state),
+        firstDashboardReady: dashboardSelectors.getFirstDashboardReady(state),
+        homeReady: appSelectors.selectHomeReady(state),
+        isHidden: !!entrySelectors.selectFullEntry(state) || !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
+        newColumn: dashboardSelectors.selectNewColumn(state),
+        pendingEntries: dashboardSelectors.getDashboardColumnPendingEntries(state, dashboardSelectors.selectActiveDashboardId(state)),
     };
 }
 

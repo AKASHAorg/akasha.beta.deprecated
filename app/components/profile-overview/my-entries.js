@@ -3,10 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectLoggedEthAddress, getProfileEntries } from '../../local-flux/selectors';
 import { EntryList } from '../';
-import { selectProfilesByEthAddress } from '../../local-flux/selectors/profile-selectors';
-import { getProfileEntriesFlags } from '../../local-flux/selectors/entry-selectors';
+import { profileSelectors, entrySelectors } from '../../local-flux/selectors';
 
 class MyEntries extends Component {
     componentDidMount () {
@@ -51,14 +49,14 @@ MyEntries.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const ethAddress = selectLoggedEthAddress(state);
+    const ethAddress = profileSelectors.selectLoggedEthAddress(state);
     return {
         ethAddress,
-        fetchingMoreProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingMoreEntries']),
-        fetchingProfileEntries: state.entryState.getIn(['profileEntries', ethAddress, 'fetchingEntries']),
-        profileEntries: getProfileEntries(state, ethAddress),
-        profiles: selectProfilesByEthAddress(state),
-        moreProfileEntries: getProfileEntriesFlags(state).moreEntries,
+        fetchingMoreProfileEntries: entrySelectors.getProfileEntriesFlags(state).fetchingMoreProfileEntries,
+        fetchingProfileEntries: entrySelectors.getProfileEntriesFlags(state).fetchingProfileEntries,
+        profileEntries: entrySelectors.getProfileEntries(state, ethAddress),
+        profiles: profileSelectors.selectProfilesByEthAddress(state),
+        moreProfileEntries: entrySelectors.getProfileEntriesFlags(state).moreEntries,
     };
 }
 

@@ -6,7 +6,7 @@ import { Button, Form, Input } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
 import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
 import { showTerms } from '../local-flux/actions/app-actions';
-import { selectLoggedEthAddress, selectProfileFlag } from '../local-flux/selectors';
+import { profileSelectors } from '../local-flux/selectors';
 
 const FormItem = Form.Item;
 
@@ -183,9 +183,9 @@ NewIdentity.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        ethAddressPending: selectProfileFlag(state, 'ethAddressPending'),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        loginPending: selectProfileFlag(state, 'loginPending')
+        ethAddressPending: profileSelectors.selectProfileFlag(state, 'ethAddressPending'),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        loginPending: profileSelectors.selectProfileFlag(state, 'loginPending')
     };
 }
 

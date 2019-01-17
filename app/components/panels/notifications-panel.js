@@ -10,9 +10,7 @@ import { notificationsSubscribe } from '../../local-flux/actions/notifications-a
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { profileMessages, generalMessages, settingsMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
-import { selectLoggedEthAddress } from '../../local-flux/selectors';
-import { selectNotificationsLoaded, selectNotifications } from '../../local-flux/selectors/notification-selectors';
-import { selectUserSettings, getThemeSettings } from '../../local-flux/selectors/settings-selectors';
+import { profileSelectors, notificationSelectors, settingsSelectors } from '../../local-flux/selectors';
 
 const { Item } = Timeline;
 
@@ -194,11 +192,11 @@ NotificationsPanel.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        darkTheme: getThemeSettings(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        notifications: selectNotifications(state),
-        notificationsLoaded: selectNotificationsLoaded(state),
-        userSettings: selectUserSettings(state)
+        darkTheme: settingsSelectors.getThemeSettings(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        notifications: notificationSelectors.selectNotifications(state),
+        notificationsLoaded: notificationSelectors.selectNotificationsLoaded(state),
+        userSettings: settingsSelectors.selectUserSettings(state)
     };
 }
 

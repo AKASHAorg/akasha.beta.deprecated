@@ -7,8 +7,7 @@ import { AddToBoardPopover, FollowButton, Icon, ProfileCardHeader } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle } from '../../local-flux/actions/app-actions';
-import { selectIsFollower, getFollowIsPending, getTipIsPending,
-    selectLoggedEthAddress, selectProfileByEthAddress } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { formatBalance } from '../../utils/number-formatter';
 
@@ -154,13 +153,13 @@ ProfileCard.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const ethAddress = ownProps.itemId;
-    const profile = ethAddress ? selectProfileByEthAddress(state, ethAddress) : ownProps.profile;
+    const profile = ethAddress ? profileSelectors.selectProfileByEthAddress(state, ethAddress) : ownProps.profile;
     return {
-        followPending: getFollowIsPending(state, ethAddress),
-        isFollower: selectIsFollower(state, ethAddress),
-        loggedEthAddress: selectLoggedEthAddress(state),
+        followPending: profileSelectors.getFollowIsPending(state, ethAddress),
+        isFollower: profileSelectors.selectIsFollower(state, ethAddress),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         profile,
-        tipPending: getTipIsPending(state, ethAddress)
+        tipPending: actionSelectors.getTipIsPending(state, ethAddress)
     };
 }
 

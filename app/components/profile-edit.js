@@ -10,7 +10,8 @@ import { setTempProfile, tempProfileGet, tempProfileUpdate, tempProfileCreate,
     tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
 import { profileMessages } from '../locale-data/messages';
-import { selectActionPendingAll, getBaseUrl, getLoggedProfileData } from '../local-flux/selectors';
+import { actionSelectors, externalProcessSelectors, profileSelectors,
+    tempProfileSelectors } from '../local-flux/selectors';
 import { Icon, ProfileEditForm } from './';
 
 class ProfileEdit extends Component {
@@ -132,12 +133,12 @@ ProfileEdit.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    ipfsBaseUrl: getBaseUrl(state),
-    loggedProfile: state.profileState.get('loggedProfile'),
-    loggedProfileData: getLoggedProfileData(state),
-    pendingActions: selectActionPendingAll(state),
-    profileExistsData: state.profileState.get('exists'),
-    tempProfile: state.tempProfileState.get('tempProfile')
+    ipfsBaseUrl: externalProcessSelectors.getBaseUrl(state),
+    loggedProfile: profileSelectors.selectLoggedProfile(state),
+    loggedProfileData: profileSelectors.getLoggedProfileData(state),
+    pendingActions: actionSelectors.selectActionPendingAll(state),
+    profileExistsData: profileSelectors.selectProfileExists(state),
+    tempProfile: tempProfileSelectors.selectTempProfile(state)
 });
 
 

@@ -5,7 +5,7 @@ import { FormattedDate, injectIntl } from 'react-intl';
 import { Modal } from 'antd';
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { listDelete } from '../../local-flux/actions/list-actions';
-import { selectEntryById, selectListById } from '../../local-flux/selectors';
+import { entrySelectors, listSelectors } from '../../local-flux/selectors';
 import { generalMessages, listMessages } from '../../locale-data/messages';
 import { EditListBtn, EntryList, Icon } from '../';
 
@@ -127,8 +127,8 @@ ListEntries.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const { listId } = ownProps.match.params;
-    const list = selectListById(state, listId);
-    const entries = list && list.get('entryIds').map(ele => selectEntryById(state, ele.entryId));
+    const list = listSelectors.selectListById(state, listId);
+    const entries = list && list.get('entryIds').map(ele => entrySelectors.selectEntryById(state, ele.entryId));
     return {
         entries,
         list,

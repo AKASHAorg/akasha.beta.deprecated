@@ -6,8 +6,7 @@ import { Button, Form, InputNumber } from 'antd';
 import classNames from 'classnames';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
-import { selectBalance, selectLoggedEthAddress,
-    getTipIsPending } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors } from '../../local-flux/selectors';
 import { balanceToNumber } from '../../utils/number-formatter';
 import * as actionTypes from '../../constants/action-types';
 
@@ -190,9 +189,9 @@ SendTipForm.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { profile } = ownProps;
     return {
-        balance: selectBalance(state),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        tipPending: getTipIsPending(state, profile.ethAddress)
+        balance: profileSelectors.selectBalance(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        tipPending: actionSelectors.getTipIsPending(state, profile.ethAddress)
     };
 }
 

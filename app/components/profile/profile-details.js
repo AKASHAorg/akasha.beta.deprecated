@@ -9,8 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { profileEditToggle, toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
-import { getBaseUrl, selectIsFollower, selectLoggedEthAddress, getFollowIsPending, getTipIsPending,
-    selectProfileByEthAddress } from '../../local-flux/selectors';
+import { actionSelectors, externalProcessSelectors, profileSelectors } from '../../local-flux/selectors';
 import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 import { formatBalance } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
@@ -274,12 +273,12 @@ ProfileDetails.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps;
     return {
-        baseUrl: getBaseUrl(state),
-        followPending: getFollowIsPending(state, ethAddress),
-        isFollower: selectIsFollower(state, ethAddress),
-        loggedEthAddress: selectLoggedEthAddress(state),
-        profileData: selectProfileByEthAddress(state, ethAddress),
-        tipPending: getTipIsPending(state, ethAddress)
+        baseUrl: externalProcessSelectors.getBaseUrl(state),
+        followPending: actionSelectors.getFollowIsPending(state, ethAddress),
+        isFollower: profileSelectors.selectIsFollower(state, ethAddress),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        profileData: profileSelectors.selectProfileByEthAddress(state, ethAddress),
+        tipPending: actionSelectors.getTipIsPending(state, ethAddress)
     };
 }
 

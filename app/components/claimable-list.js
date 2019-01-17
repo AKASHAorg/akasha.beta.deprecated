@@ -10,16 +10,11 @@ import Waypoint from 'react-waypoint';
 import * as actionTypes from '../constants/action-types';
 import { actionAdd } from '../local-flux/actions/action-actions';
 import { claimableGetEntries } from '../local-flux/actions/claimable-actions';
-import { selectClaimableEntries, getClaimableEntriesById, selectClaimableLoading,
-    selectClaimableLoadingMore, selectClaimableMoreEntries, selectLoggedEthAddress,
-    selectPendingClaims, selectPendingClaimVotes } from '../local-flux/selectors';
 import { entryMessages, formMessages, generalMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
 import { DataLoader } from './';
-import {
-    selectEntryCanClaim, selectEntryCanClaimVote, selectEntryBalance, selectEntryVotes,
-} from '../local-flux/selectors/entry-selectors';
-import { selectClaimableFetchingEntries, selectClaimableFetchingMoreEntries } from '../local-flux/selectors/claim-selectors';
+import { actionSelectors, claimSelectors, entrySelectors,
+  profileSelectors } from '../local-flux/selectors';
 
 class ClaimableList extends Component {
     shouldComponentUpdate (nextProps) { // eslint-disable-line complexity
@@ -280,20 +275,20 @@ ClaimableList.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        canClaim: selectEntryCanClaim(state),
-        canClaimVote: selectEntryCanClaimVote(state),
-        claimableEntries: selectClaimableEntries(state),
-        claimableLoading: selectClaimableLoading(state),
-        claimableLoadingMore: selectClaimableLoadingMore(state),        
-        entries: getClaimableEntriesById(state),
-        entryBalance: selectEntryBalance(state),
-        entryVotes: selectEntryVotes(state),
-        fetchingEntries: selectClaimableFetchingEntries(state),
-        fetchingMoreEntries: selectClaimableFetchingMoreEntries(state),        
-        loggedEthAddress: selectLoggedEthAddress(state),
-        moreClaimableEntries: selectClaimableMoreEntries(state),
-        pendingClaim: selectPendingClaims(state),
-        pendingClaimVote: selectPendingClaimVotes(state),
+        canClaim: entrySelectors.selectEntryCanClaim(state),
+        canClaimVote: entrySelectors.selectEntryCanClaimVote(state),
+        claimableEntries: claimSelectors.selectClaimableEntries(state),
+        claimableLoading: claimSelectors.selectClaimableLoading(state),
+        claimableLoadingMore: claimSelectors.selectClaimableLoadingMore(state),        
+        entries: claimSelectors.getClaimableEntriesById(state),
+        entryBalance: entrySelectors.selectEntryBalance(state),
+        entryVotes: entrySelectors.selectEntryVotes(state),
+        fetchingEntries: claimSelectors.selectClaimableFetchingEntries(state),
+        fetchingMoreEntries: claimSelectors.selectClaimableFetchingMoreEntries(state),        
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        moreClaimableEntries: claimSelectors.selectClaimableMoreEntries(state),
+        pendingClaim: actionSelectors.selectPendingClaims(state),
+        pendingClaimVote: actionSelectors.selectPendingClaimVotes(state),
     };
 }
 

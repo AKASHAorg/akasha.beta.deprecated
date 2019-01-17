@@ -3,7 +3,7 @@ import { call, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/e
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
-import { DraftModel } from '../reducers/models';
+import { DraftStateModel } from '../reducers/state-models/draft-state-model';
 import { profileSelectors, draftSelectors } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount, extractExcerpt } from '../../utils/dataModule';
@@ -67,7 +67,7 @@ function* draftsGet ({ data })/* : Saga<void> */ {
         if (response.length > 0) {
             response.forEach((draft) => {
                 let draftTags = new OrderedMap();
-                let draftRecord = DraftModel.createDraft(draft);
+                let draftRecord = DraftStateModel.createDraft(draft);
                 draftRecord = draftRecord.setIn(
                     ['content', 'draft'],
                     editorStateFromRaw(draft.content.draft)

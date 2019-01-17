@@ -9,10 +9,8 @@ import * as actionTypes from '../../constants/action-types';
 import { Icon, ListPopover, ShareLinkModal, VotesModal, VotePopover } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
-import { getCurrentBlockNumber, selectEntryBalance, selectEntryCanClaim, selectEntryCanClaimVote, selectEntryVote,
-    getLists, selectLists, selectListSearchTerm, selectLoggedEthAddress, getClaimIsPending,
-    getPendingClaimVote, getVoteIsPending, selectProfileByEthAddress,
-    getEntryAuthorEthAddress } from '../../local-flux/selectors';
+import { actionSelectors, entrySelectors, externalProcessSelectors, listSelectors, searchSelectors,
+  profileSelectors } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
@@ -405,22 +403,22 @@ EntryPageAction.propTypes = {
 
 function mapStateToProps (state, ownProps) {
     const entry = ownProps.entry;
-    const loggedEthAddress = selectLoggedEthAddress(state);
+    const loggedEthAddress = profileSelectors.selectLoggedEthAddress(state);
     return {
-        author: selectProfileByEthAddress(state, entry.getIn(['author', 'ethAddress'])),
-        blockNr: getCurrentBlockNumber(state),
-        canClaim: selectEntryCanClaim(state, entry.get('entryId')),
-        canClaimVote: selectEntryCanClaimVote(state, entry.get('entryId')),
-        claimPending: getClaimIsPending(state),
-        claimVotePending: getPendingClaimVote(state),
-        entryBalance: selectEntryBalance(state, entry.get('entryId')),
-        isOwnEntry: loggedEthAddress === getEntryAuthorEthAddress(state),
-        lists: getLists(state),
-        listsAll: selectLists(state),
-        listSearchKeyword: selectListSearchTerm(state),
+        author: profileSelectors.selectProfileByEthAddress(state, entry.getIn(['author', 'ethAddress'])),
+        blockNr: externalProcessSelectors.getCurrentBlockNumber(state),
+        canClaim: entrySelectors.selectEntryCanClaim(state, entry.get('entryId')),
+        canClaimVote: entrySelectors.selectEntryCanClaimVote(state, entry.get('entryId')),
+        claimPending: actionSelectors.getClaimIsPending(state),
+        claimVotePending: actionSelectors.getPendingClaimVote(state),
+        entryBalance: entrySelectors.selectEntryBalance(state, entry.get('entryId')),
+        isOwnEntry: loggedEthAddress === entrySelectors.getEntryAuthorEthAddress(state),
+        lists: listSelectors.getLists(state),
+        listsAll: listSelectors.selectLists(state),
+        listSearchKeyword: listSelectors.selectListSearchTerm(state),
         loggedEthAddress,
-        votePending: getVoteIsPending(state, entry.get('entryId')),
-        vote: selectEntryVote(state, entry.get('entryId'))
+        votePending: actionSelectors.getVoteIsPending(state, entry.get('entryId')),
+        vote: entrySelectors.selectEntryVote(state, entry.get('entryId'))
     };
 }
 

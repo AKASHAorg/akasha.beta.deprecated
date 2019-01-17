@@ -5,7 +5,7 @@ import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import Waypoint from 'react-waypoint';
-import { getPendingProfiles, selectLoggedEthAddress, selectSearchQuery } from '../local-flux/selectors';
+import {profileSelectors, searchSelectors } from '../local-flux/selectors';
 import { profileMessages, generalMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 
@@ -116,9 +116,9 @@ ProfileList.propTypes = {
 function mapStateToProps (state, ownProps) {
     const { context } = ownProps;
     return {
-        loggedEthAddress: selectLoggedEthAddress(state),
-        pendingProfiles: getPendingProfiles(state, context),
-        searchQuery: selectSearchQuery(state),
+        loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
+        pendingProfiles: profileSelectors.getPendingProfiles(state, context),
+        searchQuery: searchSelectors.selectSearchQuery(state),
     };
 }
 

@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Button, Input, Tag } from 'antd';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { selectTagEntriesCount, selectTagSearchResults } from '../../local-flux/selectors';
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { profileToggleInterest } from '../../local-flux/actions/profile-actions';
 import { dashboardAddFirst } from '../../local-flux/actions/dashboard-actions';
@@ -13,7 +12,8 @@ import { dashboardMessages, generalMessages, searchMessages,
 import { Icon, TagListInterests } from '../';
 import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
-import { selectDashboardsById, getFirstDashboardReady, getTagSearchPending } from '../../local-flux/selectors';
+import { dashboardSelectors, profileSelectors, tagSelectors,
+  searchSelectors } from '../../local-flux/selectors';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -138,12 +138,12 @@ NewIdentityInterests.propTypes = {
 function mapStateToProps (state) {
     const firstDashboard = selectDashboardsById(state).first(); 
     return {
-        entriesCount: selectTagEntriesCount(state),
-        fetchingTags: getTagSearchPending(state),
+        entriesCount: searchSelectors.selectTagEntriesCount(state),
+        fetchingTags: tagSelectors.getTagSearchPending(state),
         firstDashboardId: firstDashboard && firstDashboard.get('id'),
-        firstDashboardReady: getFirstDashboardReady(state),
-        profileInterests: state.profileState.get('interests'),
-        tags: selectTagSearchResults(state)
+        firstDashboardReady: dashboardSelectors.getFirstDashboardReady(state),
+        profileInterests: profileSelectors.selectProfileInterests(state),
+        tags: searchSelectors.selectTagSearchResults(state)
     };
 }
 

@@ -9,7 +9,7 @@ import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchTags } from '../../local-flux/actions/search-actions';
-import { selectColumnEntries, selectTagExists, selectTagSearchResults } from '../../local-flux/selectors';
+import { dashboardSelectors, tagSelectors, searchSelectors } from '../../local-flux/selectors';
 
 const DELAY = 60000;
 
@@ -132,9 +132,9 @@ TagColumn.propTypes = {
 function mapStateToProps (state, ownProps) {
     const columnId = ownProps.column.get('id');
     return {
-        entriesList: selectColumnEntries(state, columnId),
-        tagExists: selectTagExists(state),
-        tagResults: selectTagSearchResults(state),
+        entriesList: dashboardSelectors.getColumnEntries(state, columnId),
+        tagExists: tagSelectors.selectTagExists(state),
+        tagResults: searchSelectors.selectTagSearchResults(state),
     };
 }
 

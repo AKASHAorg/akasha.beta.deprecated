@@ -6,7 +6,7 @@ import { Button } from 'antd';
 import { AddToBoardPopover, EntryList } from '../';
 import { hidePreview } from '../../local-flux/actions/app-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnById, getColumnEntries, selectEntriesById, selectShowPreview } from '../../local-flux/selectors';
+import { appSelectors, dashboardSelectors, entrySelectors } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 
@@ -67,10 +67,10 @@ PreviewPanel.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        column: selectColumnById(state, 'previewColumn'),
-        preview: selectShowPreview(state),
-        previewEntries: getColumnEntries(state, 'previewColumn'),
-        entries: selectEntriesById(state),
+        column: dashboardSelectors.selectColumnById(state, 'previewColumn'),
+        preview: appSelectors.selectShowPreview(state),
+        previewEntries: dashboardSelectors.getColumnEntries(state, 'previewColumn'),
+        entries: entrySelectors.selectEntriesById(state),
     };
 }
 

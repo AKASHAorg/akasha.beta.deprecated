@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'antd';
 import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
-import { selectShowSecondarySidebar } from '../../local-flux/selectors';
+import { appSelectors } from '../../local-flux/selectors';
 
 const NewEntryTopBar = props => (
   <div className="new-entry-top-bar">
@@ -23,7 +23,7 @@ NewEntryTopBar.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        showSecondarySidebar: selectShowSecondarySidebar(state),
+        showSecondarySidebar: appSelectors.selectShowSecondarySidebar(state),
     };
 }
 

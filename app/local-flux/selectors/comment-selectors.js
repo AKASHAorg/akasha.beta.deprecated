@@ -67,6 +67,8 @@ export const selectMoreComments = (state/*: Object */, props/*: MoreCommentsProp
 export const selectResolvingComment = (state/*: Object */, props/*: ResolvingCommentProps */) =>
     selectCommentsFlags(state).get(['resolvingComments', props.commentId]);
 
+export const selectNewComments = (state/*: Object */) => state.commentsState.get('newComments');
+
 
 
 export const getEntryCommentsByParent = createSelector(
@@ -86,3 +88,5 @@ export const getCommentsFlag = (state/*: Object */, props/*: CommentsFlagProps *
     }
     return selectCommentsFlags(state).getIn([props.flag]);
 }
+
+export const getNewComments = (state/*: Object */) => selectNewComments(state).get('comments');

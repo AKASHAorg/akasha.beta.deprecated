@@ -7,12 +7,10 @@ import * as actionTypes from '../../constants/action-types';
 import { actionDelete, actionPublish, actionAdd } from '../../local-flux/actions/action-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
-import { selectNeedAuthAction, selectProfileFlag, getTokenExpiration } from '../../local-flux/selectors';
+import { actionSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
 import { confirmationMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { Input, RememberPassphrase } from '../';
 import { getDisplayName } from '../../utils/dataModule';
-import { selectLoggedProfile, selectLoginErrors } from '../../local-flux/selectors/profile-selectors';
-import { getPasswordPreference } from '../../local-flux/selectors/settings-selectors';
 
 const FormItem = Form.Item;
 
@@ -229,12 +227,12 @@ ConfirmationDialog.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        action: selectNeedAuthAction(state),
-        loginPending: selectProfileFlag(state, 'loginPending'),
-        loggedProfile: selectLoggedProfile(state),
-        loginErrors: selectLoginErrors(state),
-        passwordPreference: getPasswordPreference(state),
-        tokenExpiration: getTokenExpiration(state),
+        action: actionSelectors.selectNeedAuthAction(state),
+        loginPending: profileSelectors.selectProfileFlag(state, 'loginPending'),
+        loggedProfile: profileSelectors.selectLoggedProfile(state),
+        loginErrors: profileSelectors.selectLoginErrors(state),
+        passwordPreference: settingsSelectors.getPasswordPreference(state),
+        tokenExpiration: profileSelectors.getTokenExpiration(state),
     };
 }
 

@@ -13,9 +13,9 @@ import {
     profileMoreCommentsIterator, profileMoreFollowingsIterator, profileMoreFollowersIterator
 } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchTags } from '../../local-flux/actions/search-actions';
-import { ColumnRecord } from '../../local-flux/reducers/records';
-import { selectColumnById, selectLists, selectTagSearchResults,
-    selectProfileSearchResults, selectPendingEntriesFlags } from '../../local-flux/selectors';
+import { ColumnRecord } from '../../local-flux/reducers/state-models/dashboard-state-model';
+import { dashboardSelectors, entrySelectors, listSelectors, 
+    searchSelectors } from '../../local-flux/selectors';
 import * as dragItemTypes from '../../constants/drag-item-types';
 import ColManager from './col-manager';
 import ColumnHeader from './column-header';
@@ -91,11 +91,11 @@ Column.propTypes = {
 const mapStateToProps = (state, ownProps) => {
     const { columnId } = ownProps;
     return {
-        column: selectColumnById(state, columnId) || new ColumnRecord({ id: columnId}),
-        pendingEntries: selectPendingEntriesFlags(state),
-        lists: selectLists(state),
-        tagSearchResults: selectTagSearchResults(state),
-        profileSearchResults: selectProfileSearchResults(state),
+        column: dashboardSelectors.selectColumnById(state, columnId) || new ColumnRecord({ id: columnId}),
+        pendingEntries: entrySelectors.selectPendingEntriesFlags(state),
+        lists: listSelectors.selectLists(state),
+        tagSearchResults: searchSelectors.selectTagSearchResults(state),
+        profileSearchResults: searchSelectors.selectProfileSearchResults(state),
     };
 };
 

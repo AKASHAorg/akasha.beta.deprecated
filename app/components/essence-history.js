@@ -9,11 +9,9 @@ import { Spin } from 'antd';
 import { Icon } from './';
 import { profileEssenceIterator, profileGetBalance,
     profileResetEssenceEvents } from '../local-flux/actions/profile-actions';
-import { selectBalance } from '../local-flux/selectors';
 import { generalMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
-import { selectEntriesById, getPendingEntries, selectEssenceIterator,
-    selectEssenceEvents, selectProfileFlag } from '../local-flux/selectors';
+import { entrySelectors, profileSelectors } from '../local-flux/selectors';
 
 class EssenceHistory extends Component {
     componentDidMount () {
@@ -145,13 +143,13 @@ EssenceHistory.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: selectBalance(state),
-        entries: selectEntriesById(state),
-        essenceEvents: selectEssenceEvents(state),
-        essenceIterator: selectEssenceIterator(state),
-        loadingLogs: selectProfileFlag(state, 'fetchingEssenceIterator'),
-        loadingMoreLogs: selectProfileFlag(state, 'fetchingMoreEssenceIterator'),
-        pendingEntries: getPendingEntries(state, 'essenceEvents'),
+        balance: profileSelectors.selectBalance(state),
+        entries: entrySelectors.selectEntriesById(state),
+        essenceEvents: profileSelectors.selectEssenceEvents(state),
+        essenceIterator: profileSelectors.selectEssenceIterator(state),
+        loadingLogs: profileSelectors.selectProfileFlag(state, 'fetchingEssenceIterator'),
+        loadingMoreLogs: profileSelectors.selectProfileFlag(state, 'fetchingMoreEssenceIterator'),
+        pendingEntries: entrySelectors.getPendingEntries(state, 'essenceEvents'),
     };
 }
 

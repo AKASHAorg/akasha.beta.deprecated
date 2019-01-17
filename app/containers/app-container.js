@@ -29,8 +29,6 @@ import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, Fauc
     CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 import { dashboardSelectors, actionSelectors, profileSelectors } from '../local-flux/selectors';
-// import { selectNeedAuthAction, selectNeedEth, selectNeedAeth, selectNeedMana,
-//     selectActiveDashboardId, selectFaucet} from '../local-flux/selectors';
 
 notification.config({
     top: 60,

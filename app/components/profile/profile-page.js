@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { dashboardResetProfileColumns } from '../../local-flux/actions/dashboard-actions';
 import { profileGetData, profileResetColumns } from '../../local-flux/actions/profile-actions';
-import { selectProfileByEthAddress } from '../../local-flux/selectors';
+import { profileSelectors } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
 
 class ProfilePage extends Component {
@@ -72,7 +72,7 @@ function mapStateToProps (state, ownProps) {
     const { ethAddress } = ownProps.match.params;
     const prefixed = `0x${ethAddress}`;
     return {
-        profileData: selectProfileByEthAddress(state, prefixed),
+        profileData: profileSelectors.selectProfileByEthAddress(state, prefixed),
     };
 }
 
