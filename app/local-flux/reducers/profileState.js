@@ -2,7 +2,7 @@ import { List, Map, Collection, fromJS } from 'immutable';
 import * as types from '../constants';
 import * as actionTypes from '../../constants/action-types';
 import { createReducer } from './utils';
-import ProfileStateModel, { AethBalance, Balance, ErrorRecord,
+import ProfileStateModel, { AethBalance, Balance,
     EssenceBalance, EssenceEvent, EssenceIterator, LoggedProfile, ManaBalance,
     ProfileExistsRecord, ProfileRecord } from './state-models/profile-state-model';
 import { balanceToNumber } from '../../utils/number-formatter';
@@ -385,11 +385,11 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_LOGIN]: state =>
         state.setIn(['flags', 'loginPending'], true),
 
-    [types.PROFILE_LOGIN_ERROR]: (state, { error }) =>
-        state.merge({
-            flags: state.get('flags').set('loginPending', false),
-            loginErrors: state.get('loginErrors').push(new ErrorRecord(error))
-        }),
+    // [types.PROFILE_LOGIN_ERROR]: (state, { error }) =>
+    //     state.merge({
+    //         flags: state.get('flags').set('loginPending', false),
+    //         loginErrors: state.get('loginErrors').push(new ErrorRecord(error))
+    //     }),
 
     [types.PROFILE_LOGIN_SUCCESS]: (state, { data }) =>
         state.merge({

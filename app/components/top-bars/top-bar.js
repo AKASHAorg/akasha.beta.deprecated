@@ -85,7 +85,7 @@ TopBar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    balance: profileSelectors.selectbalance(state),
+    balance: profileSelectors.selectBalance(state),
     cyclingStates: profileSelectors.selectCyclingStates(state),
     fullEntry: !!entrySelectors.selectFullEntry(state) || !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
     hasPendingActions: !!actionSelectors.selectPublishingActions(state).size,

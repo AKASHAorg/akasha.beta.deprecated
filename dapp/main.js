@@ -42,6 +42,7 @@ const bootstrapApp = function () {
             .then((modules) => {
             appLogger.info('modules inited');
             duplexChannel = startDataStream(modules, 'workerId', getService, appLogger);
+            getService(CORE_MODULE.WEB3_HELPER).setChannel(duplexChannel.ipcChannelMain);
             appLogger.info('api listening');
         });
         registerWeb3Provider(startApp);

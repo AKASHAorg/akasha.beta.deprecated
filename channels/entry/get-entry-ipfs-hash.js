@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const ethereumjs_util_1 = require("ethereumjs-util");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
+import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 const getEntryIpfsHashS = {
     id: '/getEntryIpfsHash',
     type: 'object',
@@ -13,16 +11,16 @@ const getEntryIpfsHashS = {
     },
     required: ['entryId'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, getEntryIpfsHashS, { throwError: true });
         let ipfsHash;
-        const ethAddress = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
-        const [fn, digestSize, hash] = yield getService(constants_1.CORE_MODULE.CONTRACTS)
+        const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const [fn, digestSize, hash] = yield getService(CORE_MODULE.CONTRACTS)
             .instance.Entries.getEntry(ethAddress, data.entryId);
-        if (!!ethereumjs_util_1.unpad(hash)) {
-            ipfsHash = getService(constants_1.COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
+        if (!!unpad(hash)) {
+            ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
         }
         return { ipfsHash };
     });
@@ -30,8 +28,7 @@ function init(sp, getService) {
     const service = function () {
         return getEntryIpfsHash;
     };
-    sp().service(constants_1.ENTRY_MODULE.getEntryIpfsHash, service);
+    sp().service(ENTRY_MODULE.getEntryIpfsHash, service);
     return getEntryIpfsHash;
 }
-exports.default = init;
 //# sourceMappingURL=get-entry-ipfs-hash.js.map

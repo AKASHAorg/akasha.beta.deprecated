@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.getFollowersCountSchema = {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+export const getFollowersCountSchema = {
     id: '/getFollowersCount',
     type: 'object',
     properties: {
@@ -10,13 +8,13 @@ exports.getFollowersCountSchema = {
         akashaId: { type: 'string' },
     },
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.getFollowersCountSchema, { throwError: true });
-        const address = yield (getService(constants_1.COMMON_MODULE.profileHelpers))
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, getFollowersCountSchema, { throwError: true });
+        const address = yield (getService(COMMON_MODULE.profileHelpers))
             .profileAddress(data);
-        const count = yield (getService(constants_1.CORE_MODULE.CONTRACTS)).instance
+        const count = yield (getService(CORE_MODULE.CONTRACTS)).instance
             .Feed.totalFollowers(address);
         return { count: count.toString(10), akashaId: data.akashaId };
     });
@@ -24,8 +22,7 @@ function init(sp, getService) {
     const service = function () {
         return followersCount;
     };
-    sp().service(constants_1.PROFILE_MODULE.followersCount, service);
+    sp().service(PROFILE_MODULE.followersCount, service);
     return followersCount;
 }
-exports.default = init;
 //# sourceMappingURL=followers-count.js.map

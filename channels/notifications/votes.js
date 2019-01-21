@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 const watchVotes = {
     id: '/watchVotes',
     type: 'object',
@@ -12,14 +10,14 @@ const watchVotes = {
     },
 };
 const EVENT_TYPE = 'VOTE_EVENT';
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, watchVotes, { throwError: true });
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
-        const entriesCache = getService(constants_1.NOTIFICATIONS_MODULE.entriesCache);
-        const queue = getService(constants_1.NOTIFICATIONS_MODULE.queue);
-        const ethAddress = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const entriesCache = getService(NOTIFICATIONS_MODULE.entriesCache);
+        const queue = getService(NOTIFICATIONS_MODULE.queue);
+        const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
         if (!entriesCache.getAll().length) {
             const fetchedEntries = yield contracts
                 .fromEvent(contracts.instance.Entries.Publish, { author: ethAddress }, 0, 1000, { lastIndex: 0, reversed: true });
@@ -50,8 +48,7 @@ function init(sp, getService) {
     const service = function () {
         return execute;
     };
-    sp().service(constants_1.NOTIFICATIONS_MODULE.votes, service);
+    sp().service(NOTIFICATIONS_MODULE.votes, service);
     return execute;
 }
-exports.default = init;
 //# sourceMappingURL=votes.js.map

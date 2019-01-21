@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const channels_1 = require("./channels");
-class ModuleEmitter {
+import getChannels, { registerChannel } from './channels';
+export default class ModuleEmitter {
     constructor() {
         this.DEFAULT_MANAGED = [];
         this.logger = console;
@@ -20,7 +18,7 @@ class ModuleEmitter {
                 else {
                     response = this.formatMessage(ev, data);
                 }
-                channels_1.default().client[this.MODULE_NAME][method.name].send(response);
+                getChannels().client[this.MODULE_NAME][method.name].send(response);
             })
                 .then((result) => {
                 response = this.formatMessage(result, data);
@@ -29,7 +27,7 @@ class ModuleEmitter {
                 response = this.formatMessage({ error: { message: err.message } }, data);
             })
                 .finally(() => {
-                channels_1.default().client[this.MODULE_NAME][method.name].send(response);
+                getChannels().client[this.MODULE_NAME][method.name].send(response);
                 response = null;
             });
         };
@@ -47,25 +45,24 @@ class ModuleEmitter {
                 response = this.formatMessage({ error: { message: err.message } }, data);
             })
                 .finally(() => {
-                channels_1.default().client[this.MODULE_NAME][method.name].send(response);
+                getChannels().client[this.MODULE_NAME][method.name].send(response);
                 response = null;
             });
         };
     }
     manager() {
         this.DEFAULT_MANAGED.forEach((action) => {
-            channels_1.default().server[this.MODULE_NAME][action].enable();
+            getChannels().server[this.MODULE_NAME][action].enable();
         });
     }
     initMethods(implListener, implRequest, methods) {
         methods.forEach((method) => {
-            channels_1.registerChannel(implListener, implRequest, this.MODULE_NAME, method.name);
-            channels_1.default()
+            registerChannel(implListener, implRequest, this.MODULE_NAME, method.name);
+            getChannels()
                 .server[this.MODULE_NAME][method.name]
                 .registerListener(method.hasStream ?
                 this.generateStreamListener(method) : this.generateListener(method));
         });
     }
 }
-exports.default = ModuleEmitter;
 //# sourceMappingURL=ModuleEmitter.js.map

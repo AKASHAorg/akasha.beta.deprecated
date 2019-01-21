@@ -72,7 +72,7 @@ Notification.propTypes = {
 function mapStateToProps (state) {
     return {
         notifications: notificationSelectors.selectNotifications(state),
-        displayedNotifications: notificationSelectors.selectDisplayedNotifications(state)
+        // displayedNotifications: notificationSelectors.selectDisplayedNotifications(state)
     };
 }
 

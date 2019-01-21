@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.canCreateSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
+export const canCreateSchema = {
     id: '/canCreate',
     type: 'object',
     properties: {
@@ -10,11 +8,11 @@ exports.canCreateSchema = {
     },
     required: ['ethAddress'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.canCreateSchema, { throwError: true });
-        const can = yield (getService(constants_1.CORE_MODULE.CONTRACTS))
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, canCreateSchema, { throwError: true });
+        const can = yield (getService(CORE_MODULE.CONTRACTS))
             .instance.Tags.canCreate(data.ethAddress);
         return { can };
     });
@@ -22,8 +20,7 @@ function init(sp, getService) {
     const service = function () {
         return canCreate;
     };
-    sp().service(constants_1.TAGS_MODULE.canCreate, service);
+    sp().service(TAGS_MODULE.canCreate, service);
     return canCreate;
 }
-exports.default = init;
 //# sourceMappingURL=can-create.js.map

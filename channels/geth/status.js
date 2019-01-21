@@ -1,10 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        const gethConnector = getService(constants_1.CORE_MODULE.GETH_CONNECTOR);
+        const gethConnector = getService(CORE_MODULE.GETH_CONNECTOR);
         const blockNr = gethConnector.getInstance().serviceStatus.api ?
             yield gethConnector.getInstance().web3.eth.getBlockNumber() : null;
         return { blockNr };
@@ -13,8 +11,7 @@ function init(sp, getService) {
     const service = function () {
         return status;
     };
-    sp().service(constants_1.GETH_MODULE.status, service);
+    sp().service(GETH_MODULE.status, service);
     return status;
 }
-exports.default = init;
 //# sourceMappingURL=status.js.map

@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { IPFS_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
         return {};
     });
@@ -10,8 +8,7 @@ function init(sp, getService) {
     const service = function () {
         return status;
     };
-    sp().service(constants_1.IPFS_MODULE.status, service);
+    sp().service(IPFS_MODULE.status, service);
     return status;
 }
-exports.default = init;
 //# sourceMappingURL=status.js.map

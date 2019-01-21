@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.getTagsCreatedSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
+export const getTagsCreatedSchema = {
     id: '/getTagsCreated',
     type: 'object',
     properties: {
@@ -11,11 +9,11 @@ exports.getTagsCreatedSchema = {
     },
     required: ['fromBlock', 'toBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.getTagsCreatedSchema, { throwError: true });
-        const event = yield (getService(constants_1.CORE_MODULE.CONTRACTS))
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, getTagsCreatedSchema, { throwError: true });
+        const event = yield (getService(CORE_MODULE.CONTRACTS))
             .instance.Tags.TagCreate(data);
         const collection = yield event.get();
         return { collection };
@@ -24,8 +22,7 @@ function init(sp, getService) {
     const service = function () {
         return fetchTags;
     };
-    sp().service(constants_1.TAGS_MODULE.fetchTags, service);
+    sp().service(TAGS_MODULE.fetchTags, service);
     return fetchTags;
 }
-exports.default = init;
 //# sourceMappingURL=fetch-tags.js.map

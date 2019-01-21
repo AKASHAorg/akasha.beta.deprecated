@@ -13,7 +13,8 @@ import { generalMessages } from '../locale-data/messages';
 import { draftCreate, draftsGet } from '../local-flux/actions/draft-actions';
 import { profileEditToggle } from '../local-flux/actions/app-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import { profileSelectors, dashboardSelectors, draftSelectors, settingsSelectors } from '../local-flux/selectors';
+import { profileSelectors, appSelectors, dashboardSelectors, draftSelectors,
+    settingsSelectors } from '../local-flux/selectors';
 import { entryMessages } from '../locale-data/messages/entry-messages';
 
 class Sidebar extends Component {
@@ -348,7 +349,7 @@ function mapStateToProps (state) {
         drafts: draftSelectors.selectDrafts(state),
         draftsFetched: draftSelectors.selectDraftsFetched(state),
         fetchingDrafts: draftSelectors.selectFetchingDrafts(state),
-        isProfileEditToggled: profileSelectors.selectProfileEditToggle(state),
+        isProfileEditToggled: appSelectors.selectProfileEditToggle(state),
         loggedProfile: profileSelectors.selectLoggedProfile(state),
         loggedProfileData: profileSelectors.getLoggedProfileData(state),
         userSelectedLicense: settingsSelectors.getUserDefaultLicence(state )

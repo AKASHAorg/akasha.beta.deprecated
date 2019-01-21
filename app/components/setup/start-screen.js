@@ -32,7 +32,7 @@ StartScreen.propTypes = {
 function mapStateToProps (state) {
     return {
         darkTheme: settingsSelectors.getThemeSettings(state),
-        lightSync: settingsSelectors.getSyncModeSettings(state),
+        lightSync: settingsSelectors.getGethSyncModeSettings(state),
     };
 }
 

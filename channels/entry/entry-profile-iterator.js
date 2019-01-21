@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 const entryProfileIteratorS = {
     id: '/entryProfileIterator',
     type: 'object',
@@ -15,12 +13,12 @@ const entryProfileIteratorS = {
     },
     required: ['toBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, entryProfileIteratorS, { throwError: true });
-        const address = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
-        const entryCount = yield (getService(constants_1.CORE_MODULE.CONTRACTS))
+        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
             .instance.Entries.getEntryCount(address);
         let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
         if (maxResults > entryCount.toNumber()) {
@@ -35,7 +33,7 @@ function init(sp, getService) {
                 maxResults = entryCount - data.totalLoaded;
             }
         }
-        return getService(constants_1.ENTRY_MODULE.helpers).fetchFromPublish(Object.assign({}, data, {
+        return getService(ENTRY_MODULE.helpers).fetchFromPublish(Object.assign({}, data, {
             limit: maxResults,
             args: { author: address },
             reversed: data.reversed || false,
@@ -45,8 +43,7 @@ function init(sp, getService) {
     const service = function () {
         return entryProfileIterator;
     };
-    sp().service(constants_1.ENTRY_MODULE.entryProfileIterator, service);
+    sp().service(ENTRY_MODULE.entryProfileIterator, service);
     return entryProfileIterator;
 }
-exports.default = init;
 //# sourceMappingURL=entry-profile-iterator.js.map

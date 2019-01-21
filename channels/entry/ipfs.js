@@ -1,19 +1,17 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const ramda_1 = require("ramda");
-const safe_buffer_1 = require("safe-buffer");
-const constants_1 = require("@akashaproject/common/constants");
-exports.DRAFT_BLOCKS = 'blocks';
-exports.ATOMIC_TYPE = 'atomic';
-exports.IMAGE_TYPE = 'image';
-exports.MAX_SIZE = 200 * 1000;
-exports.EXCERPT = 'excerpt';
-exports.FEATURED_IMAGE = 'featuredImage';
-exports.CARD_INFO = 'cardInfo';
-exports.DRAFT_PART = 'draft-part';
-exports.PREVIOUS_VERSION = 'previous-version';
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { is, isEmpty, values } from 'ramda';
+import { Buffer } from 'safe-buffer';
+import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+export const DRAFT_BLOCKS = 'blocks';
+export const ATOMIC_TYPE = 'atomic';
+export const IMAGE_TYPE = 'image';
+export const MAX_SIZE = 200 * 1000;
+export const EXCERPT = 'excerpt';
+export const FEATURED_IMAGE = 'featuredImage';
+export const CARD_INFO = 'cardInfo';
+export const DRAFT_PART = 'draft-part';
+export const PREVIOUS_VERSION = 'previous-version';
+export default function init(sp, getService) {
     class IpfsEntry {
         create(content, tags, entryType, previous) {
             const ipfsApiRequests = [];
@@ -24,14 +22,14 @@ function init(sp, getService) {
             this.licence = content.licence;
             this.tags = tags;
             this.wordCount = content.wordCount;
-            if (content.featuredImage && ramda_1.is(Object, content.featuredImage)) {
+            if (content.featuredImage && is(Object, content.featuredImage)) {
                 const req = (Object.keys(content.featuredImage).sort()).map((imSize) => {
                     if (!content.featuredImage[imSize].src) {
                         return Promise.resolve({});
                     }
                     const mediaData = this._normalizeImage(content.featuredImage[imSize].src);
-                    return (getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
-                        .add(content.featuredImage[imSize].src, true, ramda_1.is(String, mediaData))
+                    return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
+                        .add(content.featuredImage[imSize].src, true, is(String, mediaData))
                         .then((obj) => {
                         return {
                             [imSize]: Object.assign({}, content.featuredImage[imSize], { src: obj.hash }),
@@ -43,30 +41,30 @@ function init(sp, getService) {
                     sizes.forEach((record) => {
                         Object.assign(LINK, record);
                     });
-                    return (getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api.add(LINK);
+                    return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api.add(LINK);
                 }).then((obj) => {
-                    this.entryLinks.push(Object.assign({}, obj, { name: exports.FEATURED_IMAGE }));
+                    this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
                 }));
             }
-            if (content.cardInfo && ramda_1.is(Object, content.cardInfo)) {
-                ipfsApiRequests.push(getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+            if (content.cardInfo && is(Object, content.cardInfo)) {
+                ipfsApiRequests.push(getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
                     .add(content.cardInfo)
-                    .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: exports.CARD_INFO }))));
+                    .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: CARD_INFO }))));
             }
-            ipfsApiRequests.push((getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
+            ipfsApiRequests.push((getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
                 .add(content.excerpt)
-                .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: exports.EXCERPT }))));
+                .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
             if (previous && previous.hash) {
-                (getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
+                (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
                     .getStats(previous.hash)
                     .then((stats) => {
-                    this.entryLinks.push({ hash: stats.Hash, size: stats.CumulativeSize, name: exports.PREVIOUS_VERSION });
+                    this.entryLinks.push({ hash: stats.Hash, size: stats.CumulativeSize, name: PREVIOUS_VERSION });
                 });
             }
             return Promise.all(ipfsApiRequests)
                 .then(() => this._uploadMediaDraft())
                 .then((parts) => {
-                return (getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
+                return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
                     .createNode({
                     draftParts: parts,
                     licence: this.licence,
@@ -80,7 +78,7 @@ function init(sp, getService) {
             });
         }
         edit(content, tags, entryType, previousHash) {
-            return (getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
+            return (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().api
                 .get(previousHash)
                 .then((data) => {
                 if (content.hasOwnProperty('version')) {
@@ -94,11 +92,11 @@ function init(sp, getService) {
         }
         _filterForImages() {
             const blockIndex = [];
-            const imageEntities = this.draft[exports.DRAFT_BLOCKS].filter((element, index) => {
-                if (element.type !== exports.ATOMIC_TYPE || ramda_1.isEmpty(element.data.type)) {
+            const imageEntities = this.draft[DRAFT_BLOCKS].filter((element, index) => {
+                if (element.type !== ATOMIC_TYPE || isEmpty(element.data.type)) {
                     return false;
                 }
-                if (element.data.type === exports.IMAGE_TYPE) {
+                if (element.data.type === IMAGE_TYPE) {
                     blockIndex.push(index);
                     return true;
                 }
@@ -107,10 +105,10 @@ function init(sp, getService) {
             return { blockIndex, imageEntities };
         }
         _normalizeImage(data) {
-            if (ramda_1.is(String, data) || safe_buffer_1.Buffer.isBuffer(data)) {
+            if (is(String, data) || Buffer.isBuffer(data)) {
                 return data;
             }
-            return safe_buffer_1.Buffer.from(ramda_1.values(data));
+            return Buffer.from(values(data));
         }
         _uploadMediaDraft() {
             const uploads = [];
@@ -122,11 +120,11 @@ function init(sp, getService) {
                         return;
                     }
                     const mediaData = this._normalizeImage(element.data.files[imSize].src);
-                    uploads.push(getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance().api
-                        .add(mediaData, true, ramda_1.is(String, mediaData))
+                    uploads.push(getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+                        .add(mediaData, true, is(String, mediaData))
                         .then((obj) => {
                         this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
-                        this.draft[exports.DRAFT_BLOCKS][blockIndex[index]]
+                        this.draft[DRAFT_BLOCKS][blockIndex[index]]
                             .data.files[imSize].src = obj.hash;
                     }));
                 });
@@ -135,11 +133,11 @@ function init(sp, getService) {
                 let start;
                 let end;
                 const slices = [];
-                const entryDraft = safe_buffer_1.Buffer.from(JSON.stringify(this.draft));
-                const parts = Math.ceil(entryDraft.length / exports.MAX_SIZE);
+                const entryDraft = Buffer.from(JSON.stringify(this.draft));
+                const parts = Math.ceil(entryDraft.length / MAX_SIZE);
                 for (let q = 0; q <= parts; q++) {
-                    start = q * exports.MAX_SIZE;
-                    end = start + exports.MAX_SIZE;
+                    start = q * MAX_SIZE;
+                    end = start + MAX_SIZE;
                     if (start > entryDraft.length) {
                         break;
                     }
@@ -147,10 +145,10 @@ function init(sp, getService) {
                         end = entryDraft.length;
                     }
                     const sliceDraft = entryDraft.slice(start, end);
-                    slices.push(getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance().api
+                    slices.push(getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api
                         .add(sliceDraft)
                         .then((obj) => {
-                        this.entryLinks.push(Object.assign({}, obj, { name: (exports.DRAFT_PART + q) }));
+                        this.entryLinks.push(Object.assign({}, obj, { name: (DRAFT_PART + q) }));
                     }));
                 }
                 return Promise.all(slices).then(() => parts);
@@ -158,40 +156,40 @@ function init(sp, getService) {
         }
     }
     const getShortContent = Promise.coroutine(function* (hash) {
-        const entries = getService(constants_1.CORE_MODULE.STASH).entries;
+        const entries = getService(CORE_MODULE.STASH).entries;
         if (entries.hasShort(hash)) {
             return Promise.resolve(entries.getShort(hash));
         }
         const response = {
-            [exports.EXCERPT]: '',
-            [exports.FEATURED_IMAGE]: '',
-            [exports.CARD_INFO]: '',
+            [EXCERPT]: '',
+            [FEATURED_IMAGE]: '',
+            [CARD_INFO]: '',
         };
-        const root = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
-        const extraData = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
-            .getInstance().api.findLinks(hash, [exports.EXCERPT, exports.FEATURED_IMAGE, exports.CARD_INFO]);
+        const root = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
+        const extraData = yield getService(CORE_MODULE.IPFS_CONNECTOR)
+            .getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE, CARD_INFO]);
         for (let i = 0; i < extraData.length; i++) {
-            response[extraData[i].name] = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
+            response[extraData[i].name] = yield getService(CORE_MODULE.IPFS_CONNECTOR)
                 .getInstance().api.get(extraData[i].multihash);
         }
-        if ((response[exports.CARD_INFO] && !ramda_1.is(Object, response[exports.CARD_INFO])) ||
-            safe_buffer_1.Buffer.isBuffer(response[exports.CARD_INFO])) {
-            response[exports.CARD_INFO] = '';
+        if ((response[CARD_INFO] && !is(Object, response[CARD_INFO])) ||
+            Buffer.isBuffer(response[CARD_INFO])) {
+            response[CARD_INFO] = '';
         }
-        if ((response[exports.EXCERPT] && !ramda_1.is(String, response[exports.EXCERPT])) ||
-            safe_buffer_1.Buffer.isBuffer(response[exports.EXCERPT])) {
-            response[exports.EXCERPT] = '';
+        if ((response[EXCERPT] && !is(String, response[EXCERPT])) ||
+            Buffer.isBuffer(response[EXCERPT])) {
+            response[EXCERPT] = '';
         }
-        if ((response[exports.FEATURED_IMAGE] && !ramda_1.is(Object, response[exports.FEATURED_IMAGE])) ||
-            safe_buffer_1.Buffer.isBuffer(response[exports.FEATURED_IMAGE])) {
-            response[exports.FEATURED_IMAGE] = '';
+        if ((response[FEATURED_IMAGE] && !is(Object, response[FEATURED_IMAGE])) ||
+            Buffer.isBuffer(response[FEATURED_IMAGE])) {
+            response[FEATURED_IMAGE] = '';
         }
         const data = Object.assign({}, root, response);
         entries.setShort(hash, data);
         return data;
     });
     const findVersion = Promise.coroutine(function* (hash, version) {
-        const root = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
+        const root = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance().api.get(hash);
         if (!root.hasOwnProperty('version')) {
             throw new Error('Cannot find version ' + version);
         }
@@ -204,46 +202,46 @@ function init(sp, getService) {
         }
         const linkPath = [];
         for (let i = 0; i < depth; i++) {
-            linkPath.push(exports.PREVIOUS_VERSION);
+            linkPath.push(PREVIOUS_VERSION);
         }
-        const seek = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
+        const seek = yield getService(CORE_MODULE.IPFS_CONNECTOR)
             .getInstance().api.findLinkPath(hash, linkPath);
         return seek[0].multihash;
     });
     const getFullContent = Promise.coroutine(function* (hash, version) {
-        const indexedVersion = (ramda_1.is(Number, version)) ? `${hash}/v/${version}` : hash;
-        const entries = getService(constants_1.CORE_MODULE.STASH).entries;
+        const indexedVersion = (is(Number, version)) ? `${hash}/v/${version}` : hash;
+        const entries = getService(CORE_MODULE.STASH).entries;
         if (entries.hasFull(indexedVersion)) {
             return Promise.resolve(entries.getFull(indexedVersion));
         }
         let tmp;
         let draft;
         let rootHash = hash;
-        if (ramda_1.is(Number, version)) {
+        if (is(Number, version)) {
             rootHash = yield findVersion(hash, version);
         }
-        const root = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR)
+        const root = yield getService(CORE_MODULE.IPFS_CONNECTOR)
             .getInstance().api.get(rootHash);
         const parts = [];
         const draftParts = [];
         for (let i = 0; i < root.draftParts; i++) {
-            parts.push(exports.DRAFT_PART + i);
+            parts.push(DRAFT_PART + i);
         }
-        const extraData = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance()
+        const extraData = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance()
             .api.findLinks(rootHash, parts);
         for (let y = 0; y < extraData.length; y++) {
-            tmp = yield getService(constants_1.CORE_MODULE.IPFS_CONNECTOR).getInstance()
+            tmp = yield getService(CORE_MODULE.IPFS_CONNECTOR).getInstance()
                 .api.getObject(extraData[y].multihash, true);
             draftParts.push(tmp);
         }
         const draftObj = draftParts.map((el) => {
             let currentData = (el.toJSON()).data;
-            if (!safe_buffer_1.Buffer.isBuffer(currentData)) {
-                currentData = safe_buffer_1.Buffer.from(currentData);
+            if (!Buffer.isBuffer(currentData)) {
+                currentData = Buffer.from(currentData);
             }
             return currentData;
         });
-        const content = (safe_buffer_1.Buffer.concat(draftObj)).toString();
+        const content = (Buffer.concat(draftObj)).toString();
         try {
             draft = JSON.parse(content);
         }
@@ -261,7 +259,6 @@ function init(sp, getService) {
     const service = function () {
         return services;
     };
-    sp().service(constants_1.ENTRY_MODULE.ipfs, service);
+    sp().service(ENTRY_MODULE.ipfs, service);
 }
-exports.default = init;
 //# sourceMappingURL=ipfs.js.map

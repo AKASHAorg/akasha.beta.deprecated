@@ -82,6 +82,11 @@ const ExternalProcessState = Record({
     ipfs: new IpfsRecord()
 });
 
+export const LogRecord = Record({
+    level: null,
+    message: '',
+    timestamp: Date.now(),
+});
 export default class ExternalProcessStateModel extends ExternalProcessState {
     computeGethStatus = (status) => {
         const newStatus = Object.assign({}, status);

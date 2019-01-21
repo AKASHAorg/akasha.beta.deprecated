@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tabs, Tooltip } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { ipfsGetPorts, ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
-    ipfsStopLogger } from '../../local-flux/actions/external-process-actions';
+import { ipfsGetPorts, ipfsSetPorts, ipfsStart, /* ipfsStartLogger, */ ipfsStop,
+    /* ipfsStopLogger */ } from '../../local-flux/actions/external-process-actions';
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 import { Icon, InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
@@ -267,9 +267,9 @@ export default connect(
         ipfsSaveSettings,
         ipfsSetPorts,
         ipfsStart,
-        ipfsStartLogger,
+        /* ipfsStartLogger, */
         ipfsStop,
-        ipfsStopLogger,
+        /* ipfsStopLogger, */
         toggleIpfsDetailsModal
     }
 )(injectIntl(IpfsDetailsModal));

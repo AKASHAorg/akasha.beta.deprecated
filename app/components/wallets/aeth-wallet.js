@@ -7,7 +7,7 @@ import { CyclingAeth, HistoryTable, Icon, PieChart, TransferForm, TransformForm 
 import * as actionTypes from '../../constants/action-types';
 import { showNotification, toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
-import { profileAethTransfersIterator, profileCyclingStates,
+import { /* profileAethTransfersIterator, */ profileCyclingStates,
     profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
@@ -335,7 +335,7 @@ export default connect(
         actionAdd,
         actionClearHistory,
         actionGetHistory,
-        profileAethTransfersIterator,
+        /* profileAethTransfersIterator, */
         profileCyclingStates,
         profileGetBalance,
         searchProfiles,

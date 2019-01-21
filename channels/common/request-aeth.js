@@ -1,14 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const superagent_1 = require("superagent");
-const constants_1 = require("./constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { post as POST } from 'superagent';
+import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS } from './constants';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const FAUCET_URL = (getService(constants_1.CORE_MODULE.SETTINGS)).get(constants_1.GENERAL_SETTINGS.FAUCET_URL);
-        const FAUCET_TOKEN = (getService(constants_1.CORE_MODULE.SETTINGS)).get(constants_1.GENERAL_SETTINGS.FAUCET_TOKEN);
+        const FAUCET_URL = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.FAUCET_URL);
+        const FAUCET_TOKEN = (getService(CORE_MODULE.SETTINGS)).get(GENERAL_SETTINGS.FAUCET_TOKEN);
         const response = yield Promise.fromCallback(function (cb1) {
-            return superagent_1.post(FAUCET_URL)
+            return POST(FAUCET_URL)
                 .set('Content-Type', 'application/json')
                 .send({ address: data.address, token: FAUCET_TOKEN })
                 .end(cb1);
@@ -21,7 +19,7 @@ function init(sp, getService) {
         if (!response.tx) {
             throw new Error('The request could not be completed.');
         }
-        getService(constants_1.CORE_MODULE.CONTRACTS).watchTx(response.tx)
+        getService(CORE_MODULE.CONTRACTS).watchTx(response.tx)
             .then(success => cb('', success)).catch(err => cb(err));
         return response;
     });
@@ -29,8 +27,7 @@ function init(sp, getService) {
     const service = function () {
         return requestEther;
     };
-    sp().service(constants_1.COMMON_MODULE.requestEther, service);
+    sp().service(COMMON_MODULE.requestEther, service);
     return requestEther;
 }
-exports.default = init;
 //# sourceMappingURL=request-aeth.js.map

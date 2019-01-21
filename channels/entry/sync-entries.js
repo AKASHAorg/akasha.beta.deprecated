@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const ethereumjs_util_1 = require("ethereumjs-util");
-const constants_1 = require("@akashaproject/common/constants");
-exports.syncEntriesS = {
+import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
+import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+export const syncEntriesS = {
     id: '/syncEntries',
     type: 'object',
     properties: {
@@ -19,13 +17,13 @@ exports.syncEntriesS = {
     },
     required: ['fromBlock', 'following'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const filterFromPublish = Promise.coroutine(function* (data) {
         const following = Array.from(data.following);
         const additionalFilter = (event) => {
             return following.indexOf(event.args.author) !== -1;
         };
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         const fetched = yield contracts.fromEventFilter(contracts.instance.Entries.Publish, {}, data.fromBlock, 10000, { lastIndex: 0, reversed: true }, additionalFilter);
         const entries = fetched.results.map((event) => {
             return { author: event.args.author, entryId: event.args.entryId };
@@ -35,13 +33,13 @@ function init(sp, getService) {
         return { entries, lastBlock: fetched.fromBlock };
     });
     const indexDbEntry = Promise.coroutine(function* (data) {
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
-        const dbs = getService(constants_1.CORE_MODULE.DB_INDEX);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const dbs = getService(CORE_MODULE.DB_INDEX);
         const [fn, digestSize, hash] = yield contracts.instance
             .Entries.getEntry(data.author, data.entryId);
-        if (!!ethereumjs_util_1.unpad(hash)) {
-            const ipfsHash = (getService(constants_1.COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
-            const entry = yield (getService(constants_1.ENTRY_MODULE.ipfs))
+        if (!!unpad(hash)) {
+            const ipfsHash = (getService(COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
+            const entry = yield (getService(ENTRY_MODULE.ipfs))
                 .getShortContent(ipfsHash).timeout(40000);
             dbs.entry.searchIndex.concurrentAdd({}, [{
                     id: data.entryId,
@@ -59,8 +57,8 @@ function init(sp, getService) {
     });
     const execute = Promise
         .coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.syncEntriesS, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, syncEntriesS, { throwError: true });
         if (!data.following || !data.following.length) {
             return {};
         }
@@ -84,14 +82,13 @@ function init(sp, getService) {
     const serviceIndexDbEntry = function () {
         return indexDbEntry;
     };
-    sp().service(constants_1.ENTRY_MODULE.filterFromPublish, serviceFilterFromPublish);
-    sp().service(constants_1.ENTRY_MODULE.indexDbEntry, serviceIndexDbEntry);
+    sp().service(ENTRY_MODULE.filterFromPublish, serviceFilterFromPublish);
+    sp().service(ENTRY_MODULE.indexDbEntry, serviceIndexDbEntry);
     const syncEntries = { execute, name: 'syncEntries', hasStream: true };
     const serviceSyncEntries = function () {
         return syncEntries;
     };
-    sp().service(constants_1.ENTRY_MODULE.syncEntries, serviceSyncEntries);
+    sp().service(ENTRY_MODULE.syncEntries, serviceSyncEntries);
     return syncEntries;
 }
-exports.default = init;
 //# sourceMappingURL=sync-entries.js.map

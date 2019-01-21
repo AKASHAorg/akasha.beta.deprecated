@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.bondAethSchema = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+export const bondAethSchema = {
     id: '/bondAeth',
     type: 'object',
     properties: {
@@ -11,15 +9,15 @@ exports.bondAethSchema = {
     },
     required: ['amount', 'token'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.bondAethSchema, { throwError: true });
-        const bnAmount = (getService(constants_1.CORE_MODULE.WEB3_API))
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, bondAethSchema, { throwError: true });
+        const bnAmount = (getService(CORE_MODULE.WEB3_API))
             .instance.toWei(data.amount, 'ether');
-        const txData = (getService(constants_1.CORE_MODULE.CONTRACTS))
+        const txData = (getService(CORE_MODULE.CONTRACTS))
             .instance.AETH.bondAeth.request(bnAmount, { gas: 100000 });
-        const receipt = yield (getService(constants_1.CORE_MODULE.CONTRACTS))
+        const receipt = yield (getService(CORE_MODULE.CONTRACTS))
             .send(txData, data.token, cb);
         return { receipt };
     });
@@ -27,8 +25,7 @@ function init(sp, getService) {
     const service = function () {
         return bondAeth;
     };
-    sp().service(constants_1.PROFILE_MODULE.bondAeth, service);
+    sp().service(PROFILE_MODULE.bondAeth, service);
     return bondAeth;
 }
-exports.default = init;
 //# sourceMappingURL=bond-aeth.js.map

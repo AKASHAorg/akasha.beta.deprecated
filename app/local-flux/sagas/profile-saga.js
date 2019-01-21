@@ -1,7 +1,7 @@
 // @flow
 import { apply, call, put, fork, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import { COMMON_MODULE, PROFILE_MODULE, AUTH_MODULE,
-    REGISTRY_MODULE, UTILS_MODULE } from '@akashaproject/common/constants';
+    REGISTRY_MODULE, /* UTILS_MODULE */ } from '@akashaproject/common/constants';
 // import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 // import * as commentsActions from '../actions/comments-actions';
@@ -83,7 +83,7 @@ function* profileCommentsIterator ({ column })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
         PROFILE_MODULE, PROFILE_MODULE.commentsIterator,
-        { 
+        {
             columnId: id,
             limit: COMMENTS_ITERATOR_LIMIT,
             akashaId,
@@ -140,7 +140,7 @@ function* profileDeleteLogged ()/* : Saga<void> */ {
 
 function* profileExists ({ akashaId })/* : Saga<void> */ {
     if (akashaId.length === 1) {
-        yield put(actions.profileExistsSuccess({ akashaId, exists: false, idValid: false }));
+        // yield put(actions.profileExistsSuccess({ akashaId, exists: false, idValid: false }));
     } else {
         yield call(
             [ChReqService, ChReqService.sendRequest],
@@ -302,12 +302,12 @@ export function* profileGetLogged ()/* : Saga<void> */ {
 export function* profileGetPublishingCost ()/* : Saga<void> */ {
     try {
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
-        yield call(
-            [ChReqService, ChReqService.sendRequest],
-            UTILS_MODULE, UTILS_MODULE.manaCosts, {
-                ethAddress: loggedProfile.get('ethAddress')
-            }
-        );
+        // yield call(
+        //     [ChReqService, ChReqService.sendRequest],
+        //     UTILS_MODULE, UTILS_MODULE.manaCosts, {
+        //         ethAddress: loggedProfile.get('ethAddress')
+        //     }
+        // );
     } catch (ex) {
         yield call(actions.profileGetPublishingCostError(ex));
     }
@@ -404,7 +404,7 @@ function* profileMoreFollowingsIterator ({ column })/* : Saga<void> */ {
         [ChReqService, ChReqService.sendRequest],
         PROFILE_MODULE, PROFILE_MODULE.followingIterator,
         {
-            columnId: column.id,        
+            columnId: column.id,
             ethAddress: column.value,
             limit: FOLLOWINGS_ITERATOR_LIMIT,
             lastBlock: column.lastBlock,
@@ -664,7 +664,7 @@ export function* watchProfileActions ()/* : Saga<void> */ { // eslint-disable-li
     yield takeEvery(PROFILE_MODULE.transfersIterator, profileAethTransfersIterator);
     yield takeEvery(PROFILE_MODULE.bondAeth, profileBondAeth);
     // yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
-    yield takeLatest(PROFILE_MODULE.commentsIterator, profileCommentsIterator);    
+    yield takeLatest(PROFILE_MODULE.commentsIterator, profileCommentsIterator);
     yield takeLatest(AUTH_MODULE.generateEthKey, profileCreateEthAddress);
     yield takeEvery(PROFILE_MODULE.cycleAeth, profileCycleAeth);
     // yield takeEvery(types.PROFILE_CYCLE_AETH_SUCCESS, profileCycleAethSuccess);
@@ -692,7 +692,7 @@ export function* watchProfileActions ()/* : Saga<void> */ { // eslint-disable-li
     yield takeLatest(COMMON_MODULE.login, profileLogin);
     yield takeLatest(COMMON_MODULE.logout, profileLogout);
     yield takeEvery(PROFILE_MODULE.manaBurned, profileManaBurned);
-    yield takeEvery(PROFILE_MODULE.commentsIterator, profileMoreCommentsIterator);    
+    yield takeEvery(PROFILE_MODULE.commentsIterator, profileMoreCommentsIterator);
     yield takeEvery(PROFILE_MODULE.followersIterator, profileMoreFollowersIterator);
     yield takeEvery(PROFILE_MODULE.followingIterator, profileMoreFollowingsIterator);
     yield takeEvery(PROFILE_MODULE.resolveProfileIpfsHash, profileResolveIpfsHash);

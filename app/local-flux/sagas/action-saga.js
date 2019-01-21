@@ -61,29 +61,29 @@ const publishActions = {
  * These ACs should receive one parameter: the action's payload object
  */
 const publishSuccessActions = {
-    [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
+    // [actionTypes.bondAeth]: profileActions.profileBondAethSuccess,
     // [actionTypes.claim]: entryActions.entryClaimSuccess,
     // [actionTypes.claimVote]: entryActions.entryClaimVoteSuccess,
     // [actionTypes.comment]: commentsActions.commentsPublishSuccess,
     // [actionTypes.commentDownvote]: commentsActions.commentsDownvoteSuccess,
     // [actionTypes.commentUpvote]: commentsActions.commentsUpvoteSuccess,
-    [actionTypes.cycleAeth]: profileActions.profileCycleAethSuccess,
-    [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
+    // [actionTypes.cycleAeth]: profileActions.profileCycleAethSuccess,
+    // [actionTypes.tagCreate]: tagActions.tagCreateSuccess,
     [actionTypes.draftPublish]: draftActions.draftPublishSuccess,
     [actionTypes.draftPublishUpdate]: draftActions.draftPublishUpdateSuccess,
     // [actionTypes.entryDownvote]: entryActions.entryDownvoteSuccess,
     // [actionTypes.entryUpvote]: entryActions.entryUpvoteSuccess,
     [actionTypes.faucet]: profileActions.profileFaucetSuccess,
-    [actionTypes.follow]: profileActions.profileFollowSuccess,
-    [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,
-    [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
-    [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
-    [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
+    // [actionTypes.follow]: profileActions.profileFollowSuccess,
+    // [actionTypes.freeAeth]: profileActions.profileFreeAethSuccess,
+    // [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
+    // [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
+    // [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
     [actionTypes.toggleDonations]: profileActions.profileToggleDonationsSuccess,
-    [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
-    [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
-    [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
-    [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
+    // [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
+    // [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
+    // [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
+    // [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
 function balanceRequired (actionType)/* : boolean */ {
@@ -117,7 +117,7 @@ function hasEnoughBalance (actionType, balance, publishingCost, payload) {
         commentPublishingCost,
         costByWeight
     });
-    
+
     const ethCost = actionType === actionTypes.batch && payload && payload.actions ?
         0.005 * payload.actions.length :
         0.01;
@@ -336,14 +336,14 @@ function* actionUpdateClaimVote ({ data })/* : Saga<void> */ {
 }
 
 export function* watchActionActions ()/* : Saga<void> */ {
-    yield takeEvery(types.ACTION_ADD, actionAdd); 
-    yield takeEvery(types.ACTION_DELETE, actionDelete); 
-    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory); 
-    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory); 
-    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending); 
-    yield takeEvery(types.ACTION_PUBLISH, actionPublish); 
-    yield takeEvery(types.ACTION_PUBLISHED, actionPublished); 
-    yield takeEvery(types.ACTION_UPDATE, actionUpdate); 
-    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim); 
+    yield takeEvery(types.ACTION_ADD, actionAdd);
+    yield takeEvery(types.ACTION_DELETE, actionDelete);
+    yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory);
+    yield takeEvery(types.ACTION_GET_HISTORY, actionGetHistory);
+    yield takeEvery(types.ACTION_GET_PENDING, actionGetPending);
+    yield takeEvery(types.ACTION_PUBLISH, actionPublish);
+    yield takeEvery(types.ACTION_PUBLISHED, actionPublished);
+    yield takeEvery(types.ACTION_UPDATE, actionUpdate);
+    yield takeEvery(types.ACTION_UPDATE_CLAIM, actionUpdateClaim);
     yield takeEvery(types.ACTION_UPDATE_CLAIM_VOTE, actionUpdateClaimVote);
 }

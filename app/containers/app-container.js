@@ -221,7 +221,7 @@ class AppContainer extends Component {
                       </div>
                     </DataLoader>
                   }
-                  <Sidebar />
+                  {/* <Sidebar /> */}
                   <Route path="/setup" component={SetupPages} />
                   <FullSizeImageViewer />
                   <ErrorNotification />

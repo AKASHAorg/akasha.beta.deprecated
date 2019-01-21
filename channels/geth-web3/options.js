@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { GETH_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
         return {};
     });
@@ -10,8 +8,7 @@ function init(sp, getService) {
     const service = function () {
         return options;
     };
-    sp().service(constants_1.GETH_MODULE.options, service);
+    sp().service(GETH_MODULE.options, service);
     return options;
 }
-exports.default = init;
 //# sourceMappingURL=options.js.map

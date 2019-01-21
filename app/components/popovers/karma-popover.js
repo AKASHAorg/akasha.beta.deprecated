@@ -10,7 +10,6 @@ import { Avatar, Icon } from '../';
 import { getDisplayName } from '../../utils/dataModule';
 import { profileKarmaRanking, profileKarmaRankingLoadMore,
     profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
-import { getLoggedProfileData } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { profileSelectors } from '../../local-flux/selectors';
@@ -302,6 +301,7 @@ class KarmaPopover extends Component {
 
     render () {
         const { loggedProfileData, intl } = this.props;
+        debugger;
         const karmaScore = balanceToNumber(loggedProfileData.get('karma'));
         const karmaLevel = Math.floor(karmaScore / 1000);
         const nextLevel = (karmaLevel + 1) * 1000;

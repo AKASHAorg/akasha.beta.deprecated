@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const ramda_1 = require("ramda");
-exports.followersIteratorSchema = {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { uniq } from 'ramda';
+export const followersIteratorSchema = {
     id: '/followersIterator',
     type: 'object',
     properties: {
@@ -15,17 +13,17 @@ exports.followersIteratorSchema = {
         lastIndex: { type: 'number' },
     },
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.followersIteratorSchema, { throwError: true });
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, followersIteratorSchema, { throwError: true });
         let lastFetchedBlock;
         let remainingResults;
         let fromIndex;
         const collection = [];
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
-        const address = yield (getService(constants_1.COMMON_MODULE.profileHelpers)).profileAddress(data);
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
+        const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
         const lastBlock = yield web3Api.instance.eth.getBlockNumber();
         const toBlock = (!data.lastBlock) ? lastBlock : data.lastBlock;
         const totalFollowers = yield contracts.instance.Feed.totalFollowers(address);
@@ -68,7 +66,7 @@ function init(sp, getService) {
             fromIndex = fetched.lastIndex;
         }
         return {
-            collection: ramda_1.uniq(collection),
+            collection: uniq(collection),
             lastBlock: lastFetchedBlock,
             lastIndex: fromIndex,
             akashaId: data.akashaId,
@@ -79,8 +77,7 @@ function init(sp, getService) {
     const service = function () {
         return followersIterator;
     };
-    sp().service(constants_1.PROFILE_MODULE.followersIterator, service);
+    sp().service(PROFILE_MODULE.followersIterator, service);
     return followersIterator;
 }
-exports.default = init;
 //# sourceMappingURL=followers-iterator.js.map

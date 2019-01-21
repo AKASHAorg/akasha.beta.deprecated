@@ -96,8 +96,8 @@ class ServiceStatusBar extends Component {
 
     render () {
         const { generalSettings, intl, toggleGethDetails, toggleIpfsDetails, withCircles } = this.props;
-        const gethState = this.getGethState();
-        const ipfsState = this.getIpfsState();
+        const gethState = serviceState.stopped; //this.getGethState();
+        const ipfsState = serviceState.stopped; //this.getIpfsState();
         const gethColor = this.getCircleColor(gethState);
         const ipfsColor = this.getCircleColor(ipfsState);
         const gethIcon = withCircles ? `geth${gethColor}` : 'geth';
@@ -169,10 +169,10 @@ ServiceStatusBar.propTypes = {
 function mapStateToProps (state) {
     return {
         generalSettings: settingsSelectors.selectGeneralSettings(state),
-        gethStarting: settingsSelectors.getGethStarting(state),
-        gethStatus: settingsSelectors.selectGethStatus(state),
-        ipfsStarting: settingsSelectors.getIpfsStarting(state),
-        ipfsStatus: settingsSelectors.selectIpfsStatus(state),
+        gethStarting: true, //settingsSelectors.getGethStarting(state),
+        gethStatus: false, //settingsSelectors.selectGethStatus(state),
+        ipfsStarting: true, //settingsSelectors.getIpfsStarting(state),
+        ipfsStatus: false, //settingsSelectors.selectIpfsStatus(state),
     };
 }
 

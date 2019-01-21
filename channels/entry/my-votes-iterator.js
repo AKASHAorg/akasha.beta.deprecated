@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const ramda_1 = require("ramda");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { descend, head, last, prop, sortWith, take } from 'ramda';
+import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 const myVotesIteratorS = {
     id: '/myVotesIterator',
     type: 'object',
@@ -16,11 +14,11 @@ const myVotesIteratorS = {
     },
     required: ['toBlock'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         v.validate(data, myVotesIteratorS, { throwError: true });
         const etherBase = (data.ethAddress) ? data.ethAddress : web3Api.instance.eth.defaultAccount;
         const collection = [];
@@ -69,9 +67,9 @@ function init(sp, getService) {
                 isVote: false,
             });
         }
-        const sortedResults = ramda_1.take(data.limit || 5, ramda_1.sortWith([ramda_1.descend(ramda_1.prop('blockNumber')),
-            ramda_1.descend(ramda_1.prop('logIndex'))], collection));
-        const lastLog = data.reversed ? ramda_1.head(sortedResults) : ramda_1.last(sortedResults);
+        const sortedResults = take(data.limit || 5, sortWith([descend(prop('blockNumber')),
+            descend(prop('logIndex'))], collection));
+        const lastLog = data.reversed ? head(sortedResults) : last(sortedResults);
         const [lastIndex, lastBlock] = lastLog ? [lastLog.logIndex, lastLog.blockNumber] : [0, 0];
         return { lastBlock, lastIndex, collection: sortedResults };
     });
@@ -79,8 +77,7 @@ function init(sp, getService) {
     const service = function () {
         return myVotesIterator;
     };
-    sp().service(constants_1.ENTRY_MODULE.myVotesIterator, service);
+    sp().service(ENTRY_MODULE.myVotesIterator, service);
     return myVotesIterator;
 }
-exports.default = init;
 //# sourceMappingURL=my-votes-iterator.js.map

@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-const profile_data_1 = require("./profile-data");
-exports.getProfileList = {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+import { getProfileDataSchema } from './profile-data';
+export const getProfileList = {
     id: '/getProfileList',
     type: 'array',
     items: {
@@ -12,12 +10,12 @@ exports.getProfileList = {
     uniqueItems: true,
     minItems: 1,
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.addSchema(profile_data_1.getProfileDataSchema, '/getProfileData');
-        v.validate(data, exports.getProfileList, { throwError: true });
-        const profileData = getService(constants_1.PROFILE_MODULE.profileData);
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.addSchema(getProfileDataSchema, '/getProfileData');
+        v.validate(data, getProfileList, { throwError: true });
+        const profileData = getService(PROFILE_MODULE.profileData);
         const pool = data.map((profile) => {
             return profileData.execute(profile, cb).then(profileData => cb(null, profileData));
         });
@@ -28,8 +26,7 @@ function init(sp, getService) {
     const service = function () {
         return getProfileLists;
     };
-    sp().service(constants_1.PROFILE_MODULE.getProfileList, service);
+    sp().service(PROFILE_MODULE.getProfileList, service);
     return getProfileLists;
 }
-exports.default = init;
 //# sourceMappingURL=get-profile-list.js.map

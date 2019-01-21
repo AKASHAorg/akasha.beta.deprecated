@@ -9,7 +9,10 @@ export default {
         // [methodName]: [requestId, requestId...]
     },
     sendRequest (module/* : Object */, methodName/* : string */, data/* : Object */) {
-        const reqId/* : string */ = data.reqId;
+        let reqId/* : string */ = data.reqId;
+        if (!reqId) {
+            reqId = this.generateId();
+        }
         const channel = this.getIPCChannel();
         const reqObject = buildCall(module, methodName, { reqId, ...data });
 
@@ -35,14 +38,13 @@ export default {
         this.IPC = channel;
     },
     getIPCChannel () {
-        return global.IPC
+        return this.IPC
     },
     addResponseListener (): void {
         this.getIPCChannel().on((evEmitter: Event/** don't care */, response: Object) => {
-            const { data, args, error } = response;
+            const { data, args } = response;
             const { method, module, payload } = args;
             const { reqId } = payload;
- 
             if(reqId) {
                 if(data && !data.hasStream) {
                     // remove requestId and process data

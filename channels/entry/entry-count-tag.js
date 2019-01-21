@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
+import * as Promise from 'bluebird';
+import { CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
 const getTagEntriesCountS = {
     id: '/getTagEntriesCount',
     type: 'array',
@@ -11,11 +9,11 @@ const getTagEntriesCountS = {
     uniqueItems: true,
     minItems: 1,
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
         v.validate(data, getTagEntriesCountS, { throwError: true });
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         const requests = data.map((tag) => {
             return contracts.instance.Tags
                 .totalEntries(tag)
@@ -30,8 +28,7 @@ function init(sp, getService) {
     const service = function () {
         return getTagEntriesCount;
     };
-    sp().service(constants_1.ENTRY_MODULE.getTagEntriesCount, service);
+    sp().service(ENTRY_MODULE.getTagEntriesCount, service);
     return getTagEntriesCount;
 }
-exports.default = init;
 //# sourceMappingURL=entry-count-tag.js.map

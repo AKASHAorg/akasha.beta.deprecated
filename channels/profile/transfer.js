@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-exports.transfer = {
+import * as Promise from 'bluebird';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
+export const transfer = {
     id: '/transfer',
     type: 'object',
     properties: {
@@ -14,16 +12,16 @@ exports.transfer = {
     },
     required: ['token'],
 };
-function init(sp, getService) {
+export default function init(sp, getService) {
     const execute = Promise.coroutine(function* (data, cb) {
-        const v = new (getService(constants_1.CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-        v.validate(data, exports.transfer, { throwError: true });
-        const web3Api = getService(constants_1.CORE_MODULE.WEB3_API);
-        const contracts = getService(constants_1.CORE_MODULE.CONTRACTS);
+        const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+        v.validate(data, transfer, { throwError: true });
+        const web3Api = getService(CORE_MODULE.WEB3_API);
+        const contracts = getService(CORE_MODULE.CONTRACTS);
         if (data.tokenAmount && data.value) {
             throw new Error('Can only send eth or aeth token individually, not combined');
         }
-        const address = yield (getService(constants_1.COMMON_MODULE.profileHelpers))
+        const address = yield (getService(COMMON_MODULE.profileHelpers))
             .profileAddress(data);
         const tokenAmount = web3Api.instance.toWei(data.tokenAmount || 0, 'ether');
         const ethAmount = web3Api.instance.toWei(data.value || 0, 'ether');
@@ -47,8 +45,7 @@ function init(sp, getService) {
     const service = function () {
         return transferService;
     };
-    sp().service(constants_1.PROFILE_MODULE.transfer, service);
+    sp().service(PROFILE_MODULE.transfer, service);
     return transferService;
 }
-exports.default = init;
 //# sourceMappingURL=transfer.js.map

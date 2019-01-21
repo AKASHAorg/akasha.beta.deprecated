@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
-const constants_1 = require("@akashaproject/common/constants");
-function init(sp, getService) {
+import * as Promise from 'bluebird';
+import { CORE_MODULE, buildCall, TX_MODULE } from '@akashaproject/common/constants';
+export default function init(sp, getService) {
     class Web3Helper {
         constructor() {
             this.txQueue = new Map();
@@ -11,12 +9,12 @@ function init(sp, getService) {
         }
         setChannel(channel) {
             this.channel = channel;
-            this.args = constants_1.buildCall(constants_1.TX_MODULE, constants_1.TX_MODULE.emitMined, {});
+            this.args = buildCall(TX_MODULE, TX_MODULE.emitMined, {});
         }
         inSync() {
             const rules = [
-                getService(constants_1.CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
-                getService(constants_1.CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
+                getService(CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
+                getService(CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
             ];
             return Promise.all(rules).then((data) => {
                 const timeStamp = Math.floor(new Date().getTime() / 1000);
@@ -24,7 +22,7 @@ function init(sp, getService) {
                     return [data[1], data[0]];
                 }
                 if (!data[0] && data[1] > 0) {
-                    return (getService(constants_1.CORE_MODULE.WEB3_API)).instance
+                    return (getService(CORE_MODULE.WEB3_API)).instance
                         .eth
                         .getBlock('latest')
                         .then((latestBlock) => {
@@ -55,13 +53,13 @@ function init(sp, getService) {
             if (this.watcher) {
                 return Promise.resolve(this.watching);
             }
-            this.watcher = getService(constants_1.CORE_MODULE.WEB3_API).instance.eth.filter('latest');
+            this.watcher = getService(CORE_MODULE.WEB3_API).instance.eth.filter('latest');
             this.watcher.watch((err, block) => {
                 if (err) {
                     return;
                 }
                 for (const hash of this.getCurrentTxQueue()) {
-                    currentQueue.push(getService(constants_1.CORE_MODULE.WEB3_API).instance
+                    currentQueue.push(getService(CORE_MODULE.WEB3_API).instance
                         .eth.getTransactionReceipt(hash));
                 }
                 Promise.all(currentQueue).then((receipt) => {
@@ -88,7 +86,7 @@ function init(sp, getService) {
             return Promise.resolve(this.watching);
         }
         hasKey(address) {
-            return getService(constants_1.CORE_MODULE.WEB3_API).instance
+            return getService(CORE_MODULE.WEB3_API).instance
                 .eth
                 .getAccounts()
                 .then((list) => {
@@ -116,7 +114,6 @@ function init(sp, getService) {
     const service = function () {
         return web3Helper;
     };
-    sp().service(constants_1.CORE_MODULE.WEB3_HELPER, service);
+    sp().service(CORE_MODULE.WEB3_HELPER, service);
 }
-exports.default = init;
 //# sourceMappingURL=web3-helper.js.map

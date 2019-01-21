@@ -12,15 +12,15 @@ import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
  */
 let gethSyncInterval = null;
 
-function* gethResetBusyState ()/* :Saga<void> */ {
-    yield call([reduxSaga, reduxSaga.delay], 2000);
-    yield put(actions.gethResetBusy());
-}
+// function* gethResetBusyState ()/* :Saga<void> */ {
+//     yield call([reduxSaga, reduxSaga.delay], 2000);
+//     yield put(actions.gethResetBusy());
+// }
 
-function* ipfsResetBusyState ()/* :Saga<void> */ {
-    yield call([reduxSaga, reduxSaga.delay], 2000);
-    yield put(actions.ipfsResetBusy());
-}
+// function* ipfsResetBusyState ()/* :Saga<void> */ {
+//     yield call([reduxSaga, reduxSaga.delay], 2000);
+//     yield put(actions.ipfsResetBusy());
+// }
 
 function* gethStartLogger ()/* :Saga<void> */ {
     while (true) {

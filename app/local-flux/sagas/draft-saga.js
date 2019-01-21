@@ -3,7 +3,7 @@ import { call, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/e
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
-import { DraftStateModel } from '../reducers/state-models/draft-state-model';
+import DraftStateModel from '../reducers/state-models/draft-state-model';
 import { profileSelectors, draftSelectors } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
 import { getWordCount, extractExcerpt } from '../../utils/dataModule';
@@ -23,7 +23,7 @@ const { EditorState, SelectionState } = DraftJS;
  * Draft saga
  */
 
-/*:: 
+/*::
     import type { Saga } from 'redux-saga';
  */
 
