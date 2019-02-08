@@ -14,6 +14,7 @@ import licenseState from './licenseState';
 import listState from './listState';
 import notificationsState from './notificationsState';
 import profileState from './profileState';
+import requestState from './requestState';
 import searchState from './searchState';
 import settingsState from './settingsState';
 import tagState from './tagState';
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
     listState,
     notificationsState,
     profileState,
+    requestState,
     searchState,
     settingsState,
     tagState,

@@ -9,7 +9,7 @@ import Redirect from 'react-router-dom/Redirect';
 import Route from 'react-router-dom/Route';
 import Switch from 'react-router-dom/Switch';
 import { hot } from 'react-hot-loader'
-import { bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
+import { bootstrapApp, bootstrapHome, hideTerms, toggleAethWallet, toggleEthWallet,
     toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
     navCounterIncrement, showNotification } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
@@ -29,7 +29,7 @@ import { AppErrorBoundary, AppPreferences, CommentPage, ConfirmationDialog, Fauc
     CustomDragLayer } from '../components';
 import { isInternalLink, removePrefix } from '../utils/url-utils';
 import { dashboardSelectors, actionSelectors, profileSelectors } from '../local-flux/selectors';
-
+import withRequest from '../components/high-order-components/with-request';
 notification.config({
     top: 60,
     duration: 0
@@ -52,8 +52,13 @@ class AppContainer extends Component {
     previousLocation = this.props.location;
 
     componentDidMount () {
-        const { history } = this.props;
-        this._bootstrapApp(this.props);
+        const { history, getActionStatus, dispatchAction } = this.props;
+
+        dispatchAction(bootstrapApp());
+        dispatchAction(bootstrapHome(), () => (getActionStatus(bootstrapApp().type) === 'success'));
+        dispatchAction(entryVoteCost(), () => (getActionStatus(bootstrapApp().type) === 'success'));
+        dispatchAction(licenseGetAll(), () => (getActionStatus(bootstrapApp().type) === 'success'));
+
         // keep track of location so we can block navigation when it would logout
         // on app refresh counters get reset
         // we also reset the back navigation counter whenever user logs out in auth.js
@@ -72,7 +77,7 @@ class AppContainer extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { errorState, intl } = nextProps;
-        this._bootstrapApp(nextProps);
+
         if (errorState.get('fatalErrors').size) {
             const error = errorState.getIn(['byId', errorState.get('fatalErrors').first()]);
             const content = error.get('messageId') ?
@@ -94,35 +99,6 @@ class AppContainer extends Component {
             (!location.state || !location.state.overlay)
         ) {
             this.previousLocation = this.props.location;
-        }
-    }
-
-    // all bootstrapping logic should be here
-    // avoid spreading it over multiple components/containers
-    _bootstrapApp = (props) => {
-        const { location, appState } = props;
-        const nonLoginRoutes = ['/setup'];
-        const shouldBootstrapHome = !nonLoginRoutes.every(route =>
-            location.pathname === '/' || location.pathname.includes(route)
-        );
-
-        // when home bootstrapping finishes reset the flag
-        if (appState.get('homeReady') && this.bootstrappingHome) {
-            this.bootstrappingHome = false;
-        }
-
-        // check if we need to bootstrap home
-        if (shouldBootstrapHome && appState.get('appReady') && !this.bootstrappingHome && !appState.get('homeReady')) {
-            this.props.bootstrapHome();
-            this.props.entryVoteCost();
-            this.props.licenseGetAll();
-
-            // make requests for geth status every 30s for updating the current block
-            this.props.gethGetStatus();
-            if (!this.interval) {
-                this.interval = setInterval(this.props.gethGetStatus, 30000);
-            }
-            this.bootstrappingHome = true;
         }
     }
 
@@ -301,12 +277,12 @@ export default hot(module)(DragDropContext(HTML5Backend)(connect(
     mapStateToProps,
     {
         userSettingsAddTrustedDomain,
-        bootstrapHome,
-        entryVoteCost,
+        // bootstrapHome,
+        // entryVoteCost,
         errorDeleteFatal,
-        gethGetStatus,
+        // gethGetStatus,
         hideTerms,
-        licenseGetAll,
+        // licenseGetAll,
         toggleAethWallet,
         toggleEthWallet,
         toggleNavigationModal,
@@ -316,4 +292,4 @@ export default hot(module)(DragDropContext(HTML5Backend)(connect(
         reloadPage,
         showNotification
     }
-)(injectIntl(AppContainer))));
+)(injectIntl(withRequest(AppContainer)))));

@@ -1,7 +1,8 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const appReady = () => action(types.APP_READY);
+export const bootstrapApp = () => action(types.BOOTSTRAP_APP);
+export const bootstrapAppSuccess = () => action(types.BOOTSTRAP_APP_SUCCESS);
 
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
@@ -25,9 +26,6 @@ export const notificationDisplay = notification => action(types.NOTIFICATION_DIS
 // export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 
 export const profileEditToggle = () => action(types.PROFILE_EDIT_TOGGLE);
-
-// this should be removed once profile logout is implemented
-export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
 // toggle secondary sidebar visibility. this affects topBar, secondarySidebar and pageContent components.
 // when forceToggle is defined it takes priority.

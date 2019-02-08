@@ -15,33 +15,29 @@ import { AppContainer } from './containers';
 import './styles/core.scss';
 import './styles/ant-vars/extract-default-theme.less';
 
-console.log('boostrapping app...');
+const store = storeConfig();
+chReqService.setDispatch(store.dispatch);
+sagaMiddleware.run(rootSaga);
 
 export const bootstrap = (web3Enabled = false, vault = false, channel, logger) => {
+    chReqService.setIPCChannel(channel);
     const history = getHistory();
     const MainContext = React.createContext({logger, channel});
-    chReqService.setIPCChannel(channel);
-    storeConfig.then(configMod => {
-        const store = configMod.default();
-        sagaMiddleware.run(rootSaga);
-        console.log(store, 'the store');
-        global.redux__store = store;
-        render(
-          <Provider store={store}>
-            <ConnectedIntlProvider>
-              <Router history={history}>
-                <Route render={(props) =>
-                  (
-                    <MainContext.Consumer>
-                      {(...contextProps) =>
-                        <AppContainer unlocked={vault} web3={web3Enabled} {...props} {...contextProps}/>
-                      }
-                    </MainContext.Consumer>
-                  )}/>
-              </Router>
-            </ConnectedIntlProvider>
-          </Provider>,
-          document.getElementById('root')
-        )
-    });
+    render(
+      <Provider store={store}>
+        <ConnectedIntlProvider>
+          <Router history={history}>
+            <Route render={(props) =>
+              (
+                <MainContext.Consumer>
+                  {(...contextProps) =>
+                    <AppContainer unlocked={vault} web3={web3Enabled} {...props} {...contextProps}/>
+                  }
+                </MainContext.Consumer>
+              )}/>
+          </Router>
+        </ConnectedIntlProvider>
+      </Provider>,
+      document.getElementById('root')
+    )
 };

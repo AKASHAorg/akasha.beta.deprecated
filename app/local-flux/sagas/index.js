@@ -1,5 +1,6 @@
 // @flow
-import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { call, fork, put, select, takeLatest } from 'redux-saga/effects';
+
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as claimableActions from '../actions/claimable-actions';
@@ -65,7 +66,7 @@ function* launchHomeActions () {
         yield put(actionActions.actionGetPending());
         yield put(claimableActions.claimableIterator());
         yield put(profileActions.profileFollowingsIterator({
-            column: { value: loggedEthAddress }, 
+            column: { value: loggedEthAddress },
             allFollowings: true,
             limit: 1000
         }));
@@ -74,10 +75,9 @@ function* launchHomeActions () {
     yield put(profileActions.profileManaBurned());
 }
 
-function* bootstrapApp () {
-    // the appReady action will be dispatched after these actions will be called
+function* bootstrapApp ()/* : Saga<void> */ {
     yield call(launchActions);
-    yield put(appActions.appReady());
+    yield put(appActions.bootstrapAppSuccess());
 }
 
 function* bootstrapHome ()/* : Saga<void> */ {
@@ -90,7 +90,7 @@ export default function* rootSaga ()/* : Saga<void> */ { // eslint-disable-line 
     yield call(loadAkashaDB);
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
-    yield fork(claimableSaga.watchClaimableActions);    
+    yield fork(claimableSaga.watchClaimableActions);
     yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(draftSaga.watchDraftActions);
@@ -107,6 +107,6 @@ export default function* rootSaga ()/* : Saga<void> */ { // eslint-disable-line 
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(transactionSaga.watchTransactionActions);
     // yield fork(utilsSaga.watchUtilsActions);
-    yield fork(bootstrapApp);
-    yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
+    yield takeLatest(types.BOOTSTRAP_APP, bootstrapApp);
+    yield takeLatest(types.BOOTSTRAP_HOME, bootstrapHome);
 }
