@@ -100,8 +100,8 @@ const EntryState = Record({
 
 export default class EntryStateModel extends EntryState {
 
-    createEntryRecord = entry =>
-        new EntryRecord(entry).withMutations((mEntry) => {
+    createEntryRecord (entry) {
+        const newEntry = new EntryRecord(entry).withMutations((mEntry) => {
             if (entry.content) {
                 let cardInfo = new CardInfo();
                 let title = entry.content.title;
@@ -115,9 +115,11 @@ export default class EntryStateModel extends EntryState {
                     title
                 }));
             }
-        })
+        });
+        return newEntry;
+    }
 
-    createEntryContent = (record) => {
+    createEntryContent (record) {
         const content = Object.assign({}, record);
         let cardInfo = new CardInfo();
         let title = content.title;
@@ -132,10 +134,12 @@ export default class EntryStateModel extends EntryState {
         });
     }
 
-    createEntryWithAuthor = entry =>
-        new EntryRecord(entry).set('author', new EntryAuthor(entry.author))
+    createEntryWithAuthor (entry) {
+        const entryRecord = new EntryRecord(entry).set('author', new EntryAuthor(entry.author));
+        return entryRecord;
+    }
 
-    entryIteratorHandler = (state, { data, request }) => {
+    entryIteratorHandler (state, { data, request }) {
         if (!request) {
             return state;
         }
@@ -149,7 +153,7 @@ export default class EntryStateModel extends EntryState {
         return state.set('byId', byId);
     }
 
-    entrySearchIteratorHandler = (state, { data }) => {
+    entrySearchIteratorHandler (state, { data }) {
         const collection = data.collection.map(res => ({
             entryId: res.entryId,
             author: { ethAddress: res.ethAddress }

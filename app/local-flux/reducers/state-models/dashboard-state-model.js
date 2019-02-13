@@ -61,7 +61,7 @@ export const DashboardState = Record({
         profileFollowings: new ColumnRecord({
             id: columnTypes.profileFollowings,
             type: columnTypes.profileFollowings
-        }),        
+        }),
     }),
     // flags: new Flags(),
     newColumn: null,
@@ -70,7 +70,7 @@ export const DashboardState = Record({
 });
 
 export default class DashboardStateModel extends DashboardState {
-    itemIterator = (state, { column }) => {
+    itemIterator (state, { column }) {
         const { id, value, reversed } = column;
         if (reversed || !id) {
             return state;
@@ -93,14 +93,14 @@ export default class DashboardStateModel extends DashboardState {
         });
     }
 
-    itemIteratorError = (state, { request }) => {
+    itemIteratorError (state, { request }) {
         if (request.reversed || !request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
         return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingItems: false });
     }
 
-    entryIteratorSuccess = (state, { data, type, request }) => {
+    entryIteratorSuccess (state, { data, type, request }) {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
@@ -135,7 +135,7 @@ export default class DashboardStateModel extends DashboardState {
         });
     }
 
-    profileIteratorSuccess = (state, { data, request }) => {
+    profileIteratorSuccess (state, { data, request }) {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
@@ -152,7 +152,7 @@ export default class DashboardStateModel extends DashboardState {
         });
     }
 
-    itemMoreIterator = (state, { column }) => {
+    itemMoreIterator (state, { column }) {
         const { id } = column;
         if (!id || !state.getIn(['columnById', id])) {
             return state;
@@ -160,14 +160,14 @@ export default class DashboardStateModel extends DashboardState {
         return state.mergeIn(['columnById', id, 'flags'], { fetchingMoreItems: true });
     }
 
-    itemMoreIteratorError = (state, { request }) => {
+    itemMoreIteratorError (state, { request }) {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
         return state.mergeIn(['columnById', request.columnId, 'flags'], { fetchingMoreItems: false });
     }
 
-    entryMoreIteratorSuccess = (state, { data, request, type }) => {
+    entryMoreIteratorSuccess (state, { data, request, type }) {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
@@ -179,7 +179,7 @@ export default class DashboardStateModel extends DashboardState {
         if (state.getIn(['columnById', request.columnId, 'itemsList']).size === 0) {
             return state;
         }
-        const column = state.getIn(['columnById', request.columnId]);    
+        const column = state.getIn(['columnById', request.columnId]);
         if (request.columnId === columnTypes.profileEntries && column.value &&
             request.ethAddress !== column.value) {
             return state;
@@ -200,7 +200,7 @@ export default class DashboardStateModel extends DashboardState {
         });
     }
 
-    profileMoreIteratorSuccess = (state, { data, request }) => {
+    profileMoreIteratorSuccess (state, { data, request }) {
         if (!request.columnId || !state.getIn(['columnById', request.columnId])) {
             return state;
         }
@@ -224,7 +224,7 @@ export default class DashboardStateModel extends DashboardState {
             lastIndex: data.lastIndex
         });
     }
-    createDashboardRecord = (data) => {
+    createDashboardRecord (data) {
         let dashboard = new DashboardRecord(data);
         dashboard = dashboard.set('columns', List(dashboard.columns.map(col => col.id)));
         return dashboard;

@@ -50,7 +50,7 @@ function* launchActions ()/* :Saga<void> */ {
 }
 
 function* getUserSettings () {
-    yield call(settingsSaga.userSettingsRequest);
+    yield call(settingsSaga.userSettingsRequest, {});
     yield put(notificationsActions.notificationsSubscribe());
 }
 

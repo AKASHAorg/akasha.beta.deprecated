@@ -409,7 +409,7 @@ function* profileMoreFollowingsIterator ({ column })/* : Saga<void> */ {
             limit: FOLLOWINGS_ITERATOR_LIMIT,
             lastBlock: column.lastBlock,
             lastIndex: column.lastIndex,
-            totalLoaded: column.itemsList.size
+            totalLoaded: column.itemList ? column.itemsList.size : 0
         }
     );
 }

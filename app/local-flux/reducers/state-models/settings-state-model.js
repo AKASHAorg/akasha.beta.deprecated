@@ -78,7 +78,7 @@ export const SettingsRecord = Record({
 });
 
 export default class SettingsStateModel extends SettingsRecord {
-    getUserSettings = (state, record) => {
+    createUserSettingsRecord (state, record) {
         const data = Object.assign({}, record);
         const preference = new PasswordPreference(data.passwordPreference);
         const hideComment = new HiddenContent(data.hideCommentContent);
@@ -97,7 +97,7 @@ export default class SettingsStateModel extends SettingsRecord {
             passwordPreference: preference
         });
     }
-    mergeUserSettings = (state, record) => {
+    mergeUserSettings (state, record) {
         const data = Object.assign({}, record);
         const changes = {};
         if (data.passwordPreference) {
@@ -116,5 +116,5 @@ export default class SettingsStateModel extends SettingsRecord {
             changes.trustedDomains = new List(data.trustedDomains);
         }
         return state.get('userSettings').merge(data).merge(changes);
-    };
+    }
 }

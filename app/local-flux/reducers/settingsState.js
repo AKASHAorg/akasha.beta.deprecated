@@ -165,8 +165,10 @@ const settingsState = createReducer(initialState, {
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('userSettings', new UserSettings()),
 
-    [types.USER_SETTINGS_SUCCESS]: (state, {data}) =>
-        state.set('userSettings', state.getUserSettings(state, data)),
+    [types.USER_SETTINGS_SUCCESS]: (state, {data}) => {
+        console.log(state, 'the state');
+        return state.set('userSettings', state.createUserSettingsRecord(state, data));
+    },
 
     [types.USER_SETTINGS_SAVE]: state =>
         state.setIn(['flags', 'savingUserSettings'], true),

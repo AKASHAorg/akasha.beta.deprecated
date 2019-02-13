@@ -26,11 +26,11 @@ const ListState = Record({
 });
 
 export default class ListStateModel extends ListState {
-    createListRecord = (record) => {
+    createListRecord (record) {
         const list = Object.assign({}, record);
         if (list.entryIds && !List.isList(list.entryIds)) {
             list.entryIds = new List(list.entryIds);
         }
         return new ListRecord(list);
-    };
+    }
 }

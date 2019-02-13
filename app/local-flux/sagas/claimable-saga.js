@@ -29,7 +29,7 @@ function* claimableDeleteEntry ({ entryId })/* : Saga<void> */ {
 function* claimableGetEntries ({ more })/* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const offset = more ? yield select(claimSelectors.getClaimableEntriesCounter) : 0;
-    yield call([reduxSaga, reduxSaga.delay], 500);    
+    yield call([reduxSaga, reduxSaga.delay], 500);
     try {
         const data = yield call(
             [claimableService, claimableService.getEntries],
@@ -72,7 +72,7 @@ function* claimableGetEntriesData (data)/* : Saga<void> */ {
     }
     if (voteEntries.length) {
         yield put(entryActions.entryCanClaimVote(voteEntries));
-        yield put(entryActions.entryGetVoteOf(voteEntries, true));        
+        yield put(entryActions.entryGetVoteOf(voteEntries, true));
     }
 }
 
@@ -94,7 +94,7 @@ function* claimableIterator ()/* : Saga<void> */ {
     while (!(yield select(externalProcessSelectors.getCurrentBlockNumber))) {
         yield call([reduxSaga, reduxSaga.delay], 1000);
     }
-    
+
     if (oldestBlock === 0) {
         yield call(
             [ChReqService, ChReqService.sendRequest],
@@ -106,7 +106,7 @@ function* claimableIterator ()/* : Saga<void> */ {
                 reversed: true
             });
     } else {
-        const toBlock = oldestBlock || (yield select(profileSelectors.getCurrentBlockNumber));
+        const toBlock = oldestBlock || (yield select(externalProcessSelectors.getCurrentBlockNumber));
         yield call(
             [ChReqService, ChReqService.sendRequest],
             ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {

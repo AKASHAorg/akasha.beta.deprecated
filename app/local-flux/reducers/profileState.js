@@ -218,13 +218,13 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [`${PROFILE_MODULE.profileData}_ERROR`]: (state, { request }) => {
-        const { context, ethAddress } = request;
-        if (!context) {
-            return state;
-        }
-        return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
-    },
+    // [`${PROFILE_MODULE.profileData}_ERROR`]: (state, { request }) => {
+    //     const { context, ethAddress } = request;
+    //     if (!context) {
+    //         return state;
+    //     }
+    //     return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
+    // },
 
     [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { data, request }) => {
         const { context, ethAddress, full } = request;

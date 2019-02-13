@@ -21,13 +21,13 @@ const ErrorState = Record({
 });
 
 export default class ErrorStateModel extends ErrorState {
-    createError = (state, error) => {
+    createError (state, error) {
         const err = new ErrorRecord(error);
         const lastErr = state.get('byId').last();
         const id = lastErr ? lastErr.get('id') + 1 : 1;
         return err.set('id', id);
     }
-    addNewError = (state, { error }) => {
+    addNewError (state, { error }) {
         const err = this.createError(state, error);
         const extra = err.fatal ?
             { fatalErrors: state.get('fatalErrors').push(err.id) } :

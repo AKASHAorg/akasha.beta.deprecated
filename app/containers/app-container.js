@@ -13,7 +13,7 @@ import { bootstrapApp, bootstrapHome, hideTerms, toggleAethWallet, toggleEthWall
     toggleNavigationModal, toggleOutsideNavigation, navForwardCounterReset,
     navCounterIncrement, showNotification } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
-import { gethGetStatus } from '../local-flux/actions/external-process-actions';
+// import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
@@ -158,7 +158,10 @@ class AppContainer extends Component {
                             <Route path="/draft/article/:draftId" component={NewTextEntryPage} />
                             <Route path="/draft/link/:draftId" component={NewLinkEntryPage} />
                             <Route path="/@:akashaId/:entryId/comment/:commentId" component={CommentPage} />
-                            <Route path="/0x:ethAddress/:entryId/comment/:commentId" component={CommentPage} />
+                            <Route
+                              path="/0x:ethAddress/:entryId/comment/:commentId"
+                              component={CommentPage}
+                            />
                             <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
                             <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
                             <Route path="/search" component={SearchPage} />
@@ -166,18 +169,24 @@ class AppContainer extends Component {
                           {isOverlay &&
                             <Switch>
                               <Route path="/@:akashaId/:entryId/comment/:commentId" component={CommentPage} />
-                              <Route path="/0x:ethAddress/:entryId/comment/:commentId" component={CommentPage} />
+                              <Route
+                                path="/0x:ethAddress/:entryId/comment/:commentId"
+                                component={CommentPage}
+                              />
                               <Route path="/@:akashaId/:entryId/:version?" component={EntryPageContainer} />
-                              <Route path="/0x:ethAddress/:entryId/:version?" component={EntryPageContainer} />
+                              <Route
+                                path="/0x:ethAddress/:entryId/:version?"
+                                component={EntryPageContainer}
+                              />
                             </Switch>
                           }
                         </PageContent>
-                        <TopBar
+                        {/* <TopBar
                           history={history}
                           intl={intl}
                           location={location}
                           showSecondarySidebar={appState.get('showSecondarySidebar')}
-                        />
+                        /> */}
                         {!!showWallet &&
                           <WalletPanel
                             showWallet={showWallet}
@@ -255,7 +264,9 @@ AppContainer.propTypes = {
     navForwardCounterReset: PropTypes.func,
     navCounterIncrement: PropTypes.func,
     reloadPage: PropTypes.func.isRequired,
-    showNotification: PropTypes.func.isRequired
+    showNotification: PropTypes.func.isRequired,
+    getActionStatus: PropTypes.func,
+    dispatchAction: PropTypes.func,
 };
 
 function mapStateToProps (state) {

@@ -72,15 +72,16 @@ export default class CommentsStateModel extends CommentsState {
         super(params);
         this.hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
     }
-    createCommentWithAuthor = (record) => {
+    createCommentWithAuthor (record) {
         const comment = Object.assign({}, record);
         if (!comment.parent || comment.parent === this.hexZero) {
             comment.parent = '0';
         }
         return new CommentRecord(comment).set('author', new CommentAuthor(comment.author));
-    };
-    sortByScore = (byId, list = new List()) =>
-        list.sort((a, b) => {
+    }
+
+    sortByScore (byId, list = new List()) {
+        return list.sort((a, b) => {
             const commA = byId.get(a);
             const commB = byId.get(b);
 
@@ -98,4 +99,5 @@ export default class CommentsStateModel extends CommentsState {
             }
             return 0;
         });
+    }
 }

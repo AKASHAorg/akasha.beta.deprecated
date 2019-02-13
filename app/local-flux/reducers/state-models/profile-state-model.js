@@ -160,7 +160,7 @@ const ProfileState = Record({
 });
 
 export default class ProfileStateModel extends ProfileState {
-    addProfileData = (byEthAddress, { ...profileData }, full) => {
+    addProfileData (byEthAddress, { ...profileData }, full) {
         if (!profileData) {
             return byEthAddress;
         }
@@ -182,7 +182,7 @@ export default class ProfileStateModel extends ProfileState {
         }
         return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
     }
-    getKarmaPopoverDefaultState = (collection, myRanking) => {
+    getKarmaPopoverDefaultState (collection, myRanking) {
         let defaultState = [];
         if (collection.length < 4) {
             return collection;
@@ -198,7 +198,7 @@ export default class ProfileStateModel extends ProfileState {
         }
         return defaultState;
     }
-    
+
     createTempProfile (profileData) {
         const { links = [], crypto = [], backgroundImage, ...others } = profileData;
         const tLinks = new List(links.map(link => new Map(link)));

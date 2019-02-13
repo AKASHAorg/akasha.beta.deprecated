@@ -68,15 +68,15 @@ export const Draft = Record({
 
 export default class DraftStateModel extends Draft {
 
-    determineEntryType = (content) => {
+    determineEntryType (content) {
         if (content.cardInfo && content.cardInfo.url) {
             return 'link';
         }
         return 'article';
     }
 
-    sortByDate = (drafts, list) =>
-        list.sort((a, b) => {
+    sortByDate (drafts, list) {
+        return list.sort((a, b) => {
             const draftA = drafts.get(a);
             const draftB = drafts.get(b);
             const timestampA = draftA.getIn(['meta', 'updated']) || draftA.getIn(['meta', 'created']);
@@ -91,7 +91,8 @@ export default class DraftStateModel extends Draft {
                 return 1;
             }
             return 0;
-        })
+        });
+    }
 
     createDraft (draftObj) {
         const { selectionState, ...others } = draftObj; // eslint-disable-line

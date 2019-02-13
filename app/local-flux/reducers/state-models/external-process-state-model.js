@@ -88,7 +88,7 @@ export const LogRecord = Record({
     timestamp: Date.now(),
 });
 export default class ExternalProcessStateModel extends ExternalProcessState {
-    computeGethStatus = (status) => {
+    computeGethStatus (status) {
         const newStatus = Object.assign({}, status);
         if (newStatus.started) {
             newStatus.message = null;
@@ -107,7 +107,7 @@ export default class ExternalProcessStateModel extends ExternalProcessState {
         }
         return newStatus;
     }
-    computeIpfsStatus = (record) => {
+    computeIpfsStatus (record) {
         const newStatus = Object.assign({}, record);
         if (newStatus.started || newStatus.process) {
             newStatus.downloading = null;

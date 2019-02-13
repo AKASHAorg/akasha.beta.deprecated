@@ -16,7 +16,7 @@ const ONE_WEEK = (7 * 24 * 3600) / 15;
 function* notificationsSubscribe ({ notificationsPreferences })/* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const settings = notificationsPreferences ||
-        (yield select(settingsSelectors.selectNotificationsPreference)).toJS();
+        (yield select(settingsSelectors.getNotificationsPreference)).toJS();
     const lastBlock = yield call([profileService, profileService.profileGetLastBlockNr], ethAddress);
     const currentBlock = yield select(externalProcessSelectors.getBlockNumber);
     const fromBlock = Math.max(lastBlock, currentBlock - ONE_WEEK);

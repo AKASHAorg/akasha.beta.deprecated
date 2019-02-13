@@ -19,6 +19,8 @@ const store = storeConfig();
 chReqService.setDispatch(store.dispatch);
 sagaMiddleware.run(rootSaga);
 
+global.redux__store = store;
+
 export const bootstrap = (web3Enabled = false, vault = false, channel, logger) => {
     chReqService.setIPCChannel(channel);
     const history = getHistory();

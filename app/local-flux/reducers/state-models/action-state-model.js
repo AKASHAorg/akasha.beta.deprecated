@@ -51,12 +51,13 @@ export const ActionState = Record({
 });
 
 export default class ActionStateModel extends ActionState {
-    createAction = (action) => {
+    createAction (action) {
         // convert the payload object to an immutable map
         const payload = fromJS(action.payload);
         return new ActionRecord(action).set('payload', payload);
     }
-    sortByBlockNr = (byId, list, reverse) =>
+
+    sortByBlockNr (byId, list, reverse) {
         list.sort((a, b) => {
             const actionA = byId.get(a);
             const actionB = byId.get(b);
@@ -72,7 +73,9 @@ export default class ActionStateModel extends ActionState {
             }
             return 0;
         });
-    addPendingAction = (pending, action) => { // eslint-disable-line complexity
+    }
+
+    addPendingAction (pending, action) { // eslint-disable-line complexity
         const { commentId, entryId, ethAddress, tag } = action.payload;
         let pendingComments;
         switch (action.type) {
@@ -116,7 +119,7 @@ export default class ActionStateModel extends ActionState {
                 return pending;
         }
     }
-    removePendingAction = (pending, action) => { // eslint-disable-line complexity
+    removePendingAction (pending, action) { // eslint-disable-line complexity
         const { commentId, entryId, ethAddress, tag } = action.payload;
         let pendingComments;
         switch (action.type) {
@@ -156,7 +159,7 @@ export default class ActionStateModel extends ActionState {
             default:
                 return pending;
         }
-    };
+    }
 }
 
 global.ActionStateModel = ActionStateModel;

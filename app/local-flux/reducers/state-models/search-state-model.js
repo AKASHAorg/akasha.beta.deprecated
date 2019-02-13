@@ -16,7 +16,7 @@ export const SearchRecord = Record({
 });
 
 export default class SearchStateModel extends SearchRecord {
-    getEntryIds = (entries) =>
-        entries.map(entry => entry.entryId);
-    
+    getEntryIds (entries) {
+        return entries.map(entry => entry.entryId);
+    }
 }
