@@ -12,7 +12,7 @@
     "debug-ipc": "cross-env ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
     "lint": "eslint app *.js",
     "browser": "node server.js",
-    "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
+    "hot-server": "cross-env NODE_ENV=development AK_PLATFORM=desktop node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
     "hot-server-dark": "cross-env NODE_ENV=development DARK_THEME=1 node --max_old_space_size=4096  -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
     "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build-vendor": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack.config.vendor.js --progress --profile --colors",
@@ -35,7 +35,7 @@
     "generate-changelog": "standard-version",
     "postinstall": "npm run rebuild",
     "rebuild": "electron-rebuild",
-    "start-dapp": "tsc -p ./dapp/tsconfig.json && cross-env NODE_ENV=development node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./dapp/webpack.config.dev.js"
+    "start-dapp": "tsc -p ./dapp/tsconfig.json && cross-env NODE_ENV=development AKASHA_LOG_LEVEL=debug node --max_old_space_size=4096 -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./dapp/webpack.config.dev.js"
   },
   "repository": {
     "type": "git",

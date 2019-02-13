@@ -4,11 +4,11 @@ import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
   const execute = Promise.coroutine(function* () {
     const web3Api = getService(CORE_MODULE.WEB3_API);
-    let connected = web3Api.instance.isConnected();
+    const connected = web3Api.instance.eth.net.isListening();
     // @TODO: reimplement this at app lvl
     // if (!connected) {
     // web3Api.instance = regenWeb3();
-    connected = web3Api.instance.isConnected();
+    // connected = web3Api.instance.isConnected();
     // }
     // if (connected) {
     //     gethStatus.process = true;

@@ -22,6 +22,7 @@ export default function init(sp, getService) {
 
     const web3Api = getService(CORE_MODULE.WEB3_API);
     const contracts = getService(CORE_MODULE.CONTRACTS);
+    console.log("contracts", contracts);
     const collection = [];
     let finished = false;
     let currentIndex = 0;

@@ -34,7 +34,12 @@ const conf = merge.smartStrategy({
     contentBase: path.join(__dirname, 'dist'),
     https: true,
     publicPath,
-    host: 'localhost'
+    host: 'localhost',
+    watchOptions: {
+      ignored: [
+        '**/desktop/**'
+      ]
+    },
   },
 });
 

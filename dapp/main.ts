@@ -42,6 +42,9 @@ const bootstrapApp = async function () {
   await initModules(sp, getService, appLogger)
     .then((modules) => {
       appLogger.info('modules inited');
+      // Usage from ui
+      // ipcChannelUI.on((err, d) => console.log("ui received", "err=", err, "data=", d))
+      // ipcChannelUI.send({module:'geth', method:'status_geth', payload: {}});
       duplexChannel = startDataStream(modules, 'workerId', getService, appLogger);
       getService(CORE_MODULE.WEB3_HELPER).setChannel(duplexChannel.ipcChannelMain);
       appLogger.info('api listening');

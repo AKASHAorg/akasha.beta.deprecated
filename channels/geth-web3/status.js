@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
-        const blockNr = (getService(CORE_MODULE.WEB3_API)).instance.isConnected() ?
+        const blockNr = (getService(CORE_MODULE.WEB3_API)).instance.eth.net.isListening() ?
             yield (getService(CORE_MODULE.WEB3_API)).instance.eth.getBlockNumber() : false;
         return { blockNr };
     });

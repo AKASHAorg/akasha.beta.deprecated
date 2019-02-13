@@ -27,7 +27,6 @@ export default {
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     modules: [
-      path.resolve(__dirname, 'main'),
       path.resolve(__dirname, 'app'),
       path.resolve(__dirname, 'app/shared-components'),
       'node_modules',

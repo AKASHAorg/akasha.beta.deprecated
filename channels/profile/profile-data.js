@@ -24,7 +24,7 @@ export default function init(sp, getService) {
         const dbIndex = getService(CORE_MODULE.DB_INDEX);
         const followingCount = getService(PROFILE_MODULE.followingCount);
         const followersCount = getService(PROFILE_MODULE.followersCount);
-        const resolveEthAddress = getService(PROFILE_MODULE.resolveEthAddress);
+        const resolveEthAddress = getService(PROFILE_MODULE.getByAddress);
         const entryCountProfile = getService(PROFILE_MODULE.entryCountProfile);
         const resolveProfile = getService(PROFILE_MODULE.resolveProfile);
         const getShortProfile = getService(PROFILE_MODULE.getShortProfile);
