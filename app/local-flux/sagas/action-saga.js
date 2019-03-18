@@ -1,19 +1,18 @@
 // @flow
-import * as reduxSaga from 'redux-saga';
-import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
-import * as actions from '../actions/action-actions';
-import * as commentsActions from '../actions/comments-actions';
-import * as draftActions from '../actions/draft-actions';
-import * as entryActions from '../actions/entry-actions';
-import * as profileActions from '../actions/profile-actions';
-import * as tagActions from '../actions/tag-actions';
-import * as transactionActions from '../actions/transaction-actions';
-import * as types from '../constants';
-import { actionSelectors, profileSelectors } from '../selectors';
-import * as actionService from '../services/action-service';
-import * as actionStatus from '../../constants/action-status';
-import * as actionTypes from '../../constants/action-types';
-import { balanceToNumber } from '../../utils/number-formatter';
+import { apply, fork, put, select, takeEvery } from "redux-saga/effects";
+import * as actions from "../actions/action-actions";
+import * as commentsActions from "../actions/comments-actions";
+import * as draftActions from "../actions/draft-actions";
+import * as entryActions from "../actions/entry-actions";
+import * as profileActions from "../actions/profile-actions";
+import * as tagActions from "../actions/tag-actions";
+import * as transactionActions from "../actions/transaction-actions";
+import * as types from "../constants";
+import { actionSelectors, profileSelectors } from "../selectors";
+import * as actionService from "../services/action-service";
+import * as actionStatus from "../../constants/action-status";
+import * as actionTypes from "../../constants/action-types";
+import { balanceToNumber } from "../../utils/number-formatter";
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -51,7 +50,7 @@ const publishActions = {
     [actionTypes.transferAeth]: profileActions.profileTransferAeth,
     [actionTypes.transferEth]: profileActions.profileTransferEth,
     [actionTypes.transformEssence]: profileActions.profileTransformEssence,
-    [actionTypes.unfollow]: profileActions.profileUnfollow,
+    [actionTypes.unfollow]: profileActions.profileUnfollow
 };
 
 /**
@@ -79,14 +78,14 @@ const publishSuccessActions = {
     // [actionTypes.profileRegister]: profileActions.profileRegisterSuccess,
     // [actionTypes.profileUpdate]: profileActions.profileUpdateSuccess,
     // [actionTypes.sendTip]: profileActions.profileSendTipSuccess,
-    [actionTypes.toggleDonations]: profileActions.profileToggleDonationsSuccess,
+    [actionTypes.toggleDonations]: profileActions.profileToggleDonationsSuccess
     // [actionTypes.transferAeth]: profileActions.profileTransferAethSuccess,
     // [actionTypes.transferEth]: profileActions.profileTransferEthSuccess,
     // [actionTypes.transformEssence]: profileActions.profileTransformEssenceSuccess,
     // [actionTypes.unfollow]: profileActions.profileUnfollowSuccess,
 };
 
-function balanceRequired (actionType)/* : boolean */ {
+function balanceRequired (actionType) /* : boolean */ {
     const balanceNotRequired = [actionTypes.faucet];
     if (balanceNotRequired.includes(actionType)) {
         return false;
@@ -96,19 +95,22 @@ function balanceRequired (actionType)/* : boolean */ {
 
 function checkHasMana (actionType, remainingMana, costs) {
     if (actionType === actionTypes.draftPublish || actionType === actionTypes.comment) {
-        return (remainingMana >= costs.commentPublishingCost);
+        return remainingMana >= costs.commentPublishingCost;
     } else {
-        return (remainingMana >= costs.costByWeight);
+        return remainingMana >= costs.costByWeight;
     }
 }
 function hasEnoughBalance (actionType, balance, publishingCost, payload) {
-    const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']), 5);
-    const entryPublishingCost = balanceToNumber(publishingCost.getIn(['entry', 'cost']), 5);
-    const commentPublishingCost = balanceToNumber(publishingCost.getIn(['comments', 'cost']), 5);
+    const remainingMana = balanceToNumber(balance.getIn(["mana", "remaining"]), 5);
+    const entryPublishingCost = balanceToNumber(publishingCost.getIn(["entry", "cost"]), 5);
+    const commentPublishingCost = balanceToNumber(publishingCost.getIn(["comments", "cost"]), 5);
     let costByWeight = 0;
-    if (payload && typeof payload.weight === 'number') {
+    if (payload && typeof payload.weight === "number") {
         costByWeight = balanceToNumber(
-            publishingCost.get('votes').find(vote => vote.get('weight') === payload.weight).get('cost'),
+            publishingCost
+                .get("votes")
+                .find(vote => vote.get("weight") === payload.weight)
+                .get("cost"),
             5
         );
     }
@@ -118,17 +120,18 @@ function hasEnoughBalance (actionType, balance, publishingCost, payload) {
         costByWeight
     });
 
-    const ethCost = actionType === actionTypes.batch && payload && payload.actions ?
-        0.005 * payload.actions.length :
-        0.01;
+    const ethCost =
+        actionType === actionTypes.batch && payload && payload.actions
+            ? 0.005 * payload.actions.length
+            : 0.01;
     return {
-        eth: balanceToNumber(balance.get('eth'), 2) > ethCost,
-        aeth: balanceToNumber(balance.getIn(['aeth', 'free'])) > 0,
-        mana: hasMana,
+        eth: balanceToNumber(balance.get("eth"), 2) > ethCost,
+        aeth: balanceToNumber(balance.getIn(["aeth", "free"])) > 0,
+        mana: hasMana
     };
 }
 
-function* actionAdd ({ ethAddress, payload, actionType })/* : Saga<void> */ {
+function* actionAdd ({ ethAddress, payload, actionType }) /* : Saga<void> */ {
     if (actionType === actionTypes.faucet) {
         const id = yield select(actionSelectors.selectActionToPublish);
         yield put(actions.actionPublish(id)); // eslint-disable-line no-use-before-define
@@ -136,7 +139,7 @@ function* actionAdd ({ ethAddress, payload, actionType })/* : Saga<void> */ {
     /**
      * Check if user has enough balance to create the action
      */
-    const balance = yield select(state => state.profileState.get('balance'));
+    const balance = yield select(state => state.profileState.get("balance"));
     const publishingCost = yield select(profileSelectors.selectPublishingCost);
     const hasBalance = hasEnoughBalance(actionType, balance, publishingCost, payload || null);
     if ((hasBalance.eth && hasBalance.mana) || !balanceRequired(actionType)) {
@@ -148,18 +151,20 @@ function* actionAdd ({ ethAddress, payload, actionType })/* : Saga<void> */ {
         /**
          * stop publishing and display the appropriate modal
          */
-        yield put(actions.actionAddNoFunds({
-            ethAddress,
-            actionType,
-            payload,
-            needEth: !hasBalance.eth,
-            needAeth: !hasBalance.aeth,
-            needMana: !hasBalance.mana,
-        }));
+        yield put(
+            actions.actionAddNoFunds({
+                ethAddress,
+                actionType,
+                payload,
+                needEth: !hasBalance.eth,
+                needAeth: !hasBalance.aeth,
+                needMana: !hasBalance.mana
+            })
+        );
     }
 }
 
-function* actionDelete ({ id })/* : Saga<void> */ {
+function* actionDelete ({ id }) /* : Saga<void> */ {
     try {
         yield apply(actionService, actionService.deleteAction, [id]);
     } catch (error) {
@@ -167,29 +172,27 @@ function* actionDelete ({ id })/* : Saga<void> */ {
     }
 }
 
-function* actionGetAllHistory ({ loadMore })/* : Saga<void> */ {
+function* actionGetAllHistory ({ loadMore }) /* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
         const offset = (yield select(actionSelectors.getActionHistory)).size;
-        const resp = yield apply(
-            actionService,
-            actionService.getAllHistory,
-            [loggedEthAddress, offset, ACTION_HISTORY_LIMIT]
-        );
+        const resp = yield apply(actionService, actionService.getAllHistory, [
+            loggedEthAddress,
+            offset,
+            ACTION_HISTORY_LIMIT
+        ]);
         yield put(actions.actionGetAllHistorySuccess(resp, { loadMore }));
     } catch (error) {
         yield put(actions.actionGetAllHistoryError(error, { loadMore }));
     }
 }
 
-function* actionGetHistory ({ request })/* : Saga<void> */ {
+function* actionGetHistory ({ request }) /* : Saga<void> */ {
     try {
         const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
-        const data = yield apply(
-            actionService,
-            actionService.getActionsByType,
-            [{ethAddress: loggedEthAddress, type: request}]
-        );
+        const data = yield apply(actionService, actionService.getActionsByType, [
+            { ethAddress: loggedEthAddress, type: request }
+        ]);
         yield put(actions.actionGetHistorySuccess(data, request));
     } catch (error) {
         yield put(actions.actionGetHistoryError(error));
@@ -201,7 +204,7 @@ function* actionGetHistory ({ request })/* : Saga<void> */ {
  * Then dispatch transactionGetStatus to check if the pending transactions were mined;
  * This is called from bootstrapHome saga (after initial login and on refresh);
  */
-function* actionGetPending ()/* : Saga<void> */ {
+function* actionGetPending () /* : Saga<void> */ {
     try {
         const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(actionService, actionService.getPendingActions, [loggedEthAddress]);
@@ -209,7 +212,7 @@ function* actionGetPending ()/* : Saga<void> */ {
         if (data.length) {
             const txs = [];
             const ids = [];
-            data.forEach((action) => {
+            data.forEach(action => {
                 txs.push(action.tx);
                 ids.push(action.id);
             });
@@ -228,22 +231,23 @@ function* actionGetPending ()/* : Saga<void> */ {
  *  - from watchProfileLoginChannel, after a successful reauthentication;
  *  - from checkAuthentication saga, whenever reauthentication is not needed (token is not expired)
  */
-function* actionPublish ({ id })/* : Saga<void> */ { // eslint-disable-line complexity
+function* actionPublish ({ id }) /* : Saga<void> */ {
+    // eslint-disable-line complexity
     const action = yield select(state => actionSelectors.selectActionById(state, id));
-    const actionId = action.get('id');
-    const payload = action.get('payload').toJS();
-    if (action.get('type') === actionTypes.batch) {
+    const actionId = action.get("id");
+    const payload = action.get("payload").toJS();
+    if (action.get("type") === actionTypes.batch) {
         const batchActions = yield select(actionSelectors.selectBatchActions);
         for (let i = 0; i < batchActions.size; i++) {
             const act = batchActions.get(i);
-            const publishAction = publishActions[act.get('type')];
+            const publishAction = publishActions[act.get("type")];
             if (publishAction) {
-                yield put(publishAction({ actionId: act.get('id'), ...act.get('payload').toJS() }));
-                yield call([reduxSaga, reduxSaga.delay], 200);
+                yield put(publishAction({ actionId: act.get("id"), ...act.get("payload").toJS() }));
+                // yield call([reduxSaga, reduxSaga.delay], 200);
             }
         }
     } else {
-        const publishAction = publishActions[action.get('type')];
+        const publishAction = publishActions[action.get("type")];
         if (publishAction) {
             yield put(publishAction({ actionId, ...payload }));
         }
@@ -254,18 +258,18 @@ function* actionPublish ({ id })/* : Saga<void> */ { // eslint-disable-line comp
  * Save action in local DB
  * This is called from actionUpdate saga, when status is updated to "publishing" or "published"
  */
-function* actionSave (id)/* : Saga<void> */ {
+function* actionSave (id) /* : Saga<void> */ {
     let action = yield select(state => actionSelectors.selectActionById(state, id));
     // For published actions, remove non persistent fields from payload before saving to local DB
     // This is needed to avoid storing useless data like entry content or profile data
     if (action && action.status === actionStatus.published) {
-        const nonPersistentFields = action.getIn(['payload', 'nonPersistentFields']);
+        const nonPersistentFields = action.getIn(["payload", "nonPersistentFields"]);
         if (nonPersistentFields && nonPersistentFields.size) {
-            nonPersistentFields.forEach((field) => {
-                action = action.deleteIn(['payload', field]);
+            nonPersistentFields.forEach(field => {
+                action = action.deleteIn(["payload", field]);
             });
         }
-        action = action.deleteIn(['payload', 'nonPersistentFields']);
+        action = action.deleteIn(["payload", "nonPersistentFields"]);
     }
     if (action) {
         try {
@@ -276,13 +280,13 @@ function* actionSave (id)/* : Saga<void> */ {
     }
 }
 
-function* actionPublished ({ receipt })/* : Saga<void> */ {
+function* actionPublished ({ receipt }) /* : Saga<void> */ {
     const { blockNumber, cumulativeGasUsed, success, transactionHash } = receipt;
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const actionId = yield apply(actionService, actionService.getActionByTx, [transactionHash]);
     const action = yield select(state => actionSelectors.selectActionById(state, actionId)); // eslint-disable-line
 
-    if (action && action.get('ethAddress') === loggedEthAddress) {
+    if (action && action.get("ethAddress") === loggedEthAddress) {
         const status = actionStatus.published;
         const changes = { id: actionId, blockNumber, cumulativeGasUsed, status, success };
         yield put(actions.actionUpdate(changes));
@@ -295,47 +299,39 @@ function* actionPublished ({ receipt })/* : Saga<void> */ {
  * React to action updates, depending on the new action status
  * Important: the "changes" object must contain the id of the action
  */
-function* actionUpdate ({ changes })/* : Saga<void> */ {
+function* actionUpdate ({ changes }) /* : Saga<void> */ {
     const action = yield select(state => actionSelectors.selectActionById(state, changes.id));
     if (changes.status === actionStatus.publishing) {
         yield fork(actionSave, changes.id);
     }
     if (changes.status === actionStatus.published) {
         yield fork(actionSave, changes.id);
-        const publishSuccessAction = publishSuccessActions[action.get('type')];
+        const publishSuccessAction = publishSuccessActions[action.get("type")];
         if (publishSuccessAction && changes.success) {
-            yield put(publishSuccessAction(action.get('payload').toJS()));
+            yield put(publishSuccessAction(action.get("payload").toJS()));
         }
     }
 }
 
-function* actionUpdateClaim ({ data })/* : Saga<void> */ {
+function* actionUpdateClaim ({ data }) /* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
-        yield apply(
-            actionService,
-            actionService.updateClaimAction,
-            [loggedEthAddress, data.entryId]
-        );
+        yield apply(actionService, actionService.updateClaimAction, [loggedEthAddress, data.entryId]);
     } catch (error) {
         yield put(actions.actionUpdateClaimError(error));
     }
 }
 
-function* actionUpdateClaimVote ({ data })/* : Saga<void> */ {
+function* actionUpdateClaimVote ({ data }) /* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     try {
-        yield apply(
-            actionService,
-            actionService.updateClaimVoteAction,
-            [loggedEthAddress, data.entryId]
-        );
+        yield apply(actionService, actionService.updateClaimVoteAction, [loggedEthAddress, data.entryId]);
     } catch (error) {
         yield put(actions.actionUpdateClaimVoteError(error));
     }
 }
 
-export function* watchActionActions ()/* : Saga<void> */ {
+export function* watchActionActions () /* : Saga<void> */ {
     yield takeEvery(types.ACTION_ADD, actionAdd);
     yield takeEvery(types.ACTION_DELETE, actionDelete);
     yield takeEvery(types.ACTION_GET_ALL_HISTORY, actionGetAllHistory);

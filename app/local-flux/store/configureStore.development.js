@@ -7,8 +7,7 @@ import batchedSubscribeEnhancer from './batching/enhancer';
 import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(
-    applyMiddleware(batchedSubscribeMiddleware, sagaMiddleware),
-    batchedSubscribeEnhancer,
+    applyMiddleware(sagaMiddleware),
     global.devToolsExtension ?
         global.devToolsExtension({
             actionCreators,

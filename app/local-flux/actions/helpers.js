@@ -9,9 +9,12 @@ export function action (type/*:  string */, payload/*: Object */ = {}) {
     if(!reqId) {
         reqId = generateId();
     }
+    // add requestId to payload...
     return {
         type,
-        reqId,
-        ...others
+        payload: {
+            reqId,
+            ...others
+        }
     };
 }

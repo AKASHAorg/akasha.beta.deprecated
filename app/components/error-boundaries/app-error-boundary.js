@@ -18,7 +18,11 @@ class AppErrorBoundary extends Component {
 
     onCopy = () => {
         const { showNotification } = this.props;
-        const { error, stack } = this.state;
+        let { error, stack } = this.state;
+        if (this.props.error) {
+            error = this.props.error;
+            stack = { componentStack: '' }
+        }
         const textArea = document.createElement('textarea');
         const code = '```';
         textArea.value = `${code}\n${error.toString()}${stack.componentStack.toString()}\n${code}`;
@@ -29,15 +33,21 @@ class AppErrorBoundary extends Component {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        showNotification({
-            id: 'errorCopiedToClipboard',
-            duration: 2
-        });
+        if (showNotification) {
+            showNotification({
+                id: 'errorCopiedToClipboard',
+                duration: 2
+            });
+        }
     };
 
     render () {
         const { children, intl, reloadPage } = this.props;
-        const { error, stack } = this.state;
+        let { error, stack } = this.state;
+        if(this.props.error) {
+            error = this.props.error;
+            stack = { componentStack: '' }
+        }
         if (error || stack) {
             return (
               <div className="app-error-boundary">
@@ -47,10 +57,12 @@ class AppErrorBoundary extends Component {
                 <div className="app-error-boundary__subtitle">
                   {intl.formatMessage(errorMessages.appErrorSubtitle)}
                 </div>
-                <div className="app-error-boundary__error-block-wrapper">                
+                <div className="app-error-boundary__error-block-wrapper">
                   <div className="app-error-boundary__error-block">
                     <pre style={{ whiteSpace: 'pre-line' }}>
-                      {error.toString()}
+                      {error.name && error.name.toString()}
+                      {error.message && error.message.toString()}
+                      {error.stack && error.stack.toString()}
                     </pre>
                     <pre style={{ whiteSpace: 'pre-line' }}>
                       {stack.componentStack.toString()}
@@ -63,9 +75,11 @@ class AppErrorBoundary extends Component {
                       {intl.formatMessage(errorMessages.copyError)}
                     </span>
                   </div>
-                  <Button className="app-error-boundary__button" onClick={reloadPage}>
-                    {intl.formatMessage(generalMessages.reload)}
-                  </Button>
+                  {reloadPage &&
+                    <Button className="app-error-boundary__button" onClick={reloadPage}>
+                      {intl.formatMessage(generalMessages.reload)}
+                    </Button>
+                  }
                   <Button className="app-error-boundary__button" type="primary">
                     <a className="unstyled-link" href="https://github.com/AkashaProject/dapp/issues">
                       {intl.formatMessage(generalMessages.reportIssue)}
@@ -82,8 +96,8 @@ class AppErrorBoundary extends Component {
 AppErrorBoundary.propTypes = {
     children: PropTypes.node,
     intl: PropTypes.shape().isRequired,
-    reloadPage: PropTypes.func.isRequired,
-    showNotification: PropTypes.func.isRequired,
+    reloadPage: PropTypes.func,
+    showNotification: PropTypes.func,
 };
 
 export default injectIntl(AppErrorBoundary);

@@ -1,5 +1,5 @@
 // @flow
-import { call, fork, put, select, takeLatest } from 'redux-saga/effects';
+import { call, fork, put, select, takeLatest, getContext, setContext } from 'redux-saga/effects';
 
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
@@ -26,12 +26,12 @@ import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
-// import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
-import { loadAkashaDB } from '../services/db/dbs';
 import ChService from '../services/channel-request-service';
 
-import type { Saga } from 'redux-saga'; // eslint-disable-line
+/*::
+    import type { Saga } from 'redux-saga';
+*/
 
 function* launchActions ()/* :Saga<void> */ {
     const timestamp = new Date().getTime();
@@ -54,8 +54,8 @@ function* getUserSettings () {
     yield put(notificationsActions.notificationsSubscribe());
 }
 
-function* launchHomeActions () {
-    yield call(profileSaga.profileGetLogged);
+function* launchHomeActions ({ payload }/* : Object */)/* : Saga<void> */ {
+    yield call(profileSaga.profileGetLogged, );
     yield fork(dashboardSaga.dashboardGetActive);
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(highlightSaga.highlightGetAll);
@@ -75,19 +75,32 @@ function* launchHomeActions () {
     yield put(profileActions.profileManaBurned());
 }
 
-function* bootstrapApp ()/* : Saga<void> */ {
-    yield call(launchActions);
-    yield put(appActions.bootstrapAppSuccess());
+function* bootstrapApp ({ payload })/* : Saga<void> */ {
+    try {
+        yield call(launchActions, payload);
+        yield put(appActions.bootstrapAppSuccess());
+    } catch (ex) {
+        const logger = yield getContext('logger');
+        logger.fatal('Cannot bootstrap app!');
+    }
 }
 
-function* bootstrapHome ()/* : Saga<void> */ {
+function* bootstrapHome ({ payload })/* : Saga<void> */ {
     // launch the necessary actions for the home/dashboard component
-    yield call(launchHomeActions);
-    yield put(appActions.bootstrapHomeSuccess());
+    try {
+        yield call(launchHomeActions, payload);
+        yield put(appActions.bootstrapHomeSuccess());
+    } catch (ex) {
+        const logger = yield getContext('logger');
+        logger.fatal('Cannot bootstrap home!', { ...ex });
+        logger.trace(ex);
+    }
 }
-
-export default function* rootSaga ()/* : Saga<void> */ { // eslint-disable-line max-statements
-    yield call(loadAkashaDB);
+/* eslint-disable max-statements */
+export default function* rootSaga (logger/* : Object */)/* : Saga<void> */ {
+    yield setContext({
+        logger,
+    });
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
     yield fork(claimableSaga.watchClaimableActions);

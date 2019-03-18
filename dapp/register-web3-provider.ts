@@ -7,12 +7,12 @@ export const regenWeb3 = (web3) => {
   return web3Regen;
 };
 const registerWithExecution = function (nextExecution) {
-  window.addEventListener('load', async () => {
+  // window.addEventListener('load', async () => {
     let web3Local;
     if (window.hasOwnProperty('ethereum')) {
       web3Local = regenWeb3(window['ethereum']);
       try {
-        await (window['ethereum']).enable();
+        window['ethereum'].enable();
         web3Local.eth.getAccounts((err, accList) => {
           if (err) {
             throw err;
@@ -26,7 +26,7 @@ const registerWithExecution = function (nextExecution) {
     } else {
       nextExecution(false, false);
     }
-  });
+  // });
 };
 
 export default registerWithExecution;
