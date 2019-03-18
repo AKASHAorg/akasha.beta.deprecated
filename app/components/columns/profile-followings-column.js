@@ -8,6 +8,7 @@ import { profileMessages } from '../../locale-data/messages';
 import { profileFollowingsIterator,
     profileMoreFollowingsIterator } from '../../local-flux/actions/profile-actions';
 import { profileSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class ProfileFollowingsColumn extends Component {
     firstCallDone = false;
@@ -29,12 +30,7 @@ class ProfileFollowingsColumn extends Component {
         if (!ethAddress) {
             ethAddress = this.props.ethAddress;
         }
-        this.props.profileFollowingsIterator({ context: 'profilePageFollowings', ethAddress });
-    };
-
-    followingsMoreIterator = () => {
-        const { ethAddress } = this.props;
-        this.props.profileMoreFollowingsIterator({ context: 'profilePageFollowings', ethAddress });
+        this.props.dispatchAction(profileFollowingsIterator({ context: 'profilePageFollowings', ethAddress }));
     };
 
     render () {
@@ -53,7 +49,7 @@ class ProfileFollowingsColumn extends Component {
               context="profilePageFollowings"
               fetchingProfiles={fetchingFollowings}
               fetchingMoreProfiles={fetchingMoreFollowings}
-              fetchMoreProfiles={this.followingsMoreIterator}
+              fetchMoreProfiles={this.followingsIterator}
               moreProfiles={moreFollowings}
               profiles={followings}
             />
@@ -70,7 +66,6 @@ ProfileFollowingsColumn.propTypes = {
     intl: PropTypes.shape().isRequired,
     moreFollowings: PropTypes.bool,
     profileFollowingsIterator: PropTypes.func.isRequired,
-    profileMoreFollowingsIterator: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -86,7 +81,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        profileFollowingsIterator,
-        profileMoreFollowingsIterator,
+        // profileFollowingsIterator,
     }
-)(injectIntl(ProfileFollowingsColumn));
+)(injectIntl(withRequest(ProfileFollowingsColumn)));

@@ -55,49 +55,49 @@ export const entryGetVoteRatio = data => action(`${ENTRY_MODULE.getVoteRatio}`, 
 export const entryListIterator = column =>
     action(`${ENTRY_MODULE.entryListIterator}`, { column });
 
-export const entryMoreListIterator = (column, batching) =>
-    action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
-export const entryMoreListIteratorSuccess = (data, request) =>
-    action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
+// export const entryMoreListIterator = (column, batching) =>
+//     action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
+// export const entryMoreListIteratorSuccess = (data, request) =>
+//     action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreNewestIterator = (column, batching) =>
-    action(types.ENTRY_MORE_NEWEST_ITERATOR, { column, batching });
-export const entryMoreNewestIteratorError = (error, request) => {
-    error.code = 'EMNIE01';
-    error.messageId = 'entryMoreNewestIterator';
-    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, request });
-};
-export const entryMoreNewestIteratorSuccess = (data, request) =>
-    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, request });
+// export const entryMoreNewestIterator = (column, batching) =>
+//     action(types.ENTRY_MORE_NEWEST_ITERATOR, { column, batching });
+// export const entryMoreNewestIteratorError = (error, request) => {
+//     error.code = 'EMNIE01';
+//     error.messageId = 'entryMoreNewestIterator';
+//     return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, request });
+// };
+// export const entryMoreNewestIteratorSuccess = (data, request) =>
+//     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreProfileIterator = (column, batching) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR, { column, batching });
-export const entryMoreProfileIteratorError = (error, request) => {
-    error.code = 'EMPIE01';
-    error.messageId = 'entryMoreProfileIterator';
-    return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, request });
-};
-export const entryMoreProfileIteratorSuccess = (data, request) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
+// export const entryMoreProfileIterator = (column, batching) =>
+//     action(types.ENTRY_MORE_PROFILE_ITERATOR, { column, batching });
+// export const entryMoreProfileIteratorError = (error, request) => {
+//     error.code = 'EMPIE01';
+//     error.messageId = 'entryMoreProfileIterator';
+//     return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, request });
+// };
+// export const entryMoreProfileIteratorSuccess = (data, request) =>
+//     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
-export const entryMoreStreamIteratorError = (error, request) => {
-    error.code = 'EMSIE01';
-    error.messageId = 'entryMoreStreamIterator';
-    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, request });
-};
-export const entryMoreStreamIteratorSuccess = (data, request) =>
-    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, request });
+// export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
+// export const entryMoreStreamIteratorError = (error, request) => {
+//     error.code = 'EMSIE01';
+//     error.messageId = 'entryMoreStreamIterator';
+//     return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, request });
+// };
+// export const entryMoreStreamIteratorSuccess = (data, request) =>
+//     action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreTagIterator = (column, batching) =>
-    action(types.ENTRY_MORE_TAG_ITERATOR, { column, batching });
-export const entryMoreTagIteratorError = (error, request) => {
-    error.code = 'EMTIE01';
-    error.messageId = 'entryMoreTagIterator';
-    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, request });
-};
-export const entryMoreTagIteratorSuccess = (data, request) =>
-    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, request });
+// export const entryMoreTagIterator = (column, batching) =>
+//     action(types.ENTRY_MORE_TAG_ITERATOR, { column, batching });
+// export const entryMoreTagIteratorError = (error, request) => {
+//     error.code = 'EMTIE01';
+//     error.messageId = 'entryMoreTagIterator';
+//     return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, request });
+// };
+// export const entryMoreTagIteratorSuccess = (data, request) =>
+//     action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, request });
 
 export const entryNewestIterator = (column, batching) =>
     action(types.ENTRY_NEWEST_ITERATOR, { column, batching });

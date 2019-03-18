@@ -41,12 +41,12 @@ class KarmaPopover extends Component {
             if (curr !== next) {
                 const followings = curr.map((profile) => {
                     if (!profiles.get(profile.ethAddress)) {
-                        self.props.profileGetData({ ethAddress: profile.ethAddress, full: true });
+                        self.props.dispatchAction(profileGetData({ ethAddress: profile.ethAddress, full: true }));
                     }
                     return profile.ethAddress;
                 });
                 if (followings.length) {
-                    self.props.profileIsFollower(followings);
+                    self.props.dispatchAction(profileIsFollower(followings));
                 }
             }
         }
@@ -61,7 +61,7 @@ class KarmaPopover extends Component {
             popoverVisible
         });
         if (popoverVisible) {
-            this.props.profileKarmaRanking();
+            this.props.dispatchAction(profileKarmaRanking());
         }
         if (!popoverVisible) {
             // Delay state reset until popover animation is finished
@@ -366,9 +366,9 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        profileKarmaRanking,
+        // profileKarmaRanking,
         profileKarmaRankingLoadMore,
-        profileGetData,
-        profileIsFollower
+        // profileGetData,
+        // profileIsFollower
     }
-)(injectIntl(KarmaPopover));
+)(injectIntl(withRequest(KarmaPopover)));

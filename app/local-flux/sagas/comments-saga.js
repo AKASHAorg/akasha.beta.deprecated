@@ -30,10 +30,10 @@ function* commentsDownvote ({ actionId, commentId, entryId, weight })/* : Saga<v
         });
 }
 
-function* commentsDownvoteSuccess ({ data })/* : Saga<void> */ {
-    yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
-    yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
-}
+// function* commentsDownvoteSuccess ({ data })/* : Saga<void> */ {
+//     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+//     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
+// }
 
 function* commentsGet ({ context, entryId, commentId, isParent })/* : Saga<void> */ {
     yield call(
@@ -116,15 +116,15 @@ function* commentsIterator (
     );
 }
 
-function* commentsMoreIterator ({ entryId, parent })/* : Saga<void> */ {
-    const toBlock = yield select(state => commentSelectors.selectCommentLastBlock(state, { parent }));
-    const lastIndex = yield select(state => commentSelectors.selectCommentLastIndex(state, { parent }));
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator,
-        { entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }
-    );
-}
+// function* commentsMoreIterator ({ entryId, parent })/* : Saga<void> */ {
+//     const toBlock = yield select(state => commentSelectors.selectCommentLastBlock(state, { parent }));
+//     const lastIndex = yield select(state => commentSelectors.selectCommentLastIndex(state, { parent }));
+//     yield call(
+//         [ChReqService, ChReqService.sendRequest],
+//         COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator,
+//         { entryId, toBlock, lastIndex, limit: COMMENT_FETCH_LIMIT, parent, more: true }
+//     );
+// }
 
 function* commentsPublish ({ actionId, ...payload })/* : Saga<void> */ {
     const token/* : string */ = yield select(profileSelectors.getToken);

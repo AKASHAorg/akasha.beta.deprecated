@@ -2,19 +2,20 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
+import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { EntryList } from '../';
 import { profileSelectors, entrySelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class MyEntries extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
-        this.props.entryProfileIterator({ id: 'profileEntries', value: ethAddress });
+        this.props.dispatchAction(entryProfileIterator({ id: 'profileEntries', value: ethAddress }));
     }
 
     fetchMoreProfileEntries = () => {
         const { ethAddress } = this.props;
-        this.props.entryMoreProfileIterator({ id: 'profileEntries', value: ethAddress });
+        this.props.dispatchAction(entryProfileIterator({ id: 'profileEntries', value: ethAddress }));
     };
 
     render () {
@@ -63,7 +64,6 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        entryMoreProfileIterator,
-        entryProfileIterator
+        // entryProfileIterator
     }
-)(injectIntl(MyEntries));
+)(injectIntl(withRequest(MyEntries)));

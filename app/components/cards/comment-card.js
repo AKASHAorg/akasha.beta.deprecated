@@ -19,6 +19,7 @@ import { actionSelectors, commentSelectors, entrySelectors, externalProcessSelec
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
+import withRequest from '../high-order-components/with-request';
 
 const ContentPlaceholder = () => (
   <div>
@@ -109,12 +110,12 @@ class CommentCard extends Component {
     };
 
     onRetry = () => {
-        const { comment, contextId, entry } = this.props;
-        this.props.commentsGetComment({
+        const { comment, contextId, entry, dispatchAction } = this.props;
+        dispatchAction(commentsGetComment({
             context: contextId,
             entryId: entry.entryId,
             commentId: comment.commentId
-        });
+        }));
     };
 
     handleVote = ({ type, weight }) => {
@@ -399,8 +400,7 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        commentsGetComment,
         entryPageShow,
         toggleOutsideNavigation
     }
-)(withRouter(injectIntl(CommentCard)));
+)(withRouter(injectIntl(withRequest(CommentCard))));

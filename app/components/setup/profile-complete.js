@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import { Card, Spin, Icon } from 'antd';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { profileExists } from '../../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileUpdate,
     tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
 import { profileSelectors, externalProcessSelectors, dashboardSelectors,
@@ -186,7 +185,7 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        profileExists,
+        // profileExists,
         setTempProfile,
         tempProfileUpdate,
         tempProfileCreate

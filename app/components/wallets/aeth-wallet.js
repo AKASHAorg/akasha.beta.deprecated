@@ -14,6 +14,7 @@ import { actionSelectors, profileSelectors, searchSelectors } from '../../local-
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
+import withRequest from '../high-order-components/with-request';
 
 const { TabPane } = Tabs;
 const CYCLING = 'cycling';
@@ -27,9 +28,10 @@ class AethWallet extends Component {
     };
 
     componentDidMount () {
-        this.props.profileCyclingStates();
-        this.props.profileAethTransfersIterator();
-        this.props.profileGetBalance();
+      const { dispatchAction } = this.props;
+        dispatchAction(profileCyclingStates());
+        // this.props.profileAethTransfersIterator();
+        dispatchAction(profileGetBalance());
         this.props.actionGetHistory([actionTypes.transferAeth, actionTypes.bondAeth, actionTypes.freeAeth,
             actionTypes.sendTip, actionTypes.transformEssence]);
     }
@@ -37,7 +39,7 @@ class AethWallet extends Component {
     componentWillReceiveProps (nextProps) {
         const { pendingCycleAeth } = nextProps;
         if (!pendingCycleAeth && this.props.pendingCycleAeth) {
-            this.props.profileCyclingStates();
+            dispatchAction(profileCyclingStates());
         }
     }
 
@@ -257,7 +259,7 @@ class AethWallet extends Component {
                   onCancel={this.props.toggleAethWallet}
                   onSubmit={this.onTransfer}
                   pendingTransfer={pendingTransfer}
-                  searchProfiles={this.props.searchProfiles}
+                  // searchProfiles={this.props.searchProfiles}
                   showNotification={this.props.showNotification}
                   type="aeth"
                 />
@@ -307,7 +309,6 @@ AethWallet.propTypes = {
     profileCyclingStates: PropTypes.func.isRequired,
     profileGetBalance: PropTypes.func.isRequired,
     profileResults: PropTypes.shape().isRequired,
-    searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     showNotification: PropTypes.func.isRequired,
@@ -336,11 +337,11 @@ export default connect(
         actionClearHistory,
         actionGetHistory,
         /* profileAethTransfersIterator, */
-        profileCyclingStates,
-        profileGetBalance,
-        searchProfiles,
+        // profileCyclingStates,
+        // profileGetBalance,
+        // searchProfiles,
         searchResetResults,
         showNotification,
         toggleAethWallet
     }
-)(injectIntl(clickAway(AethWallet)));
+)(injectIntl(clickAway(withRequest(AethWallet))));

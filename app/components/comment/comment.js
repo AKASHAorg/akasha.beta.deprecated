@@ -23,6 +23,7 @@ import { getDisplayName } from '../../utils/dataModule';
 import CommentImage from './comment-image';
 import createHighlightPlugin from './plugins/highlight-plugin';
 import LinkDecorator from './decorators/link-decorator';
+import withRequest from '../high-order-components/with-request';
 
 const { convertFromRaw, EditorState } = DraftJS;
 
@@ -148,7 +149,7 @@ class Comment extends Component {
 
     onRetry = () => {
         const { comment } = this.props;
-        this.props.commentsResolveIpfsHash([comment.get('ipfsHash')], [comment.get('commentId')]);
+        this.props.dispatchAction(commentsResolveIpfsHash([comment.get('ipfsHash')], [comment.get('commentId')]));
     };
 
     renderExpandButton = () => {
@@ -434,8 +435,8 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        commentsResolveIpfsHash,
+        // commentsResolveIpfsHash,
         toggleOutsideNavigation,
         fullSizeImageAdd,
     }
-)(withRouter(injectIntl(Comment)));
+)(withRouter(injectIntl(withRequest(Comment))));

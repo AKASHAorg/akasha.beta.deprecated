@@ -5,7 +5,7 @@ import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import Waypoint from 'react-waypoint';
-import {profileSelectors, searchSelectors } from '../local-flux/selectors';
+import { profileSelectors, searchSelectors } from '../local-flux/selectors';
 import { profileMessages, generalMessages } from '../locale-data/messages';
 import { DataLoader, ProfileCard } from './index';
 

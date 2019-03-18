@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormattedDate, injectIntl } from 'react-intl';
 import { Modal } from 'antd';
-import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
+import { entryListIterator } from '../../local-flux/actions/entry-actions';
 import { listDelete } from '../../local-flux/actions/list-actions';
 import { entrySelectors, listSelectors } from '../../local-flux/selectors';
 import { generalMessages, listMessages } from '../../locale-data/messages';
 import { EditListBtn, EntryList, Icon } from '../';
+import withRequest from '../high-order-components/with-request';
 
 class ListEntries extends Component {
     state = {
@@ -16,7 +17,7 @@ class ListEntries extends Component {
 
     componentDidMount () {
         const { list } = this.props;
-        this.props.entryListIterator({ value: list.get('id') });
+        this.props.dispatchAction(entryListIterator({ value: list.get('id') }));
     }
 
     deleteList = () => {
@@ -51,7 +52,7 @@ class ListEntries extends Component {
 
     fetchMoreEntries = () => {
         const { list } = this.props;
-        this.props.entryMoreListIterator({ columnId: list.get('name'), value: list.get('id') });
+        this.props.dispatchAction(entryListIterator({ columnId: list.get('name'), value: list.get('id') }));
     };
 
     render () {
@@ -118,7 +119,6 @@ class ListEntries extends Component {
 ListEntries.propTypes = {
     entries: PropTypes.shape(),
     entryListIterator: PropTypes.func.isRequired,
-    entryMoreListIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     history: PropTypes.shape(),
     list: PropTypes.shape(),
@@ -138,8 +138,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryListIterator,
-        entryMoreListIterator,
+        // entryListIterator,
         listDelete
     }
-)(injectIntl(ListEntries));
+)(injectIntl(withRequest(ListEntries)));

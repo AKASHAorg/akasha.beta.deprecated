@@ -7,10 +7,11 @@ import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
 import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
-import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
+import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { dashboardSelectors, profileSelectors,
     searchSelectors} from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
 
@@ -22,7 +23,7 @@ class ProfileColumn extends Component {
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
-            this.props.entryProfileIterator({ columnId: column.get('id'), value });
+            this.props.dispatchAction(entryProfileIterator({ columnId: column.get('id'), value }));
             if (this.interval) {
                 clearInterval(this.interval);
             }
@@ -57,20 +58,20 @@ class ProfileColumn extends Component {
 
     setPollingInterval = () => {
         this.interval = setInterval(() => {
-            this.props.entryProfileIterator({
+            this.props.dispatchAction(entryProfileIterator({
                 columnId: this.props.column.get('id'),
                 reversed: true,
                 value: this.props.column.get('value')
-            });
+            }));
         }, DELAY);
     };
 
     entryIterator = () => {
         const { column } = this.props;
-        this.props.entryProfileIterator({
+        this.props.dispatchAction(entryProfileIterator({
             columnId: column.get('id'),
             value: column.get('value')
-        });
+        }));
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -80,7 +81,10 @@ class ProfileColumn extends Component {
     entryMoreProfileIterator = () => {
         const { column } = this.props;
         const value = column.get('value');
-        this.props.entryMoreProfileIterator({ columnId: column.get('id'), value });
+        this.props.dispatchAction(entryProfileIterator({
+            columnId: column.get('id'),
+            value: column.get('value')
+        }));
     };
 
     render () {
@@ -125,7 +129,6 @@ ProfileColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
-    entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     profileExists: PropTypes.shape().isRequired,
@@ -146,9 +149,8 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetColumnEntries,
-        entryMoreProfileIterator,
-        entryProfileIterator,
+        // entryProfileIterator,
         searchProfiles,
         searchResetResults
     }
-)(injectIntl(ProfileColumn));
+)(injectIntl(withRequest(ProfileColumn)));

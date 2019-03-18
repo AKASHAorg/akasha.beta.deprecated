@@ -14,6 +14,7 @@ import { SEARCH } from '../../constants/context-types';
 import * as columnTypes from '../../constants/columns';
 import { dashboardSelectors, profileSelectors, tagSelectors,
   searchSelectors } from '../../local-flux/selectors';
+  import withRequest from '../high-order-components/with-request';
 
 class NewIdentityInterests extends Component {
     constructor (props) {
@@ -40,7 +41,7 @@ class NewIdentityInterests extends Component {
 
     onChange = (ev) => {
         this.setState({ query: ev.target.value });
-        this.props.searchTags(ev.target.value);
+        this.props.dispatchAction(searchTags(ev.target.value));
     }
 
     handleSkipStep = () => {
@@ -152,7 +153,7 @@ export default connect(
     {
         dashboardAddFirst,
         profileToggleInterest,
-        searchTags,
+        // searchTags,
         navBackCounterReset
     }
-)(injectIntl(NewIdentityInterests));
+)(injectIntl(withRequest(NewIdentityInterests)));

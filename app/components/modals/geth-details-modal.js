@@ -10,6 +10,7 @@ import { gethPauseSync, gethResumeSync, gethStart, /*gethStartLogger,*/ gethStop
 import { gethSaveSettings } from '../../local-flux/actions/settings-actions';
 import { GethCacheSelect, Input, LogsList, PathInputField, ServiceDetailsModal } from '../index';
 import { externalProcessSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const { TabPane } = Tabs;
 
@@ -26,13 +27,13 @@ class GethDetailsModal extends Component {
 
     onToggle = () => {
         /* eslint-disable */
-        const { gethPauseSync, gethStart, gethStatus, gethStop } = this.props;
+        const { gethPauseSync, dispatchAction } = this.props;
         /* eslint-enable */
         if (this.isGethOn()) {
-            gethStop();
+            dispatchAction(gethStop());
             gethPauseSync();
         } else {
-            gethStart();
+            dispatchAction(gethStart());
         }
     };
 
@@ -195,10 +196,10 @@ export default connect(
         gethPauseSync,
         gethResumeSync,
         gethSaveSettings,
-        gethStart,
+        // gethStart,
         /* gethStartLogger, */
-        gethStop,
+        // gethStop,
         /* gethStopLogger, */
         toggleGethDetailsModal,
     }
-)(injectIntl(GethDetailsModal));
+)(injectIntl(withRequest(GethDetailsModal)));

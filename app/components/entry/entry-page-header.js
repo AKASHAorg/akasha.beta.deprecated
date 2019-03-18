@@ -12,6 +12,7 @@ import { entryPageHide, entryGetFull } from '../../local-flux/actions/entry-acti
 import { entrySelectors, draftSelectors, profileSelectors } from '../../local-flux/selectors';
 import { calculateReadingTime, getDisplayName } from '../../utils/dataModule';
 import { addPrefix } from '../../utils/url-utils';
+import withRequest from '../high-order-components/with-request';
 
 class EntryPageHeader extends Component {
     state = {
@@ -60,12 +61,12 @@ class EntryPageHeader extends Component {
     _switchToVersion = version =>
         (ev) => {
             const { author, entry, latestVersion } = this.props;
-            this.props.entryGetFull({
+            this.props.dispatchAction(entryGetFull({
                 ethAddress: author.get('ethAddress'),
                 entryId: entry.get('entryId'),
                 version,
                 latestVersion
-            });
+            }));
             ev.preventDefault();
         }
     renderAvatar = () => {
@@ -250,7 +251,7 @@ export default connect(
     mapStateToProps,
     {
         entryPageHide,
-        entryGetFull,
+        // entryGetFull,
 
     }
-)(withRouter(injectIntl(EntryPageHeader)));
+)(withRouter(injectIntl(withRequest(EntryPageHeader))));

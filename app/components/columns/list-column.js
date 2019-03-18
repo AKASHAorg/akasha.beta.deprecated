@@ -10,15 +10,15 @@ import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-
 import { entryListIterator, entryMoreListIterator } from '../../local-flux/actions/entry-actions';
 import { dashboardSelectors, listSelectors } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages/dashboard-messages';
+import withRequest from '../high-order-components/with-request';
 
 class ListColumn extends Component {
     firstCallDone = false;
 
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
-        if (value !== this.props.column.get('value')) {
-            this.props.entryListIterator({ columnId: column.get('id'), value });
-        }
+        this.props.dispatchAction(entryListIterator({ columnId: column.get('id'), value }), (value !== this.props.column.get('value')));
+
     }
 
     componentWillUnmount () {
@@ -31,17 +31,17 @@ class ListColumn extends Component {
         const value = column.get('value');
         const list = lists.find(lst => lst.get('id') === value);
         if (list && !column.get('entriesList').size && value && !this.firstCallDone) {
-            this.props.entryListIterator({ columnId: column.get('id'), value });
+            this.props.dispatchAction(entryListIterator({ columnId: column.get('id'), value }));
             this.firstCallDone = true;
         }
     };
 
     entryMoreListIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreListIterator({
+        this.props.disaptchAction(entryListIterator({
             columnId: column.get('id'),
-            value: column.get('value')
-        });
+            value: value
+        }));
     };
 
     onRefresh = () => {
@@ -49,10 +49,10 @@ class ListColumn extends Component {
         const value = column.get('value');
         const list = lists.find(lst => lst.get('id') === value);
         if (list) {
-            this.props.entryListIterator({
+            this.props.disaptchAction(entryListIterator({
                 columnId: column.get('id'),
                 value: value
-            });
+            }));
         }
     };
 
@@ -116,7 +116,7 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetColumnEntries,
-        entryListIterator,
+        // entryListIterator,
         entryMoreListIterator,
     }
-)(injectIntl(ListColumn));
+)(injectIntl(withRequest(ListColumn)));

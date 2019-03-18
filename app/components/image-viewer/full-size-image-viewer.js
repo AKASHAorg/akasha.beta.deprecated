@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Spin } from 'antd';
+import { Spin } from 'antd';
 import { injectIntl } from 'react-intl';
-import { Icon } from '../';
 import { fullSizeImageDelete } from '../../local-flux/actions/app-actions';
 import { entryMessages } from '../../locale-data/messages';
 import { appSelectors } from '../../local-flux/selectors';

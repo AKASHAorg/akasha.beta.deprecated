@@ -8,10 +8,11 @@ import { sendTip, transferEth } from '../../constants/action-types';
 import { showNotification, toggleEthWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
 import { profileGetBalance } from '../../local-flux/actions/profile-actions';
-import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
+import { searchResetResults } from '../../local-flux/actions/search-actions';
 import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
+import withRequest from '../high-order-components/with-request';
 
 const { TabPane } = Tabs;
 const WALLET = 'wallet';
@@ -24,7 +25,7 @@ class EthWallet extends Component {
 
     componentDidMount () {
         this.props.actionGetHistory([sendTip, transferEth]);
-        this.props.profileGetBalance();
+        this.props.dispatchAction(profileGetBalance());
     }
 
     componentWillUnmount () {
@@ -93,7 +94,7 @@ class EthWallet extends Component {
                   onCancel={this.props.toggleEthWallet}
                   onSubmit={this.onSubmit}
                   pendingTransfer={pendingTransfer}
-                  searchProfiles={this.props.searchProfiles}
+                  // searchProfiles={this.props.searchProfiles}
                   showNotification={this.props.showNotification}
                   type="eth"
                 />
@@ -117,7 +118,6 @@ EthWallet.propTypes = {
     pendingTransfer: PropTypes.bool,
     profileGetBalance: PropTypes.func.isRequired,
     profileResults: PropTypes.shape().isRequired,
-    searchProfiles: PropTypes.func.isRequired,
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     showNotification: PropTypes.func.isRequired,
@@ -140,10 +140,9 @@ export default connect(
         actionAdd,
         actionClearHistory,
         actionGetHistory,
-        profileGetBalance,
-        searchProfiles,
+        // profileGetBalance,
         searchResetResults,
         showNotification,
         toggleEthWallet,
     }
-)(injectIntl(clickAway(EthWallet)));
+)(injectIntl(clickAway(withRequest(EthWallet))));

@@ -10,6 +10,7 @@ import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { searchTags } from '../../local-flux/actions/search-actions';
 import { dashboardSelectors, tagSelectors, searchSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
 
@@ -21,7 +22,7 @@ class TagColumn extends Component {
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
-            this.props.entryTagIterator({ columnId: column.get('id'), value });
+            this.props.dispatchAction(entryTagIterator({ columnId: column.get('id'), value }));
             if (this.interval) {
                 clearInterval(this.interval);
             }
@@ -55,20 +56,20 @@ class TagColumn extends Component {
 
     setPollingInterval = () => {
         this.interval = setInterval(() => {
-            this.props.entryTagIterator({
+            this.props.dispatchAction(entryTagIterator({
                 columnId: this.props.column.get('id'),
                 reversed: true,
                 value: this.props.column.get('value')
-            });
+            }));
         }, DELAY);
     };
 
     entryIterator = () => {
         const { column } = this.props;
-        this.props.entryTagIterator({
+        this.props.dispatchAction(entryTagIterator({
             columnId: column.get('id'),
             value: column.get('value')
-        });
+        }));
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -77,7 +78,11 @@ class TagColumn extends Component {
 
     entryMoreTagIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreTagIterator({ columnId: column.get('id'), value: column.get('value') });
+        this.props.dispatchAction(entryTagIterator({
+            columnId: this.props.column.get('id'),
+            reversed: true,
+            value: this.props.column.get('value')
+        }));
     };
 
     render () {
@@ -121,7 +126,6 @@ TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
-    entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     searchTags: PropTypes.func.isRequired,
@@ -142,8 +146,7 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetColumnEntries,
-        entryMoreTagIterator,
-        entryTagIterator,
+        // entryTagIterator,
         searchTags,
     }
-)(injectIntl(TagColumn));
+)(injectIntl(withRequest(TagColumn)));

@@ -140,39 +140,39 @@ export const profileLogoutError = (error) => {
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
 export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 
-export const profileMoreCommentsIterator = column =>
-    action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
-export const profileMoreCommentsIteratorError = (error, request) => {
-    error.code = 'PMCIE01';
-    error.messageId = 'profileMoreCommentsIterator';
-    return action(types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR, { error, request });
-};
-export const profileMoreCommentsIteratorSuccess = (data, request) =>
-    action(types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS, { data, request });
+// export const profileMoreCommentsIterator = column =>
+//     action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
+// export const profileMoreCommentsIteratorError = (error, request) => {
+//     error.code = 'PMCIE01';
+//     error.messageId = 'profileMoreCommentsIterator';
+//     return action(types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR, { error, request });
+// };
+// export const profileMoreCommentsIteratorSuccess = (data, request) =>
+//     action(types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS, { data, request });
 
-export const profileMoreFollowersIterator = ({ column, batching }) =>
-    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
+// export const profileMoreFollowersIterator = ({ column, batching }) =>
+//     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
 
-export const profileMoreFollowersIteratorError = (error, request) => {
-    error.code = 'PMFIE01';
-    error.messageId = 'profileMoreFollowersIterator';
-    return action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR, { error, request });
-};
+// export const profileMoreFollowersIteratorError = (error, request) => {
+//     error.code = 'PMFIE01';
+//     error.messageId = 'profileMoreFollowersIterator';
+//     return action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR, { error, request });
+// };
 
-export const profileMoreFollowersIteratorSuccess = (data, request) =>
-    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
+// export const profileMoreFollowersIteratorSuccess = (data, request) =>
+//     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
 
-export const profileMoreFollowingsIterator = ({ column, batching }) =>
-    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
+// export const profileMoreFollowingsIterator = ({ column, batching }) =>
+//     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
 
-export const profileMoreFollowingsIteratorError = (error, request) => {
-    error.code = 'PMFIE02';
-    error.messageId = 'profileMoreFollowingsIterator';
-    return action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
-};
+// export const profileMoreFollowingsIteratorError = (error, request) => {
+//     error.code = 'PMFIE02';
+//     error.messageId = 'profileMoreFollowingsIterator';
+//     return action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
+// };
 
-export const profileMoreFollowingsIteratorSuccess = (data, request, batching) =>
-    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request, batching });
+// export const profileMoreFollowingsIteratorSuccess = (data, request, batching) =>
+//     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request, batching });
 
 export const profileRegister = ({
     actionId, akashaId, address, about, avatar, backgroundImage,

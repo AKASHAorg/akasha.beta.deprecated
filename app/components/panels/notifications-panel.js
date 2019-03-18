@@ -3,14 +3,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Popover, Timeline, Switch } from 'antd';
-import classNames from 'classnames';
-import { DataLoader, Icon, NotificationLog } from '../';
+import { Icon} from '../';
 import { hideNotificationsPanel } from '../../local-flux/actions/app-actions';
 import { notificationsSubscribe } from '../../local-flux/actions/notifications-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { profileMessages, generalMessages, settingsMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
 import { profileSelectors, notificationSelectors, settingsSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const { Item } = Timeline;
 
@@ -70,7 +70,7 @@ class NotificationsPanel extends Component {
         this.setState({ visibleSettings: visible });
         if (!visible) {
             this.props.userSettingsSave(loggedEthAddress, { notificationsPreference });
-            this.props.notificationsSubscribe(notificationsPreference);
+            this.props.dispatchAction(notificationsSubscribe(notificationsPreference));
         }
     };
 
@@ -204,7 +204,7 @@ export default connect(
     mapStateToProps,
     {
         hideNotificationsPanel,
-        notificationsSubscribe,
+        // notificationsSubscribe,
         userSettingsSave
     }
-)(injectIntl(clickAway(NotificationsPanel)));
+)(injectIntl(clickAway(withRequest(NotificationsPanel))));

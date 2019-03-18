@@ -8,6 +8,7 @@ import { CommentThread, DataLoader, OptimisticComment } from '../';
 import { commentsIterator } from '../../local-flux/actions/comments-actions';
 import { actionSelectors, commentSelectors, entrySelectors,
     profileSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class CommentList extends Component {
     state = {
@@ -57,7 +58,7 @@ class CommentList extends Component {
 
     loadComments = () => {
         const { entryId } = this.props;
-        this.props.commentsIterator({ context: 'entryPage', entryId, parent: '0' });
+        this.props.dispatchAction(commentsIterator({ context: 'entryPage', entryId, parent: '0' }));
     };
 
     render () { // eslint-disable-line complexity
@@ -172,6 +173,6 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        commentsIterator,
+        // commentsIterator,
     }
-)(injectIntl(CommentList));
+)(injectIntl(withRequest(CommentList)));

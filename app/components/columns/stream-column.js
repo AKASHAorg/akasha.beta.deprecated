@@ -10,6 +10,7 @@ import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-
 import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { dashboardSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
 
@@ -45,12 +46,12 @@ class StreamColumn extends Component {
 
     setPollingInterval = () => {
         this.interval = setInterval(() => {
-            this.props.entryStreamIterator(this.props.column.get('id'), true);
+            this.props.dispatchAction(entryStreamIterator(this.props.column.get('id'), true));
         }, DELAY);
     };
 
     entryIterator = () => {
-        this.props.entryStreamIterator(this.props.column.get('id'));
+        this.props.dispatchAction(entryStreamIterator(this.props.column.get('id')));
         if (this.interval) {
             clearInterval(this.interval);
         }
@@ -59,7 +60,7 @@ class StreamColumn extends Component {
 
     entryMoreStreamIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreStreamIterator(column.get('id'));
+        this.props.dispatchAction(entryStreamIterator(this.props.column.get('id'), true));
     }
 
     render () {
@@ -95,7 +96,6 @@ StreamColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
-    entryMoreStreamIterator: PropTypes.func.isRequired,
     entryStreamIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
 };
@@ -110,7 +110,6 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetColumnEntries,
-        entryMoreStreamIterator,
-        entryStreamIterator,
+        // entryStreamIterator,
     }
-)(injectIntl(StreamColumn));
+)(injectIntl(withRequest(StreamColumn)));

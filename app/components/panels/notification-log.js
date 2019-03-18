@@ -12,6 +12,7 @@ import { profileGetData, profileIsFollower } from '../../local-flux/actions/prof
 import { entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import { generalMessages, notificationMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
+import withRequest from '../high-order-components/with-request';
 
 const getEthAddress = (notification) => {
     switch (notification.type) {
@@ -52,15 +53,15 @@ class NotificationLog extends Component {
         this.firstLoad = false;
         const ethAddress = getEthAddress(notification);
         if (!entry && notification.payload.entryId) {
-            this.props.entryGetShort({
+            this.props.dispatchAction(entryGetShort({
                 context: 'notifications',
                 entryId: notification.payload.entryId,
                 ethAddress: loggedEthAddress
-            });
+            }));
         }
         if (!profile.get('ethAddress')) {
-            this.props.profileGetData({ context: 'notifications', ethAddress });
-            this.props.profileIsFollower([ethAddress]);
+            this.props.dispatchAction(profileGetData({ context: 'notifications', ethAddress }));
+            this.props.dispatchAction(profileIsFollower([ethAddress]));
         }
     };
 
@@ -189,8 +190,8 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryGetShort,
-        profileGetData,
-        profileIsFollower,
+        // entryGetShort,
+        // profileGetData,
+        // profileIsFollower,
     }
-)(injectIntl(NotificationLog));
+)(injectIntl(withRequest(NotificationLog)));

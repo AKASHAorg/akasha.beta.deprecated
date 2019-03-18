@@ -5,7 +5,6 @@ import AvatarEditor from 'react-avatar-editor/dist';
 import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { Icon } from '../';
-import { generalMessages } from '../../locale-data/messages/general-messages';
 import { externalProcessSelectors } from '../../local-flux/selectors';
 
 class AvatarEditr extends Component {
