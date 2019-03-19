@@ -130,7 +130,6 @@ class NewIdentity extends Component {
                 {intl.formatMessage(generalMessages.termsOfService)}
             </a>
         );
-        console.log("registration is active:", active);
         if (!active) {
             return null;
         }

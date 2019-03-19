@@ -8,7 +8,6 @@ import * as React from "react";
 */
 
 function ExternalLogin (props /* : Props */) {
-    console.log("external login is active:", props.active);
     if (!props.active) {
         return null;
     }

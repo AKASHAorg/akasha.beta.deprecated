@@ -1,7 +1,6 @@
 // @flow
-import { buildCall } from '@akashaproject/common/constants';
-import { genId } from '../../utils/dataModule';
-
+import { buildCall } from "@akashaproject/common/constants";
+import { genId } from "../../utils/dataModule";
 
 export default {
     requestIds: {
@@ -9,19 +8,19 @@ export default {
     },
     dispatch: null,
     logger: null,
-    setDispatch (dispatchMethod/* : void */)/* : void */ {
+    setDispatch (dispatchMethod /* : void */) /* : void */ {
         this.dispatch = dispatchMethod;
     },
-    setLogger (logger/* : Object */)/* : void */ {
+    setLogger (logger /* : Object */) /* : void */ {
         this.logger = logger;
     },
-    sendRequest (module/* : Object */, methodName/* : string */, data/* : Object */) {
-        let reqId/* : string */ = data.reqId;
+    sendRequest (mod /* : Object */, methodName /* : string */, data /* : Object */) {
+        let reqId /* : string */ = data.reqId;
         if (!reqId) {
             reqId = this.generateId();
         }
         const channel = this.getIPCChannel();
-        const reqObject = buildCall(module, methodName, { reqId, ...data });
+        const reqObject = buildCall(mod, methodName, { reqId, ...data });
 
         try {
             channel.send(reqObject);
@@ -31,31 +30,31 @@ export default {
             this.removeRequestId(reqId, methodName);
         }
     },
-    generateId ()/* : string */ {
+    generateId () /* : string */ {
         return genId();
     },
-    setIPCChannel (channel/*: Object */) {
+    setIPCChannel (channel /*: Object */) {
         this.IPC = channel;
     },
     getIPCChannel () {
-        return this.IPC
+        return this.IPC;
     },
     addResponseListener (): void {
-        this.getIPCChannel().on((evEmitter/* : Event *//** don't care */, response/* : Object */) => {
+        this.getIPCChannel().on((evEmitter /* : Event */ /** don't care */, response /* : Object */) => {
             const { data, args } = response;
             const { method, module, payload } = args;
             const { reqId } = payload;
-            if(reqId) {
-                if(data && !data.hasStream) {
+            if (reqId) {
+                if (data && !data.hasStream) {
                     // remove requestId and process data
                     this.removeRequestId(reqId, method);
                 }
                 // keep the requestId and process data
                 const action = this.processAction(response);
                 /**
-                    * dispatch action
-                    * action = { type: String, data: Object }
-                    */
+                 * dispatch action
+                 * action = { type: String, data: Object }
+                 */
                 this.logger.info(
                     `[ChReqService] Dispatching [${action.responseAction.type}] with response:
                         ${JSON.stringify(action.responseAction.data)}`
@@ -63,15 +62,22 @@ export default {
                 this.dispatch(action.responseAction);
                 this.dispatch(action.endAction);
             } else {
-                this.logger.warn('[ChReqService] A request without requestId has been made. Please add a requestId to', module, method); // eslint-disable-line
+                this.logger.warn(
+                    "[ChReqService] A request without requestId has been made. Please add a requestId to",
+                    module,
+                    method
+                ); // eslint-disable-line
             }
         });
     },
-    processAction (response/* : Object */) {
+    processAction (response /* : Object */) {
         // determine the appropiate action base on requestId and data
         const { args, data, error } = response;
+        if (error) {
+            this.logger.fatal(`${error.message}, ${JSON.stringify(error.stack)}`);
+        }
         const { method } = args;
-        if(error) {
+        if (error) {
             return {
                 responseAction: {
                     type: `${method}_ERROR`,
@@ -103,10 +109,10 @@ export default {
         // usefull to cleanup everything
         this.getIPCChannel().removeAllListeners();
     },
-    addRequestId (reqId/* : String */, method/* : String */)/* : void */ {
+    addRequestId (reqId /* : String */, method /* : String */) /* : void */ {
         this.requestIds[reqId] = method;
     },
-    removeRequestId (reqId/* : String */, method/* : String */)/* : void */ {
-        delete(this.requestIds[reqId]);
-    },
+    removeRequestId (reqId /* : String */, method /* : String */) /* : void */ {
+        delete this.requestIds[reqId];
+    }
 };

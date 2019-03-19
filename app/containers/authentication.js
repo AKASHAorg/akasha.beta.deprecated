@@ -28,7 +28,7 @@ class Auth extends Component {
         // delay the request by 100 ms to initiate channels
         setTimeout(this.getLocalIdentities, 100);
         this.interval = setInterval(this.getLocalIdentities, 10000, true);
-        profileDeleteLogged();
+        // profileDeleteLogged();
         this.props.navBackCounterReset();
     }
 
@@ -104,7 +104,6 @@ class Auth extends Component {
         const backupButtonClass = classNames("auth__button auth__button_no-border", {
             "auth__button_no-border_disabled": backupPending
         });
-        console.log("authentication is active:", active);
         if (!active) {
             return null;
         }
@@ -191,7 +190,7 @@ Auth.propTypes = {
     localProfiles: PropTypes.shape().isRequired,
     localProfilesFetched: PropTypes.bool,
     navBackCounterReset: PropTypes.func,
-    pendingListProfiles: PropTypes.shape().isRequired,
+    pendingListProfiles: PropTypes.shape(),
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired

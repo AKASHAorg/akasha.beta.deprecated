@@ -19,7 +19,7 @@ import "./styles/core.scss";
 import "./styles/ant-vars/extract-default-theme.less";
 
 // main application context
-export const MainContext = React.createContext({
+export const MainContext = React.createContext/*::<Object>*/({
     web3: false,
     logger: {},
     channel: {}
@@ -33,7 +33,6 @@ export const bootstrap = (
     logger /* : Object */
 ) => {
     const store = storeConfig();
-
     // add logger context to sagas
     sagaMiddleware.run(rootSaga, logger);
     // add dispatch method the the instance of chReqService
@@ -44,12 +43,13 @@ export const bootstrap = (
 
     // --------- <Dev only> --------------- //
     global.redux__store = store;
+    global.ipc__channel = channel;
     // --------- </Dev only> --------------- //
 
     const rootNode = document.getElementById("root") || document.body;
 
     loadAkashaDB(err => {
-        if (err) {
+        if (err && rootNode) {
             logger.error("[index.js] Cannot load database!!");
             return render(<AppErrorBoundary error={Error("Cannot load database!")} />, rootNode);
         }
@@ -72,67 +72,90 @@ export const bootstrap = (
             }
             renderApplication(store, web3Enabled, vault, channel, logger, isMetamask, rootNode);
         } catch (ex) {
-            return render(
-                <Provider store={store}>
-                    <ConnectedIntlProvider>
-                        <AppErrorBoundary
-                            error={{
-                                name: `[index.js/75] ${ex.name}\n`,
-                                message: `${ex.stack}`
-                            }}
-                        />
-                    </ConnectedIntlProvider>
-                </Provider>,
-                rootNode
-            );
+            if (rootNode) {
+                return render(
+                    <Provider store={store}>
+                        <ConnectedIntlProvider>
+                            <AppErrorBoundary
+                                error={{
+                                    name: `[index.js/75] ${ex.name}\n`,
+                                    message: `${ex.stack}`
+                                }}
+                            />
+                        </ConnectedIntlProvider>
+                    </Provider>,
+                    rootNode
+                );
+            }
         }
     });
 };
 
 const renderApplication = (store, web3Enabled, vault, channel, logger, isMetamask, rootNode) => {
     const history = getHistory();
-    render(
-        <Provider store={store}>
-            <ConnectedIntlProvider>
-                <Router history={history}>
-                    <Route
-                        render={props => (
-                            <MainContext.Provider
-                                value={{
-                                    web3: web3Enabled,
-                                    channel,
-                                    logger
-                                }}
-                            >
-                                {/* Apps entry points. All this components are standalone and can be
+    const isAuthActive = web3Enabled && !vault && !isMetamask;
+    const isRegistrationActive = web3Enabled && !vault && !isMetamask;
+    const isSetupActive = !web3Enabled && !isMetamask;
+    const isAppActive = web3Enabled && vault;
+    const isExternalLoginActive = web3Enabled && !vault && isMetamask;
+    if (rootNode) {
+        render(
+            <Provider store={store}>
+                <ConnectedIntlProvider>
+                    <Router history={history}>
+                        <Route
+                            render={props => (
+                                <MainContext.Provider
+                                    value={{
+                                        web3: web3Enabled,
+                                        channel,
+                                        logger
+                                    }}
+                                >
+                                    {/* Apps entry points. All this components are standalone and can be
                                     easily removed/hidden based on platform (web, desktop, mobile, etc) */}
-                                {/* Application => the dashboard page with all the pages
+                                    {/* Application => the dashboard page with all the pages
                                        linked (profile, editor,etc) */}
-                                <Application active={web3Enabled && vault} {...props} />
+                                    <Application
+                                        active={isAppActive}
+                                        {...props}
+                                        reloadPage={() => {
+                                            renderApplication(
+                                                store,
+                                                web3Enabled,
+                                                vault,
+                                                channel,
+                                                logger,
+                                                isMetamask,
+                                                rootNode
+                                            );
+                                        }}
+                                    />
 
-                                {/* Authentication => the login page (can be hidden/removed
+                                    {/* Authentication => the login page (can be hidden/removed
                                     in some cases like web version) */}
-                                <Authentication active={web3Enabled && !vault && !isMetamask} {...props} />
+                                    <Authentication active={isAuthActive} {...props} />
 
-                                {/* Registration => Create profile page (standalone page).
+                                    {/* Registration => Create profile page (standalone page).
                                     Can be hidden/removed in some cases */}
-                                <Registration active={web3Enabled && !vault && !isMetamask} {...props} />
+                                    <Registration active={isRegistrationActive} {...props} />
 
-                                {/* Setup => Application setup page (mainly for ipfs and geth executables) */}
-                                <Setup active={!web3Enabled && !isMetamask} {...props} />
+                                    {/* Setup => Application setup page */}
+                                    <Setup active={isSetupActive} {...props} />
 
-                                {/* ExternalLogin => for now this is just a simple
+                                    {/* ExternalLogin => for now this is just a simple
                                     static page showing a message
                                     In the future we can use this page for external 3rd party
                                     login mechanism */}
-                                <ExternalLogin active={web3Enabled && !vault && isMetamask} {...props} />
-                            </MainContext.Provider>
-                        )}
-                    />
-                </Router>
-            </ConnectedIntlProvider>
-        </Provider>,
-        rootNode,
-        () => logger.info("[index.js] React rendered the App")
-    );
+                                    <ExternalLogin active={isExternalLoginActive} {...props} />
+                                </MainContext.Provider>
+                            )}
+                        />
+                    </Router>
+                </ConnectedIntlProvider>
+            </Provider>,
+            rootNode,
+            () => logger.info("[index.js] React rendered the App")
+        );
+    }
 };

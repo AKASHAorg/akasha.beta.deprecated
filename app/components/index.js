@@ -3,6 +3,7 @@ export { default as AddImage } from "./comment/add-image";
 export { default as AddToBoard } from "./popovers/add-to-board";
 export { default as AddToBoardPopover } from "./popovers/add-to-board-popover";
 export { default as AethWallet } from "./wallets/aeth-wallet";
+export { default as AppbarBalance } from "./top-bars/appbar-balance";
 export { default as AppErrorBoundary } from "./error-boundaries/app-error-boundary";
 export { default as AppPreferences } from "./profile-overview/app-preferences";
 export { default as AuthProfileList } from "./setup/auth-profile-list";

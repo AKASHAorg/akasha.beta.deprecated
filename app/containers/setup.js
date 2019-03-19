@@ -141,7 +141,6 @@ class Config extends Component {
     render () {
         const { configurationSaved, intl, active } = this.props;
         const { isAdvanced, syncmode } = this.state;
-        console.log("setup is active:", active);
         if (!active) {
             return null;
         }
