@@ -10,7 +10,7 @@ import ChReqService from '../services/channel-request-service';
 
 /*::
     import type { Saga, CallEffect } from 'redux-saga';
-    import type { CommentsCheckNewPayload 
+    import type { CommentsCheckNewPayload
         } from '../../flow-typed/actions/comments-actions';
  */
 
@@ -22,11 +22,11 @@ function* commentsCheckNew ({ entryId }/*: CommentsCheckNewPayload */)/* : Saga<
     yield call(commentsIterator, { entryId, toBlock, reversed: true, checkNew: true, more: false, parent: null, context: null }); // eslint-disable-line
 }
 
-function* commentsDownvote ({ actionId, commentId, entryId, weight })/* : Saga<void> */ {
+function* commentsDownvote ({ actionId, commentId, entryId, weight, reqId })/* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
     yield call([ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.downVote, {
-            actionId, token, commentId, entryId, weight
+            actionId, token, commentId, entryId, weight, reqId,
         });
 }
 
@@ -35,19 +35,19 @@ function* commentsDownvoteSuccess ({ data })/* : Saga<void> */ {
     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsGet ({ context, entryId, commentId, isParent })/* : Saga<void> */ {
+function* commentsGet ({ context, entryId, commentId, isParent, reqId })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.getComment, {
-            context, entryId, commentId, isParent
+            context, entryId, commentId, isParent, reqId
         });
 }
 
-function* commentsGetCount ({ entryId })/* : Saga<void> */ {
+function* commentsGetCount ({ entryId, reqId })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.commentsCount, {
-            entryId
+            entryId, reqId,
         });
 }
 
@@ -81,11 +81,11 @@ function* commentsGetCount ({ entryId })/* : Saga<void> */ {
 //     }
 // }
 
-function* commentsGetScore ({ commentId })/* : Saga<void> */ {
+function* commentsGetScore ({ commentId, reqId })/* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.getScore,
-        { commentId }
+        { commentId, reqId }
     );
 }
 
@@ -111,7 +111,7 @@ function* commentsIterator (
     yield call(
         [ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator, {
-            context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew 
+            context, entryId, toBlock: block, lastIndex, limit, reversed, parent, more, checkNew
         }
     );
 }

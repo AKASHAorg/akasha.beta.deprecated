@@ -1,17 +1,13 @@
-.sidebar {
+.sidebar-layout {
     width: @sidebar-width;
     position: fixed;
-    left: @sidebar-width * -1;
     top: 0;
     bottom: 0;
     z-index: 100;
     display: flex;
     flex-direction: column;
-    transition: left 0.175s ease-in-out;
-    will-change: left;
     max-width: @sidebar-width;
     background-color: @sidebar-background;
-
     &__top-icons {
         flex-grow: 4;
         padding: 16px;

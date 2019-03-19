@@ -2,7 +2,7 @@
     "extends": ["eslint:recommended", "plugin:react/recommended"],
     "plugins": ["babel"],
     "rules": {
-        "react/jsx-indent": [2, 2],
+        "react/jsx-indent": [2, 4],
         "indent": [2, 4, {"SwitchCase": 1, "ignoredNodes": ["JSXElement", "JSXElement *"]}],
         "comma-dangle": [0],
         "comma-style": ["error", "last"],
@@ -29,6 +29,7 @@
         "object-curly-newline": 0,
         "function-paren-newline": 0,
         "react/no-deprecated": 0,
+        "react/prop-types": [1, {"skipUndeclared": true}]
     },
     "settings": {
         "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"],

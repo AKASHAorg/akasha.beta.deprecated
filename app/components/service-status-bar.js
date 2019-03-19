@@ -1,52 +1,53 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
-import { Select, Tooltip } from 'antd';
-import serviceState from '../constants/serviceState';
-import { generalMessages, settingsMessages } from '../locale-data/messages';
-import { toggleGethDetailsModal,
-    toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
-import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
-import { settingsSelectors } from '../local-flux/selectors';
-import { Icon } from './';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { injectIntl } from "react-intl";
+import { Select, Tooltip } from "antd";
+import serviceState from "../constants/serviceState";
+import { generalMessages, settingsMessages } from "../locale-data/messages";
+import { toggleGethDetailsModal, toggleIpfsDetailsModal } from "../local-flux/actions/app-actions";
+import { saveGeneralSettings } from "../local-flux/actions/settings-actions";
+import { settingsSelectors } from "../local-flux/selectors";
+import { Icon } from "./";
 
 const { Option } = Select;
 
 class ServiceStatusBar extends Component {
-    getCircleColor = (state) => {
+    getCircleColor = state => {
         switch (state) {
             case serviceState.stopped:
-                return 'Red';
+                return "Red";
             case serviceState.downloading:
             case serviceState.starting:
             case serviceState.upgrading:
-                return 'Orange';
+                return "Orange";
             case serviceState.started:
-                return 'Green';
+                return "Green";
             default:
-                return '';
+                return "";
         }
     };
-    shouldComponentUpdate (nextProps) {
-        const props = this.props;
-        return !nextProps.generalSettings.equals(props.generalSettings) ||
-            nextProps.gethStarting !== props.gethStarting ||
-            !nextProps.gethStatus.equals(props.gethStatus) ||
-            nextProps.ipfsStarting !== props.ipfsStarting ||
-            !nextProps.ipfsStatus.equals(props.ipfsStatus);
-    }
+    // shouldComponentUpdate (nextProps) {
+    //     const props = this.props;
+    //     return (
+    //         !nextProps.generalSettings.equals(props.generalSettings) ||
+    //         nextProps.gethStarting !== props.gethStarting ||
+    //         !nextProps.gethStatus.equals(props.gethStatus) ||
+    //         nextProps.ipfsStarting !== props.ipfsStarting ||
+    //         !nextProps.ipfsStatus.equals(props.ipfsStatus)
+    //     );
+    // }
     getIpfsState () {
         const { ipfsStarting, ipfsStatus } = this.props;
         let ipfsState = serviceState.stopped;
 
-        if (ipfsStatus.get('downloading')) {
+        if (ipfsStatus.get("downloading")) {
             ipfsState = serviceState.downloading;
-        } else if (ipfsStatus.get('upgrading')) {
+        } else if (ipfsStatus.get("upgrading")) {
             ipfsState = serviceState.upgrading;
-        } else if (ipfsStatus.get('started') || ipfsStatus.get('process')) {
+        } else if (ipfsStatus.get("started") || ipfsStatus.get("process")) {
             ipfsState = serviceState.started;
-        } else if (ipfsStarting || ipfsStatus.get('starting')) {
+        } else if (ipfsStarting || ipfsStatus.get("starting")) {
             ipfsState = serviceState.starting;
         }
         return ipfsState;
@@ -56,13 +57,13 @@ class ServiceStatusBar extends Component {
         const { gethStarting, gethStatus } = this.props;
         let gethState = serviceState.stopped;
 
-        if (gethStatus.get('downloading')) {
+        if (gethStatus.get("downloading")) {
             gethState = serviceState.downloading;
-        } else if (gethStatus.get('upgrading')) {
+        } else if (gethStatus.get("upgrading")) {
             gethState = serviceState.upgrading;
-        } else if (gethStatus.get('started') || gethStatus.get('process')) {
+        } else if (gethStatus.get("started") || gethStatus.get("process")) {
             gethState = serviceState.started;
-        } else if (gethStarting || gethStatus.get('starting')) {
+        } else if (gethStarting || gethStatus.get("starting")) {
             gethState = serviceState.starting;
         }
         return gethState;
@@ -86,8 +87,8 @@ class ServiceStatusBar extends Component {
         }
     }
 
-    handleChange = (value) => {
-        if (value !== 'translate') {
+    handleChange = value => {
+        if (value !== "translate") {
             this.props.saveGeneralSettings({
                 locale: value
             });
@@ -100,55 +101,56 @@ class ServiceStatusBar extends Component {
         const ipfsState = serviceState.stopped; //this.getIpfsState();
         const gethColor = this.getCircleColor(gethState);
         const ipfsColor = this.getCircleColor(ipfsState);
-        const gethIcon = withCircles ? `geth${gethColor}` : 'geth';
-        const ipfsIcon = withCircles ? `ipfs${ipfsColor}` : 'ipfs';
+        const gethIcon = withCircles ? `geth${gethColor}` : "geth";
+        const ipfsIcon = withCircles ? `ipfs${ipfsColor}` : "ipfs";
 
         return (
-          <div className="service-status-bar">
-            <Tooltip title={this.getTooltip(gethState)}>
-              <div
-                className="content-link flex-center service-status-bar__button"
-                onClick={toggleGethDetails}
-              >
-                <Icon className="service-status-bar__geth-icon" type={gethIcon} />
-                {!withCircles && gethColor === 'Red' &&
-                  <div className="service-status-bar__dot" />
-                }
-              </div>
-            </Tooltip>
-            <Tooltip title={this.getTooltip(ipfsState)}>
-              <div
-                className="content-link flex-center service-status-bar__button"
-                onClick={toggleIpfsDetails}
-              >
-                <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
-                {!withCircles && ipfsColor === 'Red' &&
-                  <div className="service-status-bar__dot" />
-                }
-              </div>
-            </Tooltip>
-            {withCircles &&
-              <Select
-                className="service-status-bar__select"
-                dropdownClassName="service-status-bar__select-dropdown"
-                onChange={this.handleChange}
-                size="small"
-                value={generalSettings.get('locale')}
-              >
-                <Option value="en-US">{intl.formatMessage(settingsMessages.english)}</Option>
-                <Option value="zh-CN">{intl.formatMessage(settingsMessages.chineseSimplified)}</Option>
-                <Option value="fi-FI">{intl.formatMessage(settingsMessages.finnish)}</Option>
-                <Option value="id-ID">{intl.formatMessage(settingsMessages.indonesian)}</Option>
-                <Option value="es-ES">{intl.formatMessage(settingsMessages.spanish)}</Option>
-                <Option className="flex-center-y service-status-bar__translate-option" value="translate">
-                  <a className="unstyled-link" href="https://crowdin.com/project/akasha" >
-                    {intl.formatMessage(generalMessages.translate)}
-                  </a>
-                  <Icon className="service-status-bar__link-icon" type="link" />
-                </Option>
-              </Select>
-            }
-          </div>
+            <div className="service-status-bar">
+                <Tooltip title={this.getTooltip(gethState)}>
+                    <div
+                        className="content-link flex-center service-status-bar__button"
+                        onClick={toggleGethDetails}
+                    >
+                        <Icon className="service-status-bar__geth-icon" type={gethIcon} />
+                        {!withCircles && gethColor === "Red" && <div className="service-status-bar__dot" />}
+                    </div>
+                </Tooltip>
+                <Tooltip title={this.getTooltip(ipfsState)}>
+                    <div
+                        className="content-link flex-center service-status-bar__button"
+                        onClick={toggleIpfsDetails}
+                    >
+                        <Icon className="service-status-bar__ipfs-icon" type={ipfsIcon} />
+                        {!withCircles && ipfsColor === "Red" && <div className="service-status-bar__dot" />}
+                    </div>
+                </Tooltip>
+                {withCircles && (
+                    <Select
+                        className="service-status-bar__select"
+                        dropdownClassName="service-status-bar__select-dropdown"
+                        onChange={this.handleChange}
+                        size="small"
+                        value={generalSettings.get("locale")}
+                    >
+                        <Option value="en-US">{intl.formatMessage(settingsMessages.english)}</Option>
+                        <Option value="zh-CN">
+                            {intl.formatMessage(settingsMessages.chineseSimplified)}
+                        </Option>
+                        <Option value="fi-FI">{intl.formatMessage(settingsMessages.finnish)}</Option>
+                        <Option value="id-ID">{intl.formatMessage(settingsMessages.indonesian)}</Option>
+                        <Option value="es-ES">{intl.formatMessage(settingsMessages.spanish)}</Option>
+                        <Option
+                            className="flex-center-y service-status-bar__translate-option"
+                            value="translate"
+                        >
+                            <a className="unstyled-link" href="https://crowdin.com/project/akasha">
+                                {intl.formatMessage(generalMessages.translate)}
+                            </a>
+                            <Icon className="service-status-bar__link-icon" type="link" />
+                        </Option>
+                    </Select>
+                )}
+            </div>
         );
     }
 }
@@ -156,10 +158,10 @@ class ServiceStatusBar extends Component {
 ServiceStatusBar.propTypes = {
     generalSettings: PropTypes.shape().isRequired,
     gethStarting: PropTypes.bool,
-    gethStatus: PropTypes.shape().isRequired,
+    // gethStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsStarting: PropTypes.bool,
-    ipfsStatus: PropTypes.shape().isRequired,
+    // ipfsStatus: PropTypes.shape().isRequired,
     saveGeneralSettings: PropTypes.func.isRequired,
     toggleGethDetails: PropTypes.func.isRequired,
     toggleIpfsDetails: PropTypes.func.isRequired,
@@ -169,10 +171,10 @@ ServiceStatusBar.propTypes = {
 function mapStateToProps (state) {
     return {
         generalSettings: settingsSelectors.selectGeneralSettings(state),
-        gethStarting: true, //settingsSelectors.getGethStarting(state),
+        gethStarting: false, //settingsSelectors.getGethStarting(state),
         gethStatus: false, //settingsSelectors.selectGethStatus(state),
         ipfsStarting: true, //settingsSelectors.getIpfsStarting(state),
-        ipfsStatus: false, //settingsSelectors.selectIpfsStatus(state),
+        ipfsStatus: false //settingsSelectors.selectIpfsStatus(state),
     };
 }
 
@@ -188,4 +190,3 @@ export default connect(
     null,
     { pure: false }
 )(injectIntl(ServiceStatusBar));
-

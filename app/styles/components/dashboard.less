@@ -1,19 +1,27 @@
-.dashboard {
-    display: flex;
-    padding: 20px 20px 0;
+.dashboard-layout {
+    position: fixed;
+    left: 0;
+    padding-left: ~'calc(@{sidebar-width} + 1.429em)';
+    padding-top: ~'calc(@{top-bar-height} + 1.429em)';
+    padding-right: 1.429em;
+    top: 0;
     height: 100%;
     width: 100%;
-    overflow-x: auto;
+    z-index: 0;
     background-color: @light-background;
-    position: relative;
+    display: flex;
+    overflow-y: auto;
     &__column {
-        flex: 0 0 auto;
-        border-radius: 4px;
-        margin-right: 12px;
+        .column();
         background-color: @background;
-        position: absolute;
-        top: 20px;
-        bottom: 0;
+        margin-right: 12px;
+        border-radius: 4px;
+        // flex: 0 0 auto;
+        // top: 20px;
+        // bottom: 0;
+        &_new {
+
+        }
         &_dragging {
             .column-header {
                 opacity: 0;
