@@ -9,5 +9,5 @@ export { default as NewLinkEntryPage } from './new-link-entry-page';
 export { default as Registration } from './registration';
 export { default as Setup } from './setup';
 export { default as SearchPage } from './search-page';
-export { default as SynchronizationContainer } from './synchronization-container';
+export { default as Synchronization } from './synchronization';
 /* eslint-enable import/no-named-as-default */

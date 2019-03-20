@@ -2,7 +2,7 @@
 import { call, cancel, fork, put, select, takeLatest, take, takeEvery, delay } from 'redux-saga/effects';
 import * as actions from '../actions/external-process-actions';
 import * as types from '../constants';
-import { externalProcessSelectors } from '../selectors';
+import { externalProcessSelectors, settingsSelectors } from '../selectors';
 import ChReqService from '../services/channel-request-service';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
@@ -57,7 +57,7 @@ function* ipfsSetPorts ({ ports, restart }) /* :Saga<void> */ {
 }
 
 function* gethStart () /* :Saga<void> */ {
-    const gethOptions = yield select(externalProcessSelectors.getGethOptions);
+    const gethOptions = yield select(settingsSelectors.selectGethSettings);
     const gethJsOptions = gethOptions.toJS();
     // filter out the null and false options
     const options = {};
@@ -95,15 +95,8 @@ export function* ipfsGetStatus () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.status, {});
 }
 
-function* gethGetSyncStatus () /* :Saga<void> */ {
-    const syncActionId = yield select(externalProcessSelectors.selectGethSyncActionId);
-    if (!gethSyncInterval) {
-        gethSyncInterval = setInterval(() => {
-            if (syncActionId === 0 || syncActionId === 1) {
-                ChReqService.sendRequest(GETH_MODULE, GETH_MODULE.syncStatus, {});
-            }
-        }, 2000);
-    }
+function* gethGetSyncStatus ({ payload }) /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.syncStatus, payload);
 }
 
 function* watchGethToggleLogger () /* :Saga<void> */ {

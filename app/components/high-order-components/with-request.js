@@ -1,7 +1,7 @@
 //@flow strict
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { MainContext } from '../../index';
+import { MainContext } from '../../context';
 import reqService from '../../local-flux/services/channel-request-service';
 
 /*::
@@ -101,7 +101,9 @@ function withRequest /* ::<Config: {}> */(
 
     const forwardRef = (props, ref) => (
         <MainContext.Consumer>
-            {({ logger }) => <WithRequestWrapper forwardedRef={ref} logger={logger} {...props} />}
+            {({ logger, web3 }) => (
+                <WithRequestWrapper forwardedRef={ref} web3={web3} logger={logger} {...props} />
+            )}
         </MainContext.Consumer>
     );
 

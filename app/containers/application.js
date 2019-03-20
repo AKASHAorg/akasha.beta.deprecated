@@ -66,6 +66,7 @@ notification.config({
 const Application = (props /* :Props */) => {
     const { dispatchAction, getActionStatus } = props;
     const onReload = () => dispatchAction(reloadPage());
+    // fire actions on didMount
     React.useEffect(() => {
         dispatchAction(bootstrapApp(), getActionStatus(bootstrapApp().type) === null);
         dispatchAction(
@@ -73,15 +74,12 @@ const Application = (props /* :Props */) => {
             !getActionStatus(bootstrapHome().type) === null &&
                 getActionStatus(bootstrapApp().type === 'success')
         );
-        // dispatchAction(gethGetStatus(), getActionStatus(gethGetStatus().type) === null);
         dispatchAction(
             getCurrentProfile(),
             getActionStatus(getCurrentProfile().type) === null &&
-                getActionStatus(gethGetSyncStatus().type) === null
+                getActionStatus(gethGetSyncStatus().type) === 'success'
         );
-
-        // dispatchAction(entryVoteCost(), () => getActionStatus(bootstrapApp().type) === "success");
-    }, []);
+    }, []); // => empty array is equivalent to didMount
     return (
         <>
             <AppErrorBoundary reloadPage={onReload} showNotification={props.showNotification}>
