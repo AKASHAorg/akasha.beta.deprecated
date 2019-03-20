@@ -1,16 +1,16 @@
 // @flow strict
 
-import * as React from "react";
-import { Fill } from "react-slot-fill";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import classnames from "classnames";
-import { APPBAR_SLOTS } from "../layouts/slot-names";
-import { generalMessages } from "../../locale-data/messages";
-import { notificationSelectors } from "../../local-flux/selectors";
-import { Tooltip } from "antd";
-import { Icon, NotificationsPanel } from "../";
-import { useTogglerWithClickAway } from "../../utils/clickAway";
+import * as React from 'react';
+import { Fill } from 'react-slot-fill';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import classnames from 'classnames';
+import { APPBAR_SLOTS } from '../layouts/slot-names';
+import { generalMessages } from '../../locale-data/messages';
+import { notificationSelectors } from '../../local-flux/selectors';
+import { Tooltip } from 'antd';
+import { Icon, NotificationsPanel } from '../';
+import { useTogglerWithClickAway } from '../../utils/clickAway';
 
 /*::
     type OwnProps = {|
@@ -37,8 +37,8 @@ function UserNotification (props /* : Props */) {
     useTogglerWithClickAway(togglerRef, elRef, setOpenDrawer, openDrawer);
     // useOnClickAway(elRef, () => setOpenDrawer(null), null, openDrawer);
     // console.log(openDrawer, "the open drawer");
-    const iconClass = classnames(props.className, "notification-icon", {
-        "notification-icon_active": openDrawer === "NOTIFICATION"
+    const iconClass = classnames(props.className, 'notification-icon', {
+        'notification-icon_active': openDrawer === 'NOTIFICATION'
     });
     return (
         <>

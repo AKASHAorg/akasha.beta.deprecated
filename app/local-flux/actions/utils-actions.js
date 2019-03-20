@@ -1,7 +1,7 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const backupKeysError = (error) => {
+export const backupKeysError = error => {
     error.code = 'BKE01';
     error.messageId = 'backupKeys';
     return action(types.BACKUP_KEYS_ERROR, { error });

@@ -1,30 +1,30 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import { Tooltip } from "antd";
-import { symmetricDifference, pick } from "ramda";
-import * as columnTypes from "../../constants/columns";
-import { dashboardAddNewColumn, dashboardReorderColumn } from "../../local-flux/actions/dashboard-actions";
-import { dashboardSelectors, listSelectors } from "../../local-flux/selectors";
-import { dashboardMessages } from "../../locale-data/messages";
-import { getDisplayAddress, isEthAddress } from "../../utils/dataModule";
-import { DashboardPopover, Navigation, PlusSquareIcon, TopBarIcon } from "../";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { Tooltip } from 'antd';
+import { symmetricDifference, pick } from 'ramda';
+import * as columnTypes from '../../constants/columns';
+import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
+import { dashboardSelectors, listSelectors } from '../../local-flux/selectors';
+import { dashboardMessages } from '../../locale-data/messages';
+import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
+import { DashboardPopover, Navigation, PlusSquareIcon, TopBarIcon } from '../';
 
 const iconsTypes = {
-    [columnTypes.latest]: "entries",
-    [columnTypes.profile]: "user",
-    [columnTypes.stream]: "entries",
-    [columnTypes.tag]: "tag",
-    [columnTypes.list]: "entries"
+    [columnTypes.latest]: 'entries',
+    [columnTypes.profile]: 'user',
+    [columnTypes.stream]: 'entries',
+    [columnTypes.tag]: 'tag',
+    [columnTypes.list]: 'entries'
 };
 
 const removeClass = id => {
     const column = document.getElementById(id);
     if (column) {
-        const className = column.getAttribute("class");
-        const newClassName = className.replace("column_focused", "");
-        column.setAttribute("class", newClassName);
+        const className = column.getAttribute('class');
+        const newClassName = className.replace('column_focused', '');
+        column.setAttribute('class', newClassName);
     }
 };
 
@@ -49,23 +49,23 @@ class DashboardTopBar extends Component {
             ? intl.formatMessage(dashboardMessages.addColumn)
             : intl.formatMessage(dashboardMessages.createDashboardFirst);
         const scrollColumnIntoView = id => {
-            const dashboard = document.getElementById("dashboard-container");
+            const dashboard = document.getElementById('dashboard-container');
             const column = document.getElementById(id);
-            const className = column.getAttribute("class");
-            column.setAttribute("class", `${className} column_focused`);
+            const className = column.getAttribute('class');
+            column.setAttribute('class', `${className} column_focused`);
             setTimeout(() => removeClass(id), 500);
-            const columnLeftOffset = column.style.left.replace('"', "").replace("px", "");
+            const columnLeftOffset = column.style.left.replace('"', '').replace('px', '');
             const scrollLeft = columnLeftOffset - dashboard.clientWidth / 2 + column.clientWidth / 2;
             dashboard.scrollLeft = scrollLeft;
         };
         const getTooltip = column => {
-            const type = column.get("type");
-            const value = column.get("value");
+            const type = column.get('type');
+            const value = column.get('value');
             switch (type) {
                 case columnTypes.latest:
                     return intl.formatMessage(dashboardMessages.latest);
                 case columnTypes.list:
-                    return lists.getIn([value, "name"]);
+                    return lists.getIn([value, 'name']);
                 case columnTypes.profile:
                     return isEthAddress(value) ? getDisplayAddress(value) : `@${value}`;
                 case columnTypes.stream:
@@ -73,7 +73,7 @@ class DashboardTopBar extends Component {
                 case columnTypes.tag:
                     return `#${value}`;
                 default:
-                    return "";
+                    return '';
             }
         };
 
@@ -83,12 +83,12 @@ class DashboardTopBar extends Component {
                 <DashboardPopover />
                 {columns.map((column, i) => (
                     <TopBarIcon
-                        key={column.get("id")}
-                        id={column.get("id")}
+                        key={column.get('id')}
+                        id={column.get('id')}
                         index={i}
                         title={() => getTooltip(column)}
-                        iconType={iconsTypes[column.get("type")]}
-                        scrollIntoView={() => scrollColumnIntoView(column.get("id"))}
+                        iconType={iconsTypes[column.get('type')]}
+                        scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
                         dashboardReorderColumn={(source, target) =>
                             this.props.dashboardReorderColumn(this.props.activeDashboardId, source, target)
                         }

@@ -1,18 +1,18 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import { Button, Carousel, Modal } from "antd";
-import { Dashboard, DataLoader } from "../components";
-import { toggleNewDashboardModal } from "../local-flux/actions/app-actions";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { Button, Carousel, Modal } from 'antd';
+import { Dashboard, DataLoader } from '../components';
+import { toggleNewDashboardModal } from '../local-flux/actions/app-actions';
 import {
     dashboardHideTutorial,
     dashboardSetActive,
     dashboardUpdateNewColumn,
     dashboardReorderColumn
-} from "../local-flux/actions/dashboard-actions";
-import { appSelectors, entrySelectors, dashboardSelectors, settingsSelectors } from "../local-flux/selectors";
-import { setupMessages, generalMessages } from "../locale-data/messages";
+} from '../local-flux/actions/dashboard-actions';
+import { appSelectors, entrySelectors, dashboardSelectors, settingsSelectors } from '../local-flux/selectors';
+import { setupMessages, generalMessages } from '../locale-data/messages';
 
 class DashboardPage extends Component {
     state = {
@@ -28,7 +28,7 @@ class DashboardPage extends Component {
         }
         const { params } = nextProps.match;
         if (!params.dashboardId && this.props.match.params.dashboardId) {
-            this.props.dashboardSetActive("");
+            this.props.dashboardSetActive('');
         }
         if (params.dashboardId !== this.props.match.params.dashboardId) {
             this.props.dashboardSetActive(params.dashboardId);
@@ -69,7 +69,7 @@ class DashboardPage extends Component {
         );
 
         return (
-            <div style={{ height: "100%", display: isHidden ? "none" : "initial" }}>
+            <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
                 <Modal
                     title={intl.formatMessage(setupMessages.tutorialTitle)}
                     className="tutorial-modal"
@@ -105,8 +105,8 @@ class DashboardPage extends Component {
                         </div>
                     </Carousel>
                 </Modal>
-                <DataLoader flag={!homeReady} size="large" style={{ paddingTop: "200px" }}>
-                    <div style={{ height: "100%" }}>
+                <DataLoader flag={!homeReady} size="large" style={{ paddingTop: '200px' }}>
+                    <div style={{ height: '100%' }}>
                         <Dashboard
                             columns={columns}
                             darkTheme={darkTheme}
@@ -156,7 +156,7 @@ function mapStateToProps (state) {
         homeReady: appSelectors.selectHomeReady(state),
         isHidden:
             !!entrySelectors.selectFullEntry(state) ||
-            !!entrySelectors.selectEntryFlag(state, "fetchingFullEntry"),
+            !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
         newColumn: dashboardSelectors.selectNewColumn(state),
         pendingEntries: dashboardSelectors.getDashboardColumnPendingEntries(
             state,

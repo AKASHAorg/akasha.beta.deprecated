@@ -1,13 +1,13 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import withRouter from "react-router/withRouter";
-import { injectIntl } from "react-intl";
-import Masonry from "react-masonry-component";
-import { Waypoint } from "react-waypoint";
-import { entryMessages, generalMessages } from "../locale-data/messages";
-import { entryGetShort, entryPageShow } from "../local-flux/actions/entry-actions";
-import { toggleOutsideNavigation } from "../local-flux/actions/app-actions";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import withRouter from 'react-router/withRouter';
+import { injectIntl } from 'react-intl';
+import Masonry from 'react-masonry-component';
+import { Waypoint } from 'react-waypoint';
+import { entryMessages, generalMessages } from '../locale-data/messages';
+import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
+import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import {
     actionSelectors,
     externalProcessSelectors,
@@ -16,8 +16,8 @@ import {
     draftSelectors,
     searchSelectors,
     entrySelectors
-} from "../local-flux/selectors";
-import { DataLoader, EntryCard } from "./index";
+} from '../local-flux/selectors';
+import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
     shouldComponentUpdate (newProps) {
@@ -37,7 +37,7 @@ class EntryList extends Component {
 
     getExistingDraft = entryId => {
         const { drafts } = this.props;
-        return drafts.find(draft => draft.get("entryId") === entryId);
+        return drafts.find(draft => draft.get('entryId') === entryId);
     };
 
     // eslint-disable-next-line complexity
@@ -75,10 +75,10 @@ class EntryList extends Component {
                 if (!entry) {
                     return null;
                 }
-                const claimPending = !!pendingClaims.get(entry.get("entryId"));
-                const ethAddress = entry.getIn(["author", "ethAddress"]);
+                const claimPending = !!pendingClaims.get(entry.get('entryId'));
+                const ethAddress = entry.getIn(['author', 'ethAddress']);
                 const author = profiles.get(ethAddress);
-                const isPending = pendingEntries && pendingEntries.get(entry.get("entryId"));
+                const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
 
                 return (
                     <EntryCard
@@ -92,30 +92,30 @@ class EntryList extends Component {
                         contextId={contextId}
                         entry={entry}
                         entryPageShow={this.props.entryPageShow}
-                        existingDraft={this.getExistingDraft(entry.get("entryId"))}
+                        existingDraft={this.getExistingDraft(entry.get('entryId'))}
                         fetchingEntryBalance={fetchingEntryBalance}
                         handleEdit={this.handleEdit}
                         hideEntrySettings={hideEntrySettings}
                         isPending={isPending}
                         intl={intl}
-                        key={entry.get("entryId")}
+                        key={entry.get('entryId')}
                         large={large}
                         loggedEthAddress={loggedEthAddress}
                         onRetry={this.props.entryGetShort}
                         style={cardStyle}
                         toggleOutsideNavigation={this.props.toggleOutsideNavigation}
-                        votePending={!!pendingVotes.get(entry.get("entryId"))}
+                        votePending={!!pendingVotes.get(entry.get('entryId'))}
                     />
                 );
             });
         return (
             <div
-                className={`entry-list ${!masonry && "entry-list_flex"}`}
+                className={`entry-list ${!masonry && 'entry-list_flex'}`}
                 style={Object.assign({}, style)}
                 ref={this.getContainerRef}
             >
-                <DataLoader flag={fetchingEntries} timeout={defaultTimeout} style={{ paddingTop: "80px" }}>
-                    <div style={{ width: "100%", height: "100%" }}>
+                <DataLoader flag={fetchingEntries} timeout={defaultTimeout} style={{ paddingTop: '80px' }}>
+                    <div style={{ width: '100%', height: '100%' }}>
                         {entries.size === 0 &&
                             searching &&
                             (searchQuery.length > 2 || searchQuery.length === 0) && (
@@ -148,7 +148,7 @@ class EntryList extends Component {
                         {masonry ? (
                             <Masonry
                                 options={{ transitionDuration: 0, fitWidth: true }}
-                                style={{ margin: "0 auto" }}
+                                style={{ margin: '0 auto' }}
                             >
                                 {entryCards}
                             </Masonry>
@@ -156,7 +156,7 @@ class EntryList extends Component {
                             entryCards
                         )}
                         {moreEntries && (
-                            <div style={{ height: "35px" }}>
+                            <div style={{ height: '35px' }}>
                                 <DataLoader flag={fetchingMoreEntries} size="small">
                                     <div className="flex-center">
                                         <Waypoint onEnter={this.props.fetchMoreEntries} />
@@ -216,7 +216,7 @@ function mapStateToProps (state, ownProps) {
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         pendingClaims: actionSelectors.selectPendingClaims(state),
         pendingEntries: entrySelectors.getPendingEntries(state, ownProps.contextId),
-        pendingVotes: actionSelectors.getPendingActionByType(state, "entryVote"),
+        pendingVotes: actionSelectors.getPendingActionByType(state, 'entryVote'),
         profiles: profileSelectors.selectProfilesByEthAddress(state),
         searchQuery: searchSelectors.selectSearchQuery(state)
     };

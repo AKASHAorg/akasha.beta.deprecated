@@ -3,7 +3,7 @@
     "plugins": ["babel"],
     "rules": {
         "react/jsx-indent": [2, 4],
-        "indent": [2, 4, {"SwitchCase": 1, "ignoredNodes": ["JSXElement", "JSXElement *"]}],
+        "indent": [2, 4, {"SwitchCase": 1}],
         "comma-dangle": [0],
         "comma-style": ["error", "last"],
         "complexity": [2, 10],

@@ -1,4 +1,4 @@
-import {akashaDB, getClaimableCollection} from './db/dbs';
+import { akashaDB, getClaimableCollection } from './db/dbs';
 import * as Promise from 'bluebird';
 
 const STATUS = 'status';
@@ -33,7 +33,7 @@ export const getEntries = ({ ethAddress, limit, offset }) => {
     }
 };
 
-export const getStatus = (ethAddress) => {
+export const getStatus = ethAddress => {
     try {
         const record = getClaimableCollection().findOne({ ethAddress, opType: STATUS });
         return Promise.resolve(record || {});
@@ -59,22 +59,18 @@ export const saveEntries = (data, request) => {
             };
             getClaimableCollection().insert(newStatus);
         } else {
-            getClaimableCollection()
-                .findAndUpdate(
-                    { ethAddress, opType: STATUS },
-                    (rec) => {
-                        if (reversed) {
-                            rec.newestBlock = data.lastBlock;
-                            rec.newestIndex = data.lastIndex;
-                        } else {
-                            rec.oldestBlock = data.lastBlock;
-                            rec.oldestIndex = data.lastIndex;
-                        }
-                        newStatus = rec;
-                    }
-                );
+            getClaimableCollection().findAndUpdate({ ethAddress, opType: STATUS }, rec => {
+                if (reversed) {
+                    rec.newestBlock = data.lastBlock;
+                    rec.newestIndex = data.lastIndex;
+                } else {
+                    rec.oldestBlock = data.lastBlock;
+                    rec.oldestIndex = data.lastIndex;
+                }
+                newStatus = rec;
+            });
         }
-        collection.forEach((entry) => {
+        collection.forEach(entry => {
             const exists = getClaimableCollection().findOne({ ethAddress, entryId: entry.entryId });
             if (!exists) {
                 const record = Object.assign({}, entry);

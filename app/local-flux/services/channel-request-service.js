@@ -1,6 +1,6 @@
 // @flow
-import { buildCall } from "@akashaproject/common/constants";
-import { genId } from "../../utils/dataModule";
+import { buildCall } from '@akashaproject/common/constants';
+import { genId } from '../../utils/dataModule';
 
 export default {
     requestIds: {
@@ -63,7 +63,7 @@ export default {
                 this.dispatch(action.endAction);
             } else {
                 this.logger.warn(
-                    "[ChReqService] A request without requestId has been made. Please add a requestId to",
+                    '[ChReqService] A request without requestId has been made. Please add a requestId to',
                     module,
                     method
                 ); // eslint-disable-line

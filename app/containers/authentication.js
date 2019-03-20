@@ -1,21 +1,21 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import Link from "react-router-dom/Link";
-import { Button } from "antd";
-import classNames from "classnames";
-import throttle from "lodash.throttle";
-import { AuthProfileList, Icon, AppErrorBoundary } from "../components";
-import { setupMessages } from "../locale-data/messages";
-import { navBackCounterReset } from "../local-flux/actions/app-actions";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import Link from 'react-router-dom/Link';
+import { Button } from 'antd';
+import classNames from 'classnames';
+import throttle from 'lodash.throttle';
+import { AuthProfileList, Icon, AppErrorBoundary } from '../components';
+import { setupMessages } from '../locale-data/messages';
+import { navBackCounterReset } from '../local-flux/actions/app-actions';
 import {
     profileClearLocal,
     profileDeleteLogged,
     profileGetLocal
-} from "../local-flux/actions/profile-actions";
-import { backupKeysRequest } from "../local-flux/actions/utils-actions";
-import { externalProcessSelectors, profileSelectors, settingsSelectors } from "../local-flux/selectors";
+} from '../local-flux/actions/profile-actions';
+import { backupKeysRequest } from '../local-flux/actions/utils-actions';
+import { externalProcessSelectors, profileSelectors, settingsSelectors } from '../local-flux/selectors';
 
 class Auth extends Component {
     state = {
@@ -34,7 +34,7 @@ class Auth extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { gethStatus } = nextProps;
-        const gethStatusChanged = gethStatus.get("process") && !this.props.gethStatus.get("process");
+        const gethStatusChanged = gethStatus.get('process') && !this.props.gethStatus.get('process');
 
         if (gethStatusChanged && this.interval) {
             clearInterval(this.interval);
@@ -45,7 +45,7 @@ class Auth extends Component {
     componentWillUnmount () {
         this.props.profileClearLocal();
         if (this.listContainer) {
-            this.listContainer.removeEventListener("scroll", this.throttledHandler);
+            this.listContainer.removeEventListener('scroll', this.throttledHandler);
         }
         if (this.interval) {
             clearInterval(this.interval);
@@ -54,7 +54,7 @@ class Auth extends Component {
 
     getLocalIdentities = polling => {
         const { gethStatus, profileGetLocal } = this.props;
-        if (gethStatus.get("process")) {
+        if (gethStatus.get('process')) {
             profileGetLocal(polling);
         }
     };
@@ -63,7 +63,7 @@ class Auth extends Component {
         this.listContainer = el;
         if (!this.listenerRegistered && this.listContainer) {
             this.listenerRegistered = true;
-            this.listContainer.addEventListener("scroll", this.throttledHandler);
+            this.listContainer.addEventListener('scroll', this.throttledHandler);
         }
         if (!this.listContainer) {
             this.listenerRegistered = false;
@@ -86,7 +86,7 @@ class Auth extends Component {
     throttledHandler = throttle(this.handleProfileListScroll, 300);
 
     handleNewIdentity = () => {
-        this.props.history.push("/setup/new-identity");
+        this.props.history.push('/setup/new-identity');
     };
 
     render () {
@@ -100,9 +100,9 @@ class Auth extends Component {
             active
         } = this.props;
         const { isScrolled } = this.state;
-        const withShadow = this.listContainer && isScrolled && "auth__title-wrapper_with-shadow";
-        const backupButtonClass = classNames("auth__button auth__button_no-border", {
-            "auth__button_no-border_disabled": backupPending
+        const withShadow = this.listContainer && isScrolled && 'auth__title-wrapper_with-shadow';
+        const backupButtonClass = classNames('auth__button auth__button_no-border', {
+            'auth__button_no-border_disabled': backupPending
         });
         if (!active) {
             return null;
@@ -159,7 +159,7 @@ class Auth extends Component {
                             </div>
                             <div
                                 id="button"
-                                className={`${localProfiles.size && "auth__new-identity-button"}`}
+                                className={`${localProfiles.size && 'auth__new-identity-button'}`}
                             >
                                 {/* <Link to="/setup/new-identity">
                                     {localProfiles.size ? (
@@ -199,13 +199,13 @@ Auth.propTypes = {
 function mapStateToProps (state) {
     return {
         // backupPending: utilsSelectors.getBackupPendingFlag(state),
-        fetchingProfileList: profileSelectors.selectProfileFlag(state, "fetchingProfileList"),
+        fetchingProfileList: profileSelectors.selectProfileFlag(state, 'fetchingProfileList'),
         gethStatus: externalProcessSelectors.selectGethStatus(state),
         localProfiles: profileSelectors.selectLocalProfiles(state),
-        localProfilesFetched: profileSelectors.selectProfileFlag(state, "localProfilesFetched"),
+        localProfilesFetched: profileSelectors.selectProfileFlag(state, 'localProfilesFetched'),
         ipfsStatus: externalProcessSelectors.selectIpfsStatus(state),
         passwordPreference: settingsSelectors.getPasswordPreference(state),
-        pendingListProfiles: profileSelectors.selectProfileFlag(state, "pendingListProfiles")
+        pendingListProfiles: profileSelectors.selectProfileFlag(state, 'pendingListProfiles')
     };
 }
 

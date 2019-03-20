@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { injectIntl } from "react-intl";
-import { Button } from "antd";
-import { errorMessages, generalMessages } from "../../locale-data/messages";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
+import { errorMessages, generalMessages } from '../../locale-data/messages';
 
 class AppErrorBoundary extends Component {
     state = {
@@ -21,21 +21,21 @@ class AppErrorBoundary extends Component {
         let { error, stack } = this.state;
         if (this.props.error) {
             error = this.props.error;
-            stack = { componentStack: "" };
+            stack = { componentStack: '' };
         }
-        const textArea = document.createElement("textarea");
-        const code = "```";
+        const textArea = document.createElement('textarea');
+        const code = '```';
         textArea.value = `${code}\n${error.toString()}${stack.componentStack.toString()}\n${code}`;
-        textArea.style.position = "fixed";
+        textArea.style.position = 'fixed';
         textArea.style.top = -99999;
         textArea.style.left = -99999;
         document.body.appendChild(textArea);
         textArea.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         document.body.removeChild(textArea);
         if (showNotification) {
             showNotification({
-                id: "errorCopiedToClipboard",
+                id: 'errorCopiedToClipboard',
                 duration: 2
             });
         }
@@ -46,7 +46,7 @@ class AppErrorBoundary extends Component {
         let { error, stack } = this.state;
         if (this.props.error) {
             error = this.props.error;
-            stack = { componentStack: "" };
+            stack = { componentStack: '' };
         }
         if (error || stack) {
             return (
@@ -59,12 +59,12 @@ class AppErrorBoundary extends Component {
                     </div>
                     <div className="app-error-boundary__error-block-wrapper">
                         <div className="app-error-boundary__error-block">
-                            <pre style={{ whiteSpace: "pre-line" }}>
+                            <pre style={{ whiteSpace: 'pre-line' }}>
                                 {error.name && error.name.toString()}
                                 {error.message && error.message.toString()}
                                 {error.stack && error.stack.toString()}
                             </pre>
-                            <pre style={{ whiteSpace: "pre-line" }}>{stack.componentStack.toString()}</pre>
+                            <pre style={{ whiteSpace: 'pre-line' }}>{stack.componentStack.toString()}</pre>
                         </div>
                     </div>
                     <div className="app-error-boundary__buttons-container">

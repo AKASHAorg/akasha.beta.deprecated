@@ -1,30 +1,30 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import Redirect from "react-router-dom/Redirect";
-import { injectIntl } from "react-intl";
-import { Button, Radio, Select as AntdSelect } from "antd";
-import { connect } from "react-redux";
-import { saveConfiguration } from "../local-flux/actions/settings-actions";
-import { toggleLightSyncMode } from "../local-flux/actions/app-actions";
-import { settingsSelectors } from "../local-flux/selectors";
-import { formMessages, generalMessages, setupMessages } from "../locale-data/messages";
-import { GethCacheSelect, Icon, PathInputField, Select, StartScreen } from "../components";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import Redirect from 'react-router-dom/Redirect';
+import { injectIntl } from 'react-intl';
+import { Button, Radio, Select as AntdSelect } from 'antd';
+import { connect } from 'react-redux';
+import { saveConfiguration } from '../local-flux/actions/settings-actions';
+import { toggleLightSyncMode } from '../local-flux/actions/app-actions';
+import { settingsSelectors } from '../local-flux/selectors';
+import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
+import { GethCacheSelect, Icon, PathInputField, Select, StartScreen } from '../components';
 
 const { Option } = AntdSelect;
 const RadioGroup = Radio.Group;
 
 const syncModes = {
-    light: "light",
-    fast: "fast"
+    light: 'light',
+    fast: 'fast'
 };
 const syncSettings = {
-    advanced: "advanced",
-    express: "express"
+    advanced: 'advanced',
+    express: 'express'
 };
 
 class Config extends Component {
     state = {
-        cache: "512",
+        cache: '512',
         gethDataDir: null,
         ipfsPath: null,
         isAdvanced: false,
@@ -34,10 +34,10 @@ class Config extends Component {
     componentWillMount () {
         const { gethSettings, ipfsSettings } = this.props;
         this.setState({
-            cache: gethSettings.get("cache").toString(),
-            gethDataDir: gethSettings.get("datadir"),
-            ipfsPath: ipfsSettings.get("storagePath"),
-            syncmode: gethSettings.get("syncmode")
+            cache: gethSettings.get('cache').toString(),
+            gethDataDir: gethSettings.get('datadir'),
+            ipfsPath: ipfsSettings.get('storagePath'),
+            syncmode: gethSettings.get('syncmode')
         });
     }
 
@@ -45,10 +45,10 @@ class Config extends Component {
         const { gethSettings, ipfsSettings } = nextProps;
         if (!gethSettings.equals(this.props.gethSettings) || !ipfsSettings.equals(this.props.ipfsSettings)) {
             this.setState({
-                cache: gethSettings.get("cache").toString(),
-                gethDataDir: gethSettings.get("datadir"),
-                ipfsPath: ipfsSettings.get("storagePath"),
-                syncmode: gethSettings.get("syncmode")
+                cache: gethSettings.get('cache').toString(),
+                gethDataDir: gethSettings.get('datadir'),
+                ipfsPath: ipfsSettings.get('storagePath'),
+                syncmode: gethSettings.get('syncmode')
             });
         }
     }
@@ -74,9 +74,9 @@ class Config extends Component {
     handleReset = () => {
         const { defaultGethSettings, defaultIpfsSettings } = this.props;
         this.setState({
-            cache: defaultGethSettings.get("cache").toString(),
-            gethDataDir: defaultGethSettings.get("datadir"),
-            ipfsPath: defaultIpfsSettings.get("storagePath")
+            cache: defaultGethSettings.get('cache').toString(),
+            gethDataDir: defaultGethSettings.get('datadir'),
+            ipfsPath: defaultIpfsSettings.get('storagePath')
         });
     };
 
@@ -114,8 +114,8 @@ class Config extends Component {
         const { cache, gethDataDir, ipfsPath } = this.state;
 
         return (
-            <div style={{ paddingBottom: "10px" }}>
-                <GethCacheSelect onChange={this.onGethCacheChange} style={{ width: "100%" }} value={cache} />
+            <div style={{ paddingBottom: '10px' }}>
+                <GethCacheSelect onChange={this.onGethCacheChange} style={{ width: '100%' }} value={cache} />
                 <PathInputField
                     label={intl.formatMessage(setupMessages.gethDataDirPath)}
                     onChange={this.onGethDatadirChange}
@@ -128,7 +128,7 @@ class Config extends Component {
                     value={ipfsPath}
                     size="large"
                 />
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button className="flex-center-y configuration__reset-button" onClick={this.handleReset}>
                         <Icon type="reload" />
                         {intl.formatMessage(generalMessages.reset)}
@@ -160,7 +160,7 @@ class Config extends Component {
                                 label={intl.formatMessage(formMessages.selectOneOption)}
                                 onSelect={this.onSyncModeChange}
                                 size="large"
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                                 value={syncmode}
                             >
                                 <Option value={syncModes.fast}>
@@ -177,13 +177,13 @@ class Config extends Component {
                             >
                                 <Radio
                                     value={syncSettings.express}
-                                    style={{ display: "inline-flex", alignItems: "center" }}
+                                    style={{ display: 'inline-flex', alignItems: 'center' }}
                                 >
                                     {intl.formatMessage(setupMessages.expressSetup)}
                                 </Radio>
                                 <Radio
                                     value={syncSettings.advanced}
-                                    style={{ display: "inline-flex", alignItems: "center" }}
+                                    style={{ display: 'inline-flex', alignItems: 'center' }}
                                 >
                                     {intl.formatMessage(setupMessages.advancedSetup)}
                                 </Radio>

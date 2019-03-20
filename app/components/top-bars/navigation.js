@@ -6,22 +6,25 @@ import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { generalMessages } from '../../locale-data/messages';
-import { navCounterDecrement, navCounterIncrement,
-    toggleNavigationModal } from '../../local-flux/actions/app-actions';
+import {
+    navCounterDecrement,
+    navCounterIncrement,
+    toggleNavigationModal
+} from '../../local-flux/actions/app-actions';
 import { Icon } from '../';
 import { appSelectors } from '../../local-flux/selectors';
 
 class Navigation extends Component {
-    goBack = (disableBack) => {
+    goBack = disableBack => {
         if (disableBack) {
             return;
         }
         this.props.history.goBack();
         this.props.navCounterIncrement('forward');
         this.props.navCounterDecrement('back');
-    }
+    };
 
-    goForward = (disableForward) => {
+    goForward = disableForward => {
         const { history } = this.props;
         if (disableForward) {
             return;
@@ -29,7 +32,7 @@ class Navigation extends Component {
         history.goForward();
         this.props.navCounterIncrement('back');
         this.props.navCounterDecrement('forward');
-    }
+    };
 
     render () {
         const { intl, navigationBackCounter, navigationForwardCounter } = this.props;
@@ -45,25 +48,25 @@ class Navigation extends Component {
         });
 
         return (
-          <div className="flex-center-y navigation">
-            <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.back)}>
-              <Icon className={backBtnClassName} onClick={() => this.goBack(disableBack)} type="back" />
-            </Tooltip>
-            <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.forward)}>
-              <Icon
-                className={forwardBtnClassName}
-                onClick={() => this.goForward(disableForward)}
-                type="forward"
-              />
-            </Tooltip>
-            <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.navigateToLink)}>
-              <Icon
-                className="content-link navigation__icon navigation__link-icon"
-                onClick={this.props.toggleNavigationModal}
-                type="linkEntry"
-              />
-            </Tooltip>
-          </div>
+            <div className="flex-center-y navigation">
+                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.back)}>
+                    <Icon className={backBtnClassName} onClick={() => this.goBack(disableBack)} type="back" />
+                </Tooltip>
+                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.forward)}>
+                    <Icon
+                        className={forwardBtnClassName}
+                        onClick={() => this.goForward(disableForward)}
+                        type="forward"
+                    />
+                </Tooltip>
+                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.navigateToLink)}>
+                    <Icon
+                        className="content-link navigation__icon navigation__link-icon"
+                        onClick={this.props.toggleNavigationModal}
+                        type="linkEntry"
+                    />
+                </Tooltip>
+            </div>
         );
     }
 }
@@ -75,7 +78,7 @@ Navigation.propTypes = {
     navigationForwardCounter: PropTypes.number,
     navCounterDecrement: PropTypes.func.isRequired,
     navCounterIncrement: PropTypes.func.isRequired,
-    toggleNavigationModal: PropTypes.func.isRequired,
+    toggleNavigationModal: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -88,6 +91,6 @@ export default connect(
     {
         navCounterDecrement,
         navCounterIncrement,
-        toggleNavigationModal,
+        toggleNavigationModal
     }
 )(withRouter(injectIntl(Navigation)));

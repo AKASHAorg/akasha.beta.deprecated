@@ -17,7 +17,7 @@ export const tempProfileGet = ethAddress => action(types.TEMP_PROFILE_GET, { eth
 export const tempProfileGetSuccess = data => action(types.TEMP_PROFILE_GET_SUCCESS, { data });
 export const tempProfileGetError = error => action(types.TEMP_PROFILE_GET_ERROR, { error });
 
-export const tempProfileError = (error) => {
+export const tempProfileError = error => {
     error.code = 'TPRE01';
     error.messageId = 'tempProfileRequest';
     return action(types.TEMP_PROFILE_ERROR, { error });

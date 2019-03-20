@@ -1,13 +1,13 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import withRouter from "react-router/withRouter";
-import { injectIntl } from "react-intl";
-import Masonry from "react-masonry-component";
-import { Waypoint } from "react-waypoint";
-import { profileSelectors, searchSelectors } from "../local-flux/selectors";
-import { profileMessages, generalMessages } from "../locale-data/messages";
-import { DataLoader, ProfileCard } from "./index";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import withRouter from 'react-router/withRouter';
+import { injectIntl } from 'react-intl';
+import Masonry from 'react-masonry-component';
+import { Waypoint } from 'react-waypoint';
+import { profileSelectors, searchSelectors } from '../local-flux/selectors';
+import { profileMessages, generalMessages } from '../locale-data/messages';
+import { DataLoader, ProfileCard } from './index';
 
 class ProfileList extends Component {
     getContainerRef = el => {
@@ -51,7 +51,7 @@ class ProfileList extends Component {
 
         return (
             <div className="profile-list" style={Object.assign({}, style)} ref={this.getContainerRef}>
-                <DataLoader flag={fetchingProfiles} style={{ paddingTop: "80px" }}>
+                <DataLoader flag={fetchingProfiles} style={{ paddingTop: '80px' }}>
                     <div className="profile-list__inner">
                         {profiles.size === 0 && searching && (
                             <div className="profile-list__placeholder">
@@ -83,7 +83,7 @@ class ProfileList extends Component {
                         {masonry ? (
                             <Masonry
                                 options={{ transitionDuration: 0, fitWidth: true }}
-                                style={{ margin: "0 auto" }}
+                                style={{ margin: '0 auto' }}
                             >
                                 {profileRows}
                             </Masonry>
@@ -91,7 +91,7 @@ class ProfileList extends Component {
                             profileRows
                         )}
                         {moreProfiles && (
-                            <div style={{ height: "35px" }}>
+                            <div style={{ height: '35px' }}>
                                 <DataLoader flag={fetchingMoreProfiles} size="small">
                                     <div className="flex-center">
                                         <Waypoint onEnter={this.props.fetchMoreProfiles} />

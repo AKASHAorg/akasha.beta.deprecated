@@ -1,6 +1,6 @@
-import { action } from "./helpers";
-import * as types from "../constants";
-import { PROFILE_MODULE, REGISTRY_MODULE } from "@akashaproject/common/constants";
+import { action } from './helpers';
+import * as types from '../constants';
+import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
 
 // export const profileAethTransfersIterator = () => action(types.PROFILE_AETH_TRANSFERS_ITERATOR);
 
@@ -26,8 +26,8 @@ export const profileCommentsIterator = column => action(`${PROFILE_MODULE.commen
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
     action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
 export const profileCreateEthAddressError = error => {
-    error.code = "PCEAE01";
-    error.messageId = "profileCreateEthAddress";
+    error.code = 'PCEAE01';
+    error.messageId = 'profileCreateEthAddress';
     return action(types.PROFILE_CREATE_ETH_ADDRESS_ERROR, { error });
 };
 export const profileCreateEthAddressSuccess = data =>
@@ -40,8 +40,8 @@ export const profileCyclingStates = () => action(`${PROFILE_MODULE.cyclingStates
 
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 export const profileDeleteLoggedError = error => {
-    error.code = "PDLE01";
-    error.messageId = "profileDeleteError";
+    error.code = 'PDLE01';
+    error.messageId = 'profileDeleteError';
     return action(types.PROFILE_DELETE_LOGGED_ERROR);
 };
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
@@ -51,8 +51,8 @@ export const profileExists = akashaId => action(`${REGISTRY_MODULE.profileExists
 export const profileFaucet = ({ actionId, ethAddress, withNotification }) =>
     action(types.PROFILE_FAUCET, { actionId, ethAddress, withNotification });
 export const profileFaucetError = (error, request) => {
-    error.code = "PFE02";
-    error.messageId = "profileFaucet";
+    error.code = 'PFE02';
+    error.messageId = 'profileFaucet';
     return action(types.PROFILE_FAUCET_ERROR, { error, request });
 };
 export const profileFaucetSuccess = (data, request) =>
@@ -90,8 +90,8 @@ export const profileGetList = ethAddresses => action(`${PROFILE_MODULE.getProfil
 export const profileGetLocal = polling => action(types.PROFILE_GET_LOCAL, { polling });
 
 export const profileGetLocalError = (error, request) => {
-    error.code = "PGLE01";
-    error.messageId = "profileGetLocal";
+    error.code = 'PGLE01';
+    error.messageId = 'profileGetLocal';
     return action(types.PROFILE_GET_LOCAL_ERROR, { error, request });
 };
 
@@ -103,8 +103,8 @@ export const profileGetLocalSuccess = (data, request) =>
 export const profileGetLogged = () => action(types.PROFILE_GET_LOGGED);
 
 export const profileGetLoggedError = error => {
-    error.code = "PGLE03";
-    error.messageId = "profileGetLogged";
+    error.code = 'PGLE03';
+    error.messageId = 'profileGetLogged';
     return action(types.PROFILE_GET_LOGGED_ERROR, { error });
 };
 
@@ -126,7 +126,7 @@ export const profileLogin = data => action(types.PROFILE_LOGIN, { data });
 
 export const profileLoginError = error => {
     // this error should be treated locally (in the login form) instead of globally
-    error.code = "PLIE01";
+    error.code = 'PLIE01';
     return action(types.PROFILE_LOGIN_ERROR, { error });
 };
 
@@ -134,8 +134,8 @@ export const profileLoginSuccess = data => action(types.PROFILE_LOGIN_SUCCESS, {
 export const profileLogout = () => action(types.PROFILE_LOGOUT);
 
 export const profileLogoutError = error => {
-    error.code = "PLOE01";
-    error.messageId = "profileLogout";
+    error.code = 'PLOE01';
+    error.messageId = 'profileLogout';
     return action(types.PROFILE_LOGOUT_ERROR);
 };
 
@@ -144,8 +144,8 @@ export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 
 export const profileMoreCommentsIterator = column => action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
 export const profileMoreCommentsIteratorError = (error, request) => {
-    error.code = "PMCIE01";
-    error.messageId = "profileMoreCommentsIterator";
+    error.code = 'PMCIE01';
+    error.messageId = 'profileMoreCommentsIterator';
     return action(types.PROFILE_MORE_COMMENTS_ITERATOR_ERROR, { error, request });
 };
 export const profileMoreCommentsIteratorSuccess = (data, request) =>
@@ -155,8 +155,8 @@ export const profileMoreFollowersIterator = ({ column, batching }) =>
     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
 
 export const profileMoreFollowersIteratorError = (error, request) => {
-    error.code = "PMFIE01";
-    error.messageId = "profileMoreFollowersIterator";
+    error.code = 'PMFIE01';
+    error.messageId = 'profileMoreFollowersIterator';
     return action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR, { error, request });
 };
 
@@ -167,8 +167,8 @@ export const profileMoreFollowingsIterator = ({ column, batching }) =>
     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
 
 export const profileMoreFollowingsIteratorError = (error, request) => {
-    error.code = "PMFIE02";
-    error.messageId = "profileMoreFollowingsIterator";
+    error.code = 'PMFIE02';
+    error.messageId = 'profileMoreFollowingsIterator';
     return action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
 };
 
@@ -211,12 +211,12 @@ export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
 
 export const profileSaveLastBlockNr = () => action(types.PROFILE_SAVE_LAST_BLOCK_NR);
 export const profileSaveLastBlockNrError = error => {
-    error.code = "PSLBNE01";
+    error.code = 'PSLBNE01';
     return action(types.PROFILE_SAVE_LAST_BLOCK_NR_ERROR, { error });
 };
 
 export const profileSaveLoggedError = error => {
-    error.code = "PSLE01";
+    error.code = 'PSLE01';
     error.fatal = true;
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
@@ -239,8 +239,8 @@ export const profileToggleDonations = ({ actionId, status }) =>
     action(types.PROFILE_TOGGLE_DONATIONS, { actionId, status });
 
 export const profileToggleDonationsError = (error, request) => {
-    error.code = "PTDE01";
-    error.messageId = "profileToggleDonations";
+    error.code = 'PTDE01';
+    error.messageId = 'profileToggleDonations';
     error.values = { status: request.status };
     return action(types.PROFILE_TOGGLE_DONATIONS_ERROR, { error });
 };
@@ -271,8 +271,8 @@ export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstN
     });
 
 export const profileUpdateLoggedError = error => {
-    error.code = "PULE01";
-    error.messageId = "profileUpdateLogged";
+    error.code = 'PULE01';
+    error.messageId = 'profileUpdateLogged';
     return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
 };
 

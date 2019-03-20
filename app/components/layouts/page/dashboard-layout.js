@@ -1,8 +1,8 @@
 // @flow strict
 
-import * as React from "react";
-import { Slot } from "react-slot-fill";
-import { DASHBOARD_SLOTS } from "../slot-names";
+import * as React from 'react';
+import { Slot } from 'react-slot-fill';
+import { DASHBOARD_SLOTS } from '../slot-names';
 /*::
     type Props = {
         children: React.Node

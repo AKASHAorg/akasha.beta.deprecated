@@ -1,10 +1,10 @@
 // @flow
-import { call, select, takeEvery } from "redux-saga/effects";
-import * as types from "../constants";
-import { profileSelectors, settingsSelectors, externalProcessSelectors } from "../selectors";
-import * as profileService from "../services/profile-service";
-import { NOTIFICATIONS_MODULE } from "@akashaproject/common/constants";
-import ChReqService from "../services/channel-request-service";
+import { call, select, takeEvery } from 'redux-saga/effects';
+import * as types from '../constants';
+import { profileSelectors, settingsSelectors, externalProcessSelectors } from '../selectors';
+import * as profileService from '../services/profile-service';
+import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
+import ChReqService from '../services/channel-request-service';
 
 /*::
     import type { Saga } from 'redux-saga';

@@ -1,8 +1,8 @@
 //@flow strict
-import * as React from "react";
-import { connect } from "react-redux";
-import { MainContext } from "../../index";
-import reqService from "../../local-flux/services/channel-request-service";
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { MainContext } from '../../index';
+import reqService from '../../local-flux/services/channel-request-service';
 
 /*::
     import type { Dispatch, Store } from 'redux';
@@ -48,10 +48,10 @@ function withRequest /* ::<Config: {}> */(
         dispatchAction = (actionPayload /* : Object */, condition /*: Boolean | Function*/) /* : void */ => {
             const { dispatch, state } = this.props;
             let bool = true;
-            if (typeof condition === "function") {
+            if (typeof condition === 'function') {
                 bool = condition(state);
             }
-            if (typeof condition === "boolean") {
+            if (typeof condition === 'boolean') {
                 bool = condition;
             }
             if (condition) {
@@ -65,7 +65,7 @@ function withRequest /* ::<Config: {}> */(
                 }
             } else {
                 const { logger } = this.props;
-                logger.info("[with-request.js] Dispatching action", actionPayload.type);
+                logger.info('[with-request.js] Dispatching action', actionPayload.type);
                 dispatch(actionPayload);
             }
         };
@@ -73,12 +73,12 @@ function withRequest /* ::<Config: {}> */(
             // action status can be null, 'pending', 'success', 'error'
             const { requestState } = this.props.state;
             let actionStatus = null;
-            if (requestState.get("successActions").includes(actionType)) {
-                actionStatus = "success";
-            } else if (requestState.get("errorActions").includes(actionType)) {
-                actionStatus = "error";
+            if (requestState.get('successActions').includes(actionType)) {
+                actionStatus = 'success';
+            } else if (requestState.get('errorActions').includes(actionType)) {
+                actionStatus = 'error';
             } else if (Object.values(requests).find(val => val === actionType)) {
-                actionStatus = "pending";
+                actionStatus = 'pending';
             }
             return actionStatus;
         };

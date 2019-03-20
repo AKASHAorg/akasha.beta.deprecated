@@ -1,14 +1,14 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import { notification } from "antd";
-import * as types from "../../local-flux/constants";
-import { notificationMessages } from "../../locale-data/messages";
-import { hideNotification, notificationDisplay } from "../../local-flux/actions/app-actions";
-import { highlightEditNotes } from "../../local-flux/actions/highlight-actions";
-import { NotificationHighlightNote } from "../";
-import { notificationSelectors } from "../../local-flux/selectors";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { notification } from 'antd';
+import * as types from '../../local-flux/constants';
+import { notificationMessages } from '../../locale-data/messages';
+import { hideNotification, notificationDisplay } from '../../local-flux/actions/app-actions';
+import { highlightEditNotes } from '../../local-flux/actions/highlight-actions';
+import { NotificationHighlightNote } from '../';
+import { notificationSelectors } from '../../local-flux/selectors';
 
 class Notification extends Component {
     componentWillReceiveProps (nextProps) {
@@ -16,23 +16,23 @@ class Notification extends Component {
         const { notifications, displayedNotifications } = nextProps;
         if (!this.props.notifications.equals(notifications)) {
             const notif = notifications.last();
-            if (notif && displayedNotifications.indexOf(notif.get("displayId")) === -1) {
-                if (!notif.get("type")) {
+            if (notif && displayedNotifications.indexOf(notif.get('displayId')) === -1) {
+                if (!notif.get('type')) {
                     const message = intl.formatMessage(
-                        notificationMessages[notif.get("id")],
-                        notif.get("values")
+                        notificationMessages[notif.get('id')],
+                        notif.get('values')
                     );
                     const close = () => {
                         this.props.hideNotification(notif);
                     };
                     notification.open({
                         message,
-                        className: "notif",
-                        duration: notif.get("duration"),
+                        className: 'notif',
+                        duration: notif.get('duration'),
                         onClose: close
                     });
                     this.props.notificationDisplay(notif);
-                } else if (notif.get("type") === types.HIGHLIGHT_SAVE_SUCCESS) {
+                } else if (notif.get('type') === types.HIGHLIGHT_SAVE_SUCCESS) {
                     const close = () => {
                         this.props.hideNotification(notif);
                     };
@@ -51,7 +51,7 @@ class Notification extends Component {
                         ),
                         key,
                         onClose: close,
-                        className: "notification-highlight"
+                        className: 'notification-highlight'
                     });
                     this.props.notificationDisplay(notif);
                 }

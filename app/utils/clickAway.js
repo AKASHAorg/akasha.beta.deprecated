@@ -1,7 +1,7 @@
 // @flow
-import * as React from "react";
+import * as React from 'react';
 
-const supportedEvents /* : SupportedEvents */ = ["click", "touchstart"];
+const supportedEvents /* : SupportedEvents */ = ['click', 'touchstart'];
 
 /* ::
     type Event = SyntheticMouseEvent<HTMLElement> | SyntheticTouchEvent<HTMLElement>;
@@ -52,7 +52,7 @@ const isDescendant = (parent, child) => {
 const canClickAway = Component => {
     class ClickAwayable extends React.Component {
         render () {
-            console.warn("ClickAway HOC will be deprecated soon! Please update it with useOnClickAway hook!");
+            console.warn('ClickAway HOC will be deprecated soon! Please update it with useOnClickAway hook!');
             return React.createElement(Component, this.props);
         }
     }

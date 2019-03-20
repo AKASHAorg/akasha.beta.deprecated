@@ -1,4 +1,3 @@
-import * as types from '../constants';
 import { action } from './helpers';
 import { TAGS_MODULE } from '@akashaproject/common/constants';
 

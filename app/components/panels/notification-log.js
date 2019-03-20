@@ -1,17 +1,17 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import Link from "react-router-dom/Link";
-import { injectIntl } from "react-intl";
-import { Waypoint } from "react-waypoint";
-import { Tooltip } from "antd";
-import { Icon, ProfilePopover, Avatar } from "../";
-import * as notificationEvents from "../../constants/notification-events";
-import { entryGetShort } from "../../local-flux/actions/entry-actions";
-import { profileGetData, profileIsFollower } from "../../local-flux/actions/profile-actions";
-import { entrySelectors, profileSelectors } from "../../local-flux/selectors";
-import { generalMessages, notificationMessages } from "../../locale-data/messages";
-import { getDisplayName } from "../../utils/dataModule";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Link from 'react-router-dom/Link';
+import { injectIntl } from 'react-intl';
+import { Waypoint } from 'react-waypoint';
+import { Tooltip } from 'antd';
+import { Icon, ProfilePopover, Avatar } from '../';
+import * as notificationEvents from '../../constants/notification-events';
+import { entryGetShort } from '../../local-flux/actions/entry-actions';
+import { profileGetData, profileIsFollower } from '../../local-flux/actions/profile-actions';
+import { entrySelectors, profileSelectors } from '../../local-flux/selectors';
+import { generalMessages, notificationMessages } from '../../locale-data/messages';
+import { getDisplayName } from '../../utils/dataModule';
 
 const getEthAddress = notification => {
     switch (notification.type) {
@@ -53,13 +53,13 @@ class NotificationLog extends Component {
         const ethAddress = getEthAddress(notification);
         if (!entry && notification.payload.entryId) {
             this.props.entryGetShort({
-                context: "notifications",
+                context: 'notifications',
                 entryId: notification.payload.entryId,
                 ethAddress: loggedEthAddress
             });
         }
-        if (!profile.get("ethAddress")) {
-            this.props.profileGetData({ context: "notifications", ethAddress });
+        if (!profile.get('ethAddress')) {
+            this.props.profileGetData({ context: 'notifications', ethAddress });
             this.props.profileIsFollower([ethAddress]);
         }
     };
@@ -92,7 +92,7 @@ class NotificationLog extends Component {
         const hasEntry = !!notification.payload.entryId;
         const entryLoading = hasEntry && (!entry || pendingEntry);
 
-        if (!profile.get("ethAddress") || pendingProfile || entryLoading) {
+        if (!profile.get('ethAddress') || pendingProfile || entryLoading) {
             return (
                 <div className="notification-log">
                     <Waypoint scrollableAncestor={containerRef} onEnter={this.loadData} />
@@ -106,11 +106,11 @@ class NotificationLog extends Component {
         }
         const blockNr = notification.blockNumber;
         const url = `https://rinkeby.etherscan.io/block/${blockNr}`;
-        const akashaId = profile.get("akashaId");
-        const ethAddress = profile.get("ethAddress");
+        const akashaId = profile.get('akashaId');
+        const ethAddress = profile.get('ethAddress');
         const displayName = getDisplayName({ akashaId, ethAddress });
         const entryTitle =
-            (entry && entry.getIn(["content", "title"])) || intl.formatMessage(generalMessages.anEntry);
+            (entry && entry.getIn(['content', 'title'])) || intl.formatMessage(generalMessages.anEntry);
 
         return (
             <div className="notification-log">
@@ -118,9 +118,9 @@ class NotificationLog extends Component {
                     <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
                         <Avatar
                             className="notification-log__avatar"
-                            firstName={profile.get("firstName")}
-                            image={profile.get("avatar")}
-                            lastName={profile.get("lastName")}
+                            firstName={profile.get('firstName')}
+                            image={profile.get('avatar')}
+                            lastName={profile.get('lastName')}
                             size="small"
                         />
                     </ProfilePopover>
@@ -137,7 +137,7 @@ class NotificationLog extends Component {
                             <Link
                                 className="unstyled-link content-link"
                                 to={{
-                                    pathname: `/${loggedEthAddress}/${entry.get("entryId")}`,
+                                    pathname: `/${loggedEthAddress}/${entry.get('entryId')}`,
                                     state: { overlay: true }
                                 }}
                             >
@@ -184,8 +184,8 @@ function mapStateToProps (state, ownProps) {
     const { notification } = ownProps;
     const ethAddress = getEthAddress(notification);
     const entryId = notification.payload.entryId;
-    const pendingEntries = entryId && entrySelectors.getPendingEntries(state, "notifications");
-    const pendingProfiles = profileSelectors.getPendingProfiles(state, "notifications");
+    const pendingEntries = entryId && entrySelectors.getPendingEntries(state, 'notifications');
+    const pendingProfiles = profileSelectors.getPendingProfiles(state, 'notifications');
     return {
         entry: entrySelectors.selectEntryById(state, entryId),
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),

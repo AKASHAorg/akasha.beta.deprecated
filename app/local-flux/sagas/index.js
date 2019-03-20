@@ -1,33 +1,33 @@
 // @flow
-import { call, fork, put, select, takeLatest, getContext, setContext } from "redux-saga/effects";
+import { call, fork, put, select, takeLatest, getContext, setContext } from 'redux-saga/effects';
 
-import * as actionActions from "../actions/action-actions";
-import * as appActions from "../actions/app-actions";
-import * as claimableActions from "../actions/claimable-actions";
-import * as eProcActions from "../actions/external-process-actions";
-import * as notificationsActions from "../actions/notifications-actions";
-import * as profileActions from "../actions/profile-actions";
-import { profileSelectors } from "../selectors";
-import * as actionSaga from "./action-saga";
-import * as appSaga from "./app-saga";
-import * as claimableSaga from "./claimable-saga";
-import * as commentsSaga from "./comments-saga";
-import * as draftSaga from "./draft-saga";
-import * as dashboardSaga from "./dashboard-saga";
-import * as entrySaga from "./entry-saga";
-import * as externalProcSaga from "./external-process-saga";
-import * as highlightSaga from "./highlight-saga";
-import * as licenseSaga from "./license-saga";
-import * as listSaga from "./list-saga";
-import * as notificationsSaga from "./notifications-saga";
-import * as profileSaga from "./profile-saga";
-import * as searchSaga from "./search-saga";
-import * as settingsSaga from "./settings-saga";
-import * as tagSaga from "./tag-saga";
-import * as tempProfileSaga from "./temp-profile-saga";
-import * as transactionSaga from "./transaction-saga";
-import * as types from "../constants";
-import ChService from "../services/channel-request-service";
+import * as actionActions from '../actions/action-actions';
+import * as appActions from '../actions/app-actions';
+import * as claimableActions from '../actions/claimable-actions';
+import * as eProcActions from '../actions/external-process-actions';
+import * as notificationsActions from '../actions/notifications-actions';
+import * as profileActions from '../actions/profile-actions';
+import { profileSelectors } from '../selectors';
+import * as actionSaga from './action-saga';
+import * as appSaga from './app-saga';
+import * as claimableSaga from './claimable-saga';
+import * as commentsSaga from './comments-saga';
+import * as draftSaga from './draft-saga';
+import * as dashboardSaga from './dashboard-saga';
+import * as entrySaga from './entry-saga';
+import * as externalProcSaga from './external-process-saga';
+import * as highlightSaga from './highlight-saga';
+import * as licenseSaga from './license-saga';
+import * as listSaga from './list-saga';
+import * as notificationsSaga from './notifications-saga';
+import * as profileSaga from './profile-saga';
+import * as searchSaga from './search-saga';
+import * as settingsSaga from './settings-saga';
+import * as tagSaga from './tag-saga';
+import * as tempProfileSaga from './temp-profile-saga';
+import * as transactionSaga from './transaction-saga';
+import * as types from '../constants';
+import ChService from '../services/channel-request-service';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -83,8 +83,8 @@ function* bootstrapApp ({ payload }) /* : Saga<void> */ {
         yield put(appActions.bootstrapAppSuccess());
     } catch (ex) {
         console.debug(ex);
-        const logger = yield getContext("logger");
-        logger.fatal("Cannot bootstrap app!");
+        const logger = yield getContext('logger');
+        logger.fatal('Cannot bootstrap app!');
     }
 }
 
@@ -94,8 +94,8 @@ function* bootstrapHome ({ payload }) /* : Saga<void> */ {
         yield call(launchHomeActions, payload);
         yield put(appActions.bootstrapHomeSuccess());
     } catch (ex) {
-        const logger = yield getContext("logger");
-        logger.fatal("Cannot bootstrap home!", { ...ex });
+        const logger = yield getContext('logger');
+        logger.fatal('Cannot bootstrap home!', { ...ex });
         logger.trace(ex);
     }
 }

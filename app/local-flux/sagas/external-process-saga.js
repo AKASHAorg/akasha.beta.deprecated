@@ -1,10 +1,10 @@
 // @flow
-import { call, cancel, fork, put, select, takeLatest, take, takeEvery, delay } from "redux-saga/effects";
-import * as actions from "../actions/external-process-actions";
-import * as types from "../constants";
-import { externalProcessSelectors } from "../selectors";
-import ChReqService from "../services/channel-request-service";
-import { GETH_MODULE, IPFS_MODULE } from "@akashaproject/common/constants";
+import { call, cancel, fork, put, select, takeLatest, take, takeEvery, delay } from 'redux-saga/effects';
+import * as actions from '../actions/external-process-actions';
+import * as types from '../constants';
+import { externalProcessSelectors } from '../selectors';
+import ChReqService from '../services/channel-request-service';
+import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -67,7 +67,7 @@ function* gethStart () /* :Saga<void> */ {
         }
     });
     if (options.ipcpath) {
-        options.ipcpath = options.ipcpath.replace("\\\\.\\pipe\\", "");
+        options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
     }
     yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.startService, options);
 }

@@ -1,25 +1,25 @@
 // @flow
-import * as React from "react";
-import { connect } from "react-redux";
-import { notification } from "antd";
-import { DragDropContext } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
-import { hot } from "react-hot-loader";
-import { Provider, Fill } from "react-slot-fill";
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { notification } from 'antd';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { hot } from 'react-hot-loader';
+import { Provider, Fill } from 'react-slot-fill';
 import {
     bootstrapApp,
     bootstrapHome,
     hideTerms,
     navForwardCounterReset,
     navCounterIncrement
-} from "../local-flux/actions/app-actions";
-import { entryVoteCost } from "../local-flux/actions/entry-actions";
-import { gethGetSyncStatus, gethGetStatus } from "../local-flux/actions/external-process-actions";
-import { licenseGetAll } from "../local-flux/actions/license-actions";
-import { userSettingsAddTrustedDomain } from "../local-flux/actions/settings-actions";
-import { reloadPage } from "../local-flux/actions/utils-actions";
-import { errorDeleteFatal } from "../local-flux/actions/error-actions";
-import { getCurrentProfile } from "../local-flux/actions/profile-actions";
+} from '../local-flux/actions/app-actions';
+import { entryVoteCost } from '../local-flux/actions/entry-actions';
+import { gethGetSyncStatus, gethGetStatus } from '../local-flux/actions/external-process-actions';
+import { licenseGetAll } from '../local-flux/actions/license-actions';
+import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
+import { reloadPage } from '../local-flux/actions/utils-actions';
+import { errorDeleteFatal } from '../local-flux/actions/error-actions';
+import { getCurrentProfile } from '../local-flux/actions/profile-actions';
 
 import {
     DashboardPage,
@@ -28,19 +28,19 @@ import {
     MyProfilePage,
     ProfilePage,
     SearchPage
-} from "../components/pages";
+} from '../components/pages';
 
-import { AppbarLayout, SidebarLayout } from "../components/layouts";
-import { SIDEBAR_SLOTS, APPBAR_SLOTS } from "../components/layouts/slot-names";
+import { AppbarLayout, SidebarLayout } from '../components/layouts';
+import { SIDEBAR_SLOTS, APPBAR_SLOTS } from '../components/layouts/slot-names';
 import {
     AppErrorBoundary,
     AppbarBalance,
     CustomDragLayer,
     ServiceStatusBar,
     UserNotification
-} from "../components";
-import { dashboardSelectors, actionSelectors, profileSelectors } from "../local-flux/selectors";
-import withRequest from "../components/high-order-components/with-request";
+} from '../components';
+import { dashboardSelectors, actionSelectors, profileSelectors } from '../local-flux/selectors';
+import withRequest from '../components/high-order-components/with-request';
 
 notification.config({
     top: 60,
@@ -71,7 +71,7 @@ const Application = (props /* :Props */) => {
         dispatchAction(
             bootstrapHome(),
             !getActionStatus(bootstrapHome().type) === null &&
-                getActionStatus(bootstrapApp().type === "success")
+                getActionStatus(bootstrapApp().type === 'success')
         );
         // dispatchAction(gethGetStatus(), getActionStatus(gethGetStatus().type) === null);
         dispatchAction(

@@ -1,12 +1,12 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl, FormattedMessage } from "react-intl";
-import { Button, Form, Input } from "antd";
-import { formMessages, generalMessages, setupMessages } from "../locale-data/messages";
-import { profileCreateEthAddress } from "../local-flux/actions/profile-actions";
-import { showTerms } from "../local-flux/actions/app-actions";
-import { profileSelectors } from "../local-flux/selectors";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Button, Form, Input } from 'antd';
+import { formMessages, generalMessages, setupMessages } from '../locale-data/messages';
+import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
+import { showTerms } from '../local-flux/actions/app-actions';
+import { profileSelectors } from '../local-flux/selectors';
 
 const FormItem = Form.Item;
 
@@ -20,7 +20,7 @@ class NewIdentity extends Component {
     componentWillReceiveProps (nextProps) {
         const { loggedEthAddress, history } = this.props;
         if (!loggedEthAddress && nextProps.loggedEthAddress) {
-            history.push("/setup/profile-complete");
+            history.push('/setup/profile-complete');
         }
     }
 
@@ -37,7 +37,7 @@ class NewIdentity extends Component {
     checkConfirm = (rule, value, callback) => {
         const { intl } = this.props;
         const form = this.props.form;
-        if (value && value !== form.getFieldValue("passphrase")) {
+        if (value && value !== form.getFieldValue('passphrase')) {
             callback(intl.formatMessage(formMessages.passphraseConfirmError));
         } else {
             callback();
@@ -47,7 +47,7 @@ class NewIdentity extends Component {
     checkPassphrase = (rule, value, callback) => {
         const form = this.props.form;
         if (value && this.state.confirmDirty) {
-            form.validateFields(["passphrase1"], { force: true });
+            form.validateFields(['passphrase1'], { force: true });
         }
         callback();
     };
@@ -56,8 +56,8 @@ class NewIdentity extends Component {
         ev.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                const passphrase = new TextEncoder("utf-8").encode(values.passphrase);
-                const passphrase1 = new TextEncoder("utf-8").encode(values.passphrase1);
+                const passphrase = new TextEncoder('utf-8').encode(values.passphrase);
+                const passphrase1 = new TextEncoder('utf-8').encode(values.passphrase1);
                 this.props.profileCreateEthAddress({ passphrase, passphrase1 });
             }
         });
@@ -74,7 +74,7 @@ class NewIdentity extends Component {
         return (
             <div className="new-identity__form-wrapper">
                 <FormItem colon={false} label={intl.formatMessage(formMessages.passphrase)}>
-                    {getFieldDecorator("passphrase", {
+                    {getFieldDecorator('passphrase', {
                         rules: [
                             {
                                 required: true,
@@ -95,7 +95,7 @@ class NewIdentity extends Component {
                     )}
                 </FormItem>
                 <FormItem colon={false} label={intl.formatMessage(formMessages.confirmPassphrase)}>
-                    {getFieldDecorator("passphrase1", {
+                    {getFieldDecorator('passphrase1', {
                         rules: [
                             {
                                 required: true,
@@ -106,7 +106,7 @@ class NewIdentity extends Component {
                                 validator: this.checkConfirm
                             }
                         ],
-                        validateTrigger: "onBlur"
+                        validateTrigger: 'onBlur'
                     })(
                         <Input
                             onBlur={this.onConfirmBlur}
@@ -187,9 +187,9 @@ NewIdentity.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        ethAddressPending: profileSelectors.selectProfileFlag(state, "ethAddressPending"),
+        ethAddressPending: profileSelectors.selectProfileFlag(state, 'ethAddressPending'),
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
-        loginPending: profileSelectors.selectProfileFlag(state, "loginPending")
+        loginPending: profileSelectors.selectProfileFlag(state, 'loginPending')
     };
 }
 

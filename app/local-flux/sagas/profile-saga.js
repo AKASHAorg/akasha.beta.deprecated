@@ -1,26 +1,26 @@
 // @flow
-import { apply, call, put, fork, all, select, takeEvery, takeLatest, getContext } from "redux-saga/effects";
+import { apply, call, put, fork, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
     COMMON_MODULE,
     PROFILE_MODULE,
     AUTH_MODULE,
     REGISTRY_MODULE /* UTILS_MODULE */
-} from "@akashaproject/common/constants";
+} from '@akashaproject/common/constants';
 // import * as actionActions from '../actions/action-actions';
-import * as appActions from "../actions/app-actions";
+import * as appActions from '../actions/app-actions';
 // import * as commentsActions from '../actions/comments-actions';
 // import * as entryActions from '../actions/entry-actions';
-import * as actions from "../actions/profile-actions";
+import * as actions from '../actions/profile-actions';
 // import * as searchActions from '../actions/search-actions';
-import * as tempProfileActions from "../actions/temp-profile-actions";
-import * as types from "../constants";
-import * as profileService from "../services/profile-service";
-import { isEthAddress } from "../../utils/dataModule";
-import ChReqService from "../services/channel-request-service";
-import { profileSelectors, externalProcessSelectors, appSelectors } from "../selectors";
+import * as tempProfileActions from '../actions/temp-profile-actions';
+import * as types from '../constants';
+import * as profileService from '../services/profile-service';
+import { isEthAddress } from '../../utils/dataModule';
+import ChReqService from '../services/channel-request-service';
+import { profileSelectors, externalProcessSelectors, appSelectors } from '../selectors';
 // import * as actionStatus from '../../constants/action-status';
 // import * as actionTypes from '../../constants/action-types';
-import { getDisplayName } from "../../utils/dataModule";
+import { getDisplayName } from '../../utils/dataModule';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -70,7 +70,7 @@ function* profileBondAeth ({ actionId, amount }) /* : Saga<void> */ {
 function* profileBondAethSuccess ({ data }) /* : Saga<void> */ {
     yield put(
         appActions.showNotification({
-            id: "bondAethSuccess",
+            id: 'bondAethSuccess',
             duration: 4,
             values: { amount: data.amount }
         })
@@ -117,7 +117,7 @@ function* profileCycleAeth ({ actionId, amount }) /* : Saga<void> */ {
 function* profileCycleAethSuccess ({ data }) /* : Saga<void> */ {
     yield put(
         appActions.showNotification({
-            id: "cycleAethSuccess",
+            id: 'cycleAethSuccess',
             duration: 4,
             values: { amount: data.amount }
         })
@@ -174,7 +174,7 @@ function* profileFollowSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
     yield put(
         appActions.showNotification({
-            id: "followProfileSuccess",
+            id: 'followProfileSuccess',
             duration: 4,
             values: { displayName }
         })
@@ -217,10 +217,10 @@ function* profileFreeAeth ({ actionId, amount }) /* : Saga<void> */ {
 }
 
 function* profileFreeAethSuccess () /* : Saga<void> */ {
-    yield put(appActions.showNotification({ id: "freeAethSuccess", duration: 4 }));
+    yield put(appActions.showNotification({ id: 'freeAethSuccess', duration: 4 }));
 }
 
-function* profileGetBalance ({ unit = "ether" }) /* : Saga<void> */ {
+function* profileGetBalance ({ unit = 'ether' }) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     if (!ethAddress) {
         return;
@@ -301,8 +301,8 @@ function* getCurrentProfile () /* : Saga<void> */ {
 
 export function* profileGetLogged () /* : Saga<void> */ {
     try {
-        const loggedProfile = yield select(state => state.profileState.get("loggedProfile"));
-        if (loggedProfile.get("ethAddress")) {
+        const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
+        if (loggedProfile.get('ethAddress')) {
             return;
         }
         const profile = yield apply(profileService, profileService.profileGetLogged);
@@ -324,7 +324,7 @@ export function* profileGetLogged () /* : Saga<void> */ {
 
 export function* profileGetPublishingCost () /* : Saga<void> */ {
     try {
-        const loggedProfile = yield select(state => state.profileState.get("loggedProfile"));
+        const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
         // yield call(
         //     [ChReqService, ChReqService.sendRequest],
         //     UTILS_MODULE, UTILS_MODULE.manaCosts, {
@@ -349,7 +349,7 @@ function* profileIsFollower ({ followings, ethAddress }) /* : Saga<void> */ {
 
 function* profileLogin ({ data }) /* : Saga<void> */ {
     const { ...payload } = data;
-    payload.password = new global.TextEncoder("utf-8").encode(payload.password);
+    payload.password = new global.TextEncoder('utf-8').encode(payload.password);
     yield call([ChReqService, ChReqService.sendRequest], COMMON_MODULE, COMMON_MODULE.login, payload);
 }
 
@@ -467,7 +467,7 @@ function* profileSendTipSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
     yield put(
         appActions.showNotification({
-            id: "sendTipSuccess",
+            id: 'sendTipSuccess',
             duration: 4,
             values: { displayName }
         })
@@ -496,7 +496,7 @@ function* profileToggleDonationsSuccess () /* : Saga<void> */ {
     }
     yield put(
         appActions.showNotification({
-            id: "toggleDonationsSuccess",
+            id: 'toggleDonationsSuccess',
             duration: 4
         })
     );
@@ -517,7 +517,7 @@ function* profileTransferAethSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
     yield put(
         appActions.showNotification({
-            id: "transferAethSuccess",
+            id: 'transferAethSuccess',
             duration: 4,
             values: { displayName, tokenAmount: data.tokenAmount }
         })
@@ -539,7 +539,7 @@ function* profileTransferEthSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
     yield put(
         appActions.showNotification({
-            id: "transferEthSuccess",
+            id: 'transferEthSuccess',
             duration: 4,
             values: { displayName, value: data.value }
         })
@@ -558,7 +558,7 @@ function* profileTransformEssence ({ actionId, amount }) /* : Saga<void> */ {
 function* profileTransformEssenceSuccess ({ data }) /* : Saga<void> */ {
     yield put(
         appActions.showNotification({
-            id: "transformEssenceSuccess",
+            id: 'transformEssenceSuccess',
             duration: 4,
             values: { amount: data.amount }
         })
@@ -578,7 +578,7 @@ function* profileUnfollowSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
     yield put(
         appActions.showNotification({
-            id: "unfollowProfileSuccess",
+            id: 'unfollowProfileSuccess',
             duration: 4,
             values: { displayName }
         })
@@ -621,7 +621,7 @@ function* profileUpdateSuccess (payload) /* : Saga<void> */ {
     });
     yield put(
         appActions.showNotification({
-            id: "updateProfileSuccess",
+            id: 'updateProfileSuccess',
             duration: 4
         })
     );
@@ -678,7 +678,7 @@ function* profileRegisterSuccess (payload) /* : Saga<void> */ {
     });
     yield put(
         appActions.showNotification({
-            id: "registerProfileSuccess",
+            id: 'registerProfileSuccess',
             duration: 4
         })
     );

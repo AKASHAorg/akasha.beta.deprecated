@@ -19,8 +19,7 @@ const nameRegExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
  */
 export const getProfileSchema = (intl, options) => {
     const baseSchema = Joi.object().keys({
-        firstName: Joi
-            .string()
+        firstName: Joi.string()
             .allow('')
             .min(2)
             .max(32)
@@ -29,16 +28,23 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        min: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                        max: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        min: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                            validationMessages.min,
+                            { min: 2 }
+                        )}`,
+                        max: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                            validationMessages.max,
+                            { max: 32 }
+                        )}`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                            base: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                                validationMessages.invalidCharacters
+                            )}`
                         }
                     }
                 }
             }),
-        lastName: Joi
-            .string()
+        lastName: Joi.string()
             .max(32)
             .regex(nameRegExp)
             .allow('')
@@ -46,40 +52,47 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        max: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                        max: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(
+                            validationMessages.max,
+                            { max: 32 }
+                        )}`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                            base: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(
+                                validationMessages.invalidCharacters
+                            )}`
                         }
                     }
                 }
             }),
-        about: Joi
-            .string()
+        about: Joi.string()
             .max(aboutMeMaxChars)
             .allow('')
             .options({
                 language: {
                     string: {
-                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.max, { max: 195 })}`,
+                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(
+                            validationMessages.max,
+                            { max: 195 }
+                        )}`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                            base: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(
+                                validationMessages.invalidCharacters
+                            )}`
                         }
                     }
                 }
             }),
-        links: Joi
-            .array()
+        links: Joi.array()
             .items(
                 Joi.object({}).keys({
                     id: Joi.number(),
-                    url: Joi
-                        .string()
+                    url: Joi.string()
                         .label('URL')
                         .uri()
                         .options({
                             language: {
                                 any: {
-                                    empty: `!!URL ${intl.formatMessage(validationMessages.required)}`,
+                                    empty: `!!URL ${intl.formatMessage(validationMessages.required)}`
                                 },
                                 string: {
                                     uri: `!!URL ${intl.formatMessage(validationMessages.validAddress)}`
@@ -88,7 +101,8 @@ export const getProfileSchema = (intl, options) => {
                         })
                 })
             )
-            .label('Link').options({
+            .label('Link')
+            .options({
                 language: {
                     array: {
                         includesOne: '{{reason}}'
@@ -98,8 +112,7 @@ export const getProfileSchema = (intl, options) => {
     });
     if (options && !options.isUpdate) {
         return baseSchema.keys({
-            akashaId: Joi
-                .string()
+            akashaId: Joi.string()
                 .trim()
                 .required()
                 .lowercase()
@@ -109,16 +122,32 @@ export const getProfileSchema = (intl, options) => {
                 .options({
                     language: {
                         any: {
-                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`,
-                            empty: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`
+                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.required
+                            )}`,
+                            empty: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.required
+                            )}`
                         },
                         string: {
-                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.required)}`,
-                            min: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                            max: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                            lowercase: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.lowercase)}`,
+                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.required
+                            )}`,
+                            min: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.min,
+                                { min: 2 }
+                            )}`,
+                            max: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.max,
+                                { max: 32 }
+                            )}`,
+                            lowercase: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                validationMessages.lowercase
+                            )}`,
                             regex: {
-                                base: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
+                                base: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                    validationMessages.invalidCharacters
+                                )}`
                             }
                         }
                     }

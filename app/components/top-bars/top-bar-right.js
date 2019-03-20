@@ -1,10 +1,10 @@
-import PropTypes from "prop-types";
-import React from "react";
-import { injectIntl } from "react-intl";
-import { Tooltip } from "antd";
-import classNames from "classnames";
-import { Balance, Icon, ServiceStatusBar } from "../";
-import { generalMessages, profileMessages } from "../../locale-data/messages";
+import PropTypes from 'prop-types';
+import React from 'react';
+import { injectIntl } from 'react-intl';
+import { Tooltip } from 'antd';
+import classNames from 'classnames';
+import { Balance, Icon, ServiceStatusBar } from '../';
+import { generalMessages, profileMessages } from '../../locale-data/messages';
 
 const TopBarRight = props => {
     const {
@@ -22,19 +22,19 @@ const TopBarRight = props => {
         transactionsLogOpen,
         unreadNotifications
     } = props;
-    const ethClass = classNames("top-bar-right__balance", {
-        "top-bar-right__balance_selected": showWallet === "ETH"
+    const ethClass = classNames('top-bar-right__balance', {
+        'top-bar-right__balance_selected': showWallet === 'ETH'
     });
-    const aethClass = classNames("top-bar-right__balance", {
-        "top-bar-right__balance_selected": showWallet === "AETH"
+    const aethClass = classNames('top-bar-right__balance', {
+        'top-bar-right__balance_selected': showWallet === 'AETH'
     });
-    const activityClass = classNames("content-link top-bar-right__activity-icon", {
-        "top-bar-right__activity-icon_selected": transactionsLogOpen
+    const activityClass = classNames('content-link top-bar-right__activity-icon', {
+        'top-bar-right__activity-icon_selected': transactionsLogOpen
     });
-    const notificationsClass = classNames("content-link top-bar-right__notifications-icon", {
-        "top-bar-right__notifications-icon_selected": notificationsPanelOpen
+    const notificationsClass = classNames('content-link top-bar-right__notifications-icon', {
+        'top-bar-right__notifications-icon_selected': notificationsPanelOpen
     });
-    const hasCycledAeth = !!+cyclingStates.getIn(["available", "total"]);
+    const hasCycledAeth = !!+cyclingStates.getIn(['available', 'total']);
     return (
         <div className="top-bar-right">
             <div className="flex-center-y top-bar-right__services">
@@ -66,11 +66,11 @@ const TopBarRight = props => {
                 )}
             </div>
             <div className={ethClass} onClick={toggleEthWallet}>
-                <Balance balance={balance.get("eth")} short type="eth" />
+                <Balance balance={balance.get('eth')} short type="eth" />
             </div>
             <div className={aethClass} onClick={toggleAethWallet}>
                 {hasCycledAeth && <div className="top-bar-right__cycled-indicator" />}
-                <Balance balance={balance.getIn(["aeth", "free"])} short type="aeth" />
+                <Balance balance={balance.getIn(['aeth', 'free'])} short type="aeth" />
             </div>
         </div>
     );

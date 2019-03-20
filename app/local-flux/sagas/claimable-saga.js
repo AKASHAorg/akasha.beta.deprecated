@@ -1,12 +1,12 @@
 // @flow
-import { call, fork, put, select, takeEvery, delay } from "redux-saga/effects";
-import * as actions from "../actions/claimable-actions";
-import * as entryActions from "../actions/entry-actions";
-import * as types from "../constants";
-import { externalProcessSelectors, profileSelectors, claimSelectors, entrySelectors } from "../selectors";
-import * as claimableService from "../services/claimable-service";
-import ChReqService from "../services/channel-request-service";
-import { ENTRY_MODULE } from "@akashaproject/common/constants";
+import { call, fork, put, select, takeEvery, delay } from 'redux-saga/effects';
+import * as actions from '../actions/claimable-actions';
+import * as entryActions from '../actions/entry-actions';
+import * as types from '../constants';
+import { externalProcessSelectors, profileSelectors, claimSelectors, entrySelectors } from '../selectors';
+import * as claimableService from '../services/claimable-service';
+import ChReqService from '../services/channel-request-service';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -56,7 +56,7 @@ function* claimableGetEntriesData (data) /* : Saga<void> */ {
         }
     });
     for (let i = 0; i < allEntries.length; i++) {
-        const context = "claimable";
+        const context = 'claimable';
         const pendingEntries = yield select(state => entrySelectors.getPendingEntries(state, context));
         const isPending = pendingEntries && pendingEntries.get(allEntries[i]);
         const entry = yield select(state => entrySelectors.selectEntryById(state, allEntries[i]));

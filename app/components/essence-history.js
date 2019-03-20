@@ -1,20 +1,20 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import Link from "react-router-dom/Link";
-import { Waypoint } from "react-waypoint";
-import classNames from "classnames";
-import { Spin } from "antd";
-import { Icon } from "./";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import Link from 'react-router-dom/Link';
+import { Waypoint } from 'react-waypoint';
+import classNames from 'classnames';
+import { Spin } from 'antd';
+import { Icon } from './';
 import {
     profileEssenceIterator,
     profileGetBalance,
     profileResetEssenceEvents
-} from "../local-flux/actions/profile-actions";
-import { generalMessages } from "../locale-data/messages";
-import { balanceToNumber } from "../utils/number-formatter";
-import { entrySelectors, profileSelectors } from "../local-flux/selectors";
+} from '../local-flux/actions/profile-actions';
+import { generalMessages } from '../locale-data/messages';
+import { balanceToNumber } from '../utils/number-formatter';
+import { entrySelectors, profileSelectors } from '../local-flux/selectors';
 
 class EssenceHistory extends Component {
     componentDidMount () {
@@ -52,7 +52,7 @@ class EssenceHistory extends Component {
                     <Icon className="content-link essence-history__back-icon" onClick={onBack} type="back" />
                     <span>{intl.formatMessage(generalMessages.essenceTotal)}</span>
                     <span className="essence-history__essence-score">
-                        {balanceToNumber(balance.getIn(["essence", "total"]), 1)}
+                        {balanceToNumber(balance.getIn(['essence', 'total']), 1)}
                     </span>
                 </div>
                 <div className="essence-history__logs-wrapper">
@@ -76,11 +76,11 @@ class EssenceHistory extends Component {
                             essenceEvents.size > 0 &&
                             essenceEvents.map(ev => {
                                 const isLast = lastEvent.equals(ev);
-                                const fromComment = ev.action === "comment:vote";
-                                const fromEntry = ev.action === "entry:claim";
-                                const fromEntryVote = ev.action === "entry:vote:claim";
-                                const className = classNames("essence-history__log-row", {
-                                    "essence-history__log-row_last": isLast
+                                const fromComment = ev.action === 'comment:vote';
+                                const fromEntry = ev.action === 'entry:claim';
+                                const fromEntryVote = ev.action === 'entry:vote:claim';
+                                const className = classNames('essence-history__log-row', {
+                                    'essence-history__log-row_last': isLast
                                 });
                                 if (pendingEntries && pendingEntries.get(ev.sourceId)) {
                                     return (
@@ -94,7 +94,7 @@ class EssenceHistory extends Component {
                                 const fallbackMessage = fromEntryVote
                                     ? intl.formatMessage(generalMessages.anEntryVote)
                                     : intl.formatMessage(generalMessages.anEntry);
-                                const entryTitle = entries.getIn([ev.sourceId, "content", "title"]);
+                                const entryTitle = entries.getIn([ev.sourceId, 'content', 'title']);
                                 const entryLink = (fromEntry || fromEntryVote) && (
                                     <Link
                                         className="unstyled-link"
@@ -116,7 +116,7 @@ class EssenceHistory extends Component {
                                         <span className="essence-history__log-message">
                                             {intl.formatMessage(generalMessages.receivedAmount, {
                                                 amount: ev.amount,
-                                                symbol: "Essence"
+                                                symbol: 'Essence'
                                             })}
                                         </span>
                                         {fromComment
@@ -164,9 +164,9 @@ function mapStateToProps (state) {
         entries: entrySelectors.selectEntriesById(state),
         essenceEvents: profileSelectors.selectEssenceEvents(state),
         essenceIterator: profileSelectors.selectEssenceIterator(state),
-        loadingLogs: profileSelectors.selectProfileFlag(state, "fetchingEssenceIterator"),
-        loadingMoreLogs: profileSelectors.selectProfileFlag(state, "fetchingMoreEssenceIterator"),
-        pendingEntries: entrySelectors.getPendingEntries(state, "essenceEvents")
+        loadingLogs: profileSelectors.selectProfileFlag(state, 'fetchingEssenceIterator'),
+        loadingMoreLogs: profileSelectors.selectProfileFlag(state, 'fetchingMoreEssenceIterator'),
+        pendingEntries: entrySelectors.getPendingEntries(state, 'essenceEvents')
     };
 }
 

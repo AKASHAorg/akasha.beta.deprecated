@@ -13,4 +13,5 @@ export {
     TransactionActions,
     UtilsActions,
     ValidationActions,
-    bootstrapApp } from './actions';
+    bootstrapApp
+} from './actions';

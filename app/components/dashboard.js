@@ -1,16 +1,16 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { Map, List } from "immutable";
-import { equals } from "ramda";
-import withRouter from "react-router/withRouter";
-import { injectIntl } from "react-intl";
-import classNames from "classnames";
-import { DropTarget } from "react-dnd";
-import throttle from "lodash.throttle";
-import { Column, NewColumn } from "./";
-import { dashboardMessages } from "../locale-data/messages/dashboard-messages";
-import * as dragItemTypes from "../constants/drag-item-types";
-import { largeColumnWidth, smallColumnWidth } from "../constants/columns";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { Map, List } from 'immutable';
+import { equals } from 'ramda';
+import withRouter from 'react-router/withRouter';
+import { injectIntl } from 'react-intl';
+import classNames from 'classnames';
+import { DropTarget } from 'react-dnd';
+import throttle from 'lodash.throttle';
+import { Column, NewColumn } from './';
+import { dashboardMessages } from '../locale-data/messages/dashboard-messages';
+import * as dragItemTypes from '../constants/drag-item-types';
+import { largeColumnWidth, smallColumnWidth } from '../constants/columns';
 
 class Dashboard extends Component {
     constructor (props) {
@@ -43,19 +43,19 @@ class Dashboard extends Component {
                 columnOrder: this.state.columnOrder.set(dashboardId, new Map())
             });
         }
-        window.removeEventListener("resize", this._throttledScroll);
+        window.removeEventListener('resize', this._throttledScroll);
     }
 
     componentDidMount () {
         const { match, dashboards, columns } = this.props;
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
-        window.addEventListener("resize", this._throttledScroll);
+        window.addEventListener('resize', this._throttledScroll);
         if (this._dashboardNode && activeDashboard) {
-            this._calculateColumnData(activeDashboard.get("columns"), dashboardId, columns);
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
         if (dashboardId && activeDashboard) {
-            this._mapColumnsToState(activeDashboard.get("columns"), dashboardId);
+            this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
     }
     /* eslint-disable complexity */
@@ -66,13 +66,13 @@ class Dashboard extends Component {
         const isNewDashboard = dashboardId && dashboardId !== this.props.match.params.dashboardId;
         const columnsChanged =
             activeDashboard &&
-            !activeDashboard.get("columns").equals(this.props.dashboards.getIn([dashboardId, "columns"]));
+            !activeDashboard.get('columns').equals(this.props.dashboards.getIn([dashboardId, 'columns']));
 
         if (!activeDashboard) {
             return;
         }
 
-        if (this.state.viewportScrolledWidth === 0 && activeDashboard.get("columns").size) {
+        if (this.state.viewportScrolledWidth === 0 && activeDashboard.get('columns').size) {
             if (this._dashboardNode) {
                 const { offsetWidth, scrollLeft } = this._dashboardNode;
                 this.setState(
@@ -98,11 +98,11 @@ class Dashboard extends Component {
 
         if (isNewDashboard || columnsChanged) {
             if (this._dashboardNode) {
-                return this._calculateColumnData(activeDashboard.get("columns"), dashboardId, columns, () => {
-                    this._mapColumnsToState(activeDashboard.get("columns"), dashboardId);
+                return this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns, () => {
+                    this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
                 });
             }
-            this._mapColumnsToState(activeDashboard.get("columns"), dashboardId);
+            this._mapColumnsToState(activeDashboard.get('columns'), dashboardId);
         }
     }
 
@@ -147,7 +147,7 @@ class Dashboard extends Component {
             });
             accWidth += (colData.large ? largeColumnWidth : smallColumnWidth) + this.columnMarginLeft;
             if (index === columnOrder.size - 1) {
-                if (typeof cb === "function") {
+                if (typeof cb === 'function') {
                     cb();
                 }
             }
@@ -169,8 +169,8 @@ class Dashboard extends Component {
     _handleBeginDrag = column => {
         this.setState({
             draggingColumn: {
-                id: column.get("id"),
-                large: column.get("large")
+                id: column.get('id'),
+                large: column.get('large')
             }
         });
     };
@@ -180,10 +180,10 @@ class Dashboard extends Component {
         const { columnPlaceholder, draggingColumn } = this.state;
         const { hover } = columnPlaceholder;
         const { dashboardId } = match.params;
-        const cols = dashboards.getIn([dashboardId, "columns"]);
+        const cols = dashboards.getIn([dashboardId, 'columns']);
         const activeDashboard = dashboards.get(dashboardId);
         if (columnPlaceholder.drag !== columnPlaceholder.hover) {
-            dashboardReorderColumn(activeDashboard.get("id"), cols.indexOf(draggingColumn.id), hover);
+            dashboardReorderColumn(activeDashboard.get('id'), cols.indexOf(draggingColumn.id), hover);
         }
         this.setState({
             draggingColumn: {
@@ -223,7 +223,7 @@ class Dashboard extends Component {
 
     _getDashboardRef = node => {
         this._dashboardNode = node;
-        if (typeof this.props.getDashboardRef === "function") {
+        if (typeof this.props.getDashboardRef === 'function') {
             this.props.getDashboardRef(node);
         }
     };
@@ -269,7 +269,7 @@ class Dashboard extends Component {
         const { dashboardId } = match.params;
         const activeDashboard = dashboards.get(dashboardId);
         if (this._dashboardNode) {
-            this._calculateColumnData(activeDashboard.get("columns"), dashboardId, columns);
+            this._calculateColumnData(activeDashboard.get('columns'), dashboardId, columns);
         }
         this.forceUpdate();
     };
@@ -291,8 +291,8 @@ class Dashboard extends Component {
             columnOrderMap && columnOrderMap.size && colData && colData.get(columnOrderMap.last())
         );
         const activeDashboard = dashboards.get(dashboardId);
-        const imgClass = classNames("dashboard__empty-placeholder-img", {
-            "dashboard__empty-placeholder-img_dark": darkTheme
+        const imgClass = classNames('dashboard__empty-placeholder-img', {
+            'dashboard__empty-placeholder-img_dark': darkTheme
         });
         return connectDropTarget(
             <div
@@ -311,13 +311,13 @@ class Dashboard extends Component {
                             if (!column || !col) {
                                 return null;
                             }
-                            const width = column.get("large") ? largeColumnWidth : smallColumnWidth;
+                            const width = column.get('large') ? largeColumnWidth : smallColumnWidth;
                             const isDragging = draggingColumn.id && colId === draggingColumn.id;
                             const { left, inViewport } = col;
                             return (
                                 <div
                                     className={`dashboard__column
-                        dashboard__column${isDragging ? "_dragging" : ""}`}
+                        dashboard__column${isDragging ? '_dragging' : ''}`}
                                     id={colId}
                                     key={colId}
                                     style={{
@@ -329,14 +329,14 @@ class Dashboard extends Component {
                                 >
                                     <Column
                                         columnId={column.id}
-                                        type={column.get("type")}
+                                        type={column.get('type')}
                                         onBeginDrag={this._handleBeginDrag}
                                         onEndDrag={this._handleEndDrag}
                                         onNeighbourHover={this._handleNeighbourHover}
                                         inDragMode={isDragging}
                                         columnIndex={colIndex}
                                         intl={intl}
-                                        large={column.get("large")}
+                                        large={column.get('large')}
                                         isVisible={inViewport}
                                         draggable
                                         onSizeChange={this._handleColumnSizeChange}
@@ -350,7 +350,7 @@ class Dashboard extends Component {
                         className="dashboard-column"
                         style={{
                             transform: `translate(${newColumnPositionLeft}px, 0px)`,
-                            position: "absolute",
+                            position: 'absolute',
                             top: 20,
                             bottom: 0
                         }}

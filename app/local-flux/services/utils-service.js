@@ -28,7 +28,7 @@ export const uploadImage = (files, imgId) => {
                 return resolve(data.collection[0].hash);
             }
             const filesArr = data.collection;
-            filesArr.forEach((file) => {
+            filesArr.forEach(file => {
                 files[file.size].src = file.hash;
             });
             // console.log(files, 'the new files with ipfs hash');
@@ -39,12 +39,12 @@ export const uploadImage = (files, imgId) => {
                 serverChannel.send([{ source: files }]);
             } else {
                 serverChannel.send(
-                    Object.keys(files)
-                        .map(fileKey => ({
-                            size: fileKey,
-                            id: imgId,
-                            source: files[fileKey].src
-                        })));
+                    Object.keys(files).map(fileKey => ({
+                        size: fileKey,
+                        id: imgId,
+                        source: files[fileKey].src
+                    }))
+                );
             }
         });
         serverChannel.enable();

@@ -11,25 +11,25 @@ import chReqService from '../services/channel-request-service';
 
 const TAG_SEARCH_LIMIT = 10;
 
-function* tagCreate ({ data })/* : Saga<void> */ {
+function* tagCreate ({ data }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken());
     yield call([chReqService, chReqService.sendRequest], TAGS_MODULE, TAGS_MODULE.createTag, data);
 }
 
-function* tagCanCreateCheck ({ data })/* : Saga<void> */ {
+function* tagCanCreateCheck ({ data }) /* : Saga<void> */ {
     const { ethAddress } = data;
     yield call([chReqService, chReqService.sendRequest], TAGS_MODULE, TAGS_MODULE.canCreate, { ethAddress });
 }
 
-function* tagExists ({ data })/* : Saga<void> */ {
+function* tagExists ({ data }) /* : Saga<void> */ {
     yield call([chReqService, chReqService.sendRequest], TAGS_MODULE, TAGS_MODULE.existsTag, data);
 }
 
-function* tagGetEntriesCount ({ tags })/* : Saga<void> */ {
+function* tagGetEntriesCount ({ tags }) /* : Saga<void> */ {
     yield call([chReqService, chReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getTagEntriesCount, tags);
 }
 
-export function* watchTagActions ()/* : Saga<void> */ {
+export function* watchTagActions () /* : Saga<void> */ {
     yield takeEvery(TAGS_MODULE.createTag, tagCreate);
     yield takeEvery(TAGS_MODULE.existsTag, tagExists);
     yield takeEvery(ENTRY_MODULE.getTagEntriesCount, tagGetEntriesCount);

@@ -1,11 +1,18 @@
 import { connect } from 'react-redux';
-import { clearSyncStatus, gethGetSyncStatus, gethPauseSync, gethResumeSync, gethStart,
-    /* gethStartLogger, */ gethStop, /* gethStopLogger, */ /* gethStopSync, */ ipfsGetPorts, ipfsStart,
-    ipfsStop } from '../local-flux/actions/external-process-actions';
+import {
+    clearSyncStatus,
+    gethGetSyncStatus,
+    gethPauseSync,
+    gethResumeSync,
+    gethStart,
+    /* gethStartLogger, */ gethStop,
+    /* gethStopLogger, */ /* gethStopSync, */ ipfsGetPorts,
+    ipfsStart,
+    ipfsStop
+} from '../local-flux/actions/external-process-actions';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Sync } from '../components';
 import { externalProcessSelectors, settingsSelectors } from '../local-flux/selectors';
-
 
 function mapStateToProps (state) {
     return {
@@ -19,7 +26,7 @@ function mapStateToProps (state) {
         ipfsPortsRequested: externalProcessSelectors.getIpfsPortsRequested(state),
         ipfsStatus: externalProcessSelectors.selectIpfsStatus(state),
         ipfsStatusFetched: externalProcessSelectors.getIpfsStatusFetched(state),
-        syncActionId: externalProcessSelectors.selectGethSyncActionId(state),
+        syncActionId: externalProcessSelectors.selectGethSyncActionId(state)
     };
 }
 
@@ -38,7 +45,7 @@ export default connect(
         ipfsGetPorts,
         ipfsStart,
         ipfsStop,
-        saveGeneralSettings,
+        saveGeneralSettings
     },
     null,
     { pure: false }

@@ -17,7 +17,7 @@ import * as registryService from '../services/registry-service';
 /**
  * Get temp profile from database
  */
-function* tempProfileGet ({ ethAddress }/* : TempProfileGetParams */)/* : Saga<void> */ {
+function* tempProfileGet ({ ethAddress } /* : TempProfileGetParams */) /* : Saga<void> */ {
     try {
         const data = yield call([registryService, registryService.getTempProfile], ethAddress);
         if (data) {
@@ -31,7 +31,7 @@ function* tempProfileGet ({ ethAddress }/* : TempProfileGetParams */)/* : Saga<v
 /**
  * Create temp profile in database
  */
-function* createTempProfile ()/* : Saga<void> */ {
+function* createTempProfile () /* : Saga<void> */ {
     const tempProfile = yield select(state => state.tempProfileState.get('tempProfile'));
     try {
         const savedProfile = yield call(
@@ -47,11 +47,11 @@ function* createTempProfile ()/* : Saga<void> */ {
 /**
  * Delete temp profile in database
  */
-function* deleteTempProfile ({ ethAddress })/* : Saga<void> */ {
+function* deleteTempProfile ({ ethAddress }) /* : Saga<void> */ {
     yield call([registryService, registryService.deleteTempProfile], ethAddress);
 }
 
-export function* watchTempProfileActions ()/* : Saga<void> */ {
+export function* watchTempProfileActions () /* : Saga<void> */ {
     yield takeLatest(types.TEMP_PROFILE_GET, tempProfileGet);
     yield takeLatest(types.TEMP_PROFILE_CREATE, createTempProfile);
     yield takeLatest(types.TEMP_PROFILE_DELETE_FULL, deleteTempProfile);

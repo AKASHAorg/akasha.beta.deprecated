@@ -1,6 +1,6 @@
 // @flow strict
 
-import * as React from "react";
+import * as React from 'react';
 /*::
     type Props = {
         active: boolean

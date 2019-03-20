@@ -7,10 +7,19 @@ import Switch from 'react-router-dom/Switch';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { DashboardTopBar, Navigation, ProfilePageTopBar, TopBarRight } from '../';
-import { showNotificationsPanel, showTransactionsLog, toggleAethWallet,
-    toggleEthWallet } from '../../local-flux/actions/app-actions';
-import { actionSelectors, appSelectors, entrySelectors, profileSelectors,
-    notificationSelectors } from '../../local-flux/selectors';
+import {
+    showNotificationsPanel,
+    showTransactionsLog,
+    toggleAethWallet,
+    toggleEthWallet
+} from '../../local-flux/actions/app-actions';
+import {
+    actionSelectors,
+    appSelectors,
+    entrySelectors,
+    profileSelectors,
+    notificationSelectors
+} from '../../local-flux/selectors';
 
 class TopBar extends PureComponent {
     componentWillReceiveProps (nextProps) {
@@ -22,44 +31,49 @@ class TopBar extends PureComponent {
         }
     }
 
-    _renderComponent = (Component, injectedProps) =>
-        props => <Component {...injectedProps} {...props} />;
+    _renderComponent = (Component, injectedProps) => props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { balance, cyclingStates, fullEntry, hasPendingActions, notificationsLoaded,
-            notificationsPanelOpen, showSecondarySidebar, showWallet, transactionsLogOpen,
-            unreadNotifications } = this.props;
+        const {
+            balance,
+            cyclingStates,
+            fullEntry,
+            hasPendingActions,
+            notificationsLoaded,
+            notificationsPanelOpen,
+            showSecondarySidebar,
+            showWallet,
+            transactionsLogOpen,
+            unreadNotifications
+        } = this.props;
         const className = classNames('flex-center-y top-bar', {
             'top-bar_full': !showSecondarySidebar || fullEntry,
             'top-bar_default': !fullEntry
         });
         return (
-          <div className={className}>
-            <div className="top-bar__left-side">
-              <Switch>
-                <Route
-                  component={DashboardTopBar}
-                  path="/dashboard/:dashboardId?"
+            <div className={className}>
+                <div className="top-bar__left-side">
+                    <Switch>
+                        <Route component={DashboardTopBar} path="/dashboard/:dashboardId?" />
+                        <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
+                        <Route component={Navigation} />
+                    </Switch>
+                </div>
+                <TopBarRight
+                    balance={balance}
+                    cyclingStates={cyclingStates}
+                    hasPendingActions={hasPendingActions}
+                    notificationsLoaded={notificationsLoaded}
+                    notificationsPanelOpen={notificationsPanelOpen}
+                    showNotificationsPanel={this.props.showNotificationsPanel}
+                    showTransactionsLog={this.props.showTransactionsLog}
+                    showWallet={showWallet}
+                    toggleAethWallet={this.props.toggleAethWallet}
+                    toggleEthWallet={this.props.toggleEthWallet}
+                    transactionsLogOpen={transactionsLogOpen}
+                    unreadNotifications={unreadNotifications}
                 />
-                <Route exact path="/0x:ethAddress" component={ProfilePageTopBar} />
-                <Route component={Navigation} />
-              </Switch>
             </div>
-            <TopBarRight
-              balance={balance}
-              cyclingStates={cyclingStates}
-              hasPendingActions={hasPendingActions}
-              notificationsLoaded={notificationsLoaded}
-              notificationsPanelOpen={notificationsPanelOpen}
-              showNotificationsPanel={this.props.showNotificationsPanel}
-              showTransactionsLog={this.props.showTransactionsLog}
-              showWallet={showWallet}
-              toggleAethWallet={this.props.toggleAethWallet}
-              toggleEthWallet={this.props.toggleEthWallet}
-              transactionsLogOpen={transactionsLogOpen}
-              unreadNotifications={unreadNotifications}
-            />
-          </div>
         );
     }
 }
@@ -81,13 +95,15 @@ TopBar.propTypes = {
     toggleAethWallet: PropTypes.func.isRequired,
     toggleEthWallet: PropTypes.func.isRequired,
     transactionsLogOpen: PropTypes.bool,
-    unreadNotifications: PropTypes.number.isRequired,
+    unreadNotifications: PropTypes.number.isRequired
 };
 
 const mapStateToProps = state => ({
     balance: profileSelectors.selectBalance(state),
     cyclingStates: profileSelectors.selectCyclingStates(state),
-    fullEntry: !!entrySelectors.selectFullEntry(state) || !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
+    fullEntry:
+        !!entrySelectors.selectFullEntry(state) ||
+        !!entrySelectors.selectEntryFlag(state, 'fetchingFullEntry'),
     hasPendingActions: !!actionSelectors.selectPublishingActions(state).size,
     loggedProfile: profileSelectors.selectLoggedProfile(state),
     loggedProfileData: profileSelectors.getLoggedProfileData(state),
@@ -104,7 +120,7 @@ export default connect(
         showNotificationsPanel,
         showTransactionsLog,
         toggleAethWallet,
-        toggleEthWallet,
+        toggleEthWallet
     },
     null,
     { pure: false }

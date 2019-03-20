@@ -1,8 +1,8 @@
-import PropTypes from "prop-types";
-import React from "react";
-import { injectIntl } from "react-intl";
-import { generalMessages } from "../locale-data/messages";
-import { formatBalance } from "../utils/number-formatter";
+import PropTypes from 'prop-types';
+import React from 'react';
+import { injectIntl } from 'react-intl';
+import { generalMessages } from '../locale-data/messages';
+import { formatBalance } from '../utils/number-formatter';
 
 const Balance = ({ balance, intl, short, type }) => {
     if (!balance) {
