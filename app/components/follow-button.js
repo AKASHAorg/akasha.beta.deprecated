@@ -30,49 +30,46 @@ class FollowButton extends Component {
         let label;
         if (followPending) {
             label = (
-              <div className="flex-center">
-                <Spin className="follow-button__button-icon" size="small" />
-                {intl.formatMessage(generalMessages.pending)}
-              </div>
+                <div className="flex-center">
+                    <Spin className="follow-button__button-icon" size="small" />
+                    {intl.formatMessage(generalMessages.pending)}
+                </div>
             );
         } else if (isFollower) {
-            const message = hovered ?
-                intl.formatMessage(profileMessages.unfollow) :
-                intl.formatMessage(profileMessages.following);
+            const message = hovered
+                ? intl.formatMessage(profileMessages.unfollow)
+                : intl.formatMessage(profileMessages.following);
             label = (
-              <div className="flex-center">
-                <Icon className="follow-button__button-icon" type={hovered ? 'close' : 'check'} />
-                {message}
-              </div>
+                <div className="flex-center">
+                    <Icon className="follow-button__button-icon" type={hovered ? 'close' : 'check'} />
+                    {message}
+                </div>
             );
         } else {
             label = (
-              <div className="flex-center">
-                <Icon className="follow-button__button-icon" type="plus" />
-                {intl.formatMessage(profileMessages.follow)}
-              </div>
+                <div className="flex-center">
+                    <Icon className="follow-button__button-icon" type="plus" />
+                    {intl.formatMessage(profileMessages.follow)}
+                </div>
             );
         }
-        const className = classNames(
-            'follow-button__button',
-            {
-                'follow-button__unfollow-button': !followPending && isFollower && hovered,
-                'follow-button__following-button': !followPending && isFollower && !hovered,
-                'follow-button__follow-button': !followPending && !isFollower
-            }
-        );
+        const className = classNames('follow-button__button', {
+            'follow-button__unfollow-button': !followPending && isFollower && hovered,
+            'follow-button__following-button': !followPending && isFollower && !hovered,
+            'follow-button__follow-button': !followPending && !isFollower
+        });
 
         return (
-          <Button
-            className={className}
-            disabled={followPending}
-            onClick={onFollow}
-            onMouseEnter={this.onMouseEnter}
-            onMouseLeave={this.onMouseLeave}
-            type={canFollow ? 'primary' : 'default'}
-          >
-            {label}
-          </Button>
+            <Button
+                className={className}
+                disabled={followPending}
+                onClick={onFollow}
+                onMouseEnter={this.onMouseEnter}
+                onMouseLeave={this.onMouseLeave}
+                type={canFollow ? 'primary' : 'default'}
+            >
+                {label}
+            </Button>
         );
     }
 }
@@ -81,7 +78,7 @@ FollowButton.propTypes = {
     followPending: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
     isFollower: PropTypes.bool,
-    onFollow: PropTypes.func.isRequired,
+    onFollow: PropTypes.func.isRequired
 };
 
 export default injectIntl(FollowButton);

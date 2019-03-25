@@ -10,45 +10,58 @@ import ChReqService from '../services/channel-request-service';
 
 /*::
     import type { Saga, CallEffect } from 'redux-saga';
-    import type { CommentsCheckNewPayload 
+    import type { CommentsCheckNewPayload
         } from '../../flow-typed/actions/comments-actions';
  */
 
 const COMMENT_FETCH_LIMIT = 50;
 const REPLIES_FETCH_LIMIT = 25;
 
-function* commentsCheckNew ({ entryId }/*: CommentsCheckNewPayload */)/* : Saga<void> */ {
+function* commentsCheckNew ({ entryId } /*: CommentsCheckNewPayload */) /* : Saga<void> */ {
     const toBlock = yield select(commentSelectors.selectNewCommentsBlock);
-    yield call(commentsIterator, { entryId, toBlock, reversed: true, checkNew: true, more: false, parent: null, context: null }); // eslint-disable-line
+    yield call(commentsIterator, {
+        entryId,
+        toBlock,
+        reversed: true,
+        checkNew: true,
+        more: false,
+        parent: null,
+        context: null
+    }); // eslint-disable-line
 }
 
-function* commentsDownvote ({ actionId, commentId, entryId, weight })/* : Saga<void> */ {
+function* commentsDownvote ({ actionId, commentId, entryId, weight, reqId }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call([ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.downVote, {
-            actionId, token, commentId, entryId, weight
-        });
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.downVote, {
+        actionId,
+        token,
+        commentId,
+        entryId,
+        weight,
+        reqId
+    });
 }
 
-// function* commentsDownvoteSuccess ({ data })/* : Saga<void> */ {
-//     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
-//     yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
-// }
-
-function* commentsGet ({ context, entryId, commentId, isParent })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.getComment, {
-            context, entryId, commentId, isParent
-        });
+function* commentsDownvoteSuccess ({ data }) /* : Saga<void> */ {
+    yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
+    yield put(appActions.showNotification({ id: 'downvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsGetCount ({ entryId })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.commentsCount, {
-            entryId
-        });
+function* commentsGet ({ context, entryId, commentId, isParent, reqId }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.getComment, {
+        context,
+        entryId,
+        commentId,
+        isParent,
+        reqId
+    });
+}
+
+function* commentsGetCount ({ entryId, reqId }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.commentsCount, {
+        entryId,
+        reqId
+    });
 }
 
 // function* commentsGetExtra (collection, request)/* : Saga<void> */ {
@@ -81,25 +94,26 @@ function* commentsGetCount ({ entryId })/* : Saga<void> */ {
 //     }
 // }
 
-function* commentsGetScore ({ commentId })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.getScore,
-        { commentId }
-    );
+function* commentsGetScore ({ commentId, reqId }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.getScore, {
+        commentId,
+        reqId
+    });
 }
 
-function* commentsGetVoteOf ({ data })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.getVoteOf,
-        data
-    )
+function* commentsGetVoteOf ({ data }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.getVoteOf, data);
 }
 
-function* commentsIterator (
-    { context, entryId, parent, reversed, toBlock, more, checkNew }
-)/* : Saga<void> */ {
+function* commentsIterator ({
+    context,
+    entryId,
+    parent,
+    reversed,
+    toBlock,
+    more,
+    checkNew
+}) /* : Saga<void> */ {
     let block;
     if (toBlock) {
         block = toBlock;
@@ -108,6 +122,7 @@ function* commentsIterator (
     }
     const limit = parent === '0' ? COMMENT_FETCH_LIMIT : REPLIES_FETCH_LIMIT;
     const lastIndex = reversed ? '0' : undefined;
+<<<<<<< HEAD
     yield call(
         [ChReqService, ChReqService.sendRequest],
         COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator, {
@@ -136,38 +151,79 @@ function* commentsPublish ({ actionId, ...payload })/* : Saga<void> */ {
 }
 
 function* commentsPublishSuccess ()/* : Saga<void> */ {
+=======
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator, {
+        context,
+        entryId,
+        toBlock: block,
+        lastIndex,
+        limit,
+        reversed,
+        parent,
+        more,
+        checkNew
+    });
+}
+
+function* commentsMoreIterator ({ entryId, parent }) /* : Saga<void> */ {
+    const toBlock = yield select(state => commentSelectors.selectCommentLastBlock(state, { parent }));
+    const lastIndex = yield select(state => commentSelectors.selectCommentLastIndex(state, { parent }));
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.commentsIterator, {
+        entryId,
+        toBlock,
+        lastIndex,
+        limit: COMMENT_FETCH_LIMIT,
+        parent,
+        more: true
+    });
+}
+
+function* commentsPublish ({ actionId, ...payload }) /* : Saga<void> */ {
+    const token /* : string */ = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.comment, {
+        actionId,
+        token,
+        ...payload
+    });
+}
+
+function* commentsPublishSuccess () /* : Saga<void> */ {
+>>>>>>> 2d4f0c15e3ef795e15895a0d89310419d620eb36
     yield put(appActions.showNotification({ id: 'publishCommentSuccess', duration: 4 }));
 }
 
-function* commentsResolveIpfsHash ({ ipfsHashes, commentIds })/* : Saga<void> */ {
+function* commentsResolveIpfsHash ({ ipfsHashes, commentIds }) /* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.resolveCommentsIpfsHash,
+        COMMENTS_MODULE,
+        COMMENTS_MODULE.resolveCommentsIpfsHash,
         { ipfsHashes, commentIds }
-    )
-}
-
-function* commentsUpvote ({ actionId, commentId, entryId, weight })/* : Saga<void> */ {
-    const token/* : string */ = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMENTS_MODULE, COMMENTS_MODULE.upvote,
-        { actionId, token, commentId, entryId, weight }
     );
 }
 
-function* commentsUpvoteSuccess ({ data })/* : Saga<void> */ {
+function* commentsUpvote ({ actionId, commentId, entryId, weight }) /* : Saga<void> */ {
+    const token /* : string */ = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], COMMENTS_MODULE, COMMENTS_MODULE.upvote, {
+        actionId,
+        token,
+        commentId,
+        entryId,
+        weight
+    });
+}
+
+function* commentsUpvoteSuccess ({ data }) /* : Saga<void> */ {
     yield call(commentsVoteSuccess, data.commentId); // eslint-disable-line no-use-before-define
     yield put(appActions.showNotification({ id: 'upvoteCommentSuccess', duration: 4 }));
 }
 
-function* commentsVoteSuccess (commentId)/* : Saga<void> */ {
+function* commentsVoteSuccess (commentId) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     yield put(actions.commentsGetScore(commentId));
     yield put(actions.commentsGetVoteOf([{ commentId, ethAddress }]));
 }
 
-export function* watchCommentsActions ()/* : Saga<void> */ {
+export function* watchCommentsActions () /* : Saga<void> */ {
     yield takeEvery(COMMENTS_MODULE.downVote, commentsDownvote);
     // yield takeEvery(types.COMMENTS_DOWNVOTE_SUCCESS, commentsDownvoteSuccess);
     yield takeEvery(types.COMMENTS_CHECK_NEW, commentsCheckNew);

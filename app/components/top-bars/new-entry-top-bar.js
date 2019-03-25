@@ -6,24 +6,24 @@ import { secondarySidebarToggle } from '../../local-flux/actions/app-actions';
 import { appSelectors } from '../../local-flux/selectors';
 
 const NewEntryTopBar = props => (
-  <div className="new-entry-top-bar">
-    <div className="new-entry-top-bar__inner">
-      <Button
-        icon={props.showSecondarySidebar ? 'double-left' : 'double-right'}
-        onClick={props.secondarySidebarToggle}
-      />
+    <div className="new-entry-top-bar">
+        <div className="new-entry-top-bar__inner">
+            <Button
+                icon={props.showSecondarySidebar ? 'double-left' : 'double-right'}
+                onClick={props.secondarySidebarToggle}
+            />
+        </div>
     </div>
-  </div>
 );
 
 NewEntryTopBar.propTypes = {
     secondarySidebarToggle: PropTypes.func,
-    showSecondarySidebar: PropTypes.bool,
+    showSecondarySidebar: PropTypes.bool
 };
 
 function mapStateToProps (state) {
     return {
-        showSecondarySidebar: appSelectors.selectShowSecondarySidebar(state),
+        showSecondarySidebar: appSelectors.selectShowSecondarySidebar(state)
     };
 }
 

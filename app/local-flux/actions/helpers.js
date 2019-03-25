@@ -1,17 +1,19 @@
 // @flow
 import { genId } from '../../utils/dataModule';
 
-const generateId = (): string => {
-    return genId();
-};
-export function action (type/*:  string */, payload/*: Object */ = {}) {
+const generateId = (): string => genId();
+
+export function action (type /*:  string */, payload /*: Object */ = {}) {
     let { reqId = null, ...others } = payload;
-    if(!reqId) {
+    if (!reqId) {
         reqId = generateId();
     }
+    // add requestId to payload...
     return {
         type,
-        reqId,
-        ...others
+        payload: {
+            reqId,
+            ...others
+        }
     };
 }

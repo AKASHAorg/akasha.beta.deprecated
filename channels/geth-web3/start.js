@@ -3,8 +3,7 @@ import { CORE_MODULE, GETH_MODULE } from '@akashaproject/common/constants';
 export default function init(sp, getService) {
     const execute = Promise.coroutine(function* () {
         const web3Api = getService(CORE_MODULE.WEB3_API);
-        let connected = web3Api.instance.isConnected();
-        connected = web3Api.instance.isConnected();
+        const connected = web3Api.instance.eth.net.isListening();
         yield (getService(CORE_MODULE.CONTRACTS)).init();
         return { started: connected };
     });

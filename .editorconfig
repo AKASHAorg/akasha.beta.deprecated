@@ -4,14 +4,16 @@ end_of_line=lf
 insert_final_newline=false
 indent_style=space
 indent_size=4
+quote_type=single
 
-[{.babelrc,.stylelintrc,jest.config,.eslintrc,*.json,*.jsb3,*.jsb2,*.bowerrc}]
+[{.babelrc,.stylelintrc,jest.config,.eslintrc,*.json,*.jsb3,*.jsb2,*.bowerrc,*.config.js}]
 indent_style=space
 indent_size=2
 
 [{*.applejs,*.js}]
 indent_style=space
-indent_size=2
+indent_size=4
+quote_type=single
 
 [{*.ats,*.ts}]
 indent_style=space

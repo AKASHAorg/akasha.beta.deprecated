@@ -1,6 +1,5 @@
 // @flow
-import { all, apply, call, put, select, takeEvery,
-    takeLatest } from 'redux-saga/effects';
+import { all, apply, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 // import * as actionActions from '../actions/action-actions';
 // import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
@@ -8,8 +7,14 @@ import * as actions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 // import * as types from '../constants';
-import { profileSelectors, externalProcessSelectors, dashboardSelectors, entrySelectors, draftSelectors,
-    listSelectors } from '../selectors';
+import {
+    profileSelectors,
+    externalProcessSelectors,
+    dashboardSelectors,
+    entrySelectors,
+    draftSelectors,
+    listSelectors
+} from '../selectors';
 import { isEthAddress } from '../../utils/dataModule';
 import ChReqService from '../services/channel-request-service';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
@@ -24,34 +29,28 @@ const ENTRY_LIST_ITERATOR_LIMIT = 3;
 
 /* eslint-disable no-use-before-define */
 
-function* entryCanClaim ({ entryIds })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.canClaim, {
-            entryId: entryIds
-        }
-    )
+function* entryCanClaim ({ entryIds }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.canClaim, {
+        entryId: entryIds
+    });
 }
 
-function* entryCanClaimVote ({ entryIds })/* : Saga<void> */ {
+function* entryCanClaimVote ({ entryIds }) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.canClaimVote, {
-            entries: entryIds,
-            ethAddress
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.canClaimVote, {
+        entries: entryIds,
+        ethAddress
+    });
 }
 
-function* entryClaim ({ actionId, entryId, entryTitle })/* : Saga<void> */ {
+function* entryClaim ({ actionId, entryId, entryTitle }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.claim, {
-            actionId, token, entryId, entryTitle
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.claim, {
+        actionId,
+        token,
+        entryId,
+        entryTitle
+    });
 }
 
 // function* entryClaimSuccess ({ data })/* : Saga<void> */ {
@@ -66,14 +65,14 @@ function* entryClaim ({ actionId, entryId, entryTitle })/* : Saga<void> */ {
 //     yield put(actionActions.actionUpdateClaim(data));
 // }
 
-function* entryClaimVote ({ actionId, entryId, entryTitle })/* : Saga<void> */ {
+function* entryClaimVote ({ actionId, entryId, entryTitle }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.claimVote, {
-            actionId, token, entryId, entryTitle
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.claimVote, {
+        actionId,
+        token,
+        entryId,
+        entryTitle
+    });
 }
 
 // function* entryClaimVoteSuccess ({ data })/* : Saga<void> */ {
@@ -88,14 +87,17 @@ function* entryClaimVote ({ actionId, entryId, entryTitle })/* : Saga<void> */ {
 //     yield put(actionActions.actionUpdateClaimVote(data));
 // }
 
-function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value })/* : Saga<void> */ {
+function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.downvote, {
-            actionId, token, entryId, entryTitle, ethAddress, weight, value
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.downvote, {
+        actionId,
+        token,
+        entryId,
+        entryTitle,
+        ethAddress,
+        weight,
+        value
+    });
 }
 
 // function* entryDownvoteSuccess ({ data })/* : Saga<void> */ {
@@ -114,19 +116,18 @@ function* entryDownvote ({ actionId, entryId, entryTitle, ethAddress, weight, va
 //     );
 // }
 
-function* entryGetBalance ({ entryIds, claimable })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.getEntryBalance, {
-            list: entryIds, claimable
-        }
-    );
+function* entryGetBalance ({ entryIds, claimable }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getEntryBalance, {
+        list: entryIds,
+        claimable
+    });
 }
 
-function* entryGetEndPeriod ({ entryIds })/* : Saga<void> */ {
+function* entryGetEndPeriod ({ entryIds }) /* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.getVoteEndPeriod,
+        ENTRY_MODULE,
+        ENTRY_MODULE.getVoteEndPeriod,
         entryIds
     );
 }
@@ -155,12 +156,13 @@ function* entryGetEndPeriod ({ entryIds })/* : Saga<void> */ {
 //     }
 // }
 // @todo refactor/remove this. use actions!
-export function* entryGetExtraOfList (collection, columnId, asDrafts, batching)/* : Saga<void> */ { // eslint-disable-line
+export function* entryGetExtraOfList (collection, columnId, asDrafts, batching) /* : Saga<void> */ {
+    // eslint-disable-line
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const allEntries = [];
     const ownEntries = [];
     const ethAddresses = [];
-    collection.forEach((entry) => {
+    collection.forEach(entry => {
         const { ethAddress } = entry.author;
         allEntries.push({ ethAddress: loggedEthAddress, entryId: entry.entryId });
         if (!ethAddress) {
@@ -194,18 +196,29 @@ export function* entryGetExtraOfList (collection, columnId, asDrafts, batching)/
     }
     yield all([
         ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress, batching }))),
-        ...collection.map(entry => put(actions.entryGetShort({
-            entryId: entry.entryId,
-            ethAddress: entry.author.ethAddress,
-            context: columnId,
-            batching
-        })))
+        ...collection.map(entry =>
+            put(
+                actions.entryGetShort({
+                    entryId: entry.entryId,
+                    ethAddress: entry.author.ethAddress,
+                    context: columnId,
+                    batching
+                })
+            )
+        )
     ]);
 }
 
 function* entryGetFull ({
-    akashaId, entryId, ethAddress, version, asDraft, revert, publishedDateOnly, latestVersion
-})/* : Saga<void> */ {
+    akashaId,
+    entryId,
+    ethAddress,
+    version,
+    asDraft,
+    revert,
+    publishedDateOnly,
+    latestVersion
+}) /* : Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getEntry, {
         akashaId,
         entryId,
@@ -222,17 +235,15 @@ function* entryGetFull ({
     }
 }
 
-function* entryGetLatestVersion ({ entryId })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.getEntry, {
-            entryId,
-            full: true,
-            latestVersion: true
-        });
+function* entryGetLatestVersion ({ entryId }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getEntry, {
+        entryId,
+        full: true,
+        latestVersion: true
+    });
 }
 
-function* entryGetScore ({ entryId })/* : Saga<void> */ {
+function* entryGetScore ({ entryId }) /* : Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getScore, {
         entryId
     });
@@ -244,15 +255,16 @@ function* entryGetScore ({ entryId })/* : Saga<void> */ {
 //     });
 // }
 
-function* entryGetVoteOf ({ entryIds, claimable })/* : Saga<void> */ {
+function* entryGetVoteOf ({ entryIds, claimable }) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const request = entryIds.map(id => ({ entryId: id, ethAddress }));
     yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getVoteOf, {
-        list: request, claimable
+        list: request,
+        claimable
     });
 }
 
-function* entryListIterator ({ column, batching })/* : Saga<void> */ {
+function* entryListIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, value, limit = ENTRY_LIST_ITERATOR_LIMIT } = column;
     const collection = yield select(state => listSelectors.getListEntries(state, { listId: value, limit }));
     yield call(entryGetExtraOfList, collection, id, null, batching);
@@ -357,21 +369,22 @@ function* entryListIterator ({ column, batching })/* : Saga<void> */ {
 //     );
 // }
 
-function* entryProfileIterator ({ column, batching })/* : Saga<void> */ {
+function* entryProfileIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, value, asDrafts, reversed, limit = ITERATOR_LIMIT, entryType, firstIndex } = column;
     if (value && !isEthAddress(value)) {
         yield put(profileActions.profileExists(value));
     }
     let akashaId, ethAddress, lastIndex, toBlock, totalLoaded; // eslint-disable-line
     if (asDrafts) {
-        toBlock = (yield select(draftSelectors.getDraftsLastBlock)) ||
+        toBlock =
+            (yield select(draftSelectors.getDraftsLastBlock)) ||
             (yield select(externalProcessSelectors.getBlockNumber));
         lastIndex = yield select(draftSelectors.getDraftsLastIndex);
         totalLoaded = yield select(draftSelectors.getDraftsTotalLoaded);
     } else {
-        toBlock = reversed ?
-            yield select(state => dashboardSelectors.selectColumnFirstBlock(state, { columnId: id })) :
-            yield select(externalProcessSelectors.getBlockNumber);
+        toBlock = reversed
+            ? yield select(state => dashboardSelectors.selectColumnFirstBlock(state, { columnId: id }))
+            : yield select(externalProcessSelectors.getBlockNumber);
         lastIndex = reversed ? firstIndex : column.lastIndex;
     }
     if (isEthAddress(value)) {
@@ -379,67 +392,61 @@ function* entryProfileIterator ({ column, batching })/* : Saga<void> */ {
     } else {
         akashaId = value;
     }
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.entryProfileIterator,
-        {
-            columnId: id, limit, akashaId,
-            ethAddress, asDrafts, toBlock, reversed,
-            lastIndex, entryType, totalLoaded, batching
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.entryProfileIterator, {
+        columnId: id,
+        limit,
+        akashaId,
+        ethAddress,
+        asDrafts,
+        toBlock,
+        reversed,
+        lastIndex,
+        entryType,
+        totalLoaded,
+        batching
+    });
 }
 
-function* entryResolveIpfsHash ({ entryId, ipfsHash })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.resolveEntriesIpfsHash,
-        { ipfsHash: [ipfsHash], entryId, full: true }
-    );
+function* entryResolveIpfsHash ({ entryId, ipfsHash }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.resolveEntriesIpfsHash, {
+        ipfsHash: [ipfsHash],
+        entryId,
+        full: true
+    });
 }
 
-function* entryStreamIterator ({ column, batching })/* : Saga<void> */ {
+function* entryStreamIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, reversed, firstIndex } = column;
-    const toBlock = reversed ?
-        yield select(state => dashboardSelectors.selectColumnFirstBlock(state, id)) :
-        yield select(externalProcessSelectors.getBlockNumber);
+    const toBlock = reversed
+        ? yield select(state => dashboardSelectors.selectColumnFirstBlock(state, id))
+        : yield select(externalProcessSelectors.getBlockNumber);
     const lastIndex = reversed ? firstIndex : column.lastIndex;
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.followingStreamIterator,
-        {
-            columnId: id,
-            ethAddress,
-            limit: ITERATOR_LIMIT,
-            toBlock,
-            lastIndex,
-            reversed,
-            batching
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.followingStreamIterator, {
+        columnId: id,
+        ethAddress,
+        limit: ITERATOR_LIMIT,
+        toBlock,
+        lastIndex,
+        reversed,
+        batching
+    });
 }
 
-function* entryTagIterator ({ column, batching })/* : Saga<void> */ {
+function* entryTagIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, value, reversed, firstBlock, firstIndex } = column;
     yield put(tagActions.tagExists({ tagName: value }));
-    const toBlock = reversed ?
-        firstBlock :
-        yield select(externalProcessSelectors.getBlockNumber);
+    const toBlock = reversed ? firstBlock : yield select(externalProcessSelectors.getBlockNumber);
     const lastIndex = reversed ? firstIndex : column.lastIndex;
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.entryTagIterator,
-        {
-            columnId: id,
-            limit: ITERATOR_LIMIT,
-            tagName: value,
-            toBlock,
-            lastIndex,
-            reversed,
-            batching
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.entryTagIterator, {
+        columnId: id,
+        limit: ITERATOR_LIMIT,
+        tagName: value,
+        toBlock,
+        lastIndex,
+        reversed,
+        batching
+    });
 }
 
 // function* entryVoteSuccess (entryId)/* : Saga<void> */ {
@@ -447,15 +454,17 @@ function* entryTagIterator ({ column, batching })/* : Saga<void> */ {
 //     yield put(actions.entryGetVoteOf([entryId]));
 // }
 
-function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, value })/* : Saga<void> */ {
+function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, value }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.upvote,
-        {
-            actionId, token, entryId, entryTitle, ethAddress, weight, value
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.upvote, {
+        actionId,
+        token,
+        entryId,
+        entryTitle,
+        ethAddress,
+        weight,
+        value
+    });
 }
 
 // function* entryUpvoteSuccess ({ data })/* : Saga<void> */ {
@@ -473,16 +482,13 @@ function* entryUpvote ({ actionId, entryId, entryTitle, ethAddress, weight, valu
 //     );
 // }
 
-function* entryVoteCost ()/* : Saga<void> */ {
+function* entryVoteCost () /* : Saga<void> */ {
     const weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        ENTRY_MODULE, ENTRY_MODULE.voteCost,
-        { weights }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.voteCost, { weights });
 }
 
-export function* watchEntryActions ()/* : Saga<void> */ { // eslint-disable-line max-statements
+export function* watchEntryActions () /* : Saga<void> */ {
+    // eslint-disable-line max-statements
     yield takeEvery(ENTRY_MODULE.canClaim, entryCanClaim);
     yield takeEvery(ENTRY_MODULE.canClaimVote, entryCanClaimVote);
     yield takeEvery(ENTRY_MODULE.claim, entryClaim);

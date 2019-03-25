@@ -37,5 +37,5 @@ export {
     settingsSelectors,
     tagSelectors,
     tempProfileSelectors,
-    utilsSelectors,
-}
+    utilsSelectors
+};

@@ -37,9 +37,11 @@ class EthWallet extends Component {
         this.props.toggleEthWallet();
     };
 
-    selectTab = (activeTab) => { this.setState({ activeTab }); };
+    selectTab = activeTab => {
+        this.setState({ activeTab });
+    };
 
-    onSubmit = (payload) => {
+    onSubmit = payload => {
         const { loggedEthAddress } = this.props;
         this.props.actionAdd(loggedEthAddress, transferEth, payload);
     };
@@ -49,13 +51,12 @@ class EthWallet extends Component {
         const transactions = sentTransactions.filter(action => !!action.getIn(['payload', 'value']));
         const rows = transactions.map(action => ({
             action: (
-              <span className="flex-center-y">
-                <Icon className="eth-wallet__sent-icon" type="arrowUp" />
-                {action.type === sendTip ?
-                    intl.formatMessage(profileMessages.sentTip) :
-                    intl.formatMessage(generalMessages.sent)
-                }
-              </span>
+                <span className="flex-center-y">
+                    <Icon className="eth-wallet__sent-icon" type="arrowUp" />
+                    {action.type === sendTip
+                        ? intl.formatMessage(profileMessages.sentTip)
+                        : intl.formatMessage(generalMessages.sent)}
+                </span>
             ),
             amount: <span>{action.getIn(['payload', 'value'])} ETH</span>,
             blockNumber: action.get('blockNumber'),
@@ -63,47 +64,45 @@ class EthWallet extends Component {
             success: action.get('success')
         }));
 
-        return (
-          <HistoryTable rows={rows} />
-        );
+        return <HistoryTable rows={rows} />;
     };
 
     render () {
         const { balance, intl, loggedEthAddress, pendingTransfer, profileResults } = this.props;
         const { activeTab } = this.state;
         return (
-          <div className="eth-wallet">
-            <div className="eth-wallet__header">
-              <div>{intl.formatMessage(profileMessages.totalBalance)}</div>
-              <div>
-                <span className="eth-wallet__balance">{balance.get('eth')}</span>
-                <span>{intl.formatMessage(generalMessages.eth)}</span>
-              </div>
+            <div className="eth-wallet">
+                <div className="eth-wallet__header">
+                    <div>{intl.formatMessage(profileMessages.totalBalance)}</div>
+                    <div>
+                        <span className="eth-wallet__balance">{balance.get('eth')}</span>
+                        <span>{intl.formatMessage(generalMessages.eth)}</span>
+                    </div>
+                </div>
+                <Tabs
+                    activeKey={activeTab}
+                    onChange={this.selectTab}
+                    tabBarStyle={{ height: '40px', marginBottom: '0px' }}
+                    type="card"
+                >
+                    <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
+                        <TransferForm
+                            balance={balance.get('eth')}
+                            dataSource={profileResults}
+                            ethAddress={loggedEthAddress}
+                            onCancel={this.props.toggleEthWallet}
+                            onSubmit={this.onSubmit}
+                            pendingTransfer={pendingTransfer}
+                            searchProfiles={this.props.searchProfiles}
+                            showNotification={this.props.showNotification}
+                            type="eth"
+                        />
+                    </TabPane>
+                    <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
+                        {this.renderHistory()}
+                    </TabPane>
+                </Tabs>
             </div>
-            <Tabs
-              activeKey={activeTab}
-              onChange={this.selectTab}
-              tabBarStyle={{ height: '40px', marginBottom: '0px' }}
-              type="card"
-            >
-              <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
-                <TransferForm
-                  balance={balance.get('eth')}
-                  dataSource={profileResults}
-                  ethAddress={loggedEthAddress}
-                  onCancel={this.props.toggleEthWallet}
-                  onSubmit={this.onSubmit}
-                  pendingTransfer={pendingTransfer}
-                  // searchProfiles={this.props.searchProfiles}
-                  showNotification={this.props.showNotification}
-                  type="eth"
-                />
-              </TabPane>
-              <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
-                {this.renderHistory()}
-              </TabPane>
-            </Tabs>
-          </div>
         );
     }
 }
@@ -121,7 +120,7 @@ EthWallet.propTypes = {
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     showNotification: PropTypes.func.isRequired,
-    toggleEthWallet: PropTypes.func.isRequired,
+    toggleEthWallet: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -143,6 +142,6 @@ export default connect(
         // profileGetBalance,
         searchResetResults,
         showNotification,
-        toggleEthWallet,
+        toggleEthWallet
     }
 )(injectIntl(clickAway(withRequest(EthWallet))));

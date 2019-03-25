@@ -17,7 +17,6 @@ import * as tagActions from '../actions/tag-actions';
 import ChReqService from '../services/channel-request-service';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
-
 const { EditorState, SelectionState } = DraftJS;
 /**
  * Draft saga
@@ -32,40 +31,45 @@ const { EditorState, SelectionState } = DraftJS;
  * the trick is to split selectionState from editorState
  * and to keep them synced
  */
-function* draftCreate ({ data })/* : Saga<void> */ {
+function* draftCreate ({ data }) /* : Saga<void> */ {
     const newEditorState = EditorState.createEmpty();
-    const firstKey = newEditorState.getCurrentContent().getFirstBlock().getKey();
+    const firstKey = newEditorState
+        .getCurrentContent()
+        .getFirstBlock()
+        .getKey();
     const newSelectionState = SelectionState.createEmpty(firstKey);
     /**
      * create a new editor state with the selection applied
      */
     const editorState = EditorState.acceptSelection(newEditorState, newSelectionState);
     const { content, ...others } = data;
-    yield put(draftActions.draftCreateSuccess({
-        content: {
-            ...content,
-            draft: editorState,
-            title: '',
-            excerpt: '',
-        },
-        selectionState: newSelectionState,
-        ...others
-    }));
+    yield put(
+        draftActions.draftCreateSuccess({
+            content: {
+                ...content,
+                draft: editorState,
+                title: '',
+                excerpt: ''
+            },
+            selectionState: newSelectionState,
+            ...others
+        })
+    );
 }
 
-function* draftAddTag ({ data })/* : Saga<void> */ {
+function* draftAddTag ({ data }) /* : Saga<void> */ {
     yield put(tagActions.tagExists({ tagName: data.tagName, addToDraft: true, draftId: data.draftId }));
 }
 
 /**
  * get all drafts.
  */
-function* draftsGet ({ data })/* : Saga<void> */ {
+function* draftsGet ({ data }) /* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftsGet], data.ethAddress);
         let drafts = new Map();
         if (response.length > 0) {
-            response.forEach((draft) => {
+            response.forEach(draft => {
                 let draftTags = new OrderedMap();
                 let draftRecord = DraftStateModel.createDraft(draft);
                 draftRecord = draftRecord.setIn(
@@ -73,7 +77,7 @@ function* draftsGet ({ data })/* : Saga<void> */ {
                     editorStateFromRaw(draft.content.draft)
                 );
                 if (Object.keys(draft.tags).length) {
-                    Object.keys(draft.tags).forEach((tagKey) => {
+                    Object.keys(draft.tags).forEach(tagKey => {
                         draftTags = draftTags.set(tagKey, draft.tags[tagKey]);
                     });
                 }
@@ -90,7 +94,7 @@ function* draftsGet ({ data })/* : Saga<void> */ {
 /**
  * save draft to db every x seconds
  */
-function* draftAutoSave ({ data })/* : Saga<void> */ {
+function* draftAutoSave ({ data }) /* : Saga<void> */ {
     yield put(draftActions.draftAutosave(data.draft));
     /**
      * prepare data to save in db
@@ -105,31 +109,31 @@ function* draftAutoSave ({ data })/* : Saga<void> */ {
         const response = yield call([draftService, draftService.draftCreateOrUpdate], { draft: dataToSave });
         yield put(draftActions.draftAutosaveSuccess(response));
     } catch (ex) {
-        yield put(draftActions.draftAutosaveError(
-            { error: ex },
-            data.draft.id,
-            data.draft.content.title
-        ));
+        yield put(draftActions.draftAutosaveError({ error: ex }, data.draft.id, data.draft.content.title));
     }
 }
 
-function* draftUpdate ({ data })/* : Saga<void> */ {
+function* draftUpdate ({ data }) /* : Saga<void> */ {
     const draftObj = data;
     const draft = data.content.get('draft');
     if (draftObj.getIn(['content', 'entryType']) !== 'link') {
         const selectionState = draft.getSelection();
-        yield put(draftActions.draftUpdateSuccess({
-            draft: draftObj,
-            selectionState
-        }));
+        yield put(
+            draftActions.draftUpdateSuccess({
+                draft: draftObj,
+                selectionState
+            })
+        );
     } else {
-        yield put(draftActions.draftUpdateSuccess({
-            draft: draftObj
-        }));
+        yield put(
+            draftActions.draftUpdateSuccess({
+                draft: draftObj
+            })
+        );
     }
 }
 
-function* draftsGetCount ({ data })/* : Saga<void> */ {
+function* draftsGetCount ({ data }) /* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftsGetCount], {
             ethAddress: data.ethAddress
@@ -140,7 +144,7 @@ function* draftsGetCount ({ data })/* : Saga<void> */ {
     }
 }
 
-function* draftDelete ({ data })/* : Saga<void> */ {
+function* draftDelete ({ data }) /* : Saga<void> */ {
     try {
         const response = yield call([draftService, draftService.draftDelete], { draftId: data.draftId });
         yield put(draftActions.draftDeleteSuccess({ draftId: response }));
@@ -149,7 +153,7 @@ function* draftDelete ({ data })/* : Saga<void> */ {
     }
 }
 /* eslint-disable max-statements */
-function* draftPublish ({ actionId, draft })/* : Saga<void> */ {
+function* draftPublish ({ actionId, draft }) /* : Saga<void> */ {
     const { id } = draft;
     const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
     const token = yield select(profileSelectors.getToken);
@@ -163,44 +167,39 @@ function* draftPublish ({ actionId, draft })/* : Saga<void> */ {
          * Do not add any excerpt to link entries if it's not defined
          * See issue: #238 on /Community
          */
-        if (
-            draftToPublish.content.entryType === 'article' &&
-            isEmpty(draftToPublish.content.featuredImage)
-        ) {
+        if (draftToPublish.content.entryType === 'article' && isEmpty(draftToPublish.content.featuredImage)) {
             draftToPublish.content.featuredImage = extractImageFromContent(draftToPublish.content.draft);
         }
-        if (
-            draftToPublish.content.entryType === 'article' &&
-            isEmpty(draftToPublish.content.excerpt)
-        ) {
+        if (draftToPublish.content.entryType === 'article' && isEmpty(draftToPublish.content.excerpt)) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
-        yield call(
-            [ChReqService, ChReqService.sendRequest],
-            ENTRY_MODULE, ENTRY_MODULE.publish, {
-                actionId, id, token,
-                tags: draftFromState.tags.keySeq().toJS(),
-                content: draftToPublish.content,
-                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
-            }
-        );
+        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.publish, {
+            actionId,
+            id,
+            token,
+            tags: draftFromState.tags.keySeq().toJS(),
+            content: draftToPublish.content,
+            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
+        });
     } catch (ex) {
         yield put(draftActions.draftPublishError(ex));
     }
 }
 /* eslint-enable max-statements */
-function* draftPublishSuccess ({ data })/* : Saga<void> */ {
+function* draftPublishSuccess ({ data }) /* : Saga<void> */ {
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));
     const isUpdate = data.draft.id.startsWith('0x');
-    yield put(appActions.showNotification({
-        id: isUpdate ? 'newVersionPublishedSuccessfully' : 'draftPublishedSuccessfully',
-        duration: 4,
-        values: { title: data.draft.title }
-    }));
+    yield put(
+        appActions.showNotification({
+            id: isUpdate ? 'newVersionPublishedSuccessfully' : 'draftPublishedSuccessfully',
+            duration: 4,
+            values: { title: data.draft.title }
+        })
+    );
     yield put(claimableActions.claimableIterator());
 }
 
-function* draftPublishUpdate ({ actionId, draft })/* : Saga<void> */ {
+function* draftPublishUpdate ({ actionId, draft }) /* : Saga<void> */ {
     const { id } = draft;
     const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
     const token = yield select(profileSelectors.getToken);
@@ -210,24 +209,21 @@ function* draftPublishUpdate ({ actionId, draft })/* : Saga<void> */ {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
         );
-        yield call(
-            [ChReqService, ChReqService.sendRequest],
-            ENTRY_MODULE, ENTRY_MODULE.editEntry, {
-                ethAddress,
-                actionId,
-                entryId: id,
-                token,
-                tags: draftFromState.tags.keySeq().toJS(),
-                content: draftToPublish.content,
-                entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
-            }
-        );
+        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.editEntry, {
+            ethAddress,
+            actionId,
+            entryId: id,
+            token,
+            tags: draftFromState.tags.keySeq().toJS(),
+            content: draftToPublish.content,
+            entryType: entryTypes.findIndex(type => type === draftToPublish.content.entryType)
+        });
     } catch (ex) {
         yield put(draftActions.draftPublishUpdateError(ex));
     }
 }
 
-function* draftRevert ({ data })/* : Saga<void> */ {
+function* draftRevert ({ data }) /* : Saga<void> */ {
     const { id } = data;
     try {
         const resp = yield call([draftService, draftService.draftDelete], { draftId: id });
@@ -237,7 +233,7 @@ function* draftRevert ({ data })/* : Saga<void> */ {
     }
 }
 
-export function* watchDraftActions ()/* : Saga<void> */ {
+export function* watchDraftActions () /* : Saga<void> */ {
     yield takeEvery(types.DRAFT_CREATE, draftCreate);
     yield takeEvery(types.DRAFT_PUBLISH, draftPublish);
     yield takeEvery(types.DRAFT_PUBLISH_SUCCESS, draftPublishSuccess);

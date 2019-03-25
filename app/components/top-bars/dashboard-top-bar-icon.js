@@ -9,7 +9,7 @@ const dragSource = {
     beginDrag (props) {
         return {
             id: props.id,
-            index: props.index,
+            index: props.index
         };
     }
 };
@@ -35,29 +35,35 @@ function collect (connect, monitor) {
 
 function collectDrop (connect) {
     return {
-        connectDropTarget: connect.dropTarget(),
+        connectDropTarget: connect.dropTarget()
     };
 }
 
 class DashboardTopBarIcon extends Component {
     render () {
-        const { connectDragSource, connectDropTarget, isDragging, id, title, scrollIntoView,
-            iconType } = this.props;
-        return connectDragSource(connectDropTarget(
-          <div
-            className={classNames('flex-center dashboard-top-bar-icon', {
-                'dashboard-top-bar-icon_dragging': isDragging
-            })}
-            onClick={scrollIntoView}
-          >
-            <Tooltip key={id} title={title}>
-              <Icon
-                className="dashboard-top-bar__column-icon"
-                type={iconType}
-              />
-            </Tooltip>
-          </div>
-        ));
+        const {
+            connectDragSource,
+            connectDropTarget,
+            isDragging,
+            id,
+            title,
+            scrollIntoView,
+            iconType
+        } = this.props;
+        return connectDragSource(
+            connectDropTarget(
+                <div
+                    className={classNames('flex-center dashboard-top-bar-icon', {
+                        'dashboard-top-bar-icon_dragging': isDragging
+                    })}
+                    onClick={scrollIntoView}
+                >
+                    <Tooltip key={id} title={title}>
+                        <Icon className="dashboard-top-bar__column-icon" type={iconType} />
+                    </Tooltip>
+                </div>
+            )
+        );
     }
 }
 
@@ -73,4 +79,6 @@ DashboardTopBarIcon.propTypes = {
     dashboardReorderColumn: PropTypes.func.isRequired
 };
 
-export default DropTarget('dragElement', cardTarget, collectDrop)(DragSource('dragElement', dragSource, collect)(DashboardTopBarIcon));
+export default DropTarget('dragElement', cardTarget, collectDrop)(
+    DragSource('dragElement', dragSource, collect)(DashboardTopBarIcon)
+);

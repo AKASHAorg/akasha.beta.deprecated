@@ -10,10 +10,9 @@ import ParserUtils from '../../utils/parsers/parser-utils';
     import type { Saga } from 'redux-saga';
  */
 
-function* watchToggleOutsideNavigationModal ({ url })/* : Saga<void> */ {
+function* watchToggleOutsideNavigationModal ({ url }) /* : Saga<void> */ {
     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    const userSettings = yield call([settingsService, settingsService.userSettingsRequest],
-        loggedEthAddress);
+    const userSettings = yield call([settingsService, settingsService.userSettingsRequest], loggedEthAddress);
     const domain = ParserUtils.parseUrl(url).hostname;
     if (userSettings.trustedDomains && userSettings.trustedDomains.indexOf(domain) > -1) {
         yield put(actions.toggleOutsideNavigationRedirect(url));
@@ -22,6 +21,6 @@ function* watchToggleOutsideNavigationModal ({ url })/* : Saga<void> */ {
     }
 }
 
-export function* watchAppActions ()/* : Saga<void> */ {
+export function* watchAppActions () /* : Saga<void> */ {
     yield takeEvery(types.TOGGLE_OUTSIDE_NAVIGATION_MODAL, watchToggleOutsideNavigationModal);
 }

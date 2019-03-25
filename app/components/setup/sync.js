@@ -13,8 +13,15 @@ class Sync extends Component {
     };
 
     componentDidMount () {
-        const { gethGetSyncStatus, gethStart, gethStatus, gethStatusFetched, ipfsStart,
-            ipfsStatus, ipfsStatusFetched } = this.props;
+        const {
+            gethGetSyncStatus,
+            gethStart,
+            gethStatus,
+            gethStatusFetched,
+            ipfsStart,
+            ipfsStatus,
+            ipfsStatusFetched
+        } = this.props;
         if (gethStatusFetched) {
             if (!gethStatus.get('process')) {
                 gethStart();
@@ -28,8 +35,17 @@ class Sync extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { gethGetSyncStatus, gethStart, gethStatus, gethStatusFetched, gethSyncStatus, ipfsGetPorts,
-            ipfsStart, ipfsStatus, ipfsStatusFetched } = nextProps;
+        const {
+            gethGetSyncStatus,
+            gethStart,
+            gethStatus,
+            gethStatusFetched,
+            gethSyncStatus,
+            ipfsGetPorts,
+            ipfsStart,
+            ipfsStatus,
+            ipfsStatusFetched
+        } = nextProps;
         if (gethSyncStatus.get('synced') && ipfsStatus.get('process')) {
             ipfsGetPorts();
         }
@@ -38,7 +54,7 @@ class Sync extends Component {
                 gethStart();
             } else {
                 gethGetSyncStatus();
-            }   
+            }
         }
         if (ipfsStatusFetched && !this.props.ipfsStatusFetched && !ipfsStatus.get('process')) {
             ipfsStart();
@@ -51,8 +67,15 @@ class Sync extends Component {
     }
 
     handleCancel = () => {
-        const { clearSyncStatus, gethStatus, gethStop, gethStopSync, ipfsStatus, ipfsStop,
-            saveGeneralSettings } = this.props;
+        const {
+            clearSyncStatus,
+            gethStatus,
+            gethStop,
+            gethStopSync,
+            ipfsStatus,
+            ipfsStop,
+            saveGeneralSettings
+        } = this.props;
         gethStopSync();
         if (gethStatus.get('process')) {
             gethStop();
@@ -116,10 +139,20 @@ class Sync extends Component {
         return { action, buttonIcon };
     };
 
-    render () { // eslint-disable-line complexity
-        const { configurationSaved, gethBusyState, gethStarting, gethStatus,
-            gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
-            syncActionId } = this.props;
+    render () {
+        // eslint-disable-line complexity
+        const {
+            configurationSaved,
+            gethBusyState,
+            gethStarting,
+            gethStatus,
+            gethSyncStatus,
+            intl,
+            ipfsBusyState,
+            ipfsPortsRequested,
+            ipfsStatus,
+            syncActionId
+        } = this.props;
 
         const { action, buttonIcon } = this.getActionLabels();
         if (!configurationSaved) {
@@ -129,82 +162,76 @@ class Sync extends Component {
         }
 
         return (
-          <div className="setup-content sync">
-            <div className="setup-content__column setup-pages_left">
-              {!this.state.showDetails &&
-                <StartScreen />
-              }
-              {this.state.showDetails &&
-                <div className="sync__logs-container">
-                  <LogsDetailsContainer />
+            <div className="setup-content sync">
+                <div className="setup-content__column setup-pages_left">
+                    {!this.state.showDetails && <StartScreen />}
+                    {this.state.showDetails && (
+                        <div className="sync__logs-container">
+                            <LogsDetailsContainer />
+                        </div>
+                    )}
                 </div>
-              }
+                <div className="setup-content__column setup-pages_right sync__content">
+                    <div className="sync__status-container">
+                        <SyncStatus
+                            gethStarting={gethStarting}
+                            gethStatus={gethStatus}
+                            gethSyncStatus={gethSyncStatus}
+                            intl={intl}
+                            ipfsStatus={ipfsStatus}
+                            syncActionId={syncActionId}
+                        />
+                    </div>
+                    <div className="flex-center sync__actions">
+                        {syncActionId !== 4 && (
+                            <div className="flex-center-y">
+                                <Button className="sync__button" onClick={this.toggleDetails}>
+                                    <div className="flex-center-y">
+                                        <Icon className="sync__logs-icon" type="eye-o" />
+                                        <span>{intl.formatMessage(setupMessages.details)}</span>
+                                    </div>
+                                </Button>
+                                <Button
+                                    className="sync__button"
+                                    style={{ marginLeft: '12px' }}
+                                    onClick={this.handlePause}
+                                    disabled={gethBusyState}
+                                >
+                                    <div className="flex-center-y lowercase">
+                                        <Icon className="sync__pause-icon" type={buttonIcon} />
+                                        <span>{action}</span>
+                                    </div>
+                                </Button>
+                                <Button
+                                    className="sync__button"
+                                    style={{ marginLeft: '12px' }}
+                                    onClick={this.handleCancel}
+                                    disabled={gethBusyState}
+                                >
+                                    <div className="flex-center-y lowercase">
+                                        <div className="sync__stop-icon" />
+                                        <span>{intl.formatMessage(generalMessages.cancel)}</span>
+                                    </div>
+                                </Button>
+                            </div>
+                        )}
+                        {syncActionId === 4 && !ipfsStatus.get('starting') && (
+                            <Button
+                                disabled={ipfsBusyState || ipfsPortsRequested}
+                                onClick={this.handleNext}
+                                type="primary"
+                            >
+                                {intl.formatMessage(generalMessages.next)}
+                            </Button>
+                        )}
+                    </div>
+                    <div className="sync__message">
+                        {syncActionId === 4 && !ipfsStatus.get('starting')
+                            ? intl.formatMessage(setupMessages.afterSyncFinish)
+                            : intl.formatMessage(setupMessages.onSyncStart)}
+                    </div>
+                </div>
             </div>
-            <div className="setup-content__column setup-pages_right sync__content">
-              <div className="sync__status-container">
-                <SyncStatus
-                  gethStarting={gethStarting}
-                  gethStatus={gethStatus}
-                  gethSyncStatus={gethSyncStatus}
-                  intl={intl}
-                  ipfsStatus={ipfsStatus}
-                  syncActionId={syncActionId}
-                />
-              </div>
-              <div className="flex-center sync__actions">
-                {syncActionId !== 4 &&
-                  <div className="flex-center-y">
-                    <Button
-                      className="sync__button"
-                      onClick={this.toggleDetails}
-                    >
-                      <div className="flex-center-y">
-                        <Icon className="sync__logs-icon" type="eye-o" />
-                        <span>{intl.formatMessage(setupMessages.details)}</span>
-                      </div>
-                    </Button>
-                    <Button
-                      className="sync__button"
-                      style={{ marginLeft: '12px' }}
-                      onClick={this.handlePause}
-                      disabled={gethBusyState}
-                    >
-                      <div className="flex-center-y lowercase">
-                        <Icon className="sync__pause-icon" type={buttonIcon} />
-                        <span>{action}</span>
-                      </div>
-                    </Button>
-                    <Button
-                      className="sync__button"
-                      style={{ marginLeft: '12px' }}
-                      onClick={this.handleCancel}
-                      disabled={gethBusyState}
-                    >
-                      <div className="flex-center-y lowercase">
-                        <div className="sync__stop-icon" />
-                        <span>{intl.formatMessage(generalMessages.cancel)}</span>
-                      </div>
-                    </Button>
-                  </div>
-                }
-                {syncActionId === 4 && !ipfsStatus.get('starting') &&
-                  <Button
-                    disabled={ipfsBusyState || ipfsPortsRequested}
-                    onClick={this.handleNext}
-                    type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.next)}
-                  </Button>
-                }
-              </div>
-              <div className="sync__message">
-                {syncActionId === 4 && !ipfsStatus.get('starting') ?
-                    intl.formatMessage(setupMessages.afterSyncFinish) :
-                    intl.formatMessage(setupMessages.onSyncStart)
-                }
-              </div>
-            </div>
-          </div>
         );
     }
 }
@@ -219,7 +246,7 @@ Sync.propTypes = {
     gethStart: PropTypes.func.isRequired,
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
-    gethStatusFetched: PropTypes.bool,    
+    gethStatusFetched: PropTypes.bool,
     gethStop: PropTypes.func.isRequired,
     gethStopLogger: PropTypes.func.isRequired,
     gethStopSync: PropTypes.func.isRequired,
@@ -233,7 +260,7 @@ Sync.propTypes = {
     ipfsStatusFetched: PropTypes.bool,
     ipfsStop: PropTypes.func.isRequired,
     saveGeneralSettings: PropTypes.func.isRequired,
-    syncActionId: PropTypes.number,
+    syncActionId: PropTypes.number
 };
 
 export default injectIntl(Sync);

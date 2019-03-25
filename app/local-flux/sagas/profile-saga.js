@@ -1,7 +1,11 @@
 // @flow
 import { apply, call, put, fork, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { COMMON_MODULE, PROFILE_MODULE, AUTH_MODULE,
-    REGISTRY_MODULE, /* UTILS_MODULE */ } from '@akashaproject/common/constants';
+import {
+    COMMON_MODULE,
+    PROFILE_MODULE,
+    AUTH_MODULE,
+    REGISTRY_MODULE /* UTILS_MODULE */
+} from '@akashaproject/common/constants';
 // import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 // import * as commentsActions from '../actions/comments-actions';
@@ -27,52 +31,55 @@ const FOLLOWERS_ITERATOR_LIMIT = 2;
 const FOLLOWINGS_ITERATOR_LIMIT = 2;
 const COMMENTS_ITERATOR_LIMIT = 3;
 
-function* profileAethTransfersIterator ()/* : Saga<void> */  {
+function* profileAethTransfersIterator () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const toBlock = yield select(externalProcessSelectors.getCurrentBlockNumber);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.transfersIterator,
-        {ethAddress, toBlock, limit: TRANSFERS_ITERATOR_LIMIT}
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.transfersIterator, {
+        ethAddress,
+        toBlock,
+        limit: TRANSFERS_ITERATOR_LIMIT
+    });
 }
 
-function* profileEssenceIterator ()/* : Saga<void> */ {
+function* profileEssenceIterator () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const essenceIterator = yield select(profileSelectors.getEssenceIterator);
-    const lastBlock = (essenceIterator.lastBlock === null) ?
-        yield select(externalProcessSelectors.getCurrentBlockNumber) :
-        essenceIterator.lastBlock;
+    const lastBlock =
+        essenceIterator.lastBlock === null
+            ? yield select(externalProcessSelectors.getCurrentBlockNumber)
+            : essenceIterator.lastBlock;
     const moreRequest = !!essenceIterator.lastBlock;
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.essenceIterator,
-        { ethAddress, lastBlock, lastIndex: essenceIterator.lastIndex, limit: 16, moreRequest }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.essenceIterator, {
+        ethAddress,
+        lastBlock,
+        lastIndex: essenceIterator.lastIndex,
+        limit: 16,
+        moreRequest
+    });
 }
 
-function* profileBondAeth ({ actionId, amount })/* : Saga<void> */ {
+function* profileBondAeth ({ actionId, amount }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.bondAeth,
-        { actionId, amount, token }
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.bondAeth, {
+        actionId,
+        amount,
+        token
+    });
+}
+
+function* profileBondAethSuccess ({ data }) /* : Saga<void> */ {
+    yield put(
+        appActions.showNotification({
+            id: 'bondAethSuccess',
+            duration: 4,
+            values: { amount: data.amount }
+        })
     );
 }
 
-function* profileBondAethSuccess ({ data })/* : Saga<void> */ {
-    yield put(appActions.showNotification({
-        id: 'bondAethSuccess',
-        duration: 4,
-        values: { amount: data.amount },
-    }));
-}
-
-function* profileCommentsIterator ({ column })/* : Saga<void> */ {
+function* profileCommentsIterator ({ column }) /* : Saga<void> */ {
     const { id, value, reversed, firstBlock, firstIndex } = column;
-    const lastBlock = reversed ?
-        firstBlock :
-        yield select(externalProcessSelectors.getCurrentBlockNumber);
+    const lastBlock = reversed ? firstBlock : yield select(externalProcessSelectors.getCurrentBlockNumber);
     const lastIndex = reversed ? firstIndex : column.lastIndex;
     let akashaId, ethAddress;
     if (isEthAddress(value)) {
@@ -80,56 +87,51 @@ function* profileCommentsIterator ({ column })/* : Saga<void> */ {
     } else {
         akashaId = value;
     }
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.commentsIterator,
-        {
-            columnId: id,
-            limit: COMMENTS_ITERATOR_LIMIT,
-            akashaId,
-            ethAddress,
-            lastBlock,
-            lastIndex,
-            reversed,
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.commentsIterator, {
+        columnId: id,
+        limit: COMMENTS_ITERATOR_LIMIT,
+        akashaId,
+        ethAddress,
+        lastBlock,
+        lastIndex,
+        reversed
+    });
 }
 
-function* profileCreateEthAddress ({ passphrase, passphrase1 })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        AUTH_MODULE, AUTH_MODULE.generateEthKey,
-        { password: passphrase, password1: passphrase1 }
-    );
+function* profileCreateEthAddress ({ passphrase, passphrase1 }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], AUTH_MODULE, AUTH_MODULE.generateEthKey, {
+        password: passphrase,
+        password1: passphrase1
+    });
 }
 
-function* profileCycleAeth ({ actionId, amount })/* : Saga<void> */ {
+function* profileCycleAeth ({ actionId, amount }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.cycleAeth,
-        { actionId, amount, token }
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.cycleAeth, {
+        actionId,
+        amount,
+        token
+    });
+}
+
+function* profileCycleAethSuccess ({ data }) /* : Saga<void> */ {
+    yield put(
+        appActions.showNotification({
+            id: 'cycleAethSuccess',
+            duration: 4,
+            values: { amount: data.amount }
+        })
     );
 }
 
-function* profileCycleAethSuccess ({ data })/* : Saga<void> */ {
-    yield put(appActions.showNotification({
-        id: 'cycleAethSuccess',
-        duration: 4,
-        values: { amount: data.amount },
-    }));
-}
-
-function* profileCyclingStates ()/* : Saga<void> */ {
+function* profileCyclingStates () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.cyclingStates,
-        { ethAddress }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.cyclingStates, {
+        ethAddress
+    });
 }
 
-function* profileDeleteLogged ()/* : Saga<void> */ {
+function* profileDeleteLogged () /* : Saga<void> */ {
     try {
         yield call([profileService, profileService.profileDeleteLogged]);
         yield put(actions.profileDeleteLoggedSuccess());
@@ -138,145 +140,166 @@ function* profileDeleteLogged ()/* : Saga<void> */ {
     }
 }
 
-function* profileExists ({ akashaId })/* : Saga<void> */ {
+function* profileExists ({ akashaId }) /* : Saga<void> */ {
     if (akashaId.length === 1) {
         // yield put(actions.profileExistsSuccess({ akashaId, exists: false, idValid: false }));
     } else {
-        yield call(
-            [ChReqService, ChReqService.sendRequest],
-            REGISTRY_MODULE, REGISTRY_MODULE.profileExists,
-            { akashaId }
-        );
+        yield call([ChReqService, ChReqService.sendRequest], REGISTRY_MODULE, REGISTRY_MODULE.profileExists, {
+            akashaId
+        });
     }
 }
 
-function* profileFaucet ({ actionId, ethAddress, withNotification })/* : Saga<void> */ {
+function* profileFaucet ({ actionId, ethAddress, withNotification }) /* : Saga<void> */ {
     if (!ethAddress) {
         ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     }
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMON_MODULE, COMMON_MODULE.requestEther,
-        { address: ethAddress, actionId, withNotification }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], COMMON_MODULE, COMMON_MODULE.requestEther, {
+        address: ethAddress,
+        actionId,
+        withNotification
+    });
 }
 
-function* profileFollow ({ actionId, ethAddress })/* : Saga<void> */ {
+function* profileFollow ({ actionId, ethAddress }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.followProfile,
-        {
-            token, actionId, ethAddress
-        }
-    )
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followProfile, {
+        token,
+        actionId,
+        ethAddress
+    });
 }
 
-function* profileFollowSuccess ({ data })/* : Saga<void> */ {
+function* profileFollowSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
-    yield put(appActions.showNotification({
-        id: 'followProfileSuccess',
-        duration: 4,
-        values: { displayName },
-    }));
+    yield put(
+        appActions.showNotification({
+            id: 'followProfileSuccess',
+            duration: 4,
+            values: { displayName }
+        })
+    );
 }
 
-function* profileFollowersIterator ({ column, batching })/* : Saga<void> */ {
+function* profileFollowersIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, value } = column;
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.followersIterator,
-        { columnId: id, ethAddress: value, limit: FOLLOWERS_ITERATOR_LIMIT, batching }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followersIterator, {
+        columnId: id,
+        ethAddress: value,
+        limit: FOLLOWERS_ITERATOR_LIMIT,
+        batching
+    });
 }
 
 function* profileFollowingsIterator ({
-    column, limit = FOLLOWINGS_ITERATOR_LIMIT, allFollowings, batching
-})/* : Saga<void> */ {
+    column,
+    limit = FOLLOWINGS_ITERATOR_LIMIT,
+    allFollowings,
+    batching
+}) /* : Saga<void> */ {
     const { id, value } = column;
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.followingIterator,
-        { columnId: id, ethAddress: value, limit, allFollowings, batching }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followingIterator, {
+        columnId: id,
+        ethAddress: value,
+        limit,
+        allFollowings,
+        batching
+    });
 }
 
-function* profileFreeAeth ({ actionId, amount })/* : Saga<void> */ {
+function* profileFreeAeth ({ actionId, amount }) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.freeAeth,
-        { actionId, amount, token }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.freeAeth, {
+        actionId,
+        amount,
+        token
+    });
 }
 
-function* profileFreeAethSuccess ()/* : Saga<void> */ {
+function* profileFreeAethSuccess () /* : Saga<void> */ {
     yield put(appActions.showNotification({ id: 'freeAethSuccess', duration: 4 }));
 }
 
-function* profileGetBalance ({ unit = 'ether' })/* : Saga<void> */ {
+function* profileGetBalance ({ unit = 'ether' }) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     if (!ethAddress) {
         return;
     }
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.getBalance,
-        { etherBase: ethAddress, unit }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.getBalance, {
+        etherBase: ethAddress,
+        unit
+    });
 }
 
-function* profileGetByAddress ({ ethAddress })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.getByAddress,
-        { ethAddress }
-    );
+function* profileGetByAddress ({ ethAddress }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.getByAddress, {
+        ethAddress
+    });
 }
 
-function* profileGetData ({ akashaId, context, ethAddress, full = false, batching })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.profileData,
-        { akashaId, context, ethAddress, full, batching }
-    );
+function* profileGetData ({ akashaId, context, ethAddress, full = false, batching }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.profileData, {
+        akashaId,
+        context,
+        ethAddress,
+        full,
+        batching
+    });
 }
 
-export function* profileGetExtraOfList (collection, context)/* : Saga<void> */ {
+export function* profileGetExtraOfList (collection, context) /* : Saga<void> */ {
     const acs = yield all([
-        ...collection.filter(prof => prof.ethAddress).map(prof => put(actions.profileGetData({
-            context,
-            ethAddress: prof.ethAddress,
-            batching: true
-        })))
+        ...collection
+            .filter(prof => prof.ethAddress)
+            .map(prof =>
+                put(
+                    actions.profileGetData({
+                        context,
+                        ethAddress: prof.ethAddress,
+                        batching: true
+                    })
+                )
+            )
     ]);
     if (acs.length) {
         yield fork(profileIsFollower, { followings: acs.map(action => action.ethAddress) });
     }
 }
 
-function* profileGetList ({ ethAddresses })/* : Saga<void> */ {
+function* profileGetList ({ ethAddresses }) /* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.getProfileList,
+        PROFILE_MODULE,
+        PROFILE_MODULE.getProfileList,
         ethAddresses
     );
 }
 
-function* profileGetLocal ({ polling })/* : Saga<void> */ {
+function* profileGetLocal ({ polling }) /* : Saga<void> */ {
     // yield call(
     //     [ChReqService, ChReqService.sendRequest],
     //     UTILS_MODULE, UTILS_MODULE.checkUpdate,
     //     {}
     // );
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMON_MODULE, COMMON_MODULE.getLocalIdentities,
-        { polling }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], COMMON_MODULE, COMMON_MODULE.getLocalIdentities, {
+        polling
+    });
 }
 
-export function* profileGetLogged ()/* : Saga<void> */ {
+function* getCurrentProfile () /* : Saga<void> */ {
+    try {
+        yield call(
+            [ChReqService, ChReqService.sendRequest],
+            PROFILE_MODULE,
+            PROFILE_MODULE.getCurrentProfile,
+            {}
+        );
+    } catch (ex) {
+        yield call(actions.getCurrentProfileError(ex));
+    }
+}
+
+export function* profileGetLogged () /* : Saga<void> */ {
     try {
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
         if (loggedProfile.get('ethAddress')) {
@@ -299,7 +322,7 @@ export function* profileGetLogged ()/* : Saga<void> */ {
     }
 }
 
-export function* profileGetPublishingCost ()/* : Saga<void> */ {
+export function* profileGetPublishingCost () /* : Saga<void> */ {
     try {
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
         // yield call(
@@ -313,55 +336,42 @@ export function* profileGetPublishingCost ()/* : Saga<void> */ {
     }
 }
 
-function* profileIsFollower ({ followings, ethAddress })/* : Saga<void> */ {
+function* profileIsFollower ({ followings, ethAddress }) /* : Saga<void> */ {
     if (!ethAddress) {
         ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     }
-    const payload = followings.map(following => (
-        { ethAddressFollower: ethAddress, ethAddressFollowing: following }
-    ));
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.isFollower, payload
-    );
+    const payload = followings.map(following => ({
+        ethAddressFollower: ethAddress,
+        ethAddressFollowing: following
+    }));
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.isFollower, payload);
 }
 
-function* profileLogin ({ data })/* : Saga<void> */ {
+function* profileLogin ({ data }) /* : Saga<void> */ {
     const { ...payload } = data;
     payload.password = new global.TextEncoder('utf-8').encode(payload.password);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMON_MODULE, COMMON_MODULE.login,
-        payload
-    );
+    yield call([ChReqService, ChReqService.sendRequest], COMMON_MODULE, COMMON_MODULE.login, payload);
 }
 
-function* profileLogout ()/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        COMMON_MODULE, COMMON_MODULE.logout, {}
-    );
+function* profileLogout () /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], COMMON_MODULE, COMMON_MODULE.logout, {});
 }
 
-function* profileKarmaRanking ()/* : Saga<void> */ {
+function* profileKarmaRanking () /* : Saga<void> */ {
     const following = yield select(profileSelectors.selectAllFollowings);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.karmaRanking,
-        { following }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.karmaRanking, {
+        following
+    });
 }
 
-function* profileManaBurned ()/* : Saga<void> */ {
+function* profileManaBurned () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.manaBurned,
-        { ethAddress }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.manaBurned, {
+        ethAddress
+    });
 }
 
-function* profileMoreCommentsIterator ({ column })/* : Saga<void> */ {
+function* profileMoreCommentsIterator ({ column }) /* : Saga<void> */ {
     const { id, lastIndex, lastBlock, value } = column;
     let akashaId, ethAddress;
     if (isEthAddress(value)) {
@@ -369,74 +379,63 @@ function* profileMoreCommentsIterator ({ column })/* : Saga<void> */ {
     } else {
         akashaId = value;
     }
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.commentsIterator, {
+        columnId: id,
+        ethAddress,
+        akashaId,
+        limit: COMMENTS_ITERATOR_LIMIT,
+        lastBlock,
+        lastIndex,
+        more: true
+    });
+}
+
+function* profileMoreFollowersIterator ({ column }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followersIterator, {
+        columnId: column.id,
+        ethAddress: column.value,
+        limit: FOLLOWERS_ITERATOR_LIMIT,
+        lastBlock: column.lastBlock,
+        lastIndex: column.lastIndex,
+        totalLoaded: column.itemsList.size
+    });
+}
+
+function* profileMoreFollowingsIterator ({ column }) /* : Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.followingIterator, {
+        columnId: column.id,
+        ethAddress: column.value,
+        limit: FOLLOWINGS_ITERATOR_LIMIT,
+        lastBlock: column.lastBlock,
+        lastIndex: column.lastIndex,
+        totalLoaded: column.itemList ? column.itemsList.size : 0
+    });
+}
+
+function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) /* : Saga<void> */ {
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.commentsIterator,
+        PROFILE_MODULE,
+        PROFILE_MODULE.resolveProfileIpfsHash,
         {
-            columnId: id,
-            ethAddress,
-            akashaId,
-            limit: COMMENTS_ITERATOR_LIMIT,
-            lastBlock,
-            lastIndex,
-            more: true
+            ipfsHash,
+            columnId,
+            akashaIds
         }
     );
 }
 
-function* profileMoreFollowersIterator ({ column })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.followersIterator,
-        {
-            columnId: column.id,
-            ethAddress: column.value,
-            limit: FOLLOWERS_ITERATOR_LIMIT,
-            lastBlock: column.lastBlock,
-            lastIndex: column.lastIndex,
-            totalLoaded: column.itemsList.size
-        }
-    );
-}
-
-function* profileMoreFollowingsIterator ({ column })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.followingIterator,
-        {
-            columnId: column.id,
-            ethAddress: column.value,
-            limit: FOLLOWINGS_ITERATOR_LIMIT,
-            lastBlock: column.lastBlock,
-            lastIndex: column.lastIndex,
-            totalLoaded: column.itemList ? column.itemsList.size : 0
-        }
-    );
-}
-
-function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds })/* : Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.resolveProfileIpfsHash,
-        {
-            ipfsHash, columnId, akashaIds
-        }
-    );
-}
-
-function* profileSaveLastBlockNr ()/* : Saga<void> */ {
+function* profileSaveLastBlockNr () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const blockNr = yield select(externalProcessSelectors.getCurrentBlockNumber);
     try {
-        yield call(
-            [profileService, profileService.profileSaveLastBlockNr],
-            { ethAddress, blockNr });
+        yield call([profileService, profileService.profileSaveLastBlockNr], { ethAddress, blockNr });
     } catch (error) {
         yield put(actions.profileSaveLastBlockNrError(error));
     }
 }
 
-function* profileSaveLogged (loggedProfile)/* : Saga<void> */ {
+function* profileSaveLogged (loggedProfile) /* : Saga<void> */ {
     try {
         yield call([profileService, profileService.profileSaveLogged], loggedProfile);
     } catch (error) {
@@ -445,43 +444,46 @@ function* profileSaveLogged (loggedProfile)/* : Saga<void> */ {
 }
 
 function* profileSendTip ({
-    actionId, akashaId, ethAddress, receiver, value, tokenAmount
-})/* : Saga<void> */ {
+    actionId,
+    akashaId,
+    ethAddress,
+    receiver,
+    value,
+    tokenAmount
+}) /* : Saga<void> */ {
     const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.sendTip,
-        {
-            token,
-            actionId,
-            akashaId,
-            ethAddress,
-            receiver,
-            value,
-            tokenAmount
-        }
-    );
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.sendTip, {
+        token,
+        actionId,
+        akashaId,
+        ethAddress,
+        receiver,
+        value,
+        tokenAmount
+    });
 }
 
-function* profileSendTipSuccess ({ data })/* : Saga<void> */ {
+function* profileSendTipSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
-    yield put(appActions.showNotification({
-        id: 'sendTipSuccess',
-        duration: 4,
-        values: { displayName },
-    }));
-}
-
-function* profileToggleDonations ({ actionId, status })/* : Saga<void> */ {
-    const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.toggleDonations,
-        { token, actionId, status }
+    yield put(
+        appActions.showNotification({
+            id: 'sendTipSuccess',
+            duration: 4,
+            values: { displayName }
+        })
     );
 }
 
-function* profileToggleDonationsSuccess ()/* : Saga<void> */ {
+function* profileToggleDonations ({ actionId, status }) /* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.toggleDonations, {
+        token,
+        actionId,
+        status
+    });
+}
+
+function* profileToggleDonationsSuccess () /* : Saga<void> */ {
     const profile = yield call([profileService, profileService.profileGetLogged]);
     if (profile && profile.ethAddress) {
         yield call(profileGetData, {
@@ -492,157 +494,120 @@ function* profileToggleDonationsSuccess ()/* : Saga<void> */ {
             full: true
         });
     }
-    yield put(appActions.showNotification({
-        id: 'toggleDonationsSuccess',
-        duration: 4
-    }));
-}
-
-function* profileTransferToken ({ actionId, akashaId, ethAddress, tokenAmount })/* : Saga<void> */ {
-    const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.transfer,
-        {
-            token,
-            actionId,
-            akashaId,
-            ethAddress,
-            tokenAmount
-        }
+    yield put(
+        appActions.showNotification({
+            id: 'toggleDonationsSuccess',
+            duration: 4
+        })
     );
 }
 
-function* profileTransferAethSuccess ({ data })/* : Saga<void> */ {
+function* profileTransferToken ({ actionId, akashaId, ethAddress, tokenAmount }) /* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.transfer, {
+        token,
+        actionId,
+        akashaId,
+        ethAddress,
+        tokenAmount
+    });
+}
+
+function* profileTransferAethSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
-    yield put(appActions.showNotification({
-        id: 'transferAethSuccess',
-        duration: 4,
-        values: { displayName, tokenAmount: data.tokenAmount },
-    }));
-}
-
-function* profileTransferEth ({ actionId, akashaId, ethAddress, value })/* : Saga<void> */ {
-    const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.transfer,
-        {
-            token,
-            actionId,
-            akashaId,
-            ethAddress,
-            value
-        }
+    yield put(
+        appActions.showNotification({
+            id: 'transferAethSuccess',
+            duration: 4,
+            values: { displayName, tokenAmount: data.tokenAmount }
+        })
     );
 }
 
-function* profileTransferEthSuccess ({ data })/* : Saga<void> */ {
+function* profileTransferEth ({ actionId, akashaId, ethAddress, value }) /* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.transfer, {
+        token,
+        actionId,
+        akashaId,
+        ethAddress,
+        value
+    });
+}
+
+function* profileTransferEthSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
-    yield put(appActions.showNotification({
-        id: 'transferEthSuccess',
-        duration: 4,
-        values: { displayName, value: data.value },
-    }));
-}
-
-function* profileTransformEssence ({ actionId, amount })/* : Saga<void> */ {
-    const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.transformEssence,
-        {
-            actionId, amount, token
-        }
+    yield put(
+        appActions.showNotification({
+            id: 'transferEthSuccess',
+            duration: 4,
+            values: { displayName, value: data.value }
+        })
     );
 }
 
-function* profileTransformEssenceSuccess ({ data })/* : Saga<void> */ {
-    yield put(appActions.showNotification({
-        id: 'transformEssenceSuccess',
-        duration: 4,
-        values: { amount: data.amount },
-    }));
+function* profileTransformEssence ({ actionId, amount }) /* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.transformEssence, {
+        actionId,
+        amount,
+        token
+    });
 }
 
-function* profileUnfollow ({ actionId, ethAddress })/* : Saga<void> */ {
-    const token = yield select(profileSelectors.getToken);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.unFollowProfile,
-        {
-            token, actionId, ethAddress
-        }
+function* profileTransformEssenceSuccess ({ data }) /* : Saga<void> */ {
+    yield put(
+        appActions.showNotification({
+            id: 'transformEssenceSuccess',
+            duration: 4,
+            values: { amount: data.amount }
+        })
     );
 }
 
-function* profileUnfollowSuccess ({ data })/* : Saga<void> */ {
+function* profileUnfollow ({ actionId, ethAddress }) /* : Saga<void> */ {
+    const token = yield select(profileSelectors.getToken);
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.unFollowProfile, {
+        token,
+        actionId,
+        ethAddress
+    });
+}
+
+function* profileUnfollowSuccess ({ data }) /* : Saga<void> */ {
     const displayName = getDisplayName(data);
-    yield put(appActions.showNotification({
-        id: 'unfollowProfileSuccess',
-        duration: 4,
-        values: { displayName },
-    }));
+    yield put(
+        appActions.showNotification({
+            id: 'unfollowProfileSuccess',
+            duration: 4,
+            values: { displayName }
+        })
+    );
 }
 
 function* profileUpdate ({
-    actionId, about, avatar, backgroundImage, firstName, lastName, links
-})/* : Saga<void> */ {
+    actionId,
+    about,
+    avatar,
+    backgroundImage,
+    firstName,
+    lastName,
+    links
+}) /* : Saga<void> */ {
     const isProfileEdit = select(appSelectors.selectProfileEditToggle);
     if (isProfileEdit) {
         yield put(appActions.profileEditToggle());
     }
     const token = yield select(profileSelectors.getToken);
     const ipfs = { about, avatar, backgroundImage, firstName, lastName, links };
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        PROFILE_MODULE, PROFILE_MODULE.updateProfileData,
-        {
-            token, actionId, ipfs
-        }
-    );
-}
-
-function* profileUpdateSuccess (payload)/* : Saga<void> */ {
-    const { akashaId, ethAddress } = payload.data;
-    // remove saved temp profile from DB
-    yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
-    // get updated profile data
-    yield call(profileGetData, {
-        akashaId, ethAddress: null, context: null, batching: false, full: true
+    yield call([ChReqService, ChReqService.sendRequest], PROFILE_MODULE, PROFILE_MODULE.updateProfileData, {
+        token,
+        actionId,
+        ipfs
     });
-    yield put(appActions.showNotification({
-        id: 'updateProfileSuccess',
-        duration: 4,
-    }));
 }
 
-function* profileUpdateLogged (loggedProfile)/* : Saga<void> */ {
-    try {
-        yield apply(profileService, profileService.profileUpdateLogged, [loggedProfile]);
-    } catch (error) {
-        yield put(actions.profileUpdateLoggedError(error));
-    }
-}
-
-function* profileRegister ({ actionId, akashaId, address, about, avatar, backgroundImage, donationsEnabled,
-    firstName, lastName, links, ethAddress })/* : Saga<void> */ {
-    const isProfileEdit = yield select(appSelectors.selectProfileEditToggle);
-    if (isProfileEdit) {
-        yield put(appActions.profileEditToggle());
-    }
-    const token = yield select(profileSelectors.getToken);
-    const ipfs = { avatar, address, about, backgroundImage, firstName, lastName, links };
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        REGISTRY_MODULE, REGISTRY_MODULE.registerProfile,
-        {
-            token, actionId, akashaId, donationsEnabled, ethAddress, ipfs
-        }
-    );
-}
-
-function* profileRegisterSuccess (payload)/* : Saga<void> */ {
+function* profileUpdateSuccess (payload) /* : Saga<void> */ {
     const { akashaId, ethAddress } = payload.data;
     // remove saved temp profile from DB
     yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
@@ -654,13 +619,74 @@ function* profileRegisterSuccess (payload)/* : Saga<void> */ {
         batching: false,
         full: true
     });
-    yield put(appActions.showNotification({
-        id: 'registerProfileSuccess',
-        duration: 4,
-    }));
+    yield put(
+        appActions.showNotification({
+            id: 'updateProfileSuccess',
+            duration: 4
+        })
+    );
 }
 
-export function* watchProfileActions ()/* : Saga<void> */ { // eslint-disable-line max-statements
+function* profileUpdateLogged (loggedProfile) /* : Saga<void> */ {
+    try {
+        yield apply(profileService, profileService.profileUpdateLogged, [loggedProfile]);
+    } catch (error) {
+        yield put(actions.profileUpdateLoggedError(error));
+    }
+}
+
+function* profileRegister ({
+    actionId,
+    akashaId,
+    address,
+    about,
+    avatar,
+    backgroundImage,
+    donationsEnabled,
+    firstName,
+    lastName,
+    links,
+    ethAddress
+}) /* : Saga<void> */ {
+    const isProfileEdit = yield select(appSelectors.selectProfileEditToggle);
+    if (isProfileEdit) {
+        yield put(appActions.profileEditToggle());
+    }
+    const token = yield select(profileSelectors.getToken);
+    const ipfs = { avatar, address, about, backgroundImage, firstName, lastName, links };
+    yield call([ChReqService, ChReqService.sendRequest], REGISTRY_MODULE, REGISTRY_MODULE.registerProfile, {
+        token,
+        actionId,
+        akashaId,
+        donationsEnabled,
+        ethAddress,
+        ipfs
+    });
+}
+
+function* profileRegisterSuccess (payload) /* : Saga<void> */ {
+    const { akashaId, ethAddress } = payload.data;
+    // remove saved temp profile from DB
+    yield put(tempProfileActions.tempProfileDeleteFull(ethAddress));
+    // get updated profile data
+    yield call(profileGetData, {
+        akashaId,
+        ethAddress: null,
+        context: null,
+        batching: false,
+        full: true
+    });
+    yield put(
+        appActions.showNotification({
+            id: 'registerProfileSuccess',
+            duration: 4
+        })
+    );
+}
+
+// eslint-disable-next-line max-statements
+export function* watchProfileActions () /* : Saga<void> */ {
+    // eslint-disable-line max-statements
     yield takeEvery(PROFILE_MODULE.transfersIterator, profileAethTransfersIterator);
     yield takeEvery(PROFILE_MODULE.bondAeth, profileBondAeth);
     // yield takeEvery(types.PROFILE_BOND_AETH_SUCCESS, profileBondAethSuccess);
@@ -681,6 +707,7 @@ export function* watchProfileActions ()/* : Saga<void> */ { // eslint-disable-li
     // yield takeEvery(types.PROFILE_FREE_AETH_SUCCESS, profileFreeAethSuccess);
     yield takeLatest(PROFILE_MODULE.getBalance, profileGetBalance);
     yield takeEvery(PROFILE_MODULE.getByAddress, profileGetByAddress);
+    yield takeEvery(PROFILE_MODULE.getCurrentProfile, getCurrentProfile);
     yield takeEvery(PROFILE_MODULE.profileData, profileGetData);
     yield takeLatest(PROFILE_MODULE.getProfileList, profileGetList);
     yield takeLatest(COMMON_MODULE.getLocalIdentities, profileGetLocal);

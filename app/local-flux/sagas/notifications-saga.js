@@ -13,26 +13,22 @@ import ChReqService from '../services/channel-request-service';
 // Estimated number of blocks mined in one week
 const ONE_WEEK = (7 * 24 * 3600) / 15;
 
-function* notificationsSubscribe ({ notificationsPreferences })/* : Saga<void> */ {
+function* notificationsSubscribe ({ notificationsPreferences }) /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    const settings = notificationsPreferences ||
-        (yield select(settingsSelectors.getNotificationsPreference)).toJS();
+    const settings =
+        notificationsPreferences || (yield select(settingsSelectors.getNotificationsPreference)).toJS();
     const lastBlock = yield call([profileService, profileService.profileGetLastBlockNr], ethAddress);
-    const currentBlock = yield select(externalProcessSelectors.getBlockNumber);
+    const currentBlock = yield select(externalProcessSelectors.getCurrentBlockNumber);
     const fromBlock = Math.max(lastBlock, currentBlock - ONE_WEEK);
     const payload = { settings, profile: { ethAddress }, fromBlock };
     yield call(
         [ChReqService, ChReqService.sendRequest],
-        NOTIFICATIONS_MODULE, NOTIFICATIONS_MODULE.subscribe,
+        NOTIFICATIONS_MODULE,
+        NOTIFICATIONS_MODULE.subscribe,
         payload
     );
 }
 
-function* notificationsLoaded () {
-    yield call(delay, 5000);
-    yield put(actions.notificationsLoaded());
-}
-
-export function* watchNotificationsActions ()/* : Saga<void> */ {
+export function* watchNotificationsActions () /* : Saga<void> */ {
     yield takeEvery(NOTIFICATIONS_MODULE.subscribe, notificationsSubscribe);
 }

@@ -26,7 +26,7 @@ const StartScreen = (props) => {
 
 StartScreen.propTypes = {
     darkTheme: PropTypes.bool,
-    lightSync: PropTypes.bool,
+    lightSync: PropTypes.string,
 };
 
 function mapStateToProps (state) {

@@ -1,21 +1,22 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { createReducer } from './utils';
 import * as types from '../constants';
-import ExternalProcessStateModel, { GethSyncStatus,
-    LogRecord } from './state-models/external-process-state-model';
+import ExternalProcessStateModel, {
+    GethSyncStatus,
+    LogRecord
+} from './state-models/external-process-state-model';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new ExternalProcessStateModel();
 
 const eProcState = createReducer(initialState, {
-    [types.CLEAR_SYNC_STATUS]: state =>
-        state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
+    [types.CLEAR_SYNC_STATUS]: state => state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
 
     [`${GETH_MODULE.start}`]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
                 busyState: true,
-                gethStarting: true,
+                gethStarting: true
             }),
             status: state.getIn(['geth', 'status']).merge({
                 stopped: false
@@ -33,7 +34,7 @@ const eProcState = createReducer(initialState, {
         const newStatus = state.computeGethStatus(status);
         return state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
-                gethStarting: false,
+                gethStarting: false
             }),
             status: state.getIn(['geth', 'status']).merge(newStatus),
             syncActionId,
@@ -41,11 +42,9 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE.start}_ERROR`]: state =>
-        state.setIn(['geth', 'flags', 'gethStarting'], false),
+    [`${GETH_MODULE.start}_ERROR`]: state => state.setIn(['geth', 'flags', 'gethStarting'], false),
 
-    [`${GETH_MODULE.stop}`]: state =>
-        state.setIn(['geth', 'flags', 'busyState'], true),
+    [`${GETH_MODULE.stop}`]: state => state.setIn(['geth', 'flags', 'busyState'], true),
 
     [`${GETH_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
         if (state.getIn(['geth', 'status', 'upgrading'])) {
@@ -64,13 +63,10 @@ const eProcState = createReducer(initialState, {
     },
 
     [`${GETH_MODULE.gethStatus}_SUCCESS`]: (state, { data, services }) =>
-        state.mergeIn(
-            ['geth'],
-            {
-                flags: state.getIn(['geth', 'flags']).set('statusFetched', true),
-                status: state.getIn(['geth', 'status']).merge(Object.assign({}, data, services.geth)),
-            }
-        ),
+        state.mergeIn(['geth'], {
+            flags: state.getIn(['geth', 'flags']).set('statusFetched', true),
+            status: state.getIn(['geth', 'status']).merge(Object.assign({}, data, services.geth))
+        }),
 
     [`${IPFS_MODULE.start}`]: state =>
         state.mergeIn(['ipfs'], {
@@ -84,9 +80,9 @@ const eProcState = createReducer(initialState, {
         const ipfsStatus = state.computeIpfsStatus(action.data);
         return state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
-                ipfsStarting: false,
+                ipfsStarting: false
             }),
-            status: state.getIn(['ipfs', 'status']).merge(ipfsStatus),
+            status: state.getIn(['ipfs', 'status']).merge(ipfsStatus)
         });
     },
 
@@ -95,9 +91,9 @@ const eProcState = createReducer(initialState, {
         const ipfsStatus = state.computeIpfsStatus(status);
         return state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
-                ipfsStarting: false,
+                ipfsStarting: false
             }),
-            status: state.getIn(['ipfs', 'status']).merge(ipfsStatus),
+            status: state.getIn(['ipfs', 'status']).merge(ipfsStatus)
         });
     },
 
@@ -105,7 +101,7 @@ const eProcState = createReducer(initialState, {
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
                 busyState: true
-            }),
+            })
         }),
 
     [`${IPFS_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
@@ -114,7 +110,10 @@ const eProcState = createReducer(initialState, {
         if (state.getIn(['ipfs', 'status', 'upgrading'])) {
             newStatus = state.getIn(['ipfs', 'status']);
         } else {
-            newStatus = state.getIn(['ipfs', 'status']).clear().merge(status);
+            newStatus = state
+                .getIn(['ipfs', 'status'])
+                .clear()
+                .merge(status);
         }
         return state.mergeIn(['ipfs'], {
             status: newStatus,
@@ -128,8 +127,7 @@ const eProcState = createReducer(initialState, {
             status: state.getIn(['ipfs', 'status']).merge(Object.assign({}, data, services.ipfs))
         }),
 
-    [`${IPFS_MODULE.getPorts}`]: state =>
-        state.setIn(['ipfs', 'flags', 'portsRequested'], true),
+    [`${IPFS_MODULE.getPorts}`]: state => state.setIn(['ipfs', 'flags', 'portsRequested'], true),
 
     [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { services }) =>
         state.mergeIn(['ipfs'], {
@@ -141,10 +139,9 @@ const eProcState = createReducer(initialState, {
             })
         }),
 
-    [`${IPFS_MODULE.getPorts}_ERROR`]: state =>
-        state.setIn(['ipfs', 'flags', 'portsRequested'], false),
+    [`${IPFS_MODULE.getPorts}_ERROR`]: state => state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
-    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data, services }) => {
+    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data }) => {
         const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
         let syncActionId = oldSyncActionId;
         if (data.synced) {
@@ -153,9 +150,9 @@ const eProcState = createReducer(initialState, {
             syncActionId = 1;
         }
         return state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(services.geth),
+            status: state.getIn(['geth', 'status']).merge(data.geth),
             syncActionId,
-            syncStatus: state.getIn(['geth', 'syncStatus']).merge(data),
+            syncStatus: state.getIn(['geth', 'syncStatus']).merge(data)
         });
     },
 
@@ -193,7 +190,8 @@ const eProcState = createReducer(initialState, {
         const timestamp = new Date(data[data.length - 1].timestamp).getTime();
         return state.mergeIn(['geth'], {
             lastLogTimestamp: timestamp,
-            logs: state.getIn(['geth', 'logs'])
+            logs: state
+                .getIn(['geth', 'logs'])
                 .union(data.map(log => new LogRecord(log)))
                 .takeLast(20)
         });
@@ -206,7 +204,8 @@ const eProcState = createReducer(initialState, {
         const timestamp = new Date(data[data.length - 1].timestamp).getTime();
         return state.mergeIn(['ipfs'], {
             lastLogTimestamp: timestamp,
-            logs: state.getIn(['ipfs', 'logs'])
+            logs: state
+                .getIn(['ipfs', 'logs'])
                 .union(data.map(log => new LogRecord(log)))
                 .takeLast(20)
         });
@@ -231,8 +230,7 @@ const eProcState = createReducer(initialState, {
         state.merge({
             geth: state.get('geth').set('lastLogTimestamp', timestamp),
             ipfs: state.get('ipfs').set('lastLogTimestamp', timestamp)
-        }),
+        })
 });
 
 export default eProcState;
-

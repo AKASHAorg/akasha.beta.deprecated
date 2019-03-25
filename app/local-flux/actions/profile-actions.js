@@ -21,11 +21,11 @@ export const profileBondAeth = ({ actionId, amount }) =>
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
 
-export const profileCommentsIterator = (column) => action(`${PROFILE_MODULE.commentsIterator}`, { column });
+export const profileCommentsIterator = column => action(`${PROFILE_MODULE.commentsIterator}`, { column });
 
 export const profileCreateEthAddress = ({ passphrase, passphrase1 }) =>
     action(types.PROFILE_CREATE_ETH_ADDRESS, { passphrase, passphrase1 });
-export const profileCreateEthAddressError = (error) => {
+export const profileCreateEthAddressError = error => {
     error.code = 'PCEAE01';
     error.messageId = 'profileCreateEthAddress';
     return action(types.PROFILE_CREATE_ETH_ADDRESS_ERROR, { error });
@@ -39,7 +39,7 @@ export const profileCycleAeth = ({ actionId, amount }) =>
 export const profileCyclingStates = () => action(`${PROFILE_MODULE.cyclingStates}`);
 
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
-export const profileDeleteLoggedError = (error) => {
+export const profileDeleteLoggedError = error => {
     error.code = 'PDLE01';
     error.messageId = 'profileDeleteError';
     return action(types.PROFILE_DELETE_LOGGED_ERROR);
@@ -54,7 +54,7 @@ export const profileFaucetError = (error, request) => {
     error.code = 'PFE02';
     error.messageId = 'profileFaucet';
     return action(types.PROFILE_FAUCET_ERROR, { error, request });
-}
+};
 export const profileFaucetSuccess = (data, request) =>
     action(types.PROFILE_FAUCET_SUCCESS, { data, request });
 
@@ -85,8 +85,7 @@ export const profileGetData = ({ akashaId, context, ethAddress, full, batching }
 // export const profileGetEntrySyncBlockSuccess = block =>
 //     action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
 
-export const profileGetList = ethAddresses =>
-    action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });
+export const profileGetList = ethAddresses => action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });
 
 export const profileGetLocal = polling => action(types.PROFILE_GET_LOCAL, { polling });
 
@@ -96,11 +95,14 @@ export const profileGetLocalError = (error, request) => {
     return action(types.PROFILE_GET_LOCAL_ERROR, { error, request });
 };
 
+export const getCurrentProfile = () => action(PROFILE_MODULE.getCurrentProfile, {});
+export const getCurrentProfileError = err => action(`${PROFILE_MODULE.getCurrentProfile}_ERROR`, { err });
+
 export const profileGetLocalSuccess = (data, request) =>
     action(types.PROFILE_GET_LOCAL_SUCCESS, { data, request });
 export const profileGetLogged = () => action(types.PROFILE_GET_LOGGED);
 
-export const profileGetLoggedError = (error) => {
+export const profileGetLoggedError = error => {
     error.code = 'PGLE03';
     error.messageId = 'profileGetLogged';
     return action(types.PROFILE_GET_LOGGED_ERROR, { error });
@@ -122,7 +124,7 @@ export const profileKarmaRankingLoadMore = data => action(types.PROFILE_KARMA_RA
 
 export const profileLogin = data => action(types.PROFILE_LOGIN, { data });
 
-export const profileLoginError = (error) => {
+export const profileLoginError = error => {
     // this error should be treated locally (in the login form) instead of globally
     error.code = 'PLIE01';
     return action(types.PROFILE_LOGIN_ERROR, { error });
@@ -131,7 +133,7 @@ export const profileLoginError = (error) => {
 export const profileLoginSuccess = data => action(types.PROFILE_LOGIN_SUCCESS, { data });
 export const profileLogout = () => action(types.PROFILE_LOGOUT);
 
-export const profileLogoutError = (error) => {
+export const profileLogoutError = error => {
     error.code = 'PLOE01';
     error.messageId = 'profileLogout';
     return action(types.PROFILE_LOGOUT_ERROR);
@@ -140,8 +142,7 @@ export const profileLogoutError = (error) => {
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
 export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 
-// export const profileMoreCommentsIterator = column =>
-//     action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
+// export const profileMoreCommentsIterator = column => action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
 // export const profileMoreCommentsIteratorError = (error, request) => {
 //     error.code = 'PMCIE01';
 //     error.messageId = 'profileMoreCommentsIterator';
@@ -175,8 +176,17 @@ export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 //     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data, request, batching });
 
 export const profileRegister = ({
-    actionId, akashaId, address, about, avatar, backgroundImage,
-    donationsEnabled, firstName, lastName, links, ethAddress
+    actionId,
+    akashaId,
+    address,
+    about,
+    avatar,
+    backgroundImage,
+    donationsEnabled,
+    firstName,
+    lastName,
+    links,
+    ethAddress
 }) =>
     action(`${REGISTRY_MODULE.registerProfile}`, {
         actionId,
@@ -192,7 +202,6 @@ export const profileRegister = ({
         ethAddress
     });
 
-
 export const profileResetColumns = ethAddress => action(types.PROFILE_RESET_COLUMNS, { ethAddress });
 export const profileResetEssenceEvents = () => action(types.PROFILE_RESET_ESSENCE_EVENTS);
 export const profileResetFaucet = () => action(types.PROFILE_RESET_FAUCET);
@@ -201,19 +210,27 @@ export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
     action(`${PROFILE_MODULE.resolveProfileIpfsHash}`, { ipfsHash, columnId, akashaIds });
 
 export const profileSaveLastBlockNr = () => action(types.PROFILE_SAVE_LAST_BLOCK_NR);
-export const profileSaveLastBlockNrError = (error) => {
+export const profileSaveLastBlockNrError = error => {
     error.code = 'PSLBNE01';
     return action(types.PROFILE_SAVE_LAST_BLOCK_NR_ERROR, { error });
 };
 
-export const profileSaveLoggedError = (error) => {
+export const profileSaveLoggedError = error => {
     error.code = 'PSLE01';
     error.fatal = true;
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
 
 export const profileSendTip = ({ actionId, akashaId, ethAddress, message, receiver, value, tokenAmount }) =>
-    action(`${PROFILE_MODULE.sendTip}`, { actionId, akashaId, ethAddress, message, receiver, value, tokenAmount });
+    action(`${PROFILE_MODULE.sendTip}`, {
+        actionId,
+        akashaId,
+        ethAddress,
+        message,
+        receiver,
+        value,
+        tokenAmount
+    });
 
 export const profileToggleInterest = (interest, interestType) =>
     action(types.PROFILE_TOGGLE_INTEREST, { interest, interestType });
@@ -228,8 +245,7 @@ export const profileToggleDonationsError = (error, request) => {
     return action(types.PROFILE_TOGGLE_DONATIONS_ERROR, { error });
 };
 
-export const profileToggleDonationsSuccess = data =>
-    action(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, { data });
+export const profileToggleDonationsSuccess = data => action(types.PROFILE_TOGGLE_DONATIONS_SUCCESS, { data });
 
 export const profileTransferAeth = ({ actionId, akashaId, ethAddress, tokenAmount }) =>
     action(`${PROFILE_MODULE.transfer}`, { actionId, akashaId, ethAddress, tokenAmount });
@@ -243,17 +259,21 @@ export const profileTransformEssence = ({ actionId, amount }) =>
 export const profileUnfollow = ({ actionId, ethAddress }) =>
     action(`${PROFILE_MODULE.unFollowProfile}`, { actionId, ethAddress });
 
-
 export const profileUpdate = ({ actionId, about, avatar, backgroundImage, firstName, lastName, links }) =>
-    action(`${PROFILE_MODULE.updateProfileData}`, { actionId, about, avatar, backgroundImage, firstName, lastName, links });
+    action(`${PROFILE_MODULE.updateProfileData}`, {
+        actionId,
+        about,
+        avatar,
+        backgroundImage,
+        firstName,
+        lastName,
+        links
+    });
 
-
-
-export const profileUpdateLoggedError = (error) => {
+export const profileUpdateLoggedError = error => {
     error.code = 'PULE01';
     error.messageId = 'profileUpdateLogged';
     return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
 };
 
-export const profileEssenceIterator = () =>
-    action(`${PROFILE_MODULE.essenceIterator}`);
+export const profileEssenceIterator = () => action(`${PROFILE_MODULE.essenceIterator}`);

@@ -4,131 +4,169 @@ import { connect } from 'react-redux';
 import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
-import Waypoint from 'react-waypoint';
+import { Waypoint } from 'react-waypoint';
 import { entryMessages, generalMessages } from '../locale-data/messages';
 import { entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
-import { actionSelectors, externalProcessSelectors, settingsSelectors,
-  profileSelectors, draftSelectors, searchSelectors, entrySelectors
-  } from '../local-flux/selectors';
+import {
+    actionSelectors,
+    externalProcessSelectors,
+    settingsSelectors,
+    profileSelectors,
+    draftSelectors,
+    searchSelectors,
+    entrySelectors
+} from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
 class EntryList extends Component {
     shouldComponentUpdate (newProps) {
-        return !newProps.entries.equals(this.props.entries) ||
+        return (
+            !newProps.entries.equals(this.props.entries) ||
             newProps.fetchingMoreEntries !== this.props.fetchingMoreEntries ||
             newProps.fetchingEntries !== this.props.fetchingEntries ||
             (newProps.pendingEntries && !newProps.pendingEntries.equals(this.props.pendingEntries)) ||
             newProps.large !== this.props.large ||
-            !newProps.profiles.equals(this.props.profiles);
+            !newProps.profiles.equals(this.props.profiles)
+        );
     }
 
-    getContainerRef = (el) => { this.container = el; };
+    getContainerRef = el => {
+        this.container = el;
+    };
 
-    getExistingDraft = (entryId) => {
+    getExistingDraft = entryId => {
         const { drafts } = this.props;
         return drafts.find(draft => draft.get('entryId') === entryId);
-    }
+    };
 
-    render () { // eslint-disable-line complexity
-        const { baseUrl, baseWidth, blockNr, cardStyle, canClaimPending, contextId, defaultTimeout, entries,
-            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, hideEntrySettings, intl, large,
-            loggedEthAddress, masonry, moreEntries, pendingClaims, pendingEntries, pendingVotes,
-            placeholderMessage, profiles, style, searchQuery, searching } = this.props;
-        const entryCards = entries && entries.map((entry) => {
-            if (!entry) {
-                return null;
-            }
-            const claimPending = !!pendingClaims.get(entry.get('entryId'));
-            const ethAddress = entry.getIn(['author', 'ethAddress']);
-            const author = profiles.get(ethAddress);
-            const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
+    // eslint-disable-next-line complexity
+    render () {
+        const {
+            baseUrl,
+            baseWidth,
+            blockNr,
+            cardStyle,
+            canClaimPending,
+            contextId,
+            defaultTimeout,
+            entries,
+            fetchingEntries,
+            fetchingEntryBalance,
+            fetchingMoreEntries,
+            hideEntrySettings,
+            intl,
+            large,
+            loggedEthAddress,
+            masonry,
+            moreEntries,
+            pendingClaims,
+            pendingEntries,
+            pendingVotes,
+            placeholderMessage,
+            profiles,
+            style,
+            searchQuery,
+            searching
+        } = this.props;
+        const entryCards =
+            entries &&
+            entries.map(entry => {
+                if (!entry) {
+                    return null;
+                }
+                const claimPending = !!pendingClaims.get(entry.get('entryId'));
+                const ethAddress = entry.getIn(['author', 'ethAddress']);
+                const author = profiles.get(ethAddress);
+                const isPending = pendingEntries && pendingEntries.get(entry.get('entryId'));
 
-            return (<EntryCard
-              author={author}
-              baseWidth={baseWidth}
-              baseUrl={baseUrl}
-              blockNr={blockNr}
-              canClaimPending={canClaimPending}
-              claimPending={claimPending}
-              containerRef={this.container}
-              contextId={contextId}
-              entry={entry}
-              entryPageShow={this.props.entryPageShow}
-              existingDraft={this.getExistingDraft(entry.get('entryId'))}
-              fetchingEntryBalance={fetchingEntryBalance}
-              handleEdit={this.handleEdit}
-              hideEntrySettings={hideEntrySettings}
-              isPending={isPending}
-              intl={intl}
-              key={entry.get('entryId')}
-              large={large}
-              loggedEthAddress={loggedEthAddress}
-              // onRetry={this.props.entryGetShort}
-              style={cardStyle}
-              toggleOutsideNavigation={this.props.toggleOutsideNavigation}
-              votePending={!!pendingVotes.get(entry.get('entryId'))}
-            />);
-        });
+                return (
+                    <EntryCard
+                        author={author}
+                        baseWidth={baseWidth}
+                        baseUrl={baseUrl}
+                        blockNr={blockNr}
+                        canClaimPending={canClaimPending}
+                        claimPending={claimPending}
+                        containerRef={this.container}
+                        contextId={contextId}
+                        entry={entry}
+                        entryPageShow={this.props.entryPageShow}
+                        existingDraft={this.getExistingDraft(entry.get('entryId'))}
+                        fetchingEntryBalance={fetchingEntryBalance}
+                        handleEdit={this.handleEdit}
+                        hideEntrySettings={hideEntrySettings}
+                        isPending={isPending}
+                        intl={intl}
+                        key={entry.get('entryId')}
+                        large={large}
+                        loggedEthAddress={loggedEthAddress}
+                        // onRetry={this.props.entryGetShort}
+                        style={cardStyle}
+                        toggleOutsideNavigation={this.props.toggleOutsideNavigation}
+                        votePending={!!pendingVotes.get(entry.get('entryId'))}
+                    />
+                );
+            });
         return (
-          <div
-            className={`entry-list ${!masonry && 'entry-list_flex'}`}
-            style={Object.assign({}, style)}
-            ref={this.getContainerRef}
-          >
-            <DataLoader
-              flag={fetchingEntries}
-              timeout={defaultTimeout}
-              style={{ paddingTop: '80px' }}
+            <div
+                className={`entry-list ${!masonry && 'entry-list_flex'}`}
+                style={Object.assign({}, style)}
+                ref={this.getContainerRef}
             >
-              <div style={{ width: '100%', height: '100%' }}>
-                {(entries.size === 0) && searching && (searchQuery.length > 2 || searchQuery.length === 0) &&
-                  <div className="entry-list__search-placeholder">
-                    <div
-                      className="entry-list__search-placeholder-inner"
-                    >
-                      <div className="entry-list__search-placeholder_image" />
-                      <div className="entry-list__search-placeholder_text">
-                        {(searchQuery.length === 0) && intl.formatMessage(generalMessages.startTypingToSearch)}
-                        {(searchQuery.length > 0) && (placeholderMessage || intl.formatMessage(generalMessages.searchingNoResults, {
-                            searchTerm: searchQuery,
-                            resource: intl.formatMessage(entryMessages.entries)
-                        }))}
-                      </div>
+                <DataLoader flag={fetchingEntries} timeout={defaultTimeout} style={{ paddingTop: '80px' }}>
+                    <div style={{ width: '100%', height: '100%' }}>
+                        {entries.size === 0 &&
+                            searching &&
+                            (searchQuery.length > 2 || searchQuery.length === 0) && (
+                                <div className="entry-list__search-placeholder">
+                                    <div className="entry-list__search-placeholder-inner">
+                                        <div className="entry-list__search-placeholder_image" />
+                                        <div className="entry-list__search-placeholder_text">
+                                            {searchQuery.length === 0 &&
+                                                intl.formatMessage(generalMessages.startTypingToSearch)}
+                                            {searchQuery.length > 0 &&
+                                                (placeholderMessage ||
+                                                    intl.formatMessage(generalMessages.searchingNoResults, {
+                                                        searchTerm: searchQuery,
+                                                        resource: intl.formatMessage(entryMessages.entries)
+                                                    }))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        {entries.size === 0 && !searching && (
+                            <div className="flex-center entry-list__empty-placeholder">
+                                <div className="entry-list__empty-placeholder-inner">
+                                    <div className="entry-list__empty-placeholder-image" />
+                                    <div className="entry-list__empty-placeholder-text">
+                                        {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {masonry ? (
+                            <Masonry
+                                options={{ transitionDuration: 0, fitWidth: true }}
+                                style={{ margin: '0 auto' }}
+                            >
+                                {entryCards}
+                            </Masonry>
+                        ) : (
+                            entryCards
+                        )}
+                        {moreEntries && (
+                            <div style={{ height: '35px' }}>
+                                <DataLoader flag={fetchingMoreEntries} size="small">
+                                    <div className="flex-center">
+                                        <Waypoint onEnter={this.props.fetchMoreEntries} />
+                                    </div>
+                                </DataLoader>
+                            </div>
+                        )}
                     </div>
-                  </div>
-                }
-                {(entries.size === 0) && !searching &&
-                  <div className="flex-center entry-list__empty-placeholder">
-                    <div className="entry-list__empty-placeholder-inner">
-                      <div className="entry-list__empty-placeholder-image" />
-                      <div className="entry-list__empty-placeholder-text">
-                        {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
-                      </div>
-                    </div>
-                  </div>
-                }
-                {masonry ?
-                  <Masonry
-                    options={{ transitionDuration: 0, fitWidth: true }}
-                    style={{ margin: '0 auto' }}
-                  >
-                    {entryCards}
-                  </Masonry> :
-                  entryCards
-                }
-                {moreEntries &&
-                  <div style={{ height: '35px' }}>
-                    <DataLoader flag={fetchingMoreEntries} size="small">
-                      <div className="flex-center">
-                        <Waypoint onEnter={this.props.fetchMoreEntries} />
-                      </div>
-                    </DataLoader>
-                  </div>
-                }
-              </div>
-            </DataLoader>
-          </div>
+                </DataLoader>
+            </div>
         );
     }
 }
@@ -163,7 +201,7 @@ EntryList.propTypes = {
     style: PropTypes.shape(),
     toggleOutsideNavigation: PropTypes.func,
     searchQuery: PropTypes.string,
-    searching: PropTypes.bool,
+    searching: PropTypes.bool
 };
 
 function mapStateToProps (state, ownProps) {
@@ -179,7 +217,7 @@ function mapStateToProps (state, ownProps) {
         pendingEntries: entrySelectors.getPendingEntries(state, ownProps.contextId),
         pendingVotes: actionSelectors.getPendingActionByType(state, 'entryVote'),
         profiles: profileSelectors.selectProfilesByEthAddress(state),
-        searchQuery: searchSelectors.selectSearchQuery(state),
+        searchQuery: searchSelectors.selectSearchQuery(state)
     };
 }
 
@@ -188,6 +226,6 @@ export default connect(
     {
         // entryGetShort,
         entryPageShow,
-        toggleOutsideNavigation,
+        toggleOutsideNavigation
     }
 )(withRouter(injectIntl(EntryList)));

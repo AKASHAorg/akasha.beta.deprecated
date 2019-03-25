@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Link from 'react-router-dom/Link';
 import { injectIntl } from 'react-intl';
-import Waypoint from 'react-waypoint';
+import { Waypoint } from 'react-waypoint';
 import { Tooltip } from 'antd';
 import { Icon, ProfilePopover, Avatar } from '../';
 import * as notificationEvents from '../../constants/notification-events';
@@ -14,7 +14,7 @@ import { generalMessages, notificationMessages } from '../../locale-data/message
 import { getDisplayName } from '../../utils/dataModule';
 import withRequest from '../high-order-components/with-request';
 
-const getEthAddress = (notification) => {
+const getEthAddress = notification => {
     switch (notification.type) {
         case notificationEvents.COMMENT_EVENT:
             return notification.payload.author;
@@ -77,24 +77,32 @@ class NotificationLog extends Component {
             return notificationMessages.DONATION_EVENT_BOTH;
         }
         return notificationMessages[notification.type];
-    }
+    };
 
     render () {
-        const { containerRef, entry, intl, loggedEthAddress, notification, pendingEntry, pendingProfile,
-            profile } = this.props;
+        const {
+            containerRef,
+            entry,
+            intl,
+            loggedEthAddress,
+            notification,
+            pendingEntry,
+            pendingProfile,
+            profile
+        } = this.props;
         const hasEntry = !!notification.payload.entryId;
         const entryLoading = hasEntry && (!entry || pendingEntry);
 
         if (!profile.get('ethAddress') || pendingProfile || entryLoading) {
             return (
-              <div className="notification-log">
-                <Waypoint scrollableAncestor={containerRef} onEnter={this.loadData} />
-                <div className="content-placeholder notification-log__avatar-placeholder" />
-                <div className="notification-log__text-wrapper">
-                  <div className="content-placeholder notification-log__text-placeholder" />
-                  <div className="content-placeholder notification-log__text-placeholder-2" />
+                <div className="notification-log">
+                    <Waypoint scrollableAncestor={containerRef} onEnter={this.loadData} />
+                    <div className="content-placeholder notification-log__avatar-placeholder" />
+                    <div className="notification-log__text-wrapper">
+                        <div className="content-placeholder notification-log__text-placeholder" />
+                        <div className="content-placeholder notification-log__text-placeholder-2" />
+                    </div>
                 </div>
-              </div>
             );
         }
         const blockNr = notification.blockNumber;
@@ -102,58 +110,59 @@ class NotificationLog extends Component {
         const akashaId = profile.get('akashaId');
         const ethAddress = profile.get('ethAddress');
         const displayName = getDisplayName({ akashaId, ethAddress });
-        const entryTitle = (entry && entry.getIn(['content', 'title'])) ||
-            intl.formatMessage(generalMessages.anEntry);
+        const entryTitle =
+            (entry && entry.getIn(['content', 'title'])) || intl.formatMessage(generalMessages.anEntry);
 
         return (
-          <div className="notification-log">
-            <div className="notification-log__avatar-wrapper">
-              <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-                <Avatar
-                  className="notification-log__avatar"
-                  firstName={profile.get('firstName')}
-                  image={profile.get('avatar')}
-                  lastName={profile.get('lastName')}
-                  size="small"
-                />
-              </ProfilePopover>
+            <div className="notification-log">
+                <div className="notification-log__avatar-wrapper">
+                    <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
+                        <Avatar
+                            className="notification-log__avatar"
+                            firstName={profile.get('firstName')}
+                            image={profile.get('avatar')}
+                            lastName={profile.get('lastName')}
+                            size="small"
+                        />
+                    </ProfilePopover>
+                </div>
+                <div className="notification-log__text-wrapper">
+                    <div className="notification-log__description">
+                        <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
+                            <span className="content-link">{displayName}</span>
+                        </ProfilePopover>
+                        <span className="notification-log__message">
+                            {intl.formatMessage(this.getNotificationMessage(), { ...notification.payload })}
+                        </span>
+                        {hasEntry && (
+                            <Link
+                                className="unstyled-link content-link"
+                                to={{
+                                    pathname: `/${loggedEthAddress}/${entry.get('entryId')}`,
+                                    state: { overlay: true }
+                                }}
+                            >
+                                {entryTitle}
+                            </Link>
+                        )}
+                    </div>
+                    <div>
+                        <Tooltip
+                            arrowPointAtCenter
+                            title={intl.formatMessage(generalMessages.seeOnEtherscan)}
+                        >
+                            <a
+                                className={`unstyled-link has-hidden-action
+                                flex-center-y notification-log__link`}
+                                href={url}
+                            >
+                                {intl.formatMessage(notificationMessages.notifBlockNr, { blockNr })}
+                                <Icon className="hidden-action notification-log__link-icon" type="link" />
+                            </a>
+                        </Tooltip>
+                    </div>
+                </div>
             </div>
-            <div className="notification-log__text-wrapper">
-              <div className="notification-log__description">
-                <ProfilePopover ethAddress={ethAddress} containerRef={containerRef}>
-                  <span className="content-link">{displayName}</span>
-                </ProfilePopover>
-                <span className="notification-log__message">
-                  {intl.formatMessage(this.getNotificationMessage(), { ...notification.payload })}
-                </span>
-                {hasEntry &&
-                  <Link
-                    className="unstyled-link content-link"
-                    to={{
-                        pathname: `/${loggedEthAddress}/${entry.get('entryId')}`,
-                        state: { overlay: true }
-                    }}
-                  >
-                    {entryTitle}
-                  </Link>
-                }
-              </div>
-              <div>
-                <Tooltip
-                  arrowPointAtCenter
-                  title={intl.formatMessage(generalMessages.seeOnEtherscan)}
-                >
-                  <a
-                    className="unstyled-link has-hidden-action flex-center-y notification-log__link"
-                    href={url}
-                  >
-                    {intl.formatMessage(notificationMessages.notifBlockNr, { blockNr })}
-                    <Icon className="hidden-action notification-log__link-icon" type="link" />
-                  </a>
-                </Tooltip>
-              </div>
-            </div>
-          </div>
         );
     }
 }
@@ -169,7 +178,7 @@ NotificationLog.propTypes = {
     pendingProfile: PropTypes.bool,
     profile: PropTypes.shape().isRequired,
     profileGetData: PropTypes.func.isRequired,
-    profileIsFollower: PropTypes.func.isRequired,
+    profileIsFollower: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state, ownProps) {
@@ -183,7 +192,7 @@ function mapStateToProps (state, ownProps) {
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         pendingEntry: entryId && pendingEntries && pendingEntries.get(entryId),
         pendingProfile: pendingProfiles && pendingProfiles.get(ethAddress),
-        profile: profileSelectors.selectProfileByEthAddress(state, ethAddress),
+        profile: profileSelectors.selectProfileByEthAddress(state, ethAddress)
     };
 }
 

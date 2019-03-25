@@ -1,4 +1,4 @@
-import {akashaDB, getProfileCollection} from './db/dbs';
+import { akashaDB, getProfileCollection } from './db/dbs';
 import * as Promise from 'bluebird';
 
 export const TMP_PROFILE_TYPE = 'tempProfile';
@@ -11,8 +11,13 @@ export const TMP_PROFILE_TYPE = 'tempProfile';
  */
 export const createTempProfile = profileData => {
     try {
-        getProfileCollection().findAndRemove({ethAddress: profileData.ethAddress, opType: TMP_PROFILE_TYPE});
-        const record = getProfileCollection().insert(Object.assign({opType: TMP_PROFILE_TYPE}, profileData));
+        getProfileCollection().findAndRemove({
+            ethAddress: profileData.ethAddress,
+            opType: TMP_PROFILE_TYPE
+        });
+        const record = getProfileCollection().insert(
+            Object.assign({ opType: TMP_PROFILE_TYPE }, profileData)
+        );
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
@@ -28,15 +33,16 @@ export const createTempProfile = profileData => {
 
 export const updateTempProfile = (tempProfile, status) => {
     try {
-        const record = getProfileCollection()
-            .findAndUpdate({ethAddress: tempProfile.ethAddress, opType: TMP_PROFILE_TYPE},
-                (rec) => {
-                    Object.assign(rec, tempProfile);
-                    if (status && typeof status === 'object') {
-                        if (!rec.status) rec['status'] = {};
-                        Object.assign(rec.status, status);
-                    }
-                });
+        const record = getProfileCollection().findAndUpdate(
+            { ethAddress: tempProfile.ethAddress, opType: TMP_PROFILE_TYPE },
+            rec => {
+                Object.assign(rec, tempProfile);
+                if (status && typeof status === 'object') {
+                    if (!rec.status) rec['status'] = {};
+                    Object.assign(rec.status, status);
+                }
+            }
+        );
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb)).then(() => Object.assign({}, record));
     } catch (error) {
         return Promise.reject(error);
@@ -47,7 +53,7 @@ export const updateTempProfile = (tempProfile, status) => {
  */
 export const deleteTempProfile = ethAddress => {
     try {
-        getProfileCollection().findAndRemove({ethAddress: ethAddress, opType: TMP_PROFILE_TYPE});
+        getProfileCollection().findAndRemove({ ethAddress: ethAddress, opType: TMP_PROFILE_TYPE });
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
@@ -60,8 +66,8 @@ export const deleteTempProfile = ethAddress => {
  */
 export const getTempProfile = ethAddress => {
     try {
-        const record = getProfileCollection().findOne({ethAddress: ethAddress, opType: TMP_PROFILE_TYPE});
-        return Promise.resolve(record? Object.assign({}, record): null);
+        const record = getProfileCollection().findOne({ ethAddress: ethAddress, opType: TMP_PROFILE_TYPE });
+        return Promise.resolve(record ? Object.assign({}, record) : null);
     } catch (error) {
         return Promise.reject(error);
     }

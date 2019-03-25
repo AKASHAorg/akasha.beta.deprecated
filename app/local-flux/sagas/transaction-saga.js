@@ -15,16 +15,13 @@ import ChReqService from '../services/channel-request-service';
     }
  */
 
-export function* transactionGetStatus ({ txs, ids }/* : TxGetStatus */)/* :Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        TX_MODULE, TX_MODULE.getTransaction, {
-            transactionHash: txs,
-            actionIds: ids
-        }
-    )
+export function* transactionGetStatus ({ txs, ids } /* : TxGetStatus */) /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], TX_MODULE, TX_MODULE.getTransaction, {
+        transactionHash: txs,
+        actionIds: ids
+    });
 }
 
-export function* watchTransactionActions ()/* : Saga<void> */ {
+export function* watchTransactionActions () /* : Saga<void> */ {
     yield takeEvery(types.TRANSACTION_GET_STATUS, transactionGetStatus);
 }

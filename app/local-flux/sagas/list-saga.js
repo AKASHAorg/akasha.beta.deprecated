@@ -10,7 +10,7 @@ import * as listService from '../services/list-service';
     import type { Saga } from 'redux-saga'; // eslint-disable-line
  */
 
-function* listAdd ({ name, description, entryIds = [], addColumn })/* : Saga<void> */ {
+function* listAdd ({ name, description, entryIds = [], addColumn }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const list = { ethAddress, name, description, entryIds };
@@ -24,7 +24,7 @@ function* listAdd ({ name, description, entryIds = [], addColumn })/* : Saga<voi
     }
 }
 
-function* listDelete ({ id })/* : Saga<void> */ {
+function* listDelete ({ id }) /* : Saga<void> */ {
     try {
         yield call([listService, listService.deleteList], id);
         yield put(actions.listDeleteSuccess(id));
@@ -33,7 +33,7 @@ function* listDelete ({ id })/* : Saga<void> */ {
     }
 }
 
-function* listDeleteEntry ({ id, entryId })/* : Saga<void> */ {
+function* listDeleteEntry ({ id, entryId }) /* : Saga<void> */ {
     try {
         // @todo: rewrite this, it seems that listService.deleteEntry is not implemented
         // const ethAddress = yield select(selectLoggedEthAddress);
@@ -44,7 +44,7 @@ function* listDeleteEntry ({ id, entryId })/* : Saga<void> */ {
     }
 }
 
-function* listEdit ({ id, name, description })/* : Saga<void> */ {
+function* listEdit ({ id, name, description }) /* : Saga<void> */ {
     try {
         const list = yield call([listService, listService.editList], { id, name, description });
         yield put(actions.listEditSuccess(list));
@@ -53,7 +53,7 @@ function* listEdit ({ id, name, description })/* : Saga<void> */ {
     }
 }
 
-export function* listGetAll ()/* : Saga<void> */ {
+export function* listGetAll () /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const lists = yield call([listService, listService.getAllLists], ethAddress);
@@ -63,7 +63,7 @@ export function* listGetAll ()/* : Saga<void> */ {
     }
 }
 
-function* listGetFull ({ id })/* : Saga<void> */ {
+function* listGetFull ({ id }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield call([listService, listService.getList], { ethAddress, id });
@@ -73,7 +73,7 @@ function* listGetFull ({ id })/* : Saga<void> */ {
     }
 }
 
-function* listSearch ({ search })/* : Saga<void> */ {
+function* listSearch ({ search }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         search = search.toLowerCase();
@@ -84,13 +84,16 @@ function* listSearch ({ search })/* : Saga<void> */ {
     }
 }
 
-function* listToggleEntry ({ id, entryId, entryType, authorEthAddress })/* : Saga<void> */ {
+function* listToggleEntry ({ id, entryId, entryType, authorEthAddress }) /* : Saga<void> */ {
     try {
         const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
-        const list = yield call(
-            [listService, listService.toggleEntry],
-            { ethAddress: loggedEthAddress, id, entryId, entryType, authorEthAddress }
-        );
+        const list = yield call([listService, listService.toggleEntry], {
+            ethAddress: loggedEthAddress,
+            id,
+            entryId,
+            entryType,
+            authorEthAddress
+        });
         const request = { entryId };
         yield put(actions.listToggleEntrySuccess(list, request));
     } catch (error) {
@@ -99,7 +102,7 @@ function* listToggleEntry ({ id, entryId, entryType, authorEthAddress })/* : Sag
 }
 
 // Action watchers
-export function* watchListActions ()/* : Saga<void> */ {
+export function* watchListActions () /* : Saga<void> */ {
     yield takeEvery(types.LIST_ADD, listAdd);
     yield takeEvery(types.LIST_DELETE, listDelete);
     yield takeEvery(types.LIST_DELETE_ENTRY, listDeleteEntry);

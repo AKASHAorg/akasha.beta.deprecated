@@ -1,9 +1,8 @@
 // @flow
-import * as reduxSaga from 'redux-saga';
-import { call, cancel, fork, put, select, takeLatest, take, takeEvery } from 'redux-saga/effects';
+import { call, cancel, fork, put, select, takeLatest, take, takeEvery, delay } from 'redux-saga/effects';
 import * as actions from '../actions/external-process-actions';
 import * as types from '../constants';
-import { externalProcessSelectors } from '../selectors';
+import { externalProcessSelectors, settingsSelectors } from '../selectors';
 import ChReqService from '../services/channel-request-service';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
@@ -22,48 +21,47 @@ let gethSyncInterval = null;
 //     yield put(actions.ipfsResetBusy());
 // }
 
-function* gethStartLogger ()/* :Saga<void> */ {
+function* gethStartLogger () /* :Saga<void> */ {
     while (true) {
         yield put(actions.gethGetLogs());
         yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.logs, {});
-        yield call([reduxSaga, reduxSaga.delay], 2000);
+        yield delay(2000);
     }
 }
 
-function* ipfsStartLogger ()/* :Saga<void> */ {
+function* ipfsStartLogger () /* :Saga<void> */ {
     while (true) {
         yield put(actions.ipfsGetLogs());
-        call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.logs, {})
-        yield call([reduxSaga, reduxSaga.delay], 2000);
+        call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.logs, {});
+        yield delay(2000);
     }
 }
 
-export function* gethGetOptions ()/* :Saga<void> */ {
+export function* gethGetOptions () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.options, {});
 }
 
-export function* ipfsGetConfig ()/* :Saga<void> */ {
+export function* ipfsGetConfig () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.getConfig, {});
 }
 
-export function* ipfsGetPorts ()/* :Saga<void> */ {
+export function* ipfsGetPorts () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.getPorts, {});
 }
 
-function* ipfsSetPorts ({ ports, restart })/* :Saga<void> */ {
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        IPFS_MODULE, IPFS_MODULE.setPorts, {
-            ports, restart
-        });
+function* ipfsSetPorts ({ ports, restart }) /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.setPorts, {
+        ports,
+        restart
+    });
 }
 
-function* gethStart ()/* :Saga<void> */ {
-    const gethOptions = yield select(externalProcessSelectors.getGethOptions);
+function* gethStart () /* :Saga<void> */ {
+    const gethOptions = yield select(settingsSelectors.selectGethSettings);
     const gethJsOptions = gethOptions.toJS();
     // filter out the null and false options
     const options = {};
-    Object.keys(gethJsOptions).forEach((key) => {
+    Object.keys(gethJsOptions).forEach(key => {
         if (gethJsOptions[key] !== null && gethJsOptions[key] !== false) {
             options[key] = gethJsOptions[key];
         }
@@ -74,43 +72,34 @@ function* gethStart ()/* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.startService, options);
 }
 
-function* gethStop ()/* :Saga<void> */ {
+function* gethStop () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.stopService, {});
 }
 
-function* ipfsStart ()/* :Saga<void> */ {
+function* ipfsStart () /* :Saga<void> */ {
     const storagePath = yield select(externalProcessSelectors.getIpfsStoragePath);
-    yield call(
-        [ChReqService, ChReqService.sendRequest],
-        IPFS_MODULE, IPFS_MODULE.startService, {
-            storagePath
-        });
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.startService, {
+        storagePath
+    });
 }
 
-function* ipfsStop ()/* :Saga<void> */ {
+function* ipfsStop () /* :Saga<void> */ {
     yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.stopService, {});
 }
 
-export function* gethGetStatus ()/* :Saga<void> */ {
-    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.status, {})
+export function* gethGetStatus () /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.status, {});
 }
 
-export function* ipfsGetStatus ()/* :Saga<void> */ {
-    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.status, {})
+export function* ipfsGetStatus () /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], IPFS_MODULE, IPFS_MODULE.status, {});
 }
 
-function* gethGetSyncStatus ()/* :Saga<void> */ {
-    const syncActionId = yield select(externalProcessSelectors.selectGethSyncActionId);
-    if (!gethSyncInterval) {
-        gethSyncInterval = setInterval(() => {
-            if (syncActionId === 0 || syncActionId === 1) {
-                ChReqService.sendRequest(GETH_MODULE, GETH_MODULE.syncStatus, {});
-            }
-        }, 2000);
-    }
+function* gethGetSyncStatus ({ payload }) /* :Saga<void> */ {
+    yield call([ChReqService, ChReqService.sendRequest], GETH_MODULE, GETH_MODULE.syncStatus, payload);
 }
 
-function* watchGethToggleLogger ()/* :Saga<void> */ {
+function* watchGethToggleLogger () /* :Saga<void> */ {
     while (true) {
         yield take(GETH_MODULE.logs);
         const task = yield fork(gethStartLogger);
@@ -119,7 +108,7 @@ function* watchGethToggleLogger ()/* :Saga<void> */ {
     }
 }
 
-function* watchIpfsToggleLogger ()/* :Saga<void> */ {
+function* watchIpfsToggleLogger () /* :Saga<void> */ {
     while (true) {
         yield take(IPFS_MODULE.logs);
         const task = yield fork(ipfsStartLogger);
@@ -128,7 +117,7 @@ function* watchIpfsToggleLogger ()/* :Saga<void> */ {
     }
 }
 
-export function* watchEProcActions ()/* :Saga<void> */ {
+export function* watchEProcActions () /* :Saga<void> */ {
     yield takeLatest(GETH_MODULE.startService, gethStart);
     yield takeLatest(IPFS_MODULE.startService, ipfsStart);
     yield takeEvery(GETH_MODULE.status, gethGetStatus);

@@ -1,0 +1,42 @@
+.appbar-layout {
+    position: fixed;
+    right: 0;
+    padding-left: ~'calc(@{sidebar-width} + 1.429em)';
+    padding-right: 1.429em;
+    height: @top-bar-height;
+    transition: left 0.218s @ease-in-out;
+    background-color: @light-background;
+    border-bottom: 1px solid @light-border;
+    z-index: 100;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    &_top {
+        top: 0;
+    }
+    &_left-slot,
+    &_right-slot {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        flex-grow: 1;
+        align-items: center;
+    }
+    &_left-slot {
+        justify-content: flex-start;
+    }
+    &_right-slot {
+        justify-content: flex-end;
+    }
+    &_right-slot {
+        .notification-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            stroke: @text-color;
+            &_active {
+                stroke: @heading-color;
+            }
+        }
+    }
+}

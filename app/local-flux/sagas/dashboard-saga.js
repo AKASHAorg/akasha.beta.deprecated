@@ -11,23 +11,21 @@ import getHistory from '../../history';
     import type { Saga } from 'redux-saga';
  */
 
-function* reorderDashboards ()/* : Saga<void> */ {
+function* reorderDashboards () /* : Saga<void> */ {
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
     const ordering = yield select(state => state.dashboardState.get('allDashboards'));
-    yield call(
-        [dashboardService, dashboardService.setDashboardOrder],
-        { ethAddress, order: ordering.toJS() }
-    );
+    yield call([dashboardService, dashboardService.setDashboardOrder], {
+        ethAddress,
+        order: ordering.toJS()
+    });
 }
 
-function* dashboardAdd ({ name, columns = [] })/* : Saga<void> */ {
+function* dashboardAdd ({ name, columns = [] }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-        const dashboard = yield apply(
-            dashboardService,
-            dashboardService.addDashboard,
-            [{ ethAddress, columns, name }]
-        );
+        const dashboard = yield apply(dashboardService, dashboardService.addDashboard, [
+            { ethAddress, columns, name }
+        ]);
         yield put(actions.dashboardAddSuccess(dashboard));
         yield call(reorderDashboards, []);
         yield call(navigateToActiveDashboard, []);
@@ -36,35 +34,31 @@ function* dashboardAdd ({ name, columns = [] })/* : Saga<void> */ {
     }
 }
 
-function* navigateToActiveDashboard ()/* : Saga<void> */ {
+function* navigateToActiveDashboard () /* : Saga<void> */ {
     const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-    yield call((getHistory()).push, `/dashboard/${dashboardId}`);
+    yield call(getHistory().push, `/dashboard/${dashboardId}`);
 }
 
-function* dashboardAddColumn ({ columnType, value })/* : Saga<void> */ {
+function* dashboardAddColumn ({ columnType, value }) /* : Saga<void> */ {
     try {
         const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-        const data = yield apply(
-            dashboardService,
-            dashboardService.addColumn,
-            [{ dashboardId, type: columnType, value }]
-        );
+        const data = yield apply(dashboardService, dashboardService.addColumn, [
+            { dashboardId, type: columnType, value }
+        ]);
         yield put(actions.dashboardAddColumnSuccess(data));
     } catch (error) {
         yield put(actions.dashboardAddColumnError(error));
     }
 }
 
-function* dashboardAddFirst ({ name, interests })/* : Saga<void> */ {
-    const columns = interests ?
-        interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) :
-        [];
+function* dashboardAddFirst ({ name, interests }) /* : Saga<void> */ {
+    const columns = interests ? interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) : [];
     columns.unshift({ type: columnTypes.latest });
     yield call(dashboardAdd, { name, columns });
     yield put(actions.dashboardAddFirstSuccess());
 }
 
-function* dashboardDelete ({ id })/* : Saga<void> */ {
+function* dashboardDelete ({ id }) /* : Saga<void> */ {
     try {
         yield apply(dashboardService, dashboardService.deleteDashboard, [id]);
         yield fork(dashboardSetNextActive, id); // eslint-disable-line
@@ -76,21 +70,19 @@ function* dashboardDelete ({ id })/* : Saga<void> */ {
     }
 }
 
-function* dashboardDeleteColumn ({ columnId }) /* : Saga<void> */{
+function* dashboardDeleteColumn ({ columnId }) /* : Saga<void> */ {
     try {
         const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-        const dashboard = yield apply(
-            dashboardService,
-            dashboardService.deleteColumn,
-            [{ dashboardId, columnId }]
-        );
+        const dashboard = yield apply(dashboardService, dashboardService.deleteColumn, [
+            { dashboardId, columnId }
+        ]);
         yield put(actions.dashboardDeleteColumnSuccess({ columnId, dashboard }));
     } catch (error) {
         yield put(actions.dashboardDeleteColumnError(error));
     }
 }
 
-export function* dashboardGetActive ()/* : Saga<void> */ {
+export function* dashboardGetActive () /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(dashboardService, dashboardService.getActive, [ethAddress]);
@@ -100,7 +92,7 @@ export function* dashboardGetActive ()/* : Saga<void> */ {
     }
 }
 
-export function* dashboardGetAll ()/* : Saga<void> */ {
+export function* dashboardGetAll () /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         let data = yield apply(dashboardService, dashboardService.getAll, [ethAddress]);
@@ -114,21 +106,19 @@ export function* dashboardGetAll ()/* : Saga<void> */ {
     }
 }
 
-function* dashboardRename ({ dashboardId, newName })/* : Saga<void> */ {
+function* dashboardRename ({ dashboardId, newName }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-        const data = yield apply(
-            dashboardService,
-            dashboardService.renameDashboard,
-            [{ dashboardId, ethAddress, newName }]
-        );
+        const data = yield apply(dashboardService, dashboardService.renameDashboard, [
+            { dashboardId, ethAddress, newName }
+        ]);
         yield put(actions.dashboardRenameSuccess(data));
     } catch (error) {
         yield put(actions.dashboardRenameError(error));
     }
 }
 
-function* dashboardSetActive ({ id })/* : Saga<void> */ {
+function* dashboardSetActive ({ id }) /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         yield apply(dashboardService, dashboardService.setActive, [{ ethAddress, id }]);
@@ -138,7 +128,7 @@ function* dashboardSetActive ({ id })/* : Saga<void> */ {
     }
 }
 
-function* dashboardSetNextActive (id)/* : Saga<void> */ {
+function* dashboardSetNextActive (id) /* : Saga<void> */ {
     const activeDashboard = yield select(state => state.dashboardState.get('activeDashboard'));
     if (activeDashboard === id) {
         const dashboards = (yield select(dashboardSelectors.getDashboards)).toList();
@@ -153,40 +143,32 @@ function* dashboardSetNextActive (id)/* : Saga<void> */ {
     }
 }
 
-function* dashboardToggleProfileColumn ({ dashboardId, ethAddress })/* : Saga<void> */ {
+function* dashboardToggleProfileColumn ({ dashboardId, ethAddress }) /* : Saga<void> */ {
     try {
-        const dashboard = yield apply(
-            dashboardService,
-            dashboardService.toggleColumn,
-            [{ dashboardId, columnType: columnTypes.profile, value: ethAddress }]
-        );
+        const dashboard = yield apply(dashboardService, dashboardService.toggleColumn, [
+            { dashboardId, columnType: columnTypes.profile, value: ethAddress }
+        ]);
         yield put(actions.dashboardToggleProfileColumnSuccess(dashboard));
     } catch (error) {
         yield put(actions.dashboardToggleProfileColumnError(error));
     }
 }
 
-function* dashboardToggleTagColumn ({ dashboardId, tag })/* : Saga<void> */ {
+function* dashboardToggleTagColumn ({ dashboardId, tag }) /* : Saga<void> */ {
     try {
-        const dashboard = yield apply(
-            dashboardService,
-            dashboardService.toggleColumn,
-            [{ dashboardId, columnType: columnTypes.tag, value: tag }]
-        );
+        const dashboard = yield apply(dashboardService, dashboardService.toggleColumn, [
+            { dashboardId, columnType: columnTypes.tag, value: tag }
+        ]);
         yield put(actions.dashboardToggleTagColumnSuccess(dashboard));
     } catch (error) {
         yield put(actions.dashboardToggleTagColumnError(error));
     }
 }
 
-function* dashboardUpdateColumn ({ id, changes })/* : Saga<void> */ {
+function* dashboardUpdateColumn ({ id, changes }) /* : Saga<void> */ {
     try {
         const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-        yield apply(
-            dashboardService,
-            dashboardService.updateColumn,
-            [{ dashboardId, id, changes }]
-        );
+        yield apply(dashboardService, dashboardService.updateColumn, [{ dashboardId, id, changes }]);
         const data = { id, changes };
         yield put(actions.dashboardUpdateColumnSuccess(data));
     } catch (error) {
@@ -194,15 +176,15 @@ function* dashboardUpdateColumn ({ id, changes })/* : Saga<void> */ {
     }
 }
 
-function* reorderColumns ({ data })/* : Saga<void> */ {
+function* reorderColumns ({ data }) /* : Saga<void> */ {
     const columns = yield select(state => state.dashboardState.getIn(['byId', data.dashboardId, 'columns']));
-    yield call(
-        [dashboardService, dashboardService.setColumns],
-        { dashboardId: data.dashboardId, columns: columns.toJS() }
-    );
+    yield call([dashboardService, dashboardService.setColumns], {
+        dashboardId: data.dashboardId,
+        columns: columns.toJS()
+    });
 }
 
-export function* watchDashboardActions ()/* : Saga<void> */ {
+export function* watchDashboardActions () /* : Saga<void> */ {
     yield takeEvery(types.DASHBOARD_ADD, dashboardAdd);
     yield takeEvery(types.DASHBOARD_ADD_COLUMN, dashboardAddColumn);
     yield takeEvery(types.DASHBOARD_ADD_FIRST, dashboardAddFirst);

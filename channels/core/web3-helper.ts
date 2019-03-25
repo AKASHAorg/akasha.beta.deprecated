@@ -19,8 +19,8 @@ export default function init(sp, getService) {
     // check if current used node is synchronized
     public inSync() {
       const rules = [
-        getService(CORE_MODULE.WEB3_API).instance.eth.getSyncing(),
-        getService(CORE_MODULE.WEB3_API).instance.net.getPeerCount(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.isSyncing(),
+        getService(CORE_MODULE.WEB3_API).instance.eth.net.getPeerCount(),
       ];
 
       return Promise.all(rules).then((data) => {

@@ -37,15 +37,18 @@ class Notification extends Component {
                         this.props.hideNotification(notif);
                     };
                     const key = `open${Date.now()}`;
-                    const btnClose = () => { notification.close(key); };
+                    const btnClose = () => {
+                        notification.close(key);
+                    };
                     notification.open({
-                        message:
-  <NotificationHighlightNote
-    notif={notif}
-    intl={intl}
-    editNote={this.props.highlightEditNotes}
-    btnClose={btnClose}
-  />,
+                        message: (
+                            <NotificationHighlightNote
+                                notif={notif}
+                                intl={intl}
+                                editNote={this.props.highlightEditNotes}
+                                btnClose={btnClose}
+                            />
+                        ),
                         key,
                         onClose: close,
                         className: 'notification-highlight'
@@ -71,7 +74,7 @@ Notification.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        notifications: notificationSelectors.selectNotifications(state),
+        notifications: notificationSelectors.selectNotifications(state)
         // displayedNotifications: notificationSelectors.selectDisplayedNotifications(state)
     };
 }

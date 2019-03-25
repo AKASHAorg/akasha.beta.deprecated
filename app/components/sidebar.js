@@ -26,11 +26,11 @@ class Sidebar extends Component {
     wasVisible = false;
     componentWillReceiveProps (nextProps) {
         const { loggedProfile, draftsFetched, fetchingDrafts } = nextProps;
-        if (loggedProfile.get('ethAddress') && !draftsFetched && !fetchingDrafts) {
-            this.props.draftsGet({
-                ethAddress: loggedProfile.get('ethAddress')
-            });
-        }
+        // if (loggedProfile.get('ethAddress') && !draftsFetched && !fetchingDrafts) {
+        //     this.props.draftsGet({
+        //         ethAddress: loggedProfile.get('ethAddress')
+        //     });
+        // }
     }
     shouldComponentUpdate (nextProps, nextState) {
         const props = this.props;

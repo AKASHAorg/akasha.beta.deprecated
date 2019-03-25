@@ -1,13 +1,13 @@
-/* eslint-disable import/no-named-as-default */
-export AppContainer from './app-container';
-export AuthContainer from './auth-container';
-export ConfigurationContainer from './configuration-container';
-export EntryPageContainer from './entry-page-container';
-export DashboardPage from './dashboard-page';
-export LogsDetailsContainer from './logs-details-container';
-export NewTextEntryPage from './new-text-entry-page';
-export NewLinkEntryPage from './new-link-entry-page';
-export NewIdentityContainer from './new-identity-container';
-export SearchPage from './search-page';
-export SynchronizationContainer from './synchronization-container';
+export { default as Application } from './application';
+export { default as Authentication } from './authentication';
+export { default as DashboardPage } from './dashboard-page';
+export { default as EntryPageContainer } from './entry-page-container';
+export { default as ExternalLogin } from './external-login';
+export { default as LogsDetailsContainer } from './logs-details-container';
+export { default as NewTextEntryPage } from './new-text-entry-page';
+export { default as NewLinkEntryPage } from './new-link-entry-page';
+export { default as Registration } from './registration';
+export { default as Setup } from './setup';
+export { default as SearchPage } from './search-page';
+export { default as Synchronization } from './synchronization';
 /* eslint-enable import/no-named-as-default */
