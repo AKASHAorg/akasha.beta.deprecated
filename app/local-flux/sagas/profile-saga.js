@@ -258,7 +258,7 @@ function* getCurrentProfile () /* : Saga<void> */ {
 export function* profileGetLogged () /* : Saga<void> */ {
     const profileService = yield getContext('profileService');
     try {
-        const loggedProfile = yield select(profileSelectors.getLoggedProfile);
+        const loggedProfile = yield select(profileSelectors.selectLoggedProfile);
         if (loggedProfile.get('ethAddress')) {
             return;
         }
@@ -282,7 +282,7 @@ export function* profileGetLogged () /* : Saga<void> */ {
 export function* profileGetPublishingCost () /* : Saga<void> */ {
     const service = yield getContext('reqService');
     try {
-        const loggedProfile = yield select(profileSelectors.getLoggedProfile);
+        const loggedProfile = yield select(profileSelectors.selectLoggedProfile);
         // yield call(
         //     [service, service.sendRequest],
         //     UTILS_MODULE, UTILS_MODULE.manaCosts, {
