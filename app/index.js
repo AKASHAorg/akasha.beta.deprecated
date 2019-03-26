@@ -34,14 +34,15 @@ export const bootstrap = (
     logger /* : Object */
 ) => {
     const store = storeConfig();
-    // add logger context to sagas
-    sagaMiddleware.run(rootSaga, logger);
     // add dispatch method the the instance of chReqService
     chReqService.setDispatch(store.dispatch);
     chReqService.setLogger(logger);
-    // add channel <IPC Channel to the instance of chReqService>
+    // add <IPC> Channel to the instance of chReqService
     chReqService.setIPCChannel(channel);
-
+    // add listener for IPC channel;
+    chReqService.addResponseListener();
+    // add logger context to sagas via rootSaga
+    sagaMiddleware.run(rootSaga, logger, chReqService);
     // --------- <Dev only> --------------- //
     global.redux__store = store;
     global.ipc__channel = channel;

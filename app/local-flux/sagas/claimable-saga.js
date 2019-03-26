@@ -1,11 +1,11 @@
 // @flow
-import { call, fork, put, select, takeEvery, delay } from 'redux-saga/effects';
+import { call, fork, put, select, takeEvery, getContext } from 'redux-saga/effects';
+import delay from '@redux-saga/delay-p';
 import * as actions from '../actions/claimable-actions';
 import * as entryActions from '../actions/entry-actions';
 import * as types from '../constants';
 import { externalProcessSelectors, profileSelectors, claimSelectors, entrySelectors } from '../selectors';
 import * as claimableService from '../services/claimable-service';
-import ChReqService from '../services/channel-request-service';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
 /*::
@@ -90,13 +90,10 @@ function* claimableIterator (data) /* : Saga<void> */ {
     const status = (yield call(claimableGetStatus)) || {};
     const { newestBlock, oldestBlock, newestIndex, oldestIndex } = status;
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    // whoooohw... :(
-    // while (!(yield select(externalProcessSelectors.getCurrentBlockNumber))) {
-    //     yield call([reduxSaga, reduxSaga.delay], 1000);
-    // }
+    const service = yield getContext('reqService');
 
     if (oldestBlock === 0) {
-        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
+        yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
             ethAddress,
             toBlock: newestBlock,
             lastIndex: newestIndex,
@@ -106,7 +103,7 @@ function* claimableIterator (data) /* : Saga<void> */ {
         });
     } else {
         const toBlock = oldestBlock || (yield select(externalProcessSelectors.getCurrentBlockNumber));
-        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
+        yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.myVotesIterator, {
             ethAddress,
             toBlock,
             lastIndex: oldestIndex,

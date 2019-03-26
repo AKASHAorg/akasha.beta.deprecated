@@ -1,5 +1,5 @@
 import createSagaMiddleware from 'redux-saga';
-import ChReqService from '../services/channel-request-service';
+// import ChReqService from '../services/channel-request-service';
 import * as actionService from '../services/action-service';
 import * as claimableService from '../services/claimable-service';
 import * as dashboardService from '../services/dashboard-service';
@@ -14,7 +14,7 @@ import * as utilsService from '../services/utils-service';
 
 const sagaMiddleware = createSagaMiddleware({
     context: {
-        reqService: ChReqService,
+        // reqService: ChReqService,
         actionService,
         claimableService,
         dashboardService,

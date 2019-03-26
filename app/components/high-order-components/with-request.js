@@ -46,7 +46,8 @@ function withRequest /* ::<Config: {}> */(
             }
         };
         dispatchAction = (actionPayload /* : Object */, condition /*: Boolean | Function*/) /* : void */ => {
-            const { dispatch, state } = this.props;
+            const { dispatch, state, logger } = this.props;
+
             let bool = true;
             if (typeof condition === 'function') {
                 bool = condition(state);
@@ -56,15 +57,16 @@ function withRequest /* ::<Config: {}> */(
             }
             if (condition) {
                 if (bool) {
+                    logger.info('[with-request.js] Dispatching action', actionPayload.type);
                     dispatch(actionPayload);
                     this.requestsQueue = this.requestsQueue.filter(
                         req => req.action.type !== actionPayload.type
                     );
                 } else {
+                    logger.info('[with-request.js] Adding action to queue', actionPayload.type);
                     this.addRequestToQueue(actionPayload, condition);
                 }
             } else {
-                const { logger } = this.props;
                 logger.info('[with-request.js] Dispatching action', actionPayload.type);
                 dispatch(actionPayload);
             }
@@ -110,3 +112,13 @@ function withRequest /* ::<Config: {}> */(
     return connect(mapStateToProps)(React.forwardRef(forwardRef));
 }
 export default withRequest;
+
+// const useRequestHook = () => {
+//     const { state, dispatch } = React.useReducer();
+//     const dispatchAction = () => {}
+//     const getActionStatus = () => {}
+//     return {
+//         dispatchAction,
+//         getActionStatus
+//     };
+// }

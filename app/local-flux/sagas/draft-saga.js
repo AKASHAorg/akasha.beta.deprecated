@@ -1,5 +1,5 @@
 // @flow
-import { call, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest, throttle, getContext } from 'redux-saga/effects';
 import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
@@ -14,7 +14,6 @@ import * as draftService from '../services/draft-service';
 import * as draftActions from '../actions/draft-actions';
 import * as appActions from '../actions/app-actions';
 import * as tagActions from '../actions/tag-actions';
-import ChReqService from '../services/channel-request-service';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
 const { EditorState, SelectionState } = DraftJS;
@@ -158,6 +157,7 @@ function* draftPublish ({ actionId, draft }) /* : Saga<void> */ {
     const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
     const token = yield select(profileSelectors.getToken);
     const draftToPublish = draftFromState.toJS();
+    const service = yield getContext('reqService');
     try {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
@@ -173,7 +173,7 @@ function* draftPublish ({ actionId, draft }) /* : Saga<void> */ {
         if (draftToPublish.content.entryType === 'article' && isEmpty(draftToPublish.content.excerpt)) {
             draftToPublish.content.excerpt = extractExcerpt(draftToPublish.content.draft);
         }
-        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.publish, {
+        yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.publish, {
             actionId,
             id,
             token,
@@ -201,6 +201,7 @@ function* draftPublishSuccess ({ data }) /* : Saga<void> */ {
 
 function* draftPublishUpdate ({ actionId, draft }) /* : Saga<void> */ {
     const { id } = draft;
+    const service = yield getContext('reqService');
     const draftFromState = yield select(state => draftSelectors.selectDraftById(state, id));
     const token = yield select(profileSelectors.getToken);
     const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
@@ -209,7 +210,7 @@ function* draftPublishUpdate ({ actionId, draft }) /* : Saga<void> */ {
         draftToPublish.content.draft = JSON.parse(
             editorStateToJSON(draftFromState.getIn(['content', 'draft']))
         );
-        yield call([ChReqService, ChReqService.sendRequest], ENTRY_MODULE, ENTRY_MODULE.editEntry, {
+        yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.editEntry, {
             ethAddress,
             actionId,
             entryId: id,

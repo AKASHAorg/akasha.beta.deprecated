@@ -1,9 +1,8 @@
 // @flow
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest, getContext } from 'redux-saga/effects';
 import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
-import * as registryService from '../services/registry-service';
-
+import { selectTempProfile } from '../selectors/temp-profile-selectors';
 /*::
     import type { Saga } from 'redux-saga';
  */
@@ -18,6 +17,7 @@ import * as registryService from '../services/registry-service';
  * Get temp profile from database
  */
 function* tempProfileGet ({ ethAddress } /* : TempProfileGetParams */) /* : Saga<void> */ {
+    const registryService = yield getContext('registryService');
     try {
         const data = yield call([registryService, registryService.getTempProfile], ethAddress);
         if (data) {
@@ -32,7 +32,8 @@ function* tempProfileGet ({ ethAddress } /* : TempProfileGetParams */) /* : Saga
  * Create temp profile in database
  */
 function* createTempProfile () /* : Saga<void> */ {
-    const tempProfile = yield select(state => state.tempProfileState.get('tempProfile'));
+    const registryService = yield getContext('registryService');
+    const tempProfile = yield select(selectTempProfile);
     try {
         const savedProfile = yield call(
             [registryService, registryService.createTempProfile],
@@ -48,6 +49,7 @@ function* createTempProfile () /* : Saga<void> */ {
  * Delete temp profile in database
  */
 function* deleteTempProfile ({ ethAddress }) /* : Saga<void> */ {
+    const registryService = yield getContext('registryService');
     yield call([registryService, registryService.deleteTempProfile], ethAddress);
 }
 

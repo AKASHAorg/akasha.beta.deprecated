@@ -26,6 +26,7 @@ export default {
             channel.send(reqObject);
             this.dispatch({ type: `${methodName}_REQUEST`, data: { methodName, ...reqObject } });
         } catch (ex) {
+            console.error('exception occured', ex);
             this.dispatch({ type: `${methodName}_REQUEST_ERROR`, data: { methodName, ...ex } });
             this.removeRequestId(reqId, methodName);
         }

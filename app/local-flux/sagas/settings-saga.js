@@ -1,16 +1,16 @@
 //@flow
-import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { all, call, fork, put, select, takeEvery, getContext } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
 import { profileSelectors } from '../selectors';
-import * as settingsService from '../services/settings-service';
 
 /*::
     import type { Saga } from 'redux-saga';
  */
 
 export function* generalSettingsRequest () /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     yield put(actions.generalSettingsRequest());
     try {
         const resp = yield call([settingsService, settingsService.generalSettingsRequest]);
@@ -22,6 +22,7 @@ export function* generalSettingsRequest () /* :Saga<void> */ {
 }
 
 export function* gethSettingsRequest () /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     yield put(actions.gethSettingsRequest());
     try {
         const resp = yield call([settingsService, settingsService.gethSettingsRequest]);
@@ -32,6 +33,7 @@ export function* gethSettingsRequest () /* :Saga<void> */ {
 }
 
 export function* ipfsSettingsRequest () /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     yield put(actions.ipfsSettingsRequest());
     try {
         const resp = yield call([settingsService, settingsService.ipfsSettingsRequest]);
@@ -48,6 +50,7 @@ export function* getSettings () /* :Saga<void> */ {
 }
 
 export function* saveGeneralSettings ({ type, ...payload } /* :Object */) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         const resp = yield call([settingsService, settingsService.generalSettingsSave], payload);
         yield put(actions.saveGeneralSettingsSuccess(resp));
@@ -58,6 +61,7 @@ export function* saveGeneralSettings ({ type, ...payload } /* :Object */) /* :Sa
 }
 
 export function* gethSaveSettings ({ payload, showNotification } /*: Object*/) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         const resp = yield call([settingsService, settingsService.gethSettingsSave], payload);
         yield put(actions.gethSaveSettingsSuccess(resp));
@@ -75,6 +79,7 @@ export function* gethSaveSettings ({ payload, showNotification } /*: Object*/) /
 }
 
 export function* ipfsSaveSettings ({ payload, showNotification } /*: Object*/) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         const { ports, ...rest } = payload;
         const resp = yield call([settingsService, settingsService.ipfsSettingsSave], rest);
@@ -98,6 +103,7 @@ function* saveConfiguration ({ payload }) /* :Saga<void> */ {
 }
 
 export function* userSettingsRequest ({ ethAddress } /*: Object*/) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         if (!ethAddress) {
             ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
@@ -110,6 +116,7 @@ export function* userSettingsRequest ({ ethAddress } /*: Object*/) /* :Saga<void
 }
 
 function* userSettingsSave ({ ethAddress, payload }) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         const resp = yield call([settingsService, settingsService.userSettingsSave], ethAddress, payload);
         yield put(actions.userSettingsSaveSuccess(resp));
@@ -119,6 +126,7 @@ function* userSettingsSave ({ ethAddress, payload }) /* :Saga<void> */ {
 }
 
 function* userSettingsAddTrustedDomain ({ ethAddress, domain }) /* :Saga<void> */ {
+    const settingsService = yield getContext('settingsService');
     try {
         const resp = yield call(
             [settingsService, settingsService.userSettingsAddTrustedDomain],
