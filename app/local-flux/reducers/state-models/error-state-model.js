@@ -17,7 +17,7 @@ const ErrorState = Record({
     byType: new Map(),
     fatalErrors: new List(),
     nonFatalErrors: new List(),
-    reportError: new Map(),
+    reportError: new Map()
 });
 
 export default class ErrorStateModel extends ErrorState {
@@ -27,11 +27,10 @@ export default class ErrorStateModel extends ErrorState {
         const id = lastErr ? lastErr.get('id') + 1 : 1;
         return err.set('id', id);
     }
-    addNewError (state, { error }) {
-        const err = this.createError(state, error);
-        const extra = err.fatal ?
-            { fatalErrors: state.get('fatalErrors').push(err.id) } :
-            null;
+    addNewError (state, action) {
+        console.log(action, 'the error action');
+        const err = this.createError(state, action.error);
+        const extra = err.fatal ? { fatalErrors: state.get('fatalErrors').push(err.id) } : null;
 
         return state.merge({
             allIds: state.get('allIds').push(err.id),

@@ -1,9 +1,11 @@
-// @flow
+// @flow strict
 import { genId } from '../../utils/dataModule';
+/* ::
+    import type { ActionType } from '../../flow-types/actions/action';
+ */
+const generateId = () /* : string */ => genId();
 
-const generateId = (): string => genId();
-
-export function action (type /*:  string */, payload /*: Object */ = {}) {
+export function action (type /*:  string */, payload /*: Object */ = {}) /* : ActionType */ {
     let { reqId = null, ...others } = payload;
     if (!reqId) {
         reqId = generateId();
@@ -12,7 +14,7 @@ export function action (type /*:  string */, payload /*: Object */ = {}) {
     return {
         type,
         payload: {
-            reqId,
+            reqId /* : String */,
             ...others
         }
     };

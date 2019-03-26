@@ -47,6 +47,12 @@ function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
             return !gethSyncStatus.get('synced') && web3;
         });
     }, [!gethSyncStatus.get('synced')]);
+    console.log(gethSyncStatus.get('synced'));
+    React.useEffect(() => {
+        if (active) {
+            props.onSyncEnd();
+        }
+    }, [gethSyncStatus.get('synced')]);
 
     // if this component is active, render the layout
     // if it's not active, it will remain in background to check the status periodically

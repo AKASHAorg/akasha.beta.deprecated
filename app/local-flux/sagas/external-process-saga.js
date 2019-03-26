@@ -130,5 +130,4 @@ export function* watchEProcActions () /* :Saga<void> */ {
     yield fork(watchIpfsToggleLogger);
     yield takeLatest(IPFS_MODULE.setPorts, ipfsSetPorts);
     yield takeEvery(IPFS_MODULE.getPorts, ipfsGetPorts);
-    // yield takeEvery(`${IPFS_MODULE.getConfig}_SUCCESS`, watchIpfsConfigChannel);
 }

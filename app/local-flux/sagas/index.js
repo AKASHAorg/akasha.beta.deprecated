@@ -80,7 +80,7 @@ function* bootstrapApp ({ payload }) /* : Saga<void> */ {
         yield call(launchActions, payload);
         yield put(appActions.bootstrapAppSuccess());
     } catch (ex) {
-        console.debug(ex);
+        console.error(ex);
         const logger = yield getContext('logger');
         logger.fatal('Cannot bootstrap app!');
     }

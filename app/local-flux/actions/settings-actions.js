@@ -8,7 +8,7 @@ export const generalSettingsError = error => {
 };
 
 export const generalSettingsRequest = () => action(types.GENERAL_SETTINGS);
-export const generalSettingsSuccess = data => action(types.GENERAL_SETTINGS_SUCCESS, { data });
+export const generalSettingsSuccess = payload => action(types.GENERAL_SETTINGS_SUCCESS, payload);
 export const gethSaveSettings = (payload, showNotification) =>
     action(types.GETH_SAVE_SETTINGS, { payload, showNotification });
 
@@ -18,7 +18,7 @@ export const gethSaveSettingsError = error => {
     return action(types.GETH_SAVE_SETTINGS_ERROR, { error });
 };
 
-export const gethSaveSettingsSuccess = data => action(types.GETH_SAVE_SETTINGS_SUCCESS, { data });
+export const gethSaveSettingsSuccess = payload => action(types.GETH_SAVE_SETTINGS_SUCCESS, payload);
 
 export const gethSettingsError = error => {
     error.code = 'GSE03';
@@ -27,7 +27,7 @@ export const gethSettingsError = error => {
 };
 
 export const gethSettingsRequest = () => action(types.GETH_SETTINGS);
-export const gethSettingsSuccess = data => action(types.GETH_SETTINGS_SUCCESS, { data });
+export const gethSettingsSuccess = payload => action(types.GETH_SETTINGS_SUCCESS, payload);
 export const ipfsSaveSettings = (payload, showNotification) =>
     action(types.IPFS_SAVE_SETTINGS, { payload, showNotification });
 
@@ -37,7 +37,7 @@ export const ipfsSaveSettingsError = error => {
     return action(types.IPFS_SAVE_SETTINGS_ERROR, { error });
 };
 
-export const ipfsSaveSettingsSuccess = data => action(types.IPFS_SAVE_SETTINGS_SUCCESS, { data });
+export const ipfsSaveSettingsSuccess = payload => action(types.IPFS_SAVE_SETTINGS_SUCCESS, payload);
 
 export const ipfsSettingsError = error => {
     error.code = 'ISE01';
@@ -45,10 +45,10 @@ export const ipfsSettingsError = error => {
     return action(types.IPFS_SETTINGS_ERROR, { error });
 };
 
-export const ipfsSettingsSuccess = data => action(types.IPFS_SETTINGS_SUCCESS, { data });
+export const ipfsSettingsSuccess = payload => action(types.IPFS_SETTINGS_SUCCESS, payload);
 export const ipfsSettingsRequest = () => action(types.IPFS_SETTINGS);
-export const saveConfiguration = payload => action(types.SAVE_CONFIGURATION, { payload });
-export const saveGeneralSettings = payload => action(types.GENERAL_SETTINGS_SAVE, { payload });
+export const saveConfiguration = payload => action(types.SAVE_CONFIGURATION, payload);
+export const saveGeneralSettings = payload => action(types.GENERAL_SETTINGS_SAVE, payload);
 
 export const saveGeneralSettingsError = error => {
     error.code = 'SGSE01';
@@ -56,7 +56,7 @@ export const saveGeneralSettingsError = error => {
     return action(types.GENERAL_SETTINGS_SAVE_ERROR, { error });
 };
 
-export const saveGeneralSettingsSuccess = data => action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
+export const saveGeneralSettingsSuccess = payload => action(types.GENERAL_SETTINGS_SAVE_SUCCESS, payload);
 export const userSettingsClear = () => action(types.USER_SETTINGS_CLEAR);
 export const userSettingsRequest = ethAddress => action(types.USER_SETTINGS_REQUEST, { ethAddress });
 
@@ -74,11 +74,10 @@ export const userSettingsAddTrustedDomainError = error => {
     return action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_ERROR, { error });
 };
 
-export const userSettingsAddTrustedDomainSuccess = data =>
-    action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS, { data });
+export const userSettingsAddTrustedDomainSuccess = payload =>
+    action(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN_SUCCESS, payload);
 
-export const userSettingsSave = (ethAddress, payload) =>
-    action(types.USER_SETTINGS_SAVE, { ethAddress, payload });
+export const userSettingsSave = payload => action(types.USER_SETTINGS_SAVE, payload);
 
 export const userSettingsSaveError = error => {
     error.code = 'USSE01';
@@ -86,5 +85,5 @@ export const userSettingsSaveError = error => {
     return action(types.USER_SETTINGS_SAVE_ERROR, { error });
 };
 
-export const userSettingsSaveSuccess = data => action(types.USER_SETTINGS_SAVE_SUCCESS, { data });
-export const userSettingsSuccess = data => action(types.USER_SETTINGS_SUCCESS, { data });
+export const userSettingsSaveSuccess = payload => action(types.USER_SETTINGS_SAVE_SUCCESS, payload);
+export const userSettingsSuccess = payload => action(types.USER_SETTINGS_SUCCESS, payload);
