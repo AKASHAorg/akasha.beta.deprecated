@@ -1,8 +1,7 @@
 // @flow
-import { call, takeEvery } from 'redux-saga/effects';
+import { call, takeEvery, getContext } from 'redux-saga/effects';
 import { TX_MODULE } from '@akashaproject/common/constants';
 import * as types from '../constants';
-import ChReqService from '../services/channel-request-service';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -16,7 +15,8 @@ import ChReqService from '../services/channel-request-service';
  */
 
 export function* transactionGetStatus ({ txs, ids } /* : TxGetStatus */) /* :Saga<void> */ {
-    yield call([ChReqService, ChReqService.sendRequest], TX_MODULE, TX_MODULE.getTransaction, {
+    const service = yield getContext('reqService');
+    yield call([service, service.sendRequest], TX_MODULE, TX_MODULE.getTransaction, {
         transactionHash: txs,
         actionIds: ids
     });

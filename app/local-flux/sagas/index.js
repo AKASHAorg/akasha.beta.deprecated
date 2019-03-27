@@ -27,7 +27,6 @@ import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
 import * as types from '../constants';
-import ChService from '../services/channel-request-service';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -35,7 +34,6 @@ import ChService from '../services/channel-request-service';
 
 function* launchActions () /* :Saga<void> */ {
     const timestamp = new Date().getTime();
-    yield call([ChService, ChService.addResponseListener]);
     yield put(eProcActions.servicesSetTimestamp(timestamp));
     // from local db
     yield fork(settingsSaga.getSettings);
@@ -82,7 +80,7 @@ function* bootstrapApp ({ payload }) /* : Saga<void> */ {
         yield call(launchActions, payload);
         yield put(appActions.bootstrapAppSuccess());
     } catch (ex) {
-        console.debug(ex);
+        console.error(ex);
         const logger = yield getContext('logger');
         logger.fatal('Cannot bootstrap app!');
     }
@@ -100,9 +98,10 @@ function* bootstrapHome ({ payload }) /* : Saga<void> */ {
     }
 }
 /* eslint-disable max-statements */
-export default function* rootSaga (logger /* : Object */) /* : Saga<void> */ {
+export default function* rootSaga (logger, chReqService /* : Object */) /* : Saga<void> */ {
     yield setContext({
-        logger
+        logger,
+        reqService: chReqService
     });
     yield fork(actionSaga.watchActionActions);
     yield fork(appSaga.watchAppActions);
