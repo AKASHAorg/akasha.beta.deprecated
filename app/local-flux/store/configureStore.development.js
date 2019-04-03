@@ -8,13 +8,13 @@ import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(
     applyMiddleware(sagaMiddleware),
-    global.devToolsExtension ?
-        global.devToolsExtension({
+    global.devToolsExtension
+        ? global.devToolsExtension({
             actionCreators,
             maxAge: 200,
-            actionBlacklist: ['ENTRY_GET_SHORT']
-        }) :
-        noop => noop,
+            trace: true
+        })
+        : noop => noop
     // batchedSubscribe(updateBatcher),
     // persistState(
     //   global.location.href.match(
@@ -27,8 +27,9 @@ export default function configureStore (initialState) {
     const store = finalCreateStore(rootReducer, initialState);
 
     if (module.hot) {
-        module.hot.accept('../reducers', () =>
-            store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
+        module.hot.accept(
+            '../reducers',
+            () => store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
         );
     }
     return store;

@@ -1,6 +1,5 @@
-// @flow
+// @flow strict
 import { call, fork, put, select, takeLatest, getContext, setContext } from 'redux-saga/effects';
-
 import * as actionActions from '../actions/action-actions';
 import * as appActions from '../actions/app-actions';
 import * as claimableActions from '../actions/claimable-actions';
@@ -33,18 +32,16 @@ import * as types from '../constants';
 */
 
 function* launchActions () /* :Saga<void> */ {
-    const timestamp = new Date().getTime();
-    yield put(eProcActions.servicesSetTimestamp(timestamp));
-    // from local db
-    yield fork(settingsSaga.getSettings);
-
-    // from geth.options channel
-    yield fork(externalProcSaga.gethGetOptions);
-    // from ipfs.getConfig channel
-    yield fork(externalProcSaga.ipfsGetConfig);
-
-    yield fork(externalProcSaga.gethGetStatus);
-    yield fork(externalProcSaga.ipfsGetStatus);
+    // const timestamp = new Date().getTime();
+    // yield put(eProcActions.servicesSetTimestamp(timestamp));
+    // // from local db
+    // yield fork(settingsSaga.getSettings);
+    // // from geth.options channel
+    // yield fork(externalProcSaga.gethGetOptions);
+    // // from ipfs.getConfig channel
+    // yield fork(externalProcSaga.ipfsGetConfig);
+    // yield fork(externalProcSaga.gethGetStatus);
+    // yield fork(externalProcSaga.ipfsGetStatus);
 }
 
 function* getUserSettings () {
@@ -53,26 +50,26 @@ function* getUserSettings () {
 }
 
 function* launchHomeActions ({ payload } /* : Object */) /* : Saga<void> */ {
-    yield call(profileSaga.profileGetLogged);
-    yield fork(dashboardSaga.dashboardGetActive);
-    yield fork(dashboardSaga.dashboardGetAll);
-    yield fork(highlightSaga.highlightGetAll);
-    yield fork(listSaga.listGetAll);
-    yield fork(getUserSettings);
-    const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    if (loggedEthAddress) {
-        yield put(actionActions.actionGetPending());
-        yield put(claimableActions.claimableIterator());
-        yield put(
-            profileActions.profileFollowingsIterator({
-                column: { value: loggedEthAddress },
-                allFollowings: true,
-                limit: 1000
-            })
-        );
-        yield put(profileActions.profileCyclingStates());
-    }
-    yield put(profileActions.profileManaBurned());
+    // yield call(profileSaga.profileGetLogged);
+    // yield fork(dashboardSaga.dashboardGetActive);
+    // yield fork(dashboardSaga.dashboardGetAll);
+    // yield fork(highlightSaga.highlightGetAll);
+    // yield fork(listSaga.listGetAll);
+    // yield fork(getUserSettings);
+    // const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
+    // if (loggedEthAddress) {
+    //     yield put(actionActions.actionGetPending());
+    //     yield put(claimableActions.claimableIterator());
+    //     yield put(
+    //         profileActions.profileFollowingsIterator({
+    //             column: { value: loggedEthAddress },
+    //             allFollowings: true,
+    //             limit: 1000
+    //         })
+    //     );
+    //     yield put(profileActions.profileCyclingStates());
+    // }
+    // yield put(profileActions.profileManaBurned());
 }
 
 function* bootstrapApp ({ payload }) /* : Saga<void> */ {
@@ -80,25 +77,23 @@ function* bootstrapApp ({ payload }) /* : Saga<void> */ {
         yield call(launchActions, payload);
         yield put(appActions.bootstrapAppSuccess());
     } catch (ex) {
-        console.error(ex);
         const logger = yield getContext('logger');
-        logger.fatal('Cannot bootstrap app!');
+        logger.fatal({ error: ex }, 'Cannot bootstrap app!');
     }
 }
 
 function* bootstrapHome ({ payload }) /* : Saga<void> */ {
     // launch the necessary actions for the home/dashboard component
-    try {
-        yield call(launchHomeActions, payload);
-        yield put(appActions.bootstrapHomeSuccess());
-    } catch (ex) {
-        const logger = yield getContext('logger');
-        logger.fatal('Cannot bootstrap home!', { ...ex });
-        logger.trace(ex);
-    }
+    // try {
+    //     yield call(launchHomeActions, payload);
+    //     yield put(appActions.bootstrapHomeSuccess());
+    // } catch (ex) {
+    //     const logger = yield getContext('logger');
+    //     logger.fatal({ error: ex }, 'Cannot bootstrap home!');
+    // }
 }
 /* eslint-disable max-statements */
-export default function* rootSaga (logger, chReqService /* : Object */) /* : Saga<void> */ {
+export default function* rootSaga (logger /* : Object */, chReqService /* : Object */) /* : Saga<void> */ {
     yield setContext({
         logger,
         reqService: chReqService

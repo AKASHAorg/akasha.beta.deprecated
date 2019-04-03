@@ -6,20 +6,11 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { hot } from 'react-hot-loader';
 import { Provider, Fill } from 'react-slot-fill';
-import {
-    bootstrapApp,
-    bootstrapHome,
-    hideTerms,
-    navForwardCounterReset,
-    navCounterIncrement
-} from '../local-flux/actions/app-actions';
-import { entryVoteCost } from '../local-flux/actions/entry-actions';
-import { gethGetSyncStatus, gethGetStatus } from '../local-flux/actions/external-process-actions';
-import { licenseGetAll } from '../local-flux/actions/license-actions';
-import { userSettingsAddTrustedDomain } from '../local-flux/actions/settings-actions';
+import * as appActions from '../local-flux/actions/app-actions';
+import * as eProcActions from '../local-flux/actions/external-process-actions';
+import * as settingsActions from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
-import { errorDeleteFatal } from '../local-flux/actions/error-actions';
-import { getCurrentProfile } from '../local-flux/actions/profile-actions';
+import * as profileActions from '../local-flux/actions/profile-actions';
 
 import {
     DashboardPage,
@@ -35,11 +26,16 @@ import { SIDEBAR_SLOTS, APPBAR_SLOTS } from '../components/layouts/slot-names';
 import {
     AppErrorBoundary,
     AppbarBalance,
-    CustomDragLayer,
     ServiceStatusBar,
-    UserNotification
+    UserNotification,
+    SidebarTopMenu
 } from '../components';
-import { dashboardSelectors, actionSelectors, profileSelectors } from '../local-flux/selectors';
+import {
+    dashboardSelectors,
+    actionSelectors,
+    profileSelectors,
+    externalProcessSelectors
+} from '../local-flux/selectors';
 import withRequest from '../components/high-order-components/with-request';
 
 notification.config({
@@ -49,6 +45,7 @@ notification.config({
 
 /*::
     import type {RouterHistory} from 'react-router';
+
     type Props = {
         history: RouterHistory,
         getActionStatus: (state: Object) => boolean,
@@ -66,18 +63,18 @@ notification.config({
 const Application = (props /* :Props */) => {
     const { dispatchAction, getActionStatus } = props;
     const onReload = () => dispatchAction(reloadPage());
-    // fire actions on didMount
+
     React.useEffect(() => {
-        dispatchAction(bootstrapApp(), getActionStatus(bootstrapApp().type) === null);
-        dispatchAction(
-            bootstrapHome(),
-            !getActionStatus(bootstrapHome().type) === null &&
-                getActionStatus(bootstrapApp().type === 'success')
-        );
+        const timestamp = new Date().getTime();
+        const { getCurrentProfile } = profileActions;
+        const { servicesSetTimestamp } = eProcActions;
+        const { selectGethSyncStatus } = externalProcessSelectors;
+        dispatchAction(servicesSetTimestamp(timestamp));
         dispatchAction(
             getCurrentProfile(),
-            getActionStatus(getCurrentProfile().type) === null &&
-                getActionStatus(gethGetSyncStatus().type) === 'success'
+            newState =>
+                getActionStatus(getCurrentProfile().type) === null &&
+                selectGethSyncStatus(newState).get('synced') === true
         );
     }, []); // => empty array is equivalent to didMount
     return (
@@ -97,7 +94,7 @@ const Application = (props /* :Props */) => {
                     {/* Populate common sections/slots */}
                     <>
                         <Fill name={SIDEBAR_SLOTS.TOP}>
-                            <>Sidebar top</>
+                            <SidebarTopMenu />
                         </Fill>
                         <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
                             <ServiceStatusBar />
@@ -137,11 +134,10 @@ export default hot(module)(
         connect(
             mapStateToProps,
             {
-                userSettingsAddTrustedDomain,
-                errorDeleteFatal,
-                hideTerms,
-                navCounterIncrement,
-                navForwardCounterReset
+                userSettingsAddTrustedDomain: settingsActions.userSettingsAddTrustedDomain,
+                hideTerms: appActions.hideTerms,
+                navCounterIncrement: appActions.navCounterIncrement,
+                navForwardCounterReset: appActions.navForwardCounterReset
             }
         )(withRequest(Application))
     )

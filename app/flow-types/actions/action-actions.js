@@ -9,7 +9,7 @@ export type ActionAddPayload = {|
 export type ActionNoFunds = {|
     ...ActionAddPayload,
     needEth: Boolean,
-    neetAeth: Boolean,
+    needAeth: Boolean,
     needMana: Boolean,
 |}
 

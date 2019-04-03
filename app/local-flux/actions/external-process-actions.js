@@ -13,6 +13,10 @@ export const gethResumeSync = () => action(types.GETH_RESUME_SYNC);
 export const gethStart = () => action(`${GETH_MODULE.startService}`);
 export const gethStop = () => action(`${GETH_MODULE.stop}`);
 
+export const gethGetOptions = () => action(`${GETH_MODULE.options}`);
+
+export const ipfsGetConfig = () => action(`${IPFS_MODULE.getConfig}`);
+
 export const ipfsGetLogs = () => action(`${IPFS_MODULE.logs}`);
 
 export const ipfsGetPorts = () => action(`${IPFS_MODULE.getPorts}`);

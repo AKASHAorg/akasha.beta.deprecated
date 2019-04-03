@@ -1,18 +1,7 @@
 // @flow strict
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-    clearSyncStatus,
-    gethGetSyncStatus,
-    gethPauseSync,
-    gethResumeSync,
-    gethStart,
-    /* gethStartLogger, */ gethStop,
-    /* gethStopLogger, */ /* gethStopSync, */ ipfsGetPorts,
-    ipfsStart,
-    ipfsStop
-} from '../local-flux/actions/external-process-actions';
-import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
+import { eProcActions, settingsActions } from '../local-flux/actions';
 import { externalProcessSelectors, settingsSelectors } from '../local-flux/selectors';
 import withRequest from '../components/high-order-components/with-request';
 /* ::
@@ -35,19 +24,28 @@ import withRequest from '../components/high-order-components/with-request';
 
 function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
     const { active, gethStatus, gethSyncStatus, getActionStatus, dispatchAction, web3 } = props;
-
     React.useEffect(() => {
-        dispatchAction(gethStart(), getActionStatus(gethStart().type) === null);
+        dispatchAction(
+            eProcActions.gethGetOptions(),
+            getActionStatus(eProcActions.gethGetOptions().type === null)
+        );
+        dispatchAction(
+            eProcActions.ipfsGetConfig(),
+            getActionStatus(eProcActions.ipfsGetConfig().type === null)
+        );
+    }, []);
+    React.useEffect(() => {
+        dispatchAction(eProcActions.gethStart(), getActionStatus(eProcActions.gethStart().type) === null);
     }, [!gethStatus.get('started')]);
 
     React.useEffect(() => {
-        dispatchAction(gethGetSyncStatus(), state => {
+        dispatchAction(eProcActions.gethGetSyncStatus(), state => {
             const gethSyncStatus = externalProcessSelectors.selectGethSyncStatus(state);
             /* dispatchAction only when: */
             return !gethSyncStatus.get('synced') && web3;
         });
     }, [!gethSyncStatus.get('synced')]);
-    console.log(gethSyncStatus.get('synced'));
+
     React.useEffect(() => {
         if (active) {
             props.onSyncEnd();

@@ -1,5 +1,5 @@
 //@flow
-import { all, call, fork, put, select, takeEvery, getContext } from 'redux-saga/effects';
+import { all, call, fork, put, select, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
@@ -9,15 +9,15 @@ import { profileSelectors } from '../selectors';
     import type { Saga } from 'redux-saga';
  */
 
-export function* generalSettingsRequest () /* :Saga<void> */ {
+export function* appSettingsRequest () /* :Saga<void> */ {
     const settingsService = yield getContext('settingsService');
-    yield put(actions.generalSettingsRequest());
+    yield put(actions.getAppSettings());
     try {
-        const resp = yield call([settingsService, settingsService.generalSettingsRequest]);
+        const resp = yield call([settingsService, settingsService.appSettingsRequest]);
         localStorage.setItem('theme', resp.darkTheme ? '1' : '0');
-        yield put(actions.generalSettingsSuccess(resp));
+        yield put(actions.getAppSettingsSuccess(resp));
     } catch (error) {
-        yield put(actions.generalSettingsError({ message: error.toString() }));
+        yield put(actions.getAppSettingsError({ message: error.toString() }));
     }
 }
 
@@ -43,7 +43,7 @@ export function* ipfsSettingsRequest () /* :Saga<void> */ {
     }
 }
 
-export function* getSettings () /* :Saga<void> */ {
+export function* getLocalSettings () /* :Saga<void> */ {
     yield fork(generalSettingsRequest);
     yield fork(gethSettingsRequest);
     yield fork(ipfsSettingsRequest);
@@ -147,4 +147,5 @@ export function* watchSettingsActions () /* : Saga<void> */ {
     yield takeEvery(types.GETH_SAVE_SETTINGS, gethSaveSettings);
     yield takeEvery(types.GENERAL_SETTINGS_SAVE, saveGeneralSettings);
     yield takeEvery(types.USER_SETTINGS_ADD_TRUSTED_DOMAIN, userSettingsAddTrustedDomain);
+    yield takeLatest(types.GET_LOCAL_SETTINGS, getLocalSettings);
 }

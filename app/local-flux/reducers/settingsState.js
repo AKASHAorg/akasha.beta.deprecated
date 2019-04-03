@@ -86,15 +86,15 @@ const settingsState = createReducer(initialState, {
 
     // [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
-    [types.GENERAL_SETTINGS]: state => state.setIn(['flags', 'generalSettingsPending'], true),
+    [types.GET_APP_SETTINGS]: state => state.setIn(['flags', 'generalSettingsPending'], true),
 
-    [types.GENERAL_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.GET_APP_SETTINGS_SUCCESS]: (state, { data }) =>
         state.merge({
             general: new GeneralSettings(data),
             flags: state.get('flags').set('generalSettingsPending', false)
         }),
 
-    [types.GENERAL_SETTINGS_ERROR]: state => state.setIn(['flags', 'generalSettingsPending'], false),
+    [types.GET_APP_SETTINGS_ERROR]: state => state.setIn(['flags', 'generalSettingsPending'], false),
 
     [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
         state.merge({

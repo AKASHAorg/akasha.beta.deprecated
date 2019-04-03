@@ -29,15 +29,15 @@ const eProcState = createReducer(initialState, {
         if (gethStatus.get('stopped') && !gethStatus.get('upgrading') && !data.starting) {
             return state;
         }
-        const syncActionId = state.getIn(['geth', 'syncActionId']) === 4 ? 4 : 1;
+        // const syncActionId = state.getIn(['geth', 'syncActionId']) === 4 ? 4 : 1;
         const status = Object.assign({}, data, services.geth);
         const newStatus = state.computeGethStatus(status);
         return state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                gethStarting: false
-            }),
+            // flags: state.getIn(['geth', 'flags']).merge({
+            //     gethStarting: false
+            // }),
             status: state.getIn(['geth', 'status']).merge(newStatus),
-            syncActionId,
+            // syncActionId,
             syncStatus: new GethSyncStatus()
         });
     },
@@ -50,15 +50,15 @@ const eProcState = createReducer(initialState, {
         if (state.getIn(['geth', 'status', 'upgrading'])) {
             return state;
         }
-        const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
-        const syncActionId = oldSyncActionId === 2 ? oldSyncActionId : 3;
+        // const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
+        // const syncActionId = oldSyncActionId === 2 ? oldSyncActionId : 3;
         // action.data.upgrading = state.getIn(['geth', 'status', 'upgrading']) || null;
         const status = Object.assign({}, data, services.geth);
         const newStatus = state.computeGethStatus(status);
 
         return state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(newStatus),
-            syncActionId
+            status: state.getIn(['geth', 'status']).merge(newStatus)
+            // syncActionId
         });
     },
 
@@ -141,20 +141,19 @@ const eProcState = createReducer(initialState, {
 
     [`${IPFS_MODULE.getPorts}_ERROR`]: state => state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
-    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data }) => {
-        const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
-        let syncActionId = oldSyncActionId;
-        if (data.synced) {
-            syncActionId = 4;
-        } else if (!oldSyncActionId) {
-            syncActionId = 1;
-        }
-        return state.mergeIn(['geth'], {
+    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data }) => 
+        // const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
+        // let syncActionId = oldSyncActionId;
+        // if (data.synced) {
+        //     syncActionId = 4;
+        // } else if (!oldSyncActionId) {
+        //     syncActionId = 1;
+        // }
+        state.mergeIn(['geth'], {
             status: state.getIn(['geth', 'status']).merge(data.geth),
-            syncActionId,
+            // syncActionId,
             syncStatus: state.getIn(['geth', 'syncStatus']).merge(data)
-        });
-    },
+        }),    
 
     // [types.GETH_STOP_SYNC]: state =>
     //     state.mergeIn(['geth'], {
@@ -166,10 +165,10 @@ const eProcState = createReducer(initialState, {
     //         syncActionId: 2,
     //     }),
 
-    [types.GETH_RESUME_SYNC]: state =>
-        state.mergeIn(['geth'], {
-            syncActionId: 1
-        }),
+    // [types.GETH_RESUME_SYNC]: state =>
+    //     state.mergeIn(['geth'], {
+    //         syncActionId: 1
+    //     }),
 
     // [types.GETH_RESET_BUSY]: state =>
     //     state.mergeIn(['geth'], {

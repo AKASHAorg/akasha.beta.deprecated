@@ -5,7 +5,7 @@ import * as dashboardService from '../services/dashboard-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
 import { profileSelectors, dashboardSelectors } from '../selectors';
-import getHistory from '../../history';
+import getHistory from '../../get-history';
 
 /*::
     import type { Saga } from 'redux-saga';

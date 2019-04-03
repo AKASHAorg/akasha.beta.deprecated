@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import { List } from 'immutable';
 import ActionStateModel from './state-models/action-state-model';
 import * as actionStatus from '../../constants/action-status';
@@ -6,25 +6,33 @@ import * as actionTypes from '../../constants/action-types';
 import * as types from '../constants';
 import { createReducer, genTimeBasedID } from './utils';
 
+/* ::
+    import type { ActionAddPayload, ActionNoFunds } from '../../flow-types/actions/action-actions';
+    import type { ActionParams } from '../../flow-types/actions/action';
+ */
+
 const initialState = new ActionStateModel();
 
 const actionState = createReducer(initialState, {
-    [types.ACTION_ADD]: (state, { ethAddress, payload, actionType }) => {
+    [types.ACTION_ADD]: (state, action /* : ActionParams */) => {
+        const payload /*: ActionAddPayload */ = action.payload;
+        const { actionType, ethAddress } = payload;
         if (actionType === actionTypes.faucet) {
             const id = genTimeBasedID(null, actionType);
             const status = actionStatus.toPublish;
             const action = state.createAction({ id, ethAddress, payload, status, type: actionType });
             return state.merge({
                 byId: state.get('byId').set(id, action),
-                [status]: id,
+                [status]: id
             });
         }
         return state;
     },
-    [types.ACTION_ADD_NO_FUNDS]: (state, action) => {
-        const { ethAddress, payload, actionType, needEth, needAeth, needMana } = action;
+    [types.ACTION_ADD_NO_FUNDS]: (state, action /* : ActionParams */) => {
+        const payload /* : ActionNoFunds */ = action.payload;
+        const { ethAddress, actionType, needEth, needAeth, needMana } = payload;
         const id = genTimeBasedID(null, actionType);
-        const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
+        const status = actionType === actionTypes.faucet ? actionStatus.toPublish : actionStatus.needAuth;
         const publishAction = state.createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, publishAction),
@@ -39,21 +47,22 @@ const actionState = createReducer(initialState, {
             return state;
         }
         const id = genTimeBasedID(null, actionType);
-        const status = (actionType === actionTypes.faucet) ? actionStatus.toPublish : actionStatus.needAuth;
+        const status = actionType === actionTypes.faucet ? actionStatus.toPublish : actionStatus.needAuth;
         const action = state.createAction({ id, ethAddress, payload, status, type: actionType });
         return state.merge({
             byId: state.get('byId').set(id, action),
             [status]: id,
             needEth: false,
             needAeth: false,
-            needMana: false,
+            needMana: false
         });
     },
 
-    [types.ACTION_CLEAR_HISTORY]: state => state.merge({
-        history: new List(),
-        historyTypes: new List()
-    }),
+    [types.ACTION_CLEAR_HISTORY]: state =>
+        state.merge({
+            history: new List(),
+            historyTypes: new List()
+        }),
 
     [types.ACTION_DELETE]: (state, { id }) => {
         const needAuth = state.get('needAuth');
@@ -65,7 +74,7 @@ const actionState = createReducer(initialState, {
         return state.merge({
             byId: state.get('byId').delete(id),
             needAuth: needAuth === id ? null : needAuth,
-            pending,
+            pending
         });
     },
 
@@ -86,30 +95,29 @@ const actionState = createReducer(initialState, {
     [types.ACTION_GET_ALL_HISTORY_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
         let history = request.loadMore ? state.get('history') : new List();
-        data.forEach((action) => {
+        data.forEach(action => {
             byId = byId.set(action.id, state.createAction(action));
             history = history.push(action.id);
         });
-        const flags = request.loadMore ?
-            state.get('flags').set('fetchingMoreHistory', false) :
-            state.get('flags').set('fetchingHistory', false);
+        const flags = request.loadMore
+            ? state.get('flags').set('fetchingMoreHistory', false)
+            : state.get('flags').set('fetchingHistory', false);
         return state.merge({
             byId,
             flags,
-            history,
+            history
         });
     },
 
     [types.ACTION_GET_HISTORY]: state => state.setIn(['flags', 'fetchingHistory'], true),
 
-    [types.ACTION_GET_HISTORY_ERROR]: state =>
-        state.setIn(['flags', 'fetchingHistory'], false),
+    [types.ACTION_GET_HISTORY_ERROR]: state => state.setIn(['flags', 'fetchingHistory'], false),
 
     [types.ACTION_GET_HISTORY_SUCCESS]: (state, { data, request }) => {
         let byId = state.get('byId');
         const fetchingAethTransfers = state.getIn(['flags', 'fetchingAethTransfers']);
         let list = fetchingAethTransfers ? new List() : state.get('history');
-        data.forEach((action) => {
+        data.forEach(action => {
             byId = byId.set(action.id, state.createAction(action));
             list = list.push(action.id);
         });
@@ -125,7 +133,7 @@ const actionState = createReducer(initialState, {
         let byId = state.get('byId');
         let pending = state.get('pending');
         let publishing = new List();
-        data.forEach((action) => {
+        data.forEach(action => {
             byId = byId.set(action.id, state.createAction(action));
             pending = state.addPendingAction(pending, action);
             publishing = publishing.push(action.id);
@@ -148,7 +156,7 @@ const actionState = createReducer(initialState, {
         const action = state.getIn(['byId', id]);
         let pending = state.get('pending');
         if (action.type === actionTypes.batch) {
-            /* 
+            /*
              * for batch actions, this is where we should add the actions in state
              */
             let byId = state.get('byId');
