@@ -17,6 +17,7 @@ import {
 import { generalMessages, profileMessages } from "../../locale-data/messages";
 import { balanceToNumber } from "../../utils/number-formatter";
 import { profileSelectors } from "../../local-flux/selectors";
+import withRequest from '../high-order-components/with-request';
 
 const DEFAULT = "default";
 const LEADERBOARD = "leaderboard";

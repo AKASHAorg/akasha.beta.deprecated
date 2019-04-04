@@ -39,8 +39,8 @@ export const commentsIterator = ({ context, entryId, parent, more }) =>
 // export const commentsIteratorReversedSuccess = (data, request) =>
 //     action(types.COMMENTS_ITERATOR_REVERSED_SUCCESS, { data, request });
 export const commentsLoadNew = () => action(types.COMMENTS_LOAD_NEW);
-// export const commentsMoreIterator = ({ entryId, parent }) =>
-//     action(types.COMMENTS_MORE_ITERATOR, { entryId, parent });
+export const commentsMoreIterator = ({ entryId, parent }) =>
+    action(types.COMMENTS_MORE_ITERATOR, { entryId, parent });
 // export const commentsMoreIteratorError = (error, request) => {
 //     error.code = 'CMIE01';
 //     error.messageId = 'commentsMoreIterator';

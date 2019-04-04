@@ -55,13 +55,13 @@ export const entryGetVoteRatio = data => action(`${ENTRY_MODULE.getVoteRatio}`, 
 export const entryListIterator = column =>
     action(`${ENTRY_MODULE.entryListIterator}`, { column });
 
-// export const entryMoreListIterator = (column, batching) =>
-//     action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
+export const entryMoreListIterator = (column, batching) =>
+    action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
 // export const entryMoreListIteratorSuccess = (data, request) =>
 //     action(types.ENTRY_MORE_LIST_ITERATOR_SUCCESS, { data, request });
 
-// export const entryMoreNewestIterator = (column, batching) =>
-//     action(types.ENTRY_MORE_NEWEST_ITERATOR, { column, batching });
+export const entryMoreNewestIterator = (column, batching) =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR, { column, batching });
 // export const entryMoreNewestIteratorError = (error, request) => {
 //     error.code = 'EMNIE01';
 //     error.messageId = 'entryMoreNewestIterator';
@@ -70,8 +70,8 @@ export const entryListIterator = column =>
 // export const entryMoreNewestIteratorSuccess = (data, request) =>
 //     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, request });
 
-// export const entryMoreProfileIterator = (column, batching) =>
-//     action(types.ENTRY_MORE_PROFILE_ITERATOR, { column, batching });
+export const entryMoreProfileIterator = (column, batching) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { column, batching });
 // export const entryMoreProfileIteratorError = (error, request) => {
 //     error.code = 'EMPIE01';
 //     error.messageId = 'entryMoreProfileIterator';
@@ -80,7 +80,7 @@ export const entryListIterator = column =>
 // export const entryMoreProfileIteratorSuccess = (data, request) =>
 //     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-// export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
+export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
 // export const entryMoreStreamIteratorError = (error, request) => {
 //     error.code = 'EMSIE01';
 //     error.messageId = 'entryMoreStreamIterator';
@@ -89,8 +89,8 @@ export const entryListIterator = column =>
 // export const entryMoreStreamIteratorSuccess = (data, request) =>
 //     action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, request });
 
-// export const entryMoreTagIterator = (column, batching) =>
-//     action(types.ENTRY_MORE_TAG_ITERATOR, { column, batching });
+export const entryMoreTagIterator = (column, batching) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { column, batching });
 // export const entryMoreTagIteratorError = (error, request) => {
 //     error.code = 'EMTIE01';
 //     error.messageId = 'entryMoreTagIterator';

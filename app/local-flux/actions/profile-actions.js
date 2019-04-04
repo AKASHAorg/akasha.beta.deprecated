@@ -142,7 +142,7 @@ export const profileLogoutError = error => {
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
 export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 
-// export const profileMoreCommentsIterator = column => action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
+export const profileMoreCommentsIterator = column => action(types.PROFILE_MORE_COMMENTS_ITERATOR, { column });
 // export const profileMoreCommentsIteratorError = (error, request) => {
 //     error.code = 'PMCIE01';
 //     error.messageId = 'profileMoreCommentsIterator';
@@ -151,8 +151,8 @@ export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 // export const profileMoreCommentsIteratorSuccess = (data, request) =>
 //     action(types.PROFILE_MORE_COMMENTS_ITERATOR_SUCCESS, { data, request });
 
-// export const profileMoreFollowersIterator = ({ column, batching }) =>
-//     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
+export const profileMoreFollowersIterator = ({ column, batching }) =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { column, batching });
 
 // export const profileMoreFollowersIteratorError = (error, request) => {
 //     error.code = 'PMFIE01';
@@ -163,8 +163,8 @@ export const profileManaBurned = () => action(`${PROFILE_MODULE.manaBurned}`);
 // export const profileMoreFollowersIteratorSuccess = (data, request) =>
 //     action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data, request });
 
-// export const profileMoreFollowingsIterator = ({ column, batching }) =>
-//     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
+export const profileMoreFollowingsIterator = ({ column, batching }) =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { column, batching });
 
 // export const profileMoreFollowingsIteratorError = (error, request) => {
 //     error.code = 'PMFIE02';
