@@ -7,8 +7,7 @@ import { ClaimableList, EssenceHistory, Icon, ShiftForm } from '../';
 import * as actionTypes from '../../constants/action-types';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { claimableGetEntries } from '../../local-flux/actions/claimable-actions';
-import { profileEssenceIterator, profileGetBalance,
-    profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
+import { profileResetEssenceEvents } from '../../local-flux/actions/profile-actions';
 import { actionSelectors, profileSelectors } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
@@ -154,8 +153,6 @@ export default connect(
     {
         actionAdd,
         claimableGetEntries,
-        profileEssenceIterator,
-        profileGetBalance,
         profileResetEssenceEvents
     }
 )(Form.create()(injectIntl(EssencePopover)));

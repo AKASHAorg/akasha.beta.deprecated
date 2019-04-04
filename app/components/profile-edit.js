@@ -5,7 +5,6 @@ import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import classNames from 'classnames';
 import { actionAdd } from '../local-flux/actions/action-actions';
-import { profileExists } from '../local-flux/actions/profile-actions';
 import { setTempProfile, tempProfileGet, tempProfileUpdate, tempProfileCreate,
     tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { profileEditToggle, showTerms } from '../local-flux/actions/app-actions';
@@ -97,7 +96,7 @@ class ProfileEdit extends Component {
                 getFormContainerRef={this.getFormContainerRef}
                 loggedProfileData={loggedProfileData}
                 pendingActions={pendingActions}
-                profileExists={this.props.profileExists}
+                // profileExists={this.props.profileExists}
                 profileExistsData={profileExistsData}
                 tempProfile={tempProfile}
                 tempProfileCreate={this.props.tempProfileCreate}
@@ -121,7 +120,6 @@ ProfileEdit.propTypes = {
     loggedProfileData: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     profileEditToggle: PropTypes.func,
-    profileExists: PropTypes.func,
     profileExistsData: PropTypes.shape(),
     setTempProfile: PropTypes.func,
     showTerms: PropTypes.func,
@@ -147,7 +145,7 @@ export default connect(
     {
         actionAdd,
         profileEditToggle,
-        profileExists,
+        // profileExists,
         setTempProfile,
         showTerms,
         tempProfileUpdate,

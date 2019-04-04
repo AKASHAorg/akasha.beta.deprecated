@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../';
-import { entryMessages, profileMessages } from '../../locale-data/messages';
+import { entryMessages, tagMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
-import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { dashboardSelectors, profileSelectors,
-    searchSelectors} from '../../local-flux/selectors';
+import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { searchTags } from '../../local-flux/actions/search-actions';
+import { dashboardSelectors, tagSelectors, searchSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
 
-class ProfileColumn extends Component {
+class TagColumn extends Component {
     firstCallDone = false;
     interval = null;
     timeout = null;
@@ -23,7 +22,7 @@ class ProfileColumn extends Component {
     componentWillReceiveProps ({ column }) {
         const value = column.get('value');
         if (value !== this.props.column.get('value')) {
-            this.props.dispatchAction(entryProfileIterator({ columnId: column.get('id'), value }));
+            this.props.dispatchAction(entryTagIterator({ columnId: column.get('id'), value }));
             if (this.interval) {
                 clearInterval(this.interval);
             }
@@ -43,14 +42,13 @@ class ProfileColumn extends Component {
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
-        this.props.searchResetResults();
         this.props.dashboardResetColumnEntries(column.get('id'));
     }
 
     firstLoad = () => {
         const { column } = this.props;
         const value = column.get('value');
-        if (value && !this.firstCallDone) {
+        if (!this.firstCallDone && value) {
             this.entryIterator();
             this.firstCallDone = true;
         }
@@ -58,7 +56,7 @@ class ProfileColumn extends Component {
 
     setPollingInterval = () => {
         this.interval = setInterval(() => {
-            this.props.dispatchAction(entryProfileIterator({
+            this.props.dispatchAction(entryTagIterator({
                 columnId: this.props.column.get('id'),
                 reversed: true,
                 value: this.props.column.get('value')
@@ -68,7 +66,7 @@ class ProfileColumn extends Component {
 
     entryIterator = () => {
         const { column } = this.props;
-        this.props.dispatchAction(entryProfileIterator({
+        this.props.dispatchAction(entryTagIterator({
             columnId: column.get('id'),
             value: column.get('value')
         }));
@@ -78,25 +76,24 @@ class ProfileColumn extends Component {
         this.timeout = setTimeout(this.setPollingInterval, DELAY);
     }
 
-    entryMoreProfileIterator = () => {
+    entryMoreTagIterator = () => {
         const { column } = this.props;
-        const value = column.get('value');
-        this.props.dispatchAction(entryProfileIterator({
-            columnId: column.get('id'),
-            value: column.get('value')
+        this.props.dispatchAction(entryTagIterator({
+            columnId: this.props.column.get('id'),
+            reversed: true,
+            value: this.props.column.get('value')
         }));
     };
 
     render () {
-        const { column, entriesList, intl, profileExists, profileResults } = this.props;
+        const { column, entriesList, intl, tagExists, tagResults } = this.props;
         let placeholderMessage;
-        const columnValue = column.get('value');
-        if (columnValue && profileExists.has(columnValue)) {
-            placeholderMessage = profileExists.getIn([columnValue, 'exists']) ?
+        if (column.get('value')) {
+            placeholderMessage = tagExists.get(column.get('value')) ?
                 intl.formatMessage(entryMessages.noEntries) :
-                intl.formatMessage(profileMessages.profileDoesntExist);
+                intl.formatMessage(tagMessages.tagDoesntExist);
         } else {
-            intl.formatMessage(entryMessages.searchProfile);
+            intl.formatMessage(entryMessages.searchTag);
         }
         const className = classNames('column', { column_large: column.get('large') });
 
@@ -104,10 +101,10 @@ class ProfileColumn extends Component {
           <div className={className}>
             <ColumnHeader
               column={column}
-              dataSource={profileResults}
-              iconType="user"
+              dataSource={tagResults}
+              iconType="tag"
               onRefresh={this.entryIterator}
-              onSearch={this.props.searchProfiles}
+              onSearch={this.props.searchTags}
             />
             <Waypoint onEnter={this.firstLoad} horizontal />
             <EntryList
@@ -115,7 +112,7 @@ class ProfileColumn extends Component {
               entries={entriesList}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreProfileIterator}
+              fetchMoreEntries={this.entryMoreTagIterator}
               large={column.get('large')}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={placeholderMessage}
@@ -125,23 +122,23 @@ class ProfileColumn extends Component {
     }
 }
 
-ProfileColumn.propTypes = {
+TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     dashboardResetColumnEntries: PropTypes.func.isRequired,
     entriesList: PropTypes.shape().isRequired,
-    entryProfileIterator: PropTypes.func.isRequired,
+    entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    profileExists: PropTypes.shape().isRequired,
-    profileResults: PropTypes.shape().isRequired,
-    searchProfiles: PropTypes.func.isRequired,
-    searchResetResults: PropTypes.func.isRequired,
+    searchTags: PropTypes.func.isRequired,
+    tagExists: PropTypes.shape().isRequired,
+    tagResults: PropTypes.shape().isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
+    const columnId = ownProps.column.get('id');
     return {
-        entriesList: dashboardSelectors.getColumnEntries(state, ownProps.column.get('id')),
-        profileExists: profileSelectors.selectProfileExists(state),
-        profileResults: searchSelectors.selectProfileSearchResults(state),
+        entriesList: dashboardSelectors.getColumnEntries(state, columnId),
+        tagExists: tagSelectors.selectTagExists(state),
+        tagResults: searchSelectors.selectTagSearchResults(state),
     };
 }
 
@@ -149,8 +146,7 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetColumnEntries,
-        // entryProfileIterator,
-        searchProfiles,
-        searchResetResults
+        // entryTagIterator,
+        searchTags,
     }
-)(injectIntl(withRequest(ProfileColumn)));
+)(injectIntl(withRequest(TagColumn)));

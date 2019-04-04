@@ -4,6 +4,7 @@ import { injectIntl } from 'react-intl';
 import { AutoComplete, Button, Form, Input, InputNumber } from 'antd';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
+import withRequest from '../high-order-components/with-request';
 
 const FormItem = Form.Item;
 
@@ -26,7 +27,7 @@ class TransferForm extends Component {
     };
 
     onSearch = (value) => {
-        this.props.searchProfiles(value, true);
+        this.props.dispatchAction(searchProfiles(value, true));
     };
 
     onSubmit = (ev) => {
@@ -48,7 +49,7 @@ class TransferForm extends Component {
     };
 
     render () {
-        const { balance, dataSource, ethAddress, form, intl, onCancel, pendingTransfer, searchProfiles,
+        const { balance, dataSource, ethAddress, form, intl, onCancel, pendingTransfer,
             type } = this.props;
         const { getFieldDecorator, getFieldError } = form;
         const { amount, receiver } = form.getFieldsValue();
@@ -152,4 +153,4 @@ TransferForm.propTypes = {
     type: PropTypes.string.isRequired,
 };
 
-export default Form.create()(injectIntl(TransferForm));
+export default Form.create()(injectIntl(withRequest(TransferForm)));

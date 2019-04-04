@@ -31,7 +31,7 @@ export default connect(
         actionAdd,
         commentsCheckNew,
         commentsLoadNew,
-        commentsMoreIterator,
+        // commentsMoreIterator,
         entryCleanFull,
         entryGetFull,
         entryGetLatestVersion,

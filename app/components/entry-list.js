@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import { Waypoint } from 'react-waypoint';
 import { entryMessages, generalMessages } from '../locale-data/messages';
-import { entryGetShort, entryPageShow } from '../local-flux/actions/entry-actions';
+import { entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import {
     actionSelectors,
@@ -101,7 +101,7 @@ class EntryList extends Component {
                         key={entry.get('entryId')}
                         large={large}
                         loggedEthAddress={loggedEthAddress}
-                        onRetry={this.props.entryGetShort}
+                        // onRetry={this.props.entryGetShort}
                         style={cardStyle}
                         toggleOutsideNavigation={this.props.toggleOutsideNavigation}
                         votePending={!!pendingVotes.get(entry.get('entryId'))}
@@ -181,7 +181,6 @@ EntryList.propTypes = {
     defaultTimeout: PropTypes.number,
     drafts: PropTypes.shape(),
     entries: PropTypes.shape(),
-    entryGetShort: PropTypes.func.isRequired,
     entryPageShow: PropTypes.func.isRequired,
     fetchingEntries: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
@@ -225,7 +224,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryGetShort,
+        // entryGetShort,
         entryPageShow,
         toggleOutsideNavigation
     }

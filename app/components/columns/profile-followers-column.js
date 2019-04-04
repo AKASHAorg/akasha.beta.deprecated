@@ -8,6 +8,7 @@ import { profileMessages } from '../../locale-data/messages';
 import { profileFollowersIterator,
     profileMoreFollowersIterator } from '../../local-flux/actions/profile-actions';
 import { profileSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class ProfileFollowersColumn extends Component {
     firstCallDone = false;
@@ -29,12 +30,7 @@ class ProfileFollowersColumn extends Component {
         if (!ethAddress) {
             ethAddress = this.props.ethAddress;
         }
-        this.props.profileFollowersIterator({ context: 'profilePageFollowers', ethAddress });
-    };
-
-    followersMoreIterator = () => {
-        const { ethAddress } = this.props;
-        this.props.profileMoreFollowersIterator({ context: 'profilePageFollowers', ethAddress });
+        this.props.dispatchAction(profileFollowersIterator({ context: 'profilePageFollowers', ethAddress }));
     };
 
     render () {
@@ -53,7 +49,7 @@ class ProfileFollowersColumn extends Component {
               context="profilePageFollowers"
               fetchingProfiles={fetchingFollowers}
               fetchingMoreProfiles={fetchingMoreFollowers}
-              fetchMoreProfiles={this.followersMoreIterator}
+              fetchMoreProfiles={this.followersIterator}
               moreProfiles={moreFollowers}
               profiles={followers}
             />
@@ -70,7 +66,6 @@ ProfileFollowersColumn.propTypes = {
     intl: PropTypes.shape().isRequired,
     moreFollowers: PropTypes.bool,
     profileFollowersIterator: PropTypes.func.isRequired,
-    profileMoreFollowersIterator: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
@@ -86,7 +81,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        profileFollowersIterator,
-        profileMoreFollowersIterator,
+        // profileFollowersIterator,
     }
-)(injectIntl(ProfileFollowersColumn));
+)(injectIntl(withRequest(ProfileFollowersColumn)));

@@ -13,6 +13,7 @@ import { highlightDelete, highlightEditNotes, highlightSearch,
 import { profileGetList } from '../../local-flux/actions/profile-actions';
 import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
 import { highlightsSelectors, profileSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class Highlights extends Component {
     componentDidMount () {
@@ -20,7 +21,7 @@ class Highlights extends Component {
         const ethAddresses = highlights.map(highlight => ({ ethAddress: highlight.get('publisher') }));
         const payload = R.uniq(ethAddresses.toJS());
         if (payload.length) {
-            this.props.profileGetList(payload);
+            this.props.dispatchAction(profileGetList(payload));
         }
     }
 
@@ -119,8 +120,8 @@ export default connect(
         highlightDelete,
         highlightEditNotes,
         highlightSearch,
-        profileGetList,
+        // profileGetList,
         highlightToggleEditing,
         highlightToggleNoteEditable
     }
-)(injectIntl(Highlights));
+)(injectIntl(withRequest(Highlights)));
