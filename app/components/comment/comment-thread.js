@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { commentsMoreIterator } from '../../local-flux/actions/comments-actions';
+import { commentsIterator } from '../../local-flux/actions/comments-actions';
 import { commentSelectors, entrySelectors,
     profileSelectors } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
+import withRequest from '../high-order-components/with-request';
 
 class CommentThread extends Component {
     componentDidUpdate (prevProps) {
@@ -37,7 +38,7 @@ class CommentThread extends Component {
 
     loadMoreReplies = () => {
         const { comment, entryId } = this.props;
-        this.props.commentsMoreIterator({ entryId, parent: comment.commentId });
+        this.props.dispatchAction(commentsIterator({ entryId, parent: comment.commentId }));
     }
 
     renderOptimisticComments = () => {
@@ -153,7 +154,6 @@ CommentThread.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     author: PropTypes.shape(),
     comment: PropTypes.shape().isRequired,
-    commentsMoreIterator: PropTypes.func.isRequired,
     containerRef: PropTypes.shape(),
     context: PropTypes.string,
     entryId: PropTypes.string,
@@ -190,6 +190,6 @@ export default connect(
     mapStateToProps,
     {
         actionAdd,
-        commentsMoreIterator,
+        // commentsMoreIterator,
     }
-)(injectIntl(CommentThread));
+)(injectIntl(withRequest(CommentThread)));

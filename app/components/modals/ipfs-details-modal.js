@@ -10,6 +10,7 @@ import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 import { Icon, InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
 import { externalProcessSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const { TabPane } = Tabs;
 const SETTINGS = 'SETTINGS';
@@ -41,9 +42,9 @@ class IpfsDetailsModal extends Component {
 
     onToggle = () => {
         if (this.isIpfsOn()) {
-            this.props.ipfsStop();
+            this.props.dispatchAction(ipfsStop());
         } else {
-            this.props.ipfsStart();
+            this.props.dispatchAction(ipfsStart());
         }
     };
 
@@ -266,10 +267,10 @@ export default connect(
         ipfsGetPorts,
         ipfsSaveSettings,
         ipfsSetPorts,
-        ipfsStart,
+        // ipfsStart,
         /* ipfsStartLogger, */
-        ipfsStop,
+        // ipfsStop,
         /* ipfsStopLogger, */
         toggleIpfsDetailsModal
     }
-)(injectIntl(IpfsDetailsModal));
+)(injectIntl(withRequest(IpfsDetailsModal)));

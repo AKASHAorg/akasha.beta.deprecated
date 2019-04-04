@@ -26,7 +26,7 @@ export default function init(sp, getService) {
       resolved = yield contracts.instance.ProfileResolver.resolve(profileHex);
     }
 
-    const akashaId = (profileHex) ? web3Api.instance.toUtf8(resolved[0]) : '';
+    const akashaId = (profileHex) ? web3Api.instance.utils.toUtf8(resolved[0]) : '';
     return { akashaId, ethAddress: data.ethAddress, raw: profileHex };
   });
 

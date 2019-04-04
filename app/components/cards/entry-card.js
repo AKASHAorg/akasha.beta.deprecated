@@ -15,6 +15,7 @@ import { externalProcessSelectors, entrySelectors, profileSelectors,
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
 import { isLinkToAkashaWeb, extractEntryUrl } from '../../utils/url-utils';
+import withRequest from '../high-order-components/with-request';
 
 const smallCard = 320;
 const largeCard = 480;
@@ -94,9 +95,9 @@ class EntryCard extends Component {
     }
 
     onRetry = () => {
-        const { contextId, entry } = this.props;
+        const { contextId, entry, dispatchAction } = this.props;
         const ethAddress = entry.getIn(['author', 'ethAddress']);
-        this.props.entryGetShort({ context: contextId, entryId: entry.entryId, ethAddress });
+        dispatchAction(entryGetShort({ context: contextId, entryId: entry.entryId, ethAddress }));
     };
 
     renderContentPlaceholder = () => (
@@ -312,8 +313,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryGetShort,
         entryPageShow,
         toggleOutsideNavigation
     }
-)(withRouter(injectIntl(EntryCard)));
+)(withRouter(injectIntl(withRequest(EntryCard))));

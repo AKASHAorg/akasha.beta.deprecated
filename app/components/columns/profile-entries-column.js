@@ -7,6 +7,7 @@ import { ColumnHeader, EntryList } from '../';
 import { profileMessages } from '../../locale-data/messages';
 import { entryProfileIterator, entryMoreProfileIterator } from '../../local-flux/actions/entry-actions';
 import { entrySelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 class ProfileEntriesColumn extends Component {
     firstCallDone = false;
@@ -28,13 +29,8 @@ class ProfileEntriesColumn extends Component {
         if (!ethAddress) {
             ethAddress = this.props.ethAddress;
         }
-        this.props.entryProfileIterator({ columnId: 'profileEntries', value: ethAddress });
+        this.props.dispatchAction(entryProfileIterator({ columnId: 'profileEntries', value: ethAddress }));
     };
-
-    entryMoreIterator = () => {
-        const { ethAddress } = this.props;
-        this.props.entryMoreProfileIterator({ columnId: 'profileEntries', value: ethAddress });
-    }
 
     render () {
         const { entriesList, fetchingEntries, fetchingMoreEntries, intl, moreEntries } = this.props;
@@ -53,7 +49,7 @@ class ProfileEntriesColumn extends Component {
               entries={entriesList}
               fetchingEntries={fetchingEntries}
               fetchingMoreEntries={fetchingMoreEntries}
-              fetchMoreEntries={this.entryMoreIterator}
+              fetchMoreEntries={this.entryIterator}
               moreEntries={moreEntries}
             />
           </div>
@@ -63,7 +59,6 @@ class ProfileEntriesColumn extends Component {
 
 ProfileEntriesColumn.propTypes = {
     entriesList: PropTypes.shape().isRequired,
-    entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     ethAddress: PropTypes.string.isRequired,
     fetchingEntries: PropTypes.bool,
@@ -87,7 +82,6 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryMoreProfileIterator,
-        entryProfileIterator,
+        // entryProfileIterator,
     }
-)(injectIntl(ProfileEntriesColumn));
+)(injectIntl(withRequest(ProfileEntriesColumn)));

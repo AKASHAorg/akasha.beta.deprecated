@@ -12,6 +12,7 @@ import { draftsGetCount, draftsGet, draftDelete, draftCreate,
 import { entryProfileIterator, entryGetFull } from '../../local-flux/actions/entry-actions';
 import { tagCanCreate } from '../../local-flux/actions/tag-actions';
 import { draftSelectors, profileSelectors, settingsSelectors } from '../../local-flux/selectors';
+import withRequest from '../high-order-components/with-request';
 
 const { confirm } = Modal;
 const shallowEquals = (a, b) => Object.keys(a).every(key => a[key] === b[key]);
@@ -31,7 +32,7 @@ class NewEntrySecondarySidebar extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
         this.props.draftsGetCount({ ethAddress });
-        this.props.tagCanCreate({ ethAddress });
+        this.props.dispatchAction(tagCanCreate({ ethAddress }));
         this.entryProfileIterator();
     }
     /* eslint-disable complexity */
@@ -61,13 +62,13 @@ class NewEntrySecondarySidebar extends Component {
         const entryType = selectedEntryFilter === 'all' ?
             undefined :
             entryTypes.indexOf(selectedEntryFilter);
-        this.props.entryProfileIterator({
+        this.props.dispatchAction(entryProfileIterator({
             id: null,
             value: ethAddress,
             limit: 5,
             asDrafts: true,
             entryType
-        });
+        }));
     };
 
     _onDraftItemClick = (ev, draftPath) => {
@@ -153,13 +154,13 @@ class NewEntrySecondarySidebar extends Component {
             version,
             id: draftId
         });
-        this.props.entryGetFull({
+        this.props.dispatchAction(entryGetFull({
             entryId: draftId,
             version,
             asDraft: true,
             revert: true,
             ethAddress,
-        });
+        }));
     };
 
     _handleDraftRevert = (ev, draftId) => {
@@ -539,8 +540,8 @@ export default connect(
         draftsGet,
         draftResetIterator,
         draftRevertToVersion,
-        entryGetFull,
-        entryProfileIterator,
-        tagCanCreate,
+        // entryGetFull,
+        // entryProfileIterator,
+        // tagCanCreate,
     }
-)(injectIntl(NewEntrySecondarySidebar));
+)(injectIntl(withRequest(NewEntrySecondarySidebar)));

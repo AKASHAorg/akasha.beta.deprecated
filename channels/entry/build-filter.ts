@@ -35,7 +35,7 @@ export default function init(sp, getService) {
 
       for (const event of fetched.results) {
         const tags = event.args.tagsPublished.map((tag) => {
-          return web3Api.instance.toUtf8(tag);
+          return web3Api.instance.utils.toUtf8(tag);
         });
         const author = yield resolve.execute({ ethAddress: event.args.author });
         collection.push({

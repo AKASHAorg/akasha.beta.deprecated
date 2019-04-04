@@ -9,7 +9,7 @@ import * as actionTypes from '../../constants/action-types';
 import { Icon, ListPopover, ShareLinkModal, VotesModal, VotePopover } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
-import { actionSelectors, entrySelectors, externalProcessSelectors, listSelectors, searchSelectors,
+import { actionSelectors, entrySelectors, externalProcessSelectors, listSelectors,
   profileSelectors } from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';

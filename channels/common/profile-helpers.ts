@@ -35,7 +35,7 @@ export default function init(sp, getService) {
     const nameHash = yield contracts.instance.ProfileResolver.reverse(ethAddress);
     if (!!unpad(nameHash)) {
       const [akashaId, , ] = yield contracts.instance.ProfileResolver.resolve(nameHash);
-      return { akashaId: normaliseId(web3Api.instance.toUtf8(akashaId)), ethAddress };
+      return { akashaId: normaliseId(web3Api.instance.utils.toUtf8(akashaId)), ethAddress };
     }
     return { ethAddress };
   });

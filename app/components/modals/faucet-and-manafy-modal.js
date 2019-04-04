@@ -6,7 +6,6 @@ import { Modal, Button } from 'antd';
 import { actionDelete, actionResetFundingRequirements,
     actionAdd } from '../../local-flux/actions/action-actions';
 import { profileResetFaucet } from '../../local-flux/actions/profile-actions';
-import { selectLoggedEthAddress } from '../../local-flux/selectors/index';
 import { NoEth, NoMana } from '../';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';

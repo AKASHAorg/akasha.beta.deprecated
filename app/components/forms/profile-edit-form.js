@@ -12,6 +12,7 @@ import { profileMessages, formMessages,
     generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
 import { uploadImage } from '../../local-flux/services/utils-service';
+import withRequest from '../high-order-components/with-request';
 
 const FormItem = Form.Item;
 
@@ -147,7 +148,7 @@ class ProfileEditForm extends Component {
         }
         // validation passed
         if (field === 'akashaId') {
-            this.props.profileExists(this.props.tempProfile.get('akashaId'));
+            this.props.dispatchAction(profileExists(this.props.tempProfile.get('akashaId')));
             this.setState({
                 akashaIdIsValid: true,
                 akashaIdExists: false
@@ -560,5 +561,5 @@ ProfileEditForm.propTypes = {
 const validationHOC = validation(strategy());
 
 export default injectIntl(
-    Form.create()(validationHOC(ProfileEditForm))
+    Form.create()(validationHOC(withRequest(ProfileEditForm)))
 );

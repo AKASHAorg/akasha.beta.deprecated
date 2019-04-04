@@ -8,6 +8,7 @@ import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageCon
 import { entryMessages } from '../../locale-data/messages';
 import { isInViewport } from '../../utils/domUtils';
 import { generalMessages } from '../../locale-data/messages/general-messages';
+import withRequest from '../high-order-components/with-request';
 
 const CHECK_NEW_COMMENTS_INTERVAL = 15000; // in ms
 
@@ -77,7 +78,7 @@ class EntryPage extends Component {
         const prefixed = ethAddress === '0' ? undefined : `0x${ethAddress}`;
         const version = parseInt(match.params.version, 10);
         const versionNr = isNaN(Number(version)) ? null : Number(version);
-        this.props.entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr });
+        this.props.dispatchAction(entryGetFull({ akashaId, entryId, ethAddress: prefixed, version: versionNr }));
     };
 
     getContainerRef = (el) => { this.container = el; };
@@ -262,7 +263,6 @@ EntryPage.propTypes = {
     commentsMoreIterator: PropTypes.func.isRequired,
     entry: PropTypes.shape(),
     entryCleanFull: PropTypes.func.isRequired,
-    entryGetFull: PropTypes.func.isRequired,
     entryResolveIpfsHash: PropTypes.func.isRequired,
     fetchingFullEntry: PropTypes.bool,
     fullSizeImageAdd: PropTypes.func,
@@ -278,4 +278,4 @@ EntryPage.propTypes = {
     toggleOutsideNavigation: PropTypes.func,
 };
 
-export default injectIntl(EntryPage);
+export default injectIntl(withRequest(EntryPage));

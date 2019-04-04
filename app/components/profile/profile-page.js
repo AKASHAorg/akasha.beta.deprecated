@@ -5,25 +5,26 @@ import { dashboardResetProfileColumns } from '../../local-flux/actions/dashboard
 import { profileGetData, profileResetColumns } from '../../local-flux/actions/profile-actions';
 import { profileSelectors } from '../../local-flux/selectors';
 import { DataLoader, ProfileActivity, ProfileDetails } from '../';
+import withRequest from '../high-order-components/with-request';
 
 class ProfilePage extends Component {
     componentDidMount () {
         const { akashaId, ethAddress } = this.props.match.params;
         if (akashaId) {
-            this.props.profileGetData({ akashaId, full: true });
+            this.props.dispatchAction(profileGetData({ akashaId, full: true }));
         }
         if (ethAddress) {
-            this.props.profileGetData({ ethAddress: `0x${ethAddress}`, full: true });
+            this.props.dispatchAction(profileGetData({ ethAddress: `0x${ethAddress}`, full: true }));
         }
     }
 
     componentWillReceiveProps (nextProps) {
         const { akashaId, ethAddress } = nextProps.match.params;
         if (akashaId && akashaId !== this.props.match.params.akashaId) {
-            this.props.profileGetData({ akashaId, full: true });
+            this.props.dispatchAction(profileGetData({ akashaId, full: true }));
         }
         if (ethAddress && ethAddress !== this.props.match.params.ethAddress) {
-            this.props.profileGetData({ ethAddress: `0x${ethAddress}`, full: true });
+            this.props.dispatchAction(profileGetData({ ethAddress: `0x${ethAddress}`, full: true }));
         }
     }
 
@@ -80,7 +81,7 @@ export default connect(
     mapStateToProps,
     {
         dashboardResetProfileColumns,
-        profileGetData,
+        // profileGetData,
         profileResetColumns,
     }
-)(ProfilePage);
+)(withRequest(ProfilePage));

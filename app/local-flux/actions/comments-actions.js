@@ -36,18 +36,18 @@ export const commentsGetVoteOf = data => action(`${COMMENTS_MODULE.getVoteOf}`, 
 export const commentsIterator = ({ context, entryId, parent, more }) =>
     action(`${COMMENTS_MODULE.commentsIterator}`, { context, entryId, parent, more });
 
-export const commentsIteratorReversedSuccess = (data, request) =>
-    action(types.COMMENTS_ITERATOR_REVERSED_SUCCESS, { data, request });
+// export const commentsIteratorReversedSuccess = (data, request) =>
+//     action(types.COMMENTS_ITERATOR_REVERSED_SUCCESS, { data, request });
 export const commentsLoadNew = () => action(types.COMMENTS_LOAD_NEW);
 export const commentsMoreIterator = ({ entryId, parent }) =>
     action(types.COMMENTS_MORE_ITERATOR, { entryId, parent });
-export const commentsMoreIteratorError = (error, request) => {
-    error.code = 'CMIE01';
-    error.messageId = 'commentsMoreIterator';
-    return action(types.COMMENTS_MORE_ITERATOR_ERROR, { error, request });
-};
-export const commentsMoreIteratorSuccess = (data, request) =>
-    action(types.COMMENTS_MORE_ITERATOR_SUCCESS, { data, request });
+// export const commentsMoreIteratorError = (error, request) => {
+//     error.code = 'CMIE01';
+//     error.messageId = 'commentsMoreIterator';
+//     return action(types.COMMENTS_MORE_ITERATOR_ERROR, { error, request });
+// };
+// export const commentsMoreIteratorSuccess = (data, request) =>
+//     action(types.COMMENTS_MORE_ITERATOR_SUCCESS, { data, request });
 
 export const commentsPublish = ({ actionId, ...payload }) =>
     action(`${COMMENTS_MODULE.comment}`, { actionId, ...payload });

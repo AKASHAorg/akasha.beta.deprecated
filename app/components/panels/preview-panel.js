@@ -5,15 +5,16 @@ import { injectIntl } from 'react-intl';
 import { Button } from 'antd';
 import { AddToBoardPopover, EntryList } from '../';
 import { hidePreview } from '../../local-flux/actions/app-actions';
-import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { entryTagIterator } from '../../local-flux/actions/entry-actions';
 import { appSelectors, dashboardSelectors, entrySelectors } from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages } from '../../locale-data/messages';
 import clickAway from '../../utils/clickAway';
+import withRequest from '../high-order-components/with-request';
 
 class PreviewPanel extends Component {
     componentDidMount () {
         const { preview, column } = this.props;
-        this.props.entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column });
+        this.props.dispatchAction(entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column }));
     }
 
     componentClickAway = () => {
@@ -21,8 +22,8 @@ class PreviewPanel extends Component {
     };
 
     loadMoreEntries = () => {
-        const { column } = this.props;
-        this.props.entryMoreTagIterator(column);
+        const { column, preview } = this.props;
+        this.props.dispatchAction(entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column }));
     };
 
     render () {
@@ -77,8 +78,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        entryMoreTagIterator,
         entryTagIterator,
         hidePreview
     }
-)(injectIntl(clickAway(PreviewPanel)));
+)(injectIntl(clickAway(withRequest(PreviewPanel))));

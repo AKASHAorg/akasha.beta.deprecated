@@ -15,11 +15,13 @@ import {
 import { generalMessages } from '../locale-data/messages';
 import { balanceToNumber } from '../utils/number-formatter';
 import { entrySelectors, profileSelectors } from '../local-flux/selectors';
+import withRequest from '../components/high-order-components/with-request';
 
 class EssenceHistory extends Component {
     componentDidMount () {
-        this.props.profileEssenceIterator();
-        this.props.profileGetBalance();
+        const { dispatchAction } = this.props;
+        dispatchAction(profileEssenceIterator());
+        dispatchAction(profileGetBalance());
     }
 
     componentWillUnmount () {
@@ -29,7 +31,7 @@ class EssenceHistory extends Component {
     onEnterIterator = () => {
         const { essenceIterator } = this.props;
         if (essenceIterator.lastBlock !== 0) {
-            this.props.profileEssenceIterator();
+            this.props.dispatchAction(profileEssenceIterator());
         }
     };
 
@@ -173,8 +175,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        profileEssenceIterator,
-        profileGetBalance,
-        profileResetEssenceEvents
+        // profileEssenceIterator,
+        // profileGetBalance,
+        profileResetEssenceEvents,
     }
-)(injectIntl(EssenceHistory));
+)(injectIntl(withRequest(EssenceHistory)));

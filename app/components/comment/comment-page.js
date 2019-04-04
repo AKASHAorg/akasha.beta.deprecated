@@ -11,6 +11,7 @@ import { actionSelectors, commentSelectors, entrySelectors,
   profileSelectors } from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { CommentThread, EntryCardHeader } from '../';
+import withRequest from '../high-order-components/with-request';
 
 const ContentPlaceholder = () => (
   <div>
@@ -30,8 +31,8 @@ class CommentPage extends Component {
         const ethAddress = `0x${this.props.match.params.ethAddress}`;
         const author = { ethAddress };
         const context = 'commentPage';
-        this.props.commentsGetComment({ context, entryId, commentId, author });
-        this.props.entryGetShort({ context, entryId });
+        this.props.dispatchAction(commentsGetComment({ context, entryId, commentId, author }));
+        this.props.dispatchAction(entryGetShort({ context, entryId }));
     }
 
     componentWillReceiveProps (nextProps) {
@@ -42,7 +43,7 @@ class CommentPage extends Component {
         const newEthAddress = entry && entry.getIn(['author', 'ethAddress']);
         if (newEthAddress && !entryAuthor.ethAddress) {
             const context = 'commentPage';            
-            this.props.profileGetData({ ethAddress: newEthAddress, context });                    
+            this.props.dispatchAction(profileGetData({ ethAddress: newEthAddress, context }));                    
         }
     }
 
@@ -204,8 +205,8 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        commentsGetComment,
-        entryGetShort,
-        profileGetData
+        // commentsGetComment,
+        // entryGetShort,
+        // profileGetData
     }
-)(injectIntl(CommentPage));
+)(injectIntl(withRequest(CommentPage)));

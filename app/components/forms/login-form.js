@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import withRouter from 'react-router/withRouter';
 import { injectIntl } from 'react-intl';
-import { Button, Form, Tooltip, Icon } from 'antd';
+import { Button, Form, Icon } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,

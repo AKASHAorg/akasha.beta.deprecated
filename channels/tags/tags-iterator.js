@@ -20,7 +20,7 @@ export default function init(sp, getService) {
         const web3Api = getService(CORE_MODULE.WEB3_API);
         const fetched = yield contracts.fromEvent(contracts.instance.Tags.TagCreate, {}, data.toBlock, maxResults, {});
         for (const event of fetched.results) {
-            collection.push({ tag: web3Api.instance.toUtf8(event.args.tag) });
+            collection.push({ tag: web3Api.instance.utils.toUtf8(event.args.tag) });
             if (collection.length === maxResults) {
                 break;
             }
