@@ -26,12 +26,12 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_SETTINGS_SUCCESS]: (state, { data }) => {
+    [types.IPFS_SETTINGS_SUCCESS]: (state, { payload }) => {
         const defaultSettings = new IpfsSettings().toJS();
         const newSettings = {};
-        Object.keys(data).forEach(key => {
-            if (key !== 'ports' && key !== 'name' && data[key] !== defaultSettings[key]) {
-                newSettings[key] = data[key];
+        Object.keys(payload).forEach(key => {
+            if (key !== 'ports' && key !== 'name' && payload[key] !== defaultSettings[key]) {
+                newSettings[key] = payload[key];
             }
         });
 
@@ -86,19 +86,21 @@ const settingsState = createReducer(initialState, {
 
     // [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
-    [types.GET_APP_SETTINGS]: state => state.setIn(['flags', 'generalSettingsPending'], true),
+    // [types.GET_APP_SETTINGS]: state => state.setIn(['flags', 'generalSettingsPending'], true),
 
-    [types.GET_APP_SETTINGS_SUCCESS]: (state, { data }) =>
+    [types.GET_APP_SETTINGS_SUCCESS]: (state, { payload }) =>
         state.merge({
-            general: new GeneralSettings(data),
-            flags: state.get('flags').set('generalSettingsPending', false)
+            general: new GeneralSettings(payload)
         }),
 
-    [types.GET_APP_SETTINGS_ERROR]: state => state.setIn(['flags', 'generalSettingsPending'], false),
+    [types.GET_APP_SETTINGS_ERROR]: (state, { payload }) => {
+        console.error(payload, payload.error, 'GET_APP_SETTINGS_ERROR');
+        return state;
+    },
 
-    [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
+    [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { payload }) =>
         state.merge({
-            general: state.get('general').merge(data)
+            general: state.get('general').merge(payload)
         }),
 
     // [types.GETH_GET_OPTIONS_SUCCESS]: (state, action) => {

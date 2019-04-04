@@ -1,13 +1,90 @@
+.sidebar {
+    &-icon_wrapper {}
+    &__icon {
+        width: @sidebar-width / 2;
+        height: @sidebar-width / 2;
+        margin: (@sidebar-width / 4) 0 0 0;
+    }
+    &__new-entry-wrapper {
+        width: 32px;
+        height: 32px;
+        background-color: @blue;
+        border-radius: 4px;
+    }
+    &__new-entry {
+        position: relative;
+        text-align: center;
+        &-icon {
+            stroke: @light-background !important;
+        }
+    }
+    &__popover {
+        .ant-popover-inner-content {
+            padding: 0;
+        }
+        &-icon {
+            stroke: @light-background;
+        }
+    }
+    &__entry-menu {
+        &-buttons {
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+            &_wrapper {
+                padding: 8px 24px;
+                color: @grey;
+                user-select: none;
+                cursor: pointer;
+                &:hover {
+                    color: @text-color;
+                   .ant-btn-entry-menu-button {
+                       &:extend(.ant-btn-entry-menu-button:hover);
+                   }
+                }
+                &-disabled {
+                    cursor: not-allowed;
+                    &:hover {
+                        color: @grey;
+                    }
+                }
+            }
+            &_text {
+                text-align: center;
+            }
+            &_draft-button {
+                padding: 4px 8px;
+                background: @background;
+                cursor: pointer;
+                &-icon {
+                    vertical-align: middle;
+                    margin-right: 8px;
+                }
+                &-label {
+                    vertical-align: middle;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}
 .sidebar-layout {
     width: @sidebar-width;
     position: fixed;
     top: 0;
     bottom: 0;
     z-index: 100;
-    display: flex;
-    flex-direction: column;
     max-width: @sidebar-width;
     background-color: @sidebar-background;
+    padding: 16px;
+    &_top {
+        display: flex;
+        flex-direction: column;
+        a {
+            display: flex;
+            justify-content: center;
+        }
+    }
     &__top-icons {
         flex-grow: 4;
         padding: 16px;
@@ -17,37 +94,9 @@
         padding-bottom: 16px;
     }
 
-    &__popover {
-        .ant-popover-inner-content {
-            padding: 0;
-        }
-    }
-
-    &__new-entry {
-        position: relative;
-        text-align: center;
-    }
-
-    &__new-entry-wrapper {
-        width: 32px;
-        height: 32px;
-        background-color: @blue;
-        border-radius: 4px;
-    }
-
-    &__new-entry-icon {
-        stroke: @light-background;
-    }
-
     &__profile-icon {
         width: 21px !important;
         height: 24px !important;
-    }
-
-    &_shown {
-        left: 0;
-        transition: left 0.175s ease-in-out;
-        will-change: left;
     }
 
     &__logo {

@@ -17,6 +17,7 @@ import { AppErrorBoundary } from './components';
 import { loadAkashaDB } from './local-flux/services/db/dbs';
 import * as settingsService from './local-flux/services/settings-service';
 import { MainContext } from './context';
+import { settingsActions } from './local-flux/actions';
 // $FlowFixMe
 import './styles/core.scss';
 // $FlowFixMe
@@ -61,7 +62,19 @@ export const bootstrap = (
                 settingsService.appSettingsRequest(),
                 settingsService.gethSettingsRequest(),
                 settingsService.ipfsSettingsRequest()
-            ]);
+            ])
+                .then(([appSettings, gethSettings, ipfsSettings]) => {
+                    store.dispatch(settingsActions.getAppSettingsSuccess(appSettings));
+                    store.dispatch(settingsActions.gethSettingsSuccess(gethSettings));
+                    store.dispatch(settingsActions.ipfsSettingsSuccess(ipfsSettings));
+                    return [appSettings, gethSettings, ipfsSettings];
+                })
+                .catch(err => {
+                    store.dispatch(settingsActions.getAppSettingsError(err));
+                    store.dispatch(settingsActions.gethSettingsError(err));
+                    store.dispatch(settingsActions.ipfsSettingsError(err));
+                    throw err;
+                });
         })
         .then(([appSettings, gethSettings, ipfsSettings]) => {
             logger.info(
@@ -76,6 +89,8 @@ export const bootstrap = (
         })
         .catch(ex => {
             logger.error({ error: ex }, '[index.js] Cannot load database!!');
+            console.debug(ex, 'the exception');
+            Object.keys(ex).forEach(key => console.log(key, 'the key'));
             if (rootNode) {
                 return render(
                     <Provider store={store}>

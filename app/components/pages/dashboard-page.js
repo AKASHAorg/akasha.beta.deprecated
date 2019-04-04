@@ -15,6 +15,7 @@ function DashboardPage (props /* : Props */) {
         <>
             <Route
                 path="/"
+                exact
                 render={() => (
                     <>
                         <Fill name={APPBAR_SLOTS.LEFT}>
