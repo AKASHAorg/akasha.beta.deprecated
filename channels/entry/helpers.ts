@@ -29,7 +29,7 @@ export default function init(sp, getService) {
         );
 
         tags = captureIndex.results.map(function (ev) {
-          return web3Api.instance.toUtf8(ev.args.tagName);
+          return web3Api.instance.utils.toUtf8(ev.args.tagName);
         });
 
         author = yield getService(PROFILE_MODULE.resolveEthAddress)
@@ -84,7 +84,7 @@ export default function init(sp, getService) {
         );
 
         tags = captureIndex.results.map(function (ev) {
-          return web3Api.instance.toUtf8(ev.args.tagName);
+          return web3Api.instance.utils.toUtf8(ev.args.tagName);
         });
 
         author = fetchedPublish.results.length ?

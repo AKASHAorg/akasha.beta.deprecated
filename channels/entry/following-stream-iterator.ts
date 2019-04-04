@@ -51,7 +51,7 @@ export default function init(sp, getService) {
         data.toBlock, 10, { stopOnFirst: true });
 
       const tags = captureIndex.results.map(function (ev) {
-        return web3Api.instance.toUtf8(ev.args.tagName);
+        return web3Api.instance.utils.toUtf8(ev.args.tagName);
       });
       const author = yield getService(PROFILE_MODULE.getByAddress)
       .execute({ ethAddress: event.args.author });

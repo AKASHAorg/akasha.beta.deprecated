@@ -28,7 +28,7 @@ export default function init(sp, getService) {
       {});
 
     for (const event of fetched.results) {
-      collection.push({ akashaId: web3Api.instance.toUtf8(event.args.label) });
+      collection.push({ akashaId: web3Api.instance.utils.toUtf8(event.args.label) });
     }
     return { collection, lastBlock: fetched.fromBlock };
   });

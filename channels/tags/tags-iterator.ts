@@ -29,7 +29,7 @@ export default function init(sp, getService) {
       {});
 
     for (const event of fetched.results) {
-      collection.push({ tag: web3Api.instance.toUtf8(event.args.tag) });
+      collection.push({ tag: web3Api.instance.utils.toUtf8(event.args.tag) });
       if (collection.length === maxResults) {
         break;
       }
