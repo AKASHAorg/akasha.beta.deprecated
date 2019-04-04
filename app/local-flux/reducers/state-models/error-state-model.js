@@ -1,4 +1,10 @@
+// @flow strict
 import { List, Map, Record } from 'immutable';
+
+/* ::
+    import type { ActionParams, ErrorPayloadType } from '../../../flow-types/actions/action';
+    import type { RecordOf, RecordInstance } from 'immutable';
+ */
 
 const ErrorRecord = Record({
     code: null,
@@ -8,7 +14,8 @@ const ErrorRecord = Record({
     message: '',
     messageId: '',
     platform: '',
-    values: {}
+    values: {},
+    title: ''
 });
 
 const ErrorState = Record({
@@ -20,16 +27,16 @@ const ErrorState = Record({
     reportError: new Map()
 });
 
-export default class ErrorStateModel extends ErrorState {
-    createError (state, error) {
-        const err = new ErrorRecord(error);
+export default class ErrorStateModel /* :: <ErrorState> */ extends ErrorState {
+    createError (state, payload /* : ErrorPayloadType */) {
+        const err = new ErrorRecord(payload);
         const lastErr = state.get('byId').last();
         const id = lastErr ? lastErr.get('id') + 1 : 1;
         return err.set('id', id);
     }
-    addNewError (state, action) {
-        console.log(action, 'the error action');
-        const err = this.createError(state, action.error);
+    addNewError (state /* : ErrorStateModel */, action /* : ActionParams */) {
+        const payload = action.payload;
+        const err = this.createError(state, payload);
         const extra = err.fatal ? { fatalErrors: state.get('fatalErrors').push(err.id) } : null;
 
         return state.merge({

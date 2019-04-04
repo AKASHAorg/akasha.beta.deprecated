@@ -18,7 +18,12 @@ export type ErrorPayloadType = {|
     message?: string,
     reqId?: string,
     code?: string,
-    messageId?: string
+    messageId?: string,
+    fatal: boolean,
+    from?: Object,
+    id?: string,
+    platform?: string,
+    values?: Object
 |};
 
 */

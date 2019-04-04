@@ -1,14 +1,14 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
-export const generalSettingsError = error => {
+export const getAppSettingsError = error => {
     error.code = 'GSE02';
     error.messageId = 'generalSettings';
-    return action(types.GENERAL_SETTINGS_ERROR, { error });
+    return action(types.GET_APP_SETTINGS_ERROR, { error });
 };
 
-export const generalSettingsRequest = () => action(types.GENERAL_SETTINGS);
-export const generalSettingsSuccess = payload => action(types.GENERAL_SETTINGS_SUCCESS, payload);
+export const getAppSettings = () => action(types.GET_APP_SETTINGS);
+export const getAppSettingsSuccess = payload => action(types.GET_APP_SETTINGS_SUCCESS, payload);
 export const gethSaveSettings = (payload, showNotification) =>
     action(types.GETH_SAVE_SETTINGS, { payload, showNotification });
 

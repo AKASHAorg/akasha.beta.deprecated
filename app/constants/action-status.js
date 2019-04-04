@@ -1,4 +1,5 @@
-export const needAuth = 'needAuth';
-export const published = 'published';
-export const publishing = 'publishing';
-export const toPublish = 'toPublish';
+// @flow strict
+export const needAuth /* : string */ = 'needAuth';
+export const published /* : string */ = 'published';
+export const publishing /* : string */ = 'publishing';
+export const toPublish /* : string */ = 'toPublish';

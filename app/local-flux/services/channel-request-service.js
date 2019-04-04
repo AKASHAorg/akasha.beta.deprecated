@@ -14,13 +14,13 @@ export default {
     setLogger (logger /* : Object */) /* : void */ {
         this.logger = logger;
     },
-    sendRequest (mod /* : Object */, methodName /* : string */, data /* : Object */) {
+    sendRequest (moduleName /* : Object */, methodName /* : string */, data /* : Object */) {
         let reqId /* : string */ = data.reqId;
         if (!reqId) {
             reqId = this.generateId();
         }
         const channel = this.getIPCChannel();
-        const reqObject = buildCall(mod, methodName, { reqId, ...data });
+        const reqObject = buildCall(moduleName, methodName, { reqId, ...data });
 
         try {
             channel.send(reqObject);
@@ -57,17 +57,16 @@ export default {
                  * action = { type: String, data: Object }
                  */
                 this.logger.info(
-                    `[ChReqService] Dispatching [${action.responseAction.type}] with response:
-                        ${JSON.stringify(action.responseAction.data)}`
+                    { payload: action.responseAction.data },
+                    `[ChReqService] Dispatching [${action.responseAction.type}]`
                 );
                 this.dispatch(action.responseAction);
                 this.dispatch(action.endAction);
             } else {
                 this.logger.warn(
-                    '[ChReqService] A request without requestId has been made. Please add a requestId to',
-                    module,
-                    method
-                ); // eslint-disable-line
+                    { module, method },
+                    '[ChReqService] A request without requestId has been made'
+                );
             }
         });
     },
@@ -75,7 +74,7 @@ export default {
         // determine the appropiate action base on requestId and data
         const { args, data, error } = response;
         if (error) {
-            this.logger.fatal(`${error.message}, ${JSON.stringify(error.stack)}`);
+            this.logger.error({ args, error }, `[${args.module}/${args.method}]`);
         }
         const { method } = args;
         if (error) {

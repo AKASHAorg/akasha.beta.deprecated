@@ -19,9 +19,7 @@ import reqService from '../../local-flux/services/channel-request-service';
     }
 */
 
-function withRequest /* ::<Config: {}> */(
-    WrappedComponent /* : React.AbstractComponent <WrappedComponentProps, Config> */
-) {
+function withRequest (WrappedComponent /* : React.AbstractComponent <*> */) {
     const requests = reqService.requestIds;
     class WithRequestWrapper extends React.Component /* :: <WrapperComponentProps> */ {
         requestsQueue /* : Array<Object> */ = [];
@@ -63,7 +61,7 @@ function withRequest /* ::<Config: {}> */(
                         req => req.action.type !== actionPayload.type
                     );
                 } else {
-                    logger.info('[with-request.js] Adding action to queue', actionPayload.type);
+                    // logger.info('[with-request.js] Adding action to queue', actionPayload.type);
                     this.addRequestToQueue(actionPayload, condition);
                 }
             } else {

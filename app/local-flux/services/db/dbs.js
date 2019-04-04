@@ -33,23 +33,25 @@ export const akashaDB = new Loki('akashaDB-beta', {
 });
 
 // Moved: from 'rootSaga' to 'app/index.js'
-// Do not return a promise here!
 //
 // calling this in root saga will block the middleware from listening actions!!
 // because we need the database from the start of the app
 // if we encounter an error it is better to inform the user and
 // stop loading the app
-export const loadAkashaDB  = (cb) =>
-    akashaDB.loadDatabase({}, () => {
-        collections.forEach(record => {
-            if (!akashaDB.getCollection(record.collectionName)) {
-                akashaDB.addCollection(record.collectionName, record.options);
-            }
-            akashaDB.getCollection(record.collectionName)
-                .checkAllIndexes({ repair: true, randomSampling: false })
-        });
-        cb('', akashaDB);
-    });
+export const loadAkashaDB = () =>
+    Promise.fromCallback(cb =>
+        akashaDB.loadDatabase({}, () => {
+            collections.forEach(record => {
+                if (!akashaDB.getCollection(record.collectionName)) {
+                    akashaDB.addCollection(record.collectionName, record.options);
+                }
+                akashaDB
+                    .getCollection(record.collectionName)
+                    .checkAllIndexes({ repair: true, randomSampling: false });
+            });
+            cb('', akashaDB);
+        })
+    );
 
 export const getActionCollection = () => akashaDB.getCollection(actionCollection.collectionName);
 export const getClaimableCollection = () => akashaDB.getCollection(claimableCollection.collectionName);

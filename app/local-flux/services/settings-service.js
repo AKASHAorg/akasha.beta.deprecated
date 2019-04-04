@@ -29,7 +29,7 @@ const saveSettings = (table, payload) => {
     }
 };
 
-export const generalSettingsRequest = () => getSettings('general');
+export const appSettingsRequest = () => getSettings('general');
 export const gethSettingsRequest = () => getSettings('geth');
 export const ipfsSettingsRequest = () => getSettings('ipfs');
 export const userSettingsRequest = ethAddress => {
@@ -41,7 +41,7 @@ export const userSettingsRequest = ethAddress => {
     }
 };
 
-export const generalSettingsSave = payload => saveSettings('general', payload);
+export const appSettingsSave = payload => saveSettings('general', payload);
 export const gethSettingsSave = payload => saveSettings('geth', payload);
 export const ipfsSettingsSave = payload => saveSettings('ipfs', payload);
 export const userSettingsSave = (ethAddress, payload) => {

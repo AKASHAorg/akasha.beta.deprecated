@@ -1,9 +1,21 @@
 // @flow
-import { call, cancel, fork, put, select, takeLatest, take, takeEvery, getContext } from 'redux-saga/effects';
+import {
+    call,
+    cancel,
+    fork,
+    put,
+    select,
+    takeLatest,
+    take,
+    takeEvery,
+    takeLeading,
+    getContext
+} from 'redux-saga/effects';
 import delay from '@redux-saga/delay-p';
 import * as actions from '../actions/external-process-actions';
 import { externalProcessSelectors, settingsSelectors } from '../selectors';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
+import * as types from '../constants';
 
 /*::
     import type { Saga } from 'redux-saga';
@@ -130,4 +142,6 @@ export function* watchEProcActions () /* :Saga<void> */ {
     yield fork(watchIpfsToggleLogger);
     yield takeLatest(IPFS_MODULE.setPorts, ipfsSetPorts);
     yield takeEvery(IPFS_MODULE.getPorts, ipfsGetPorts);
+    yield takeLeading(GETH_MODULE.options, gethGetOptions);
+    yield takeLeading(IPFS_MODULE.getConfig, ipfsGetConfig);
 }

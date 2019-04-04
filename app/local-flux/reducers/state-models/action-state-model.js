@@ -1,3 +1,4 @@
+// @flow strict
 import { List, Record, Map, fromJS } from 'immutable';
 import * as actionTypes from '../../../constants/action-types';
 
@@ -13,24 +14,14 @@ export const ActionRecord = Record({
     type: null
 });
 
-// const Flags = Record({
-//     fetchingAethTransfers: false,
-//     fetchingHistory: false,
-// });
-
 export const ActionState = Record({
     allActions: new List(),
     batchActions: new List(),
     byId: new Map(),
     byType: new Map(),
-    // flags: new Flags(),
     history: new List(),
     historyTypes: new List(),
-    // needAuth: null,
-    // needEth: null,
-    // needAeth: null,
-    // needMana: null,
-    pending: new Map({
+    pending: Map({
         bondAeth: false,
         claim: new Map(),
         claimVote: new Map(),
@@ -75,7 +66,8 @@ export default class ActionStateModel extends ActionState {
         });
     }
 
-    addPendingAction (pending, action) { // eslint-disable-line complexity
+    // eslint-disable-next-line complexity
+    addPendingAction (pending, action) {
         const { commentId, entryId, ethAddress, tag } = action.payload;
         let pendingComments;
         switch (action.type) {
@@ -119,7 +111,8 @@ export default class ActionStateModel extends ActionState {
                 return pending;
         }
     }
-    removePendingAction (pending, action) { // eslint-disable-line complexity
+    // eslint-disable-next-line complexity
+    removePendingAction (pending, action) {
         const { commentId, entryId, ethAddress, tag } = action.payload;
         let pendingComments;
         switch (action.type) {
@@ -140,7 +133,7 @@ export default class ActionStateModel extends ActionState {
                 return pending.setIn([action.type, entryId], false);
             case actionTypes.comment: {
                 const pendingEntry = pending.getIn([action.type, entryId]);
-                pendingComments = pendingEntry && pendingEntry.filter((comm) => comm.id !== action.id);
+                pendingComments = pendingEntry && pendingEntry.filter(comm => comm.id !== action.id);
                 return pending.setIn([action.type, entryId], pendingComments);
             }
             case actionTypes.entryDownvote:
