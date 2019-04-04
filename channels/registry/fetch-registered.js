@@ -19,7 +19,7 @@ export default function init(sp, getService) {
         const web3Api = getService(CORE_MODULE.WEB3_API);
         const fetched = yield contracts.fromEvent(contracts.instance.ProfileRegistrar.Register, {}, data.toBlock, maxResults, {});
         for (const event of fetched.results) {
-            collection.push({ akashaId: web3Api.instance.toUtf8(event.args.label) });
+            collection.push({ akashaId: web3Api.instance.utils.toUtf8(event.args.label) });
         }
         return { collection, lastBlock: fetched.fromBlock };
     });

@@ -29,7 +29,7 @@ export default function init(sp, getService) {
         for (const event of fetched.results) {
             collection.push({
                 amount: (web3Api.instance.fromWei(event.args.amount, 'ether')).toFormat(5),
-                action: web3Api.instance.toUtf8(addHexPrefix(unpad(event.args.action))),
+                action: web3Api.instance.utils.toUtf8(addHexPrefix(unpad(event.args.action))),
                 sourceId: event.args.source,
                 blockNumber: event.blockNumber,
             });

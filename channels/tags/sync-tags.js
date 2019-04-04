@@ -17,7 +17,7 @@ export default function init(sp, getService) {
         const tagCreateEvent = contracts.createWatcher(contracts.instance.Tags.TagCreate, {}, data.fromBlock);
         const web3Api = getService(CORE_MODULE.WEB3_API);
         const dbIndex = getService(CORE_MODULE.DB_INDEX);
-        const toUtf8 = web3Api.instance.toUtf8;
+        const toUtf8 = web3Api.instance.utils.toUtf8;
         tagCreateEvent.watch((err, event) => {
             const data = { id: event.args.tag, tagName: toUtf8(event.args.tag) };
             dbIndex.tags

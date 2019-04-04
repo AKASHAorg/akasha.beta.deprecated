@@ -22,7 +22,7 @@ export default function init(sp, getService) {
             yield Promise
                 .fromCallback((cb) => filter.get(cb)).then((collection) => {
                 const tags = collection.map((el) => {
-                    return getService(CORE_MODULE.WEB3_API).instance.toUtf8(el.args.tag);
+                    return getService(CORE_MODULE.WEB3_API).instance.utils.toUtf8(el.args.tag);
                 });
                 stash.mixed.setFull(cacheKey, tags);
                 return true;
