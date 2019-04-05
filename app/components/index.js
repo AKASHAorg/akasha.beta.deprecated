@@ -140,6 +140,7 @@ export { default as ShareLinkModal } from './modals/share-link-modal';
 export { default as ShiftForm } from './forms/shift-form';
 export { default as Sidebar } from './sidebar';
 export { default as SidebarIcon } from './sidebar-icon';
+export { default as SidebarBottomMenu } from './sidebar/sidebar-bottom-menu';
 export { default as SidebarTopMenu } from './sidebar/sidebar-top-menu';
 export { default as StartScreen } from './setup/start-screen';
 // export { default as StreamColumn } from "./columns/stream-column";

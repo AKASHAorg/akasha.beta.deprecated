@@ -4,27 +4,16 @@ import RequestStateModel from './state-models/request-state-model';
 const initialState = new RequestStateModel();
 
 const requestState = createReducer(initialState, {
-    'BOOTSTRAP_APP_SUCCESS': (state, action) => {
-        return state.merge({
-            successActions: state.get('successActions').concat(['BOOTSTRAP_APP'])
-        });
-    },
-    'GENERIC_REQUEST_START': (state, action) => {
-        return state.merge({
+    GENERIC_REQUEST_START: (state, action) =>
+        state.merge({
             requstedActions: state.get('requestedActions').concat([action.type])
-        });
-    },
-    'GENERIC_REQUEST_START_ERROR': (state, action) => {
-        return state.setIn(['errorActions', action.type]);
-    },
-    'GENERIC_REQUEST_END_SUCCESS': (state, action) => {
-        return state.merge({
+        }),
+    GENERIC_REQUEST_START_ERROR: (state, action) => state.setIn(['errorActions', action.type]),
+    GENERIC_REQUEST_END_SUCCESS: (state, action) =>
+        state.merge({
             successActions: state.get('successActions').concat([action.type])
-        });
-    },
-    'GENERIC_REQUEST_END_ERROR': (state, action) => {
-        return state.setIn(['errorActions', action.data.actionType]);
-    }
+        }),
+    GENERIC_REQUEST_END_ERROR: (state, action) => state.setIn(['errorActions', action.payload.actionType])
 });
 
 export default requestState;

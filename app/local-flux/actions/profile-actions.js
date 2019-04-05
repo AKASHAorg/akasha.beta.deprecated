@@ -81,8 +81,7 @@ export const profileGetBalance = () => action(`${PROFILE_MODULE.getBalance}`);
 
 export const profileGetByAddress = ethAddress => action(`${PROFILE_MODULE.getByAddress}`, { ethAddress });
 
-export const profileGetData = ({ akashaId, context, ethAddress, full, batching }) =>
-    action(`${PROFILE_MODULE.profileData}`, { akashaId, context, ethAddress, full, batching });
+export const profileGetData = payload => action(`${PROFILE_MODULE.profileData}`, payload);
 
 export const profileGetList = ethAddresses => action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });
 

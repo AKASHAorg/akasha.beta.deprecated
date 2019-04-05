@@ -29,7 +29,8 @@ import {
     AppbarBalance,
     ServiceStatusBar,
     UserNotification,
-    SidebarTopMenu
+    SidebarTopMenu,
+    SidebarBottomMenu
 } from '../components';
 import {
     dashboardSelectors,
@@ -66,7 +67,6 @@ const Application = (props /* :Props */) => {
     const onReload = () => dispatchAction(reloadPage());
 
     React.useEffect(() => {
-        const timestamp = new Date().getTime();
         const { getCurrentProfile } = profileActions;
         const { selectGethSyncStatus } = externalProcessSelectors;
         dispatchAction(
@@ -98,7 +98,7 @@ const Application = (props /* :Props */) => {
                             <SidebarTopMenu />
                         </Fill>
                         <Fill name={SIDEBAR_SLOTS.BOTTOM}>
-                            <>Bottom</>
+                            <SidebarBottomMenu />
                         </Fill>
                         <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
                             <ServiceStatusBar />
