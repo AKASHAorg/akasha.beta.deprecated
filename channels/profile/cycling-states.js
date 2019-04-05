@@ -28,7 +28,7 @@ export default function init(sp, getService) {
                 continue;
             }
             collection.push({
-                amount: (web3Api.instance.fromWei(amount, 'ether')).toFormat(5),
+                amount: (web3Api.instance.utils.fromWei(amount, 'ether')).toFormat(5),
                 unlockDate: unlockDate.toNumber(),
             });
             currentIndex = index.toNumber() + 1;

@@ -76,7 +76,7 @@ export default function init(sp, getService) {
             score: score.toString(10),
             publishDate: (endPeriod.minus(votingPeriod)).toNumber(),
             endPeriod: endPeriod.toNumber(),
-            totalKarma: (web3Api.instance.fromWei(totalKarma, 'ether')).toString(10),
+            totalKarma: (web3Api.instance.utils.fromWei(totalKarma, 'ether')).toString(10),
             content: entry,
             commentsCount: cCount.collection.length ? cCount.collection[0].count : 0,
         };

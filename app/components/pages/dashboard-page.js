@@ -24,9 +24,10 @@ function DashboardPage (props /* : Props */) {
                         </Fill>
                         <Fill name={DASHBOARD_SLOTS.COLUMN}>
                             <>Column 1</>
-                        </Fill>
-                        <Fill name={DASHBOARD_SLOTS.COLUMN}>
                             <>Column 2</>
+                        </Fill>
+                        <Fill name={DASHBOARD_SLOTS.NEW_COLUMN}>
+                            <>New Column</>
                         </Fill>
                         <CustomDragLayer />
                     </>

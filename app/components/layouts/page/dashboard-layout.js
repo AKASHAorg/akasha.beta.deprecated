@@ -32,7 +32,9 @@ function DashboardLayout (props /* : Props */) {
                                 </>
                             )}
                         </Slot>
-                        {props.children}
+                        <div className="dashboard-layout__column">
+                            <Slot name={DASHBOARD_SLOTS.NEW_COLUMN} />
+                        </div>
                     </div>
                 )}
             />
