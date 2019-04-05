@@ -2,9 +2,17 @@ import { List, Map, Collection, fromJS } from 'immutable';
 import * as types from '../constants';
 import * as actionTypes from '../../constants/action-types';
 import { createReducer } from './utils';
-import ProfileStateModel, { AethBalance, Balance,
-    EssenceBalance, EssenceEvent, EssenceIterator, LoggedProfile, ManaBalance,
-    ProfileExistsRecord, ProfileRecord } from './state-models/profile-state-model';
+import ProfileStateModel, {
+    AethBalance,
+    Balance,
+    EssenceBalance,
+    EssenceEvent,
+    EssenceIterator,
+    LoggedProfile,
+    ManaBalance,
+    ProfileExistsRecord,
+    ProfileRecord
+} from './state-models/profile-state-model';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants';
 import { genId } from '../../utils/dataModule';
@@ -12,6 +20,15 @@ import { genId } from '../../utils/dataModule';
 const initialState = new ProfileStateModel();
 
 const profileState = createReducer(initialState, {
+    /* ======= cleaned ========== */
+
+    [`${PROFILE_MODULE.getCurrentProfile}_SUCCESS`]: (state, { payload }) => {
+        const { akashaId, ethAddress, raw } = payload;
+        const loggedProfile = new LoggedProfile({ akashaId, ethAddress, raw });
+        return state.set(['loggedProfile'], loggedProfile);
+    },
+
+    /* ======== dirty ============ */
 
     [types.ACTION_ADD]: (state, { actionType }) => {
         if (actionType === actionTypes.faucet) {
@@ -30,43 +47,36 @@ const profileState = createReducer(initialState, {
             localProfiles: new List()
         }),
 
-    [types.PROFILE_CLEAR_LOGIN_ERRORS]: state =>
-        state.set('loginErrors', new List()),
+    [types.PROFILE_CLEAR_LOGIN_ERRORS]: state => state.set('loginErrors', new List()),
 
-    [types.PROFILE_CREATE_ETH_ADDRESS]: state =>
-        state.setIn(['flags', 'ethAddressPending'], true),
+    [types.PROFILE_CREATE_ETH_ADDRESS]: state => state.setIn(['flags', 'ethAddressPending'], true),
 
-    [types.PROFILE_CREATE_ETH_ADDRESS_ERROR]: state =>
-        state.setIn(['flags', 'ethAddressPending'], false),
+    [types.PROFILE_CREATE_ETH_ADDRESS_ERROR]: state => state.setIn(['flags', 'ethAddressPending'], false),
 
-    [types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS]: state =>
-        state.setIn(['flags', 'ethAddressPending'], false),
+    [types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS]: state => state.setIn(['flags', 'ethAddressPending'], false),
 
     // [types.PROFILE_CYCLING_STATES_SUCCESS]: (state, { data }) => {
     //     return state.mergeIn(['cyclingStates'], data);
     // },
 
-    [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
-        state.set('loggedProfile', new LoggedProfile()),
+    [types.PROFILE_DELETE_LOGGED_SUCCESS]: state => state.set('loggedProfile', new LoggedProfile()),
 
-    [`${PROFILE_MODULE.essenceIterator}`]: (state) => {
-        const flag = state.getIn(['essenceIterator', 'lastBlock']) ?
-            'fetchingMoreEssenceIterator' :
-            'fetchingEssenceIterator';
+    [`${PROFILE_MODULE.essenceIterator}`]: state => {
+        const flag = state.getIn(['essenceIterator', 'lastBlock'])
+            ? 'fetchingMoreEssenceIterator'
+            : 'fetchingEssenceIterator';
         return state.setIn(['flags', flag], true);
     },
 
     [`${PROFILE_MODULE.essenceIterator}_ERROR`]: (state, { request }) => {
-        const flag = request.lastIndex ?
-            'fetchingMoreEssenceIterator' :
-            'fetchingEssenceIterator';
+        const flag = request.lastIndex ? 'fetchingMoreEssenceIterator' : 'fetchingEssenceIterator';
         return state.setIn(['flags', flag], false);
     },
 
     [`${PROFILE_MODULE.essenceIterator}_SUCCESS`]: (state, { data, request }) => {
         let latestIterable = new List();
         const essenceEvents = state.get('essenceEvents');
-        data.collection.forEach((event) => {
+        data.collection.forEach(event => {
             const newEssenceRecord = new EssenceEvent({
                 amount: balanceToNumber(event.amount),
                 action: event.action,
@@ -110,12 +120,12 @@ const profileState = createReducer(initialState, {
         const oldFollowings = state.get('followings');
         const followersList = oldFollowers.get(ethAddress);
         const followingsList = oldFollowings.get(loggedEthAddress);
-        const followers = followersList ?
-            oldFollowers.set(ethAddress, followersList.unshift(loggedEthAddress)) :
-            oldFollowers;
-        const followings = followingsList ?
-            oldFollowings.set(loggedEthAddress, followingsList.unshift(ethAddress)) :
-            oldFollowings;
+        const followers = followersList
+            ? oldFollowers.set(ethAddress, followersList.unshift(loggedEthAddress))
+            : oldFollowers;
+        const followings = followingsList
+            ? oldFollowings.set(loggedEthAddress, followingsList.unshift(ethAddress))
+            : oldFollowings;
         const allFollowings = state.get('allFollowings');
         if (allFollowings.indexOf(ethAddress) === -1) {
             allFollowings.push(ethAddress);
@@ -123,9 +133,9 @@ const profileState = createReducer(initialState, {
         return state.merge({
             allFollowings,
             byEthAddress: state.get('byEthAddress').merge({
-                [ethAddress]: profile ?
-                    profile.set('followersCount', +profile.get('followersCount') + 1) :
-                    undefined,
+                [ethAddress]: profile
+                    ? profile.set('followersCount', +profile.get('followersCount') + 1)
+                    : undefined,
                 [loggedEthAddress]: loggedProfile.set('followingCount', +followingCount + 1)
             }),
             followers,
@@ -147,7 +157,7 @@ const profileState = createReducer(initialState, {
             lastIndex: data.lastIndex,
             lastBlock: data.lastBlock
         };
-        data.collection.forEach((follower) => {
+        data.collection.forEach(follower => {
             followersList = followersList.push(follower.ethAddress);
         });
 
@@ -172,7 +182,7 @@ const profileState = createReducer(initialState, {
             lastIndex: data.lastIndex,
             lastBlock: data.lastBlock
         };
-        data.collection.forEach((following) => {
+        data.collection.forEach(following => {
             followingsList = followingsList.push(following.ethAddress);
         });
 
@@ -205,9 +215,9 @@ const profileState = createReducer(initialState, {
     },
 
     [`${PROFILE_MODULE.profileData}`]: (state, { context, akashaId, ethAddress }) => {
-        const flags = context ?
-            state.get('flags').setIn(['pendingProfiles', context, ethAddress], true) :
-            state.get('flags');
+        const flags = context
+            ? state.get('flags').setIn(['pendingProfiles', context, ethAddress], true)
+            : state.get('flags');
         const byEthAddress = state.get('byEthAddress');
         if (byEthAddress.get(ethAddress)) {
             return state.set('flags', flags);
@@ -239,7 +249,7 @@ const profileState = createReducer(initialState, {
 
     [`${PROFILE_MODULE.getProfileList}`]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);
-        ethAddresses.forEach((item) => {
+        ethAddresses.forEach(item => {
             pendingListProfiles = pendingListProfiles.set(item.ethAddress, true);
         });
         return state.setIn(['flags', 'pendingListProfiles'], pendingListProfiles);
@@ -279,7 +289,7 @@ const profileState = createReducer(initialState, {
         let byEthAddress = state.get('byEthAddress');
         if (!request.polling) {
             let localProfiles = new List();
-            data.forEach((prf) => {
+            data.forEach(prf => {
                 byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
                 localProfiles = localProfiles.push(prf.ethAddress);
             });
@@ -294,7 +304,7 @@ const profileState = createReducer(initialState, {
             });
         }
         let localProfiles = state.get('localProfiles');
-        data.forEach((prf) => {
+        data.forEach(prf => {
             if (!localProfiles.includes(prf.ethAddress)) {
                 byEthAddress = byEthAddress.set(prf.ethAddress, new ProfileRecord(prf));
                 localProfiles = localProfiles.push(prf.ethAddress);
@@ -355,8 +365,10 @@ const profileState = createReducer(initialState, {
         }
         if (data === 'below' && below.length) {
             const last = below[below.length - 1].rank;
-            const newBelow = (last && last === collection[collection.length - 1].rank) ?
-                below : below.concat(collection.slice(last + 1, last + 5));
+            const newBelow =
+                last && last === collection[collection.length - 1].rank
+                    ? below
+                    : below.concat(collection.slice(last + 1, last + 5));
             return state.setIn(['karmaRanking', 'below'], newBelow);
         }
         return state;
@@ -364,12 +376,15 @@ const profileState = createReducer(initialState, {
 
     [`${PROFILE_MODULE.karmaRanking}_SUCCESS`]: (state, { data }) => {
         const defaultState = state.getKarmaPopoverDefaultState(data.collection, data.myRanking);
-        const first = ((defaultState[0].rank - 3) > -1) ? defaultState[0].rank - 3 : 0;
+        const first = defaultState[0].rank - 3 > -1 ? defaultState[0].rank - 3 : 0;
         const above = data.collection.slice(first, defaultState[0].rank);
-        const below = (defaultState[defaultState.length - 1].rank === data.collection.length - 1) ?
-            [] :
-            data.collection.slice(defaultState[defaultState.length - 1].rank + 1,
-                defaultState[defaultState.length - 1].rank + 4);
+        const below =
+            defaultState[defaultState.length - 1].rank === data.collection.length - 1
+                ? []
+                : data.collection.slice(
+                    defaultState[defaultState.length - 1].rank + 1,
+                    defaultState[defaultState.length - 1].rank + 4
+                );
         return state.merge({
             flags: state.get('flags').set('karmaRankingPending', false),
             karmaRanking: state.get('karmaRanking').merge({
@@ -382,8 +397,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_LOGIN]: state =>
-        state.setIn(['flags', 'loginPending'], true),
+    [types.PROFILE_LOGIN]: state => state.setIn(['flags', 'loginPending'], true),
 
     // [types.PROFILE_LOGIN_ERROR]: (state, { error }) =>
     //     state.merge({
@@ -419,7 +433,7 @@ const profileState = createReducer(initialState, {
             lastIndex: data.lastIndex,
             lastBlock: data.lastBlock
         };
-        data.collection.forEach((follower) => {
+        data.collection.forEach(follower => {
             if (!followersList.includes(follower.ethAddress)) {
                 followersList = followersList.push(follower.ethAddress);
             }
@@ -445,7 +459,7 @@ const profileState = createReducer(initialState, {
             lastIndex: data.lastIndex,
             lastBlock: data.lastBlock
         };
-        data.collection.forEach((following) => {
+        data.collection.forEach(following => {
             if (!followingsList.includes(following.ethAddress)) {
                 followingsList = followingsList.push(following.ethAddress);
             }
@@ -465,13 +479,14 @@ const profileState = createReducer(initialState, {
             lastFollower: state.get('lastFollower').set(ethAddress, new List()),
             lastFollowing: state.get('lastFollowing').set(ethAddress, new List()),
             moreFollowers: state.get('moreFollowers').set(ethAddress, false),
-            moreFollowings: state.get('moreFollowings').set(ethAddress, false),
+            moreFollowings: state.get('moreFollowings').set(ethAddress, false)
         }),
 
-    [types.PROFILE_RESET_ESSENCE_EVENTS]: state => state.merge({
-        essenceEvents: new Collection.Set([]),
-        essenceIterator: new EssenceIterator()
-    }),
+    [types.PROFILE_RESET_ESSENCE_EVENTS]: state =>
+        state.merge({
+            essenceEvents: new Collection.Set([]),
+            essenceIterator: new EssenceIterator()
+        }),
 
     // [types.PROFILE_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
     //     let newHashes = new Map();
@@ -493,9 +508,9 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_TOGGLE_INTEREST]: (state, { interest, interestType }) => {
         const interestState = state.getIn(['interests', interestType]);
-        const newList = interestState.includes(interest) ?
-            interestState.delete(interestState.indexOf(interest)) :
-            interestState.push(interest);
+        const newList = interestState.includes(interest)
+            ? interestState.delete(interestState.indexOf(interest))
+            : interestState.push(interest);
         return state.setIn(['interests', interestType], newList);
     },
 
@@ -553,9 +568,7 @@ const profileState = createReducer(initialState, {
             })
         }),
 
-    [types.TEMP_PROFILE_UPDATE]: (state, { data }) =>
-        state.mergeIn(['tempProfile'], data),
-
+    [types.TEMP_PROFILE_UPDATE]: (state, { data }) => state.mergeIn(['tempProfile'], data),
 
     [types.TEMP_PROFILE_DELETE]: state => state.clear()
 });

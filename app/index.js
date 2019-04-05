@@ -89,8 +89,6 @@ export const bootstrap = (
         })
         .catch(ex => {
             logger.error({ error: ex }, '[index.js] Cannot load database!!');
-            console.debug(ex, 'the exception');
-            Object.keys(ex).forEach(key => console.log(key, 'the key'));
             if (rootNode) {
                 return render(
                     <Provider store={store}>

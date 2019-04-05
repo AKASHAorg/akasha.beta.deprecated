@@ -1,12 +1,12 @@
 // @flow strict
-import { call, fork, put, select, takeLatest, getContext, setContext } from 'redux-saga/effects';
-import * as actionActions from '../actions/action-actions';
-import * as appActions from '../actions/app-actions';
-import * as claimableActions from '../actions/claimable-actions';
-import * as eProcActions from '../actions/external-process-actions';
-import * as notificationsActions from '../actions/notifications-actions';
-import * as profileActions from '../actions/profile-actions';
-import { profileSelectors } from '../selectors';
+import { fork, setContext } from 'redux-saga/effects';
+// import * as actionActions from '../actions/action-actions';
+// import * as appActions from '../actions/app-actions';
+// import * as claimableActions from '../actions/claimable-actions';
+// import * as eProcActions from '../actions/external-process-actions';
+// import * as notificationsActions from '../actions/notifications-actions';
+// import * as profileActions from '../actions/profile-actions';
+// import { profileSelectors } from '../selectors';
 import * as actionSaga from './action-saga';
 import * as appSaga from './app-saga';
 import * as claimableSaga from './claimable-saga';
@@ -25,73 +25,73 @@ import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as transactionSaga from './transaction-saga';
-import * as types from '../constants';
+// import * as types from '../constants';
 
 /*::
     import type { Saga } from 'redux-saga';
 */
 
-function* launchActions () /* :Saga<void> */ {
-    // const timestamp = new Date().getTime();
-    // yield put(eProcActions.servicesSetTimestamp(timestamp));
-    // // from local db
-    // yield fork(settingsSaga.getSettings);
-    // // from geth.options channel
-    // yield fork(externalProcSaga.gethGetOptions);
-    // // from ipfs.getConfig channel
-    // yield fork(externalProcSaga.ipfsGetConfig);
-    // yield fork(externalProcSaga.gethGetStatus);
-    // yield fork(externalProcSaga.ipfsGetStatus);
-}
+// function* launchActions () /* :Saga<void> */ {
+// const timestamp = new Date().getTime();
+// yield put(eProcActions.servicesSetTimestamp(timestamp));
+// // from local db
+// yield fork(settingsSaga.getSettings);
+// // from geth.options channel
+// yield fork(externalProcSaga.gethGetOptions);
+// // from ipfs.getConfig channel
+// yield fork(externalProcSaga.ipfsGetConfig);
+// yield fork(externalProcSaga.gethGetStatus);
+// yield fork(externalProcSaga.ipfsGetStatus);
+// }
 
-function* getUserSettings () {
-    yield call(settingsSaga.userSettingsRequest, {});
-    yield put(notificationsActions.notificationsSubscribe());
-}
+// function* getUserSettings () {
+//     yield call(settingsSaga.userSettingsRequest, {});
+//     yield put(notificationsActions.notificationsSubscribe());
+// }
 
-function* launchHomeActions ({ payload } /* : Object */) /* : Saga<void> */ {
-    // yield call(profileSaga.profileGetLogged);
-    // yield fork(dashboardSaga.dashboardGetActive);
-    // yield fork(dashboardSaga.dashboardGetAll);
-    // yield fork(highlightSaga.highlightGetAll);
-    // yield fork(listSaga.listGetAll);
-    // yield fork(getUserSettings);
-    // const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
-    // if (loggedEthAddress) {
-    //     yield put(actionActions.actionGetPending());
-    //     yield put(claimableActions.claimableIterator());
-    //     yield put(
-    //         profileActions.profileFollowingsIterator({
-    //             column: { value: loggedEthAddress },
-    //             allFollowings: true,
-    //             limit: 1000
-    //         })
-    //     );
-    //     yield put(profileActions.profileCyclingStates());
-    // }
-    // yield put(profileActions.profileManaBurned());
-}
+// function* launchHomeActions ({ payload } /* : Object */) /* : Saga<void> */ {
+// yield call(profileSaga.profileGetLogged);
+// yield fork(dashboardSaga.dashboardGetActive);
+// yield fork(dashboardSaga.dashboardGetAll);
+// yield fork(highlightSaga.highlightGetAll);
+// yield fork(listSaga.listGetAll);
+// yield fork(getUserSettings);
+// const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
+// if (loggedEthAddress) {
+//     yield put(actionActions.actionGetPending());
+//     yield put(claimableActions.claimableIterator());
+//     yield put(
+//         profileActions.profileFollowingsIterator({
+//             column: { value: loggedEthAddress },
+//             allFollowings: true,
+//             limit: 1000
+//         })
+//     );
+//     yield put(profileActions.profileCyclingStates());
+// }
+// yield put(profileActions.profileManaBurned());
+// }
 
-function* bootstrapApp ({ payload }) /* : Saga<void> */ {
-    try {
-        yield call(launchActions, payload);
-        yield put(appActions.bootstrapAppSuccess());
-    } catch (ex) {
-        const logger = yield getContext('logger');
-        logger.fatal({ error: ex }, 'Cannot bootstrap app!');
-    }
-}
+// function* bootstrapApp ({ payload }) /* : Saga<void> */ {
+//     try {
+//         yield call(launchActions, payload);
+//         yield put(appActions.bootstrapAppSuccess());
+//     } catch (ex) {
+//         const logger = yield getContext('logger');
+//         logger.fatal({ error: ex }, 'Cannot bootstrap app!');
+//     }
+// }
 
-function* bootstrapHome ({ payload }) /* : Saga<void> */ {
-    // launch the necessary actions for the home/dashboard component
-    // try {
-    //     yield call(launchHomeActions, payload);
-    //     yield put(appActions.bootstrapHomeSuccess());
-    // } catch (ex) {
-    //     const logger = yield getContext('logger');
-    //     logger.fatal({ error: ex }, 'Cannot bootstrap home!');
-    // }
-}
+// function* bootstrapHome ({ payload }) /* : Saga<void> */ {
+// launch the necessary actions for the home/dashboard component
+// try {
+//     yield call(launchHomeActions, payload);
+//     yield put(appActions.bootstrapHomeSuccess());
+// } catch (ex) {
+//     const logger = yield getContext('logger');
+//     logger.fatal({ error: ex }, 'Cannot bootstrap home!');
+// }
+// }
 /* eslint-disable max-statements */
 export default function* rootSaga (logger /* : Object */, chReqService /* : Object */) /* : Saga<void> */ {
     yield setContext({
@@ -117,6 +117,6 @@ export default function* rootSaga (logger /* : Object */, chReqService /* : Obje
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(transactionSaga.watchTransactionActions);
     // yield fork(utilsSaga.watchUtilsActions);
-    yield takeLatest(types.BOOTSTRAP_APP, bootstrapApp);
-    yield takeLatest(types.BOOTSTRAP_HOME, bootstrapHome);
+    // yield takeLatest(types.BOOTSTRAP_APP, bootstrapApp);
+    // yield takeLatest(types.BOOTSTRAP_HOME, bootstrapHome);
 }

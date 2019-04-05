@@ -15,6 +15,13 @@ import { PROFILE_MODULE, REGISTRY_MODULE } from '@akashaproject/common/constants
 
 // export const profileAllFollowings = following => action(types.PROFILE_ALL_FOLLOWINGS, { following });
 
+/* ======== cleaned ============= */
+
+export const getCurrentProfile = () => action(PROFILE_MODULE.getCurrentProfile, {});
+export const getCurrentProfileError = error => action(`${PROFILE_MODULE.getCurrentProfile}_ERROR`, { error });
+
+/* ========= dirty ============== */
+
 export const profileBondAeth = ({ actionId, amount }) =>
     action(`${PROFILE_MODULE.bondAeth}`, { actionId, amount });
 
@@ -77,14 +84,6 @@ export const profileGetByAddress = ethAddress => action(`${PROFILE_MODULE.getByA
 export const profileGetData = ({ akashaId, context, ethAddress, full, batching }) =>
     action(`${PROFILE_MODULE.profileData}`, { akashaId, context, ethAddress, full, batching });
 
-// export const profileGetEntrySyncBlockError = (error) => {
-//     error.code = 'PGESBE01';
-//     return action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_ERROR, { error });
-// };
-//
-// export const profileGetEntrySyncBlockSuccess = block =>
-//     action(types.PROFILE_GET_ENTRY_SYNC_BLOCK_SUCCESS, { block });
-
 export const profileGetList = ethAddresses => action(`${PROFILE_MODULE.getProfileList}`, { ethAddresses });
 
 export const profileGetLocal = polling => action(types.PROFILE_GET_LOCAL, { polling });
@@ -94,9 +93,6 @@ export const profileGetLocalError = (error, request) => {
     error.messageId = 'profileGetLocal';
     return action(types.PROFILE_GET_LOCAL_ERROR, { error, request });
 };
-
-export const getCurrentProfile = () => action(PROFILE_MODULE.getCurrentProfile, {});
-export const getCurrentProfileError = err => action(`${PROFILE_MODULE.getCurrentProfile}_ERROR`, { err });
 
 export const profileGetLocalSuccess = (data, request) =>
     action(types.PROFILE_GET_LOCAL_SUCCESS, { data, request });

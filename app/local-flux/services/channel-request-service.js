@@ -57,7 +57,7 @@ export default {
                  * action = { type: String, data: Object }
                  */
                 this.logger.info(
-                    { payload: action.responseAction.data },
+                    { payload: action.responseAction.payload },
                     `[ChReqService] Dispatching [${action.responseAction.type}]`
                 );
                 this.dispatch(action.responseAction);
@@ -81,11 +81,11 @@ export default {
             return {
                 responseAction: {
                     type: `${method}_ERROR`,
-                    data: error
+                    payload: { error }
                 },
                 endAction: {
                     type: `${method}_REQUEST_END_ERROR`,
-                    data: {
+                    payload: {
                         actionType: `${method}`
                     }
                 }
@@ -94,11 +94,11 @@ export default {
         return {
             responseAction: {
                 type: `${method}_SUCCESS`,
-                data
+                payload: { ...data }
             },
             endAction: {
                 type: `${method}_REQUEST_END_SUCCESS`,
-                data: {
+                payload: {
                     actionType: `${method}`
                 }
             }

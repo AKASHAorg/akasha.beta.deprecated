@@ -15,4 +15,10 @@ const SIDEBAR_SLOTS = {
     BOTTOM: 'sidebar-bottom-slot'
 };
 
-export { APPBAR_SLOTS, DASHBOARD_SLOTS, SIDEBAR_SLOTS };
+const MY_PROFILE_SLOTS = {
+    PAGE_SIDEBAR: 'my-profile-page-sidebar',
+    MY_PROFILE_PAGE: 'my-profile-page',
+    HIGHLIGHTS_PAGE: 'highlights-page'
+};
+
+export { APPBAR_SLOTS, DASHBOARD_SLOTS, SIDEBAR_SLOTS, MY_PROFILE_SLOTS };

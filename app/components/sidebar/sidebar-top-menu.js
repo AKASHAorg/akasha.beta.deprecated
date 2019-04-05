@@ -67,7 +67,7 @@ const getEntryMenu = (intl, onNavigation, onDraftsClick) => (
 
 function SidebarTopMenu (props /* : Props */) {
     const { intl, activeDashboard } = props;
-    const onNavigate = path => _ => {
+    const onNavigate = path => () => {
         console.log('navigate to ', path);
     };
     const onDraftsClick = () => {
@@ -89,7 +89,7 @@ function SidebarTopMenu (props /* : Props */) {
             </div>
             <SidebarIcon
                 activePath="/dashboard"
-                linkTo={`/dashboard/${activeDashboard || ''}`}
+                linkTo="/"
                 iconType="dashboard"
                 tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipDashboard)}
                 linkClassName="sidebar__icon"

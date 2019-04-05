@@ -11,6 +11,7 @@ import * as eProcActions from '../local-flux/actions/external-process-actions';
 import * as settingsActions from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
 import * as profileActions from '../local-flux/actions/profile-actions';
+import { DashboardPageLayout, MyProfilePageLayout } from '../components/layouts';
 
 import {
     DashboardPage,
@@ -67,9 +68,7 @@ const Application = (props /* :Props */) => {
     React.useEffect(() => {
         const timestamp = new Date().getTime();
         const { getCurrentProfile } = profileActions;
-        const { servicesSetTimestamp } = eProcActions;
         const { selectGethSyncStatus } = externalProcessSelectors;
-        dispatchAction(servicesSetTimestamp(timestamp));
         dispatchAction(
             getCurrentProfile(),
             newState =>
@@ -84,6 +83,8 @@ const Application = (props /* :Props */) => {
                     {/* Common application parts */}
                     <AppbarLayout />
                     <SidebarLayout />
+                    <DashboardPageLayout />
+                    <MyProfilePageLayout />
                     {/* Page Layouts */}
                     <DashboardPage />
                     <EditorPage />
@@ -95,6 +96,9 @@ const Application = (props /* :Props */) => {
                     <>
                         <Fill name={SIDEBAR_SLOTS.TOP}>
                             <SidebarTopMenu />
+                        </Fill>
+                        <Fill name={SIDEBAR_SLOTS.BOTTOM}>
+                            <>Bottom</>
                         </Fill>
                         <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
                             <ServiceStatusBar />
