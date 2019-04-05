@@ -50,8 +50,8 @@ export default function init(sp, getService) {
             entriesCount: entriesCount.count,
             commentsCount: commentsCount.toString(10),
             [GENERAL_SETTINGS.BASE_URL]: settings.get(GENERAL_SETTINGS.BASE_URL),
-            karma: (web3Api.instance.utils.fromWei(karma, 'ether')).toFormat(5),
-            essence: (web3Api.instance.utils.fromWei(essence, 'ether')).toFormat(5),
+            karma: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma), 'ether')).toFormat(5),
+            essence: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(essence), 'ether')).toFormat(5),
         };
         cb('', partialProfile);
         if (!!unpad(hash)) {

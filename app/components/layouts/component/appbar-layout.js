@@ -18,8 +18,8 @@ function AppBarLayout (/* props /* : Props */) {
                     <Slot name={APPBAR_SLOTS.WALLET} />
                 </div>
             </div>
-            <div className={`appbar-right-drawer`}>
-                <Slot name={APPBAR_SLOTS.RIGHT_DRAWER} />
+            <div className={`appbar-right-panel`}>
+                <Slot name={APPBAR_SLOTS.RIGHT_PANEL} />
             </div>
         </>
     );

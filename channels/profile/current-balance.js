@@ -27,24 +27,24 @@ export default function init(sp, getService) {
         const essenceValue = yield contracts.instance.Essence.aethValueFrom(essence);
         const symbol = 'AETH';
         const totalAeth = free.plus(bonded).plus(cycling);
-        const balance = fromWei(weiAmount, unit);
+        const balance = fromWei(web3Api.instance.utils.toBN(weiAmount), unit);
         return {
             balance: balance.toFormat(5),
             [symbol]: {
-                total: (fromWei(totalAeth)).toFormat(7),
-                free: (fromWei(free)).toFormat(5),
-                bonded: (fromWei(bonded)).toFormat(5),
-                cycling: (fromWei(cycling)).toFormat(5),
+                total: (fromWei(web3Api.instance.utils.toBN(totalAeth))).toFormat(7),
+                free: (fromWei(web3Api.instance.utils.toBN(free))).toFormat(5),
+                bonded: (fromWei(web3Api.instance.utils.toBN(bonded))).toFormat(5),
+                cycling: (fromWei(web3Api.instance.utils.toBN(cycling))).toFormat(5),
             },
             mana: {
-                total: (fromWei(manaTotal)).toFormat(5),
-                spent: (fromWei(manaSpent)).toFormat(5),
-                remaining: (fromWei(manaRemaining)).toFormat(5),
+                total: (fromWei(web3Api.instance.utils.toBN(manaTotal))).toFormat(5),
+                spent: (fromWei(web3Api.instance.utils.toBN(manaSpent))).toFormat(5),
+                remaining: (fromWei(web3Api.instance.utils.toBN(manaRemaining))).toFormat(5),
             },
-            karma: { total: (fromWei(karma)).toFormat(5) },
+            karma: { total: (fromWei(web3Api.instance.utils.toBN(karma))).toFormat(5) },
             essence: {
-                total: (fromWei(essence)).toFormat(5),
-                aethValue: (fromWei(essenceValue)).toFormat(5),
+                total: (fromWei(web3Api.instance.utils.toBN(essence))).toFormat(5),
+                aethValue: (fromWei(web3Api.instance.utils.toBN(essenceValue))).toFormat(5),
             },
             unit, etherBase,
         };

@@ -35,7 +35,7 @@ export default function init(sp, getService) {
                     contracts.instance.Votes.karmaOf(ethAddress, req.entryId),
                 ]);
             }).spread((vote, karma) => {
-                return Object.assign({}, req, { vote: vote.toString(), essence: (web3Api.instance.utils.fromWei(karma[0])).toFormat(10), claimed: karma[1] });
+                return Object.assign({}, req, { vote: vote.toString(), essence: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma[0]))).toFormat(10), claimed: karma[1] });
             });
         });
         const collection = yield Promise.all(requests);

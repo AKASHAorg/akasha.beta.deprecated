@@ -111,6 +111,7 @@ export { default as ProfileComplete } from './setup/profile-complete';
 export { default as ProfileCompleteForm } from './forms/profile-complete-form';
 export { default as ProfileDetails } from './profile/profile-details';
 export { default as ProfileEdit } from './profile-edit';
+export { default as ProfileEditPanel } from './panels/profile-edit-panel';
 export { default as ProfileEditForm } from './forms/profile-edit-form';
 // export { default as ProfileEntriesColumn } from "./columns/profile-entries-column";
 // export { default as ProfileFollowersColumn } from "./columns/profile-followers-column";

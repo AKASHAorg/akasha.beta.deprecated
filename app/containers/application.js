@@ -30,7 +30,8 @@ import {
     ServiceStatusBar,
     UserNotification,
     SidebarTopMenu,
-    SidebarBottomMenu
+    SidebarBottomMenu,
+    ProfileEditPanel
 } from '../components';
 import {
     dashboardSelectors,
@@ -64,6 +65,8 @@ notification.config({
 
 const Application = (props /* :Props */) => {
     const { dispatchAction, getActionStatus } = props;
+    const [profileEditPanelVisible, setProfileEditPanelVisible] = React.useState(false);
+
     const onReload = () => dispatchAction(reloadPage());
 
     React.useEffect(() => {
@@ -82,7 +85,7 @@ const Application = (props /* :Props */) => {
                 <Provider>
                     {/* Common application parts */}
                     <AppbarLayout />
-                    <SidebarLayout />
+                    <SidebarLayout profilePanelOpen={profileEditPanelVisible} />
                     <DashboardPageLayout />
                     <MyProfilePageLayout />
                     {/* Page Layouts */}
@@ -98,7 +101,12 @@ const Application = (props /* :Props */) => {
                             <SidebarTopMenu />
                         </Fill>
                         <Fill name={SIDEBAR_SLOTS.BOTTOM}>
-                            <SidebarBottomMenu />
+                            <SidebarBottomMenu
+                                onProfileEdit={() => setProfileEditPanelVisible(!profileEditPanelVisible)}
+                            />
+                        </Fill>
+                        <Fill name={SIDEBAR_SLOTS.PROFILE_EDIT_PANEL}>
+                            <ProfileEditPanel visible={profileEditPanelVisible} />
                         </Fill>
                         <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
                             <ServiceStatusBar />

@@ -75,7 +75,7 @@ function SidebarTopMenu (props /* : Props */) {
     };
     return (
         <>
-            <div className="sidebar__new-entry sidebar__icon">
+            <div className="sidebar__new-entry">
                 <Popover
                     arrowPointAtCenter
                     placement="right"

@@ -13,11 +13,11 @@ import { profileActions } from '../../local-flux/actions';
 /*:: type Props = {||}; */
 
 const getMenu = props => (
-    <div onClick={props.onClick}>
-        <div onClick={props.navigateToProfile} className="popover-menu__item">
+    <div onClick={() => props.onPopoverClick()}>
+        <Link className="popover-menu__item" to={`/${props.loggedProfileEthAddress}`}>
             {props.intl.formatMessage(generalMessages.viewProfile)}
-        </div>
-        <div onClick={props.profileEditToggle} className="popover-menu__item">
+        </Link>
+        <div onClick={() => props.onProfileEdit()} className="popover-menu__item">
             {props.intl.formatMessage(generalMessages.editProfile)}
         </div>
         <div className="popover-menu__item">
@@ -37,8 +37,18 @@ const getMenu = props => (
 );
 
 function SidebarBottomMenu (props /* : Props */) {
-    const [visible, setVisible] = React.useState(false);
-    const { loggedProfileData, loggedProfileEthAddress, dispatchAction, getActionStatus } = props;
+    const [popoverMenuVisible, setPopoverMenuVisible] = React.useState(false);
+    const {
+        loggedProfileData,
+        loggedProfileEthAddress,
+        onProfileEdit,
+        intl,
+        dispatchAction,
+        getActionStatus
+    } = props;
+
+    const onLogout = () => {};
+    const handlePopoverClick = () => setPopoverMenuVisible(false);
 
     React.useEffect(() => {
         if (loggedProfileEthAddress) {
@@ -48,7 +58,8 @@ function SidebarBottomMenu (props /* : Props */) {
             );
         }
     }, [loggedProfileEthAddress]);
-    if (!loggedProfileData) {
+
+    if (!loggedProfileEthAddress) {
         return null;
     }
 
@@ -67,11 +78,16 @@ function SidebarBottomMenu (props /* : Props */) {
                 <Popover
                     arrowPointAtCenter
                     placement="topRight"
-                    content={false ? getMenu({ intl: props.intl }) : null}
+                    content={getMenu({
+                        intl,
+                        loggedProfileEthAddress,
+                        onProfileEdit,
+                        onPopoverClick: handlePopoverClick
+                    })}
                     trigger="click"
                     overlayClassName="popover-menu"
-                    visible={visible}
-                    onVisibleChange={isVisible => setVisible(isVisible)}
+                    visible={popoverMenuVisible}
+                    onVisibleChange={visible => setPopoverMenuVisible(visible)}
                 >
                     <Avatar
                         firstName={loggedProfileData && loggedProfileData.get('firstName')}
