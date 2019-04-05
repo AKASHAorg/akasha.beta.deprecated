@@ -36,7 +36,7 @@ export default function init(sp, getService) {
             totalVotes: totalVotes.toString(10),
             score: score.toString(10),
             endPeriod: (new Date(endPeriod.toNumber() * 1000)).toISOString(),
-            totalKarma: (web3Api.instance.utils.fromWei(totalKarma, 'ether')).toString(10),
+            totalKarma: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(totalKarma), 'ether')).toString(10),
           });
         });
       });
