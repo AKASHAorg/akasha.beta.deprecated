@@ -27,24 +27,25 @@ export default function init(sp, getService) {
         const essenceValue = yield contracts.instance.Essence.aethValueFrom(essence);
         const symbol = 'AETH';
         const totalAeth = free.plus(bonded).plus(cycling);
+        console.log(weiAmount, 'wei');
         const balance = fromWei(web3Api.instance.utils.toBN(weiAmount), unit);
         return {
-            balance: (web3Api.instance.utils.toBN(balance)).toNumber(),
+            balance,
             [symbol]: {
-                total: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(totalAeth)))).toNumber(),
-                free: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(free)))).toNumber(),
-                bonded: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(bonded)))).toNumber(),
-                cycling: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(cycling)))).toNumber(),
+                total: fromWei(web3Api.instance.utils.toBN(totalAeth)),
+                free: fromWei(web3Api.instance.utils.toBN(free)),
+                bonded: fromWei(web3Api.instance.utils.toBN(bonded)),
+                cycling: fromWei(web3Api.instance.utils.toBN(cycling)),
             },
             mana: {
-                total: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(manaTotal)))).toNumber(),
-                spent: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(manaSpent)))).toNumber(),
-                remaining: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(manaRemaining)))).toNumber(),
+                total: fromWei(web3Api.instance.utils.toBN(manaTotal)),
+                spent: fromWei(web3Api.instance.utils.toBN(manaSpent)),
+                remaining: fromWei(web3Api.instance.utils.toBN(manaRemaining)),
             },
-            karma: { total: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(karma)))).toNumber() },
+            karma: { total: fromWei(web3Api.instance.utils.toBN(karma)) },
             essence: {
-                total: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(essence)))).toNumber(),
-                aethValue: (web3Api.instance.utils.toBN(fromWei(web3Api.instance.utils.toBN(essenceValue)))).toNumber(),
+                total: fromWei(web3Api.instance.utils.toBN(essence)),
+                aethValue: fromWei(web3Api.instance.utils.toBN(essenceValue)),
             },
             unit, etherBase,
         };
