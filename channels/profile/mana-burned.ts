@@ -34,15 +34,15 @@ export default function init(sp, getService) {
     return {
       entries: {
         totalEntries: totalEntries.toNumber(),
-        manaCost: (web3Api.instance.fromWei(totalEntriesMana, 'ether')).toFormat(5),
+        manaCost: (web3Api.instance.utils.fromWei(totalEntriesMana, 'ether')).toFormat(5),
       },
       comments: {
         totalComments: totalComments.toNumber(),
-        manaCost: (web3Api.instance.fromWei(totalCommentsMana, 'ether')).toFormat(5),
+        manaCost: (web3Api.instance.utils.fromWei(totalCommentsMana, 'ether')).toFormat(5),
       },
       votes: {
         totalVotes: (totalVotes[0].times(totalVotes[1])).toNumber(),
-        manaCost: (web3Api.instance.fromWei(votesMana, 'ether')).toFormat(5),
+        manaCost: (web3Api.instance.utils.fromWei(votesMana, 'ether')).toFormat(5),
       },
     };
   });

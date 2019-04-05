@@ -38,7 +38,7 @@ export default function init(sp, getService) {
 
       collection.push({
         from,
-        amount: (web3Api.instance.fromWei(event.args.value, 'ether')).toFormat(5),
+        amount: (web3Api.instance.utils.fromWei(event.args.value, 'ether')).toFormat(5),
         blockNumber: event.blockNumber,
       });
 

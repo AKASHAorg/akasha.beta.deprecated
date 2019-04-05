@@ -36,7 +36,7 @@ export default function init(sp, getService) {
       collection.push(
         {
           ethAddress: dataCopyFollowing[i],
-          karma: (web3Api.instance.fromWei(karma)).toNumber(),
+          karma: (web3Api.instance.utils.fromWei(karma)).toNumber(),
         });
     }
 
