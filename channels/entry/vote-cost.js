@@ -16,7 +16,7 @@ export default function init(sp, getService) {
         const requests = data.map((w) => {
             return contracts.instance.Votes.getEssenceCost(w)
                 .then((cost) => {
-                const ethCost = web3Api.instance.fromWei(cost, 'ether');
+                const ethCost = web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(cost), 'ether');
                 return { cost: ethCost.toString(10), weight: w };
             });
         });
