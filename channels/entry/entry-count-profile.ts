@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/common/constants';
 
 const getProfileEntriesCountS = {
   id: '/getProfileEntriesCount',
@@ -26,6 +26,6 @@ export default function init(sp, getService) {
   const service = function () {
     return getProfileEntriesCount;
   };
-  sp().service(ENTRY_MODULE.getProfileEntriesCount, service);
+  sp().service(PROFILE_MODULE.entryCountProfile, service);
   return getProfileEntriesCount;
 }
