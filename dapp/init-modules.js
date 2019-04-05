@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import jsonSchemaWeb3 from '@akashaproject/jsonschema-web3';
-import { CORE_MODULE } from '@akashaproject/common/constants';
+import { CORE_MODULE, GENERAL_SETTINGS } from '@akashaproject/common/constants';
 import IpfsConnector from '@akashaproject/ipfs-js-connector';
 import core from '@akashaproject/core';
 import commonModule from '@akashaproject/common';
@@ -25,7 +25,7 @@ import searchModule from '@akashaproject/search';
 import { init } from '@akashaproject/search/indexes';
 import tagsModule from '@akashaproject/tags';
 import txModule from '@akashaproject/tx';
-import { DEFAULT_IPFS_CONFIG } from './config/settings';
+import { DEFAULT_IPFS_CONFIG, BASE_URL } from './config/settings';
 const bootstrap = function bootstrap(serviceProvider, gS, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         core.init();
@@ -55,6 +55,7 @@ const bootstrap = function bootstrap(serviceProvider, gS, logger) {
         serviceProvider().service(CORE_MODULE.IPFS_CONNECTOR, function () {
             return IpfsConnector;
         });
+        gS(CORE_MODULE.SETTINGS).set(GENERAL_SETTINGS.BASE_URL, BASE_URL);
         const prefix = 'akasha#dapp#0';
         yield init(prefix)
             .then(() => logger.debug('Finished init local db.'))

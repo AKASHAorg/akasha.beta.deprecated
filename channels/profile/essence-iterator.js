@@ -28,7 +28,7 @@ export default function init(sp, getService) {
         const fetched = yield contracts.fromEvent(contracts.instance.Essence.CollectEssence, { receiver: address }, toBlock, maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
         for (const event of fetched.results) {
             collection.push({
-                amount: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.amount), 'ether')).toFormat(5),
+                amount: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.amount), 'ether')).toNumber(),
                 action: web3Api.instance.utils.toUtf8(addHexPrefix(unpad(event.args.action))),
                 sourceId: event.args.source,
                 blockNumber: event.blockNumber,

@@ -29,7 +29,7 @@ export default function init(sp, getService) {
             const from = yield profileHelpers.resolveEthAddress(event.args.from);
             collection.push({
                 from,
-                amount: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.value), 'ether')).toFormat(5),
+                amount: (web3Api.instance.utils.toBN(web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.value), 'ether'))).toNumber(),
                 blockNumber: event.blockNumber,
             });
             if (collection.length === data.limit) {

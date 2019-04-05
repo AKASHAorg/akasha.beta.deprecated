@@ -63,13 +63,12 @@ export default function init(sp, getService) {
     }
     const gethStatus = new GethStatus();
     const mainResponse = (rawData, request) => {
-        const generalSettings = getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.OP_WAIT_TIME);
         if (rawData.error) {
             return {
                 data: {},
                 services: {
                     ipfs: Object.assign(getService(CORE_MODULE.IPFS_API).instance.serviceStatus, {
-                        [GENERAL_SETTINGS.BASE_URL]: generalSettings.get(GENERAL_SETTINGS.BASE_URL),
+                        [GENERAL_SETTINGS.BASE_URL]: getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.BASE_URL),
                     }),
                     geth: {
                         process: gethStatus.process,
@@ -87,7 +86,9 @@ export default function init(sp, getService) {
         return {
             data: rawData,
             services: {
-                ipfs: Object.assign(getService(CORE_MODULE.IPFS_API).instance.serviceStatus, { [GENERAL_SETTINGS.BASE_URL]: generalSettings.get(GENERAL_SETTINGS.BASE_URL) }),
+                ipfs: Object.assign(getService(CORE_MODULE.IPFS_API).instance.serviceStatus, {
+                    [GENERAL_SETTINGS.BASE_URL]: getService(CORE_MODULE.SETTINGS).get(GENERAL_SETTINGS.BASE_URL),
+                }),
                 geth: {
                     process: gethStatus.process,
                     api: gethStatus.api,

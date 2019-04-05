@@ -43,7 +43,9 @@ export default function init(sp, getService) {
           return {
             ...req,
             vote: vote.toString(),
-            essence: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma[0]))).toFormat(10),
+            essence: (web3Api.instance.utils.toBN(
+              web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(karma[0])))
+            ).toNumber(),
             claimed: karma[1],
           };
         });

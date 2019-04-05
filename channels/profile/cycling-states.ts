@@ -36,7 +36,9 @@ export default function init(sp, getService) {
         continue;
       }
       collection.push({
-        amount: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(amount), 'ether')).toFormat(5),
+        amount: (web3Api.instance.utils.toBN(
+          web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(amount), 'ether'))
+        ).toNumber(),
         unlockDate: unlockDate.toNumber(),
       });
       currentIndex = index.toNumber() + 1;
@@ -57,10 +59,12 @@ export default function init(sp, getService) {
       (acc, curr) => {
         return acc.plus(curr.amount);
       },
-      new web3Api.instance.BigNumber(0));
+      new web3Api.instance.utils.toBN(0));
     return {
-      available: { collection: available, total: totalAvailable.toFormat(5) },
-      pending: { collection: pending, total: totalPending.toFormat(5) },
+      available: { collection: available, total: (web3Api.instance.utils
+          .toBN(totalAvailable)).toNumber() },
+      pending: { collection: pending, total: (web3Api.instance.utils
+          .toBN(totalPending)).toNumber() },
     };
   });
   const cyclingStates = { execute, name: 'cyclingStates' };

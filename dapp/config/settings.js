@@ -1,5 +1,4 @@
-export const generalSettings = new Map();
-export const BASE_URL = 'baseUrl';
+export const BASE_URL = 'https://cloudflare-ipfs.com/ipfs';
 export const OP_WAIT_TIME = 15000;
 export const SHORT_WAIT_TIME = 48000;
 export const MEDIUM_WAIT_TIME = 15000;
@@ -70,5 +69,4 @@ export const DEFAULT_IPFS_CONFIG = {
         },
     },
 };
-generalSettings.set(BASE_URL, 'https://cloudflare-ipfs.com/ipfs');
 //# sourceMappingURL=settings.js.map

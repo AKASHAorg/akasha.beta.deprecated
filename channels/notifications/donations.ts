@@ -34,8 +34,12 @@ export default function init(sp, getService) {
             type: EVENT_TYPE,
             payload: {
               from: ev.args.from,
-              aeth: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(ev.args.aeth), 'ether')).toFormat(5),
-              eth: (web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(ev.args.eth), 'ether')).toFormat(5),
+              aeth: (web3Api.instance.utils.toBN(
+                web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(ev.args.aeth), 'ether'))
+              ).toNumber(),
+              eth: (web3Api.instance.utils.toBN(
+                web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(ev.args.eth), 'ether'))
+              ).toNumber(),
               message: ev.args.extraData,
             },
             blockNumber: ev.blockNumber,
