@@ -11,6 +11,7 @@ import * as eProcActions from '../local-flux/actions/external-process-actions';
 import * as settingsActions from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
 import * as profileActions from '../local-flux/actions/profile-actions';
+import { DashboardPageLayout, MyProfilePageLayout } from '../components/layouts';
 
 import {
     DashboardPage,
@@ -28,7 +29,9 @@ import {
     AppbarBalance,
     ServiceStatusBar,
     UserNotification,
-    SidebarTopMenu
+    SidebarTopMenu,
+    SidebarBottomMenu,
+    ProfileEditPanel
 } from '../components';
 import {
     dashboardSelectors,
@@ -62,14 +65,13 @@ notification.config({
 
 const Application = (props /* :Props */) => {
     const { dispatchAction, getActionStatus } = props;
+    const [profileEditPanelVisible, setProfileEditPanelVisible] = React.useState(false);
+
     const onReload = () => dispatchAction(reloadPage());
 
     React.useEffect(() => {
-        const timestamp = new Date().getTime();
         const { getCurrentProfile } = profileActions;
-        const { servicesSetTimestamp } = eProcActions;
         const { selectGethSyncStatus } = externalProcessSelectors;
-        dispatchAction(servicesSetTimestamp(timestamp));
         dispatchAction(
             getCurrentProfile(),
             newState =>
@@ -83,7 +85,9 @@ const Application = (props /* :Props */) => {
                 <Provider>
                     {/* Common application parts */}
                     <AppbarLayout />
-                    <SidebarLayout />
+                    <SidebarLayout profilePanelOpen={profileEditPanelVisible} />
+                    <DashboardPageLayout />
+                    <MyProfilePageLayout />
                     {/* Page Layouts */}
                     <DashboardPage />
                     <EditorPage />
@@ -95,6 +99,14 @@ const Application = (props /* :Props */) => {
                     <>
                         <Fill name={SIDEBAR_SLOTS.TOP}>
                             <SidebarTopMenu />
+                        </Fill>
+                        <Fill name={SIDEBAR_SLOTS.BOTTOM}>
+                            <SidebarBottomMenu
+                                onProfileEdit={() => setProfileEditPanelVisible(!profileEditPanelVisible)}
+                            />
+                        </Fill>
+                        <Fill name={SIDEBAR_SLOTS.PROFILE_EDIT_PANEL}>
+                            <ProfileEditPanel visible={profileEditPanelVisible} />
                         </Fill>
                         <Fill name={APPBAR_SLOTS.SERVICE_STATUS}>
                             <ServiceStatusBar />

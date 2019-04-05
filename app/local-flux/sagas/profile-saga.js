@@ -204,7 +204,8 @@ function* profileGetByAddress ({ ethAddress }) /* : Saga<void> */ {
     });
 }
 
-function* profileGetData ({ akashaId, context, ethAddress, full = false, batching }) /* : Saga<void> */ {
+function* profileGetData ({ payload }) /* : Saga<void> */ {
+    const { akashaId, context, ethAddress, full = false, batching } = payload;
     const service = yield getContext('reqService');
     yield call([service, service.sendRequest], PROFILE_MODULE, PROFILE_MODULE.profileData, {
         akashaId,

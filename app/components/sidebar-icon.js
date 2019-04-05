@@ -7,7 +7,16 @@ import { Tooltip } from 'antd';
 import { Icon } from './';
 
 const SidebarIcon = props => {
-    const { activePath, className, history, iconType, linkTo, location, tooltipTitle, disabled } = props;
+    const {
+        activePath,
+        className,
+        linkClassName,
+        iconType,
+        linkTo,
+        location,
+        tooltipTitle,
+        disabled
+    } = props;
     const isActive = location.pathname.includes(activePath);
     const wrapperClassName = classNames('flex-center sidebar-icon__wrapper', {
         'sidebar-icon__wrapper_active': isActive
@@ -26,7 +35,7 @@ const SidebarIcon = props => {
     }
 
     return (
-        <Link to={linkTo || ''}>
+        <Link to={linkTo || ''} className={linkClassName}>
             <Tooltip mouseEnterDelay={0.3} title={tooltipTitle} placement="right">
                 <div className={wrapperClassName}>
                     <Icon className={iconClassName} type={iconType} />

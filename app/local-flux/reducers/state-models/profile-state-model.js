@@ -25,7 +25,7 @@ export const Balance = Record({
     aeth: new AethBalance(),
     essence: new EssenceBalance(),
     eth: null,
-    mana: new ManaBalance(),
+    mana: new ManaBalance()
 });
 
 const CyclingRecord = Record({
@@ -70,7 +70,7 @@ export const ProfileRecord = Record({
     lastName: '',
     links: [],
     profile: null,
-    subscriptionsCount: null,
+    subscriptionsCount: null
 });
 export const TempProfileRecord = Record({
     localId: '',
@@ -92,26 +92,8 @@ export const LoggedProfile = Record({
     ethAddress: null,
     expiration: null,
     token: null,
+    raw: null
 });
-
-// const Flags = Record({
-//     ethAddressPending: false,
-//     fetchingEssenceIterator: false,
-//     fetchingFollowers: new Map(),
-//     fetchingFollowings: new Map(),
-//     fetchingLocalProfiles: false,
-//     fetchingLoggedProfile: false,
-//     fetchingMoreEssenceIterator: false,
-//     fetchingMoreFollowers: new Map(),
-//     fetchingMoreFollowings: new Map(),
-//     fetchingProfileList: false,
-//     karmaRankingPending: false,
-//     localProfilesFetched: false,
-//     loginPending: false,
-//     pendingListProfiles: new Map(),
-//     pendingProfiles: new Map(),
-//     resolvingIpfsHash: new Map(),
-// });
 
 const Interests = Record({
     tag: new List(),
@@ -134,11 +116,8 @@ const ProfileState = Record({
     essenceEvents: new Collection.Set([]),
     essenceIterator: new EssenceIterator(),
     errors: new List(), // to be removed
-    // @todo: what is this??
     exists: new Map(),
     faucet: null,
-    // fetchingFullLoggedProfile: false, // to be removed
-    // flags: new Flags(),
     followers: new Map(),
     followersList: new List(), // to be removed
     followings: new Map(),
@@ -174,8 +153,8 @@ export default class ProfileStateModel extends ProfileState {
         }
         if (oldProfile) {
             /*
-            * Prevent data from being overwriten if the new response is an unresolved profile
-            */
+             * Prevent data from being overwriten if the new response is an unresolved profile
+             */
             profileData.avatar = profileData.avatar || oldProfile.get('avatar');
             profileData.firstName = profileData.firstName || oldProfile.get('firstName');
             profileData.lastName = profileData.lastName || oldProfile.get('lastName');

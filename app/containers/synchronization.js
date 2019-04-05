@@ -24,22 +24,27 @@ import withRequest from '../components/high-order-components/with-request';
 
 function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
     const { active, gethStatus, gethSyncStatus, getActionStatus, dispatchAction, web3 } = props;
+    const {
+        servicesSetTimestamp,
+        gethGetOptions,
+        ipfsGetConfig,
+        gethStart,
+        gethGetSyncStatus
+    } = eProcActions;
+    const timestamp = new Date().getTime();
+
     React.useEffect(() => {
-        dispatchAction(
-            eProcActions.gethGetOptions(),
-            getActionStatus(eProcActions.gethGetOptions().type === null)
-        );
-        dispatchAction(
-            eProcActions.ipfsGetConfig(),
-            getActionStatus(eProcActions.ipfsGetConfig().type === null)
-        );
+        dispatchAction(servicesSetTimestamp(timestamp));
+        dispatchAction(gethGetOptions(), getActionStatus(gethGetOptions().type === null));
+        dispatchAction(ipfsGetConfig(), getActionStatus(ipfsGetConfig().type === null));
     }, []);
+
     React.useEffect(() => {
-        dispatchAction(eProcActions.gethStart(), getActionStatus(eProcActions.gethStart().type) === null);
+        dispatchAction(gethStart(), getActionStatus(gethStart().type) === null);
     }, [!gethStatus.get('started')]);
 
     React.useEffect(() => {
-        dispatchAction(eProcActions.gethGetSyncStatus(), state => {
+        dispatchAction(gethGetSyncStatus(), state => {
             const gethSyncStatus = externalProcessSelectors.selectGethSyncStatus(state);
             /* dispatchAction only when: */
             return !gethSyncStatus.get('synced') && web3;

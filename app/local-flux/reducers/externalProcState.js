@@ -12,18 +12,8 @@ const initialState = new ExternalProcessStateModel();
 const eProcState = createReducer(initialState, {
     [types.CLEAR_SYNC_STATUS]: state => state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
 
-    [`${GETH_MODULE.start}`]: state =>
-        state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                busyState: true,
-                gethStarting: true
-            }),
-            status: state.getIn(['geth', 'status']).merge({
-                stopped: false
-            })
-        }),
-
-    [`${GETH_MODULE.start}_SUCCESS`]: (state, { data, services }) => {
+    [`${GETH_MODULE.start}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         const gethStatus = state.getIn(['geth', 'status']);
         // if geth was stopped and it is not upgrading, ignore this action
         if (gethStatus.get('stopped') && !gethStatus.get('upgrading') && !data.starting) {
@@ -42,11 +32,8 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE.start}_ERROR`]: state => state.setIn(['geth', 'flags', 'gethStarting'], false),
-
-    [`${GETH_MODULE.stop}`]: state => state.setIn(['geth', 'flags', 'busyState'], true),
-
-    [`${GETH_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
+    [`${GETH_MODULE.stop}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         if (state.getIn(['geth', 'status', 'upgrading'])) {
             return state;
         }
@@ -62,49 +49,32 @@ const eProcState = createReducer(initialState, {
         });
     },
 
-    [`${GETH_MODULE.gethStatus}_SUCCESS`]: (state, { data, services }) =>
+    [`${GETH_MODULE.gethStatus}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).set('statusFetched', true),
             status: state.getIn(['geth', 'status']).merge(Object.assign({}, data, services.geth))
-        }),
+        });
+    },
 
-    [`${IPFS_MODULE.start}`]: state =>
-        state.mergeIn(['ipfs'], {
-            flags: state.getIn(['ipfs', 'flags']).merge({
-                busyState: true,
-                ipfsStarting: true
-            })
-        }),
-
-    [`${IPFS_MODULE.start}_ERROR`]: (state, action) => {
-        const ipfsStatus = state.computeIpfsStatus(action.data);
+    [`${IPFS_MODULE.start}_ERROR`]: (state, { payload }) => {
+        const ipfsStatus = state.computeIpfsStatus(payload);
         return state.mergeIn(['ipfs'], {
-            flags: state.getIn(['ipfs', 'flags']).merge({
-                ipfsStarting: false
-            }),
             status: state.getIn(['ipfs', 'status']).merge(ipfsStatus)
         });
     },
 
-    [`${IPFS_MODULE.start}_SUCCESS`]: (state, { data, services }) => {
+    [`${IPFS_MODULE.start}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         const status = Object.assign({}, data, services.ipfs);
         const ipfsStatus = state.computeIpfsStatus(status);
         return state.mergeIn(['ipfs'], {
-            flags: state.getIn(['ipfs', 'flags']).merge({
-                ipfsStarting: false
-            }),
             status: state.getIn(['ipfs', 'status']).merge(ipfsStatus)
         });
     },
 
-    [`${IPFS_MODULE.stop}`]: state =>
-        state.mergeIn(['ipfs'], {
-            flags: state.getIn(['ipfs', 'flags']).merge({
-                busyState: true
-            })
-        }),
-
-    [`${IPFS_MODULE.stop}_SUCCESS`]: (state, { data, services }) => {
+    [`${IPFS_MODULE.stop}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         const status = Object.assign({}, data, services.ipfs);
         let newStatus;
         if (state.getIn(['ipfs', 'status', 'upgrading'])) {
@@ -116,32 +86,28 @@ const eProcState = createReducer(initialState, {
                 .merge(status);
         }
         return state.mergeIn(['ipfs'], {
-            status: newStatus,
-            flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false)
+            status: newStatus
         });
     },
 
-    [`${IPFS_MODULE.ipfsStatus}_SUCCESS`]: (state, { data, services }) =>
+    [`${IPFS_MODULE.ipfsStatus}_SUCCESS`]: (state, { payload }) => {
+        const { data, services } = payload;
         state.mergeIn(['ipfs'], {
-            flags: state.getIn(['ipfs', 'flags']).set('statusFetched', true),
             status: state.getIn(['ipfs', 'status']).merge(Object.assign({}, data, services.ipfs))
-        }),
+        });
+    },
 
-    [`${IPFS_MODULE.getPorts}`]: state => state.setIn(['ipfs', 'flags', 'portsRequested'], true),
-
-    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { services }) =>
+    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { payload }) =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false),
             status: state.getIn(['ipfs', 'status']).merge({
-                api: services.ipfs.api,
-                baseUrl: services.ipfs.baseUrl,
-                process: services.ipfs.process
+                api: payload.services.ipfs.api,
+                baseUrl: payload.services.ipfs.baseUrl,
+                process: payload.services.ipfs.process
             })
         }),
 
-    [`${IPFS_MODULE.getPorts}_ERROR`]: state => state.setIn(['ipfs', 'flags', 'portsRequested'], false),
-
-    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { data }) => 
+    [`${GETH_MODULE.syncStatus}_SUCCESS`]: (state, { payload }) =>
         // const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
         // let syncActionId = oldSyncActionId;
         // if (data.synced) {
@@ -150,85 +116,43 @@ const eProcState = createReducer(initialState, {
         //     syncActionId = 1;
         // }
         state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(data.geth),
+            status: state.getIn(['geth', 'status']).merge(payload.geth),
             // syncActionId,
-            syncStatus: state.getIn(['geth', 'syncStatus']).merge(data)
-        }),    
+            syncStatus: state.getIn(['geth', 'syncStatus']).merge(payload)
+        }),
 
-    // [types.GETH_STOP_SYNC]: state =>
-    //     state.mergeIn(['geth'], {
-    //         syncActionId: 3,
-    //     }),
-
-    // [types.GET_PAUSE_SYNC]: state =>
-    //     state.mergeIn(['geth'], {
-    //         syncActionId: 2,
-    //     }),
-
-    // [types.GETH_RESUME_SYNC]: state =>
-    //     state.mergeIn(['geth'], {
-    //         syncActionId: 1
-    //     }),
-
-    // [types.GETH_RESET_BUSY]: state =>
-    //     state.mergeIn(['geth'], {
-    //         flags: state.getIn(['geth', 'flags']).merge({
-    //             busyState: false
-    //         })
-    //     }),
-
-    // [types.IPFS_RESET_BUSY]: state =>
-    //     state.mergeIn(['ipfs', 'flags'], {
-    //         busyState: false
-    //     }),
-
-    [`${GETH_MODULE.logs}_SUCCESS`]: (state, { data }) => {
-        if (!data.length) {
+    [`${GETH_MODULE.logs}_SUCCESS`]: (state, { payload }) => {
+        if (!payload.length) {
             return state;
         }
-        const timestamp = new Date(data[data.length - 1].timestamp).getTime();
+        const timestamp = new Date(payload[payload.length - 1].timestamp).getTime();
         return state.mergeIn(['geth'], {
             lastLogTimestamp: timestamp,
             logs: state
                 .getIn(['geth', 'logs'])
-                .union(data.map(log => new LogRecord(log)))
+                .union(payload.map(log => new LogRecord(log)))
                 .takeLast(20)
         });
     },
 
-    [`${IPFS_MODULE.logs}_SUCCESS`]: (state, { data }) => {
-        if (!data.length) {
+    [`${IPFS_MODULE.logs}_SUCCESS`]: (state, { payload }) => {
+        if (!payload.length) {
             return state;
         }
-        const timestamp = new Date(data[data.length - 1].timestamp).getTime();
+        const timestamp = new Date(payload[payload.length - 1].timestamp).getTime();
         return state.mergeIn(['ipfs'], {
             lastLogTimestamp: timestamp,
             logs: state
                 .getIn(['ipfs', 'logs'])
-                .union(data.map(log => new LogRecord(log)))
+                .union(payload.map(log => new LogRecord(log)))
                 .takeLast(20)
         });
     },
 
-    [`${IPFS_MODULE.setPorts}`]: state =>
-        state.mergeIn(['ipfs', 'flags'], {
-            settingPorts: true
-        }),
-
-    [`${IPFS_MODULE.setPorts}_SUCCESS`]: state =>
-        state.mergeIn(['ipfs', 'flags'], {
-            settingPorts: false
-        }),
-
-    [`${IPFS_MODULE.setPorts}_ERROR`]: state =>
-        state.mergeIn(['ipfs', 'flags'], {
-            settingPorts: false
-        }),
-
-    [types.SERVICES_SET_TIMESTAMP]: (state, { timestamp }) =>
+    [types.SERVICES_SET_TIMESTAMP]: (state, { payload }) =>
         state.merge({
-            geth: state.get('geth').set('lastLogTimestamp', timestamp),
-            ipfs: state.get('ipfs').set('lastLogTimestamp', timestamp)
+            geth: state.get('geth').set('lastLogTimestamp', payload.timestamp),
+            ipfs: state.get('ipfs').set('lastLogTimestamp', payload.timestamp)
         })
 });
 
