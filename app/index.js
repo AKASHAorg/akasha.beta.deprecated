@@ -110,8 +110,9 @@ export const bootstrap = (
 // eslint-disable-next-line complexity
 const renderApplication = (store, web3Enabled, vault, channel, logger, rootNode, isSynced = false) => {
     const history = getHistory();
+    const requestWeb3Confirm = web3Enabled && !vault;
     const isSetupActive = !web3Enabled;
-    const isAppActive = isSynced && web3Enabled;
+    const isAppActive = isSynced && web3Enabled && vault;
     if (rootNode) {
         render(
             <Provider store={store}>
@@ -164,6 +165,7 @@ const renderApplication = (store, web3Enabled, vault, channel, logger, rootNode,
                                     )}
                                     {/* Setup => Application setup page */}
                                     {isSetupActive && <Setup {...props} />}
+                                    {requestWeb3Confirm && <>Waiting for Metamask confirmation</>}
                                 </MainContext.Provider>
                             )}
                         />

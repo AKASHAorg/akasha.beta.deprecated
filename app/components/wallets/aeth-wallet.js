@@ -7,12 +7,13 @@ import { CyclingAeth, HistoryTable, Icon, PieChart, TransferForm, TransformForm 
 import * as actionTypes from '../../constants/action-types';
 import { showNotification, toggleAethWallet } from '../../local-flux/actions/app-actions';
 import { actionAdd, actionClearHistory, actionGetHistory } from '../../local-flux/actions/action-actions';
-import { /* profileAethTransfersIterator, */ profileCyclingStates,
-    profileGetBalance } from '../../local-flux/actions/profile-actions';
+import {
+    /* profileAethTransfersIterator, */ profileCyclingStates,
+    profileGetBalance
+} from '../../local-flux/actions/profile-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
 import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import clickAway from '../../utils/clickAway';
 import { balanceToNumber, formatBalance, removeTrailingZeros } from '../../utils/number-formatter';
 import withRequest from '../high-order-components/with-request';
 
@@ -28,12 +29,17 @@ class AethWallet extends Component {
     };
 
     componentDidMount () {
-      const { dispatchAction } = this.props;
+        const { dispatchAction } = this.props;
         dispatchAction(profileCyclingStates());
         // this.props.profileAethTransfersIterator();
         dispatchAction(profileGetBalance());
-        this.props.actionGetHistory([actionTypes.transferAeth, actionTypes.bondAeth, actionTypes.freeAeth,
-            actionTypes.sendTip, actionTypes.transformEssence]);
+        this.props.actionGetHistory([
+            actionTypes.transferAeth,
+            actionTypes.bondAeth,
+            actionTypes.freeAeth,
+            actionTypes.sendTip,
+            actionTypes.transformEssence
+        ]);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -52,7 +58,9 @@ class AethWallet extends Component {
         this.props.toggleAethWallet();
     };
 
-    selectTab = (activeTab) => { this.setState({ activeTab }); };
+    selectTab = activeTab => {
+        this.setState({ activeTab });
+    };
 
     onFreeAeth = () => {
         const { cyclingStates, loggedEthAddress } = this.props;
@@ -60,12 +68,12 @@ class AethWallet extends Component {
         this.props.actionAdd(loggedEthAddress, actionTypes.freeAeth, { amount });
     };
 
-    onTransfer = (payload) => {
+    onTransfer = payload => {
         const { loggedEthAddress } = this.props;
         this.props.actionAdd(loggedEthAddress, actionTypes.transferAeth, payload);
     };
 
-    getActionCell = (action) => {
+    getActionCell = action => {
         const { intl } = this.props;
         const sentIcon = <Icon className="aeth-wallet__sent-icon" type="arrowUp" />;
         const receivedIcon = <Icon className="aeth-wallet__received-icon" type="arrowDown" />;
@@ -74,46 +82,52 @@ class AethWallet extends Component {
         switch (action.type) {
             case actionTypes.transferAeth:
                 return (
-                  <span className="flex-center-y">
-                    {sentIcon}{intl.formatMessage(generalMessages.sent)}
-                  </span>
+                    <span className="flex-center-y">
+                        {sentIcon}
+                        {intl.formatMessage(generalMessages.sent)}
+                    </span>
                 );
             case actionTypes.sendTip:
                 return (
-                  <span className="flex-center-y">
-                    {sentIcon}{intl.formatMessage(profileMessages.sentTip)}
-                  </span>
+                    <span className="flex-center-y">
+                        {sentIcon}
+                        {intl.formatMessage(profileMessages.sentTip)}
+                    </span>
                 );
             case actionTypes.bondAeth:
                 return (
-                  <span className="flex-center-y">
-                    {transformedIcon}{intl.formatMessage(generalMessages.manafied)}
-                  </span>
+                    <span className="flex-center-y">
+                        {transformedIcon}
+                        {intl.formatMessage(generalMessages.manafied)}
+                    </span>
                 );
             case actionTypes.freeAeth:
                 return (
-                  <span className="flex-center-y">
-                    {transformedIcon}{intl.formatMessage(generalMessages.collected)}
-                  </span>
+                    <span className="flex-center-y">
+                        {transformedIcon}
+                        {intl.formatMessage(generalMessages.collected)}
+                    </span>
                 );
             case actionTypes.transformEssence:
                 return (
-                  <span className="flex-center-y">
-                    {receivedIcon}{intl.formatMessage(generalMessages.forged)}
-                  </span>
+                    <span className="flex-center-y">
+                        {receivedIcon}
+                        {intl.formatMessage(generalMessages.forged)}
+                    </span>
                 );
             case actionTypes.receiveAeth:
                 return (
-                  <span className="flex-center-y capitalize">
-                    {receivedIcon}{intl.formatMessage(generalMessages.received)}
-                  </span>
+                    <span className="flex-center-y capitalize">
+                        {receivedIcon}
+                        {intl.formatMessage(generalMessages.received)}
+                    </span>
                 );
             default:
                 return null;
         }
     };
 
-    getAmount = (action) => {
+    getAmount = action => {
         let amount;
         switch (action.type) {
             case actionTypes.transferAeth:
@@ -138,15 +152,17 @@ class AethWallet extends Component {
         const transactions = sentTransactions.filter(action => !!this.getAmount(action));
         const rows = transactions.map(action => ({
             action: this.getActionCell(action),
-            amount: <span>{this.getAmount(action)} {intl.formatMessage(generalMessages.aeth)}</span>,
+            amount: (
+                <span>
+                    {this.getAmount(action)} {intl.formatMessage(generalMessages.aeth)}
+                </span>
+            ),
             blockNumber: action.get('blockNumber'),
             id: action.get('id'),
             success: action.get('success')
         }));
 
-        return (
-          <HistoryTable rows={rows} />
-        );
+        return <HistoryTable rows={rows} />;
     };
 
     renderLegend = () => {
@@ -154,54 +170,68 @@ class AethWallet extends Component {
         const aethBalance = balance.get('aeth').toJS();
 
         return (
-          <div className="aeth-wallet__chart-legend">
-            <div className="aeth-wallet__legend-row">
-              <div className="aeth-wallet__legend-box aeth-wallet__legend-box_transferable" />
-              <div>
-                <div className="aeth-wallet__legend-label">
-                  {intl.formatMessage(generalMessages.transferable)}
+            <div className="aeth-wallet__chart-legend">
+                <div className="aeth-wallet__legend-row">
+                    <div className="aeth-wallet__legend-box aeth-wallet__legend-box_transferable" />
+                    <div>
+                        <div className="aeth-wallet__legend-label">
+                            {intl.formatMessage(generalMessages.transferable)}
+                        </div>
+                        <div>
+                            {aethBalance.free} {intl.formatMessage(generalMessages.aeth)}
+                        </div>
+                    </div>
                 </div>
-                <div>{aethBalance.free} {intl.formatMessage(generalMessages.aeth)}</div>
-              </div>
-            </div>
-            <div className="aeth-wallet__legend-row">
-              <div className="aeth-wallet__legend-box aeth-wallet__legend-box_manafied" />
-              <div>
-                <div className="aeth-wallet__legend-label">
-                  {intl.formatMessage(generalMessages.manafied)}
+                <div className="aeth-wallet__legend-row">
+                    <div className="aeth-wallet__legend-box aeth-wallet__legend-box_manafied" />
+                    <div>
+                        <div className="aeth-wallet__legend-label">
+                            {intl.formatMessage(generalMessages.manafied)}
+                        </div>
+                        <div>
+                            {aethBalance.bonded} {intl.formatMessage(generalMessages.aeth)}
+                        </div>
+                    </div>
                 </div>
-                <div>{aethBalance.bonded} {intl.formatMessage(generalMessages.aeth)}</div>
-              </div>
-            </div>
-            <div className="aeth-wallet__legend-row">
-              <div className="aeth-wallet__legend-box aeth-wallet__legend-box_cycling" />
-              <div>
-                <div className="aeth-wallet__legend-label">
-                  {intl.formatMessage(generalMessages.cycling)}
+                <div className="aeth-wallet__legend-row">
+                    <div className="aeth-wallet__legend-box aeth-wallet__legend-box_cycling" />
+                    <div>
+                        <div className="aeth-wallet__legend-label">
+                            {intl.formatMessage(generalMessages.cycling)}
+                        </div>
+                        <div>
+                            {aethBalance.cycling} {intl.formatMessage(generalMessages.aeth)}
+                        </div>
+                    </div>
                 </div>
-                <div>{aethBalance.cycling} {intl.formatMessage(generalMessages.aeth)}</div>
-              </div>
             </div>
-          </div>
         );
-    }
+    };
 
     render () {
-        const { balance, cyclingStates, intl, loggedEthAddress, pendingBondAeth, pendingCycleAeth,
-            pendingFreeAeth, pendingTransfer, pendingTransformEssence, profileResults } = this.props;
+        const {
+            balance,
+            cyclingStates,
+            intl,
+            loggedEthAddress,
+            pendingBondAeth,
+            pendingCycleAeth,
+            pendingFreeAeth,
+            pendingTransfer,
+            pendingTransformEssence,
+            profileResults
+        } = this.props;
         const { activeTab } = this.state;
         const aethBalance = balance.get('aeth').toJS();
         const cyclingPending = cyclingStates.getIn(['pending', 'collection']);
         const cyclingCount = pendingCycleAeth ? (cyclingPending.length || 0) + 1 : cyclingPending.length;
-        const hasCycledAeth = !!(+cyclingStates.getIn(['available', 'total']));
+        const hasCycledAeth = !!+cyclingStates.getIn(['available', 'total']);
         const cyclingTab = (
-          <span className="flex-center">
-            {hasCycledAeth &&
-              <div className="aeth-wallet__cycled-indicator" />
-            }
-            {intl.formatMessage(generalMessages.cycling)}
-            <span className="flex-center aeth-wallet__cycling-count">{cyclingCount}</span>
-          </span>
+            <span className="flex-center">
+                {hasCycledAeth && <div className="aeth-wallet__cycled-indicator" />}
+                {intl.formatMessage(generalMessages.cycling)}
+                <span className="flex-center aeth-wallet__cycling-count">{cyclingCount}</span>
+            </span>
         );
         const free = balanceToNumber(aethBalance.free);
         const bonded = balanceToNumber(aethBalance.bonded);
@@ -213,81 +243,83 @@ class AethWallet extends Component {
             data = [free, bonded, cycling];
         }
         return (
-          <div className="aeth-wallet">
-            <div className="aeth-wallet__header">
-              <div className="aeth-wallet__balance-label">
-                {intl.formatMessage(profileMessages.totalBalance)}
-              </div>
-              <div>
-                <span className="aeth-wallet__balance">
-                  {formatBalance(balance.getIn(['aeth', 'total']), 7)}
-                </span>
-                <span>{intl.formatMessage(generalMessages.aeth)}</span>
-              </div>
+            <div className="aeth-wallet">
+                <div className="aeth-wallet__header">
+                    <div className="aeth-wallet__balance-label">
+                        {intl.formatMessage(profileMessages.totalBalance)}
+                    </div>
+                    <div>
+                        <span className="aeth-wallet__balance">
+                            {formatBalance(balance.getIn(['aeth', 'total']), 7)}
+                        </span>
+                        <span>{intl.formatMessage(generalMessages.aeth)}</span>
+                    </div>
+                </div>
+                <div className="aeth-wallet__chart-area">
+                    <div className="aeth-wallet__chart-wrapper">
+                        <PieChart
+                            data={{
+                                labels: ['Transferable', 'Manafied', 'Cycling'],
+                                datasets: [
+                                    {
+                                        data,
+                                        backgroundColor: ['#06d2dc', '#b400ff', '#039eda']
+                                    }
+                                ]
+                            }}
+                            options={{
+                                legend: { display: false },
+                                tooltips: { enabled: false }
+                            }}
+                            width="100%"
+                            height="100%"
+                        />
+                    </div>
+                    {this.renderLegend()}
+                </div>
+                <Tabs
+                    activeKey={activeTab}
+                    onChange={this.selectTab}
+                    tabBarStyle={{ height: '40px', marginBottom: '0px' }}
+                    type="card"
+                >
+                    <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
+                        <TransferForm
+                            balance={balance.getIn(['aeth', 'free'])}
+                            dataSource={profileResults}
+                            ethAddress={loggedEthAddress}
+                            onCancel={this.props.toggleAethWallet}
+                            onSubmit={this.onTransfer}
+                            pendingTransfer={pendingTransfer}
+                            // searchProfiles={this.props.searchProfiles}
+                            showNotification={this.props.showNotification}
+                            type="aeth"
+                        />
+                    </TabPane>
+                    <TabPane key={TRANSFORM} tab={intl.formatMessage(generalMessages.transform)}>
+                        <TransformForm
+                            actionAdd={this.props.actionAdd}
+                            balance={balance}
+                            loggedEthAddress={loggedEthAddress}
+                            pendingBondAeth={pendingBondAeth}
+                            pendingCycleAeth={!!pendingCycleAeth}
+                            pendingTransformEssence={pendingTransformEssence}
+                            onCancel={this.props.toggleAethWallet}
+                        />
+                    </TabPane>
+                    <TabPane key={CYCLING} tab={cyclingTab}>
+                        <CyclingAeth
+                            cyclingStates={cyclingStates}
+                            onCollect={this.onFreeAeth}
+                            pendingCycleAeth={pendingCycleAeth}
+                            pendingFreeAeth={pendingFreeAeth}
+                        />
+                    </TabPane>
+                    <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
+                        {this.renderHistory()}
+                    </TabPane>
+                </Tabs>
             </div>
-            <div className="aeth-wallet__chart-area">
-              <div className="aeth-wallet__chart-wrapper">
-                <PieChart
-                  data={{
-                      labels: ['Transferable', 'Manafied', 'Cycling'],
-                          datasets: [{
-                              data,
-                              backgroundColor: ['#06d2dc', '#b400ff', '#039eda']
-                          }]
-                  }}
-                  options={{
-                      legend: { display: false },
-                      tooltips: { enabled: false }
-                  }}
-                  width="100%"
-                  height="100%"
-                />
-              </div>
-              {this.renderLegend()}
-            </div>
-            <Tabs
-              activeKey={activeTab}
-              onChange={this.selectTab}
-              tabBarStyle={{ height: '40px', marginBottom: '0px' }}
-              type="card"
-            >
-              <TabPane key={WALLET} tab={intl.formatMessage(generalMessages.wallet)}>
-                <TransferForm
-                  balance={balance.getIn(['aeth', 'free'])}
-                  dataSource={profileResults}
-                  ethAddress={loggedEthAddress}
-                  onCancel={this.props.toggleAethWallet}
-                  onSubmit={this.onTransfer}
-                  pendingTransfer={pendingTransfer}
-                  // searchProfiles={this.props.searchProfiles}
-                  showNotification={this.props.showNotification}
-                  type="aeth"
-                />
-              </TabPane>
-              <TabPane key={TRANSFORM} tab={intl.formatMessage(generalMessages.transform)}>
-                <TransformForm
-                  actionAdd={this.props.actionAdd}
-                  balance={balance}
-                  loggedEthAddress={loggedEthAddress}
-                  pendingBondAeth={pendingBondAeth}
-                  pendingCycleAeth={!!pendingCycleAeth}
-                  pendingTransformEssence={pendingTransformEssence}
-                  onCancel={this.props.toggleAethWallet}
-                />
-              </TabPane>
-              <TabPane key={CYCLING} tab={cyclingTab}>
-                <CyclingAeth
-                  cyclingStates={cyclingStates}
-                  onCollect={this.onFreeAeth}
-                  pendingCycleAeth={pendingCycleAeth}
-                  pendingFreeAeth={pendingFreeAeth}
-                />
-              </TabPane>
-              <TabPane key={HISTORY} tab={intl.formatMessage(generalMessages.history)}>
-                {this.renderHistory()}
-              </TabPane>
-            </Tabs>
-          </div>
         );
     }
 }
@@ -312,7 +344,7 @@ AethWallet.propTypes = {
     searchResetResults: PropTypes.func.isRequired,
     sentTransactions: PropTypes.shape().isRequired,
     showNotification: PropTypes.func.isRequired,
-    toggleAethWallet: PropTypes.func.isRequired,
+    toggleAethWallet: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -320,11 +352,11 @@ function mapStateToProps (state) {
         balance: profileSelectors.selectBalance(state),
         cyclingStates: profileSelectors.selectCyclingStates(state),
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
-        pendingBondAeth: actionSelectors.selectPendingActionByType(state, actionTypes.bondAeth),
-        pendingCycleAeth: actionSelectors.selectPendingActionByType(state, actionTypes.cycleAeth),
-        pendingFreeAeth: actionSelectors.selectPendingActionByType(state, actionTypes.freeAeth),
-        pendingTransfer: actionSelectors.selectPendingActionByType(state, actionTypes.transferAeth),
-        pendingTransformEssence: actionSelectors.selectPendingActionByType(state, actionTypes.transformEssence),
+        pendingBondAeth: actionSelectors.getPendingBondAeth(state),
+        pendingCycleAeth: actionSelectors.getPendingCycleAeth(state),
+        pendingFreeAeth: actionSelectors.getPendingFreeAeth(state),
+        pendingTransfer: actionSelectors.getPendingTransfer(state),
+        pendingTransformEssence: actionSelectors.getPendingEssenceTransform(state),
         profileResults: searchSelectors.selectProfileSearchResults(state),
         sentTransactions: actionSelectors.getActionHistory(state)
     };
@@ -344,4 +376,4 @@ export default connect(
         showNotification,
         toggleAethWallet
     }
-)(injectIntl(clickAway(withRequest(AethWallet))));
+)(injectIntl(withRequest(AethWallet)));

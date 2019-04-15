@@ -14,7 +14,8 @@ import withRequest from '../components/high-order-components/with-request';
         getActionStatus: Function,
         dispatchAction: Function,
         web3: boolean,
-        logger: Object
+        logger: Object,
+        onSyncEnd: Function
     |}
     type Props = {|
         ...StateProps,
@@ -23,7 +24,7 @@ import withRequest from '../components/high-order-components/with-request';
 */
 
 function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
-    const { active, gethStatus, gethSyncStatus, getActionStatus, dispatchAction, web3 } = props;
+    const { active, gethStatus, gethSyncStatus, getActionStatus, dispatchAction, web3, onSyncEnd } = props;
     const {
         servicesSetTimestamp,
         gethGetOptions,
@@ -52,8 +53,8 @@ function Synchronization /* :: <AbstractComponent> */(props /* : Props */) {
     }, [!gethSyncStatus.get('synced')]);
 
     React.useEffect(() => {
-        if (active) {
-            props.onSyncEnd();
+        if (gethSyncStatus.get('synced')) {
+            onSyncEnd();
         }
     }, [gethSyncStatus.get('synced')]);
 

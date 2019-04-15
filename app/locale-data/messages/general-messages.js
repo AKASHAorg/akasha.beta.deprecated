@@ -342,7 +342,7 @@ const generalMessages = defineMessages({
     },
     noPeersAvailable: {
         id: 'app.general.noPeersAvailable',
-        description: 'couldn\'t find any IPFS peers for a specific content',
+        description: "couldn't find any IPFS peers for a specific content",
         defaultMessage: 'No peers available'
     },
     notes: {
@@ -676,7 +676,7 @@ const generalMessages = defineMessages({
     yes: {
         id: 'app.general.yes',
         description: 'yes (as a confirmation)',
-        defaultMessage: 'Yes',
+        defaultMessage: 'Yes'
     },
     comment: {
         id: 'app.general.comment',
@@ -876,12 +876,13 @@ const generalMessages = defineMessages({
     guestModeInfo: {
         id: 'app.general.guestModeInfo',
         description: 'info for guest mode modal',
-        defaultMessage: 'While in guest mode you have access to a limited part of the Akasha app, and cannot do any action that requires a transaction.'
+        defaultMessage:
+            'While in guest mode you have access to a limited part of the Akasha app, and cannot do any action that requires a transaction.'
     },
     unlockVault: {
-        id: "app.general.unlockVault",
-        description: "info for guest mode modal",
-        defaultMessage: "Please refresh the page to login after unlocking Metamask."
+        id: 'app.general.unlockVault',
+        description: 'info for guest mode modal',
+        defaultMessage: 'Please refresh the page to login after unlocking Metamask.'
     },
     thanks: {
         id: 'app.general.thanks',
@@ -927,6 +928,16 @@ const generalMessages = defineMessages({
         id: 'app.general.cannotLoginIpfsStopped',
         description: 'message to show on login when ipfs is stopped',
         defaultMessage: 'Cannot login! IPFS service is stopped.'
+    },
+    ether: {
+        id: 'app.general.ether',
+        description: 'ether (long/full name)',
+        defaultMessage: 'Ether'
+    },
+    ether_symbol: {
+        id: 'app.general.ether_symbol',
+        description: 'ether symbol',
+        defaultMessage: 'ETH'
     }
 });
 export { generalMessages };

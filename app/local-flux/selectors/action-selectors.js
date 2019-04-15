@@ -55,8 +55,8 @@ export const getActionHistory = (state /*: Object*/) /*: Object*/ =>
 export const getBatchActions = (state /*: Object*/) /*: Array<Object>*/ =>
     selectBatchActions(state).map(actionId => selectActionById(state, actionId));
 
-export const getPendingActionByType = (state /*: Object*/, props /*: ActionByTypeProps*/) =>
-    selectPendingActions(state).get(props.actionType);
+// export const getPendingActionByType = (state /*: Object*/, props /*: ActionByTypeProps*/) =>
+//     selectPendingActions(state).get(props.actionType);
 
 export const getClaimableActions = (state /*: Object*/) =>
     selectClaimableActions(state).map(actionId => selectActionById(state, actionId));
@@ -112,3 +112,6 @@ export const getEntryPendingComments = (state /*: Object*/, props /*: Object*/) 
 
 export const getPendingCommentVote = (state /*: Object*/, props /*: Object*/) =>
     selectPendingActions(state).getIn(['commentVote', props.commentId]);
+
+export const getPendingFreeAeth = state => selectPendingActions(state).get('freeAeth');
+export const getPendingTransfer = state => selectPendingActions(state).get('transfer');

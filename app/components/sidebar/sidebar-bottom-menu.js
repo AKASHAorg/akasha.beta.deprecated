@@ -44,7 +44,8 @@ function SidebarBottomMenu (props /* : Props */) {
         onProfileEdit,
         intl,
         dispatchAction,
-        getActionStatus
+        getActionStatus,
+        balance
     } = props;
 
     const onLogout = () => {};
@@ -53,8 +54,12 @@ function SidebarBottomMenu (props /* : Props */) {
     React.useEffect(() => {
         if (loggedProfileEthAddress) {
             dispatchAction(
-                profileActions.profileGetData({ ethAddress: loggedProfileEthAddress }),
+                profileActions.profileGetData({ ethAddress: loggedProfileEthAddress, full: true }),
                 getActionStatus(profileActions.profileGetData().type === null)
+            );
+            dispatchAction(
+                profileActions.profileGetBalance(),
+                balance.get('balance') === null && loggedProfileEthAddress
             );
         }
     }, [loggedProfileEthAddress]);
@@ -66,10 +71,10 @@ function SidebarBottomMenu (props /* : Props */) {
     return (
         <div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
-                {/* <ManaPopover /> */}
+                {/* <ManaPopover mana={balance.get('mana')} /> */}
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
-                {/* <EssencePopover /> */}
+                {/* <EssencePopover essence={balance.get('essence')} /> */}
             </div>
             <div className="flex-center-x content-link sidebar__progress-wrapper">
                 {/* <KarmaPopover /> */}
@@ -102,6 +107,7 @@ function SidebarBottomMenu (props /* : Props */) {
 }
 const mapStateToProps = state => ({
     loggedProfile: profileSelectors.getLoggedProfileData(state),
-    loggedProfileEthAddress: profileSelectors.selectLoggedEthAddress(state)
+    loggedProfileEthAddress: profileSelectors.selectLoggedEthAddress(state),
+    balance: profileSelectors.selectBalance(state)
 });
 export default connect(mapStateToProps)(injectIntl(withRequest(SidebarBottomMenu)));

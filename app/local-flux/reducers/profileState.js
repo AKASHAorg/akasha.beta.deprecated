@@ -28,6 +28,46 @@ const profileState = createReducer(initialState, {
         return state.set(['loggedProfile'], loggedProfile);
     },
 
+    [`${PROFILE_MODULE.profileData}`]: (state, { akashaId, ethAddress }) =>
+        state.merge({
+            byEthAddress: state
+                .get('byEthAddress')
+                .set(ethAddress, new ProfileRecord({ akashaId, ethAddress }))
+        }),
+
+    [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { payload }) => {
+        const { ethAddress } = payload;
+        // console.log(payload, 'state payload!');
+        // return state;
+        return state.merge({
+            byEthAddress: state.addProfileData(state.get('byEthAddress'), payload)
+        });
+    },
+
+    [`${PROFILE_MODULE.getBalance}_SUCCESS`]: (state, { payload }) => {
+        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
+        // balance => main token balance
+        // unit => the name of the main token (in this case ether)
+        const { AETH, balance, etherBase, essence, karma, mana, unit } = payload;
+
+        if (loggedEthAddress !== etherBase) {
+            return state;
+        }
+
+        return state.merge({
+            balance: state.get('balance').merge({
+                aeth: new AethBalance(AETH),
+                essence: new EssenceBalance(essence),
+                balance,
+                mana: new ManaBalance(mana),
+                unit
+            }),
+            byEthAddress: state.get('byEthAddress').mergeIn([loggedEthAddress], {
+                essence: essence.total,
+                karma: karma.total
+            })
+        });
+    },
     /* ======== dirty ============ */
 
     [types.ACTION_ADD]: (state, { actionType }) => {
@@ -194,39 +234,19 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [`${PROFILE_MODULE.getBalance}_SUCCESS`]: (state, { data }) => {
-        const loggedEthAddress = state.getIn(['loggedProfile', 'ethAddress']);
-        if (loggedEthAddress !== data.etherBase) {
-            return state;
-        }
-        const balance = new Balance().merge({
-            aeth: new AethBalance(data.AETH),
-            essence: new EssenceBalance(data.essence),
-            eth: data.balance,
-            mana: new ManaBalance(data.mana)
-        });
-        return state.merge({
-            balance,
-            byEthAddress: state.get('byEthAddress').mergeIn([loggedEthAddress], {
-                essence: data.essence.total,
-                karma: data.karma.total
-            })
-        });
-    },
-
-    [`${PROFILE_MODULE.profileData}`]: (state, { context, akashaId, ethAddress }) => {
-        const flags = context
-            ? state.get('flags').setIn(['pendingProfiles', context, ethAddress], true)
-            : state.get('flags');
-        const byEthAddress = state.get('byEthAddress');
-        if (byEthAddress.get(ethAddress)) {
-            return state.set('flags', flags);
-        }
-        return state.merge({
-            byEthAddress: byEthAddress.set(ethAddress, new ProfileRecord({ akashaId, ethAddress })),
-            flags
-        });
-    },
+    // [`${PROFILE_MODULE.profileData}`]: (state, { context, akashaId, ethAddress }) => {
+    //     const flags = context
+    //         ? state.get('flags').setIn(['pendingProfiles', context, ethAddress], true)
+    //         : state.get('flags');
+    //     const byEthAddress = state.get('byEthAddress');
+    //     if (byEthAddress.get(ethAddress)) {
+    //         return state.set('flags', flags);
+    //     }
+    //     return state.merge({
+    //         byEthAddress: byEthAddress.set(ethAddress, new ProfileRecord({ akashaId, ethAddress })),
+    //         flags
+    //     });
+    // },
 
     // [`${PROFILE_MODULE.profileData}_ERROR`]: (state, { request }) => {
     //     const { context, ethAddress } = request;
@@ -235,17 +255,6 @@ const profileState = createReducer(initialState, {
     //     }
     //     return state.setIn(['flags', 'pendingProfiles', context, ethAddress], false);
     // },
-
-    [`${PROFILE_MODULE.profileData}_SUCCESS`]: (state, { data, request }) => {
-        const { context, ethAddress, full } = request;
-        if (!context) {
-            return state.set('byEthAddress', state.addProfileData(state.get('byEthAddress'), data, full));
-        }
-        return state.merge({
-            byEthAddress: state.addProfileData(state.get('byEthAddress'), data, full),
-            flags: state.get('flags').setIn(['pendingProfiles', context, ethAddress], false)
-        });
-    },
 
     [`${PROFILE_MODULE.getProfileList}`]: (state, { ethAddresses }) => {
         let pendingListProfiles = state.getIn(['flags', 'pendingListProfiles']);

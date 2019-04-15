@@ -23,9 +23,10 @@ export const ManaBalance = Record({
 
 export const Balance = Record({
     aeth: new AethBalance(),
+    balance: null,
     essence: new EssenceBalance(),
-    eth: null,
-    mana: new ManaBalance()
+    mana: new ManaBalance(),
+    unit: null
 });
 
 const CyclingRecord = Record({

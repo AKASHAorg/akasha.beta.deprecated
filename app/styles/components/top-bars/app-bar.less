@@ -38,5 +38,31 @@
                 stroke: @heading-color;
             }
         }
+        .appbar {
+            &-balance {
+                display: flex;
+                user-select: none;
+                padding: 0 0.75rem;
+                .balance:first-child {
+                    margin-right: 12px;
+                }
+            }
+        }
+    }
+}
+
+.appbar {
+    &-right-panel {
+        position: fixed;
+        top: @top-bar-height;
+        bottom: 0;
+        right: 0;
+        background-color: @light-background;
+        box-shadow: -2px 0px 15px -3px @shadow-color;
+        z-index: 2;
+        .eth-panel,
+        .aeth-panel {
+            width: @wallet-panel-width
+        }
     }
 }

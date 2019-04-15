@@ -51,8 +51,12 @@ const isDescendant = (parent, child) => {
 /* @todo: ======== <DEPRECATE THIS AND DELETE IT> =========== */
 const canClickAway = Component => {
     class ClickAwayable extends React.Component {
+        getOwner = owner => {
+            console.log(owner, 'used by: ', owner);
+        };
         render () {
-            console.warn('ClickAway HOC will be deprecated soon! Please update it with useOnClickAway hook!');
+            this.getOwner(this._reactInternalFiber);
+            console.warn('ClickAway is deprecated! Please update it with useOnClickAway hook!');
             return React.createElement(Component, this.props);
         }
     }
@@ -95,7 +99,7 @@ const useOnClickAway = (
             ) {
                 return;
             }
-            handler.current(ev);
+            handlerRef.current(ev);
         };
         supportedEvents.forEach((eventName /* : EventNames */) => {
             //@todo check if passive event is supported and use it
@@ -132,6 +136,7 @@ const useTogglerWithClickAway = (
     });
     React.useEffect(() => {
         const listener = (ev /* : Event */) => {
+            console.log('clicked away');
             const targetIsToggler = ev.target === togglerElemRef.current;
             const targetIsClickAway = ev.target === clickAwayElemRef.current;
             const targetIsTogglerDescendant = isDescendant(togglerElemRef.current, ev.target);
@@ -150,13 +155,14 @@ const useTogglerWithClickAway = (
                 return;
             }
             // clicked outside so toggle it off;
-            return handlerRef.current(false);
+            return handlerRef.current(!toggled);
         };
         supportedEvents.forEach(event => {
             if (togglerElemRef.current) {
                 togglerElemRef.current.addEventListener(event, listener);
+            } else {
+                document.addEventListener(event, listener);
             }
-            document.addEventListener(event, listener);
         });
         return () => {
             supportedEvents.forEach(event => {

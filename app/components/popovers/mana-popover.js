@@ -27,7 +27,7 @@ class ManaPopover extends Component {
         }
     }
 
-    onVisibleChange = (popoverVisible) => {
+    onVisibleChange = popoverVisible => {
         this.wasVisible = true;
         this.setState({
             popoverVisible
@@ -44,18 +44,24 @@ class ManaPopover extends Component {
         }
     };
 
-    onShiftDown = () => { this.setState({ page: SHIFT_DOWN }); };
+    onShiftDown = () => {
+        this.setState({ page: SHIFT_DOWN });
+    };
 
-    onShiftUp = () => { this.setState({ page: SHIFT_UP }); };
+    onShiftUp = () => {
+        this.setState({ page: SHIFT_UP });
+    };
 
-    onCancel = () => { this.setState({ page: DEFAULT }); };
+    onCancel = () => {
+        this.setState({ page: DEFAULT });
+    };
 
-    onShiftDownSubmit = (amount) => {
+    onShiftDownSubmit = amount => {
         const { loggedEthAddress } = this.props;
         this.props.actionAdd(loggedEthAddress, actionTypes.cycleAeth, { amount });
     };
 
-    onShiftUpSubmit = (amount) => {
+    onShiftUpSubmit = amount => {
         const { loggedEthAddress } = this.props;
         this.props.actionAdd(loggedEthAddress, actionTypes.bondAeth, { amount });
     };
@@ -65,27 +71,28 @@ class ManaPopover extends Component {
         const { page } = this.state;
         const remainingMana = balanceToNumber(balance.getIn(['mana', 'remaining']));
         const totalMana = balanceToNumber(balance.getIn(['mana', 'total']));
+        console.log(props.mana, 'the mana');
         if (page === SHIFT_DOWN) {
             return (
-              <ShiftForm
-                balance={balance}
-                onCancel={this.onCancel}
-                onShift={this.onShiftDownSubmit}
-                pendingShift={!!pendingCycleAeth}
-                type="shiftDownMana"
-              />
+                <ShiftForm
+                    balance={balance}
+                    onCancel={this.onCancel}
+                    onShift={this.onShiftDownSubmit}
+                    pendingShift={!!pendingCycleAeth}
+                    type="shiftDownMana"
+                />
             );
         }
 
         if (page === SHIFT_UP) {
             return (
-              <ShiftForm
-                balance={balance}
-                onCancel={this.onCancel}
-                onShift={this.onShiftUpSubmit}
-                pendingShift={pendingBondAeth}
-                type="shiftUpMana"
-              />
+                <ShiftForm
+                    balance={balance}
+                    onCancel={this.onCancel}
+                    onShift={this.onShiftUpSubmit}
+                    pendingShift={pendingBondAeth}
+                    type="shiftUpMana"
+                />
             );
         }
         const comments = manaBurned.get('comments');
@@ -100,55 +107,46 @@ class ManaPopover extends Component {
         }
         const burnedMana = comments + entries + votes;
         return (
-          <div className="mana-popover__content">
-            <div className="flex-center mana-popover__title">
-              {intl.formatMessage(generalMessages.manaPool)}
-              <Tooltip
-                placement="top"
-                title={intl.formatMessage(generalMessages.manaBurned)}
-              >
-                <span className="mana-popover__mana-score">
-                  { burnedMana }
-                </span>
-              </Tooltip>
+            <div className="mana-popover__content">
+                <div className="flex-center mana-popover__title">
+                    {intl.formatMessage(generalMessages.manaPool)}
+                    <Tooltip placement="top" title={intl.formatMessage(generalMessages.manaBurned)}>
+                        <span className="mana-popover__mana-score">{burnedMana}</span>
+                    </Tooltip>
+                </div>
+                <div className="flex-center mana-popover__chart-wrapper">
+                    <PieChart
+                        data={{
+                            labels: ['Comments', 'Entries', 'Votes'],
+                            datasets: [
+                                {
+                                    data,
+                                    backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']
+                                }
+                            ]
+                        }}
+                        options={{
+                            legend: { display: false },
+                            tooltips: {
+                                displayColors: false,
+                                enabled: !noValues
+                            }
+                        }}
+                        width={240}
+                        height={240}
+                    />
+                </div>
+                <div className="mana-popover__actions">
+                    <Button className="flex-center mana-popover__button" onClick={this.onShiftDown}>
+                        <Icon type="arrowDown" />
+                        {intl.formatMessage(formMessages.shiftDown)}
+                    </Button>
+                    <Button className="flex-center mana-popover__button" onClick={this.onShiftUp}>
+                        <Icon type="arrowUp" />
+                        {intl.formatMessage(formMessages.shiftUp)}
+                    </Button>
+                </div>
             </div>
-            <div className="flex-center mana-popover__chart-wrapper">
-              <PieChart
-                data={{
-                    labels: ['Comments', 'Entries', 'Votes'],
-                    datasets: [{
-                        data,
-                        backgroundColor: ['#1e7bf5', '#70a0ff', '#c7d4ff']
-                    }]
-                }}
-                options={{
-                    legend: { display: false },
-                    tooltips: {
-                        displayColors: false,
-                        enabled: !noValues
-                    }
-                }}
-                width={240}
-                height={240}
-              />
-            </div>
-            <div className="mana-popover__actions">
-              <Button
-                className="flex-center mana-popover__button"
-                onClick={this.onShiftDown}
-              >
-                <Icon type="arrowDown" />
-                {intl.formatMessage(formMessages.shiftDown)}
-              </Button>
-              <Button
-                className="flex-center mana-popover__button"
-                onClick={this.onShiftUp}
-              >
-                <Icon type="arrowUp" />
-                {intl.formatMessage(formMessages.shiftUp)}
-              </Button>
-            </div>
-          </div>
         );
     };
 
@@ -158,32 +156,34 @@ class ManaPopover extends Component {
         const total = balanceToNumber(balance.getIn(['mana', 'total']));
         const percent = total ? (remaining / total) * 100 : 0;
         const tooltip = (
-          <div>
-            <div>{intl.formatMessage(generalMessages.mana)}</div>
-            <div>{remaining} / {total}</div>
-          </div>
+            <div>
+                <div>{intl.formatMessage(generalMessages.mana)}</div>
+                <div>
+                    {remaining} / {total}
+                </div>
+            </div>
         );
 
         return (
-          <Popover
-            content={this.wasVisible ? this.renderContent() : null}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="mana-popover"
-            placement="leftBottom"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            <Tooltip placement="right" title={tooltip} mouseEnterDelay={0.3}>
-              <Progress
-                className="mana-popover__progress"
-                format={() => <Icon type="mana" />}
-                percent={percent}
-                strokeWidth={10}
-                type="circle"
-                width={35}
-              />
-            </Tooltip>
-          </Popover>
+            <Popover
+                content={this.wasVisible ? this.renderContent() : null}
+                onVisibleChange={this.onVisibleChange}
+                overlayClassName="mana-popover"
+                placement="leftBottom"
+                trigger="click"
+                visible={this.state.popoverVisible}
+            >
+                <Tooltip placement="right" title={tooltip} mouseEnterDelay={0.3}>
+                    <Progress
+                        className="mana-popover__progress"
+                        format={() => <Icon type="mana" />}
+                        percent={percent}
+                        strokeWidth={10}
+                        type="circle"
+                        width={35}
+                    />
+                </Tooltip>
+            </Popover>
         );
     }
 }
@@ -195,7 +195,7 @@ ManaPopover.propTypes = {
     loggedEthAddress: PropTypes.string,
     manaBurned: PropTypes.shape().isRequired,
     pendingBondAeth: PropTypes.bool,
-    pendingCycleAeth: PropTypes.string,
+    pendingCycleAeth: PropTypes.string
 };
 
 function mapStateToProps (state) {
@@ -204,7 +204,7 @@ function mapStateToProps (state) {
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         manaBurned: profileSelectors.selectBurnedMana(state),
         pendingBondAeth: actionSelectors.getPendingBondAeth(state),
-        pendingCycleAeth: actionSelectors.getPendingCycleAeth(state),
+        pendingCycleAeth: actionSelectors.getPendingCycleAeth(state)
     };
 }
 

@@ -35,10 +35,9 @@ function UserNotification (props /* : Props */) {
     const [openDrawer, setOpenDrawer] = React.useState(false);
 
     useTogglerWithClickAway(togglerRef, elRef, setOpenDrawer, openDrawer);
-    // useOnClickAway(elRef, () => setOpenDrawer(null), null, openDrawer);
     // console.log(openDrawer, "the open drawer");
     const iconClass = classnames(props.className, 'notification-icon', {
-        'notification-icon_active': openDrawer === 'NOTIFICATION'
+        'notification-icon_active': openDrawer
     });
     return (
         <>
@@ -51,10 +50,10 @@ function UserNotification (props /* : Props */) {
                 </div>
             )}
             {openDrawer && (
-                <Fill name={APPBAR_SLOTS.RIGHT_DRAWER}>
-                    <div ref={elRef}>
+                <Fill name={APPBAR_SLOTS.RIGHT_PANEL}>
+                    <>
                         <NotificationsPanel />
-                    </div>
+                    </>
                 </Fill>
             )}
         </>

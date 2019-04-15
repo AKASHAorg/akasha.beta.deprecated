@@ -1,16 +1,15 @@
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
-import { Popover, Timeline, Switch } from "antd";
-import classNames from "classnames";
-import { DataLoader, Icon, NotificationLog } from "../";
-import { hideNotificationsPanel } from "../../local-flux/actions/app-actions";
-import { notificationsSubscribe } from "../../local-flux/actions/notifications-actions";
-import { userSettingsSave } from "../../local-flux/actions/settings-actions";
-import { profileMessages, generalMessages, settingsMessages } from "../../locale-data/messages";
-import clickAway from "../../utils/clickAway";
-import { profileSelectors, notificationSelectors, settingsSelectors } from "../../local-flux/selectors";
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { Popover, Timeline, Switch } from 'antd';
+import classNames from 'classnames';
+import { DataLoader, Icon, NotificationLog } from '../';
+import { hideNotificationsPanel } from '../../local-flux/actions/app-actions';
+import { notificationsSubscribe } from '../../local-flux/actions/notifications-actions';
+import { userSettingsSave } from '../../local-flux/actions/settings-actions';
+import { profileMessages, generalMessages, settingsMessages } from '../../locale-data/messages';
+import { profileSelectors, notificationSelectors, settingsSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 const { Item } = Timeline;
@@ -18,7 +17,7 @@ const { Item } = Timeline;
 class NotificationsPanel extends Component {
     constructor (props) {
         super(props);
-        const notificationsPreference = props.userSettings.get("notificationsPreference");
+        const notificationsPreference = props.userSettings.get('notificationsPreference');
         this.state = {
             notifFeed: notificationsPreference.feed,
             notifComments: notificationsPreference.comments,
@@ -43,10 +42,6 @@ class NotificationsPanel extends Component {
         return false;
     }
 
-    componentClickAway = () => {
-        this.props.hideNotificationsPanel();
-    };
-
     getContainerRef = el => {
         this.containerRef = el;
     };
@@ -55,7 +50,7 @@ class NotificationsPanel extends Component {
         const values = Object.values(notification.payload);
         let key = notification.blockNumber;
         values.forEach(val => {
-            if (typeof val === "string") {
+            if (typeof val === 'string') {
                 key = `${key}-${val.substr(0, 10)}`;
             }
         });
@@ -139,7 +134,7 @@ class NotificationsPanel extends Component {
 
     render () {
         const { intl, userSettings } = this.props;
-        const { feed, comments, donations, votes } = userSettings.get("notificationsPreference");
+        const { feed, comments, donations, votes } = userSettings.get('notificationsPreference');
 
         return (
             <div className="notifications-panel" ref={this.props.nodeRef}>
@@ -173,15 +168,15 @@ class NotificationsPanel extends Component {
 }
 
 NotificationsPanel.propTypes = {
-    darkTheme: PropTypes.bool,
-    hideNotificationsPanel: PropTypes.func.isRequired,
-    intl: PropTypes.shape().isRequired,
-    loggedEthAddress: PropTypes.string.isRequired,
-    notifications: PropTypes.shape().isRequired,
-    notificationsLoaded: PropTypes.bool,
-    notificationsSubscribe: PropTypes.func.isRequired,
-    userSettings: PropTypes.shape().isRequired,
-    userSettingsSave: PropTypes.func.isRequired
+    // darkTheme: PropTypes.bool,
+    // hideNotificationsPanel: PropTypes.func.isRequired,
+    // intl: PropTypes.shape().isRequired,
+    // loggedEthAddress: PropTypes.string.isRequired,
+    // notifications: PropTypes.shape().isRequired,
+    // notificationsLoaded: PropTypes.bool,
+    // notificationsSubscribe: PropTypes.func.isRequired,
+    // userSettings: PropTypes.shape().isRequired,
+    // userSettingsSave: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -201,4 +196,4 @@ export default connect(
         // notificationsSubscribe,
         userSettingsSave
     }
-)(injectIntl(clickAway(withRequest(NotificationsPanel))));
+)(injectIntl(withRequest(NotificationsPanel)));

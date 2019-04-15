@@ -27,7 +27,6 @@ export default function init(sp, getService) {
         const essenceValue = yield contracts.instance.Essence.aethValueFrom(essence);
         const symbol = 'AETH';
         const totalAeth = free.plus(bonded).plus(cycling);
-        console.log(weiAmount, 'wei');
         const balance = fromWei(web3Api.instance.utils.toBN(weiAmount), unit);
         return {
             balance,

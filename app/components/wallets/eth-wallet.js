@@ -11,7 +11,6 @@ import { profileGetBalance } from '../../local-flux/actions/profile-actions';
 import { searchResetResults } from '../../local-flux/actions/search-actions';
 import { actionSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
-import clickAway from '../../utils/clickAway';
 import withRequest from '../high-order-components/with-request';
 
 const { TabPane } = Tabs;
@@ -32,10 +31,6 @@ class EthWallet extends Component {
         this.props.actionClearHistory();
         this.props.searchResetResults();
     }
-
-    componentClickAway = () => {
-        this.props.toggleEthWallet();
-    };
 
     selectTab = activeTab => {
         this.setState({ activeTab });
@@ -108,27 +103,26 @@ class EthWallet extends Component {
 }
 
 EthWallet.propTypes = {
-    actionAdd: PropTypes.func.isRequired,
-    actionClearHistory: PropTypes.func.isRequired,
-    actionGetHistory: PropTypes.func.isRequired,
-    balance: PropTypes.shape().isRequired,
-    intl: PropTypes.shape().isRequired,
-    loggedEthAddress: PropTypes.string.isRequired,
-    pendingTransfer: PropTypes.bool,
-    profileGetBalance: PropTypes.func.isRequired,
-    profileResults: PropTypes.shape().isRequired,
-    searchResetResults: PropTypes.func.isRequired,
-    sentTransactions: PropTypes.shape().isRequired,
-    showNotification: PropTypes.func.isRequired,
-    toggleEthWallet: PropTypes.func.isRequired
+    // actionAdd: PropTypes.func.isRequired,
+    // actionClearHistory: PropTypes.func.isRequired,
+    // actionGetHistory: PropTypes.func.isRequired,
+    // balance: PropTypes.shape().isRequired,
+    // intl: PropTypes.shape().isRequired,
+    // loggedEthAddress: PropTypes.string.isRequired,
+    // pendingTransfer: PropTypes.bool,
+    // profileGetBalance: PropTypes.func.isRequired,
+    // profileResults: PropTypes.shape().isRequired,
+    // searchResetResults: PropTypes.func.isRequired,
+    // sentTransactions: PropTypes.shape().isRequired,
+    // showNotification: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
     return {
         balance: profileSelectors.selectBalance(state),
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
-        pendingTransfer: actionSelectors.selectPendingActionByType(state, transferEth),
-        profileResults: actionSelectors.selectProfileSearchResults(state),
+        pendingTransfer: actionSelectors.getPendingTransfer(state),
+        profileResults: searchSelectors.selectProfileSearchResults(state),
         sentTransactions: actionSelectors.getActionHistory(state)
     };
 }
@@ -144,4 +138,4 @@ export default connect(
         showNotification,
         toggleEthWallet
     }
-)(injectIntl(clickAway(withRequest(EthWallet))));
+)(injectIntl(withRequest(EthWallet)));

@@ -134,6 +134,7 @@ export const getEssenceIterator = (state /*: Object*/) => ({
     lastIndex: selectEssenceIterator(state).get('lastIndex')
 });
 
-export const getEthBalance = (state /*: Object*/) => selectBalance(state).get('eth');
+export const getMainBalance = (state /*: Object*/) => selectBalance(state).get('balance');
+export const getMainBalanceTokenName = (state /*: Object */) => selectBalance(state).get('unit');
 
-export const getManaBalance = (state /*: Object*/) => selectBalance(state).getIn(['mana', 'remaining']);
+export const getRemainingMana = (state /*: Object*/) => selectBalance(state).getIn(['mana', 'remaining']);

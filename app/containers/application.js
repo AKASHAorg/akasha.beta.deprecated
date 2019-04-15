@@ -7,7 +7,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { hot } from 'react-hot-loader';
 import { Provider, Fill } from 'react-slot-fill';
 import * as appActions from '../local-flux/actions/app-actions';
-import * as eProcActions from '../local-flux/actions/external-process-actions';
 import * as settingsActions from '../local-flux/actions/settings-actions';
 import { reloadPage } from '../local-flux/actions/utils-actions';
 import * as profileActions from '../local-flux/actions/profile-actions';
@@ -53,6 +52,7 @@ notification.config({
         history: RouterHistory,
         getActionStatus: (state: Object) => boolean,
         dispatchAction: (Object, ?boolean | () => boolean) => void,
+        gethIsSynced: boolean
     }
 */
 
@@ -64,7 +64,7 @@ notification.config({
  */
 
 const Application = (props /* :Props */) => {
-    const { dispatchAction, getActionStatus } = props;
+    const { dispatchAction, getActionStatus, gethIsSynced, showNotification, loggedEthAddress } = props;
     const [profileEditPanelVisible, setProfileEditPanelVisible] = React.useState(false);
 
     const onReload = () => dispatchAction(reloadPage());
@@ -74,21 +74,19 @@ const Application = (props /* :Props */) => {
         const { selectGethSyncStatus } = externalProcessSelectors;
         dispatchAction(
             getCurrentProfile(),
-            newState =>
-                getActionStatus(getCurrentProfile().type) === null &&
-                selectGethSyncStatus(newState).get('synced') === true
+            newState => !loggedEthAddress && selectGethSyncStatus(newState).get('synced')
         );
-    }, []); // => empty array is equivalent to didMount
+    }, [gethIsSynced, !loggedEthAddress]);
     return (
         <>
-            <AppErrorBoundary reloadPage={onReload} showNotification={props.showNotification}>
+            <AppErrorBoundary reloadPage={onReload} showNotification={showNotification}>
                 <Provider>
-                    {/* Common application parts */}
+                    {/* load layouts here */}
                     <AppbarLayout />
                     <SidebarLayout profilePanelOpen={profileEditPanelVisible} />
                     <DashboardPageLayout />
                     <MyProfilePageLayout />
-                    {/* Page Layouts */}
+                    {/* Populate layout (Pages) */}
                     <DashboardPage />
                     <EditorPage />
                     <EntryPage />
@@ -134,9 +132,10 @@ function mapStateToProps (state) {
         faucet: profileSelectors.selectFaucet(state),
         loggedEthAddress: profileSelectors.selectLoggedEthAddress(state),
         needAuth: actionSelectors.getNeedAuthAction(state),
-        needEth: actionSelectors.selectNeedEth(state),
-        needAeth: actionSelectors.selectNeedAeth(state),
-        needMana: actionSelectors.selectNeedMana(state)
+        // needEth: actionSelectors.selectNeedEth(state),
+        // needAeth: actionSelectors.selectNeedAeth(state),
+        // needMana: actionSelectors.selectNeedMana(state)
+        gethIsSynced: externalProcessSelectors.selectGethSyncStatus(state).get('synced')
     };
 }
 

@@ -19,6 +19,7 @@ function AppBarLayout (/* props /* : Props */) {
                 </div>
             </div>
             <div className={`appbar-right-panel`}>
+                {/*  only one panel can be open at a time' */}
                 <Slot name={APPBAR_SLOTS.RIGHT_PANEL} />
             </div>
         </>

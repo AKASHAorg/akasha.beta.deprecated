@@ -82,7 +82,7 @@ function* dashboardDeleteColumn ({ columnId }) /* : Saga<void> */ {
     }
 }
 
-export function* dashboardGetActive () /* : Saga<void> */ {
+function* dashboardGetActive () /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         const data = yield apply(dashboardService, dashboardService.getActive, [ethAddress]);
@@ -92,7 +92,7 @@ export function* dashboardGetActive () /* : Saga<void> */ {
     }
 }
 
-export function* dashboardGetAll () /* : Saga<void> */ {
+function* dashboardGetAll () /* : Saga<void> */ {
     try {
         const ethAddress = yield select(profileSelectors.selectLoggedEthAddress);
         let data = yield apply(dashboardService, dashboardService.getAll, [ethAddress]);
@@ -190,11 +190,13 @@ export function* watchDashboardActions () /* : Saga<void> */ {
     yield takeEvery(types.DASHBOARD_ADD_FIRST, dashboardAddFirst);
     yield takeEvery(types.DASHBOARD_DELETE, dashboardDelete);
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
+    yield takeEvery(types.DASHBOARD_GET_ACTIVE, dashboardGetActive);
     yield takeEvery(types.DASHBOARD_RENAME, dashboardRename);
+    yield takeEvery(types.DASHBOARD_REORDER, reorderDashboards);
+    yield takeEvery(types.DASHBOARD_REORDER_COLUMN, reorderColumns);
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
     yield takeEvery(types.DASHBOARD_TOGGLE_PROFILE_COLUMN, dashboardToggleProfileColumn);
     yield takeEvery(types.DASHBOARD_TOGGLE_TAG_COLUMN, dashboardToggleTagColumn);
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
-    yield takeEvery(types.DASHBOARD_REORDER_COLUMN, reorderColumns);
-    yield takeEvery(types.DASHBOARD_REORDER, reorderDashboards);
+    yield takeEvery(types.DASHBOARD_GET_ALL, dashboardGetAll);
 }
