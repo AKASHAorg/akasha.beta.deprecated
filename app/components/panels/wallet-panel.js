@@ -5,10 +5,10 @@ import { AethWallet, EthWallet } from '../';
 const WalletPanel = (props) => {
     const { showWallet } = props;
     return (
-      <div className="wallet-panel">
-        {showWallet === 'AETH' && <AethWallet />}
-        {showWallet === 'ETH' && <EthWallet />}
-      </div>
+        <div className="wallet-panel">
+            { showWallet === 'AETH' && <AethWallet/> }
+            { showWallet === 'ETH' && <EthWallet/> }
+        </div>
     );
 };
 

@@ -1,4 +1,4 @@
-import { List, Map, Record, Collection, fromJS } from 'immutable';
+import { Collection, fromJS, List, Map, Record } from 'immutable';
 
 export const AethBalance = Record({
     bonded: null,
@@ -162,6 +162,7 @@ export default class ProfileStateModel extends ProfileState {
         }
         return byEthAddress.set(profileData.ethAddress, new ProfileRecord(profileData));
     }
+
     getKarmaPopoverDefaultState (collection, myRanking) {
         let defaultState = [];
         if (collection.length < 4) {

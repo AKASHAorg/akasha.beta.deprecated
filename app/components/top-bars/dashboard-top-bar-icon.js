@@ -53,13 +53,13 @@ class DashboardTopBarIcon extends Component {
         return connectDragSource(
             connectDropTarget(
                 <div
-                    className={classNames('flex-center dashboard-top-bar-icon', {
+                    className={ classNames('flex-center dashboard-top-bar-icon', {
                         'dashboard-top-bar-icon_dragging': isDragging
-                    })}
-                    onClick={scrollIntoView}
+                    }) }
+                    onClick={ scrollIntoView }
                 >
-                    <Tooltip key={id} title={title}>
-                        <Icon className="dashboard-top-bar__column-icon" type={iconType} />
+                    <Tooltip key={ id } title={ title }>
+                        <Icon className="dashboard-top-bar__column-icon" type={ iconType }/>
                     </Tooltip>
                 </div>
             )

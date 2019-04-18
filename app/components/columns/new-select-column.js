@@ -31,42 +31,43 @@ class NewSelectColumn extends Component {
         const placeholderMessage = intl.formatMessage(entryMessages.noEntries);
 
         return (
-          <div className="new-select-column">
-            <div className="new-select-column__select-wrapper">
-              <Select
-                className="new-select-column__select"
-                filterOption
-                notFoundContent={intl.formatMessage(generalMessages.notFound)}
-                onChange={this.onChange}
-                onSelect={this.onSelect}
-                showSearch
-                size="large"
-                value={newColumn.get('value')}
-              >
-                {options.map(option => (
-                  <Option key={option.get('id')} value={option.get('id')}>{option.get('name')}</Option>
-                ))}
-              </Select>
+            <div className="new-select-column">
+                <div className="new-select-column__select-wrapper">
+                    <Select
+                        className="new-select-column__select"
+                        filterOption
+                        notFoundContent={ intl.formatMessage(generalMessages.notFound) }
+                        onChange={ this.onChange }
+                        onSelect={ this.onSelect }
+                        showSearch
+                        size="large"
+                        value={ newColumn.get('value') }
+                    >
+                        { options.map(option => (
+                            <Option key={ option.get('id') }
+                                    value={ option.get('id') }>{ option.get('name') }</Option>
+                        )) }
+                    </Select>
+                </div>
+                { column.get('value') &&
+                <div className="overflow-ellipsis new-select-column__preview-title">
+                    { previewMessage }
+                </div>
+                }
+                { column.get('value') &&
+                <div className="new-select-column__list-wrapper">
+                    <EntryList
+                        contextId="newColumn"
+                        entries={ previewEntries }
+                        fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                        fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                        fetchMoreEntries={ this.onLoadMore }
+                        moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                        placeholderMessage={ placeholderMessage }
+                    />
+                </div>
+                }
             </div>
-            {column.get('value') &&
-              <div className="overflow-ellipsis new-select-column__preview-title">
-                {previewMessage}
-              </div>
-            }
-            {column.get('value') &&
-              <div className="new-select-column__list-wrapper">
-                <EntryList
-                  contextId="newColumn"
-                  entries={previewEntries}
-                  fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-                  fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-                  fetchMoreEntries={this.onLoadMore}
-                  moreEntries={column.getIn(['flags', 'moreEntries'])}
-                  placeholderMessage={placeholderMessage}
-                />
-              </div>
-            }
-          </div>
         );
     }
 }

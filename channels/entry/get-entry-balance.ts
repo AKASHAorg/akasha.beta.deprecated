@@ -17,7 +17,7 @@ export const getEntryBalanceS = {
   required: ['list'],
 
 };
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data: { list: string[] }) {

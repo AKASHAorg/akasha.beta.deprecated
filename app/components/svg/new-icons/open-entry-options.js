@@ -1,11 +1,12 @@
-import React from "react";
+import React from 'react';
 
 const OpenEntryOptions = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" { ...props }
+         ref={ ref }>
         <g fill="none" fillRule="evenodd">
-            <circle cx="12" cy="12" r="10.08" strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="10.08" strokeWidth="1.5"/>
             <g fill="#2E3747" transform="rotate(90 5.35 11.824)">
-                <rect width="1.26" height="10.08" x="5.04" rx=".63" />
+                <rect width="1.26" height="10.08" x="5.04" rx=".63"/>
                 <rect
                     width="1.26"
                     height="10.08"
@@ -18,5 +19,5 @@ const OpenEntryOptions = React.forwardRef((props, ref) => (
         </g>
     </svg>
 ));
-OpenEntryOptions.displayName = "OpenEntryOptions";
+OpenEntryOptions.displayName = 'OpenEntryOptions';
 export default OpenEntryOptions;

@@ -1,4 +1,4 @@
-import { Record, List, Map } from 'immutable';
+import { List, Map, Record } from 'immutable';
 
 const TagRecord = Record({
     entriesCount: new Map(),

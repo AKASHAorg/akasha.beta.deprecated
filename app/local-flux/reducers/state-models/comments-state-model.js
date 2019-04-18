@@ -72,6 +72,7 @@ export default class CommentsStateModel extends CommentsState {
         super(params);
         this.hexZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
     }
+
     createCommentWithAuthor (record) {
         const comment = Object.assign({}, record);
         if (!comment.parent || comment.parent === this.hexZero) {

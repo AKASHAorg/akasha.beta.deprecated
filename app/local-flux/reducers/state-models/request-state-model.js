@@ -1,4 +1,4 @@
-import { Record, List } from 'immutable';
+import { List, Record } from 'immutable';
 
 const RequestState = Record({
     successActions: new List(),
@@ -6,4 +6,5 @@ const RequestState = Record({
     requestedActions: new List(),
 });
 
-export default class RequestStateModel extends RequestState {}
+export default class RequestStateModel extends RequestState {
+}

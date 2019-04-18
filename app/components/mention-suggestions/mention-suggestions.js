@@ -120,7 +120,7 @@ class MentionSuggestions extends Component {
         let mentionReplacedContent = Modifier.replaceText(
             editorState.getCurrentContent(),
             mentionTextSelection,
-            `@${akashaId}`
+            `@${ akashaId }`
         );
         const blockKey = mentionTextSelection.getAnchorKey();
         const blockSize = editorState.getCurrentContent().getBlockForKey(blockKey).getLength();
@@ -175,27 +175,30 @@ class MentionSuggestions extends Component {
             return null;
         }
         return (
-          <div
-            className={`${styles.root}`}
-            style={{
-                top: suggestionsPosition.top + 14,
-                left: suggestionsPosition.left,
-            }}
-          >
-            {suggestions.map((akashaId, index) =>
-              <div
-                className={`${styles.result} row middle-xs`}
-                key={akashaId}
-                onClick={(ev) => { ev.stopPropagation(); this.replaceText(akashaId); }}
-                onMouseEnter={() => this.onMouseEnter(index)}
-                style={{ backgroundColor: index === focusedIndex ? 'rgba(0, 0, 0, 0.08)' : '' }}
-              >
-                <div className={styles.akashaId}>
-                  {`@${akashaId}`}
-                </div>
-              </div>
-            )}
-          </div>
+            <div
+                className={ `${ styles.root }` }
+                style={ {
+                    top: suggestionsPosition.top + 14,
+                    left: suggestionsPosition.left,
+                } }
+            >
+                { suggestions.map((akashaId, index) =>
+                    <div
+                        className={ `${ styles.result } row middle-xs` }
+                        key={ akashaId }
+                        onClick={ (ev) => {
+                            ev.stopPropagation();
+                            this.replaceText(akashaId);
+                        } }
+                        onMouseEnter={ () => this.onMouseEnter(index) }
+                        style={ { backgroundColor: index === focusedIndex ? 'rgba(0, 0, 0, 0.08)' : '' } }
+                    >
+                        <div className={ styles.akashaId }>
+                            { `@${ akashaId }` }
+                        </div>
+                    </div>
+                ) }
+            </div>
         );
     }
 }

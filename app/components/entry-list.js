@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import Masonry from 'react-masonry-component';
 import { Waypoint } from 'react-waypoint';
@@ -10,12 +10,12 @@ import { entryPageShow } from '../local-flux/actions/entry-actions';
 import { toggleOutsideNavigation } from '../local-flux/actions/app-actions';
 import {
     actionSelectors,
-    externalProcessSelectors,
-    settingsSelectors,
-    profileSelectors,
     draftSelectors,
+    entrySelectors,
+    externalProcessSelectors,
+    profileSelectors,
     searchSelectors,
-    entrySelectors
+    settingsSelectors
 } from '../local-flux/selectors';
 import { DataLoader, EntryCard } from './index';
 
@@ -82,88 +82,89 @@ class EntryList extends Component {
 
                 return (
                     <EntryCard
-                        author={author}
-                        baseWidth={baseWidth}
-                        baseUrl={baseUrl}
-                        blockNr={blockNr}
-                        canClaimPending={canClaimPending}
-                        claimPending={claimPending}
-                        containerRef={this.container}
-                        contextId={contextId}
-                        entry={entry}
-                        entryPageShow={this.props.entryPageShow}
-                        existingDraft={this.getExistingDraft(entry.get('entryId'))}
-                        fetchingEntryBalance={fetchingEntryBalance}
-                        handleEdit={this.handleEdit}
-                        hideEntrySettings={hideEntrySettings}
-                        isPending={isPending}
-                        intl={intl}
-                        key={entry.get('entryId')}
-                        large={large}
-                        loggedEthAddress={loggedEthAddress}
+                        author={ author }
+                        baseWidth={ baseWidth }
+                        baseUrl={ baseUrl }
+                        blockNr={ blockNr }
+                        canClaimPending={ canClaimPending }
+                        claimPending={ claimPending }
+                        containerRef={ this.container }
+                        contextId={ contextId }
+                        entry={ entry }
+                        entryPageShow={ this.props.entryPageShow }
+                        existingDraft={ this.getExistingDraft(entry.get('entryId')) }
+                        fetchingEntryBalance={ fetchingEntryBalance }
+                        handleEdit={ this.handleEdit }
+                        hideEntrySettings={ hideEntrySettings }
+                        isPending={ isPending }
+                        intl={ intl }
+                        key={ entry.get('entryId') }
+                        large={ large }
+                        loggedEthAddress={ loggedEthAddress }
                         // onRetry={this.props.entryGetShort}
-                        style={cardStyle}
-                        toggleOutsideNavigation={this.props.toggleOutsideNavigation}
-                        votePending={!!pendingVotes.get(entry.get('entryId'))}
+                        style={ cardStyle }
+                        toggleOutsideNavigation={ this.props.toggleOutsideNavigation }
+                        votePending={ !!pendingVotes.get(entry.get('entryId')) }
                     />
                 );
             });
         return (
             <div
-                className={`entry-list ${!masonry && 'entry-list_flex'}`}
-                style={Object.assign({}, style)}
-                ref={this.getContainerRef}
+                className={ `entry-list ${ !masonry && 'entry-list_flex' }` }
+                style={ Object.assign({}, style) }
+                ref={ this.getContainerRef }
             >
-                <DataLoader flag={fetchingEntries} timeout={defaultTimeout} style={{ paddingTop: '80px' }}>
-                    <div style={{ width: '100%', height: '100%' }}>
-                        {entries.size === 0 &&
-                            searching &&
-                            (searchQuery.length > 2 || searchQuery.length === 0) && (
-                                <div className="entry-list__search-placeholder">
-                                    <div className="entry-list__search-placeholder-inner">
-                                        <div className="entry-list__search-placeholder_image" />
-                                        <div className="entry-list__search-placeholder_text">
-                                            {searchQuery.length === 0 &&
-                                                intl.formatMessage(generalMessages.startTypingToSearch)}
-                                            {searchQuery.length > 0 &&
-                                                (placeholderMessage ||
-                                                    intl.formatMessage(generalMessages.searchingNoResults, {
-                                                        searchTerm: searchQuery,
-                                                        resource: intl.formatMessage(entryMessages.entries)
-                                                    }))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        {entries.size === 0 && !searching && (
-                            <div className="flex-center entry-list__empty-placeholder">
-                                <div className="entry-list__empty-placeholder-inner">
-                                    <div className="entry-list__empty-placeholder-image" />
-                                    <div className="entry-list__empty-placeholder-text">
-                                        {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
+                <DataLoader flag={ fetchingEntries } timeout={ defaultTimeout }
+                            style={ { paddingTop: '80px' } }>
+                    <div style={ { width: '100%', height: '100%' } }>
+                        { entries.size === 0 &&
+                        searching &&
+                        (searchQuery.length > 2 || searchQuery.length === 0) && (
+                            <div className="entry-list__search-placeholder">
+                                <div className="entry-list__search-placeholder-inner">
+                                    <div className="entry-list__search-placeholder_image"/>
+                                    <div className="entry-list__search-placeholder_text">
+                                        { searchQuery.length === 0 &&
+                                        intl.formatMessage(generalMessages.startTypingToSearch) }
+                                        { searchQuery.length > 0 &&
+                                        (placeholderMessage ||
+                                            intl.formatMessage(generalMessages.searchingNoResults, {
+                                                searchTerm: searchQuery,
+                                                resource: intl.formatMessage(entryMessages.entries)
+                                            })) }
                                     </div>
                                 </div>
                             </div>
-                        )}
-                        {masonry ? (
+                        ) }
+                        { entries.size === 0 && !searching && (
+                            <div className="flex-center entry-list__empty-placeholder">
+                                <div className="entry-list__empty-placeholder-inner">
+                                    <div className="entry-list__empty-placeholder-image"/>
+                                    <div className="entry-list__empty-placeholder-text">
+                                        { placeholderMessage || intl.formatMessage(entryMessages.noEntries) }
+                                    </div>
+                                </div>
+                            </div>
+                        ) }
+                        { masonry ? (
                             <Masonry
-                                options={{ transitionDuration: 0, fitWidth: true }}
-                                style={{ margin: '0 auto' }}
+                                options={ { transitionDuration: 0, fitWidth: true } }
+                                style={ { margin: '0 auto' } }
                             >
-                                {entryCards}
+                                { entryCards }
                             </Masonry>
                         ) : (
                             entryCards
-                        )}
-                        {moreEntries && (
-                            <div style={{ height: '35px' }}>
-                                <DataLoader flag={fetchingMoreEntries} size="small">
+                        ) }
+                        { moreEntries && (
+                            <div style={ { height: '35px' } }>
+                                <DataLoader flag={ fetchingMoreEntries } size="small">
                                     <div className="flex-center">
-                                        <Waypoint onEnter={this.props.fetchMoreEntries} />
+                                        <Waypoint onEnter={ this.props.fetchMoreEntries }/>
                                     </div>
                                 </DataLoader>
                             </div>
-                        )}
+                        ) }
                     </div>
                 </DataLoader>
             </div>

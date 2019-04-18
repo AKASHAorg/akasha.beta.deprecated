@@ -9,6 +9,7 @@ class AppErrorBoundary extends Component {
         error: null,
         stack: null
     };
+
     componentDidCatch (err, compStack) {
         this.setState({
             error: err,
@@ -25,7 +26,7 @@ class AppErrorBoundary extends Component {
         }
         const textArea = document.createElement('textarea');
         const code = '```';
-        textArea.value = `${code}\n${error.toString()}${stack.componentStack.toString()}\n${code}`;
+        textArea.value = `${ code }\n${ error.toString() }${ stack.componentStack.toString() }\n${ code }`;
         textArea.style.position = 'fixed';
         textArea.style.top = -99999;
         textArea.style.left = -99999;
@@ -52,35 +53,37 @@ class AppErrorBoundary extends Component {
             return (
                 <div className="app-error-boundary">
                     <div className="app-error-boundary__title">
-                        {intl.formatMessage(errorMessages.appErrorTitle)}
+                        { intl.formatMessage(errorMessages.appErrorTitle) }
                     </div>
                     <div className="app-error-boundary__subtitle">
-                        {intl.formatMessage(errorMessages.appErrorSubtitle)}
+                        { intl.formatMessage(errorMessages.appErrorSubtitle) }
                     </div>
                     <div className="app-error-boundary__error-block-wrapper">
                         <div className="app-error-boundary__error-block">
-                            <pre style={{ whiteSpace: 'pre-line' }}>
-                                {error.name && error.name.toString()}
-                                {error.message && error.message.toString()}
-                                {error.stack && error.stack.toString()}
+                            <pre style={ { whiteSpace: 'pre-line' } }>
+                                { error.name && error.name.toString() }
+                                { error.message && error.message.toString() }
+                                { error.stack && error.stack.toString() }
                             </pre>
-                            <pre style={{ whiteSpace: 'pre-line' }}>{stack.componentStack.toString()}</pre>
+                            <pre
+                                style={ { whiteSpace: 'pre-line' } }>{ stack.componentStack.toString() }</pre>
                         </div>
                     </div>
                     <div className="app-error-boundary__buttons-container">
                         <div className="app-error-boundary__copy-error">
-                            <span className="content-link flex-center-y" onClick={this.onCopy}>
-                                {intl.formatMessage(errorMessages.copyError)}
+                            <span className="content-link flex-center-y" onClick={ this.onCopy }>
+                                { intl.formatMessage(errorMessages.copyError) }
                             </span>
                         </div>
-                        {reloadPage && (
-                            <Button className="app-error-boundary__button" onClick={reloadPage}>
-                                {intl.formatMessage(generalMessages.reload)}
+                        { reloadPage && (
+                            <Button className="app-error-boundary__button" onClick={ reloadPage }>
+                                { intl.formatMessage(generalMessages.reload) }
                             </Button>
-                        )}
+                        ) }
                         <Button className="app-error-boundary__button" type="primary">
-                            <a className="unstyled-link" href="https://github.com/AkashaProject/dapp/issues">
-                                {intl.formatMessage(generalMessages.reportIssue)}
+                            <a className="unstyled-link"
+                               href="https://github.com/AkashaProject/dapp/issues">
+                                { intl.formatMessage(generalMessages.reportIssue) }
                             </a>
                         </Button>
                     </div>

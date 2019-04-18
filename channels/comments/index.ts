@@ -11,7 +11,7 @@ import getScoreInit from './get-score';
 import initIpfsComments from './ipfs';
 import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
   initIpfsComments(sp, getService);
   const addComment = addCommentInit(sp, getService);
   const commentsCount = commentsCountInit(sp, getService);

@@ -5,7 +5,7 @@ import addressOfInit from './address-of-akashaid';
 import checkIdFormatInit from './check-id-format';
 import { REGISTRY_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   const fetchRegistered = fetchRegisteredInit(sp, getService);
   const profileExists = profileExistsInit(sp, getService);

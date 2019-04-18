@@ -83,18 +83,18 @@ class TagListItem extends Component {
         switch (content) {
             case DASHBOARDS:
                 return (
-                  <AddToBoard
-                    closePopover={this.closePopover}
-                    onNewDashboard={this.onNewDashboard}
-                    tag={tag}
-                  />
+                    <AddToBoard
+                        closePopover={ this.closePopover }
+                        onNewDashboard={ this.onNewDashboard }
+                        tag={ tag }
+                    />
                 );
             case NEW_DASHBOARD:
                 return (
-                  <NewDashboardForm
-                    onCancel={this.onAddToDashboard}
-                    tag={tag}
-                  />
+                    <NewDashboardForm
+                        onCancel={ this.onAddToDashboard }
+                        tag={ tag }
+                    />
                 );
             default:
                 return null;
@@ -108,35 +108,35 @@ class TagListItem extends Component {
             'tag-list-item_last': isLast
         });
         return (
-          <div className={itemClass}>
-            <div className="tag-list-item__text-wrapper">
-              <span className="tag-list-item__tag">#{tag}</span>
-              <span className="tag-list-item__entry-count">
-                {intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) })}
+            <div className={ itemClass }>
+                <div className="tag-list-item__text-wrapper">
+                    <span className="tag-list-item__tag">#{ tag }</span>
+                    <span className="tag-list-item__entry-count">
+                { intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) }) }
               </span>
+                </div>
+                <div className="tag-list-item__buttons">
+                    <Popover
+                        content={ this.wasVisible ? this.renderContent() : null }
+                        onVisibleChange={ this.onVisibleChange }
+                        overlayClassName="popover-menu"
+                        placement="bottom"
+                        trigger="click"
+                        visible={ popoverVisible }
+                    >
+                        <Button className="tag-list-item__button" size="small">
+                            { intl.formatMessage(dashboardMessages.addToBoard) }
+                        </Button>
+                    </Popover>
+                    <Button
+                        className="tag-list-item__button tag-list-item__preview-button"
+                        onClick={ this.showPreview }
+                        size="small"
+                    >
+                        { intl.formatMessage(generalMessages.preview) }
+                    </Button>
+                </div>
             </div>
-            <div className="tag-list-item__buttons">
-              <Popover
-                content={this.wasVisible ? this.renderContent() : null}
-                onVisibleChange={this.onVisibleChange}
-                overlayClassName="popover-menu"
-                placement="bottom"
-                trigger="click"
-                visible={popoverVisible}
-              >
-                <Button className="tag-list-item__button" size="small">
-                  {intl.formatMessage(dashboardMessages.addToBoard)}
-                </Button>
-              </Popover>
-              <Button
-                className="tag-list-item__button tag-list-item__preview-button"
-                onClick={this.showPreview}
-                size="small"
-              >
-                {intl.formatMessage(generalMessages.preview)}
-              </Button>
-            </div>
-          </div>
         );
     }
 }

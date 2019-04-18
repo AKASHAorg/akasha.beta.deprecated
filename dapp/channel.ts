@@ -7,29 +7,29 @@ export default class DuplexChannel extends ApiListener {
   public observer: Observer<any>;
   protected windowId;
 
-  constructor(channel: string, opts?: { channelName?: string, windowId?: string }) {
+  constructor (channel: string, opts?: { channelName?: string, windowId?: string }) {
     super(channel, opts.channelName);
     this.subject = new Subject();
     this.subscribers = new Map();
     this.windowId = opts.windowId;
   }
 
-  public bind(observer: Observer<any>) {
-    this.observer = observer;
-  }
-
-  get listenerCount() {
+  get listenerCount () {
     return this.subject.observers.length || this.subscribers.size;
   }
 
-  public on(listener: Function) {
+  public bind (observer: Observer<any>) {
+    this.observer = observer;
+  }
+
+  public on (listener: Function) {
     this.subscribers.set(
       listener,
       this.subject.subscribe((data: any) => listener(null, data), error => listener(error)),
     );
   }
 
-  public once(listener: Function) {
+  public once (listener: Function) {
     const sub = this.subject.subscribe(
       (data) => {
         listener(null, data);
@@ -42,12 +42,12 @@ export default class DuplexChannel extends ApiListener {
     );
   }
 
-  public removeListener(listener: Function) {
+  public removeListener (listener: Function) {
     this.subscribers.get(listener).unsubscribe();
     this.subscribers.delete(listener);
   }
 
-  public removeAllListeners() {
+  public removeAllListeners () {
     for (const [listener] of this.subscribers) {
       this.removeListener(listener);
     }
@@ -55,7 +55,7 @@ export default class DuplexChannel extends ApiListener {
     this.subscribers.clear();
   }
 
-  public send(data: {}) {
+  public send (data: {}) {
     this.observer.next(data);
   }
 }

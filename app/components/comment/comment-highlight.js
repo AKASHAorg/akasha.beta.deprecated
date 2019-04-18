@@ -7,7 +7,7 @@ class CommentHighlight extends Component {
         const entityKey = block.getEntityAt(0);
         const entity = contentState.getEntity(entityKey);
         const data = entity.getData();
-        return <blockquote>{data.highlight}</blockquote>;
+        return <blockquote>{ data.highlight }</blockquote>;
     }
 }
 

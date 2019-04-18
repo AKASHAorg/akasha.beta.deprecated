@@ -3,13 +3,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
-import { symmetricDifference, pick } from 'ramda';
+import { pick, symmetricDifference } from 'ramda';
 import * as columnTypes from '../../constants/columns';
-import { dashboardAddNewColumn, dashboardReorderColumn } from '../../local-flux/actions/dashboard-actions';
+import {
+    dashboardAddNewColumn,
+    dashboardReorderColumn
+} from '../../local-flux/actions/dashboard-actions';
 import { dashboardSelectors, listSelectors } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 import { getDisplayAddress, isEthAddress } from '../../utils/dataModule';
-import { DashboardPopover, Navigation, PlusSquareIcon, TopBarIcon } from '../';
+import { DashboardPopover, PlusSquareIcon, TopBarIcon } from '../';
 
 const iconsTypes = {
     [columnTypes.latest]: 'entries',
@@ -35,7 +38,7 @@ class DashboardTopBar extends Component {
             nextProps.activeDashboardId !== this.props.activeDashboardId &&
             nextProps.match.params.dashboardId !== nextProps.activeDashboardId
         ) {
-            history.push(`/dashboard/${nextProps.activeDashboardId}`);
+            history.push(`/dashboard/${ nextProps.activeDashboardId }`);
         }
     }
 
@@ -52,7 +55,7 @@ class DashboardTopBar extends Component {
             const dashboard = document.getElementById('dashboard-container');
             const column = document.getElementById(id);
             const className = column.getAttribute('class');
-            column.setAttribute('class', `${className} column_focused`);
+            column.setAttribute('class', `${ className } column_focused`);
             setTimeout(() => removeClass(id), 500);
             const columnLeftOffset = column.style.left.replace('"', '').replace('px', '');
             const scrollLeft = columnLeftOffset - dashboard.clientWidth / 2 + column.clientWidth / 2;
@@ -67,11 +70,11 @@ class DashboardTopBar extends Component {
                 case columnTypes.list:
                     return lists.getIn([value, 'name']);
                 case columnTypes.profile:
-                    return isEthAddress(value) ? getDisplayAddress(value) : `@${value}`;
+                    return isEthAddress(value) ? getDisplayAddress(value) : `@${ value }`;
                 case columnTypes.stream:
                     return intl.formatMessage(dashboardMessages.stream);
                 case columnTypes.tag:
-                    return `#${value}`;
+                    return `#${ value }`;
                 default:
                     return '';
             }
@@ -79,24 +82,24 @@ class DashboardTopBar extends Component {
 
         return (
             <div className="flex-center-y dashboard-top-bar">
-                {/* <Navigation /> */}
-                <DashboardPopover />
-                {columns.map((column, i) => (
+                {/* <Navigation /> */ }
+                <DashboardPopover/>
+                { columns.map((column, i) => (
                     <TopBarIcon
-                        key={column.get('id')}
-                        id={column.get('id')}
-                        index={i}
-                        title={() => getTooltip(column)}
-                        iconType={iconsTypes[column.get('type')]}
-                        scrollIntoView={() => scrollColumnIntoView(column.get('id'))}
-                        dashboardReorderColumn={(source, target) =>
+                        key={ column.get('id') }
+                        id={ column.get('id') }
+                        index={ i }
+                        title={ () => getTooltip(column) }
+                        iconType={ iconsTypes[column.get('type')] }
+                        scrollIntoView={ () => scrollColumnIntoView(column.get('id')) }
+                        dashboardReorderColumn={ (source, target) =>
                             this.props.dashboardReorderColumn(this.props.activeDashboardId, source, target)
                         }
                     />
-                ))}
-                <Tooltip title={addColumnTooltip}>
-                    <div onClick={activeDashboard ? this.props.dashboardAddNewColumn : undefined}>
-                        <PlusSquareIcon disabled={!activeDashboard} large />
+                )) }
+                <Tooltip title={ addColumnTooltip }>
+                    <div onClick={ activeDashboard ? this.props.dashboardAddNewColumn : undefined }>
+                        <PlusSquareIcon disabled={ !activeDashboard } large/>
                     </div>
                 </Tooltip>
             </div>

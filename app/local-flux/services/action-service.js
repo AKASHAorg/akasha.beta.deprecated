@@ -1,11 +1,11 @@
-import {akashaDB, getActionCollection} from './db/dbs';
+import { akashaDB, getActionCollection } from './db/dbs';
 import * as actionStatus from '../../constants/action-status';
 import * as actionTypes from '../../constants/action-types';
 import * as Promise from 'bluebird';
 
 export const deleteAction = id => {
     try {
-        getActionCollection().findAndRemove({id: id});
+        getActionCollection().findAndRemove({ id: id });
         return Promise.fromCallback(cb => akashaDB.saveDatabase(cb));
     } catch (error) {
         return Promise.reject(error);
@@ -14,7 +14,7 @@ export const deleteAction = id => {
 
 export const getActionByTx = tx => {
     try {
-        const record = getActionCollection().findOne({tx: tx});
+        const record = getActionCollection().findOne({ tx: tx });
         return Promise.resolve(record.id);
     } catch (error) {
         return Promise.reject(error);
@@ -27,7 +27,7 @@ export const getActionsByType = request => {
             .chain()
             .find({
                 ethAddress: request.ethAddress,
-                type: {'$in': request.type}
+                type: { '$in': request.type }
             })
             .simplesort('created', true);
         return Promise.resolve(Array.from(records.data()));
@@ -58,7 +58,7 @@ export const getClaimable = request => {
             .chain()
             .find({
                 ethAddress: request.ethAddress,
-                type: {'$in': request.type}
+                type: { '$in': request.type }
             })
             .where(rec => !rec.claimed)
             .simplesort('created', false)
@@ -86,13 +86,13 @@ export const getPendingActions = ethAddress => {
 
 export const saveAction = action => {
     try {
-        const record = getActionCollection().findOne({id: action.id});
+        const record = getActionCollection().findOne({ id: action.id });
         if (!record) {
             getActionCollection().insert(
-                Object.assign({}, {created: (new Date()).getTime()}, action)
+                Object.assign({}, { created: (new Date()).getTime() }, action)
             );
         } else {
-            getActionCollection().chain().find({id: action.id}).update(result => {
+            getActionCollection().chain().find({ id: action.id }).update(result => {
                 Object.assign(result, action);
             })
         }

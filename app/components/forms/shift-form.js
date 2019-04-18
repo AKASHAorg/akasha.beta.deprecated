@@ -64,7 +64,10 @@ class ShiftForm extends Component {
                     return intl.formatMessage(formMessages.transformEssenceMin);
                 }
                 value = amount / 1000;
-                return intl.formatMessage(formMessages.transformEssenceDisclaimer, { amount, value });
+                return intl.formatMessage(formMessages.transformEssenceDisclaimer, {
+                    amount,
+                    value
+                });
             default:
                 return '';
         }
@@ -102,94 +105,95 @@ class ShiftForm extends Component {
         const amountNotEnough = !amount || (type === 'transformEssence' && amount < 1000);
 
         return (
-          <Form className="shift-form">
-            <div className="flex-center-y shift-form__title">
-              {this.getTitle()}
-            </div>
-            <div className="shift-form__total-balance">
-              <div className="shift-form__balance-label">
-                {intl.formatMessage(formMessages.totalAethBalance)}
-              </div>
-              <div className="shift-form__total-value">
-                {removeTrailingZeros(balance.getIn(['aeth', 'total']))}
-              </div>
-            </div>
-            <div className="shift-form__balances">
-              <div>
-                <div className="shift-form__balance-label">
-                  {intl.formatMessage(generalMessages.transferable)}
+            <Form className="shift-form">
+                <div className="flex-center-y shift-form__title">
+                    { this.getTitle() }
                 </div>
-                <div className="shift-form__balance-value">
-                  {removeTrailingZeros(balance.getIn(['aeth', 'free']))}
+                <div className="shift-form__total-balance">
+                    <div className="shift-form__balance-label">
+                        { intl.formatMessage(formMessages.totalAethBalance) }
+                    </div>
+                    <div className="shift-form__total-value">
+                        { removeTrailingZeros(balance.getIn(['aeth', 'total'])) }
+                    </div>
                 </div>
-              </div>
-              <div>
-                <div className="shift-form__balance-label">
-                  {intl.formatMessage(generalMessages.manafied)}
+                <div className="shift-form__balances">
+                    <div>
+                        <div className="shift-form__balance-label">
+                            { intl.formatMessage(generalMessages.transferable) }
+                        </div>
+                        <div className="shift-form__balance-value">
+                            { removeTrailingZeros(balance.getIn(['aeth', 'free'])) }
+                        </div>
+                    </div>
+                    <div>
+                        <div className="shift-form__balance-label">
+                            { intl.formatMessage(generalMessages.manafied) }
+                        </div>
+                        <div className="shift-form__balance-value">
+                            { formatBalance(balance.getIn(['aeth', 'bonded'])) }
+                        </div>
+                    </div>
+                    <div>
+                        <div className="shift-form__balance-label">
+                            { intl.formatMessage(generalMessages.cycling) }
+                        </div>
+                        <div className="shift-form__balance-value">
+                            { formatBalance(balance.getIn(['aeth', 'cycling'])) }
+                        </div>
+                    </div>
                 </div>
-                <div className="shift-form__balance-value">
-                  {formatBalance(balance.getIn(['aeth', 'bonded']))}
+                <div>
+                    { this.getSliderTitle() }
                 </div>
-              </div>
-              <div>
-                <div className="shift-form__balance-label">
-                  {intl.formatMessage(generalMessages.cycling)}
+                <FormItem
+                    colon={ false }
+                    className="shift-form__slider-wrapper"
+                    help={ this.getHelpMessage() }
+                >
+                    <div className="flex-center">
+                        <Slider
+                            min={ 0 }
+                            // if both min and max are 0, the slider will not work properly
+                            max={ max || 1 }
+                            onChange={ max ? this.onChange : () => {
+                            } }
+                            tipFormatter={ null }
+                            value={ amount }
+                            style={ { flex: '1 1 auto' } }
+                        />
+                        <InputNumber
+                            className="shift-form__amount"
+                            disabled={ !max }
+                            min={ 0 }
+                            max={ max }
+                            maxLength={ 12 }
+                            onChange={ this.onChange }
+                            precision={ 0 }
+                            size="small"
+                            step={ 1 }
+                            value={ amount }
+                        />
+                    </div>
+                </FormItem>
+                <div className="shift-form__actions">
+                    <Button
+                        className="shift-form__button"
+                        onClick={ onCancel }
+                    >
+                        { intl.formatMessage(generalMessages.cancel) }
+                    </Button>
+                    <Button
+                        className="shift-form__button"
+                        disabled={ pendingShift || amountNotEnough }
+                        loading={ pendingShift }
+                        onClick={ this.onShift }
+                        type="primary"
+                    >
+                        { intl.formatMessage(generalMessages.submit) }
+                    </Button>
                 </div>
-                <div className="shift-form__balance-value">
-                  {formatBalance(balance.getIn(['aeth', 'cycling']))}
-                </div>
-              </div>
-            </div>
-            <div>
-              {this.getSliderTitle()}
-            </div>
-            <FormItem
-              colon={false}
-              className="shift-form__slider-wrapper"
-              help={this.getHelpMessage()}
-            >
-              <div className="flex-center">
-                <Slider
-                  min={0}
-                  // if both min and max are 0, the slider will not work properly
-                  max={max || 1}
-                  onChange={max ? this.onChange : () => {}}
-                  tipFormatter={null}
-                  value={amount}
-                  style={{ flex: '1 1 auto' }}
-                />
-                <InputNumber
-                  className="shift-form__amount"
-                  disabled={!max}
-                  min={0}
-                  max={max}
-                  maxLength={12}
-                  onChange={this.onChange}
-                  precision={0}
-                  size="small"
-                  step={1}
-                  value={amount}
-                />
-              </div>
-            </FormItem>
-            <div className="shift-form__actions">
-              <Button
-                className="shift-form__button"
-                onClick={onCancel}
-              >
-                {intl.formatMessage(generalMessages.cancel)}
-              </Button>
-              <Button
-                className="shift-form__button"
-                disabled={pendingShift || amountNotEnough}
-                loading={pendingShift}
-                onClick={this.onShift}
-                type="primary"
-              >
-                {intl.formatMessage(generalMessages.submit)}
-              </Button>
-            </div>
-          </Form>
+            </Form>
         );
     }
 }

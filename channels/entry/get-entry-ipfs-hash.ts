@@ -13,7 +13,7 @@ const getEntryIpfsHashS = {
   required: ['entryId'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getEntryIpfsHashS, { throwError: true });
@@ -21,7 +21,7 @@ export default function init(sp, getService) {
     let ipfsHash;
     const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const [fn, digestSize, hash] = yield getService(CORE_MODULE.CONTRACTS)
-    .instance.Entries.getEntry(ethAddress, data.entryId);
+      .instance.Entries.getEntry(ethAddress, data.entryId);
     if (!!unpad(hash)) {
       ipfsHash = getService(COMMON_MODULE.ipfsHelpers).encodeHash(fn, digestSize, hash);
     }

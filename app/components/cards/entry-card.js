@@ -2,32 +2,41 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
-import Link from 'react-router-dom/Link';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Card } from 'antd';
 import classNames from 'classnames';
 import { EntryCardHeader, EntryPageActions, TagPopover, WebsiteInfoCard } from '../index';
 import { toggleOutsideNavigation } from '../../local-flux/actions/app-actions';
 import { entryGetShort, entryPageShow } from '../../local-flux/actions/entry-actions';
 import { ProfileRecord } from '../../local-flux/reducers/state-models/profile-state-model';
-import { externalProcessSelectors, entrySelectors, profileSelectors,
-  settingsSelectors } from '../../local-flux/selectors';
+import {
+    entrySelectors,
+    externalProcessSelectors,
+    profileSelectors,
+    settingsSelectors
+} from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import LazyImageLoader from '../lazy-image-loader';
-import { isLinkToAkashaWeb, extractEntryUrl } from '../../utils/url-utils';
+import { extractEntryUrl, isLinkToAkashaWeb } from '../../utils/url-utils';
 import withRequest from '../high-order-components/with-request';
 
 const smallCard = 320;
 const largeCard = 480;
 
 const ContentPlaceholder = () => (
-  <div>
-    <div className="content-placeholder entry-card__title_placeholder" style={{ width: '80%' }} />
-    <div className="content-placeholder entry-card__title_placeholder" style={{ width: '40%' }} />
-    <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '16px' }} />
-    <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '8px' }} />
-  </div>
+    <div>
+        <div className="content-placeholder entry-card__title_placeholder"
+             style={ { width: '80%' } }/>
+        <div className="content-placeholder entry-card__title_placeholder"
+             style={ { width: '40%' } }/>
+        <div className="content-placeholder entry-card__content-placeholder"
+             style={ { marginTop: '16px' } }/>
+        <div className="content-placeholder entry-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+    </div>
 );
+
 class EntryCard extends Component {
     constructor (props) {
         super(props);
@@ -55,6 +64,7 @@ class EntryCard extends Component {
         }
         return false;
     }
+
     componentWillReceiveProps (nextProps) {
         const { markAsNew } = nextProps;
         if (!markAsNew && this.props.markAsNew) {
@@ -65,6 +75,7 @@ class EntryCard extends Component {
             }, 2000)
         }
     }
+
     showHiddenContent = () => {
         this.setState({
             expanded: true
@@ -101,58 +112,65 @@ class EntryCard extends Component {
     };
 
     renderContentPlaceholder = () => (
-      <div>
-        <div className="content-placeholder entry-card__title_placeholder" style={{ width: '80%' }} />
-        <div className="content-placeholder entry-card__title_placeholder" style={{ width: '40%' }} />
-        <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '16px' }} />
-        <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '8px' }} />
-      </div>
+        <div>
+            <div className="content-placeholder entry-card__title_placeholder"
+                 style={ { width: '80%' } }/>
+            <div className="content-placeholder entry-card__title_placeholder"
+                 style={ { width: '40%' } }/>
+            <div className="content-placeholder entry-card__content-placeholder"
+                 style={ { marginTop: '16px' } }/>
+            <div className="content-placeholder entry-card__content-placeholder"
+                 style={ { marginTop: '8px' } }/>
+        </div>
     );
 
     renderHiddenContent = (entryId) => (
-      <div key={`${entryId}-hidden`} style={{ position: 'relative' }}>
-        <ContentPlaceholder />
-        <div className="entry-card__hidden">
-          <div className="heading flex-center">
-            {this.props.intl.formatMessage(entryMessages.hiddenContent, {
-                score: this.props.hideEntrySettings.value
-            })}
-          </div>
-          <div className="heading entry-card__hidden-message">
-            {this.props.intl.formatMessage(entryMessages.hiddenContent2)}
-            <Link className="entry-card__settings-link" to="/profileoverview/settings">
-              {this.props.intl.formatMessage(entryMessages.hiddenContent3)}
-            </Link>
-          </div>
-          <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.showHiddenContent}>
-              {this.props.intl.formatMessage(entryMessages.showAnyway)}
+        <div key={ `${ entryId }-hidden` } style={ { position: 'relative' } }>
+            <ContentPlaceholder/>
+            <div className="entry-card__hidden">
+                <div className="heading flex-center">
+                    { this.props.intl.formatMessage(entryMessages.hiddenContent, {
+                        score: this.props.hideEntrySettings.value
+                    }) }
+                </div>
+                <div className="heading entry-card__hidden-message">
+                    { this.props.intl.formatMessage(entryMessages.hiddenContent2) }
+                    <Link className="entry-card__settings-link" to="/profileoverview/settings">
+                        { this.props.intl.formatMessage(entryMessages.hiddenContent3) }
+                    </Link>
+                </div>
+                <div className="flex-center">
+            <span className="content-link entry-card__retry-button"
+                  onClick={ this.showHiddenContent }>
+              { this.props.intl.formatMessage(entryMessages.showAnyway) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     renderUnresolvedPlaceholder = () => (
-      <div style={{ position: 'relative' }}>
-        <ContentPlaceholder />
-        <div className="entry-card__unresolved">
-          <div className="heading flex-center">
-            {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
-          </div>
-          <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.onRetry}>
-              {this.props.intl.formatMessage(generalMessages.retry)}
+        <div style={ { position: 'relative' } }>
+            <ContentPlaceholder/>
+            <div className="entry-card__unresolved">
+                <div className="heading flex-center">
+                    { this.props.intl.formatMessage(generalMessages.noPeersAvailable) }
+                </div>
+                <div className="flex-center">
+            <span className="content-link entry-card__retry-button" onClick={ this.onRetry }>
+              { this.props.intl.formatMessage(generalMessages.retry) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     /* eslint-disable complexity */
     render () {
-        const { author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
-            style, intl } = this.props;
+        const {
+            author, baseUrl, containerRef, entry, hideEntrySettings, isPending, large,
+            style, intl
+        } = this.props;
         const { expanded, markAsNew } = this.state;
         const content = entry && entry.get('content');
         const entryType = entry && entry.getIn(['content', 'entryType']);
@@ -173,101 +191,101 @@ class EntryCard extends Component {
         });
 
         return (
-          <Card
-            className={cardClass}
-            style={style}
-            title={
-              <EntryCardHeader
-                author={author}
-                containerRef={containerRef}
-                entry={entry}
-                isOwnEntry={this.isOwnEntry()}
-                large={large}
-                onEntryVersionNavigation={this._handleNavigation}
-                onDraftNavigation={this._handleNavigation}
-                loading={isPending}
-              />
-            }
-          >
-            {isPending && <ContentPlaceholder />}
-            {hasContent &&
-              !isPending &&
-              [!hideContent && hasFeaturedImage && entryType === 0 && <Link
-                className="unstyled-link"
-                key={`${entryId}-fImage`}
-                to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
-                    state: { overlay: true }
-                }}
-              >
-                <div className={featuredImageClass}>
-                  <LazyImageLoader
-                    image={featuredImage}
-                    baseWidth={large ? largeCard : smallCard}
-                    baseUrl={baseUrl}
-                    className="entry-card__featured-image"
-                  />
-                </div>
-              </Link>,
-              !hideContent && entryType === 1 &&
-                <WebsiteInfoCard
-                  key={`${entryId}-entryCard`}
-                  baseUrl={baseUrl}
-                  baseWidth={large ? largeCard : smallCard}
-                  cardInfo={content.get('cardInfo')}
-                  hasCard={!!hasContent}
-                  onClick={this._handleOutsideNavigation}
-                  maxImageHeight={150}
-                  infoExtracted
-                  intl={intl}
-                />,
-              !hideContent && entryType === 0 &&
-                <div className="entry-card__title" key={`${entryId}-title`}>
-                  <Link
-                    className="unstyled-link"
-                    to={{
-                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
-                      state: { overlay: true }
-                    }}
-                  >
-                    <span className="content-link">{content.get('title')}</span>
-                  </Link>
-                </div>,
-              hasContent && !hideContent && content.get('excerpt') &&
-                <Link
-                  key={`${entryId}-excerpt`}
-                  className="unstyled-link"
-                  to={{
-                      pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entryId}`,
-                      state: { overlay: true }
-                  }}
-                >
-                  <div className="entry-card__excerpt">
-                    <span className="content-link">{content.get('excerpt')}</span>
-                  </div>
-                </Link>,
-              !hideContent && <div className="entry-card__tags" key={`${entryId}-tags`}>
-                  {content.get('tags').map(tag => (
-                    <TagPopover
-                      containerRef={containerRef}
-                      key={tag}
-                      tag={tag}
+            <Card
+                className={ cardClass }
+                style={ style }
+                title={
+                    <EntryCardHeader
+                        author={ author }
+                        containerRef={ containerRef }
+                        entry={ entry }
+                        isOwnEntry={ this.isOwnEntry() }
+                        large={ large }
+                        onEntryVersionNavigation={ this._handleNavigation }
+                        onDraftNavigation={ this._handleNavigation }
+                        loading={ isPending }
                     />
-                  ))}
-                </div>,
-              hideContent && this.renderHiddenContent(entryId),
-                <EntryPageActions
-                  key={`${entryId}-entryActions`}
-                  containerRef={containerRef}
-                  entry={entry}
-                  noVotesBar
-                />
-              ]
-            }
-            {!hasContent && !isPending &&
+                }
+            >
+                { isPending && <ContentPlaceholder/> }
+                { hasContent &&
+                !isPending &&
+                [!hideContent && hasFeaturedImage && entryType === 0 && <Link
+                    className="unstyled-link"
+                    key={ `${ entryId }-fImage` }
+                    to={ {
+                        pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entryId }`,
+                        state: { overlay: true }
+                    } }
+                >
+                    <div className={ featuredImageClass }>
+                        <LazyImageLoader
+                            image={ featuredImage }
+                            baseWidth={ large ? largeCard : smallCard }
+                            baseUrl={ baseUrl }
+                            className="entry-card__featured-image"
+                        />
+                    </div>
+                </Link>,
+                    !hideContent && entryType === 1 &&
+                    <WebsiteInfoCard
+                        key={ `${ entryId }-entryCard` }
+                        baseUrl={ baseUrl }
+                        baseWidth={ large ? largeCard : smallCard }
+                        cardInfo={ content.get('cardInfo') }
+                        hasCard={ !!hasContent }
+                        onClick={ this._handleOutsideNavigation }
+                        maxImageHeight={ 150 }
+                        infoExtracted
+                        intl={ intl }
+                    />,
+                    !hideContent && entryType === 0 &&
+                    <div className="entry-card__title" key={ `${ entryId }-title` }>
+                        <Link
+                            className="unstyled-link"
+                            to={ {
+                                pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entryId }`,
+                                state: { overlay: true }
+                            } }
+                        >
+                            <span className="content-link">{ content.get('title') }</span>
+                        </Link>
+                    </div>,
+                    hasContent && !hideContent && content.get('excerpt') &&
+                    <Link
+                        key={ `${ entryId }-excerpt` }
+                        className="unstyled-link"
+                        to={ {
+                            pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entryId }`,
+                            state: { overlay: true }
+                        } }
+                    >
+                        <div className="entry-card__excerpt">
+                            <span className="content-link">{ content.get('excerpt') }</span>
+                        </div>
+                    </Link>,
+                    !hideContent && <div className="entry-card__tags" key={ `${ entryId }-tags` }>
+                        { content.get('tags').map(tag => (
+                            <TagPopover
+                                containerRef={ containerRef }
+                                key={ tag }
+                                tag={ tag }
+                            />
+                        )) }
+                    </div>,
+                    hideContent && this.renderHiddenContent(entryId),
+                    <EntryPageActions
+                        key={ `${ entryId }-entryActions` }
+                        containerRef={ containerRef }
+                        entry={ entry }
+                        noVotesBar
+                    />
+                ]
+                }
+                { !hasContent && !isPending &&
                 this.renderUnresolvedPlaceholder()
-            }
-          </Card>
+                }
+            </Card>
         );
     }
 }

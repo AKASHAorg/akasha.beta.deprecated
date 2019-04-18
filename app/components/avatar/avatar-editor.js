@@ -1,12 +1,11 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import AvatarEditor from "react-avatar-editor/dist";
-import { injectIntl } from "react-intl";
-import { Button } from "antd";
-import { Icon } from "../";
-import { generalMessages } from "../../locale-data/messages/general-messages";
-import { externalProcessSelectors } from "../../local-flux/selectors";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import AvatarEditor from 'react-avatar-editor/dist';
+import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
+import { Icon } from '../';
+import { externalProcessSelectors } from '../../local-flux/selectors';
 
 class AvatarEditr extends Component {
     constructor (props) {
@@ -20,6 +19,7 @@ class AvatarEditr extends Component {
             avatarClose: false
         };
     }
+
     onImageLoad = () => {
         this.setState({
             imageLoaded: true
@@ -28,7 +28,7 @@ class AvatarEditr extends Component {
     getImage = () =>
         new Promise(resolve => {
             // if image is a string it means it comes from ipfs
-            if (this.props.image && typeof this.props.image === "string") {
+            if (this.props.image && typeof this.props.image === 'string') {
                 return resolve(this.props.image);
             }
             if (!this.props.image && !this.editor) {
@@ -39,7 +39,7 @@ class AvatarEditr extends Component {
                 const reader = new FileReader();
                 reader.onloadend = ev => resolve(new Uint8Array(ev.target.result));
                 reader.readAsArrayBuffer(blob);
-            }, "image/png");
+            }, 'image/png');
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;
@@ -93,7 +93,7 @@ class AvatarEditr extends Component {
     };
     _handleImageDrop = ev => {
         this._handleAvatarClear();
-        const files = ev.target.toDataURL("image/jpeg", 1);
+        const files = ev.target.toDataURL('image/jpeg', 1);
         this.setState({
             avatarImage: files,
             isNewAvatarLoaded: true,
@@ -107,7 +107,7 @@ class AvatarEditr extends Component {
     };
     _highlightDropZone = ev => {
         ev.preventDefault();
-        if (ev.target.className === "avatar__dialog-handler") {
+        if (ev.target.className === 'avatar__dialog-handler') {
             this.setState({
                 highlightDropZone: true
             });
@@ -124,6 +124,7 @@ class AvatarEditr extends Component {
             this.props.onClick(ev);
         }
     };
+
     render () {
         const {
             baseUrl,
@@ -139,7 +140,7 @@ class AvatarEditr extends Component {
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
-            avatarImage = `${baseUrl}/${image}`;
+            avatarImage = `${ baseUrl }/${ image }`;
         }
         if (!avatarImage) {
             this.editor = null;
@@ -148,35 +149,35 @@ class AvatarEditr extends Component {
         return (
             <div
                 className="avatar avatar_with-overflow"
-                style={{ width: size, height: size, ...style }}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onDragEnter={this._highlightDropZone}
-                onDragLeave={this._diminishDropZone}
+                style={ { width: size, height: size, ...style } }
+                onMouseEnter={ onMouseEnter }
+                onMouseLeave={ onMouseLeave }
+                onDragEnter={ this._highlightDropZone }
+                onDragLeave={ this._diminishDropZone }
             >
-                {!avatarImage && (
+                { !avatarImage && (
                     <div>
                         <input
-                            ref={fileInput => {
+                            ref={ fileInput => {
                                 this.fileInput = fileInput;
-                            }}
+                            } }
                             className="avatar__dialog-handler"
                             type="file"
-                            onChange={this._handleImageAdd}
+                            onChange={ this._handleImageAdd }
                         />
                         <div
-                            className={`avatar__avatar-empty
-                    avatar__avatar-empty${this.state.highlightDropZone ? "_dragEnter" : ""}`}
-                            style={{
+                            className={ `avatar__avatar-empty
+                    avatar__avatar-empty${ this.state.highlightDropZone ? '_dragEnter' : '' }` }
+                            style={ {
                                 width: size,
                                 height: size
-                            }}
+                            } }
                         />
                         <div
-                            className={`avatar__add-image-icon-wrapper
-                    avatar__add-image-icon-wrapper${this.state.highlightDropZone ? "_dragEnter" : ""}`}
+                            className={ `avatar__add-image-icon-wrapper
+                    avatar__add-image-icon-wrapper${ this.state.highlightDropZone ? '_dragEnter' : '' }` }
                         >
-                            <Icon className="avatar__add-image-icon" type="photoImage" />
+                            <Icon className="avatar__add-image-icon" type="photoImage"/>
                         </div>
                         {/* <div
                 className={
@@ -186,46 +187,46 @@ class AvatarEditr extends Component {
               >
                 {!this.state.highlightDropZone && intl.formatMessage(generalMessages.addImage)}
                 {this.state.highlightDropZone && intl.formatMessage(generalMessages.addImageDragged)}
-              </div> */}
+              </div> */ }
                     </div>
-                )}
-                {avatarImage && (
+                ) }
+                { avatarImage && (
                     <div>
                         <div
-                            onMouseEnter={() => {
+                            onMouseEnter={ () => {
                                 this.setState({ avatarClose: true });
-                            }}
-                            onMouseLeave={() => {
+                            } }
+                            onMouseLeave={ () => {
                                 this.setState({ avatarClose: false });
-                            }}
+                            } }
                         >
                             <AvatarEditor
-                                style={{
+                                style={ {
                                     border: offsetBorder || 0,
                                     backgroundColor,
                                     width: size,
                                     height: size
-                                }}
+                                } }
                                 className="avatar__avatar-editor"
-                                border={0}
-                                image={avatarImage}
+                                border={ 0 }
+                                image={ avatarImage }
                                 disableDrop
-                                ref={editor => {
+                                ref={ editor => {
                                     this.editor = editor;
-                                }}
-                                scale={this.state.avatarScale}
-                                rotate={this.state.rotation}
-                                onLoadSuccess={this._handleImageLoad}
+                                } }
+                                scale={ this.state.avatarScale }
+                                rotate={ this.state.rotation }
+                                onLoadSuccess={ this._handleImageLoad }
                             />
-                            {this.state.avatarClose && (
+                            { this.state.avatarClose && (
                                 <div className="avatar__clear-image-button">
                                     <Button
                                         type="standard"
                                         icon="close-circle"
-                                        onClick={this._handleAvatarClear}
+                                        onClick={ this._handleAvatarClear }
                                     />
                                 </div>
-                            )}
+                            ) }
                         </div>
                         {/* <div className="avatar__controls">
                   <Row type="flex" align="middle" gutter={8}>
@@ -259,13 +260,14 @@ class AvatarEditr extends Component {
                       />
                     </Col>
                   </Row>
-                </div> */}
+                </div> */ }
                     </div>
-                )}
+                ) }
             </div>
         );
     }
 }
+
 AvatarEditr.propTypes = {
     avatarScale: PropTypes.number,
     baseUrl: PropTypes.string,

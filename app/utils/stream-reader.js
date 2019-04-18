@@ -18,6 +18,7 @@ export default class StreamReader {
         }
         return s;
     }
+
     getFrameNumber () {
         const length = this.data.length;
         let i;

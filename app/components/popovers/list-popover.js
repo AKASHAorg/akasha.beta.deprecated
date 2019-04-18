@@ -106,95 +106,99 @@ class ListPopover extends Component {
     };
 
     renderContent = () => {
-        const { authorEthAddress, entryId, entryType, intl, listAdd, listDelete, lists,
-            listsAll, listToggleEntry, search } = this.props;
+        const {
+            authorEthAddress, entryId, entryType, intl, listAdd, listDelete, lists,
+            listsAll, listToggleEntry, search
+        } = this.props;
 
         if (this.state.addNewList) {
             return (
-              <NewListForm
-                authorEthAddress={authorEthAddress}
-                entryId={entryId}
-                entryType={entryType}
-                lists={listsAll}
-                onSave={listAdd}
-                onCancel={this.toggleNewList}
-              />
+                <NewListForm
+                    authorEthAddress={ authorEthAddress }
+                    entryId={ entryId }
+                    entryType={ entryType }
+                    lists={ listsAll }
+                    onSave={ listAdd }
+                    onCancel={ this.toggleNewList }
+                />
             );
         }
 
         return (
-          <div>
             <div>
-              <Input
-                className="list-popover__search"
-                id="list-popover-search"
-                onChange={this.onSearchChange}
-                onKeyDown={this.onKeyDown}
-                placeholder={intl.formatMessage(listMessages.searchForList)}
-                prefix={<Icon type="search" />}
-                size="large"
-                value={search}
-              />
-            </div>
-            <div className="list-popover__list-wrapper">
-              {this.groupByState(lists).map((list) => {
-                  const toggleList = () => {
-                      this.onVisibleChange(false);
-                      listToggleEntry(list.get('id'), entryId, entryType, authorEthAddress);
-                  };
-                  const isSaved = this.isSaved(list);
-                  const root = 'list-popover__left-item list-popover__row-icon';
-                  const modifier = 'list-popover__row-icon_saved';
-                  const className = `${root} ${isSaved && modifier}`;
-                  return (
-                    <div
-                      className="has-hidden-action list-popover__row"
-                      key={list.get('id')}
-                      onClick={toggleList}
-                    >
-                      <div className={`hidden-action-reverse ${className}`}>
-                        {list.get('entryIds').size}
-                      </div>
-                      <div className="hidden-action list-popover__left-item">
-                        <Checkbox checked={isSaved} />
-                      </div>
-                      <div className="overflow-ellipsis list-popover__name">
-                        {list.get('name')}
-                      </div>
-                      <div className="hidden-action content-link flex-center list-popover__icon">
+                <div>
+                    <Input
+                        className="list-popover__search"
+                        id="list-popover-search"
+                        onChange={ this.onSearchChange }
+                        onKeyDown={ this.onKeyDown }
+                        placeholder={ intl.formatMessage(listMessages.searchForList) }
+                        prefix={ <Icon type="search"/> }
+                        size="large"
+                        value={ search }
+                    />
+                </div>
+                <div className="list-popover__list-wrapper">
+                    { this.groupByState(lists).map((list) => {
+                        const toggleList = () => {
+                            this.onVisibleChange(false);
+                            listToggleEntry(list.get('id'), entryId, entryType, authorEthAddress);
+                        };
+                        const isSaved = this.isSaved(list);
+                        const root = 'list-popover__left-item list-popover__row-icon';
+                        const modifier = 'list-popover__row-icon_saved';
+                        const className = `${ root } ${ isSaved && modifier }`;
+                        return (
+                            <div
+                                className="has-hidden-action list-popover__row"
+                                key={ list.get('id') }
+                                onClick={ toggleList }
+                            >
+                                <div className={ `hidden-action-reverse ${ className }` }>
+                                    { list.get('entryIds').size }
+                                </div>
+                                <div className="hidden-action list-popover__left-item">
+                                    <Checkbox checked={ isSaved }/>
+                                </div>
+                                <div className="overflow-ellipsis list-popover__name">
+                                    { list.get('name') }
+                                </div>
+                                <div
+                                    className="hidden-action content-link flex-center list-popover__icon">
+                                    <Icon
+                                        className="list-popover__edit-icon"
+                                        onClick={ ev => ev.stopPropagation() }
+                                        type="edit"
+                                    />
+                                </div>
+                                <div
+                                    className="hidden-action content-link flex-center list-popover__icon">
+                                    <Icon
+                                        className="list-popover__small-icon"
+                                        type="trash"
+                                        onClick={ (ev) => {
+                                            ev.preventDefault();
+                                            ev.stopPropagation();
+                                            listDelete(list.get('id'), list.get('name'));
+                                        } }
+                                    />
+                                </div>
+                            </div>
+                        );
+                    }) }
+                </div>
+                <div className="content-link list-popover__button" onClick={ this.toggleNewList }>
+                    <div className="list-popover__left-item">
                         <Icon
-                          className="list-popover__edit-icon"
-                          onClick={ev => ev.stopPropagation()}
-                          type="edit"
+                            className="list-popover__small-icon"
+                            type="plus"
                         />
-                      </div>
-                      <div className="hidden-action content-link flex-center list-popover__icon">
-                        <Icon
-                          className="list-popover__small-icon"
-                          type="trash"
-                          onClick={(ev) => {
-                              ev.preventDefault();
-                              ev.stopPropagation();
-                              listDelete(list.get('id'), list.get('name'));
-                          }}
-                        />
-                      </div>
                     </div>
-                  );
-              })}
+                    <div style={ { flex: '1 1 auto' } }>
+                        { intl.formatMessage(listMessages.createNew) }
+                    </div>
+                </div>
             </div>
-            <div className="content-link list-popover__button" onClick={this.toggleNewList}>
-              <div className="list-popover__left-item">
-                <Icon
-                  className="list-popover__small-icon"
-                  type="plus"
-                />
-              </div>
-              <div style={{ flex: '1 1 auto' }}>
-                {intl.formatMessage(listMessages.createNew)}
-              </div>
-            </div>
-          </div>
         );
     };
 
@@ -206,25 +210,25 @@ class ListPopover extends Component {
         });
 
         return (
-          <Popover
-            arrowPointAtCenter
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="popover-menu list-popover"
-            placement="bottomRight"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            <Tooltip
-              arrowPointAtCenter
-              getPopupContainer={() => containerRef || document.body}
-              placement="topRight"
-              title={intl.formatMessage(listMessages.addToList)}
+            <Popover
+                arrowPointAtCenter
+                content={ this.wasVisible ? this.renderContent() : null }
+                getPopupContainer={ () => containerRef || document.body }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName="popover-menu list-popover"
+                placement="bottomRight"
+                trigger="click"
+                visible={ this.state.popoverVisible }
             >
-              <Icon className={className} type="bookmark" />
-            </Tooltip>
-          </Popover>
+                <Tooltip
+                    arrowPointAtCenter
+                    getPopupContainer={ () => containerRef || document.body }
+                    placement="topRight"
+                    title={ intl.formatMessage(listMessages.addToList) }
+                >
+                    <Icon className={ className } type="bookmark"/>
+                </Tooltip>
+            </Popover>
         );
     }
 }

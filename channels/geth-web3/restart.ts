@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { GETH_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* () {
     yield (getService(GETH_MODULE.stop)).execute();
     yield Promise.delay(500);

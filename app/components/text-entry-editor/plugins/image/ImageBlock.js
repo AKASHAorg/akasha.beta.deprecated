@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DraftJS } from 'megadraft';
-import { Input, Popover, Menu, Icon as AntdIcon } from 'antd';
-import {
-    ImageSizeXS,
-    ImageSizeMedium,
-    ImageSizeLarge } from '../../../../components/svg';
-import { SvgIcon, Icon, LazyImageLoader } from '../../../../components';
+import { Icon as AntdIcon, Input, Menu, Popover } from 'antd';
+import { ImageSizeLarge, ImageSizeMedium, ImageSizeXS } from '../../../../components/svg';
+import { Icon, LazyImageLoader, SvgIcon } from '../../../../components';
 import clickAway from '../../../../utils/clickAway';
 import { entryMessages } from '../../../../locale-data/messages/entry-messages';
 
@@ -60,7 +57,7 @@ class ImageBlock extends Component {
     }
     _handleTextareaClick = () => {
         this.props.blockProps.setReadOnly(true);
-        if(this.state.isCardEnabled) {
+        if (this.state.isCardEnabled) {
             this.wrapperNode.removeEventListener('keyup', this._removeImageContainer);
         }
     }
@@ -104,32 +101,32 @@ class ImageBlock extends Component {
         const { data } = this.props;
         const { media } = data;
         return (
-          <Menu
-            className="image-block__image-size-menu"
-            onSelect={this._handleImageSizeChange}
-            defaultSelectedKeys={['md']}
-            selectedKeys={[media]}
-          >
-            <Menu.Item className="image-block__image-size-menu-item" key="xs">
-              <SvgIcon viewBox="0 0 24 24">
-                <ImageSizeXS />
-              </SvgIcon>
-            </Menu.Item>
-            {data.files.md &&
-              <Menu.Item className="image-block__image-size-menu-item" key="md">
-                <SvgIcon viewBox="0 0 24 24">
-                  <ImageSizeMedium />
-                </SvgIcon>
-              </Menu.Item>
-            }
-            {data.files.xl &&
-              <Menu.Item className="image-block__image-size-menu-item" key="lg">
-                <SvgIcon viewBox="0 0 24 24">
-                  <ImageSizeLarge />
-                </SvgIcon>
-              </Menu.Item>
-            }
-          </Menu>
+            <Menu
+                className="image-block__image-size-menu"
+                onSelect={ this._handleImageSizeChange }
+                defaultSelectedKeys={ ['md'] }
+                selectedKeys={ [media] }
+            >
+                <Menu.Item className="image-block__image-size-menu-item" key="xs">
+                    <SvgIcon viewBox="0 0 24 24">
+                        <ImageSizeXS/>
+                    </SvgIcon>
+                </Menu.Item>
+                { data.files.md &&
+                <Menu.Item className="image-block__image-size-menu-item" key="md">
+                    <SvgIcon viewBox="0 0 24 24">
+                        <ImageSizeMedium/>
+                    </SvgIcon>
+                </Menu.Item>
+                }
+                { data.files.xl &&
+                <Menu.Item className="image-block__image-size-menu-item" key="lg">
+                    <SvgIcon viewBox="0 0 24 24">
+                        <ImageSizeLarge/>
+                    </SvgIcon>
+                </Menu.Item>
+                }
+            </Menu>
         );
     }
 
@@ -162,62 +159,67 @@ class ImageBlock extends Component {
         const { files, caption, media } = data;
 
         return (
-          <div ref={(baseNode) => { this.baseNodeRef = baseNode; }} className="image-block">
-            <div
-              id="image-block"
-              className="image-block__inner"
-            >
-              {files &&
-                <Popover
-                  content={this._getImageSizeMenu()}
-                  placement="top"
-                  trigger="click"
-                  visible={this.state.popoverVisible}
-                  onVisibleChange={this._handlePopoverVisibility}
-                  autoAdjustOverflow={false}
-                  getPopupContainer={this._getPopupContainer}
+            <div ref={ (baseNode) => {
+                this.baseNodeRef = baseNode;
+            } } className="image-block">
+                <div
+                    id="image-block"
+                    className="image-block__inner"
                 >
-                  <div
-                    className={
-                        `image-block__image-wrapper
-                        image-block__image-wrapper_${media}
-                        image-block__image-wrapper${isCardEnabled ? '_active' : ''}`
+                    { files &&
+                    <Popover
+                        content={ this._getImageSizeMenu() }
+                        placement="top"
+                        trigger="click"
+                        visible={ this.state.popoverVisible }
+                        onVisibleChange={ this._handlePopoverVisibility }
+                        autoAdjustOverflow={ false }
+                        getPopupContainer={ this._getPopupContainer }
+                    >
+                        <div
+                            className={
+                                `image-block__image-wrapper
+                        image-block__image-wrapper_${ media }
+                        image-block__image-wrapper${ isCardEnabled ? '_active' : '' }`
+                            }
+                            onClick={ this._handleImageClick }
+                            ref={ (wrapperNode) => {
+                                this.wrapperNode = wrapperNode;
+                            } }
+                        >
+                            { files && files.gif &&
+                            <div className="image-block__gif-play-icon">
+                                <AntdIcon type="play-circle-o"/>
+                            </div>
+                            }
+                            <LazyImageLoader
+                                image={ files }
+                                baseUrl={ baseUrl }
+                                intl={ intl }
+                                className="entry-image-block"
+                            />
+                            <Icon
+                                type="close"
+                                onClick={ this._removeImage }
+                                className="image-block__image-remove-button"
+                            />
+                        </div>
+                        <TextArea
+                            className="image-block__caption-input"
+                            placeholder={ intl.formatMessage(entryMessages.imageCaptionPlaceholder) }
+                            value={ caption }
+                            autosize
+                            onChange={ this._handleCaptionChange }
+                            onClick={ this._handleTextareaClick }
+                        />
+                    </Popover>
                     }
-                    onClick={this._handleImageClick}
-                    ref={(wrapperNode) => { this.wrapperNode = wrapperNode; }}
-                  >
-                    {files && files.gif &&
-                      <div className="image-block__gif-play-icon">
-                        <AntdIcon type="play-circle-o" />
-                      </div>
-                    }
-                    <LazyImageLoader
-                      image={files}
-                      baseUrl={baseUrl}
-                      intl={intl}
-                      className="entry-image-block"
-                     />
-                    <Icon
-                      type="close"
-                      onClick={this._removeImage}
-                      className="image-block__image-remove-button"
-                    />
-                  </div>
-                  <TextArea
-                    className="image-block__caption-input"
-                    placeholder={intl.formatMessage(entryMessages.imageCaptionPlaceholder)}
-                    value={caption}
-                    autosize
-                    onChange={this._handleCaptionChange}
-                    onClick={this._handleTextareaClick}
-                  />
-                </Popover>
-              }
+                </div>
             </div>
-          </div>
         );
     }
 }
+
 ImageBlock.propTypes = {
     container: PropTypes.shape({
         updateData: PropTypes.func,

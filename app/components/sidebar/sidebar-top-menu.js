@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Button, Popover } from 'antd';
 import { injectIntl } from 'react-intl';
 import { Icon, SidebarIcon } from '../';
-import { generalMessages, entryMessages } from '../../locale-data/messages';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 
 /*:: type Props = {|
     intl: Object,
@@ -20,10 +20,10 @@ const getEntryMenu = (intl, onNavigation, onDraftsClick) => (
                     className="borderless"
                     icon="file"
                     ghost
-                    onClick={onNavigation('/draft/article/new')}
+                    onClick={ onNavigation('/draft/article/new') }
                 />
                 <div className="sidebar__entry-menu-buttons_text">
-                    {intl.formatMessage(generalMessages.sidebarEntryTypeArticle)}
+                    { intl.formatMessage(generalMessages.sidebarEntryTypeArticle) }
                 </div>
             </li>
             <li className="sidebar__entry-menu-buttons_wrapper">
@@ -33,10 +33,10 @@ const getEntryMenu = (intl, onNavigation, onDraftsClick) => (
                     className="borderless"
                     icon="link"
                     ghost
-                    onClick={onNavigation('/draft/link/new')}
+                    onClick={ onNavigation('/draft/link/new') }
                 />
                 <div className="sidebar__entry-menu-buttons_text">
-                    {intl.formatMessage(generalMessages.sidebarEntryTypeLink)}
+                    { intl.formatMessage(generalMessages.sidebarEntryTypeLink) }
                 </div>
             </li>
             <li className="sidebar__entry-menu-buttons_wrapper sidebar__entry-menu-buttons_wrapper-disabled">
@@ -47,18 +47,19 @@ const getEntryMenu = (intl, onNavigation, onDraftsClick) => (
                     icon="picture"
                     ghost
                     disabled
-                    onClick={() => {}}
+                    onClick={ () => {
+                    } }
                 />
                 <div className="sidebar__entry-menu-buttons_text">
-                    {intl.formatMessage(generalMessages.sidebarEntryTypeImage)}
+                    { intl.formatMessage(generalMessages.sidebarEntryTypeImage) }
                 </div>
             </li>
         </ul>
         <div>
-            <div className="sidebar__entry-menu-buttons_draft-button" onClick={onDraftsClick}>
-                <Icon type="draft" className="sidebar__entry-menu-buttons_draft-button-icon" />
+            <div className="sidebar__entry-menu-buttons_draft-button" onClick={ onDraftsClick }>
+                <Icon type="draft" className="sidebar__entry-menu-buttons_draft-button-icon"/>
                 <span className="sidebar__entry-menu-buttons_draft-button-label">
-                    {intl.formatMessage(entryMessages.gotoMyDrafts)}
+                    { intl.formatMessage(entryMessages.gotoMyDrafts) }
                 </span>
             </div>
         </div>
@@ -79,11 +80,12 @@ function SidebarTopMenu (props /* : Props */) {
                 <Popover
                     arrowPointAtCenter
                     placement="right"
-                    content={getEntryMenu(intl, onNavigate, onDraftsClick)}
+                    content={ getEntryMenu(intl, onNavigate, onDraftsClick) }
                     overlayClassName="entry-menu-popover"
                 >
                     <div className="content-link sidebar__new-entry-wrapper flex-center">
-                        <Icon className="sidebar__new-entry-icon sidebar-icon__icon" type="newEntry" />
+                        <Icon className="sidebar__new-entry-icon sidebar-icon__icon"
+                              type="newEntry"/>
                     </div>
                 </Popover>
             </div>
@@ -91,7 +93,7 @@ function SidebarTopMenu (props /* : Props */) {
                 activePath="/dashboard"
                 linkTo="/"
                 iconType="dashboard"
-                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipDashboard)}
+                tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipDashboard) }
                 linkClassName="sidebar__icon"
             />
             <SidebarIcon
@@ -99,14 +101,14 @@ function SidebarTopMenu (props /* : Props */) {
                 className="sidebar__profile-icon"
                 linkTo="/profileoverview/myentries"
                 iconType="profileOverview"
-                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipProfile)}
+                tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipProfile) }
                 linkClassName="sidebar__icon"
             />
             <SidebarIcon
                 activePath="/search"
                 linkTo="/search/entries"
                 iconType="search"
-                tooltipTitle={intl.formatMessage(generalMessages.sidebarTooltipSearch)}
+                tooltipTitle={ intl.formatMessage(generalMessages.sidebarTooltipSearch) }
                 linkClassName="sidebar__icon"
             />
         </>

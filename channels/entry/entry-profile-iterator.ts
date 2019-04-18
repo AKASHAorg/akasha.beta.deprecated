@@ -15,14 +15,14 @@ const entryProfileIteratorS = {
   required: ['toBlock'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
 
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, entryProfileIteratorS, { throwError: true });
     const address = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
     const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Entries.getEntryCount(address);
+      .instance.Entries.getEntryCount(address);
 
     let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
     if (maxResults > entryCount.toNumber()) {

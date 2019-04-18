@@ -4,37 +4,45 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { EntryList } from '../';
-import { profileSelectors, entrySelectors } from '../../local-flux/selectors';
+import { entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 class MyEntries extends Component {
     componentDidMount () {
         const { ethAddress } = this.props;
-        this.props.dispatchAction(entryProfileIterator({ id: 'profileEntries', value: ethAddress }));
+        this.props.dispatchAction(entryProfileIterator({
+            id: 'profileEntries',
+            value: ethAddress
+        }));
     }
 
     fetchMoreProfileEntries = () => {
         const { ethAddress } = this.props;
-        this.props.dispatchAction(entryProfileIterator({ id: 'profileEntries', value: ethAddress }));
+        this.props.dispatchAction(entryProfileIterator({
+            id: 'profileEntries',
+            value: ethAddress
+        }));
     };
 
     render () {
-        const { profileEntries, fetchingProfileEntries, moreProfileEntries,
-            fetchingMoreProfileEntries } = this.props;
+        const {
+            profileEntries, fetchingProfileEntries, moreProfileEntries,
+            fetchingMoreProfileEntries
+        } = this.props;
 
         return (
-          <div className="myentries">
-            <EntryList
-              contextId="profileEntries"
-              entries={profileEntries}
-              fetchingEntries={fetchingProfileEntries}
-              fetchingMoreEntries={fetchingMoreProfileEntries}
-              fetchMoreEntries={this.fetchMoreProfileEntries}
-              moreEntries={moreProfileEntries}
-              masonry
-              style={{ padding: '30px 0px' }}
-            />
-          </div>
+            <div className="myentries">
+                <EntryList
+                    contextId="profileEntries"
+                    entries={ profileEntries }
+                    fetchingEntries={ fetchingProfileEntries }
+                    fetchingMoreEntries={ fetchingMoreProfileEntries }
+                    fetchMoreEntries={ this.fetchMoreProfileEntries }
+                    moreEntries={ moreProfileEntries }
+                    masonry
+                    style={ { padding: '30px 0px' } }
+                />
+            </div>
         );
     }
 }

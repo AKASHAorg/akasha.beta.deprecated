@@ -12,7 +12,7 @@ const notificationsState = createReducer(initialState, {
 
     // [`${NOTIFICATIONS_MODULE.subscribe}_ERROR`]: state => state.set('fetchingNotifications', false),
 
-    [`${NOTIFICATIONS_MODULE.subscribe}_SUCCESS`]: (state, { data, isPanelOpen }) => {
+    [`${ NOTIFICATIONS_MODULE.subscribe }_SUCCESS`]: (state, { data, isPanelOpen }) => {
         // if (data.watching) {
         //     return state.set('fetchingNotifications', false);
         // }

@@ -18,43 +18,43 @@ class Lists extends Component {
         const { intl, lists, search } = this.props;
 
         const searchInput = (
-          <div className="lists__search">
-            <Input
-              size="large"
-              onChange={this.onSearchChange}
-              value={search}
-              prefix={<Icon type="search" />}
-              placeholder={intl.formatMessage(searchMessages.searchSomething)}
-            />
-          </div>
+            <div className="lists__search">
+                <Input
+                    size="large"
+                    onChange={ this.onSearchChange }
+                    value={ search }
+                    prefix={ <Icon type="search"/> }
+                    placeholder={ intl.formatMessage(searchMessages.searchSomething) }
+                />
+            </div>
         );
 
         return (
-          <div className="lists__wrapper">
-            <div className="lists">
-              <div className="lists__content-wrap">
-                <div className="lists__header">
-                  {searchInput}
-                  <NewListBtn />
+            <div className="lists__wrapper">
+                <div className="lists">
+                    <div className="lists__content-wrap">
+                        <div className="lists__header">
+                            { searchInput }
+                            <NewListBtn/>
+                        </div>
+                        <div className="lists__content">
+                            <Masonry
+                                className="lists__masonry"
+                                options={ { transitionDuration: 0, fitWidth: true } }
+                                style={ { margin: '0 auto' } }
+                            >
+                                { lists.map(list => (
+                                    <ListCard
+                                        deleteList={ this.props.listDelete }
+                                        key={ list.get('id') }
+                                        list={ list }
+                                    />
+                                )) }
+                            </Masonry>
+                        </div>
+                    </div>
                 </div>
-                <div className="lists__content">
-                  <Masonry
-                    className="lists__masonry"
-                    options={{ transitionDuration: 0, fitWidth: true }}
-                    style={{ margin: '0 auto' }}
-                  >
-                    {lists.map(list => (
-                      <ListCard
-                        deleteList={this.props.listDelete}
-                        key={list.get('id')}
-                        list={list}
-                      />
-                  ))}
-                  </Masonry>
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 }

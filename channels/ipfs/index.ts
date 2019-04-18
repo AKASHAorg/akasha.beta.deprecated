@@ -9,7 +9,7 @@ import statusInit from './status';
 import stopInit from './stop';
 import { IPFS_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
   const createImage = createImageInit(sp, getService);
   const getConfig = getConfigInit(sp, getService);
   const getPorts = getPortsInit(sp, getService);

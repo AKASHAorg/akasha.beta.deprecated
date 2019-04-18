@@ -9,7 +9,7 @@ const Icon /* : React.AbstractComponent<any> */ = React.forwardRef((
 ) => {
     const Component /*: React.AbstractComponent<any> */ = icons[props.type];
     const iconClass = classNames('icon', className);
-    return <Component className={iconClass} {...props} ref={ref} />;
+    return <Component className={ iconClass } { ...props } ref={ ref }/>;
 });
 
 Icon.displayName = 'Icon';

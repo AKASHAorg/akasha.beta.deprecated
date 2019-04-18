@@ -10,7 +10,7 @@ const getScoreS = {
   required: ['commentId'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data: { commentId: string }) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();

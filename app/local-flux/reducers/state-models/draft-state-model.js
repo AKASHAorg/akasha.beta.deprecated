@@ -1,4 +1,4 @@
-import { Record, OrderedMap, Map } from 'immutable';
+import { Map, OrderedMap, Record } from 'immutable';
 import { DraftJS } from 'megadraft';
 import { License } from './license-state-model';
 

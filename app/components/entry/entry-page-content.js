@@ -1,12 +1,22 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import DraftJS from 'draft-js';
-import { Tooltip, Icon } from 'antd';
-import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
-    CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
-    CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
-    CreativeCommonsSA } from '../svg';
+import { Icon, Tooltip } from 'antd';
+import {
+    AllRightsReserved,
+    CreativeCommonsBY,
+    CreativeCommonsCC,
+    CreativeCommonsNC,
+    CreativeCommonsNCEU,
+    CreativeCommonsNCJP,
+    CreativeCommonsND,
+    CreativeCommonsPD,
+    CreativeCommonsREMIX,
+    CreativeCommonsSA,
+    CreativeCommonsSHARE,
+    CreativeCommonsZERO
+} from '../svg';
 import { SelectableEditor, TagPopover, WebsiteInfoCard } from '../';
 import { entryMessages } from '../../locale-data/messages/entry-messages';
 
@@ -64,26 +74,27 @@ class EntryPageContent extends Component {
         };
 
         return (
-          <div className="entry-page-content__license-wrapper">
-            {licence.description.map((descr) => { // eslint-disable-line consistent-return, array-callback-return, max-len
-                if (descr.icon && licenseIcons[descr.icon] !== undefined) {
-                    const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
-                        '0 0 20 20' :
-                        '0 0 18 18';
-                    return (
-                      <Tooltip
-                        getPopupContainer={this.getPopupContainer}
-                        key={descr.icon}
-                        title={descr.text}
-                      >
-                        <svg className="entry-page-content__license-icon" viewBox={viewBox}>
-                          {React.createElement(licenseIcons[descr.icon])}
-                        </svg>
-                      </Tooltip>
-                    );
-                }
-            })}
-          </div>
+            <div className="entry-page-content__license-wrapper">
+                { licence.description.map((descr) => { // eslint-disable-line consistent-return, array-callback-return, max-len
+                    if (descr.icon && licenseIcons[descr.icon] !== undefined) {
+                        const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
+                            '0 0 20 20' :
+                            '0 0 18 18';
+                        return (
+                            <Tooltip
+                                getPopupContainer={ this.getPopupContainer }
+                                key={ descr.icon }
+                                title={ descr.text }
+                            >
+                                <svg className="entry-page-content__license-icon"
+                                     viewBox={ viewBox }>
+                                    { React.createElement(licenseIcons[descr.icon]) }
+                                </svg>
+                            </Tooltip>
+                        );
+                    }
+                }) }
+            </div>
         );
     };
     // when user clicks a link in an entry
@@ -91,6 +102,7 @@ class EntryPageContent extends Component {
         const { toggleOutsideNavigation } = this.props;
         toggleOutsideNavigation(url);
     }
+
     render () {
         const { baseUrl, commentEditor, containerRef, entry, licenses, intl, fullSizeImageAdd } = this.props;
         const license = licenses.get(entry.content.licence.id);
@@ -106,56 +118,57 @@ class EntryPageContent extends Component {
             }
         }
         return (
-          <div className="entry-page-content">
-            <div>
-              <h1 className="entry-page-content__title">
-                {entry.getIn(['content', 'entryType']) === 0 && entry.getIn(['content', 'title'])}
-              </h1>
-              {entry.content.entryType === 1 &&
-                <WebsiteInfoCard
-                  cardInfo={entry.content.cardInfo}
-                  baseUrl={baseUrl}
-                  hasCard={
-                      !!entry.content.cardInfo.title ||
-                      !!entry.content.cardInfo.description
-                  }
-                  isEdit={false}
-                  infoExtracted
-                  onClick={this._handleOutsideNavigation}
-                />
-              }
-              <div className="entry-page-content__content">
-                <SelectableEditor
-                  baseUrl={baseUrl}
-                  draft={entry.getIn(['content', 'draft'])}
-                  highlightSave={this.highlightSave}
-                  startComment={commentEditor && commentEditor.insertHighlight}
-                  onOutsideNavigation={this._handleOutsideNavigation}
-                  fullSizeImageAdd={fullSizeImageAdd}
-                />
-              </div>
-            </div>
-            <div className="flex-center-y entry-page-content__info">
-              {!entry.content.licence.id && !entry.content.licence.parent &&
-                <Icon type="exclamation-circle-o" className="entry-page-content__licence-error-icon" />
-              }
-              <span style={{ paddingRight: '10px' }}>
-                {licenseLabel}
+            <div className="entry-page-content">
+                <div>
+                    <h1 className="entry-page-content__title">
+                        { entry.getIn(['content', 'entryType']) === 0 && entry.getIn(['content', 'title']) }
+                    </h1>
+                    { entry.content.entryType === 1 &&
+                    <WebsiteInfoCard
+                        cardInfo={ entry.content.cardInfo }
+                        baseUrl={ baseUrl }
+                        hasCard={
+                            !!entry.content.cardInfo.title ||
+                            !!entry.content.cardInfo.description
+                        }
+                        isEdit={ false }
+                        infoExtracted
+                        onClick={ this._handleOutsideNavigation }
+                    />
+                    }
+                    <div className="entry-page-content__content">
+                        <SelectableEditor
+                            baseUrl={ baseUrl }
+                            draft={ entry.getIn(['content', 'draft']) }
+                            highlightSave={ this.highlightSave }
+                            startComment={ commentEditor && commentEditor.insertHighlight }
+                            onOutsideNavigation={ this._handleOutsideNavigation }
+                            fullSizeImageAdd={ fullSizeImageAdd }
+                        />
+                    </div>
+                </div>
+                <div className="flex-center-y entry-page-content__info">
+                    { !entry.content.licence.id && !entry.content.licence.parent &&
+                    <Icon type="exclamation-circle-o"
+                          className="entry-page-content__licence-error-icon"/>
+                    }
+                    <span style={ { paddingRight: '10px' } }>
+                { licenseLabel }
               </span>
-              {this.renderLicenseIcons()}
+                    { this.renderLicenseIcons() }
+                </div>
+                <div className="entry-page-content__info">
+                    <div>
+                        { entry.getIn(['content', 'tags']).map(tag => (
+                            <TagPopover
+                                containerRef={ containerRef }
+                                key={ tag }
+                                tag={ tag }
+                            />
+                        )) }
+                    </div>
+                </div>
             </div>
-            <div className="entry-page-content__info">
-              <div>
-                {entry.getIn(['content', 'tags']).map(tag => (
-                  <TagPopover
-                    containerRef={containerRef}
-                    key={tag}
-                    tag={tag}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
         );
     }
 }

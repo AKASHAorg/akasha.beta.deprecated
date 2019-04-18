@@ -14,13 +14,13 @@ const entryTagIteratorS = {
   required: ['toBlock', 'tagName'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, entryTagIteratorS, { throwError: true });
 
     const entryCount = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.totalEntries(data.tagName);
+      .instance.Tags.totalEntries(data.tagName);
 
     let maxResults = entryCount.toNumber() === 0 ? 0 : data.limit || 5;
     if (maxResults > entryCount.toNumber()) {
@@ -36,11 +36,11 @@ export default function init(sp, getService) {
       }
     }
     return getService(ENTRY_MODULE.helpers)
-    .fetchFromTagIndex(Object.assign({}, data, {
-      limit: maxResults,
-      args: { tagName: data.tagName },
-      reversed: data.reversed || false,
-    }));
+      .fetchFromTagIndex(Object.assign({}, data, {
+        limit: maxResults,
+        args: { tagName: data.tagName },
+        reversed: data.reversed || false,
+      }));
   });
 
   const entryTagIterator = { execute, name: 'entryTagIterator' };

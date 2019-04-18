@@ -49,11 +49,17 @@ class EssencePopover extends Component {
         }
     };
 
-    onHistory = () => { this.setState({ page: HISTORY }); };
+    onHistory = () => {
+        this.setState({ page: HISTORY });
+    };
 
-    onForge = () => { this.setState({ page: FORGE }); };
+    onForge = () => {
+        this.setState({ page: FORGE });
+    };
 
-    onCancel = () => { this.setState({ page: COLLECT }); };
+    onCancel = () => {
+        this.setState({ page: COLLECT });
+    };
 
     onShiftDownSubmit = (amount) => {
         const { loggedEthAddress } = this.props;
@@ -70,27 +76,27 @@ class EssencePopover extends Component {
         const { page } = this.state;
         if (page === COLLECT) {
             return (
-              <ClaimableList
-                onForge={this.onForge}
-                onHistory={this.onHistory}
-              />
+                <ClaimableList
+                    onForge={ this.onForge }
+                    onHistory={ this.onHistory }
+                />
             );
         }
 
         if (page === FORGE) {
             return (
-              <ShiftForm
-                balance={balance}
-                onCancel={this.onCancel}
-                onShift={this.onShiftUpSubmit}
-                pendingShift={pendingTransformEssence}
-                type="transformEssence"
-              />
+                <ShiftForm
+                    balance={ balance }
+                    onCancel={ this.onCancel }
+                    onShift={ this.onShiftUpSubmit }
+                    pendingShift={ pendingTransformEssence }
+                    type="transformEssence"
+                />
             );
         }
 
         return (
-          <EssenceHistory onBack={this.onCancel} />
+            <EssenceHistory onBack={ this.onCancel }/>
         );
     };
 
@@ -101,32 +107,32 @@ class EssencePopover extends Component {
         const firstStep = 1000;
         const percent = (total / firstStep) * 100;
         const tooltip = (
-          <div>
-            <div>{intl.formatMessage(generalMessages.essence)}</div>
-            <div>{total}</div>
-          </div>
+            <div>
+                <div>{ intl.formatMessage(generalMessages.essence) }</div>
+                <div>{ total }</div>
+            </div>
         );
 
         return (
-          <Popover
-            content={this.wasVisible ? this.renderContent() : null}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="essence-popover"
-            placement="leftBottom"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            <Tooltip placement="right" title={tooltip} mouseEnterDelay={0.3}>
-              <Progress
-                className="essence-popover__progress"
-                format={() => <Icon className="essence-popover__icon" type="essence" />}
-                percent={percent}
-                strokeWidth={10}
-                type="circle"
-                width={35}
-              />
-            </Tooltip>
-          </Popover>
+            <Popover
+                content={ this.wasVisible ? this.renderContent() : null }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName="essence-popover"
+                placement="leftBottom"
+                trigger="click"
+                visible={ this.state.popoverVisible }
+            >
+                <Tooltip placement="right" title={ tooltip } mouseEnterDelay={ 0.3 }>
+                    <Progress
+                        className="essence-popover__progress"
+                        format={ () => <Icon className="essence-popover__icon" type="essence"/> }
+                        percent={ percent }
+                        strokeWidth={ 10 }
+                        type="circle"
+                        width={ 35 }
+                    />
+                </Tooltip>
+            </Popover>
         );
     }
 }
@@ -134,7 +140,7 @@ class EssencePopover extends Component {
 EssencePopover.propTypes = {
     actionAdd: PropTypes.func.isRequired,
     balance: PropTypes.shape().isRequired,
-    claimableGetEntries: PropTypes.func.isRequired,    
+    claimableGetEntries: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     loggedEthAddress: PropTypes.string,
     pendingTransformEssence: PropTypes.bool,

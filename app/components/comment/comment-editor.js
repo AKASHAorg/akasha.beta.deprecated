@@ -105,9 +105,13 @@ class CommentEditor extends Component {
         }
     };
 
-    getBaseNodeRef = (el) => { this.baseNodeRef = el; };
+    getBaseNodeRef = (el) => {
+        this.baseNodeRef = el;
+    };
 
-    getEditorRef = (el) => { this.editor = el; };
+    getEditorRef = (el) => {
+        this.editor = el;
+    };
 
     scrollIntoView = () => this.baseNodeRef && this.baseNodeRef.scrollIntoViewIfNeeded();
 
@@ -321,15 +325,18 @@ class CommentEditor extends Component {
             'comment-editor__toolbar-button_active': this.isActionActive(action)
         });
         return (
-          <div
-            className={className}
-            key={action.style || index}
-            // Do not remove ev.preventDefault() from "onMouseDown" handler
-            // See: https://github.com/facebook/draft-js/issues/696
-            onMouseDown={(ev) => { ev.preventDefault(); this.actionHandler(action.style); }}
-          >
-            <Icon type={action.icon} />
-          </div>
+            <div
+                className={ className }
+                key={ action.style || index }
+                // Do not remove ev.preventDefault() from "onMouseDown" handler
+                // See: https://github.com/facebook/draft-js/issues/696
+                onMouseDown={ (ev) => {
+                    ev.preventDefault();
+                    this.actionHandler(action.style);
+                } }
+            >
+                <Icon type={ action.icon }/>
+            </div>
         );
     };
 
@@ -350,27 +357,30 @@ class CommentEditor extends Component {
         });
 
         return (
-          <div className="flex-center-y comment-editor__toolbar-actions">
-            {inlineStyleActions.map(this.renderAction)}
-            <div className={buttonClass}>
-              <Tooltip title={!linkDisabled ? undefined : intl.formatMessage(entryMessages.linkDisabled)}>
-                <Icon
-                  className={linkClassName}
-                  onClick={!linkDisabled ? linkHandler : undefined}
-                  onMouseDown={(ev) => { ev.preventDefault(); }}
-                  type="linkEntry"
-                />
-              </Tooltip>
+            <div className="flex-center-y comment-editor__toolbar-actions">
+                { inlineStyleActions.map(this.renderAction) }
+                <div className={ buttonClass }>
+                    <Tooltip
+                        title={ !linkDisabled ? undefined : intl.formatMessage(entryMessages.linkDisabled) }>
+                        <Icon
+                            className={ linkClassName }
+                            onClick={ !linkDisabled ? linkHandler : undefined }
+                            onMouseDown={ (ev) => {
+                                ev.preventDefault();
+                            } }
+                            type="linkEntry"
+                        />
+                    </Tooltip>
+                </div>
+                <div className="comment-editor__separator"/>
+                <div className="comment-editor__toolbar-button">
+                    <AddImage
+                        editorState={ this.state.editorState }
+                        onChange={ this.onChange }
+                    />
+                </div>
+                { blockStyleActions.map(this.renderAction) }
             </div>
-            <div className="comment-editor__separator" />
-            <div className="comment-editor__toolbar-button">
-              <AddImage
-                editorState={this.state.editorState}
-                onChange={this.onChange}
-              />
-            </div>
-            {blockStyleActions.map(this.renderAction)}
-          </div>
         );
     };
 
@@ -395,68 +405,70 @@ class CommentEditor extends Component {
         });
 
         if (!placeholder) {
-            placeholder = `${intl.formatMessage(entryMessages.writeComment)}...`;
+            placeholder = `${ intl.formatMessage(entryMessages.writeComment) }...`;
         }
         return (
-          <div className="comment-editor" ref={this.getBaseNodeRef}>
-            <div className="comment-editor__avatar">
-              <ProfilePopover
-                containerRef={containerRef}
-                ethAddress={loggedProfileData.get('ethAddress')}
-              >
-                <Avatar
-                  firstName={loggedProfileData.get('firstName')}
-                  image={loggedProfileData.get('avatar')}
-                  lastName={loggedProfileData.get('lastName')}
-                  size="small"
-                />
-              </ProfilePopover>
-            </div>
-            <div
-              className={boxClass}
-              ref={this.getContainerRef}
-            >
-              <div
-                className="comment-editor__editor-area"
-                onClick={this.onWrapperClick}
-              >
+            <div className="comment-editor" ref={ this.getBaseNodeRef }>
+                <div className="comment-editor__avatar">
+                    <ProfilePopover
+                        containerRef={ containerRef }
+                        ethAddress={ loggedProfileData.get('ethAddress') }
+                    >
+                        <Avatar
+                            firstName={ loggedProfileData.get('firstName') }
+                            image={ loggedProfileData.get('avatar') }
+                            lastName={ loggedProfileData.get('lastName') }
+                            size="small"
+                        />
+                    </ProfilePopover>
+                </div>
                 <div
-                  className={wrapperClass}
-                  ref={(el) => { this.editorWrapper = el; }}
+                    className={ boxClass }
+                    ref={ this.getContainerRef }
                 >
-                  <Editor
-                    editorState={editorState}
-                    handleKeyCommand={this.handleKeyCommand}
-                    onChange={this.onChange}
-                    placeholder={placeholder}
-                    plugins={[this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin]}
-                    ref={this.getEditorRef}
-                  />
+                    <div
+                        className="comment-editor__editor-area"
+                        onClick={ this.onWrapperClick }
+                    >
+                        <div
+                            className={ wrapperClass }
+                            ref={ (el) => {
+                                this.editorWrapper = el;
+                            } }
+                        >
+                            <Editor
+                                editorState={ editorState }
+                                handleKeyCommand={ this.handleKeyCommand }
+                                onChange={ this.onChange }
+                                placeholder={ placeholder }
+                                plugins={ [this.emojiPlugin, this.highlightPlugin, this.imagePlugin, this.linkPlugin] }
+                                ref={ this.getEditorRef }
+                            />
+                        </div>
+                        <EmojiSelect/>
+                        <EmojiSuggestions/>
+                    </div>
+                    { linkPopoverVisible &&
+                    <LinkPopover
+                        left={ left }
+                        onClose={ this.hideLinkPopover }
+                        onSubmit={ this.onAddLink }
+                        top={ top }
+                    />
+                    }
+                    { showToolbar &&
+                    <div className="comment-editor__toolbar">
+                        { this.renderToolbarActions() }
+                        <div
+                            className={ publishClass }
+                            onClick={ this.handleCommentCreate }
+                        >
+                            { intl.formatMessage(generalMessages.publish) }
+                        </div>
+                    </div>
+                    }
                 </div>
-                <EmojiSelect />
-                <EmojiSuggestions />
-              </div>
-              {linkPopoverVisible &&
-                <LinkPopover
-                  left={left}
-                  onClose={this.hideLinkPopover}
-                  onSubmit={this.onAddLink}
-                  top={top}
-                />
-              }
-              {showToolbar &&
-                <div className="comment-editor__toolbar">
-                  {this.renderToolbarActions()}
-                  <div
-                    className={publishClass}
-                    onClick={this.handleCommentCreate}
-                  >
-                    {intl.formatMessage(generalMessages.publish)}
-                  </div>
-                </div>
-              }
             </div>
-          </div>
         );
     }
 }

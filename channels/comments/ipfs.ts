@@ -2,8 +2,8 @@ import * as Promise from 'bluebird';
 
 import { COMMENTS_MODULE, CORE_MODULE, GENERAL_SETTINGS } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
-  const create = function create(data) {
+export default function init (sp, getService) {
+  const create = function create (data) {
     const date = (new Date()).toJSON();
     const constructed = {
       date,
@@ -14,7 +14,7 @@ export default function init(sp, getService) {
       .then((result: any) => result.hash);
   };
 
-  const getCommentContent = function getCommentContent(hash) {
+  const getCommentContent = function getCommentContent (hash) {
     const comments = (getService(CORE_MODULE.STASH)).comments;
     if (comments.hasFull(hash)) {
       return Promise.resolve(comments.getFull(hash));

@@ -4,8 +4,12 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Tabs, Tooltip } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { ipfsGetPorts, ipfsSetPorts, ipfsStart, /* ipfsStartLogger, */ ipfsStop,
-    /* ipfsStopLogger */ } from '../../local-flux/actions/external-process-actions';
+import {
+    ipfsGetPorts,
+    ipfsSetPorts,
+    ipfsStart,
+    ipfsStop,
+} from '../../local-flux/actions/external-process-actions';
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 import { Icon, InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
@@ -133,76 +137,78 @@ class IpfsDetailsModal extends Component {
         const ipfsApi = ipfsStatus.get('api');
 
         return (
-          <div className="service-details-modal ipfs-details-modal">
-            <Tabs
-              activeKey={activeTab}
-              onChange={this.selectTab}
-              tabBarStyle={{ height: '60px', marginBottom: '0px' }}
-              type="card"
-            >
-              <TabPane key={SETTINGS} tab={intl.formatMessage(generalMessages.settings)}>
-                <div className="service-details-modal__tab-pane">
-                  <PathInputField
-                    label={
-                      <div className="flex-center-y">
-                        {intl.formatMessage(setupMessages.ipfsStoragePath)}
-                        <Tooltip title={intl.formatMessage(setupMessages.ipfsStoragePathInfo)}>
-                          <Icon
-                            className="question-circle-icon ipfs-details-modal__info-icon"
-                            type="questionCircle"
-                          />
-                        </Tooltip>
-                      </div>
-                    }
-                    onChange={this.onStorageChange}
-                    size="large"
-                    value={storagePath}
-                  />
-                  <div className="ipfs-details-modal__ports">
-                    <InputNumber
-                      label={intl.formatMessage(setupMessages.ipfsApiPort)}
-                      value={apiPort}
-                      onChange={this.onApiPortChange}
-                      disabled={!ipfsApi || ipfsPortsRequested}
-                      size="large"
-                      style={{ width: '100%' }}
-                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                    />
-                    <InputNumber
-                      label={intl.formatMessage(setupMessages.ipfsGatewayPort)}
-                      value={gatewayPort}
-                      onChange={this.onGatewayPortChange}
-                      disabled={ipfsPortsRequested}
-                      size="large"
-                      style={{ width: '100%' }}
-                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                    />
-                    <InputNumber
-                      label={intl.formatMessage(setupMessages.ipfsSwarmPort)}
-                      value={swarmPort}
-                      onChange={this.onSwarmPortChange}
-                      disabled={!ipfsApi || ipfsPortsRequested}
-                      size="large"
-                      style={{ width: '100%' }}
-                      wrapperStyle={{ width: '48%', margin: '12px 0px' }}
-                    />
-                  </div>
-                </div>
-              </TabPane>
-              <TabPane key={LOGS} tab={intl.formatMessage(generalMessages.logs)}>
-                <div className="service-details-modal__tab-pane service-details-modal__tab-pane_logs">
-                  {activeTab === LOGS &&
-                    <LogsList
-                      logs={ipfsLogs}
-                      modal
-                      startLogger={this.props.ipfsStartLogger}
-                      stopLogger={this.props.ipfsStopLogger}
-                    />
-                  }
-                </div>
-              </TabPane>
-            </Tabs>
-          </div>
+            <div className="service-details-modal ipfs-details-modal">
+                <Tabs
+                    activeKey={ activeTab }
+                    onChange={ this.selectTab }
+                    tabBarStyle={ { height: '60px', marginBottom: '0px' } }
+                    type="card"
+                >
+                    <TabPane key={ SETTINGS } tab={ intl.formatMessage(generalMessages.settings) }>
+                        <div className="service-details-modal__tab-pane">
+                            <PathInputField
+                                label={
+                                    <div className="flex-center-y">
+                                        { intl.formatMessage(setupMessages.ipfsStoragePath) }
+                                        <Tooltip
+                                            title={ intl.formatMessage(setupMessages.ipfsStoragePathInfo) }>
+                                            <Icon
+                                                className="question-circle-icon ipfs-details-modal__info-icon"
+                                                type="questionCircle"
+                                            />
+                                        </Tooltip>
+                                    </div>
+                                }
+                                onChange={ this.onStorageChange }
+                                size="large"
+                                value={ storagePath }
+                            />
+                            <div className="ipfs-details-modal__ports">
+                                <InputNumber
+                                    label={ intl.formatMessage(setupMessages.ipfsApiPort) }
+                                    value={ apiPort }
+                                    onChange={ this.onApiPortChange }
+                                    disabled={ !ipfsApi || ipfsPortsRequested }
+                                    size="large"
+                                    style={ { width: '100%' } }
+                                    wrapperStyle={ { width: '48%', margin: '12px 0px' } }
+                                />
+                                <InputNumber
+                                    label={ intl.formatMessage(setupMessages.ipfsGatewayPort) }
+                                    value={ gatewayPort }
+                                    onChange={ this.onGatewayPortChange }
+                                    disabled={ ipfsPortsRequested }
+                                    size="large"
+                                    style={ { width: '100%' } }
+                                    wrapperStyle={ { width: '48%', margin: '12px 0px' } }
+                                />
+                                <InputNumber
+                                    label={ intl.formatMessage(setupMessages.ipfsSwarmPort) }
+                                    value={ swarmPort }
+                                    onChange={ this.onSwarmPortChange }
+                                    disabled={ !ipfsApi || ipfsPortsRequested }
+                                    size="large"
+                                    style={ { width: '100%' } }
+                                    wrapperStyle={ { width: '48%', margin: '12px 0px' } }
+                                />
+                            </div>
+                        </div>
+                    </TabPane>
+                    <TabPane key={ LOGS } tab={ intl.formatMessage(generalMessages.logs) }>
+                        <div
+                            className="service-details-modal__tab-pane service-details-modal__tab-pane_logs">
+                            { activeTab === LOGS &&
+                            <LogsList
+                                logs={ ipfsLogs }
+                                modal
+                                startLogger={ this.props.ipfsStartLogger }
+                                stopLogger={ this.props.ipfsStopLogger }
+                            />
+                            }
+                        </div>
+                    </TabPane>
+                </Tabs>
+            </div>
         );
     };
 
@@ -217,17 +223,17 @@ class IpfsDetailsModal extends Component {
             intl.formatMessage(generalMessages.ipfsServiceOff);
 
         return (
-          <ServiceDetailsModal
-            onCancel={this.props.toggleIpfsDetailsModal}
-            onSave={this.saveOptions}
-            onToggle={this.onToggle}
-            saveDisabled={!isFormDirty}
-            toggleDisabled={toggleDisabled}
-            toggleLabel={toggleLabel}
-            toggleOn={isIpfsOn}
-          >
-            {this.renderModalContent()}
-          </ServiceDetailsModal>
+            <ServiceDetailsModal
+                onCancel={ this.props.toggleIpfsDetailsModal }
+                onSave={ this.saveOptions }
+                onToggle={ this.onToggle }
+                saveDisabled={ !isFormDirty }
+                toggleDisabled={ toggleDisabled }
+                toggleLabel={ toggleLabel }
+                toggleOn={ isIpfsOn }
+            >
+                { this.renderModalContent() }
+            </ServiceDetailsModal>
         );
     }
 }

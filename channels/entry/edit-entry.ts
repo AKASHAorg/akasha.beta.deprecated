@@ -28,7 +28,7 @@ const update = {
   required: ['content', 'token', 'tags', 'ethAddress', 'entryType'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, update, { throwError: true });
@@ -44,7 +44,7 @@ export default function init(sp, getService) {
 
     const ipfsHashPublished = (getService(COMMON_MODULE.ipfsHelpers)).encodeHash(fn, digestSize, hash);
     const ipfsHash = yield ipfsEntry
-    .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
+      .edit(data.content, data.tags, data.entryType, ipfsHashPublished);
     const decodedHash = (getService(COMMON_MODULE.ipfsHelpers)).decodeHash(ipfsHash);
     delete data.content;
     delete data.tags;

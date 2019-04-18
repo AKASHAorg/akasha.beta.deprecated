@@ -7,7 +7,7 @@ import stopInit from './stop';
 import syncStatusInit from './sync-status';
 import { GETH_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
   const logs = logsInit(sp, getService);
   const options = optionsInit(sp, getService);
   const restart = restartInit(sp, getService);

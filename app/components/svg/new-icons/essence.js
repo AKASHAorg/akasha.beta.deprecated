@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
 
 const Essence = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="15" viewBox="0 0 17 15" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="15" viewBox="0 0 17 15" { ...props }
+         ref={ ref }>
         <path
             fill="#4BCDC4"
             fillRule="evenodd"
@@ -9,5 +10,5 @@ const Essence = React.forwardRef((props, ref) => (
         />
     </svg>
 ));
-Essence.displayName = "Essence";
+Essence.displayName = 'Essence';
 export default Essence;

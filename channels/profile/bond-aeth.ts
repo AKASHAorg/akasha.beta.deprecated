@@ -11,20 +11,20 @@ export const bondAethSchema = {
   required: ['amount', 'token'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, bondAethSchema, { throwError: true });
 
     const bnAmount = (getService(CORE_MODULE.WEB3_API))
-    .instance.toWei(data.amount, 'ether');
+      .instance.toWei(data.amount, 'ether');
 
     const txData = (getService(CORE_MODULE.CONTRACTS))
-    .instance.AETH.bondAeth.request(bnAmount, { gas: 100000 });
+      .instance.AETH.bondAeth.request(bnAmount, { gas: 100000 });
 
     const receipt = yield (getService(CORE_MODULE.CONTRACTS))
-    .send(txData, data.token, cb);
+      .send(txData, data.token, cb);
 
     return { receipt };
   });

@@ -2,6 +2,7 @@
   "extends": "tslint-config-airbnb",
   "rules": {
     "import-name": false,
-    "ter-prefer-arrow-callback": false
+    "ter-prefer-arrow-callback": false,
+    "space-before-function-paren": true
   }
 }

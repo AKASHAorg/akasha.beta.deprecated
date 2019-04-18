@@ -1,5 +1,5 @@
 // @flow
-import { call, takeEvery, getContext } from 'redux-saga/effects';
+import { call, getContext, takeEvery } from 'redux-saga/effects';
 import { TX_MODULE } from '@akashaproject/common/constants';
 import * as types from '../constants';
 

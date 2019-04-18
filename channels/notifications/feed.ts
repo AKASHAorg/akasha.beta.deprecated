@@ -13,7 +13,7 @@ const watchFollow = {
 
 const EVENT_TYPE = 'FOLLOWING_EVENT';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data, cb) {
 
@@ -23,7 +23,7 @@ export default function init(sp, getService) {
     const contracts = getService(CORE_MODULE.CONTRACTS);
     const queue = getService(NOTIFICATIONS_MODULE.queue);
     const followEvent = contracts
-    .createWatcher(contracts.instance.Feed.Follow, { followed: ethAddress }, data.fromBlock);
+      .createWatcher(contracts.instance.Feed.Follow, { followed: ethAddress }, data.fromBlock);
 
     followEvent.watch((err, ev) => {
       if (!err) {

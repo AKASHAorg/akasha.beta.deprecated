@@ -1,12 +1,12 @@
 // @flow
-import { call, put, select, takeEvery, takeLatest, throttle, getContext } from 'redux-saga/effects';
-import { DraftJS, editorStateToJSON, editorStateFromRaw } from 'megadraft';
+import { call, getContext, put, select, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { DraftJS, editorStateFromRaw, editorStateToJSON } from 'megadraft';
 import { Map, OrderedMap } from 'immutable';
 import { isEmpty } from 'ramda';
 import DraftStateModel from '../reducers/state-models/draft-state-model';
-import { profileSelectors, draftSelectors } from '../selectors';
+import { draftSelectors, profileSelectors } from '../selectors';
 import { entryTypes } from '../../constants/entry-types';
-import { getWordCount, extractExcerpt } from '../../utils/dataModule';
+import { extractExcerpt, getWordCount } from '../../utils/dataModule';
 import { extractImageFromContent } from '../../utils/imageUtils';
 import * as types from '../constants';
 import * as claimableActions from '../actions/claimable-actions';
@@ -57,7 +57,11 @@ function* draftCreate ({ data }) /* : Saga<void> */ {
 }
 
 function* draftAddTag ({ data }) /* : Saga<void> */ {
-    yield put(tagActions.tagExists({ tagName: data.tagName, addToDraft: true, draftId: data.draftId }));
+    yield put(tagActions.tagExists({
+        tagName: data.tagName,
+        addToDraft: true,
+        draftId: data.draftId
+    }));
 }
 
 /**
@@ -151,6 +155,7 @@ function* draftDelete ({ data }) /* : Saga<void> */ {
         yield put(draftActions.draftDeleteError({ error: ex, draftId: data.draftId }));
     }
 }
+
 /* eslint-disable max-statements */
 function* draftPublish ({ actionId, draft }) /* : Saga<void> */ {
     const { id } = draft;
@@ -185,6 +190,7 @@ function* draftPublish ({ actionId, draft }) /* : Saga<void> */ {
         yield put(draftActions.draftPublishError(ex));
     }
 }
+
 /* eslint-enable max-statements */
 function* draftPublishSuccess ({ data }) /* : Saga<void> */ {
     yield put(draftActions.draftDelete({ draftId: data.draft.id }));

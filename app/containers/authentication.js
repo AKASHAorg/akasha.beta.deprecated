@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import Link from 'react-router-dom/Link';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import throttle from 'lodash.throttle';
-import { AuthProfileList, Icon, AppErrorBoundary } from '../components';
+import { AppErrorBoundary, AuthProfileList, Icon } from '../components';
 import { setupMessages } from '../locale-data/messages';
 import { navBackCounterReset } from '../local-flux/actions/app-actions';
 import {
@@ -15,7 +14,11 @@ import {
     profileGetLocal
 } from '../local-flux/actions/profile-actions';
 import { backupKeysRequest } from '../local-flux/actions/utils-actions';
-import { externalProcessSelectors, profileSelectors, settingsSelectors } from '../local-flux/selectors';
+import {
+    externalProcessSelectors,
+    profileSelectors,
+    settingsSelectors
+} from '../local-flux/selectors';
 
 class Auth extends Component {
     state = {
@@ -113,24 +116,24 @@ class Auth extends Component {
                     <div className="flex-center-x setup-content__column_full">
                         <div className="flex-center-x setup-content__column-content auth__content">
                             <div className="auth__content-inner">
-                                <div className={`auth__title-wrapper ${withShadow}`}>
+                                <div className={ `auth__title-wrapper ${ withShadow }` }>
                                     <div className="auth__title heading">
-                                        {intl.formatMessage(setupMessages.welcome)}
+                                        { intl.formatMessage(setupMessages.welcome) }
                                     </div>
                                     <div className="auth__subtitle">
-                                        {localProfiles.size
+                                        { localProfiles.size
                                             ? intl.formatMessage(setupMessages.chooseIdentity)
-                                            : intl.formatMessage(setupMessages.getStarted)}
+                                            : intl.formatMessage(setupMessages.getStarted) }
                                     </div>
                                 </div>
                                 <div className="auth__list-wrapper">
                                     <AuthProfileList
-                                        displayShadow={this.displayShadow}
-                                        fetchingProfiles={!localProfilesFetched}
-                                        getListContainerRef={this.getListContainerRef}
-                                        intl={intl}
-                                        pendingListProfiles={pendingListProfiles}
-                                        profiles={localProfiles}
+                                        displayShadow={ this.displayShadow }
+                                        fetchingProfiles={ !localProfilesFetched }
+                                        getListContainerRef={ this.getListContainerRef }
+                                        intl={ intl }
+                                        pendingListProfiles={ pendingListProfiles }
+                                        profiles={ localProfiles }
                                     />
                                 </div>
                             </div>
@@ -145,21 +148,21 @@ class Auth extends Component {
                         />
                         {intl.formatMessage(setupMessages.importKeys)}
                         </div>
-                    </Button> */}
+                    </Button> */ }
                                 <Button
-                                    className={backupButtonClass}
-                                    disabled={backupPending || !localProfiles.size}
-                                    onClick={backupKeysRequest}
+                                    className={ backupButtonClass }
+                                    disabled={ backupPending || !localProfiles.size }
+                                    onClick={ backupKeysRequest }
                                 >
                                     <div className="flex-center-y">
-                                        <Icon className="auth__icon" type="zipFile" />
-                                        {intl.formatMessage(setupMessages.backup)}
+                                        <Icon className="auth__icon" type="zipFile"/>
+                                        { intl.formatMessage(setupMessages.backup) }
                                     </div>
                                 </Button>
                             </div>
                             <div
                                 id="button"
-                                className={`${localProfiles.size && 'auth__new-identity-button'}`}
+                                className={ `${ localProfiles.size && 'auth__new-identity-button' }` }
                             >
                                 {/* <Link to="/setup/new-identity">
                                     {localProfiles.size ? (
@@ -171,7 +174,7 @@ class Auth extends Component {
                                             {intl.formatMessage(setupMessages.createIdentity)}
                                         </Button>
                                     )}
-                                </Link> */}
+                                </Link> */ }
                             </div>
                         </div>
                     </div>

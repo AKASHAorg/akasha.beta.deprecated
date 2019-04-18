@@ -10,17 +10,17 @@ export const getFollowersCountSchema = {
   },
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getFollowersCountSchema, { throwError: true });
 
     const address = yield (getService(COMMON_MODULE.profileHelpers))
-    .profileAddress(data);
+      .profileAddress(data);
 
     const count = yield (getService(CORE_MODULE.CONTRACTS)).instance
-    .Feed.totalFollowers(address);
+      .Feed.totalFollowers(address);
 
     return { count: count.toString(10), akashaId: data.akashaId };
   });

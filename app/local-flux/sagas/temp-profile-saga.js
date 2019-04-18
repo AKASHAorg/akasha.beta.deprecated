@@ -1,5 +1,5 @@
 // @flow
-import { call, put, select, takeLatest, getContext } from 'redux-saga/effects';
+import { call, getContext, put, select, takeLatest } from 'redux-saga/effects';
 import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import { selectTempProfile } from '../selectors/temp-profile-selectors';

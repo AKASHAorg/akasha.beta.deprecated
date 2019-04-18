@@ -17,17 +17,17 @@ const ToggleButton = (props) => {
     //     style.visibility = 'visible';
     // }
     return (
-      <Button
-        type="button"
-        style={style}
-        onClick={(ev) => {
-            ev.stopPropagation();
-            props.toggle(ev);
-        }}
-        shape="circle"
-        ghost
-        icon="plus"
-      />
+        <Button
+            type="button"
+            style={ style }
+            onClick={ (ev) => {
+                ev.stopPropagation();
+                props.toggle(ev);
+            } }
+            shape="circle"
+            ghost
+            icon="plus"
+        />
     );
 };
 ToggleButton.propTypes = {

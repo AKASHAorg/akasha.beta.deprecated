@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
-const searchIndex = require('search-index');
 import { CORE_MODULE } from '@akashaproject/common/constants';
+const searchIndex = require('search-index');
 export const dbs = {
     entry: {
         path: 'beta-entry-index',

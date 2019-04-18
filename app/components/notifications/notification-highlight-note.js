@@ -39,44 +39,44 @@ class NotificationHighlightNote extends Component {
         const { intl, notif } = this.props;
         const hasText = !!this.state.value;
         return (
-          <div className="notif-note">
-            <div className="flex-center-y notif-note__message">
-              <Icon className="notif-note__icon" type="check-circle" />
-              <div className="notif-note__text">
-                { intl.formatMessage(notificationMessages[notif.get('id')]) }
-              </div>
-            </div>
-            <div className="notif-note__input">
-              <Input
-                size="large"
-                placeholder={intl.formatMessage(notificationMessages.highlightSaveSuccessInputPlaceholder)}
-                value={this.state.value}
-                onChange={this.handleChange}
-                onKeyDown={this.handleKeyPress}
-              />
-            </div>
-            {hasText &&
-              <div className="notif-note__buttons">
-                <div className="notif-note__cancel">
-                  <Button
-                    size="small"
-                    onClick={this.handleCancel}
-                  >
-                    {intl.formatMessage(generalMessages.cancel)}
-                  </Button>
+            <div className="notif-note">
+                <div className="flex-center-y notif-note__message">
+                    <Icon className="notif-note__icon" type="check-circle"/>
+                    <div className="notif-note__text">
+                        { intl.formatMessage(notificationMessages[notif.get('id')]) }
+                    </div>
                 </div>
-                <div className="notif-note__save">
-                  <Button
-                    type="primary"
-                    size="small"
-                    onClick={this.handleSave}
-                  >
-                    {intl.formatMessage(generalMessages.save)}
-                  </Button>
+                <div className="notif-note__input">
+                    <Input
+                        size="large"
+                        placeholder={ intl.formatMessage(notificationMessages.highlightSaveSuccessInputPlaceholder) }
+                        value={ this.state.value }
+                        onChange={ this.handleChange }
+                        onKeyDown={ this.handleKeyPress }
+                    />
                 </div>
-              </div>
-            }
-          </div>
+                { hasText &&
+                <div className="notif-note__buttons">
+                    <div className="notif-note__cancel">
+                        <Button
+                            size="small"
+                            onClick={ this.handleCancel }
+                        >
+                            { intl.formatMessage(generalMessages.cancel) }
+                        </Button>
+                    </div>
+                    <div className="notif-note__save">
+                        <Button
+                            type="primary"
+                            size="small"
+                            onClick={ this.handleSave }
+                        >
+                            { intl.formatMessage(generalMessages.save) }
+                        </Button>
+                    </div>
+                </div>
+                }
+            </div>
         );
     }
 }

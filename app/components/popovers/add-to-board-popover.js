@@ -74,20 +74,20 @@ class AddToBoardPopover extends Component {
         switch (content) {
             case DASHBOARDS:
                 return (
-                  <AddToBoard
-                    closePopover={this.closePopover}
-                    onNewDashboard={this.onNewDashboard}
-                    profile={profile}
-                    tag={tag}
-                  />
+                    <AddToBoard
+                        closePopover={ this.closePopover }
+                        onNewDashboard={ this.onNewDashboard }
+                        profile={ profile }
+                        tag={ tag }
+                    />
                 );
             case NEW_DASHBOARD:
                 return (
-                  <NewDashboardForm
-                    ethAddress={profile && profile.ethAddress}
-                    onCancel={this.onAddToDashboard}
-                    tag={tag}
-                  />
+                    <NewDashboardForm
+                        ethAddress={ profile && profile.ethAddress }
+                        onCancel={ this.onAddToDashboard }
+                        tag={ tag }
+                    />
                 );
             default:
                 return null;
@@ -99,18 +99,18 @@ class AddToBoardPopover extends Component {
         const getPopupContainer = () => containerRef || document.body;
 
         return (
-          <Popover
-            arrowPointAtCenter={arrowPointAtCenter}
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={getPopupContainer}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="profile-popover"
-            placement="bottomLeft"
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            {this.props.children}
-          </Popover>
+            <Popover
+                arrowPointAtCenter={ arrowPointAtCenter }
+                content={ this.wasVisible ? this.renderContent() : null }
+                getPopupContainer={ getPopupContainer }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName="profile-popover"
+                placement="bottomLeft"
+                trigger="click"
+                visible={ this.state.popoverVisible }
+            >
+                { this.props.children }
+            </Popover>
         );
     }
 }

@@ -4,14 +4,14 @@ import { Input } from 'antd';
 import styles from './input.scss';
 
 const WrappedInput = ({ getInputRef, label, labelStyle, wrapperStyle, ...props }) => (
-  <div className={`${styles.root} ${label && styles.withLabel}`} style={wrapperStyle}>
-    {label &&
-      <div className={styles.label} style={labelStyle}>
-        {label}
-      </div>
-    }
-    <Input ref={getInputRef || null} {...props} />
-  </div>
+    <div className={ `${ styles.root } ${ label && styles.withLabel }` } style={ wrapperStyle }>
+        { label &&
+        <div className={ styles.label } style={ labelStyle }>
+            { label }
+        </div>
+        }
+        <Input ref={ getInputRef || null } { ...props } />
+    </div>
 );
 
 WrappedInput.propTypes = {

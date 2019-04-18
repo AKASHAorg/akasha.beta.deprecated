@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Slot } from 'react-slot-fill';
 import classNames from 'classnames';
 import { SIDEBAR_SLOTS } from '../slot-names';
+
 /*::
     type Props = {||};
 */
@@ -22,19 +23,19 @@ function SidebarLayout (props /* : Props */) {
         <div className="sidebar-layout sidebar-layout_main">
             <div className="sidebar-layout_sidebar">
                 <div className="sidebar-layout_top">
-                    <Slot name={SIDEBAR_SLOTS.TOP} />
+                    <Slot name={ SIDEBAR_SLOTS.TOP }/>
                 </div>
                 <div className="sidebar-layout_bottom">
-                    <Slot name={SIDEBAR_SLOTS.BOTTOM} />
+                    <Slot name={ SIDEBAR_SLOTS.BOTTOM }/>
                 </div>
             </div>
-            <div className={editProfilePanelClass}>
-                <Slot name={SIDEBAR_SLOTS.PROFILE_EDIT_PANEL} />
+            <div className={ editProfilePanelClass }>
+                <Slot name={ SIDEBAR_SLOTS.PROFILE_EDIT_PANEL }/>
             </div>
-            <div className={sidebarPanelClass}>
-                <Slot name={SIDEBAR_SLOTS.SIDEBAR_PANEL} />
+            <div className={ sidebarPanelClass }>
+                <Slot name={ SIDEBAR_SLOTS.SIDEBAR_PANEL }/>
             </div>
-            <div className={panelOverlayClass} />
+            <div className={ panelOverlayClass }/>
         </div>
     );
 }

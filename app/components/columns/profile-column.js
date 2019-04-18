@@ -9,8 +9,7 @@ import { entryMessages, profileMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
 import { entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { searchProfiles, searchResetResults } from '../../local-flux/actions/search-actions';
-import { dashboardSelectors, profileSelectors,
-    searchSelectors} from '../../local-flux/selectors';
+import { dashboardSelectors, profileSelectors, searchSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
 const DELAY = 60000;
@@ -101,26 +100,26 @@ class ProfileColumn extends Component {
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div className={className}>
-            <ColumnHeader
-              column={column}
-              dataSource={profileResults}
-              iconType="user"
-              onRefresh={this.entryIterator}
-              onSearch={this.props.searchProfiles}
-            />
-            <Waypoint onEnter={this.firstLoad} horizontal />
-            <EntryList
-              contextId={column.get('id')}
-              entries={entriesList}
-              fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-              fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreProfileIterator}
-              large={column.get('large')}
-              moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={placeholderMessage}
-            />
-          </div>
+            <div className={ className }>
+                <ColumnHeader
+                    column={ column }
+                    dataSource={ profileResults }
+                    iconType="user"
+                    onRefresh={ this.entryIterator }
+                    onSearch={ this.props.searchProfiles }
+                />
+                <Waypoint onEnter={ this.firstLoad } horizontal/>
+                <EntryList
+                    contextId={ column.get('id') }
+                    entries={ entriesList }
+                    fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                    fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                    fetchMoreEntries={ this.entryMoreProfileIterator }
+                    large={ column.get('large') }
+                    moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                    placeholderMessage={ placeholderMessage }
+                />
+            </div>
         );
     }
 }

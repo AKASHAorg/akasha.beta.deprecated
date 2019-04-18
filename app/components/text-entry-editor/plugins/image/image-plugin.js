@@ -4,8 +4,8 @@ import ImageBlock from './ImageBlock';
 
 const imagePlugin = otherProps => ({
     type: 'image',
-    buttonComponent: props => <ImageButton {...otherProps} {...props} />,
-    blockComponent: props => <ImageBlock {...otherProps} {...props} />
+    buttonComponent: props => <ImageButton { ...otherProps } { ...props } />,
+    blockComponent: props => <ImageBlock { ...otherProps } { ...props } />
 });
 
 export default imagePlugin;

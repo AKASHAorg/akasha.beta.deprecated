@@ -5,7 +5,7 @@ import { LICENCE_MODULE } from '@akashaproject/common/constants';
 const initialState = new LicenseStateModel();
 
 const licenseState = createReducer(initialState, {
-    [`${LICENCE_MODULE.getLicences}_SUCCESS`]: (state, { data }) => {
+    [`${ LICENCE_MODULE.getLicences }_SUCCESS`]: (state, { data }) => {
         let allIds = state.get('allIds');
         let byId = state.get('byId');
         data.licences.forEach((license) => {

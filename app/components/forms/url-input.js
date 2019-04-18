@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { Input } from 'antd';
 import { Icon } from '../';
 import { formMessages, generalMessages } from '../../locale-data/messages';
@@ -31,7 +31,9 @@ class UrlInput extends Component {
         return false;
     }
 
-    getInputRef = (el) => { this.input = el; };
+    getInputRef = (el) => {
+        this.input = el;
+    };
 
     copyUrl = () => {
         const { onSubmit, showNotification, value } = this.props;
@@ -76,7 +78,7 @@ class UrlInput extends Component {
         const isValid = isInternalLink(value);
         if (isValid) {
             onSubmit();
-            history.push(`/${this.state.value.replace('/#', '')}`);
+            history.push(`/${ this.state.value.replace('/#', '') }`);
         } else {
             this.setState({
                 isInvalid: true
@@ -92,27 +94,27 @@ class UrlInput extends Component {
             intl.formatMessage(generalMessages.go);
 
         return (
-          <div className="flex-center-y url-input">
-            <div className="url-input__link-icon-wrapper">
-              <Icon className="url-input__link-icon" type="linkEntry" />
+            <div className="flex-center-y url-input">
+                <div className="url-input__link-icon-wrapper">
+                    <Icon className="url-input__link-icon" type="linkEntry"/>
+                </div>
+                <Input
+                    className="url-input__input"
+                    onChange={ this.onInputChange }
+                    onKeyDown={ this.onKeyDown }
+                    readOnly={ readOnly }
+                    ref={ this.getInputRef }
+                    value={ readOnly ? this.props.value : value }
+                />
+                <div className="url-input__button" onClick={ this.handleAction }>
+                    { buttonLabel }
+                </div>
+                { isInvalid &&
+                <div className="url-input__error">
+                    { intl.formatMessage(formMessages.navigationError) }
+                </div>
+                }
             </div>
-            <Input
-              className="url-input__input"
-              onChange={this.onInputChange}
-              onKeyDown={this.onKeyDown}
-              readOnly={readOnly}
-              ref={this.getInputRef}
-              value={readOnly ? this.props.value : value}
-            />
-            <div className="url-input__button" onClick={this.handleAction}>
-              {buttonLabel}
-            </div>
-            {isInvalid &&
-              <div className="url-input__error">
-                {intl.formatMessage(formMessages.navigationError)}
-              </div>
-            }
-          </div>
         );
     }
 }

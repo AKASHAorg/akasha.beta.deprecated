@@ -24,10 +24,10 @@ export default {
 
         try {
             channel.send(reqObject);
-            this.dispatch({ type: `${methodName}_REQUEST`, data: { methodName, ...reqObject } });
+            this.dispatch({ type: `${ methodName }_REQUEST`, data: { methodName, ...reqObject } });
         } catch (ex) {
             console.error('exception occured', ex);
-            this.dispatch({ type: `${methodName}_REQUEST_ERROR`, data: { methodName, ...ex } });
+            this.dispatch({ type: `${ methodName }_REQUEST_ERROR`, data: { methodName, ...ex } });
             this.removeRequestId(reqId, methodName);
         }
     },
@@ -58,7 +58,7 @@ export default {
                  */
                 this.logger.info(
                     { payload: action.responseAction.payload },
-                    `[ChReqService] Dispatching [${action.responseAction.type}]`
+                    `[ChReqService] Dispatching [${ action.responseAction.type }]`
                 );
                 this.dispatch(action.responseAction);
                 this.dispatch(action.endAction);
@@ -74,32 +74,32 @@ export default {
         // determine the appropiate action base on requestId and data
         const { args, data, error } = response;
         if (error) {
-            this.logger.error({ args, error }, `[${args.module}/${args.method}]`);
+            this.logger.error({ args, error }, `[${ args.module }/${ args.method }]`);
         }
         const { method } = args;
         if (error) {
             return {
                 responseAction: {
-                    type: `${method}_ERROR`,
+                    type: `${ method }_ERROR`,
                     payload: { error }
                 },
                 endAction: {
-                    type: `${method}_REQUEST_END_ERROR`,
+                    type: `${ method }_REQUEST_END_ERROR`,
                     payload: {
-                        actionType: `${method}`
+                        actionType: `${ method }`
                     }
                 }
             };
         }
         return {
             responseAction: {
-                type: `${method}_SUCCESS`,
+                type: `${ method }_SUCCESS`,
                 payload: { ...data }
             },
             endAction: {
-                type: `${method}_REQUEST_END_SUCCESS`,
+                type: `${ method }_REQUEST_END_SUCCESS`,
                 payload: {
-                    actionType: `${method}`
+                    actionType: `${ method }`
                 }
             }
         };

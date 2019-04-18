@@ -34,6 +34,7 @@ export default class ErrorStateModel /* :: <ErrorState> */ extends ErrorState {
         const id = lastErr ? lastErr.get('id') + 1 : 1;
         return err.set('id', id);
     }
+
     addNewError (state /* : ErrorStateModel */, action /* : ActionParams */) {
         const payload = action.payload;
         const err = this.createError(state, payload);
@@ -45,9 +46,11 @@ export default class ErrorStateModel /* :: <ErrorState> */ extends ErrorState {
             ...extra
         });
     }
+
     getFatal () {
         return this.errors.filter(err => err.get('fatal'));
     }
+
     getByCode (code) {
         return this.errors.filter(err => err.get('code') === code);
     }

@@ -1,16 +1,26 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import * as actionTypes from '../../constants/action-types';
-import { Icon, ListPopover, ShareLinkModal, VotesModal, VotePopover } from '../';
+import { Icon, ListPopover, ShareLinkModal, VotePopover, VotesModal } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { listAdd, listDelete, listSearch, listToggleEntry } from '../../local-flux/actions/list-actions';
-import { actionSelectors, entrySelectors, externalProcessSelectors, listSelectors,
-  profileSelectors } from '../../local-flux/selectors';
+import {
+    listAdd,
+    listDelete,
+    listSearch,
+    listToggleEntry
+} from '../../local-flux/actions/list-actions';
+import {
+    actionSelectors,
+    entrySelectors,
+    externalProcessSelectors,
+    listSelectors,
+    profileSelectors
+} from '../../local-flux/selectors';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { balanceToNumber } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
@@ -74,28 +84,30 @@ class EntryPageAction extends Component {
 
     renderShareIcon = () => {
         const { entry } = this.props;
-        const url = addPrefix(`/${entry.author.ethAddress || '0x0'}/${entry.entryId}`);
+        const url = addPrefix(`/${ entry.author.ethAddress || '0x0' }/${ entry.entryId }`);
 
         return (
-          <ShareLinkModal url={url} />
+            <ShareLinkModal url={ url }/>
         );
     }
 
     renderVotesModal = () => {
         const { blockNr, entry } = this.props;
         return (
-          <VotesModal
-            closeVotesPanel={this.closeVotesPanel}
-            content={entry}
-            contentTitle={entry.content.title}
-            blockNr={blockNr}
-          />
+            <VotesModal
+                closeVotesPanel={ this.closeVotesPanel }
+                content={ entry }
+                contentTitle={ entry.content.title }
+                blockNr={ blockNr }
+            />
         );
     };
 
     renderOwnEntryActions = () => { // eslint-disable-line complexity
-        const { canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
-            lists, listsAll, listSearchKeyword } = this.props;
+        const {
+            canClaim, claimPending, containerRef, entry, entryBalance, intl, isFullEntry,
+            lists, listsAll, listSearchKeyword
+        } = this.props;
         const balance = entryBalance && balanceToNumber(entryBalance.get('totalKarma'));
         const isClaimed = entryBalance && entryBalance.get('claimed');
         const endPeriod = new Date(entry.get('endPeriod') * 1000);
@@ -112,89 +124,90 @@ class EntryPageAction extends Component {
             'entry-actions__collect-button_disabled': claimDisabled || claimPending
         });
         return (
-          <div className="flex-center-y entry-actions entry-actions_own-entry">
-            <div className={infoClass}>
-              <div className={infoTextClass}>
-                <span className="content-link" onClick={this.openVotesPanel}>
-                  {entry.score} {intl.formatMessage(entryMessages.score)}
+            <div className="flex-center-y entry-actions entry-actions_own-entry">
+                <div className={ infoClass }>
+                    <div className={ infoTextClass }>
+                <span className="content-link" onClick={ this.openVotesPanel }>
+                  { entry.score } { intl.formatMessage(entryMessages.score) }
                 </span>
-                <span className="entry-actions__separator">|</span>
-                {balance} {intl.formatMessage(generalMessages.essence)}
-              </div>
-              <div>
-                {isClaimed &&
-                  <span className="entry-actions__collected">
-                    {intl.formatMessage(entryMessages.collected)}
+                        <span className="entry-actions__separator">|</span>
+                        { balance } { intl.formatMessage(generalMessages.essence) }
+                    </div>
+                    <div>
+                        { isClaimed &&
+                        <span className="entry-actions__collected">
+                    { intl.formatMessage(entryMessages.collected) }
                   </span>
-                }
-                {!this.isActive() && !isClaimed &&
-                  <div className="flex-center-y">
-                    {claimPending && <Spin size="small" style={{ marginRight: '5px' }} />}
-                    <span
-                      className={collectClass}
-                      onClick={!claimDisabled && !claimPending ? this.handleClaim : undefined}
-                    >
-                      {intl.formatMessage(entryMessages.collectEssence)}
-                    </span>
-                    {claimDisabled &&
-                      <Tooltip
-                        getPopupContainer={() => containerRef || document.body}
-                        title={balance ?
-                            intl.formatMessage(entryMessages.cannotClaimEntry) :
-                            intl.formatMessage(entryMessages.nothingToCollect)
                         }
-                      >
-                        <Icon
-                          className="question-circle-icon entry-actions__info-icon"
-                          type="questionCircle"
-                        />
-                      </Tooltip>
-                    }
-                  </div>
-                }
-                {this.isActive() &&
-                  <span className="entry-actions__collect-in">
-                    {intl.formatMessage(entryMessages.collectEssence)}
-                    {' '}
-                    {intl.formatRelative(endPeriod)}
-                  </span>
-                }
-              </div>
-            </div>
-            <div className="flex-center-y entry-actions__actions">
-              {!isFullEntry &&
-                <div className="content-link entry-actions__comments">
-                  <Link
-                    className="flex-center-y unstyled-link"
-                    to={{
-                        pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
-                        state: { overlay: true }
-                    }}
-                  >
-                    <span className="entry-actions__comments-counter">
-                      {entry.get('commentsCount')}
+                        { !this.isActive() && !isClaimed &&
+                        <div className="flex-center-y">
+                            { claimPending &&
+                            <Spin size="small" style={ { marginRight: '5px' } }/> }
+                            <span
+                                className={ collectClass }
+                                onClick={ !claimDisabled && !claimPending ? this.handleClaim : undefined }
+                            >
+                      { intl.formatMessage(entryMessages.collectEssence) }
                     </span>
-                    <Icon className="entry-actions__comment-icon" type="commentLarge" />
-                  </Link>
+                            { claimDisabled &&
+                            <Tooltip
+                                getPopupContainer={ () => containerRef || document.body }
+                                title={ balance ?
+                                    intl.formatMessage(entryMessages.cannotClaimEntry) :
+                                    intl.formatMessage(entryMessages.nothingToCollect)
+                                }
+                            >
+                                <Icon
+                                    className="question-circle-icon entry-actions__info-icon"
+                                    type="questionCircle"
+                                />
+                            </Tooltip>
+                            }
+                        </div>
+                        }
+                        { this.isActive() &&
+                        <span className="entry-actions__collect-in">
+                    { intl.formatMessage(entryMessages.collectEssence) }
+                            { ' ' }
+                            { intl.formatRelative(endPeriod) }
+                  </span>
+                        }
+                    </div>
                 </div>
-              }
-              <ListPopover
-                authorEthAddress={entry.author.ethAddress}
-                containerRef={containerRef}
-                entryId={entry.entryId}
-                entryType={entry.getIn(['content', 'entryType'])}
-                listAdd={this.props.listAdd}
-                listDelete={this.props.listDelete}
-                lists={lists}
-                listsAll={listsAll}
-                listSearch={this.props.listSearch}
-                listToggleEntry={this.props.listToggleEntry}
-                search={listSearchKeyword}
-              />
-              {this.renderShareIcon()}
+                <div className="flex-center-y entry-actions__actions">
+                    { !isFullEntry &&
+                    <div className="content-link entry-actions__comments">
+                        <Link
+                            className="flex-center-y unstyled-link"
+                            to={ {
+                                pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entry.get('entryId') }`,
+                                state: { overlay: true }
+                            } }
+                        >
+                    <span className="entry-actions__comments-counter">
+                      { entry.get('commentsCount') }
+                    </span>
+                            <Icon className="entry-actions__comment-icon" type="commentLarge"/>
+                        </Link>
+                    </div>
+                    }
+                    <ListPopover
+                        authorEthAddress={ entry.author.ethAddress }
+                        containerRef={ containerRef }
+                        entryId={ entry.entryId }
+                        entryType={ entry.getIn(['content', 'entryType']) }
+                        listAdd={ this.props.listAdd }
+                        listDelete={ this.props.listDelete }
+                        lists={ lists }
+                        listsAll={ listsAll }
+                        listSearch={ this.props.listSearch }
+                        listToggleEntry={ this.props.listToggleEntry }
+                        search={ listSearchKeyword }
+                    />
+                    { this.renderShareIcon() }
+                </div>
+                { this.state.showVotes && this.renderVotesModal() }
             </div>
-            {this.state.showVotes && this.renderVotesModal()}
-          </div>
         );
     };
 
@@ -216,53 +229,57 @@ class EntryPageAction extends Component {
             'entry-actions__collect-button_disabled': claimDisabled || claimVotePending
         });
         return (
-          <div className={infoClass}>
-            <div className={infoTextClass}>
-              {balance} {intl.formatMessage(generalMessages.essence)}
-            </div>
-            <div>
-              {isVoteClaimed &&
-                <span className="entry-actions__collected">
-                  {intl.formatMessage(entryMessages.collected)}
-                </span>
-              }
-              {!this.isActive() && !isVoteClaimed &&
-                <div>
-                  {claimVotePending && <Spin size="small" style={{ marginRight: '5px' }} />}
-                  <span
-                    className={collectClass}
-                    onClick={!claimDisabled && !claimVotePending ? this.handleClaimVote : undefined}
-                  >
-                    {intl.formatMessage(entryMessages.collectEssence)}
-                  </span>
-                  {claimDisabled &&
-                    <Tooltip
-                      getPopupContainer={() => containerRef || document.body}
-                      title={balance ?
-                          intl.formatMessage(entryMessages.cannotClaimVote) :
-                          intl.formatMessage(entryMessages.nothingToCollect)
-                      }
-                    >
-                      <Icon className="question-circle-icon entry-actions__info-icon" type="questionCircle" />
-                    </Tooltip>
-                  }
+            <div className={ infoClass }>
+                <div className={ infoTextClass }>
+                    { balance } { intl.formatMessage(generalMessages.essence) }
                 </div>
-              }
-              {this.isActive() &&
-                <span className="entry-actions__collect-in">
-                  {intl.formatMessage(entryMessages.collectEssence)}
-                  {' '}
-                  {intl.formatRelative(endPeriod)}
+                <div>
+                    { isVoteClaimed &&
+                    <span className="entry-actions__collected">
+                  { intl.formatMessage(entryMessages.collected) }
                 </span>
-              }
+                    }
+                    { !this.isActive() && !isVoteClaimed &&
+                    <div>
+                        { claimVotePending &&
+                        <Spin size="small" style={ { marginRight: '5px' } }/> }
+                        <span
+                            className={ collectClass }
+                            onClick={ !claimDisabled && !claimVotePending ? this.handleClaimVote : undefined }
+                        >
+                    { intl.formatMessage(entryMessages.collectEssence) }
+                  </span>
+                        { claimDisabled &&
+                        <Tooltip
+                            getPopupContainer={ () => containerRef || document.body }
+                            title={ balance ?
+                                intl.formatMessage(entryMessages.cannotClaimVote) :
+                                intl.formatMessage(entryMessages.nothingToCollect)
+                            }
+                        >
+                            <Icon className="question-circle-icon entry-actions__info-icon"
+                                  type="questionCircle"/>
+                        </Tooltip>
+                        }
+                    </div>
+                    }
+                    { this.isActive() &&
+                    <span className="entry-actions__collect-in">
+                  { intl.formatMessage(entryMessages.collectEssence) }
+                        { ' ' }
+                        { intl.formatRelative(endPeriod) }
+                </span>
+                    }
+                </div>
             </div>
-          </div>
         );
     };
 
     render () { // eslint-disable-line complexity
-        const { containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
-            listsAll, listSearchKeyword, votePending, vote } = this.props;
+        const {
+            containerRef, entry, intl, isFullEntry, isOwnEntry, lists,
+            listsAll, listSearchKeyword, votePending, vote
+        } = this.props;
         if (isOwnEntry) {
             return this.renderOwnEntryActions();
         }
@@ -286,91 +303,95 @@ class EntryPageAction extends Component {
         });
 
         return (
-          <div className="entry-actions">
-            <div className="flex-center-y">
-              <div>
+            <div className="entry-actions">
                 <div className="flex-center-y">
-                  <div className="flex-center entry-actions__vote-wrapper">
-                    <VotePopover
-                      onSubmit={this.handleVote}
-                      type={actionTypes.entryUpvote}
-                      {...voteProps}
-                    />
-                  </div>
-                  <div className="flex-center entry-actions__score">
-                    <span className="content-link" onClick={this.openVotesPanel}>
-                      {entry.score}
+                    <div>
+                        <div className="flex-center-y">
+                            <div className="flex-center entry-actions__vote-wrapper">
+                                <VotePopover
+                                    onSubmit={ this.handleVote }
+                                    type={ actionTypes.entryUpvote }
+                                    { ...voteProps }
+                                />
+                            </div>
+                            <div className="flex-center entry-actions__score">
+                    <span className="content-link" onClick={ this.openVotesPanel }>
+                      { entry.score }
                     </span>
-                  </div>
-                  <div className="flex-center entry-actions__vote-wrapper">
-                    <VotePopover
-                      onSubmit={this.handleVote}
-                      type={actionTypes.entryDownvote}
-                      {...voteProps}
-                    />
-                  </div>
-                </div>
-                {isFullEntry &&
-                <Tooltip placement="left" title={votePercentTooltip}>
-                  <div className={
-                    `flex-center-y
+                            </div>
+                            <div className="flex-center entry-actions__vote-wrapper">
+                                <VotePopover
+                                    onSubmit={ this.handleVote }
+                                    type={ actionTypes.entryDownvote }
+                                    { ...voteProps }
+                                />
+                            </div>
+                        </div>
+                        { isFullEntry &&
+                        <Tooltip placement="left" title={ votePercentTooltip }>
+                            <div className={
+                                `flex-center-y
                     entry-actions__vote-bar
-                    entry-actions__vote-bar${(upvotePercent || downvotePercent) ? '' : '_disabled'}`}
-                  >
-                    <div className="entry-actions__upvote-bar" style={{ width: `${upvotePercent}%` }} />
-                    <div className="entry-actions__downvote-bar" style={{ width: `${downvotePercent}%` }} />
-                  </div>
-                </Tooltip>
-                }
-              </div>
-              <div className="entry-actions__right-actions">
-                {!isFullEntry &&
-                  <div className="content-link entry-actions__comments">
-                    <Link
-                      className="unstyled-link"
-                      to={{
-                          pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.get('entryId')}`,
-                          state: { overlay: true }
-                      }}
-                    >
-                      <div className="content-link flex-center-y">
-                        <span className="entry-actions__comments-counter">
-                          {entry.get('commentsCount')}
-                        </span>
-                        <Icon className="entry-actions__comment-icon" type="commentLarge" />
-                      </div>
-                    </Link>
+                    entry-actions__vote-bar${ (upvotePercent || downvotePercent) ? '' : '_disabled' }` }
+                            >
+                                <div className="entry-actions__upvote-bar"
+                                     style={ { width: `${ upvotePercent }%` } }/>
+                                <div className="entry-actions__downvote-bar"
+                                     style={ { width: `${ downvotePercent }%` } }/>
+                            </div>
+                        </Tooltip>
+                        }
                     </div>
-                  }
-                <ListPopover
-                  authorEthAddress={entry.author.ethAddress}
-                  containerRef={containerRef}
-                  entryId={entry.entryId}
-                  entryType={entry.content.entryType}
-                  listAdd={this.props.listAdd}
-                  listDelete={this.props.listDelete}
-                  lists={lists}
-                  listsAll={listsAll}
-                  listSearch={this.props.listSearch}
-                  listToggleEntry={this.props.listToggleEntry}
-                  search={listSearchKeyword}
-                />
-                {this.renderShareIcon()}
-              </div>
-            </div>
-            {vote && vote.get('vote') !== '0' && this.renderCollectEntryVote()}
-            {vote && vote.get('vote') === '0' && !this.isActive() &&
-              <div className="entry-actions__info">
+                    <div className="entry-actions__right-actions">
+                        { !isFullEntry &&
+                        <div className="content-link entry-actions__comments">
+                            <Link
+                                className="unstyled-link"
+                                to={ {
+                                    pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entry.get('entryId') }`,
+                                    state: { overlay: true }
+                                } }
+                            >
+                                <div className="content-link flex-center-y">
+                        <span className="entry-actions__comments-counter">
+                          { entry.get('commentsCount') }
+                        </span>
+                                    <Icon className="entry-actions__comment-icon"
+                                          type="commentLarge"/>
+                                </div>
+                            </Link>
+                        </div>
+                        }
+                        <ListPopover
+                            authorEthAddress={ entry.author.ethAddress }
+                            containerRef={ containerRef }
+                            entryId={ entry.entryId }
+                            entryType={ entry.content.entryType }
+                            listAdd={ this.props.listAdd }
+                            listDelete={ this.props.listDelete }
+                            lists={ lists }
+                            listsAll={ listsAll }
+                            listSearch={ this.props.listSearch }
+                            listToggleEntry={ this.props.listToggleEntry }
+                            search={ listSearchKeyword }
+                        />
+                        { this.renderShareIcon() }
+                    </div>
+                </div>
+                { vote && vote.get('vote') !== '0' && this.renderCollectEntryVote() }
+                { vote && vote.get('vote') === '0' && !this.isActive() &&
+                <div className="entry-actions__info">
                 <span className="entry-actions__info-text">
-                  {intl.formatMessage(entryMessages.votingPeriod)}
-                  <Tooltip title={intl.formatMessage(entryMessages.votingPeriodDisclaimer)}>
-                    <Icon className="question-circle-icon entry-actions__info-icon" type="questionCircle" />
+                  { intl.formatMessage(entryMessages.votingPeriod) }
+                    <Tooltip title={ intl.formatMessage(entryMessages.votingPeriodDisclaimer) }>
+                    <Icon className="question-circle-icon entry-actions__info-icon"
+                          type="questionCircle"/>
                   </Tooltip>
                 </span>
-              </div>
-            }
-            {this.state.showVotes && this.renderVotesModal()}
-          </div>
+                </div>
+                }
+                { this.state.showVotes && this.renderVotesModal() }
+            </div>
         );
     }
 }

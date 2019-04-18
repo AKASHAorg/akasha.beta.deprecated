@@ -15,19 +15,19 @@ class LogsList extends Component {
     }
 
     renderListItem = (log, key) => (
-      <li key={`${key}-${log.get('timestamp')}`} className="logs-list__list-item" >
-        <div className="logs-list__list-item-header">
+        <li key={ `${ key }-${ log.get('timestamp') }` } className="logs-list__list-item">
+            <div className="logs-list__list-item-header">
           <span className="logs-list__log-level">
-            {log.get('level')}
+            { log.get('level') }
           </span>
-          <span className="logs-list__timestamp">
-            {hoursMinutesSeconds(new Date(log.get('timestamp')))}
+                <span className="logs-list__timestamp">
+            { hoursMinutesSeconds(new Date(log.get('timestamp'))) }
           </span>
-        </div>
-        <p className="logs-list__message">
-          {log.get('message')}
-        </p>
-      </li>
+            </div>
+            <p className="logs-list__message">
+                { log.get('message') }
+            </p>
+        </li>
     );
 
     render () {
@@ -38,9 +38,9 @@ class LogsList extends Component {
             'logs-list_modal': modal
         });
         return (
-          <ul className={className}>
-            {listItems}
-          </ul>
+            <ul className={ className }>
+                { listItems }
+            </ul>
         );
     }
 }

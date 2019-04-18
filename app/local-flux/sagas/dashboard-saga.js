@@ -4,7 +4,7 @@ import * as actions from '../actions/dashboard-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as types from '../constants';
 import * as columnTypes from '../../constants/columns';
-import { profileSelectors, dashboardSelectors } from '../selectors';
+import { dashboardSelectors, profileSelectors } from '../selectors';
 import getHistory from '../../get-history';
 
 /*::
@@ -36,7 +36,7 @@ function* dashboardAdd ({ name, columns = [] }) /* : Saga<void> */ {
 
 function* navigateToActiveDashboard () /* : Saga<void> */ {
     const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-    yield call(getHistory().push, `/dashboard/${dashboardId}`);
+    yield call(getHistory().push, `/dashboard/${ dashboardId }`);
 }
 
 function* dashboardAddColumn ({ columnType, value }) /* : Saga<void> */ {
@@ -52,7 +52,10 @@ function* dashboardAddColumn ({ columnType, value }) /* : Saga<void> */ {
 }
 
 function* dashboardAddFirst ({ name, interests }) /* : Saga<void> */ {
-    const columns = interests ? interests.tag.map(tag => ({ type: columnTypes.tag, value: tag })) : [];
+    const columns = interests ? interests.tag.map(tag => ({
+        type: columnTypes.tag,
+        value: tag
+    })) : [];
     columns.unshift({ type: columnTypes.latest });
     yield call(dashboardAdd, { name, columns });
     yield put(actions.dashboardAddFirstSuccess());
@@ -168,7 +171,11 @@ function* dashboardToggleTagColumn ({ dashboardId, tag }) /* : Saga<void> */ {
 function* dashboardUpdateColumn ({ id, changes }) /* : Saga<void> */ {
     try {
         const dashboardId = yield select(dashboardSelectors.selectActiveDashboardId);
-        yield apply(dashboardService, dashboardService.updateColumn, [{ dashboardId, id, changes }]);
+        yield apply(dashboardService, dashboardService.updateColumn, [{
+            dashboardId,
+            id,
+            changes
+        }]);
         const data = { id, changes };
         yield put(actions.dashboardUpdateColumnSuccess(data));
     } catch (error) {

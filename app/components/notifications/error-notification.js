@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { notification } from 'antd';
 import { errorMessages } from '../../locale-data/messages';
-import { errorDisplay, errorDeleteNonFatal } from '../../local-flux/actions/error-actions';
+import { errorDeleteNonFatal, errorDisplay } from '../../local-flux/actions/error-actions';
 
 class ErrorNotification extends Component {
     componentWillReceiveProps (nextProps) {
@@ -32,6 +32,7 @@ class ErrorNotification extends Component {
             }
         }
     }
+
     render () {
         return null;
     }

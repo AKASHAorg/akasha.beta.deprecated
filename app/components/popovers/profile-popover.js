@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Button, Popover, Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -13,8 +13,15 @@ import { dashboardMessages, generalMessages, profileMessages } from '../../local
 import { getDisplayName } from '../../utils/dataModule';
 import { formatBalance } from '../../utils/number-formatter';
 import { addPrefix } from '../../utils/url-utils';
-import { AddToBoard, Avatar, FollowButton, Icon, NewDashboardForm, SendTipForm,
-    ShareLinkModal } from '../';
+import {
+    AddToBoard,
+    Avatar,
+    FollowButton,
+    Icon,
+    NewDashboardForm,
+    SendTipForm,
+    ShareLinkModal
+} from '../';
 
 const DEFAULT = 'DEFAULT';
 const DASHBOARDS = 'DASHBOARDS';
@@ -111,17 +118,19 @@ class ProfilePopover extends Component {
     };
 
     renderProfileInfo = () => {
-        const { ethAddress, followPending, intl, isFollower, loggedEthAddress, profile,
-            tipPending } = this.props;
+        const {
+            ethAddress, followPending, intl, isFollower, loggedEthAddress, profile,
+            tipPending
+        } = this.props;
         const akashaId = profile.get('akashaId');
         const firstName = profile.get('firstName');
         const lastName = profile.get('lastName');
-        const name = firstName || lastName ? `${firstName} ${lastName}` : null;
+        const name = firstName || lastName ? `${ firstName } ${ lastName }` : null;
         const isOwnProfile = ethAddress === loggedEthAddress;
         const tipTooltip = tipPending ?
             intl.formatMessage(profileMessages.sendingTip) :
             intl.formatMessage(profileMessages.sendTip);
-        const url = addPrefix(`/${ethAddress}`);
+        const url = addPrefix(`/${ ethAddress }`);
         const textClassName = classNames('profile-popover__header-text-wrapper', {
             'profile-popover__header-text-wrapper_own-profile': isOwnProfile
         });
@@ -131,120 +140,123 @@ class ProfilePopover extends Component {
         });
 
         return (
-          <div className="profile-popover__content">
-            <div className="profile-popover__header">
-              <div className="profile-popover__avatar-wrapper" onClick={() => this.onVisibleChange(false)}>
-                <Avatar
-                  akashaId={profile.get('akashaId')}
-                  ethAddress={ethAddress}
-                  firstName={profile.get('firstName')}
-                  image={profile.get('avatar')}
-                  lastName={profile.get('lastName')}
-                  link
-                  size="small"
-                />
-              </div>
-              <div className={textClassName}>
-                <div className="overflow-ellipsis profile-popover__name-wrapper">
-                  <Link
-                    className="unstyled-link"
-                    onClick={() => this.onVisibleChange(false)}
-                    to={`/${ethAddress}`}
-                  >
+            <div className="profile-popover__content">
+                <div className="profile-popover__header">
+                    <div className="profile-popover__avatar-wrapper"
+                         onClick={ () => this.onVisibleChange(false) }>
+                        <Avatar
+                            akashaId={ profile.get('akashaId') }
+                            ethAddress={ ethAddress }
+                            firstName={ profile.get('firstName') }
+                            image={ profile.get('avatar') }
+                            lastName={ profile.get('lastName') }
+                            link
+                            size="small"
+                        />
+                    </div>
+                    <div className={ textClassName }>
+                        <div className="overflow-ellipsis profile-popover__name-wrapper">
+                            <Link
+                                className="unstyled-link"
+                                onClick={ () => this.onVisibleChange(false) }
+                                to={ `/${ ethAddress }` }
+                            >
                     <span className="content-link">
-                      {name || getDisplayName({ akashaId, ethAddress })}
+                      { name || getDisplayName({ akashaId, ethAddress }) }
                     </span>
-                  </Link>
+                            </Link>
+                        </div>
+                        { name &&
+                        <div className="overflow-ellipsis profile-popover__akasha-id">
+                            @{ akashaId }
+                        </div>
+                        }
+                    </div>
+                    <div className="flex-center-y">
+                        { !isOwnProfile &&
+                        <div className="flex-center profile-popover__tip-icon-wrapper">
+                            <Tooltip title={ tipTooltip }>
+                                <Icon
+                                    className={ tipIconClass }
+                                    onClick={ tipPending ? undefined : this.onSendTip }
+                                    type="wallet"
+                                />
+                            </Tooltip>
+                        </div>
+                        }
+                        <ShareLinkModal url={ url }/>
+                    </div>
                 </div>
-                {name &&
-                  <div className="overflow-ellipsis profile-popover__akasha-id">
-                    @{akashaId}
-                  </div>
-                }
-              </div>
-              <div className="flex-center-y">
-                {!isOwnProfile &&
-                  <div className="flex-center profile-popover__tip-icon-wrapper">
-                    <Tooltip title={tipTooltip}>
-                      <Icon
-                        className={tipIconClass}
-                        onClick={tipPending ? undefined : this.onSendTip}
-                        type="wallet"
-                      />
-                    </Tooltip>
-                  </div>
-                }
-                <ShareLinkModal url={url} />
-              </div>
+                <div className="profile-popover__details">
+                    <div className="flex-center-y">
+                        <Tooltip title={ intl.formatMessage(generalMessages.entries) }>
+                            <Icon className="profile-popover__icon" type="entry"/>
+                        </Tooltip>
+                        <div className="profile-popover__counter-text">
+                            { profile.get('entriesCount') }
+                        </div>
+                        <Tooltip title={ intl.formatMessage(generalMessages.comments) }>
+                            <Icon className="profile-popover__icon" type="comment"/>
+                        </Tooltip>
+                        <div className="profile-popover__counter-text">
+                            { profile.get('commentsCount') }
+                        </div>
+                        <Tooltip title={ intl.formatMessage(generalMessages.karma) }>
+                            <Icon className="profile-popover__icon profile-popover__karma-icon"
+                                  type="karma"/>
+                        </Tooltip>
+                        <div className="profile-popover__counter-text">
+                            { formatBalance(profile.get('karma')) }
+                        </div>
+                    </div>
+                    { profile.get('about') &&
+                    <div className="profile-popover__about">
+                        <span
+                            className="profile-popover__about-inner">{ profile.get('about') }</span>
+                    </div>
+                    }
+                </div>
+                <div className="profile-popover__counters-wrapper">
+                    <div style={ { marginRight: '12px' } }>
+                        <div>{ intl.formatMessage(profileMessages.followers) }</div>
+                        <div className="profile-popover__counter">
+                            { profile.get('followersCount') }
+                        </div>
+                    </div>
+                    <div>
+                        <div>{ intl.formatMessage(profileMessages.followings) }</div>
+                        <div className="profile-popover__counter">
+                            { profile.get('followingCount') }
+                        </div>
+                    </div>
+                </div>
+                <div className="profile-popover__actions">
+                    { !isOwnProfile &&
+                    <FollowButton
+                        followPending={ followPending }
+                        isFollower={ isFollower }
+                        onFollow={ this.onFollow }
+                    />
+                    }
+                    { !isOwnProfile &&
+                    <Button
+                        className="profile-popover__button"
+                        onClick={ this.onAddToDashboard }
+                    >
+                        { intl.formatMessage(dashboardMessages.addToBoard) }
+                    </Button>
+                    }
+                    { isOwnProfile &&
+                    <Button
+                        className="profile-popover__button"
+                        onClick={ this.onEditProfile }
+                        type="primary"
+                    >
+                        { intl.formatMessage(generalMessages.editProfile) }
+                    </Button>
+                    }
+                </div>
             </div>
-            <div className="profile-popover__details">
-              <div className="flex-center-y">
-                <Tooltip title={intl.formatMessage(generalMessages.entries)}>
-                  <Icon className="profile-popover__icon" type="entry" />
-                </Tooltip>
-                <div className="profile-popover__counter-text">
-                  {profile.get('entriesCount')}
-                </div>
-                <Tooltip title={intl.formatMessage(generalMessages.comments)}>
-                  <Icon className="profile-popover__icon" type="comment" />
-                </Tooltip>
-                <div className="profile-popover__counter-text">
-                  {profile.get('commentsCount')}
-                </div>
-                <Tooltip title={intl.formatMessage(generalMessages.karma)}>
-                  <Icon className="profile-popover__icon profile-popover__karma-icon" type="karma" />
-                </Tooltip>
-                <div className="profile-popover__counter-text">
-                  {formatBalance(profile.get('karma'))}
-                </div>
-              </div>
-              {profile.get('about') &&
-                <div className="profile-popover__about">
-                  <span className="profile-popover__about-inner">{profile.get('about')}</span>
-                </div>
-              }
-            </div>
-            <div className="profile-popover__counters-wrapper">
-              <div style={{ marginRight: '12px' }}>
-                <div>{intl.formatMessage(profileMessages.followers)}</div>
-                <div className="profile-popover__counter">
-                  {profile.get('followersCount')}
-                </div>
-              </div>
-              <div>
-                <div>{intl.formatMessage(profileMessages.followings)}</div>
-                <div className="profile-popover__counter">
-                  {profile.get('followingCount')}
-                </div>
-              </div>
-            </div>
-            <div className="profile-popover__actions">
-              {!isOwnProfile &&
-                <FollowButton
-                  followPending={followPending}
-                  isFollower={isFollower}
-                  onFollow={this.onFollow}
-                />
-              }
-              {!isOwnProfile &&
-                <Button
-                  className="profile-popover__button"
-                  onClick={this.onAddToDashboard}
-                >
-                  {intl.formatMessage(dashboardMessages.addToBoard)}
-                </Button>
-              }
-              {isOwnProfile &&
-                <Button
-                  className="profile-popover__button"
-                  onClick={this.onEditProfile}
-                  type="primary"
-                >
-                  {intl.formatMessage(generalMessages.editProfile)}
-                </Button>
-              }
-            </div>
-          </div>
         );
     };
 
@@ -260,26 +272,26 @@ class ProfilePopover extends Component {
                 return this.renderProfileInfo();
             case SEND_TIP:
                 return (
-                  <SendTipForm
-                    className="profile-popover__send-tip-form"
-                    profile={profile}
-                    onCancel={this.onDefaultContent}
-                  />
+                    <SendTipForm
+                        className="profile-popover__send-tip-form"
+                        profile={ profile }
+                        onCancel={ this.onDefaultContent }
+                    />
                 );
             case DASHBOARDS:
                 return (
-                  <AddToBoard
-                    closePopover={this.closePopover}
-                    onNewDashboard={this.onNewDashboard}
-                    profile={profile}
-                  />
+                    <AddToBoard
+                        closePopover={ this.closePopover }
+                        onNewDashboard={ this.onNewDashboard }
+                        profile={ profile }
+                    />
                 );
             case NEW_DASHBOARD:
                 return (
-                  <NewDashboardForm
-                    onCancel={this.onAddToDashboard}
-                    ethAddress={ethAddress}
-                  />
+                    <NewDashboardForm
+                        onCancel={ this.onAddToDashboard }
+                        ethAddress={ ethAddress }
+                    />
                 );
             default:
                 return null;
@@ -291,18 +303,18 @@ class ProfilePopover extends Component {
         const getPopupContainer = () => containerRef || document.body;
 
         return (
-          <Popover
-            arrowPointAtCenter
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={getPopupContainer}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName="profile-popover"
-            placement={placement}
-            trigger="click"
-            visible={this.state.popoverVisible}
-          >
-            {this.props.children}
-          </Popover>
+            <Popover
+                arrowPointAtCenter
+                content={ this.wasVisible ? this.renderContent() : null }
+                getPopupContainer={ getPopupContainer }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName="profile-popover"
+                placement={ placement }
+                trigger="click"
+                visible={ this.state.popoverVisible }
+            >
+                { this.props.children }
+            </Popover>
         );
     }
 }

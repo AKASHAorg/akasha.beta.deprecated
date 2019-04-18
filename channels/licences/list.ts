@@ -5,7 +5,8 @@ export const licences = [
     label: 'All rights reserved',
     description: [
       {
-        icon: 'copyright-1', text: 'Others cannot copy, distribute, or perform your work without your' +
+        icon: 'copyright-1',
+        text: 'Others cannot copy, distribute, or perform your work without your' +
           ' permission (or as permitted by fair use).',
       },
     ],
@@ -132,12 +133,15 @@ export const licences = [
     parent: '3',
     label: 'Public Domain',
     description: [
-      { icon: 'CCPD', text: 'This work is already in the public domain and free of copyright restrictions.' },
+      {
+        icon: 'CCPD',
+        text: 'This work is already in the public domain and free of copyright restrictions.',
+      },
     ],
   },
 ];
 
-export function getLicence(id) {
+export function getLicence (id) {
   return licences.find((element) => {
     return element.id === id + '';
   });

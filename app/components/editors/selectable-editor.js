@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { DraftJS, editorStateFromRaw, MegadraftEditor, createTypeStrategy } from 'megadraft';
+import { createTypeStrategy, DraftJS, editorStateFromRaw, MegadraftEditor } from 'megadraft';
 import { Popover } from 'antd';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
@@ -50,7 +50,7 @@ class SelectableEditor extends Component {
             return 'paragraph';
         }
         if (type === 'atomic' && data.type === 'image') {
-            return `image-block__${data.media}`;
+            return `image-block__${ data.media }`;
         }
         return '';
     }
@@ -193,7 +193,7 @@ class SelectableEditor extends Component {
                 const imgId = blockData.get('imgId');
                 const bestImage = getBestAvailableImage(files);
                 return {
-                    src: `${baseUrl}/${bestImage.src}`,
+                    src: `${ baseUrl }/${ bestImage.src }`,
                     height: bestImage.height,
                     width: bestImage.width,
                     imgId,
@@ -222,35 +222,37 @@ class SelectableEditor extends Component {
         }
         const { top, left } = this.getPopoverPosition();
         const content = (
-          <div>
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={this.saveHighlight}
-            >
-              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="highlight" />
-              <span>{intl.formatMessage(entryMessages.saveHighlight)}</span>
+            <div>
+                <div
+                    className="flex-center-y popover-menu__item"
+                    onClick={ this.saveHighlight }
+                >
+                    <Icon className="popover-menu__icon selectable-editor__popover-icon"
+                          type="highlight"/>
+                    <span>{ intl.formatMessage(entryMessages.saveHighlight) }</span>
+                </div>
+                <div
+                    className="flex-center-y popover-menu__item"
+                    onClick={ startComment && this.startComment }
+                >
+                    <Icon className="popover-menu__icon selectable-editor__popover-icon"
+                          type="commentLarge"/>
+                    <span>{ intl.formatMessage(entryMessages.startComment) }</span>
+                </div>
             </div>
-            <div
-              className="flex-center-y popover-menu__item"
-              onClick={startComment && this.startComment}
-            >
-              <Icon className="popover-menu__icon selectable-editor__popover-icon" type="commentLarge" />
-              <span>{intl.formatMessage(entryMessages.startComment)}</span>
-            </div>
-          </div>
         );
 
         return (
-          <div className="selectable-editor__popover-wrapper" style={{ top, left }}>
-            <Popover
-              content={content}
-              overlayClassName="popover-menu"
-              placement="bottom"
-              visible
-            >
-              <div className="selectable-editor__popover-inner" />
-            </Popover>
-          </div>
+            <div className="selectable-editor__popover-wrapper" style={ { top, left } }>
+                <Popover
+                    content={ content }
+                    overlayClassName="popover-menu"
+                    placement="bottom"
+                    visible
+                >
+                    <div className="selectable-editor__popover-inner"/>
+                </Popover>
+            </div>
         );
     };
 
@@ -259,27 +261,29 @@ class SelectableEditor extends Component {
         const { editorState, showPopover } = this.state;
 
         return (
-          <div className="selectable-editor">
-            <div
-              onMouseDown={this.hidePopover}
-              onMouseUp={this.checkSelection}
-              ref={(el) => { this.editorWrapper = el; }}
-            >
-              <MegadraftEditor
-                editorState={editorState}
-                onChange={this.handleChange}
-                plugins={[
-                    readOnlyImagePlugin({
-                        baseUrl,
-                        onImageClick: this._handleImageFullScreenSwitch
-                    })
-                ]}
-                readOnly
-                blockStyleFn={this.blockStyleFn}
-              />
+            <div className="selectable-editor">
+                <div
+                    onMouseDown={ this.hidePopover }
+                    onMouseUp={ this.checkSelection }
+                    ref={ (el) => {
+                        this.editorWrapper = el;
+                    } }
+                >
+                    <MegadraftEditor
+                        editorState={ editorState }
+                        onChange={ this.handleChange }
+                        plugins={ [
+                            readOnlyImagePlugin({
+                                baseUrl,
+                                onImageClick: this._handleImageFullScreenSwitch
+                            })
+                        ] }
+                        readOnly
+                        blockStyleFn={ this.blockStyleFn }
+                    />
+                </div>
+                { showPopover && this.renderPopover() }
             </div>
-            {showPopover && this.renderPopover()}
-          </div>
         );
     }
 }

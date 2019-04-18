@@ -1,5 +1,5 @@
 //@flow strict
-import { Map, fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import { createReducer } from './utils';
 import ErrorStateModel from './state-models/error-state-model';
 import * as types from '../constants';

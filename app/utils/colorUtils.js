@@ -1,7 +1,7 @@
 const getHexFromRgb = (rgb) => {
-    const r = `0${(parseInt(rgb[1], 10).toString(16)).slice(-2)}`;
-    const g = `0${(parseInt(rgb[2], 10).toString(16)).slice(-2)}`;
-    const b = `0${(parseInt(rgb[3], 10).toString(16)).slice(-2)}`;
+    const r = `0${ (parseInt(rgb[1], 10).toString(16)).slice(-2) }`;
+    const g = `0${ (parseInt(rgb[2], 10).toString(16)).slice(-2) }`;
+    const b = `0${ (parseInt(rgb[3], 10).toString(16)).slice(-2) }`;
     return {
         r, g, b
     };
@@ -37,7 +37,7 @@ const getLuma = (color) => {
     document.body.appendChild(div);
     const col = window.getComputedStyle(div).color;
     document.body.removeChild(div);
-    return getLuma(`${col}`);
+    return getLuma(`${ col }`);
 };
 
 export const getTextColor = (color) => {

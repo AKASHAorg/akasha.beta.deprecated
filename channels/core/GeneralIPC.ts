@@ -19,28 +19,28 @@ import { ApiListener, ApiRequest } from './ipcPreloader';
 
 export default class GeneralIPC extends ModuleEmitter {
 
-  constructor(formatter) {
+  constructor (formatter) {
     super();
     this.addFormatter(formatter);
   }
 
   // reserve a namespace for module
-  registerModuleName(name: string) {
+  registerModuleName (name: string) {
     this.MODULE_NAME = name;
   }
 
   // can add a custom logger
-  registerLogger(logger: any) {
+  registerLogger (logger: any) {
     this.logger = logger;
   }
 
   // register default enabled channels
-  registerDefaultManaged(methods: string[]) {
+  registerDefaultManaged (methods: string[]) {
     this.DEFAULT_MANAGED = methods;
   }
 
   // implement observable channels for 2-way communication
-  registerMethods(
+  registerMethods (
     implListener: ApiListener,
     implRequest: ApiRequest,
     methods,

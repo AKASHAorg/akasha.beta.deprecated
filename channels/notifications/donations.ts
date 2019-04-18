@@ -13,41 +13,41 @@ const watchDonate = {
 
 const EVENT_TYPE = 'DONATION_EVENT';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise
-  .coroutine(function* (data, cb) {
+    .coroutine(function* (data, cb) {
 
-    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-    v.validate(data, watchDonate, { throwError: true });
-    const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
-    const web3Api = getService(CORE_MODULE.WEB3_API);
-    const contracts = getService(CORE_MODULE.CONTRACTS);
-    const queue = getService(NOTIFICATIONS_MODULE.queue);
-    const donateEvent = contracts
-    .createWatcher(contracts.instance.AETH.Donate, { to: ethAddress }, data.fromBlock);
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+      v.validate(data, watchDonate, { throwError: true });
+      const ethAddress = yield (getService(COMMON_MODULE.profileHelpers)).profileAddress(data);
+      const web3Api = getService(CORE_MODULE.WEB3_API);
+      const contracts = getService(CORE_MODULE.CONTRACTS);
+      const queue = getService(NOTIFICATIONS_MODULE.queue);
+      const donateEvent = contracts
+        .createWatcher(contracts.instance.AETH.Donate, { to: ethAddress }, data.fromBlock);
 
-    donateEvent.watch((err, ev) => {
-      if (!err) {
-        queue.push(
-          cb,
-          {
-            type: EVENT_TYPE,
-            payload: {
-              from: ev.args.from,
-              aeth: web3Api.instance.utils
-                .fromWei(web3Api.instance.utils.toBN(ev.args.aeth), 'ether'),
-              eth: web3Api.instance.utils
-                .fromWei(web3Api.instance.utils.toBN(ev.args.eth), 'ether'),
-              message: ev.args.extraData,
+      donateEvent.watch((err, ev) => {
+        if (!err) {
+          queue.push(
+            cb,
+            {
+              type: EVENT_TYPE,
+              payload: {
+                from: ev.args.from,
+                aeth: web3Api.instance.utils
+                  .fromWei(web3Api.instance.utils.toBN(ev.args.aeth), 'ether'),
+                eth: web3Api.instance.utils
+                  .fromWei(web3Api.instance.utils.toBN(ev.args.eth), 'ether'),
+                message: ev.args.extraData,
+              },
+              blockNumber: ev.blockNumber,
             },
-            blockNumber: ev.blockNumber,
-          },
-        );
-      }
-    });
+          );
+        }
+      });
 
-    return donateEvent;
-  });
+      return donateEvent;
+    });
   const service = function () {
     return execute;
   };

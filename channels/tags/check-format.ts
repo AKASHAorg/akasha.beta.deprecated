@@ -10,13 +10,13 @@ export const checkFormatSchema = {
   required: ['tagName'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkFormatSchema, { throwError: true });
 
     const status = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.checkFormat(data.tagName);
+      .instance.Tags.checkFormat(data.tagName);
     return { status, tagName: data.tagName };
   });
 

@@ -9,23 +9,23 @@ const RememberPassphrase = (props) => {
     const { handleCheck, handleTimeChange, intl, isChecked, unlockTime } = props;
 
     return (
-      <div className="remember-passphrase">
-        <div>
-          <Checkbox
-            checked={isChecked}
-            onChange={handleCheck}
-          >
-            {intl.formatMessage(formMessages.rememberPassFor)}
-          </Checkbox>
+        <div className="remember-passphrase">
+            <div>
+                <Checkbox
+                    checked={ isChecked }
+                    onChange={ handleCheck }
+                >
+                    { intl.formatMessage(formMessages.rememberPassFor) }
+                </Checkbox>
+            </div>
+            <div className="remember-passphrase__select-wrapper">
+                <RememberPassphraseSelect
+                    getPopupContainer={ () => document.getElementById('select-popup-container') || document.body }
+                    handleTimeChange={ handleTimeChange }
+                    unlockTime={ unlockTime }
+                />
+            </div>
         </div>
-        <div className="remember-passphrase__select-wrapper">
-          <RememberPassphraseSelect
-            getPopupContainer={() => document.getElementById('select-popup-container') || document.body}
-            handleTimeChange={handleTimeChange}
-            unlockTime={unlockTime}
-          />
-        </div>
-      </div>
     );
 };
 

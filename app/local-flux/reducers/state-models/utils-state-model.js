@@ -9,5 +9,5 @@ export const UtilsState = Record({
 });
 
 export default class UtilsStateModel extends UtilsState {
-    
+
 }

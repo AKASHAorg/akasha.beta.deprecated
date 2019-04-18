@@ -28,7 +28,7 @@ export const claimableGetStatusError = (error) => {
 };
 
 export const claimableIterator = () => action(types.CLAIMABLE_ITERATOR);
-export const claimableIteratorError = (error) => { 
+export const claimableIteratorError = (error) => {
     error.code = 'CIE02';
     error.messageId = 'claimableIterator';
     return action(types.CLAIMABLE_ITERATOR, { error });

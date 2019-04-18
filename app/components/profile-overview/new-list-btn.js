@@ -62,79 +62,79 @@ class NewListBtn extends Component {
         const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
         const newListForm = (
-          <div className="new-list-btn__form">
+            <div className="new-list-btn__form">
             <span className="new-list-btn__header">
-              {intl.formatMessage(listMessages.createNew)}
+              { intl.formatMessage(listMessages.createNew) }
             </span>
-            <Form>
-              <Form.Item
-                label={intl.formatMessage(listMessages.listName)}
-                colon={false}
-                validateStatus={listNameError ? 'error' : ''}
-                help={listNameError || ''}
-              >
-                {getFieldDecorator('name', {
-                    rules: [{
-                        validator: this.validateName,
-                    }]
-                })(
-                  <Input
-                    autoFocus
-                    onKeyDown={this.onKeyDown}
-                    maxLength="70"
-                  />
-                )}
-              </Form.Item>
-              <Form.Item
-                label={intl.formatMessage(listMessages.shortDescription)}
-                colon={false}
-              >
-                {getFieldDecorator('description')(
-                  <Input
-                    onKeyDown={this.onKeyDown}
-                    maxLength="100"
-                  />
-                )}
-              </Form.Item>
-              <div className="new-list-btn__footer">
-                <div className="new-list-btn__cancel-btn">
-                  <Button
-                    onClick={this.hide}
-                  >
-                    {intl.formatMessage(generalMessages.cancel)}
-                  </Button>
-                </div>
-                <div className="new-list-btn__submit-btn">
-                  <Button
-                    disabled={hasErrors(getFieldsError())}
-                    htmlType="submit"
-                    onClick={this.handleSubmit}
-                    type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.create)}
-                  </Button>
-                </div>
-              </div>
-            </Form>
-          </div>
+                <Form>
+                    <Form.Item
+                        label={ intl.formatMessage(listMessages.listName) }
+                        colon={ false }
+                        validateStatus={ listNameError ? 'error' : '' }
+                        help={ listNameError || '' }
+                    >
+                        { getFieldDecorator('name', {
+                            rules: [{
+                                validator: this.validateName,
+                            }]
+                        })(
+                            <Input
+                                autoFocus
+                                onKeyDown={ this.onKeyDown }
+                                maxLength="70"
+                            />
+                        ) }
+                    </Form.Item>
+                    <Form.Item
+                        label={ intl.formatMessage(listMessages.shortDescription) }
+                        colon={ false }
+                    >
+                        { getFieldDecorator('description')(
+                            <Input
+                                onKeyDown={ this.onKeyDown }
+                                maxLength="100"
+                            />
+                        ) }
+                    </Form.Item>
+                    <div className="new-list-btn__footer">
+                        <div className="new-list-btn__cancel-btn">
+                            <Button
+                                onClick={ this.hide }
+                            >
+                                { intl.formatMessage(generalMessages.cancel) }
+                            </Button>
+                        </div>
+                        <div className="new-list-btn__submit-btn">
+                            <Button
+                                disabled={ hasErrors(getFieldsError()) }
+                                htmlType="submit"
+                                onClick={ this.handleSubmit }
+                                type="primary"
+                            >
+                                { intl.formatMessage(generalMessages.create) }
+                            </Button>
+                        </div>
+                    </div>
+                </Form>
+            </div>
         );
 
         return (
-          <div className="new-list-btn__create">
-            <Popover
-              placement="bottomRight"
-              content={this.wasVisible ? newListForm : null}
-              trigger="click"
-              visible={this.state.visible}
-              onVisibleChange={this.handleVisibleChange}
-            >
-              <Button
-                size="large"
-              >
-                {intl.formatMessage(listMessages.createNew)}
-              </Button>
-            </Popover>
-          </div>
+            <div className="new-list-btn__create">
+                <Popover
+                    placement="bottomRight"
+                    content={ this.wasVisible ? newListForm : null }
+                    trigger="click"
+                    visible={ this.state.visible }
+                    onVisibleChange={ this.handleVisibleChange }
+                >
+                    <Button
+                        size="large"
+                    >
+                        { intl.formatMessage(listMessages.createNew) }
+                    </Button>
+                </Popover>
+            </div>
         );
     }
 }

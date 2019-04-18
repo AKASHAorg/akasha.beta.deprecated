@@ -3,8 +3,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import getHistory from './get-history';
-import Route from 'react-router-dom/Route';
-import Router from 'react-router-dom/Router';
+import { Route, Router } from 'react-router-dom';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import './styles/ant-icons/iconfont.css';
 import ConnectedIntlProvider from './connected-intl-provider';
@@ -91,13 +90,13 @@ export const bootstrap = (
             logger.error({ error: ex }, '[index.js] Cannot load database!!');
             if (rootNode) {
                 return render(
-                    <Provider store={store}>
+                    <Provider store={ store }>
                         <ConnectedIntlProvider>
                             <AppErrorBoundary
-                                error={{
-                                    name: `[index.js] ${ex.name}\n`,
-                                    message: `${ex.stack}`
-                                }}
+                                error={ {
+                                    name: `[index.js] ${ ex.name }\n`,
+                                    message: `${ ex.stack }`
+                                } }
                             />
                         </ConnectedIntlProvider>
                     </Provider>,
@@ -115,21 +114,21 @@ const renderApplication = (store, web3Enabled, vault, channel, logger, rootNode,
     const isAppActive = isSynced && web3Enabled && vault;
     if (rootNode) {
         render(
-            <Provider store={store}>
+            <Provider store={ store }>
                 <ConnectedIntlProvider>
-                    <Router history={history}>
+                    <Router history={ history }>
                         <Route
-                            render={props => (
+                            render={ props => (
                                 <MainContext.Provider
-                                    value={{
+                                    value={ {
                                         web3: web3Enabled,
                                         channel,
                                         logger
-                                    }}
+                                    } }
                                 >
                                     <Synchronization
-                                        active={!isSynced}
-                                        onSyncEnd={() => {
+                                        active={ !isSynced }
+                                        onSyncEnd={ () => {
                                             renderApplication(
                                                 store,
                                                 web3Enabled,
@@ -139,17 +138,17 @@ const renderApplication = (store, web3Enabled, vault, channel, logger, rootNode,
                                                 rootNode,
                                                 true
                                             );
-                                        }}
+                                        } }
                                     />
                                     {/* Apps entry points. All this components are standalone and can be
-                                    easily removed/hidden based on platform (web, desktop, mobile, etc) */}
+                                    easily removed/hidden based on platform (web, desktop, mobile, etc) */ }
 
                                     {/* Application => the dashboard page with all the pages
-                                       linked (profile, editor,etc) */}
-                                    {isAppActive && (
+                                       linked (profile, editor,etc) */ }
+                                    { isAppActive && (
                                         <Application
-                                            {...props}
-                                            reloadPage={() => {
+                                            { ...props }
+                                            reloadPage={ () => {
                                                 //@todo have a proper reload procedure
                                                 // aka partial reset store?
                                                 renderApplication(
@@ -160,14 +159,14 @@ const renderApplication = (store, web3Enabled, vault, channel, logger, rootNode,
                                                     logger,
                                                     rootNode
                                                 );
-                                            }}
+                                            } }
                                         />
-                                    )}
-                                    {/* Setup => Application setup page */}
-                                    {isSetupActive && <Setup {...props} />}
-                                    {requestWeb3Confirm && <>Waiting for Metamask confirmation</>}
+                                    ) }
+                                    {/* Setup => Application setup page */ }
+                                    { isSetupActive && <Setup { ...props } /> }
+                                    { requestWeb3Confirm && <>Waiting for Metamask confirmation</> }
                                 </MainContext.Provider>
-                            )}
+                            ) }
                         />
                     </Router>
                 </ConnectedIntlProvider>

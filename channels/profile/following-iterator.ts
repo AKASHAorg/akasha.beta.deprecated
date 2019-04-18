@@ -3,7 +3,7 @@ import { COMMON_MODULE, CORE_MODULE, PROFILE_MODULE } from '@akashaproject/commo
 import { followersIteratorSchema } from './followers-iterator';
 import { uniq } from 'ramda';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();

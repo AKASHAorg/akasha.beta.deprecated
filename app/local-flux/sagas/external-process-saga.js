@@ -3,19 +3,18 @@ import {
     call,
     cancel,
     fork,
+    getContext,
     put,
     select,
-    takeLatest,
     take,
     takeEvery,
-    takeLeading,
-    getContext
+    takeLatest,
+    takeLeading
 } from 'redux-saga/effects';
 import delay from '@redux-saga/delay-p';
 import * as actions from '../actions/external-process-actions';
 import { externalProcessSelectors, settingsSelectors } from '../selectors';
 import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
-import * as types from '../constants';
 
 /*::
     import type { Saga } from 'redux-saga';

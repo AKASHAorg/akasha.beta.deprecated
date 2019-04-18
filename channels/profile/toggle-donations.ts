@@ -11,7 +11,7 @@ export const toggleDonations = {
   required: ['token', 'status'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(
     function* (data: { status: boolean, token: string }, cb) {
@@ -25,9 +25,9 @@ export default function init(sp, getService) {
       }
 
       const txData = contracts.instance
-      .ProfileResolver
-      .toggleDonations
-      .request(currentProfile.raw, data.status, { gas: 200000 });
+        .ProfileResolver
+        .toggleDonations
+        .request(currentProfile.raw, data.status, { gas: 200000 });
       const receipt = yield contracts.send(txData, data.token, cb);
       return {
         receipt,

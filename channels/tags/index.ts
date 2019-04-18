@@ -9,7 +9,7 @@ import searchTagInit from './search-tag';
 import syncTagsInit from './sync-tags';
 import { TAGS_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   const canCreate = canCreateInit(sp, getService);
   const checkFormat = checkFormatInit(sp, getService);

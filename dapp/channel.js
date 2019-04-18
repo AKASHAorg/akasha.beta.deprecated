@@ -7,11 +7,11 @@ export default class DuplexChannel extends ApiListener {
         this.subscribers = new Map();
         this.windowId = opts.windowId;
     }
-    bind(observer) {
-        this.observer = observer;
-    }
     get listenerCount() {
         return this.subject.observers.length || this.subscribers.size;
+    }
+    bind(observer) {
+        this.observer = observer;
     }
     on(listener) {
         this.subscribers.set(listener, this.subject.subscribe((data) => listener(null, data), error => listener(error)));

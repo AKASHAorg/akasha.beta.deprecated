@@ -54,12 +54,14 @@ const canClickAway = Component => {
         getOwner = owner => {
             console.log(owner, 'used by: ', owner);
         };
+
         render () {
             this.getOwner(this._reactInternalFiber);
             console.warn('ClickAway is deprecated! Please update it with useOnClickAway hook!');
             return React.createElement(Component, this.props);
         }
     }
+
     return ClickAwayable;
 };
 
@@ -103,7 +105,7 @@ const useOnClickAway = (
         };
         supportedEvents.forEach((eventName /* : EventNames */) => {
             //@todo check if passive event is supported and use it
-            document.body.addEventListener(`${eventName}`, listener);
+            document.body.addEventListener(`${ eventName }`, listener);
         });
 
         return () => {

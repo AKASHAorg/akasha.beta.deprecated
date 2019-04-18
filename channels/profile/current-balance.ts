@@ -9,7 +9,7 @@ export const getBalanceSchema = {
     unit: { type: 'string' },
   },
 };
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise
     .coroutine(function* (data) {

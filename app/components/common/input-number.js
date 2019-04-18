@@ -4,14 +4,14 @@ import { InputNumber } from 'antd';
 import styles from './input.scss';
 
 const WrappedInputNumber = ({ label, labelStyle, wrapperStyle, ...props }) => (
-  <div className={`${styles.root} ${label && styles.withLabel}`} style={wrapperStyle}>
-    {label &&
-      <div className={styles.label} style={labelStyle}>
-        {label}
+    <div className={ `${ styles.root } ${ label && styles.withLabel }` } style={ wrapperStyle }>
+        { label &&
+        <div className={ styles.label } style={ labelStyle }>
+            { label }
         </div>
-    }
-    <InputNumber {...props} />
-  </div>
+        }
+        <InputNumber { ...props } />
+    </div>
 );
 
 WrappedInputNumber.propTypes = {

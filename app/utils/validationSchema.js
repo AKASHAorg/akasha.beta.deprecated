@@ -28,18 +28,18 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        min: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                        min: `!!${ intl.formatMessage(formMessages.firstName) } ${ intl.formatMessage(
                             validationMessages.min,
                             { min: 2 }
-                        )}`,
-                        max: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                        ) }`,
+                        max: `!!${ intl.formatMessage(formMessages.firstName) } ${ intl.formatMessage(
                             validationMessages.max,
                             { max: 32 }
-                        )}`,
+                        ) }`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.firstName)} ${intl.formatMessage(
+                            base: `!!${ intl.formatMessage(formMessages.firstName) } ${ intl.formatMessage(
                                 validationMessages.invalidCharacters
-                            )}`
+                            ) }`
                         }
                     }
                 }
@@ -52,14 +52,14 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        max: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(
+                        max: `!!${ intl.formatMessage(formMessages.lastName) } ${ intl.formatMessage(
                             validationMessages.max,
                             { max: 32 }
-                        )}`,
+                        ) }`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.lastName)} ${intl.formatMessage(
+                            base: `!!${ intl.formatMessage(formMessages.lastName) } ${ intl.formatMessage(
                                 validationMessages.invalidCharacters
-                            )}`
+                            ) }`
                         }
                     }
                 }
@@ -70,14 +70,14 @@ export const getProfileSchema = (intl, options) => {
             .options({
                 language: {
                     string: {
-                        max: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(
+                        max: `!!${ intl.formatMessage(formMessages.about) } ${ intl.formatMessage(
                             validationMessages.max,
                             { max: 195 }
-                        )}`,
+                        ) }`,
                         regex: {
-                            base: `!!${intl.formatMessage(formMessages.about)} ${intl.formatMessage(
+                            base: `!!${ intl.formatMessage(formMessages.about) } ${ intl.formatMessage(
                                 validationMessages.invalidCharacters
-                            )}`
+                            ) }`
                         }
                     }
                 }
@@ -92,10 +92,10 @@ export const getProfileSchema = (intl, options) => {
                         .options({
                             language: {
                                 any: {
-                                    empty: `!!URL ${intl.formatMessage(validationMessages.required)}`
+                                    empty: `!!URL ${ intl.formatMessage(validationMessages.required) }`
                                 },
                                 string: {
-                                    uri: `!!URL ${intl.formatMessage(validationMessages.validAddress)}`
+                                    uri: `!!URL ${ intl.formatMessage(validationMessages.validAddress) }`
                                 }
                             }
                         })
@@ -122,32 +122,32 @@ export const getProfileSchema = (intl, options) => {
                 .options({
                     language: {
                         any: {
-                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            required: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.required
-                            )}`,
-                            empty: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            ) }`,
+                            empty: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.required
-                            )}`
+                            ) }`
                         },
                         string: {
-                            required: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            required: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.required
-                            )}`,
-                            min: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            ) }`,
+                            min: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.min,
                                 { min: 2 }
-                            )}`,
-                            max: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            ) }`,
+                            max: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.max,
                                 { max: 32 }
-                            )}`,
-                            lowercase: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                            ) }`,
+                            lowercase: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                 validationMessages.lowercase
-                            )}`,
+                            ) }`,
                             regex: {
-                                base: `!!${intl.formatMessage(formMessages.akashaId)} ${intl.formatMessage(
+                                base: `!!${ intl.formatMessage(formMessages.akashaId) } ${ intl.formatMessage(
                                     validationMessages.invalidCharacters
-                                )}`
+                                ) }`
                             }
                         }
                     }

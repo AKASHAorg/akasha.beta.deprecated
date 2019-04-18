@@ -65,7 +65,10 @@ export const profileSaveLastBlockNr = payload => {
 
 export const profileGetLastBlockNr = ethAddress => {
     try {
-        const record = getProfileCollection().findOne({ opType: LAST_BLOCK_TYPE, ethAddress: ethAddress });
+        const record = getProfileCollection().findOne({
+            opType: LAST_BLOCK_TYPE,
+            ethAddress: ethAddress
+        });
         return Promise.resolve(record ? record.blockNr : 0);
     } catch (error) {
         return Promise.reject(error);

@@ -1,5 +1,5 @@
 // @flow
-import { all, call, put, select, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
+import { all, call, getContext, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 // import * as actionActions from '../actions/action-actions';
 // import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
@@ -8,11 +8,11 @@ import * as profileActions from '../actions/profile-actions';
 import * as tagActions from '../actions/tag-actions';
 // import * as types from '../constants';
 import {
-    profileSelectors,
-    externalProcessSelectors,
     dashboardSelectors,
     draftSelectors,
-    listSelectors
+    externalProcessSelectors,
+    listSelectors,
+    profileSelectors
 } from '../selectors';
 import { isEthAddress } from '../../utils/dataModule';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
@@ -131,6 +131,7 @@ function* entryGetEndPeriod ({ entryIds }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getVoteEndPeriod, entryIds);
 }
+
 // @todo refactor/remove this and use actions
 // function* entryGetExtraOfEntry (entryId, ethAddress)/* : Saga<void> */ {
 //     const loggedEthAddress = yield select(profileSelectors.selectLoggedEthAddress);
@@ -200,7 +201,10 @@ export function* entryGetExtraOfList (
         });
     }
     yield all([
-        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({ ethAddress, batching }))),
+        ...ethAddresses.map(ethAddress => put(profileActions.profileGetData({
+            ethAddress,
+            batching
+        }))),
         ...collection.map(entry =>
             put(
                 actions.entryGetShort({
@@ -215,15 +219,15 @@ export function* entryGetExtraOfList (
 }
 
 function* entryGetFull ({
-    akashaId,
-    entryId,
-    ethAddress,
-    version,
-    asDraft,
-    revert,
-    publishedDateOnly,
-    latestVersion
-}) /* : Saga<void> */ {
+                            akashaId,
+                            entryId,
+                            ethAddress,
+                            version,
+                            asDraft,
+                            revert,
+                            publishedDateOnly,
+                            latestVersion
+                        }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     yield call([service, service.sendRequest], ENTRY_MODULE, ENTRY_MODULE.getEntry, {
         akashaId,
@@ -275,7 +279,10 @@ function* entryGetVoteOf ({ entryIds, claimable }) /* : Saga<void> */ {
 
 function* entryListIterator ({ column, batching }) /* : Saga<void> */ {
     const { id, value, limit = ENTRY_LIST_ITERATOR_LIMIT } = column;
-    const collection = yield select(state => listSelectors.getListEntries(state, { listId: value, limit }));
+    const collection = yield select(state => listSelectors.getListEntries(state, {
+        listId: value,
+        limit
+    }));
     yield call(entryGetExtraOfList, collection, id, null, batching);
     // yield put(actions.entryListIteratorSuccess({ collection }, { columnId: id, value, limit }));
 }

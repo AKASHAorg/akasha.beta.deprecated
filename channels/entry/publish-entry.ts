@@ -1,5 +1,10 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, ENTRY_MODULE, NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
+import {
+  COMMON_MODULE,
+  CORE_MODULE,
+  ENTRY_MODULE,
+  NOTIFICATIONS_MODULE,
+} from '@akashaproject/common/constants';
 
 const publishS = {
   id: '/publish',
@@ -26,7 +31,7 @@ const publishS = {
   required: ['content', 'tags', 'entryType', 'token'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, publishS, { throwError: true });

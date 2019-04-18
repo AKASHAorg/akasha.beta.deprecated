@@ -50,74 +50,74 @@ class NewListForm extends Component {
         const listNameError = isFieldTouched('name') && getFieldError('name');
 
         return (
-          <Form className="new-list-form" hideRequiredMark onSubmit={this.onSubmit}>
-            <div className="new-list-form__title">
-              {intl.formatMessage(listMessages.addToNewList)}
-            </div>
-            <FormItem
-              className="new-list-form__form-item"
-              colon={false}
-              label={
-                <span className="uppercase">
-                  {intl.formatMessage(listMessages.listName)}
+            <Form className="new-list-form" hideRequiredMark onSubmit={ this.onSubmit }>
+                <div className="new-list-form__title">
+                    { intl.formatMessage(listMessages.addToNewList) }
+                </div>
+                <FormItem
+                    className="new-list-form__form-item"
+                    colon={ false }
+                    label={
+                        <span className="uppercase">
+                  { intl.formatMessage(listMessages.listName) }
                 </span>
-              }
-              validateStatus={listNameError ? 'error' : ''}
-              help={listNameError || ''}
-            >
-              {getFieldDecorator('name', {
-                  rules: [{
-                      required: true,
-                      message: intl.formatMessage(listMessages.listNameRequired)
-                  }, {
-                      validator: this.validateName,
-                  }]
-              })(
-                <Input
-                  autoFocus
-                  onKeyDown={this.onKeyDown}
-                  placeholder={intl.formatMessage(listMessages.namePlaceholder)}
-                  maxLength="70"
-                />
-              )}
-            </FormItem>
-            <FormItem
-              className="new-list-form__form-item"
-              colon={false}
-              label={
-                <span className="new-list-form__label">
-                  {intl.formatMessage(listMessages.shortDescription)}
+                    }
+                    validateStatus={ listNameError ? 'error' : '' }
+                    help={ listNameError || '' }
+                >
+                    { getFieldDecorator('name', {
+                        rules: [{
+                            required: true,
+                            message: intl.formatMessage(listMessages.listNameRequired)
+                        }, {
+                            validator: this.validateName,
+                        }]
+                    })(
+                        <Input
+                            autoFocus
+                            onKeyDown={ this.onKeyDown }
+                            placeholder={ intl.formatMessage(listMessages.namePlaceholder) }
+                            maxLength="70"
+                        />
+                    ) }
+                </FormItem>
+                <FormItem
+                    className="new-list-form__form-item"
+                    colon={ false }
+                    label={
+                        <span className="new-list-form__label">
+                  { intl.formatMessage(listMessages.shortDescription) }
                 </span>
-              }
-            >
-              {getFieldDecorator('description')(
-                <Input
-                  onKeyDown={this.onKeyDown}
-                  placeholder={intl.formatMessage(listMessages.descriptionPlaceholder)}
-                  maxLength="100"
-                />
-              )}
-            </FormItem>
-            <div className="new-list-form__actions">
-              <Button className="new-list-form__button" onClick={onCancel} size="small">
+                    }
+                >
+                    { getFieldDecorator('description')(
+                        <Input
+                            onKeyDown={ this.onKeyDown }
+                            placeholder={ intl.formatMessage(listMessages.descriptionPlaceholder) }
+                            maxLength="100"
+                        />
+                    ) }
+                </FormItem>
+                <div className="new-list-form__actions">
+                    <Button className="new-list-form__button" onClick={ onCancel } size="small">
                 <span className="new-list-form__button-label">
-                  {intl.formatMessage(generalMessages.cancel)}
+                  { intl.formatMessage(generalMessages.cancel) }
                 </span>
-              </Button>
-              <Button
-                className="new-list-form__button"
-                disabled={hasErrors(getFieldsError())}
-                htmlType="submit"
-                onClick={this.onSubmit}
-                size="small"
-                type="primary"
-              >
+                    </Button>
+                    <Button
+                        className="new-list-form__button"
+                        disabled={ hasErrors(getFieldsError()) }
+                        htmlType="submit"
+                        onClick={ this.onSubmit }
+                        size="small"
+                        type="primary"
+                    >
                 <span className="new-list-form__button-label">
-                  {intl.formatMessage(generalMessages.save)}
+                  { intl.formatMessage(generalMessages.save) }
                 </span>
-              </Button>
-            </div>
-          </Form>
+                    </Button>
+                </div>
+            </Form>
         );
     }
 }

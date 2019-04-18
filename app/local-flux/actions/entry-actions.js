@@ -1,32 +1,39 @@
 import { action } from './helpers';
 import * as types from '../constants';
-import { ENTRY_MODULE, COMMENTS_MODULE } from '@akashaproject/common/constants';
+import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
-export const entryCanClaim = entryIds => action(`${ENTRY_MODULE.canClaim}`, { entryIds });
+export const entryCanClaim = entryIds => action(`${ ENTRY_MODULE.canClaim }`, { entryIds });
 
-export const entryCanClaimVote = entryIds => action(`${ENTRY_MODULE.canClaimVote}`, { entryIds });
+export const entryCanClaimVote = entryIds => action(`${ ENTRY_MODULE.canClaimVote }`, { entryIds });
 
 export const entryClaim = ({ actionId, entryId, entryTitle }) =>
-    action(`${ENTRY_MODULE.claim}`, { actionId, entryId, entryTitle });
+    action(`${ ENTRY_MODULE.claim }`, { actionId, entryId, entryTitle });
 
 export const entryClaimVote = ({ actionId, entryId, entryTitle }) =>
-    action(`${ENTRY_MODULE.claimVote}`, { actionId, entryId, entryTitle });
+    action(`${ ENTRY_MODULE.claimVote }`, { actionId, entryId, entryTitle });
 
 export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
 
 export const entryDownvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
-    action(`${ENTRY_MODULE.downVote}`, { actionId, entryId, entryTitle, ethAddress, weight, value });
+    action(`${ ENTRY_MODULE.downVote }`, {
+        actionId,
+        entryId,
+        entryTitle,
+        ethAddress,
+        weight,
+        value
+    });
 
 export const entryGetBalance = (entryIds, claimable) =>
-    action(`${ENTRY_MODULE.getEntryBalance}`, { entryIds, claimable });
+    action(`${ ENTRY_MODULE.getEntryBalance }`, { entryIds, claimable });
 
-export const entryGetEndPeriod = entryIds => action(`${ENTRY_MODULE.getVoteEndPeriod}`, { entryIds });
+export const entryGetEndPeriod = entryIds => action(`${ ENTRY_MODULE.getVoteEndPeriod }`, { entryIds });
 
 export const entryGetFull = ({
-    akashaId, entryId, ethAddress, version, asDraft,
-    revert, publishedDateOnly, latestVersion
-}) =>
-    action(`${ENTRY_MODULE.getEntry}`, {
+                                 akashaId, entryId, ethAddress, version, asDraft,
+                                 revert, publishedDateOnly, latestVersion
+                             }) =>
+    action(`${ ENTRY_MODULE.getEntry }`, {
         akashaId, entryId, ethAddress, version, asDraft, revert, publishedDateOnly, latestVersion
     });
 
@@ -40,20 +47,20 @@ export const entryGetVersionPublishedDateSuccess = (data, req) =>
 export const entryGetVersionPublishedDateError = error =>
     action(types.ENTRY_GET_VERSION_PUBLISHED_DATE_ERROR, { error });
 
-export const entryGetLatestVersion = entryId => action(`${ENTRY_MODULE.getLatestEntryVersion}`, { entryId });
+export const entryGetLatestVersion = entryId => action(`${ ENTRY_MODULE.getLatestEntryVersion }`, { entryId });
 
-export const entryGetScore = entryId => action(`${ENTRY_MODULE.getScore}`, { entryId });
+export const entryGetScore = entryId => action(`${ ENTRY_MODULE.getScore }`, { entryId });
 
 export const entryGetShort = ({ context, entryId, ethAddress, batching, includeVotes }) =>
-    action(`${ENTRY_MODULE.getEntry}`, { context, entryId, ethAddress, batching, includeVotes });
+    action(`${ ENTRY_MODULE.getEntry }`, { context, entryId, ethAddress, batching, includeVotes });
 
 export const entryGetVoteOf = (entryIds, claimable) =>
-    action(`${ENTRY_MODULE.getVoteOf}`, { entryIds, claimable });
+    action(`${ ENTRY_MODULE.getVoteOf }`, { entryIds, claimable });
 
-export const entryGetVoteRatio = data => action(`${ENTRY_MODULE.getVoteRatio}`, { data });
+export const entryGetVoteRatio = data => action(`${ ENTRY_MODULE.getVoteRatio }`, { data });
 
 export const entryListIterator = column =>
-    action(`${ENTRY_MODULE.entryListIterator}`, { column });
+    action(`${ ENTRY_MODULE.entryListIterator }`, { column });
 
 export const entryMoreListIterator = (column, batching) =>
     action(types.ENTRY_MORE_LIST_ITERATOR, { column, batching });
@@ -80,7 +87,10 @@ export const entryMoreProfileIterator = (column, batching) =>
 // export const entryMoreProfileIteratorSuccess = (data, request) =>
 //     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, request });
 
-export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, { column, batching });
+export const entryMoreStreamIterator = (column, batching) => action(types.ENTRY_MORE_STREAM_ITERATOR, {
+    column,
+    batching
+});
 // export const entryMoreStreamIteratorError = (error, request) => {
 //     error.code = 'EMSIE01';
 //     error.messageId = 'entryMoreStreamIterator';
@@ -125,15 +135,22 @@ export const entryProfileIteratorSuccess = (data, request) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, request });
 
 export const entryResolveIpfsHash = ({ entryId, ipfsHash }) =>
-    action(`${ENTRY_MODULE.resolveEntriesIpfsHash}`, { entryId, ipfsHash });
+    action(`${ ENTRY_MODULE.resolveEntriesIpfsHash }`, { entryId, ipfsHash });
 
 export const entryStreamIterator = (column, batching) =>
-    action(`${ENTRY_MODULE.allStreamIterator}`, { column, batching });
+    action(`${ ENTRY_MODULE.allStreamIterator }`, { column, batching });
 
 export const entryTagIterator = (column, batching) =>
-    action(`${ENTRY_MODULE.entryTagIterator}`, { column, batching });
+    action(`${ ENTRY_MODULE.entryTagIterator }`, { column, batching });
 
 export const entryUpvote = ({ actionId, entryId, entryTitle, ethAddress, weight, value }) =>
-    action(`${ENTRY_MODULE.upVote}`, { actionId, entryId, entryTitle, ethAddress, weight, value });
+    action(`${ ENTRY_MODULE.upVote }`, {
+        actionId,
+        entryId,
+        entryTitle,
+        ethAddress,
+        weight,
+        value
+    });
 
-export const entryVoteCost = () => action(`${ENTRY_MODULE.voteCost}`);
+export const entryVoteCost = () => action(`${ ENTRY_MODULE.voteCost }`);

@@ -1,9 +1,7 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 // import { persistState } from 'redux-devtools';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
-import batchedSubscribeMiddleware from './batching/middleware';
-import batchedSubscribeEnhancer from './batching/enhancer';
 import * as actionCreators from '../actions';
 
 const finalCreateStore = compose(

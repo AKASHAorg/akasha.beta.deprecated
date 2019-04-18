@@ -8,12 +8,12 @@ const DisplayName = (props) => {
     const name = getDisplayName({ akashaId, ethAddress });
     if (!akashaId) {
         return (
-          <Tooltip overlayClassName="display-name__tooltip" title={ethAddress}>
-            {name}
-          </Tooltip>
+            <Tooltip overlayClassName="display-name__tooltip" title={ ethAddress }>
+                { name }
+            </Tooltip>
         );
     }
-    return <div>{name}</div>;
+    return <div>{ name }</div>;
 };
 
 DisplayName.propTypes = {

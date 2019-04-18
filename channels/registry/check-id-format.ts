@@ -10,13 +10,13 @@ export const checkIdFormatSchema = {
   required: ['akashaId'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, checkIdFormatSchema, { throwError: true });
 
     const idValid = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.ProfileRegistrar.check_format(data.akashaId);
+      .instance.ProfileRegistrar.check_format(data.akashaId);
     return { idValid, akashaId: data.akashaId };
   });
 

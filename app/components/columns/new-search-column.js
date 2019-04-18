@@ -16,7 +16,9 @@ class NewSearchColumn extends Component {
         this.props.dashboardResetNewColumn();
     }
 
-    getInputRef = (el) => { this.input = el; };
+    getInputRef = (el) => {
+        this.input = el;
+    };
 
     onSearch = value => this.props.onSearch(value, true);
 
@@ -55,50 +57,50 @@ class NewSearchColumn extends Component {
         const placeholderMessage = intl.formatMessage(entryMessages.noEntries);
 
         return (
-          <div className="new-search-column">
-            <div className="new-search-column__search-wrapper">
-              <AutoComplete
-                className="new-search-column__auto-complete"
-                dataSource={dataSource}
-                onChange={this.onChange}
-                onSearch={this.onSearch}
-                onSelect={this.onSelect}
-                size="large"
-                value={newColumn.get('value')}
-              >
-                <Input
-                  onKeyDown={this.onKeyDown}
-                  ref={this.getInputRef}
-                  suffix={(
-                    <div
-                      className="flex-center content-link new-search-column__search-icon-wrapper"
-                      onClick={this.onSearchEntries}
+            <div className="new-search-column">
+                <div className="new-search-column__search-wrapper">
+                    <AutoComplete
+                        className="new-search-column__auto-complete"
+                        dataSource={ dataSource }
+                        onChange={ this.onChange }
+                        onSearch={ this.onSearch }
+                        onSelect={ this.onSelect }
+                        size="large"
+                        value={ newColumn.get('value') }
                     >
-                      <Icon className="new-search-column__icon" type="search" />
-                    </div>
-                  )}
-                />
-              </AutoComplete>
+                        <Input
+                            onKeyDown={ this.onKeyDown }
+                            ref={ this.getInputRef }
+                            suffix={ (
+                                <div
+                                    className="flex-center content-link new-search-column__search-icon-wrapper"
+                                    onClick={ this.onSearchEntries }
+                                >
+                                    <Icon className="new-search-column__icon" type="search"/>
+                                </div>
+                            ) }
+                        />
+                    </AutoComplete>
+                </div>
+                { column.get('value') &&
+                <div className="flex-center-y new-search-column__preview-title">
+                    { previewMessage }
+                </div>
+                }
+                { column.get('value') &&
+                <div className="new-search-column__list-wrapper">
+                    <EntryList
+                        contextId="newColumn"
+                        entries={ previewEntries }
+                        fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                        fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                        fetchMoreEntries={ this.onLoadMore }
+                        moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                        placeholderMessage={ placeholderMessage }
+                    />
+                </div>
+                }
             </div>
-            {column.get('value') &&
-              <div className="flex-center-y new-search-column__preview-title">
-                {previewMessage}
-              </div>
-            }
-            {column.get('value') &&
-              <div className="new-search-column__list-wrapper">
-                <EntryList
-                  contextId="newColumn"
-                  entries={previewEntries}
-                  fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-                  fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-                  fetchMoreEntries={this.onLoadMore}
-                  moreEntries={column.getIn(['flags', 'moreEntries'])}
-                  placeholderMessage={placeholderMessage}
-                />
-              </div>
-            }
-          </div>
         );
     }
 }

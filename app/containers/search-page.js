@@ -6,8 +6,13 @@ import { Input, Tabs } from 'antd';
 import { EntryList, Icon, ProfileList, TagList } from '../components';
 import { showPreview } from '../local-flux/actions/app-actions';
 import { dashboardSearch } from '../local-flux/actions/dashboard-actions';
-import { searchMoreQuery, searchProfiles, searchQuery, searchResetResults,
-    searchTags } from '../local-flux/actions/search-actions';
+import {
+    searchMoreQuery,
+    searchProfiles,
+    searchQuery,
+    searchResetResults,
+    searchTags
+} from '../local-flux/actions/search-actions';
 import { searchSelectors } from '../local-flux/selectors';
 import { generalMessages, searchMessages } from '../locale-data/messages';
 import { SEARCH } from '../constants/context-types';
@@ -53,52 +58,53 @@ class SearchPage extends Component {
         const { entries, resultsCount, fetchingResults, fetchingMoreResults, searchOffset } = this.props;
         const moreEntries = resultsCount > searchOffset;
         return (
-          <EntryList
-            contextId={SEARCH}
-            entries={entries}
-            fetchingEntries={fetchingResults}
-            fetchingMoreEntries={fetchingMoreResults}
-            fetchMoreEntries={this.props.searchMoreQuery}
-            masonry
-            searching
-            moreEntries={moreEntries}
-            style={{ padding: '12px 0px' }}
-            cardStyle={{
-                width: 320
-            }}
-          />
+            <EntryList
+                contextId={ SEARCH }
+                entries={ entries }
+                fetchingEntries={ fetchingResults }
+                fetchingMoreEntries={ fetchingMoreResults }
+                fetchMoreEntries={ this.props.searchMoreQuery }
+                masonry
+                searching
+                moreEntries={ moreEntries }
+                style={ { padding: '12px 0px' } }
+                cardStyle={ {
+                    width: 320
+                } }
+            />
         );
     }
 
     renderProfileResults () {
         const { fetchingResults, profiles } = this.props;
         return (
-          <ProfileList
-            context={SEARCH}
-            fetchingProfiles={fetchingResults}
-            fetchingMoreProfiles={false}
-            fetchMoreProfiles={() => {}}
-            masonry
-            searching
-            moreProfiles={false}
-            profiles={profiles}
-            style={{ padding: '12px 0px' }}
-          />
+            <ProfileList
+                context={ SEARCH }
+                fetchingProfiles={ fetchingResults }
+                fetchingMoreProfiles={ false }
+                fetchMoreProfiles={ () => {
+                } }
+                masonry
+                searching
+                moreProfiles={ false }
+                profiles={ profiles }
+                style={ { padding: '12px 0px' } }
+            />
         );
     }
 
     renderTagResults () {
         const { fetchingResults, tagEntriesCount, tags, query } = this.props;
         return (
-          <TagList
-            dashboardSearch={this.props.dashboardSearch}
-            entriesCount={tagEntriesCount}
-            fetchingTags={fetchingResults}
-            showPreview={this.props.showPreview}
-            tags={tags}
-            searching
-            searchQuery={query}
-          />
+            <TagList
+                dashboardSearch={ this.props.dashboardSearch }
+                entriesCount={ tagEntriesCount }
+                fetchingTags={ fetchingResults }
+                showPreview={ this.props.showPreview }
+                tags={ tags }
+                searching
+                searchQuery={ query }
+            />
         );
     }
 
@@ -107,33 +113,33 @@ class SearchPage extends Component {
         const { activeTab } = this.state;
 
         return (
-          <div className="search">
-            <div className="search__content">
-              <div className="search__input-wrapper">
-                <Input
-                  onChange={this.onSearchChange}
-                  placeholder={intl.formatMessage(searchMessages.searchSomething)}
-                  prefix={<Icon type="search" />}
-                  size="large"
-                  value={query}
-                />
-              </div>
-              <Tabs
-                activeKey={activeTab}
-                onChange={this.selectTab}
-              >
-                <TabPane key="entries" tab={intl.formatMessage(generalMessages.entries)}>
-                  {this.renderEntryResults()}
-                </TabPane>
-                <TabPane key="people" tab={intl.formatMessage(generalMessages.people)}>
-                  {this.renderProfileResults()}
-                </TabPane>
-                <TabPane key="tags" tab={intl.formatMessage(generalMessages.tags)}>
-                  {this.renderTagResults()}
-                </TabPane>
-              </Tabs>
+            <div className="search">
+                <div className="search__content">
+                    <div className="search__input-wrapper">
+                        <Input
+                            onChange={ this.onSearchChange }
+                            placeholder={ intl.formatMessage(searchMessages.searchSomething) }
+                            prefix={ <Icon type="search"/> }
+                            size="large"
+                            value={ query }
+                        />
+                    </div>
+                    <Tabs
+                        activeKey={ activeTab }
+                        onChange={ this.selectTab }
+                    >
+                        <TabPane key="entries" tab={ intl.formatMessage(generalMessages.entries) }>
+                            { this.renderEntryResults() }
+                        </TabPane>
+                        <TabPane key="people" tab={ intl.formatMessage(generalMessages.people) }>
+                            { this.renderProfileResults() }
+                        </TabPane>
+                        <TabPane key="tags" tab={ intl.formatMessage(generalMessages.tags) }>
+                            { this.renderTagResults() }
+                        </TabPane>
+                    </Tabs>
+                </div>
             </div>
-          </div>
         );
     }
 }

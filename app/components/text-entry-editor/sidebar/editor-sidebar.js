@@ -11,6 +11,7 @@ class SideBar extends Component {
             sidebarVisible: true
         };
     }
+
     shouldComponentUpdate (nextProps, nextState) {
         return (nextState.top !== this.state.top) ||
             (nextState.left !== this.state.left) ||
@@ -19,14 +20,17 @@ class SideBar extends Component {
             (nextProps.sidebarReposition !== this.props.sidebarReposition) ||
             (nextProps.error !== this.props.error);
     }
+
     componentDidUpdate () {
         this.updateSidebarPosition(this.props);
     }
+
     componentWillUnmount () {
         this.setState({
             sidebarVisible: false
         });
     }
+
     onChange = (editorState) => {
         this.props.onChange(editorState);
         this.updateSidebarPosition();
@@ -44,6 +48,7 @@ class SideBar extends Component {
         }
         return null;
     }
+
     getValidSidebarPlugins () {
         const plugins = [];
         this.props.plugins.forEach((plugin) => {
@@ -53,6 +58,7 @@ class SideBar extends Component {
         });
         return plugins;
     }
+
     setSidebarPosition () {
         const { editorState } = this.props;
         const selection = editorState.getSelection();
@@ -61,7 +67,7 @@ class SideBar extends Component {
         const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
         const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
         if (!selection.getHasFocus()) {
-            element = document.querySelector(`div[data-offset-key='${selection.anchorKey}-0-0']`);
+            element = document.querySelector(`div[data-offset-key='${ selection.anchorKey }-0-0']`);
         }
         const noElement = !element || !container || isBlackListed;
         if (noElement) {
@@ -100,35 +106,38 @@ class SideBar extends Component {
             return null;
         }
         return (
-          <div ref={(container) => { this.container = container; }} >
-            <div
-              style={{
-                  top: `${this.state.top}px`,
-                  left: `${this.state.left}px`,
-                  zIndex: 9,
-                  transition: 'top 0.13s ease-in-out',
-              }}
-              className="sidebar__menu"
-            >
-              {this.props.error &&
-                <div className="sidebar__image-error">{this.props.error}</div>
-              }
-              <ul className="sidebar__sidemenu-wrapper">
-                <SideMenu
-                  editorState={this.props.editorState}
-                  onChange={this.onChange}
-                  plugins={this.getValidSidebarPlugins()}
-                  showTerms={this.props.showTerms}
-                  onError={this.props.onError}
-                  onSidebarToggle={this.props.onSidebarToggle}
-                  editorHasFocus={this.props.editorHasFocus}
-                />
-              </ul>
+            <div ref={ (container) => {
+                this.container = container;
+            } }>
+                <div
+                    style={ {
+                        top: `${ this.state.top }px`,
+                        left: `${ this.state.left }px`,
+                        zIndex: 9,
+                        transition: 'top 0.13s ease-in-out',
+                    } }
+                    className="sidebar__menu"
+                >
+                    { this.props.error &&
+                    <div className="sidebar__image-error">{ this.props.error }</div>
+                    }
+                    <ul className="sidebar__sidemenu-wrapper">
+                        <SideMenu
+                            editorState={ this.props.editorState }
+                            onChange={ this.onChange }
+                            plugins={ this.getValidSidebarPlugins() }
+                            showTerms={ this.props.showTerms }
+                            onError={ this.props.onError }
+                            onSidebarToggle={ this.props.onSidebarToggle }
+                            editorHasFocus={ this.props.editorHasFocus }
+                        />
+                    </ul>
+                </div>
             </div>
-          </div>
         );
     }
 }
+
 SideBar.propTypes = {
     onChange: PropTypes.func,
     editorState: PropTypes.shape(),

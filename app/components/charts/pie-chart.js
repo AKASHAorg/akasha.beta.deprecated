@@ -32,7 +32,9 @@ class PieChart extends Component {
     componentDidUpdate () {
         const { data } = this.props;
         const { chart } = this.state;
-        data.datasets.forEach((dataset, i) => { chart.data.datasets[i].data = dataset.data; });
+        data.datasets.forEach((dataset, i) => {
+            chart.data.datasets[i].data = dataset.data;
+        });
 
         chart.data.labels = data.labels;
         chart.update();
@@ -43,12 +45,14 @@ class PieChart extends Component {
         chart.destroy();
     }
 
-    getCanvasRef = (el) => { this.canvas = el; };
+    getCanvasRef = (el) => {
+        this.canvas = el;
+    };
 
     render () {
         const { data, options, ...other } = this.props;
         return (
-          <canvas ref={this.getCanvasRef} {...other} />
+            <canvas ref={ this.getCanvasRef } { ...other } />
         );
     }
 }

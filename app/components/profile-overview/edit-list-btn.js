@@ -49,72 +49,72 @@ class EditListBtn extends Component {
         const { getFieldDecorator } = form;
 
         const newListForm = (
-          <div className="edit-list-btn__form">
+            <div className="edit-list-btn__form">
             <span className="edit-list-btn__header">
-              {intl.formatMessage(listMessages.editList)}
+              { intl.formatMessage(listMessages.editList) }
             </span>
-            <Form>
-              <Form.Item
-                label={intl.formatMessage(listMessages.listName)}
-                colon={false}
-              >
-                {getFieldDecorator('name')(
-                  <Input
-                    autoFocus
-                    onKeyDown={this.onKeyDown}
-                    maxLength="70"
-                  />
-                )}
-              </Form.Item>
-              <Form.Item
-                label={intl.formatMessage(listMessages.shortDescription)}
-                colon={false}
-              >
-                {getFieldDecorator('description')(
-                  <Input
-                    onKeyDown={this.onKeyDown}
-                    maxLength="100"
-                  />
-                )}
-              </Form.Item>
-              <div className="edit-list-btn__footer">
-                <div className="edit-list-btn__cancel-btn">
-                  <Button
-                    onClick={this.hide}
-                  >
-                    {intl.formatMessage(generalMessages.cancel)}
-                  </Button>
-                </div>
-                <div className="edit-list-btn__submit-btn">
-                  <Button
-                    htmlType="submit"
-                    onClick={this.handleSubmit}
-                    type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.save)}
-                  </Button>
-                </div>
-              </div>
-            </Form>
-          </div>
+                <Form>
+                    <Form.Item
+                        label={ intl.formatMessage(listMessages.listName) }
+                        colon={ false }
+                    >
+                        { getFieldDecorator('name')(
+                            <Input
+                                autoFocus
+                                onKeyDown={ this.onKeyDown }
+                                maxLength="70"
+                            />
+                        ) }
+                    </Form.Item>
+                    <Form.Item
+                        label={ intl.formatMessage(listMessages.shortDescription) }
+                        colon={ false }
+                    >
+                        { getFieldDecorator('description')(
+                            <Input
+                                onKeyDown={ this.onKeyDown }
+                                maxLength="100"
+                            />
+                        ) }
+                    </Form.Item>
+                    <div className="edit-list-btn__footer">
+                        <div className="edit-list-btn__cancel-btn">
+                            <Button
+                                onClick={ this.hide }
+                            >
+                                { intl.formatMessage(generalMessages.cancel) }
+                            </Button>
+                        </div>
+                        <div className="edit-list-btn__submit-btn">
+                            <Button
+                                htmlType="submit"
+                                onClick={ this.handleSubmit }
+                                type="primary"
+                            >
+                                { intl.formatMessage(generalMessages.save) }
+                            </Button>
+                        </div>
+                    </div>
+                </Form>
+            </div>
         );
 
         return (
-          <div className="edit-list-btn__edit">
-            <Popover
-              arrowPointAtCenter
-              placement="bottomRight"
-              content={this.wasVisible ? newListForm : null}
-              trigger="click"
-              visible={this.state.visible}
-              onVisibleChange={this.handleVisibleChange}
-            >
-              <Icon
-                className="content-link edit-list-btn__icon"
-                type="edit"
-              />
-            </Popover>
-          </div>
+            <div className="edit-list-btn__edit">
+                <Popover
+                    arrowPointAtCenter
+                    placement="bottomRight"
+                    content={ this.wasVisible ? newListForm : null }
+                    trigger="click"
+                    visible={ this.state.visible }
+                    onVisibleChange={ this.handleVisibleChange }
+                >
+                    <Icon
+                        className="content-link edit-list-btn__icon"
+                        type="edit"
+                    />
+                </Popover>
+            </div>
         );
     }
 }

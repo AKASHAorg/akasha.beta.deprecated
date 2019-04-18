@@ -87,35 +87,35 @@ class TagPopover extends Component {
         switch (content) {
             case DASHBOARDS:
                 return (
-                  <AddToBoard
-                    closePopover={this.closePopover}
-                    onNewDashboard={this.onNewDashboard}
-                    tag={tag}
-                  />
+                    <AddToBoard
+                        closePopover={ this.closePopover }
+                        onNewDashboard={ this.onNewDashboard }
+                        tag={ tag }
+                    />
                 );
             case NEW_DASHBOARD:
                 return (
-                  <NewDashboardForm
-                    onCancel={this.onAddToDashboard}
-                    tag={tag}
-                  />
+                    <NewDashboardForm
+                        onCancel={ this.onAddToDashboard }
+                        tag={ tag }
+                    />
                 );
             case MENU:
                 return (
-                  <div>
-                    <div
-                      className="popover-menu__item"
-                      onClick={this.onAddToDashboard}
-                    >
-                      <span>{intl.formatMessage(dashboardMessages.addToBoard)}</span>
+                    <div>
+                        <div
+                            className="popover-menu__item"
+                            onClick={ this.onAddToDashboard }
+                        >
+                            <span>{ intl.formatMessage(dashboardMessages.addToBoard) }</span>
+                        </div>
+                        <div
+                            className="popover-menu__item"
+                            onClick={ this.showPreview }
+                        >
+                            <span>{ intl.formatMessage(generalMessages.preview) }</span>
+                        </div>
                     </div>
-                    <div
-                      className="popover-menu__item"
-                      onClick={this.showPreview}
-                    >
-                      <span>{intl.formatMessage(generalMessages.preview)}</span>
-                    </div>
-                  </div>
                 );
             default:
                 return null;
@@ -129,19 +129,19 @@ class TagPopover extends Component {
         });
 
         return (
-          <Popover
-            content={this.wasVisible ? this.renderContent() : null}
-            getPopupContainer={() => containerRef || document.body}
-            onVisibleChange={this.onVisibleChange}
-            overlayClassName={overlayClassName}
-            placement="bottomLeft"
-            trigger="click"
-            visible={this.state.visible}
-          >
-            <Tag className="uppercase tag-popover__tag">
-              {tag}
-            </Tag>
-          </Popover>
+            <Popover
+                content={ this.wasVisible ? this.renderContent() : null }
+                getPopupContainer={ () => containerRef || document.body }
+                onVisibleChange={ this.onVisibleChange }
+                overlayClassName={ overlayClassName }
+                placement="bottomLeft"
+                trigger="click"
+                visible={ this.state.visible }
+            >
+                <Tag className="uppercase tag-popover__tag">
+                    { tag }
+                </Tag>
+            </Popover>
         );
     }
 }

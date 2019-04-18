@@ -1,6 +1,6 @@
 // @flow
-import { call, select, takeEvery, getContext } from 'redux-saga/effects';
-import { profileSelectors, settingsSelectors, externalProcessSelectors } from '../selectors';
+import { call, getContext, select, takeEvery } from 'redux-saga/effects';
+import { externalProcessSelectors, profileSelectors, settingsSelectors } from '../selectors';
 import { NOTIFICATIONS_MODULE } from '@akashaproject/common/constants';
 
 /*::

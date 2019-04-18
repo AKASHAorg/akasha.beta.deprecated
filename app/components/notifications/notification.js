@@ -36,17 +36,17 @@ class Notification extends Component {
                     const close = () => {
                         this.props.hideNotification(notif);
                     };
-                    const key = `open${Date.now()}`;
+                    const key = `open${ Date.now() }`;
                     const btnClose = () => {
                         notification.close(key);
                     };
                     notification.open({
                         message: (
                             <NotificationHighlightNote
-                                notif={notif}
-                                intl={intl}
-                                editNote={this.props.highlightEditNotes}
-                                btnClose={btnClose}
+                                notif={ notif }
+                                intl={ intl }
+                                editNote={ this.props.highlightEditNotes }
+                                btnClose={ btnClose }
                             />
                         ),
                         key,
@@ -58,6 +58,7 @@ class Notification extends Component {
             }
         }
     }
+
     render () {
         return null;
     }

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Button, Form, Input, InputNumber } from 'antd';
@@ -59,27 +58,27 @@ class TransferForm extends Component {
                 : intl.formatMessage(formMessages.maxAethAmount, { aeth: balance });
         const emptyInputs = !amount || !receiver;
         return (
-            <Form className="transfer-form" hideRequiredMark onSubmit={this.onSubmit}>
+            <Form className="transfer-form" hideRequiredMark onSubmit={ this.onSubmit }>
                 <FormItem
                     className="transfer-form__form-item"
-                    colon={false}
-                    label={intl.formatMessage(profileMessages.yourEthAddress)}
+                    colon={ false }
+                    label={ intl.formatMessage(profileMessages.yourEthAddress) }
                 >
                     <Input
                         className="transfer-form__input transfer-form__my-address"
                         readOnly
-                        value={ethAddress}
+                        value={ ethAddress }
                     />
-                    <div className="transfer-form__copy-button" onClick={this.onCopy}>
-                        {intl.formatMessage(generalMessages.copy)}
+                    <div className="transfer-form__copy-button" onClick={ this.onCopy }>
+                        { intl.formatMessage(generalMessages.copy) }
                     </div>
                 </FormItem>
                 <FormItem
                     className="transfer-form__form-item"
-                    colon={false}
-                    label={intl.formatMessage(profileMessages.sendTo)}
+                    colon={ false }
+                    label={ intl.formatMessage(profileMessages.sendTo) }
                 >
-                    {getFieldDecorator('receiver', {
+                    { getFieldDecorator('receiver', {
                         rules: [
                             {
                                 required: true,
@@ -87,22 +86,22 @@ class TransferForm extends Component {
                             }
                         ]
                     })(
-                        <AutoComplete dataSource={dataSource} onSearch={this.onSearch}>
+                        <AutoComplete dataSource={ dataSource } onSearch={ this.onSearch }>
                             <Input
                                 className="transfer-form__input"
-                                placeholder={intl.formatMessage(profileMessages.receiverPlaceholder)}
+                                placeholder={ intl.formatMessage(profileMessages.receiverPlaceholder) }
                             />
                         </AutoComplete>
-                    )}
+                    ) }
                 </FormItem>
                 <FormItem
                     className="transfer-form__form-item"
-                    colon={false}
-                    help={amountError || extra}
-                    label={intl.formatMessage(generalMessages.amount)}
-                    validateStatus={amountError ? 'error' : ''}
+                    colon={ false }
+                    help={ amountError || extra }
+                    label={ intl.formatMessage(generalMessages.amount) }
+                    validateStatus={ amountError ? 'error' : '' }
                 >
-                    {getFieldDecorator('amount', {
+                    { getFieldDecorator('amount', {
                         rules: [
                             {
                                 required: true,
@@ -112,27 +111,27 @@ class TransferForm extends Component {
                     })(
                         <InputNumber
                             className="transfer-form__input"
-                            min={0}
-                            max={balanceToNumber(balance, 5)}
-                            placeholder={intl.formatMessage(profileMessages.amountPlaceholder)}
-                            step={0.01}
-                            maxLength={22}
+                            min={ 0 }
+                            max={ balanceToNumber(balance, 5) }
+                            placeholder={ intl.formatMessage(profileMessages.amountPlaceholder) }
+                            step={ 0.01 }
+                            maxLength={ 22 }
                         />
-                    )}
+                    ) }
                 </FormItem>
                 <div className="transfer-form__actions">
-                    <Button className="transfer-form__button" onClick={onCancel}>
-                        {intl.formatMessage(generalMessages.cancel)}
+                    <Button className="transfer-form__button" onClick={ onCancel }>
+                        { intl.formatMessage(generalMessages.cancel) }
                     </Button>
                     <Button
                         className="transfer-form__button"
-                        disabled={!!amountError || pendingTransfer || emptyInputs}
+                        disabled={ !!amountError || pendingTransfer || emptyInputs }
                         htmlType="submit"
-                        loading={pendingTransfer}
-                        onClick={this.onSubmit}
+                        loading={ pendingTransfer }
+                        onClick={ this.onSubmit }
                         type="primary"
                     >
-                        {intl.formatMessage(generalMessages.send)}
+                        { intl.formatMessage(generalMessages.send) }
                     </Button>
                 </div>
             </Form>

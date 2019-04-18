@@ -1,6 +1,7 @@
 // @flow strict
 
 import * as React from 'react';
+
 /*::
     type Props = {
         children: React.Node
@@ -10,7 +11,7 @@ import * as React from 'react';
 function EditorPageLayout (props /* : Props */) {
     return (
         <>
-            <div className="page-layout editor-page-layout">{props.children}</div>
+            <div className="page-layout editor-page-layout">{ props.children }</div>
         </>
     );
 }

@@ -21,8 +21,10 @@ import reqService from '../../local-flux/services/channel-request-service';
 
 function withRequest (WrappedComponent /* : React.AbstractComponent <*> */) {
     const requests = reqService.requestIds;
+
     class WithRequestWrapper extends React.Component /* :: <WrapperComponentProps> */ {
         requestsQueue /* : Array<Object> */ = [];
+
         componentDidUpdate () {
             // @todo IMPORTANT add a guard and check if it makes sense to iterate through reqQueue...
             // i.e. a relevant part of the store changed...
@@ -30,10 +32,12 @@ function withRequest (WrappedComponent /* : React.AbstractComponent <*> */) {
                 this.dispatchAction(req.action, req.condition);
             });
         }
+
         shouldComponentUpdate () {
             //@todo: IMPORTANT should update only if request state modified
             return true;
         }
+
         addRequestToQueue = (action, condition) => {
             const targetAction = this.requestsQueue.find(req => req.action.type === action.type);
             if (!targetAction) {
@@ -85,30 +89,34 @@ function withRequest (WrappedComponent /* : React.AbstractComponent <*> */) {
         getRequestIdStatus = reqId => {
             // @todo
         };
+
         render () {
             const { forwardedRef, state, ...other } = this.props;
             return (
                 <WrappedComponent
-                    ref={forwardedRef}
-                    dispatchAction={this.dispatchAction}
-                    getActionStatus={this.getActionStatus}
-                    {...other}
+                    ref={ forwardedRef }
+                    dispatchAction={ this.dispatchAction }
+                    getActionStatus={ this.getActionStatus }
+                    { ...other }
                 />
             );
         }
     }
+
     const mapStateToProps = (state /* : Store<any, any> */) => ({ state });
 
     const forwardRef = (props, ref) => (
         <MainContext.Consumer>
-            {({ logger, web3 }) => (
-                <WithRequestWrapper forwardedRef={ref} web3={web3} logger={logger} {...props} />
-            )}
+            { ({ logger, web3 }) => (
+                <WithRequestWrapper forwardedRef={ ref } web3={ web3 }
+                                    logger={ logger } { ...props } />
+            ) }
         </MainContext.Consumer>
     );
 
     return connect(mapStateToProps)(React.forwardRef(forwardRef));
 }
+
 export default withRequest;
 
 // const useRequestHook = () => {

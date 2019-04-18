@@ -9,7 +9,7 @@ export const voteCostS = {
   minItems: 1,
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(
     function* (data: number[]) {
       const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -18,10 +18,10 @@ export default function init(sp, getService) {
       const web3Api = getService(CORE_MODULE.WEB3_API);
       const requests = data.map((w) => {
         return contracts.instance.Votes.getEssenceCost(w)
-        .then((cost) => {
-          const ethCost = web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(cost), 'ether');
-          return { cost: ethCost.toString(10), weight: w };
-        });
+          .then((cost) => {
+            const ethCost = web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(cost), 'ether');
+            return { cost: ethCost.toString(10), weight: w };
+          });
       });
 
       const collection = yield Promise.all(requests);

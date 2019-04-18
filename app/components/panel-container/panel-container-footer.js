@@ -1,24 +1,24 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Card, Row, Col } from 'antd';
+import { Col, Row } from 'antd';
 import styles from './panel-container-footer.scss';
 
 const PanelContainerFooter = (props) => {
     const { footerHeight, children, leftActions, className } = props;
     return (
-      <Row
-        type="flex"
-        className={`${styles.root} ${className}`}
-      >
-        <Col span={6} className={`${styles.leftActions}`}>
-          {leftActions}
-        </Col>
-        <Col span={18} className={`${styles.rightActions}`}>
-          <Row type="flex" justify="end">
-            {children}
-          </Row>
-        </Col>
-      </Row>
+        <Row
+            type="flex"
+            className={ `${ styles.root } ${ className }` }
+        >
+            <Col span={ 6 } className={ `${ styles.leftActions }` }>
+                { leftActions }
+            </Col>
+            <Col span={ 18 } className={ `${ styles.rightActions }` }>
+                <Row type="flex" justify="end">
+                    { children }
+                </Row>
+            </Col>
+        </Row>
     );
 };
 

@@ -2,16 +2,36 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Button, Input, Form } from 'antd';
+import { Button, Form, Input } from 'antd';
 import classNames from 'classnames';
 import * as columnTypes from '../../constants/columns';
 import { listAdd } from '../../local-flux/actions/list-actions';
-import { dashboardAddColumn, dashboardAddNewColumn, dashboardDeleteNewColumn,
-    dashboardResetNewColumn, dashboardUpdateNewColumn } from '../../local-flux/actions/dashboard-actions';
-import { entryListIterator, entryMoreListIterator, entryMoreProfileIterator, entryMoreTagIterator,
-    entryProfileIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { searchProfiles, searchResetResults, searchTags } from '../../local-flux/actions/search-actions';
-import { dashboardSelectors, entrySelectors, listSelectors, searchSelectors } from '../../local-flux/selectors';
+import {
+    dashboardAddColumn,
+    dashboardAddNewColumn,
+    dashboardDeleteNewColumn,
+    dashboardResetNewColumn,
+    dashboardUpdateNewColumn
+} from '../../local-flux/actions/dashboard-actions';
+import {
+    entryListIterator,
+    entryMoreListIterator,
+    entryMoreProfileIterator,
+    entryMoreTagIterator,
+    entryProfileIterator,
+    entryTagIterator
+} from '../../local-flux/actions/entry-actions';
+import {
+    searchProfiles,
+    searchResetResults,
+    searchTags
+} from '../../local-flux/actions/search-actions';
+import {
+    dashboardSelectors,
+    entrySelectors,
+    listSelectors,
+    searchSelectors
+} from '../../local-flux/selectors';
 import { dashboardMessages, generalMessages, listMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import { Icon, NewSearchColumn, NewSelectColumn } from '../';
@@ -42,8 +62,10 @@ class NewColumn extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) { // eslint-disable-line complexity
-        const { activeDashboard, column, dashboardId, lists, newColumn, previewEntries, profileResults,
-            tagResults } = nextProps;
+        const {
+            activeDashboard, column, dashboardId, lists, newColumn, previewEntries, profileResults,
+            tagResults
+        } = nextProps;
         const { newListDescription, newListName, selectedColumn } = nextState;
         if (
             (nextProps.activeDashboardId !== this.props.activeDashboardId) ||
@@ -145,41 +167,41 @@ class NewColumn extends Component {
     };
 
     renderPlaceholder = () => (
-      <div className="new-column">
-        <div className="new-column__inner new-column__inner_placeholder">
-          <div className="new-column__placeholder-background">
-            <div className="flex-center-x new-column__placeholder-title">
-              {this.props.intl.formatMessage(dashboardMessages.noColumnsTitle)}
+        <div className="new-column">
+            <div className="new-column__inner new-column__inner_placeholder">
+                <div className="new-column__placeholder-background">
+                    <div className="flex-center-x new-column__placeholder-title">
+                        { this.props.intl.formatMessage(dashboardMessages.noColumnsTitle) }
+                    </div>
+                    <div className="flex-center-x new-column__placeholder-message">
+                        { this.props.intl.formatMessage(dashboardMessages.noColumns) }
+                    </div>
+                    <div className="flex-center-x">
+                        <Button
+                            onClick={ this.props.dashboardAddNewColumn }
+                            type="primary"
+                        >
+                            { this.props.intl.formatMessage(dashboardMessages.addFirstColumn) }
+                        </Button>
+                    </div>
+                </div>
             </div>
-            <div className="flex-center-x new-column__placeholder-message">
-              {this.props.intl.formatMessage(dashboardMessages.noColumns)}
-            </div>
-            <div className="flex-center-x">
-              <Button
-                onClick={this.props.dashboardAddNewColumn}
-                type="primary"
-              >
-                {this.props.intl.formatMessage(dashboardMessages.addFirstColumn)}
-              </Button>
-            </div>
-          </div>
         </div>
-      </div>
     );
 
     renderNewColumn = () => (
-      <div className="new-column">
-        <div className="new-column__inner">
-          <div
-            className="flex-center new-column__add-column"
-            onClick={this.props.dashboardAddNewColumn}
-          >
+        <div className="new-column">
+            <div className="new-column__inner">
+                <div
+                    className="flex-center new-column__add-column"
+                    onClick={ this.props.dashboardAddNewColumn }
+                >
             <span>
-              {this.props.intl.formatMessage(dashboardMessages.addColumn)}
+              { this.props.intl.formatMessage(dashboardMessages.addColumn) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     renderListItem = (columnType) => {
@@ -190,20 +212,22 @@ class NewColumn extends Component {
         });
 
         return (
-          <div
-            className={className}
-            key={columnType}
-            onClick={() => this.onSelectColumn(columnType)}
-          >
-            <Icon className="dark-icon new-column__icon" type={iconTypes[columnType]} />
-            <span>{intl.formatMessage(dashboardMessages[columnType])}</span>
-          </div>
+            <div
+                className={ className }
+                key={ columnType }
+                onClick={ () => this.onSelectColumn(columnType) }
+            >
+                <Icon className="dark-icon new-column__icon" type={ iconTypes[columnType] }/>
+                <span>{ intl.formatMessage(dashboardMessages[columnType]) }</span>
+            </div>
         );
     };
 
     render () { // eslint-disable-line complexity
-        const { activeDashboard, column, entries, dashboardId, intl, lists, newColumn, previewEntries,
-            profileResults, tagResults } = this.props;
+        const {
+            activeDashboard, column, entries, dashboardId, intl, lists, newColumn, previewEntries,
+            profileResults, tagResults
+        } = this.props;
         if (!activeDashboard || (dashboardId !== activeDashboard.get('id'))) {
             return null;
         }
@@ -239,14 +263,14 @@ class NewColumn extends Component {
                     displayName
                 });
                 component = (
-                  <NewSearchColumn
-                    dataSource={profileResults}
-                    entryIterator={this.props.entryProfileIterator}
-                    entryMoreIterator={this.props.entryMoreProfileIterator}
-                    onSearch={this.props.searchProfiles}
-                    previewMessage={previewMessage}
-                    {...props}
-                  />
+                    <NewSearchColumn
+                        dataSource={ profileResults }
+                        entryIterator={ this.props.entryProfileIterator }
+                        entryMoreIterator={ this.props.entryMoreProfileIterator }
+                        onSearch={ this.props.searchProfiles }
+                        previewMessage={ previewMessage }
+                        { ...props }
+                    />
                 );
                 title = dashboardMessages.addNewProfileColumn;
                 subtitle = dashboardMessages.addNewProfileColumnSubtitle;
@@ -254,14 +278,14 @@ class NewColumn extends Component {
             case columnTypes.tag:
                 previewMessage = intl.formatMessage(dashboardMessages.previewTag, { tagName: value });
                 component = (
-                  <NewSearchColumn
-                    dataSource={tagResults}
-                    entryIterator={this.props.entryTagIterator}
-                    entryMoreIterator={this.props.entryMoreTagIterator}
-                    onSearch={this.props.searchTags}
-                    previewMessage={previewMessage}
-                    {...props}
-                  />
+                    <NewSearchColumn
+                        dataSource={ tagResults }
+                        entryIterator={ this.props.entryTagIterator }
+                        entryMoreIterator={ this.props.entryMoreTagIterator }
+                        onSearch={ this.props.searchTags }
+                        previewMessage={ previewMessage }
+                        { ...props }
+                    />
                 );
                 title = dashboardMessages.addNewTagColumn;
                 subtitle = dashboardMessages.addNewTagColumnSubtitle;
@@ -270,41 +294,41 @@ class NewColumn extends Component {
                 previewMessage = intl.formatMessage(dashboardMessages.previewList, { listName });
                 component = (lists.size !== 0) ?
                     (
-                      <NewSelectColumn
-                        entryIterator={this.props.entryListIterator}
-                        entryMoreIterator={this.props.entryMoreListIterator}
-                        options={lists}
-                        previewMessage={previewMessage}
-                        {...props}
-                      />
+                        <NewSelectColumn
+                            entryIterator={ this.props.entryListIterator }
+                            entryMoreIterator={ this.props.entryMoreListIterator }
+                            options={ lists }
+                            previewMessage={ previewMessage }
+                            { ...props }
+                        />
                     ) :
                     (
-                      <div className="new-column__new-list">
-                        <Form>
-                          <Form.Item
-                            label={intl.formatMessage(listMessages.listName)}
-                            colon={false}
-                          >
-                            <div className="new-column__new-list-input">
-                              <Input
-                                value={this.state.newListName}
-                                onChange={this.onListNameChange}
-                              />
-                            </div>
-                          </Form.Item>
-                          <Form.Item
-                            label={intl.formatMessage(listMessages.shortDescription)}
-                            colon={false}
-                          >
-                            <div className="new-column__new-list-input">
-                              <Input
-                                value={this.state.newListDescription}
-                                onChange={this.onListDescriptionChange}
-                              />
-                            </div>
-                          </Form.Item>
-                        </Form>
-                      </div>
+                        <div className="new-column__new-list">
+                            <Form>
+                                <Form.Item
+                                    label={ intl.formatMessage(listMessages.listName) }
+                                    colon={ false }
+                                >
+                                    <div className="new-column__new-list-input">
+                                        <Input
+                                            value={ this.state.newListName }
+                                            onChange={ this.onListNameChange }
+                                        />
+                                    </div>
+                                </Form.Item>
+                                <Form.Item
+                                    label={ intl.formatMessage(listMessages.shortDescription) }
+                                    colon={ false }
+                                >
+                                    <div className="new-column__new-list-input">
+                                        <Input
+                                            value={ this.state.newListDescription }
+                                            onChange={ this.onListDescriptionChange }
+                                        />
+                                    </div>
+                                </Form.Item>
+                            </Form>
+                        </div>
                     );
                 title = dashboardMessages.addNewListColumn;
                 subtitle = (lists.size !== 0) ?
@@ -318,42 +342,42 @@ class NewColumn extends Component {
         }
 
         return (
-          <div className="new-column">
-            <div className="new-column__inner">
-              <div className="new-column__header">
-                <div className="flex-center-y new-column__title">
-                  {intl.formatMessage(title)}
+            <div className="new-column">
+                <div className="new-column__inner">
+                    <div className="new-column__header">
+                        <div className="flex-center-y new-column__title">
+                            { intl.formatMessage(title) }
+                        </div>
+                        <div className="new-column__subtitle">
+                            { intl.formatMessage(subtitle) }
+                        </div>
+                    </div>
+                    <div className="new-column__content">
+                        { component }
+                        { !component &&
+                        <div className="new-column__list">
+                            { columns.map(this.renderListItem) }
+                        </div>
+                        }
+                        <div className="new-column__actions">
+                            <Button
+                                className="new-column__button"
+                                onClick={ this.onCancel }
+                            >
+                                { intl.formatMessage(generalMessages.cancel) }
+                            </Button>
+                            <Button
+                                className="new-column__button"
+                                disabled={ this.isDisabled() }
+                                onClick={ this.onAddColumn }
+                                type="primary"
+                            >
+                                { intl.formatMessage(generalMessages.add) }
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-                <div className="new-column__subtitle">
-                  {intl.formatMessage(subtitle)}
-                </div>
-              </div>
-              <div className="new-column__content">
-                {component}
-                {!component &&
-                  <div className="new-column__list">
-                    {columns.map(this.renderListItem)}
-                  </div>
-                }
-                <div className="new-column__actions">
-                  <Button
-                    className="new-column__button"
-                    onClick={this.onCancel}
-                  >
-                    {intl.formatMessage(generalMessages.cancel)}
-                  </Button>
-                  <Button
-                    className="new-column__button"
-                    disabled={this.isDisabled()}
-                    onClick={this.onAddColumn}
-                    type="primary"
-                  >
-                    {intl.formatMessage(generalMessages.add)}
-                  </Button>
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 }

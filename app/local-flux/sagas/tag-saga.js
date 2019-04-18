@@ -1,6 +1,6 @@
 // @flow
-import { call, takeEvery, takeLatest, getContext } from 'redux-saga/effects';
-import { TAGS_MODULE, ENTRY_MODULE } from '@akashaproject/common/constants';
+import { call, getContext, takeEvery, takeLatest } from 'redux-saga/effects';
+import { ENTRY_MODULE, TAGS_MODULE } from '@akashaproject/common/constants';
 // import { profileSelectors } from '../selectors';
 
 /*::

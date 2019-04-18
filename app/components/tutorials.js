@@ -30,6 +30,7 @@ class Tutorials extends Component {
             iconClassName: 'web'
         }];
     }
+
     componentDidMount = () => {
         this.interval = setInterval(this.tick, 15000);
     }
@@ -40,34 +41,36 @@ class Tutorials extends Component {
         const { currentSlide } = this.state;
         this.setState({ currentSlide: currentSlide === 3 ? 0 : currentSlide + 1 });
     }
+
     render () {
         const { theme } = this.props;
         const containerClassName = 'intro_bg';
         const slider = this.slides.map((slide, key) =>
             (<div
-              className={`${styles.slide_item} ${styles[theme]} row between-xs`}
-              key={slide.iconClassName}
-              style={{ opacity: (key === this.state.currentSlide) ? 1 : 0 }}
-                >
-              <div className="col-xs-12">
-                <h1>
-                  {slide.title}
-                </h1>
-              </div>
-              <div className="col-xs-12">
-                <div className={`${styles[`${slide.iconClassName}_${theme}`]} ${styles.slide_icon}`} />
-              </div>
-              <div className="col-xs-12">
-                <p className={`${styles.slide_text}`} >
-                  {slide.content}
-                </p>
-              </div>
+                className={ `${ styles.slide_item } ${ styles[theme] } row between-xs` }
+                key={ slide.iconClassName }
+                style={ { opacity: (key === this.state.currentSlide) ? 1 : 0 } }
+            >
+                <div className="col-xs-12">
+                    <h1>
+                        { slide.title }
+                    </h1>
+                </div>
+                <div className="col-xs-12">
+                    <div
+                        className={ `${ styles[`${ slide.iconClassName }_${ theme }`] } ${ styles.slide_icon }` }/>
+                </div>
+                <div className="col-xs-12">
+                    <p className={ `${ styles.slide_text }` }>
+                        { slide.content }
+                    </p>
+                </div>
             </div>)
         );
         return (
-          <div className={`${styles.root} ${styles[`${containerClassName}_${theme}`]}`} >
-            {slider}
-          </div>
+            <div className={ `${ styles.root } ${ styles[`${ containerClassName }_${ theme }`] }` }>
+                { slider }
+            </div>
         );
     }
 }

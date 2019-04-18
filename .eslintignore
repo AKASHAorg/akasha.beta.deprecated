@@ -7,3 +7,5 @@ ipfs-connector/**
 contracts.sol/**
 main/**
 *.config.js
+dapp
+channels

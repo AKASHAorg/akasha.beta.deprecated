@@ -9,13 +9,13 @@ export const canCreateSchema = {
   },
   required: ['ethAddress'],
 };
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, canCreateSchema, { throwError: true });
 
     const can = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.canCreate(data.ethAddress);
+      .instance.Tags.canCreate(data.ethAddress);
     return { can };
   });
 

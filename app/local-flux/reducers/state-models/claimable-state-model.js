@@ -9,7 +9,7 @@ export const ClaimableEntry = Record({
 
 export const ClaimableState = Record({
     entriesLoading: List(),
-    entriesLoadingMore: List(),    
+    entriesLoadingMore: List(),
     entryList: List(),
     moreEntries: null,
 });

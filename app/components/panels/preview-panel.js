@@ -14,7 +14,10 @@ import withRequest from '../high-order-components/with-request';
 class PreviewPanel extends Component {
     componentDidMount () {
         const { preview, column } = this.props;
-        this.props.dispatchAction(entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column }));
+        this.props.dispatchAction(entryTagIterator({
+            id: 'previewColumn',
+            value: preview.get('value'), ...column
+        }));
     }
 
     componentClickAway = () => {
@@ -23,34 +26,37 @@ class PreviewPanel extends Component {
 
     loadMoreEntries = () => {
         const { column, preview } = this.props;
-        this.props.dispatchAction(entryTagIterator({ id: 'previewColumn', value: preview.get('value'), ...column }));
+        this.props.dispatchAction(entryTagIterator({
+            id: 'previewColumn',
+            value: preview.get('value'), ...column
+        }));
     };
 
     render () {
         const { column, intl, preview, previewEntries, entries } = this.props;
         return (
-          <div className="preview-panel">
-            <div className="preview-panel__header">
-              <div className="overflow-ellipsis preview-panel__title">
-                {intl.formatMessage(dashboardMessages.previewTag, { tagName: preview.get('value') })}
-              </div>
-              <AddToBoardPopover tag={preview.get('value')} >
-                <Button className="preview-panel__add-to-board" size="small">
-                  {intl.formatMessage(generalMessages.addTo)}
-                </Button>
-              </AddToBoardPopover>
+            <div className="preview-panel">
+                <div className="preview-panel__header">
+                    <div className="overflow-ellipsis preview-panel__title">
+                        { intl.formatMessage(dashboardMessages.previewTag, { tagName: preview.get('value') }) }
+                    </div>
+                    <AddToBoardPopover tag={ preview.get('value') }>
+                        <Button className="preview-panel__add-to-board" size="small">
+                            { intl.formatMessage(generalMessages.addTo) }
+                        </Button>
+                    </AddToBoardPopover>
+                </div>
+                <div className="preview-panel__list-wrapper">
+                    <EntryList
+                        contextId="previewColumn"
+                        entries={ previewEntries }
+                        fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                        fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                        fetchMoreEntries={ this.loadMoreEntries }
+                        moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                    />
+                </div>
             </div>
-            <div className="preview-panel__list-wrapper">
-              <EntryList
-                contextId="previewColumn"
-                entries={previewEntries}
-                fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-                fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-                fetchMoreEntries={this.loadMoreEntries}
-                moreEntries={column.getIn(['flags', 'moreEntries'])}
-              />
-            </div>
-          </div>
         );
     }
 }

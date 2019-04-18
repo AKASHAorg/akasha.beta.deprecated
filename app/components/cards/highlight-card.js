@@ -30,74 +30,76 @@ class HighlightCard extends Component {
     }
 
     render () {
-        const { containerRef, deleteHighlight, editing, highlight, intl, publisher,
-            toggleEditing, toggleNoteEditable } = this.props;
+        const {
+            containerRef, deleteHighlight, editing, highlight, intl, publisher,
+            toggleEditing, toggleNoteEditable
+        } = this.props;
         const notes = highlight.get('notes');
         const editNotes = highlight.get('editNotes');
-        const cardClassName = `highlight-card ${editNotes && 'highlight-card_editing'}
-            ${!!editing && 'highlight-card_opaque'}`;
+        const cardClassName = `highlight-card ${ editNotes && 'highlight-card_editing' }
+            ${ !!editing && 'highlight-card_opaque' }`;
 
         return (
-          <Card
-            className={cardClassName}
-            title={
-              <HighlightHeader
-                containerRef={containerRef}
-                deleteHighlight={deleteHighlight}
-                highlight={highlight}
-                publisher={publisher}
-                toggleNoteEditable={toggleNoteEditable}
-                toggleEditing={toggleEditing}
-              />
-            }
-          >
-            <div className="highlight-card__quote">
-              <div className="highlight-card__quote-icon-wrapper">
-                <Icon className="highlight-card__quote-icon" type="quote" />
-              </div>
-              <div className="highlight-card__content">
-                {highlight.get('content')}
-              </div>
-            </div>
-            {(notes || editNotes) &&
-              <div className="highlight-card__notes">
-                <div className="highlight-card__notes-title">
-                  {intl.formatMessage(generalMessages.notes)}
-                </div>
-                {editNotes ?
-                  <div className="highlight-card__notes-editor">
-                    <Input.TextArea
-                      autoFocus
-                      className="highlight-card__notes-input"
-                      rows={3}
-                      value={this.state.notes}
-                      onChange={this.onNotesChange}
+            <Card
+                className={ cardClassName }
+                title={
+                    <HighlightHeader
+                        containerRef={ containerRef }
+                        deleteHighlight={ deleteHighlight }
+                        highlight={ highlight }
+                        publisher={ publisher }
+                        toggleNoteEditable={ toggleNoteEditable }
+                        toggleEditing={ toggleEditing }
                     />
-                    <div className="highlight-card__notes-input-buttons">
-                      <div className="highlight-card__notes-input-cancel">
-                        <Button
-                          size="small"
-                          onClick={this.handleCancel}
-                        >
-                          {intl.formatMessage(generalMessages.cancel)}
-                        </Button>
-                      </div>
-                      <Button
-                        size="small"
-                        type="primary"
-                        onClick={this.handleSave}
-                      >
-                        {intl.formatMessage(generalMessages.save)}
-                      </Button>
-                    </div>
-                  </div> :
-                  <div className="highlight-card__notes-content">
-                    {highlight.get('notes')}
-                  </div>
                 }
-              </div>
-            }
-          </Card>
+            >
+                <div className="highlight-card__quote">
+                    <div className="highlight-card__quote-icon-wrapper">
+                        <Icon className="highlight-card__quote-icon" type="quote"/>
+                    </div>
+                    <div className="highlight-card__content">
+                        { highlight.get('content') }
+                    </div>
+                </div>
+                { (notes || editNotes) &&
+                <div className="highlight-card__notes">
+                    <div className="highlight-card__notes-title">
+                        { intl.formatMessage(generalMessages.notes) }
+                    </div>
+                    { editNotes ?
+                        <div className="highlight-card__notes-editor">
+                            <Input.TextArea
+                                autoFocus
+                                className="highlight-card__notes-input"
+                                rows={ 3 }
+                                value={ this.state.notes }
+                                onChange={ this.onNotesChange }
+                            />
+                            <div className="highlight-card__notes-input-buttons">
+                                <div className="highlight-card__notes-input-cancel">
+                                    <Button
+                                        size="small"
+                                        onClick={ this.handleCancel }
+                                    >
+                                        { intl.formatMessage(generalMessages.cancel) }
+                                    </Button>
+                                </div>
+                                <Button
+                                    size="small"
+                                    type="primary"
+                                    onClick={ this.handleSave }
+                                >
+                                    { intl.formatMessage(generalMessages.save) }
+                                </Button>
+                            </div>
+                        </div> :
+                        <div className="highlight-card__notes-content">
+                            { highlight.get('notes') }
+                        </div>
+                    }
+                </div>
+                }
+            </Card>
         );
     }
 }

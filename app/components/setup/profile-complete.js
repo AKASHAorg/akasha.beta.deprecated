@@ -3,12 +3,19 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
-import { Card, Spin, Icon } from 'antd';
+import { Card, Icon, Spin } from 'antd';
 import { actionAdd } from '../../local-flux/actions/action-actions';
-import { setTempProfile, tempProfileUpdate,
-    tempProfileCreate } from '../../local-flux/actions/temp-profile-actions';
-import { profileSelectors, externalProcessSelectors, dashboardSelectors,
-    tempProfileSelectors } from '../../local-flux/selectors';
+import {
+    setTempProfile,
+    tempProfileCreate,
+    tempProfileUpdate
+} from '../../local-flux/actions/temp-profile-actions';
+import {
+    dashboardSelectors,
+    externalProcessSelectors,
+    profileSelectors,
+    tempProfileSelectors
+} from '../../local-flux/selectors';
 import { setupMessages } from '../../locale-data/messages';
 import * as actionTypes from '../../constants/action-types';
 import { ProfileCompleteForm } from '../';
@@ -64,89 +71,91 @@ class ProfileComplete extends Component {
     throttledHandler = throttle(this.handleFormScroll, 300);
 
     render () {
-        const { faucet, intl, history, tempProfile, ipfsBaseUrl, loggedProfileData,
-            loggedEthAddress, profileExistsData } = this.props;
+        const {
+            faucet, intl, history, tempProfile, ipfsBaseUrl, loggedProfileData,
+            loggedEthAddress, profileExistsData
+        } = this.props;
         const isUpdate = !!loggedProfileData.get('akashaId');
         const { isScrolled } = this.state;
         const withShadow = isScrolled && 'profile-complete__header_with-shadow';
-        const spinIcon = <Icon type="loading-3-quarters" style={{ fontSize: 30 }} spin />;
+        const spinIcon = <Icon type="loading-3-quarters" style={ { fontSize: 30 } } spin/>;
         const self = this;
 
         function FaucetDiv (props) {
             const faucetState = props.faucet;
             if (faucet === 'success') {
                 return (
-                  <Card>
-                    <div className="profile-complete__faucet-icon">
-                      <Icon type="check" style={{ fontSize: 30 }} />
-                    </div>
-                    {/* <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div> */}
-                    <div>{intl.formatMessage(setupMessages.faucetSuccess1)}</div>
-                  </Card>
+                    <Card>
+                        <div className="profile-complete__faucet-icon">
+                            <Icon type="check" style={ { fontSize: 30 } }/>
+                        </div>
+                        {/* <div>{intl.formatMessage(setupMessages.faucetSuccess)}</div> */ }
+                        <div>{ intl.formatMessage(setupMessages.faucetSuccess1) }</div>
+                    </Card>
                 );
             }
             if (faucetState === 'error') {
                 return (
-                  <Card>
-                    <div className="profile-complete__faucet-icon">
-                      <Icon type="close" style={{ fontSize: 30 }} />
-                    </div>
-                    <div>{intl.formatMessage(setupMessages.faucetError)}</div>
-                    <div
-                      onClick={() => self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
-                        { ethAddress: loggedEthAddress })}
-                      className="profile-complete__faucet-retry "
-                    >
-                      {intl.formatMessage(setupMessages.faucetRetry)}
-                    </div>
-                  </Card>
+                    <Card>
+                        <div className="profile-complete__faucet-icon">
+                            <Icon type="close" style={ { fontSize: 30 } }/>
+                        </div>
+                        <div>{ intl.formatMessage(setupMessages.faucetError) }</div>
+                        <div
+                            onClick={ () => self.props.actionAdd(loggedEthAddress, actionTypes.faucet,
+                                { ethAddress: loggedEthAddress }) }
+                            className="profile-complete__faucet-retry "
+                        >
+                            { intl.formatMessage(setupMessages.faucetRetry) }
+                        </div>
+                    </Card>
                 );
             }
             if (faucetState === 'requested' || !faucetState) {
                 return (
-                  <Card>
-                    <div className="profile-complete__faucet-icon">
-                      <Spin indicator={spinIcon} />
-                    </div>
-                    <div>{intl.formatMessage(setupMessages.faucetPending)}</div>
-                    <div>{intl.formatMessage(setupMessages.faucetPending1)}</div>
-                  </Card>
+                    <Card>
+                        <div className="profile-complete__faucet-icon">
+                            <Spin indicator={ spinIcon }/>
+                        </div>
+                        <div>{ intl.formatMessage(setupMessages.faucetPending) }</div>
+                        <div>{ intl.formatMessage(setupMessages.faucetPending1) }</div>
+                    </Card>
                 );
             }
         }
 
         return (
-          <div className="setup-content setup-content__column_full">
-            <div className="profile-complete">
-              <div className="profile-complete__left">
-                <div className="profile-complete__left-bold-text">
-                  {intl.formatMessage(setupMessages.authComplete)}
+            <div className="setup-content setup-content__column_full">
+                <div className="profile-complete">
+                    <div className="profile-complete__left">
+                        <div className="profile-complete__left-bold-text">
+                            { intl.formatMessage(setupMessages.authComplete) }
+                        </div>
+                        <span>{ intl.formatMessage(setupMessages.completeProfile) }</span>
+                        <div className="profile-complete__faucet">
+                            <FaucetDiv faucet={ faucet }/>
+                        </div>
+                    </div>
+                    <div className="profile-complete__right">
+                        <div className={ `profile-complete__header ${ withShadow }` }/>
+                        <ProfileCompleteForm
+                            actionAdd={ this.props.actionAdd }
+                            balance={ this.props.balance }
+                            baseUrl={ ipfsBaseUrl }
+                            intl={ intl }
+                            history={ history }
+                            isUpdate={ isUpdate }
+                            getFormContainerRef={ this.getFormContainerRef }
+                            loggedEthAddress={ loggedEthAddress }
+                            profileExists={ this.props.profileExists }
+                            profileExistsData={ profileExistsData }
+                            tempProfile={ tempProfile }
+                            tempProfileCreate={ this.props.tempProfileCreate }
+                            onProfileUpdate={ this._updateTempProfile }
+                        />
+                    </div>
                 </div>
-                <span>{intl.formatMessage(setupMessages.completeProfile)}</span>
-                <div className="profile-complete__faucet">
-                  <FaucetDiv faucet={faucet} />
-                </div>
-              </div>
-              <div className="profile-complete__right">
-                <div className={`profile-complete__header ${withShadow}`} />
-                <ProfileCompleteForm
-                  actionAdd={this.props.actionAdd}
-                  balance={this.props.balance}
-                  baseUrl={ipfsBaseUrl}
-                  intl={intl}
-                  history={history}
-                  isUpdate={isUpdate}
-                  getFormContainerRef={this.getFormContainerRef}
-                  loggedEthAddress={loggedEthAddress}
-                  profileExists={this.props.profileExists}
-                  profileExistsData={profileExistsData}
-                  tempProfile={tempProfile}
-                  tempProfileCreate={this.props.tempProfileCreate}
-                  onProfileUpdate={this._updateTempProfile}
-                />
-              </div>
             </div>
-          </div>
         );
     }
 }

@@ -3,7 +3,7 @@ import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { Buffer } from 'safe-buffer';
 import { COMMON_MODULE } from './constants';
 
-export default function init(sp) {
+export default function init (sp) {
   // takes an ipfs hash like QmVSzbxYSvztu2YRfEDGjeGR7J7coTQhBR83DYRBXSoWyn
   // transforms it into [0x12, 0x20, 0x69a1c99d0af1da500ff363069c4e8c819c518bde34b3d6f8063cd6361eb4fdf1]
   const decodeHash = function (ipfsHash: string): string[] {

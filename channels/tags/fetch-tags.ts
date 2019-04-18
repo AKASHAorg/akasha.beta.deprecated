@@ -11,13 +11,13 @@ export const getTagsCreatedSchema = {
   required: ['fromBlock', 'toBlock'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, getTagsCreatedSchema, { throwError: true });
 
     const event = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.TagCreate(data);
+      .instance.Tags.TagCreate(data);
     const collection = yield event.get();
     return { collection };
   });

@@ -1,4 +1,4 @@
-import { Record, List, Map } from 'immutable';
+import { List, Map, Record } from 'immutable';
 
 export const SearchRecord = Record({
     currentPage: null,

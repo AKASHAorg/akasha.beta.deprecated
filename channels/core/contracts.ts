@@ -4,7 +4,7 @@ import * as initContracts from '@akashaproject/contracts.js';
 import { descend, filter, head, isNil, last, prop, sortWith, take, uniq } from 'ramda';
 import { AUTH_MODULE, CORE_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   class Contracts {
     public instance: any;
@@ -13,17 +13,17 @@ export default function init(sp, getService) {
     /**
      * Init web3 contract js bindings
      */
-    public async init() {
+    public async init () {
       this.instance = await initContracts(
         getService(CORE_MODULE.WEB3_API).instance.currentProvider);
     }
 
-    public reset() {
+    public reset () {
       this.instance = null;
     }
 
     // send transaction and watch status
-    public send(data: any, token: string, cb) {
+    public send (data: any, token: string, cb) {
       return (getService(AUTH_MODULE.auth)).signData(data.params[0], token)
         .once('transactionHash', function (txHash) {
           cb(null, { tx: txHash });
@@ -33,13 +33,13 @@ export default function init(sp, getService) {
         });
     }
 
-    public createWatcher(ethEvent: any, args: any, fromBlock: number) {
+    public createWatcher (ethEvent: any, args: any, fromBlock: number) {
       const currentWatcher = ethEvent(args, { fromBlock });
       this.watchers.push(currentWatcher);
       return currentWatcher;
     }
 
-    public stopAllWatchers() {
+    public stopAllWatchers () {
       this.watchers.forEach((watcher) => {
         return watcher.stopWatching(() => {
         });
@@ -48,7 +48,7 @@ export default function init(sp, getService) {
       return BlPromise.delay(1000);
     }
 
-    public fromEvent(
+    public fromEvent (
       ethEvent: any, args: any, toBlock: number | string, limit: number,
       options: { lastIndex?: number, reversed?: boolean, stopOnFirst?: boolean },
     ) {
@@ -121,9 +121,9 @@ export default function init(sp, getService) {
 
     }
 
-    public fromEventFilter(ethEvent: any, args: any, toBlock: number | string, limit: number,
-                           options: { lastIndex?: number, reversed?: boolean },
-                           aditionalFilter: (data) => boolean) {
+    public fromEventFilter (ethEvent: any, args: any, toBlock: number | string, limit: number,
+                            options: { lastIndex?: number, reversed?: boolean },
+                            aditionalFilter: (data) => boolean) {
       const step = 8300;
       const hashedEvent = hash(Array.from(arguments));
       if (getService(CORE_MODULE.STASH).eventCache.hasFull(hashedEvent) &&

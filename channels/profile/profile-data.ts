@@ -1,5 +1,10 @@
 import * as Promise from 'bluebird';
-import { COMMON_MODULE, CORE_MODULE, GENERAL_SETTINGS, PROFILE_MODULE } from '@akashaproject/common/constants';
+import {
+  COMMON_MODULE,
+  CORE_MODULE,
+  GENERAL_SETTINGS,
+  PROFILE_MODULE,
+} from '@akashaproject/common/constants';
 import { unpad } from 'ethereumjs-util';
 
 export const getProfileDataSchema = {
@@ -14,7 +19,7 @@ export const getProfileDataSchema = {
   },
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute: any = Promise.coroutine(function* (data: any, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
@@ -67,12 +72,12 @@ export default function init(sp, getService) {
       } else {
         profile = (data.full) ?
           yield resolveProfile(ipfsHash, data.resolveImages)
-          .timeout(settings.get(GENERAL_SETTINGS.FULL_WAIT_TIME) || 25000)
-          .then((d) => d).catch((e) => null)
+            .timeout(settings.get(GENERAL_SETTINGS.FULL_WAIT_TIME) || 25000)
+            .then((d) => d).catch((e) => null)
           :
           yield getShortProfile(ipfsHash, data.resolveImages)
-          .timeout(settings.get(GENERAL_SETTINGS.OP_WAIT_TIME) || 15000)
-          .then((d) => d).catch((e) => null);
+            .timeout(settings.get(GENERAL_SETTINGS.OP_WAIT_TIME) || 15000)
+            .then((d) => d).catch((e) => null);
       }
 
       dbIndex.profiles.searchIndex.concurrentAdd(

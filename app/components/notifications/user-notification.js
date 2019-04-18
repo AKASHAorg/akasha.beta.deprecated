@@ -41,21 +41,22 @@ function UserNotification (props /* : Props */) {
     });
     return (
         <>
-            <Tooltip title={props.intl.formatMessage(generalMessages.notifications)}>
-                <Icon className={`${iconClass}`} ref={togglerRef} type="notifications" />
+            <Tooltip title={ props.intl.formatMessage(generalMessages.notifications) }>
+                <Icon className={ `${ iconClass }` } ref={ togglerRef } type="notifications"/>
             </Tooltip>
-            {props.notificationsLoaded && !!props.unreadNotifications && (
-                <div className="flex-center top-bar-right__notifications-indicator" ref={togglerRef}>
-                    {props.unreadNotifications}
+            { props.notificationsLoaded && !!props.unreadNotifications && (
+                <div className="flex-center top-bar-right__notifications-indicator"
+                     ref={ togglerRef }>
+                    { props.unreadNotifications }
                 </div>
-            )}
-            {openDrawer && (
-                <Fill name={APPBAR_SLOTS.RIGHT_PANEL}>
+            ) }
+            { openDrawer && (
+                <Fill name={ APPBAR_SLOTS.RIGHT_PANEL }>
                     <>
-                        <NotificationsPanel />
+                        <NotificationsPanel/>
                     </>
                 </Fill>
-            )}
+            ) }
         </>
     );
 }

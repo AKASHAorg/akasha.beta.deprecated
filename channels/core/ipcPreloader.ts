@@ -2,37 +2,38 @@ class GenericApi {
   public channel: string;
   public channelName: string;
 
-  constructor(channel: string, channelName?: string) {
+  constructor (channel: string, channelName?: string) {
     this.channel = channel;
     this.channelName = channelName;
   }
 
 }
+
 export abstract class ApiListener extends GenericApi {
   public pipe: any;
   public subscribers: Map<any, any>;
+  readonly listenerCount: number;
 
-  protected constructor(channel: string, channelName?: string) {
+  protected constructor (channel: string, channelName?: string) {
     super(channel, channelName);
   }
-  abstract send(data: {}): any | void;
 
-  abstract on(listener : Function);
+  abstract send (data: {}): any | void;
 
-  abstract once(listener: Function);
+  abstract on (listener: Function);
 
-  abstract removeListener(listener: Function);
+  abstract once (listener: Function);
 
-  abstract removeAllListeners();
+  abstract removeListener (listener: Function);
 
-  readonly listenerCount: number;
+  abstract removeAllListeners ();
 }
 
-export interface ApiRequest{
+export interface ApiRequest {
 
-  enable();
+  enable ();
 
-  disable();
+  disable ();
 
-  registerListener(listener: (data) => {});
+  registerListener (listener: (data) => {});
 }

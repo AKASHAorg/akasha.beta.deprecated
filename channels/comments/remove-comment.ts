@@ -13,7 +13,7 @@ const removeCommentS = {
   required: ['ethAddress', 'entryId', 'token', 'commentId'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* (data: any, cb) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, removeCommentS, { throwError: true });

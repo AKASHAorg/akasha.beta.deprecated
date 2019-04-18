@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { Modal } from 'antd';
 import classNames from 'classnames';
 import { entryMessages } from '../../locale-data/messages';
@@ -71,63 +71,67 @@ class EntryVotesModal extends Component {
         const { fetchingVotes, votes } = this.state;
 
         return (
-          <Modal
-            closable={false}
-            footer={null}
-            onCancel={closeVotesPanel}
-            title={
-              <div className="flex-center-y votes-modal__header">
-                <svg className="votes-modal__title-icon" viewBox="0 0 16 16">
-                  <ToolbarVotes />
-                </svg>
-                <span className="overflow-ellipsis votes-modal__title">
-                  {contentTitle}
+            <Modal
+                closable={ false }
+                footer={ null }
+                onCancel={ closeVotesPanel }
+                title={
+                    <div className="flex-center-y votes-modal__header">
+                        <svg className="votes-modal__title-icon" viewBox="0 0 16 16">
+                            <ToolbarVotes/>
+                        </svg>
+                        <span className="overflow-ellipsis votes-modal__title">
+                  { contentTitle }
                 </span>
-              </div>
-            }
-            visible
-            width={320}
-            wrapClassName="votes-modal"
-          >
-            {votes && votes.length > 0 &&
-              <div className="votes-modal__list">
-                {votes.map((vote) => {
-                    const weight = vote.weight;
-                    const url = `/${vote.ethAddress}`;
-                    const iconClass = classNames('votes-modal__vote-icon', {
-                        'votes-modal__vote-icon_downvote': weight < 0,
-                        'votes-modal__vote-icon_upvote': weight > 0
-                    });
-                    return (
-                      <Link className="unstyled-link" key={vote.ethAddress} to={url}>
-                        <div className="flex-center-y votes-modal__row">
-                          <Icon
-                            className={iconClass}
-                            type={weight < 0 ? 'arrowDown' : 'arrowUp'}
-                          />
-                          <span className="overflow-ellipsis votes-modal__voter">
-                            {getDisplayName({ akashaId: vote.akashaId, ethAddress: vote.ethAddress, long: true })}
+                    </div>
+                }
+                visible
+                width={ 320 }
+                wrapClassName="votes-modal"
+            >
+                { votes && votes.length > 0 &&
+                <div className="votes-modal__list">
+                    { votes.map((vote) => {
+                        const weight = vote.weight;
+                        const url = `/${ vote.ethAddress }`;
+                        const iconClass = classNames('votes-modal__vote-icon', {
+                            'votes-modal__vote-icon_downvote': weight < 0,
+                            'votes-modal__vote-icon_upvote': weight > 0
+                        });
+                        return (
+                            <Link className="unstyled-link" key={ vote.ethAddress } to={ url }>
+                                <div className="flex-center-y votes-modal__row">
+                                    <Icon
+                                        className={ iconClass }
+                                        type={ weight < 0 ? 'arrowDown' : 'arrowUp' }
+                                    />
+                                    <span className="overflow-ellipsis votes-modal__voter">
+                            { getDisplayName({
+                                akashaId: vote.akashaId,
+                                ethAddress: vote.ethAddress,
+                                long: true
+                            }) }
                           </span>
-                          <span className="votes-modal__weight">
-                            {vote.weight}
+                                    <span className="votes-modal__weight">
+                            { vote.weight }
                           </span>
-                        </div>
-                      </Link>
-                    );
-                })}
-              </div>
-            }
-            {votes && votes.length === 0 && !fetchingVotes &&
-              <div className="flex-center votes-modal__placeholder">
-                {intl.formatMessage(entryMessages.noVotes)}
-              </div>
-            }
-            {fetchingVotes &&
-              <div className="flex-center votes-modal__placeholder">
-                <DataLoader flag />
-              </div>
-            }
-          </Modal>
+                                </div>
+                            </Link>
+                        );
+                    }) }
+                </div>
+                }
+                { votes && votes.length === 0 && !fetchingVotes &&
+                <div className="flex-center votes-modal__placeholder">
+                    { intl.formatMessage(entryMessages.noVotes) }
+                </div>
+                }
+                { fetchingVotes &&
+                <div className="flex-center votes-modal__placeholder">
+                    <DataLoader flag/>
+                </div>
+                }
+            </Modal>
         );
     }
 }

@@ -2,7 +2,7 @@ import XRegExp from 'xregexp';
 import { isEmpty } from 'ramda';
 /* eslint-disable no-bitwise */
 export const genId = () =>
-    ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 /* eslint-enable no-bitwise */
@@ -27,15 +27,15 @@ export const calculateReadingTime = (wordCount = 0, options = {}) => {
 
 export const getDisplayAddress = (ethAddress) => {
     if (!ethAddress || !ethAddress.length === 42 || !ethAddress.startsWith('0x')) {
-        console.error(`${ethAddress} is not a valid address`);
+        console.error(`${ ethAddress } is not a valid address`);
         return '';
     }
-    return `${ethAddress.slice(0, 6)}...${ethAddress.slice(38)}`;
+    return `${ ethAddress.slice(0, 6) }...${ ethAddress.slice(38) }`;
 };
 
 export const getDisplayName = ({ akashaId, ethAddress, long }) => {
     if (akashaId) {
-        return `@${akashaId}`;
+        return `@${ akashaId }`;
     }
     if (long) {
         return ethAddress;
@@ -87,7 +87,7 @@ export function getInitials (firstName, lastName = '') {
                 return '';
             })
             .reduce((prev, current) => prev + current, '');
-    const initials = `${firstNameInitial}${lastNameInitial}`;
+    const initials = `${ firstNameInitial }${ lastNameInitial }`;
     return initials ?
         initials.slice(0, 2) :
         '';
@@ -97,7 +97,7 @@ export function getUrl (url) {
     if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
-    return `http://${url}`;
+    return `http://${ url }`;
 }
 
 export function extractExcerpt (data) {

@@ -25,20 +25,21 @@ export default function PathInputField ({ disabled, onChange, ...props }) {
     };
 
     return (
-      <div>
-        <input
-          type="file"
-          ref={setFileInputRef}
-          onChange={handlePathChange}
-          style={{ display: 'none' }}
-        />
-        <Input
-          disabled={disabled}
-          onClick={disabled ? () => {} : handleDialogOpen}
-          readOnly
-          {...props}
-        />
-      </div>
+        <div>
+            <input
+                type="file"
+                ref={ setFileInputRef }
+                onChange={ handlePathChange }
+                style={ { display: 'none' } }
+            />
+            <Input
+                disabled={ disabled }
+                onClick={ disabled ? () => {
+                } : handleDialogOpen }
+                readOnly
+                { ...props }
+            />
+        </div>
     );
 }
 

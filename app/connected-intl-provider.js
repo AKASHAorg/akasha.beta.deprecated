@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { IntlProvider, addLocaleData } from 'react-intl';
+import { addLocaleData, IntlProvider } from 'react-intl';
 import en from 'react-intl/locale-data/en';
 import ru from 'react-intl/locale-data/ru';
 import zh from 'react-intl/locale-data/zh';
@@ -33,13 +33,13 @@ addLocaleData([...en, ...es, ...ru, ...zh, ...fi, ...id]);
 const ConnectedIntlProvider = (props) => {
     const { children, locale } = props;
     return (
-      <IntlProvider
-        locale={locale}
-        messages={localeMessages[locale]}
-        key={locale}
-      >
-        {children}
-      </IntlProvider>
+        <IntlProvider
+            locale={ locale }
+            messages={ localeMessages[locale] }
+            key={ locale }
+        >
+            { children }
+        </IntlProvider>
     );
 };
 

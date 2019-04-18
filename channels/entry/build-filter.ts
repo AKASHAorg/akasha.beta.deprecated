@@ -11,7 +11,7 @@ const buildFilterS = {
   required: ['toBlock'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(
     function* (data: {
       toBlock: number, limit?: number, author?: string, entryType?: number,

@@ -7,8 +7,12 @@ import { List } from 'immutable';
 import classNames from 'classnames';
 import { Icon } from '../';
 import * as columnTypes from '../../constants/columns';
-import { dashboardDelete, dashboardSearch, dashboardToggleProfileColumn,
-    dashboardToggleTagColumn } from '../../local-flux/actions/dashboard-actions';
+import {
+    dashboardDelete,
+    dashboardSearch,
+    dashboardToggleProfileColumn,
+    dashboardToggleTagColumn
+} from '../../local-flux/actions/dashboard-actions';
 import { dashboardSelectors } from '../../local-flux/selectors';
 import { dashboardMessages } from '../../locale-data/messages';
 
@@ -25,7 +29,7 @@ class AddToBoard extends Component {
         return dashboard.get('columns').some(id =>
             columns.getIn([id, 'type']) === columnType &&
             (columns.getIn([id, 'value']) === profile.ethAddress ||
-            columns.getIn([id, 'value']) === profile.akashaId)
+                columns.getIn([id, 'value']) === profile.akashaId)
         );
     };
 
@@ -55,72 +59,72 @@ class AddToBoard extends Component {
     render () {
         const { closePopover, dashboards, intl, onNewDashboard, profile, search, tag } = this.props;
         return (
-          <div>
             <div>
-              <Input
-                className="add-to-board__search"
-                id="add-to-board-search"
-                onChange={this.onSearchChange}
-                onKeyDown={this.onKeyDown}
-                placeholder={intl.formatMessage(dashboardMessages.searchForBoard)}
-                prefix={<Icon type="search" />}
-                size="large"
-                value={search}
-              />
-            </div>
-            <div className="add-to-board__list-wrapper">
-              {this.groupByState(dashboards).map((dashboard) => {
-                  const toggleDashboard = () => {
-                        closePopover();
-                        if (tag) {
-                            this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
-                        } else {
-                            const value = profile.akashaId || profile.ethAddress;
-                            this.props.dashboardToggleProfileColumn(dashboard.get('id'), value);
-                        }
-                  };
-                  const isSaved = this.isSaved(dashboard);
-                  const className = classNames('add-to-board__left-item add-to-board__row-icon', {
-                      'add-to-board__row-icon_saved': isSaved
-                  });
-                  return (
-                    <div
-                      className="has-hidden-action add-to-board__row"
-                      key={dashboard.get('id')}
-                      onClick={toggleDashboard}
-                    >
-                      <div className={`hidden-action-reverse ${className}`}>
-                        {dashboard.get('columns').size}
-                      </div>
-                      <div className="hidden-action add-to-board__left-item">
-                        <Checkbox checked={isSaved} />
-                      </div>
-                      <div className="overflow-ellipsis add-to-board__name">
-                        {dashboard.get('name')}
-                      </div>
-                      <div className="hidden-action flex-center add-to-board__icon">
-                        <Icon
-                          type="trash"
-                          onClick={(ev) => {
-                              ev.preventDefault();
-                              ev.stopPropagation();
-                              this.props.dashboardDelete(dashboard.get('id'));
-                          }}
-                        />
-                      </div>
+                <div>
+                    <Input
+                        className="add-to-board__search"
+                        id="add-to-board-search"
+                        onChange={ this.onSearchChange }
+                        onKeyDown={ this.onKeyDown }
+                        placeholder={ intl.formatMessage(dashboardMessages.searchForBoard) }
+                        prefix={ <Icon type="search"/> }
+                        size="large"
+                        value={ search }
+                    />
+                </div>
+                <div className="add-to-board__list-wrapper">
+                    { this.groupByState(dashboards).map((dashboard) => {
+                        const toggleDashboard = () => {
+                            closePopover();
+                            if (tag) {
+                                this.props.dashboardToggleTagColumn(dashboard.get('id'), tag);
+                            } else {
+                                const value = profile.akashaId || profile.ethAddress;
+                                this.props.dashboardToggleProfileColumn(dashboard.get('id'), value);
+                            }
+                        };
+                        const isSaved = this.isSaved(dashboard);
+                        const className = classNames('add-to-board__left-item add-to-board__row-icon', {
+                            'add-to-board__row-icon_saved': isSaved
+                        });
+                        return (
+                            <div
+                                className="has-hidden-action add-to-board__row"
+                                key={ dashboard.get('id') }
+                                onClick={ toggleDashboard }
+                            >
+                                <div className={ `hidden-action-reverse ${ className }` }>
+                                    { dashboard.get('columns').size }
+                                </div>
+                                <div className="hidden-action add-to-board__left-item">
+                                    <Checkbox checked={ isSaved }/>
+                                </div>
+                                <div className="overflow-ellipsis add-to-board__name">
+                                    { dashboard.get('name') }
+                                </div>
+                                <div className="hidden-action flex-center add-to-board__icon">
+                                    <Icon
+                                        type="trash"
+                                        onClick={ (ev) => {
+                                            ev.preventDefault();
+                                            ev.stopPropagation();
+                                            this.props.dashboardDelete(dashboard.get('id'));
+                                        } }
+                                    />
+                                </div>
+                            </div>
+                        );
+                    }) }
+                </div>
+                <div className="add-to-board__button" onClick={ onNewDashboard }>
+                    <div className="add-to-board__left-item">
+                        <Icon className="add-to-board__icon" type="plus"/>
                     </div>
-                  );
-              })}
+                    <div style={ { flex: '1 1 auto' } }>
+                        { intl.formatMessage(dashboardMessages.createNew) }
+                    </div>
+                </div>
             </div>
-            <div className="add-to-board__button" onClick={onNewDashboard}>
-              <div className="add-to-board__left-item">
-                <Icon className="add-to-board__icon" type="plus" />
-              </div>
-              <div style={{ flex: '1 1 auto' }}>
-                {intl.formatMessage(dashboardMessages.createNew)}
-              </div>
-            </div>
-          </div>
         );
     }
 }

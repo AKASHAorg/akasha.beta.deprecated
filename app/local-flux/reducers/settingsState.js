@@ -7,7 +7,7 @@ import SettingsStateModel, {
     PortsRecord,
     UserSettings
 } from './state-models/settings-state-model';
-import { GETH_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
+import { IPFS_MODULE } from '@akashaproject/common/constants';
 
 const initialState = new SettingsStateModel();
 
@@ -62,7 +62,7 @@ const settingsState = createReducer(initialState, {
             general: state.get('general').merge(payload)
         }),
 
-    [`${IPFS_MODULE.getConfig}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.getConfig }_SUCCESS`]: (state, { payload }) => {
         const ipfsSettings = Object.assign({}, state.get('ipfs').toJS());
         if (ipfsSettings.ports) {
             delete ipfsSettings.ports;
@@ -81,7 +81,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [`${IPFS_MODULE.getPorts}_SUCCESS`]: (state, { payload }) => {
+    [`${ IPFS_MODULE.getPorts }_SUCCESS`]: (state, { payload }) => {
         const ports = {
             apiPort: Number(payload.apiPort),
             gatewayPort: Number(payload.gatewayPort),

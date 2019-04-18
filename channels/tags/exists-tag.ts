@@ -10,14 +10,14 @@ export const existsSchema = {
   required: ['tagName'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise.coroutine(function* (data) {
     const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
     v.validate(data, existsSchema, { throwError: true });
 
     const exists = yield (getService(CORE_MODULE.CONTRACTS))
-    .instance.Tags.exists(data.tagName);
+      .instance.Tags.exists(data.tagName);
     return { exists, tagName: data.tagName };
   });
 

@@ -1,7 +1,7 @@
 // @flow
-import { call, select, takeEvery, getContext } from 'redux-saga/effects';
+import { call, getContext, select, takeEvery } from 'redux-saga/effects';
 import * as types from '../constants';
-import { externalProcessSelectors, commentSelectors, profileSelectors } from '../selectors';
+import { commentSelectors, externalProcessSelectors, profileSelectors } from '../selectors';
 import { COMMENTS_MODULE } from '@akashaproject/common/constants';
 
 /*::
@@ -75,14 +75,14 @@ function* commentsGetVoteOf ({ data }) /* : Saga<void> */ {
 }
 
 function* commentsIterator ({
-    context,
-    entryId,
-    parent,
-    reversed,
-    toBlock,
-    more,
-    checkNew
-}) /* : Saga<void> */ {
+                                context,
+                                entryId,
+                                parent,
+                                reversed,
+                                toBlock,
+                                more,
+                                checkNew
+                            }) /* : Saga<void> */ {
     const service = yield getContext('reqService');
     let block;
     if (toBlock) {

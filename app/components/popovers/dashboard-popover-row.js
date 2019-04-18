@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {injectIntl} from 'react-intl';
-import Link from 'react-router-dom/Link';
-import {Modal} from 'antd';
+import React, { Component } from 'react';
+import { injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { Modal } from 'antd';
 import classNames from 'classnames';
-import {DragSource, DropTarget} from 'react-dnd';
-import {dashboardMessages, generalMessages} from '../../locale-data/messages';
-import {Icon} from '../';
+import { DragSource, DropTarget } from 'react-dnd';
+import { dashboardMessages, generalMessages } from '../../locale-data/messages';
+import { Icon } from '../';
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
 
 const dragSource = {
@@ -46,7 +46,7 @@ function collectDrop (connect) {
 
 class DashboardPopoverRow extends Component {
     onDelete = () => {
-        const {closePopover, dashboard, dashboardDelete, intl} = this.props;
+        const { closePopover, dashboard, dashboardDelete, intl } = this.props;
         closePopover()
         const onOk = () => {
             dashboardDelete(dashboard.get('id'));
@@ -66,7 +66,7 @@ class DashboardPopoverRow extends Component {
     };
 
     render () {
-        const {activeDashboard, dashboard, connectDragSource, connectDropTarget, isDragging} = this.props;
+        const { activeDashboard, dashboard, connectDragSource, connectDropTarget, isDragging } = this.props;
         const isActive = dashboard.get('id') === activeDashboard;
         const className = classNames('has-hidden-action flex-center-y', {
             'dashboard-popover__row': true,
@@ -74,41 +74,41 @@ class DashboardPopoverRow extends Component {
         });
 
         const menu = (
-          <div className="dashboard-popover__row-menu hidden-action">
-            <div>
-              <Icon
-                className="content-link dashboard-popover__icon"
-                onClick={() => this.props.onRename(dashboard)}
-                type="edit"
-              />
+            <div className="dashboard-popover__row-menu hidden-action">
+                <div>
+                    <Icon
+                        className="content-link dashboard-popover__icon"
+                        onClick={ () => this.props.onRename(dashboard) }
+                        type="edit"
+                    />
+                </div>
+                <Icon
+                    className="content-link dashboard-popover__icon dashboard-popover__icon_delete"
+                    onClick={ this.onDelete }
+                    type="trash"
+                />
             </div>
-            <Icon
-                className="content-link dashboard-popover__icon dashboard-popover__icon_delete"
-                onClick={this.onDelete}
-                type="trash"
-            />
-          </div>
         );
 
         return connectDragSource(
             connectDropTarget(
-              <div style={{
-                opacity: isDragging ? 0.2 : 1,
-                cursor: 'move'
-              }}
-              >
-                <div className={className}>
-                  <Link
-                    className="unstyled-link dashboard-popover__link"
-                    to={`/dashboard/${dashboard.get('id')}`}
-                  >
-                    <div className="overflow-ellipsis dashboard-popover__name">
-                      {dashboard.get('name')}
+                <div style={ {
+                    opacity: isDragging ? 0.2 : 1,
+                    cursor: 'move'
+                } }
+                >
+                    <div className={ className }>
+                        <Link
+                            className="unstyled-link dashboard-popover__link"
+                            to={ `/dashboard/${ dashboard.get('id') }` }
+                        >
+                            <div className="overflow-ellipsis dashboard-popover__name">
+                                { dashboard.get('name') }
+                            </div>
+                        </Link>
+                        { menu }
                     </div>
-                  </Link>
-                  {menu}
                 </div>
-              </div>
             ));
     }
 }

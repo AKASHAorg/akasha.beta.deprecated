@@ -31,7 +31,7 @@ import helpersInit from './helpers';
 import ipfsInit from './ipfs';
 import { ENTRY_MODULE } from '@akashaproject/common/constants';
 
-const init = function init(sp, getService) {
+const init = function init (sp, getService) {
 
   helpersInit(sp, getService);
   ipfsInit(sp, getService);

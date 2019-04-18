@@ -1,18 +1,18 @@
 import { CORE_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp) {
+export default function init (sp) {
 
   class Service {
     protected serviceInstance: any;
 
-    public get instance(): any {
+    public get instance (): any {
       if (!this.serviceInstance) {
         throw new Error('No instance available');
       }
       return this.serviceInstance;
     }
 
-    public set instance(apiInstance: any) {
+    public set instance (apiInstance: any) {
       this.serviceInstance = apiInstance;
     }
   }

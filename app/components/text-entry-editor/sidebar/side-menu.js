@@ -10,6 +10,7 @@ class SideMenu extends Component {
             open: false
         };
     }
+
     componentWillReceiveProps (nextProps) {
         // if (nextProps.editorHasFocus) {
         //     this.setState({
@@ -19,6 +20,7 @@ class SideMenu extends Component {
         //     });
         // }
     }
+
     componentWillUnmount () {
         this.setState({
             open: false
@@ -26,6 +28,7 @@ class SideMenu extends Component {
             this.props.onSidebarToggle(false);
         });
     }
+
     onChange = (editorState) => {
         this.props.onChange(editorState);
     }
@@ -40,25 +43,26 @@ class SideMenu extends Component {
 
     render () {
         return (
-          <li className="sidemenu" id="sidebar-menu">
-            <ToggleButton
-              toggle={this.toggle}
-              open={this.state.open}
-              isVisible={this.props.sidebarVisible}
-            />
-            <BlockStyles
-              editorState={this.props.editorState}
-              plugins={this.props.plugins}
-              open={this.state.open}
-              onChange={this.onChange}
-              toggle={this.toggle}
-              showTerms={this.props.showTerms}
-              onError={this.props.onError}
-            />
-          </li>
+            <li className="sidemenu" id="sidebar-menu">
+                <ToggleButton
+                    toggle={ this.toggle }
+                    open={ this.state.open }
+                    isVisible={ this.props.sidebarVisible }
+                />
+                <BlockStyles
+                    editorState={ this.props.editorState }
+                    plugins={ this.props.plugins }
+                    open={ this.state.open }
+                    onChange={ this.onChange }
+                    toggle={ this.toggle }
+                    showTerms={ this.props.showTerms }
+                    onError={ this.props.onError }
+                />
+            </li>
         );
     }
 }
+
 SideMenu.propTypes = {
     sidebarVisible: PropTypes.bool,
     plugins: PropTypes.arrayOf(PropTypes.shape()),

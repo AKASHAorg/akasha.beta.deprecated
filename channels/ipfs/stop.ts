@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { CORE_MODULE, IPFS_MODULE } from '@akashaproject/common/constants';
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
   const execute = Promise.coroutine(function* () {
     (getService(CORE_MODULE.IPFS_CONNECTOR)).getInstance().stop();
     yield Promise.delay(50);

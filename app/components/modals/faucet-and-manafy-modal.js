@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Modal, Button } from 'antd';
-import { actionDelete, actionResetFundingRequirements,
-    actionAdd } from '../../local-flux/actions/action-actions';
+import { Button, Modal } from 'antd';
+import {
+    actionAdd,
+    actionDelete,
+    actionResetFundingRequirements
+} from '../../local-flux/actions/action-actions';
 import { profileResetFaucet } from '../../local-flux/actions/profile-actions';
 import { NoEth, NoMana } from '../';
 import * as actionStatus from '../../constants/action-status';
@@ -16,13 +19,13 @@ class FaucetAndManafyModal extends Component {
     _getModalContent = () => {
         const { needEth, needAeth, needMana } = this.props;
         if (needEth) {
-            return <NoEth />;
+            return <NoEth/>;
         }
         if (needMana && needAeth) {
-            return <NoEth />;
+            return <NoEth/>;
         }
         if (needMana && !needAeth && !needEth) {
-            return <NoMana />;
+            return <NoMana/>;
         }
         return null;
     }
@@ -44,8 +47,10 @@ class FaucetAndManafyModal extends Component {
     }
 
     _handleModalOk = () => {
-        const { needEth, needAeth, needMana, faucetRequested, faucetPending,
-            loggedEthAddress } = this.props;
+        const {
+            needEth, needAeth, needMana, faucetRequested, faucetPending,
+            loggedEthAddress
+        } = this.props;
         if ((needMana && needAeth) || needEth) {
             if (!faucetPending && !faucetRequested) {
                 return this.props.actionAdd(loggedEthAddress, actionTypes.faucet, { withNotification: true });
@@ -63,58 +68,60 @@ class FaucetAndManafyModal extends Component {
     _getModalTitle = () => {
         const { needEth, needAeth, needMana, intl } = this.props;
         if (needEth) {
-            return <div>{intl.formatMessage(generalMessages.requestTestEthersTitle)}</div>;
+            return <div>{ intl.formatMessage(generalMessages.requestTestEthersTitle) }</div>;
         }
         if (needMana && needAeth) {
-            return <div>{intl.formatMessage(generalMessages.requestTestAEthersTitle)}</div>;
+            return <div>{ intl.formatMessage(generalMessages.requestTestAEthersTitle) }</div>;
         }
         if (needMana && !needAeth && !needEth) {
-            return <div>{intl.formatMessage(generalMessages.transformAethers)}</div>;
+            return <div>{ intl.formatMessage(generalMessages.transformAethers) }</div>;
         }
         return null;
     }
+
     render () {
         const { needAeth, needEth, needMana, faucetRequested, faucetPending, intl } = this.props;
         return (
-          <div>
-            <Modal
-              visible
-              title={this._getModalTitle()}
-              onOk={this._handleModalOk}
-              onCancel={this._handleModalCancel}
-              footer={[
-                <Button
-                  key="back"
-                  onClick={this._handleModalCancel}
+            <div>
+                <Modal
+                    visible
+                    title={ this._getModalTitle() }
+                    onOk={ this._handleModalOk }
+                    onCancel={ this._handleModalCancel }
+                    footer={ [
+                        <Button
+                            key="back"
+                            onClick={ this._handleModalCancel }
+                        >
+                            { intl.formatMessage(generalMessages.cancel) }
+                        </Button>,
+                        <Button
+                            key="submit"
+                            type="primary"
+                            onClick={ this._handleModalOk }
+                            loading={ faucetPending }
+                        >
+                            { faucetPending && intl.formatMessage(generalMessages.waiting) }
+                            { (faucetRequested === 'success' && !faucetPending && (needAeth || needEth)) &&
+                            intl.formatMessage(generalMessages.done)
+                            }
+                            { needEth && !faucetRequested && intl.formatMessage(generalMessages.requestTestEthers) }
+                            { (needAeth && needMana) && !needEth && !faucetRequested &&
+                            intl.formatMessage(generalMessages.requestTestAEthers)
+                            }
+                            { needMana && !needAeth && !needEth &&
+                            intl.formatMessage(generalMessages.learnMore)
+                            }
+                        </Button>,
+                    ] }
                 >
-                  {intl.formatMessage(generalMessages.cancel)}
-                </Button>,
-                <Button
-                  key="submit"
-                  type="primary"
-                  onClick={this._handleModalOk}
-                  loading={faucetPending}
-                >
-                  {faucetPending && intl.formatMessage(generalMessages.waiting)}
-                  {(faucetRequested === 'success' && !faucetPending && (needAeth || needEth)) &&
-                    intl.formatMessage(generalMessages.done)
-                  }
-                  {needEth && !faucetRequested && intl.formatMessage(generalMessages.requestTestEthers)}
-                  {(needAeth && needMana) && !needEth && !faucetRequested &&
-                    intl.formatMessage(generalMessages.requestTestAEthers)
-                  }
-                  {needMana && !needAeth && !needEth &&
-                    intl.formatMessage(generalMessages.learnMore)
-                  }
-                </Button>,
-              ]}
-            >
-              {this._getModalContent()}
-            </Modal>
-          </div>
+                    { this._getModalContent() }
+                </Modal>
+            </div>
         );
     }
 }
+
 FaucetAndManafyModal.propTypes = {
     actionDelete: PropTypes.func,
     actionResetFundingRequirements: PropTypes.func,

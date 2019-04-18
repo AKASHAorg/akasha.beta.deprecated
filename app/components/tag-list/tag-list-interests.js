@@ -18,24 +18,24 @@ class TagListInterests extends Component {
             'tag-list-interests__tag-list-item_last': index === tags.size - 1
         });
         return (
-          <div key={tag} className={itemClass}>
-            <div
-              className="tag-list-interests__tag-list-item-text-wrapper content-link"
-              onClick={() => this.handleSwitch(tag)}
-            >
-              <span className="tag-list-interests__tag-list-tag-name">#{tag}</span>
-              <span className="tag-list-interests__tag-list-entry-count">
-                {intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) })}
+            <div key={ tag } className={ itemClass }>
+                <div
+                    className="tag-list-interests__tag-list-item-text-wrapper content-link"
+                    onClick={ () => this.handleSwitch(tag) }
+                >
+                    <span className="tag-list-interests__tag-list-tag-name">#{ tag }</span>
+                    <span className="tag-list-interests__tag-list-entry-count">
+                { intl.formatMessage(entryMessages.entriesCount, { count: entriesCount.get(tag) }) }
               </span>
+                </div>
+                <div className="tag-list-interests__tag-list-switch">
+                    <Switch
+                        checked={ hasTag }
+                        onChange={ () => this.handleSwitch(tag) }
+                        size="small"
+                    />
+                </div>
             </div>
-            <div className="tag-list-interests__tag-list-switch">
-              <Switch
-                checked={hasTag}
-                onChange={() => this.handleSwitch(tag)}
-                size="small"
-              />
-            </div>
-          </div>
         );
     }
 
@@ -45,22 +45,22 @@ class TagListInterests extends Component {
             return null;
         }
         return (
-          <div className="tag-list-interests">
-            <DataLoader
-              flag={fetchingTags}
-              timeout={defaultTimeout}
-              style={{ paddingTop: '80px' }}
-            >
-              <div>
-                {tags.size === 0 &&
-                  <div className="tag-list-interests__no-tags">
-                    {intl.formatMessage(searchMessages.noResults)}
-                  </div>
-                }
-                {tags && tags.map(this.renderTagListItem)}
-              </div>
-            </DataLoader>
-          </div>
+            <div className="tag-list-interests">
+                <DataLoader
+                    flag={ fetchingTags }
+                    timeout={ defaultTimeout }
+                    style={ { paddingTop: '80px' } }
+                >
+                    <div>
+                        { tags.size === 0 &&
+                        <div className="tag-list-interests__no-tags">
+                            { intl.formatMessage(searchMessages.noResults) }
+                        </div>
+                        }
+                        { tags && tags.map(this.renderTagListItem) }
+                    </div>
+                </DataLoader>
+            </div>
         );
     }
 }

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import withRouter from 'react-router/withRouter';
+import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -49,20 +49,23 @@ class Navigation extends Component {
 
         return (
             <div className="flex-center-y navigation">
-                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.back)}>
-                    <Icon className={backBtnClassName} onClick={() => this.goBack(disableBack)} type="back" />
+                <Tooltip mouseEnterDelay={ 0.3 } title={ intl.formatMessage(generalMessages.back) }>
+                    <Icon className={ backBtnClassName } onClick={ () => this.goBack(disableBack) }
+                          type="back"/>
                 </Tooltip>
-                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.forward)}>
+                <Tooltip mouseEnterDelay={ 0.3 }
+                         title={ intl.formatMessage(generalMessages.forward) }>
                     <Icon
-                        className={forwardBtnClassName}
-                        onClick={() => this.goForward(disableForward)}
+                        className={ forwardBtnClassName }
+                        onClick={ () => this.goForward(disableForward) }
                         type="forward"
                     />
                 </Tooltip>
-                <Tooltip mouseEnterDelay={0.3} title={intl.formatMessage(generalMessages.navigateToLink)}>
+                <Tooltip mouseEnterDelay={ 0.3 }
+                         title={ intl.formatMessage(generalMessages.navigateToLink) }>
                     <Icon
                         className="content-link navigation__icon navigation__link-icon"
-                        onClick={this.props.toggleNavigationModal}
+                        onClick={ this.props.toggleNavigationModal }
                         type="linkEntry"
                     />
                 </Tooltip>

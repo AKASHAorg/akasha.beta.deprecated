@@ -15,42 +15,42 @@ export const transfersIteratorSchema = {
   required: ['toBlock', 'ethAddress'],
 };
 
-export default function init(sp, getService) {
+export default function init (sp, getService) {
 
   const execute = Promise
-  .coroutine(function* (data) {
+    .coroutine(function* (data) {
 
-    const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
-    v.validate(data, transfersIteratorSchema, { throwError: true });
+      const v = new (getService(CORE_MODULE.VALIDATOR_SCHEMA)).Validator();
+      v.validate(data, transfersIteratorSchema, { throwError: true });
 
-    const maxResults = data.limit || 5;
-    const collection = [];
-    const contracts = getService(CORE_MODULE.CONTRACTS);
-    const profileHelpers = getService(COMMON_MODULE.profileHelpers);
-    const web3Api = getService(CORE_MODULE.WEB3_API);
-    const fetched = yield contracts
-    .fromEvent(
-      contracts.instance.AETH.Transfer, { to: data.ethAddress }, data.toBlock,
-      maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
+      const maxResults = data.limit || 5;
+      const collection = [];
+      const contracts = getService(CORE_MODULE.CONTRACTS);
+      const profileHelpers = getService(COMMON_MODULE.profileHelpers);
+      const web3Api = getService(CORE_MODULE.WEB3_API);
+      const fetched = yield contracts
+        .fromEvent(
+          contracts.instance.AETH.Transfer, { to: data.ethAddress }, data.toBlock,
+          maxResults, { lastIndex: data.lastIndex, reversed: data.reversed || false });
 
-    for (const event of fetched.results) {
-      const from = yield profileHelpers.resolveEthAddress(event.args.from);
+      for (const event of fetched.results) {
+        const from = yield profileHelpers.resolveEthAddress(event.args.from);
 
-      collection.push({
-        from,
-        amount: (web3Api.instance.utils.toBN(
-          web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.value), 'ether'))
-        ).toNumber(),
-        blockNumber: event.blockNumber,
-      });
+        collection.push({
+          from,
+          amount: (web3Api.instance.utils.toBN(
+              web3Api.instance.utils.fromWei(web3Api.instance.utils.toBN(event.args.value), 'ether'))
+          ).toNumber(),
+          blockNumber: event.blockNumber,
+        });
 
-      if (collection.length === data.limit) {
-        break;
+        if (collection.length === data.limit) {
+          break;
+        }
       }
-    }
 
-    return { collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
-  });
+      return { collection, lastBlock: fetched.fromBlock, lastIndex: fetched.lastIndex };
+    });
   const transfersIterator = { execute, name: 'transfersIterator' };
   const service = function () {
     return transfersIterator;

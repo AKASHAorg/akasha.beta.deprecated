@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { insertDataBlock, DraftJS } from 'megadraft';
+import { DraftJS, insertDataBlock } from 'megadraft';
 import { Icon } from 'antd';
-import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
+import { findClosestMatch, getResizedImages } from '../../../../utils/imageUtils';
 import { genId } from '../../../../utils/dataModule';
 import { uploadImage } from '../../../../local-flux/services/utils-service';
 
@@ -95,22 +95,24 @@ export default class BlockButton extends Component {
     render () {
 
         return (
-          <div>
-            <Icon
-              title="Add an image"
-              shape="circle"
-              type="camera-o"
-              className="sidemenu__image-button"
-              onClick={this._triggerFileBrowser}
-            >
-              <input
-                ref={((input) => { this.fileInput = input; })}
-                type="file"
-                accept="image/*"
-                onChange={this._handleImageAdd}
-              />
-            </Icon>
-          </div>
+            <div>
+                <Icon
+                    title="Add an image"
+                    shape="circle"
+                    type="camera-o"
+                    className="sidemenu__image-button"
+                    onClick={ this._triggerFileBrowser }
+                >
+                    <input
+                        ref={ ((input) => {
+                            this.fileInput = input;
+                        }) }
+                        type="file"
+                        accept="image/*"
+                        onChange={ this._handleImageAdd }
+                    />
+                </Icon>
+            </div>
         );
     }
 }

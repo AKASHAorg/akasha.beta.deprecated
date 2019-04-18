@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
+import { createTypeStrategy, DraftJS, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import EditorSidebar from './sidebar/editor-sidebar';
 import imagePlugin from './plugins/image/image-plugin';
@@ -20,10 +20,11 @@ class EntryEditor extends Component {
             imageErr: null
         };
     }
+
     updateCaretPosition = (newSelectionState) => {
         const anchorKey = newSelectionState.getAnchorKey();
-        const dataKey = `${anchorKey}-0-0`;
-        const targetNode = document.querySelector(`div[data-offset-key='${dataKey}']`);
+        const dataKey = `${ anchorKey }-0-0`;
+        const targetNode = document.querySelector(`div[data-offset-key='${ dataKey }']`);
 
         if (targetNode) {
             targetNode.scrollIntoViewIfNeeded();
@@ -45,6 +46,7 @@ class EntryEditor extends Component {
             this.updateCaretPosition(currSelection);
         }
     }
+
     _handleEditorChange = (editorState) => {
         this.props.onChange(editorState);
     };
@@ -62,7 +64,7 @@ class EntryEditor extends Component {
             return 'paragraph';
         }
         if (type === 'atomic' && data.type === 'image') {
-            return `image-block__${data.media}`;
+            return `image-block__${ data.media }`;
         }
         return '';
     }
@@ -70,17 +72,17 @@ class EntryEditor extends Component {
         const { showSidebar, readOnly, showTerms, onError, sidebarReposition } = this.props;
         if (showSidebar && !readOnly) {
             return (
-              <EditorSidebar
-                plugins={plugins}
-                editorState={editorState}
-                onChange={onChange}
-                showTerms={showTerms}
-                onError={onError}
-                onSidebarToggle={this._handleSidebarToggle}
-                sidebarOpen={this.state.sidebarOpen}
-                sidebarReposition={sidebarReposition}
-                error={this.state.imageErr}
-              />
+                <EditorSidebar
+                    plugins={ plugins }
+                    editorState={ editorState }
+                    onChange={ onChange }
+                    showTerms={ showTerms }
+                    onError={ onError }
+                    onSidebarToggle={ this._handleSidebarToggle }
+                    sidebarOpen={ this.state.sidebarOpen }
+                    sidebarReposition={ sidebarReposition }
+                    error={ this.state.imageErr }
+                />
             );
         }
         return null;
@@ -90,50 +92,57 @@ class EntryEditor extends Component {
         const { editorPlaceholder, readOnly, editorState, className, style, intl } = this.props;
         const editrState = EditorState.set(editorState, { decorator: this.decorators });
         return (
-          <div
-            className={`text-entry-editor ${className}`}
-            ref={(rootNode) => { this.rootNode = rootNode; }}
-            style={style}
-          >
             <div
-              className="text-entry-editor__editor-wrapper"
-              ref={(el) => { this.container = el; }}
+                className={ `text-entry-editor ${ className }` }
+                ref={ (rootNode) => {
+                    this.rootNode = rootNode;
+                } }
+                style={ style }
             >
-              <MegadraftEditor
-                ref={(edtr) => {
-                    this.editor = edtr;
-                    if (this.props.editorRef) {
-                        this.props.editorRef(edtr);
-                    }
-                }}
-                readOnly={readOnly}
-                sidebarRendererFn={this._renderSidebar}
-                editorState={editrState}
-                entityInputs={{ LINK: EditorLinkInput }}
-                onChange={this._handleEditorChange}
-                plugins={[
-                    imagePlugin({
-                        onAutosave: this.props.onAutosave,
-                        onImageError: this._handleImageError,
-                        baseUrl: this.props.baseUrl,
-                        intl
-                    })
-                ]}
-                placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
-                tabIndex="0"
-                spellCheck
-                blockStyleFn={this.blockStyleFn}
-              />
+                <div
+                    className="text-entry-editor__editor-wrapper"
+                    ref={ (el) => {
+                        this.container = el;
+                    } }
+                >
+                    <MegadraftEditor
+                        ref={ (edtr) => {
+                            this.editor = edtr;
+                            if (this.props.editorRef) {
+                                this.props.editorRef(edtr);
+                            }
+                        } }
+                        readOnly={ readOnly }
+                        sidebarRendererFn={ this._renderSidebar }
+                        editorState={ editrState }
+                        entityInputs={ { LINK: EditorLinkInput } }
+                        onChange={ this._handleEditorChange }
+                        plugins={ [
+                            imagePlugin({
+                                onAutosave: this.props.onAutosave,
+                                onImageError: this._handleImageError,
+                                baseUrl: this.props.baseUrl,
+                                intl
+                            })
+                        ] }
+                        placeholder={ this.state.sidebarOpen ? '' : editorPlaceholder }
+                        tabIndex="0"
+                        spellCheck
+                        blockStyleFn={ this.blockStyleFn }
+                    />
+                </div>
             </div>
-          </div>
         );
     }
 }
 
 EntryEditor.defaultProps = {
-    onScrollBetween: () => {},
-    onScrollBottom: () => {},
-    onScrollTop: () => {},
+    onScrollBetween: () => {
+    },
+    onScrollBottom: () => {
+    },
+    onScrollTop: () => {
+    },
     showSidebar: true,
     showTitle: true,
     readOnly: false,

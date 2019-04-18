@@ -17,9 +17,9 @@ import searchModule from '@akashaproject/search';
 import { init } from '@akashaproject/search/indexes';
 import tagsModule from '@akashaproject/tags';
 import txModule from '@akashaproject/tx';
-import { DEFAULT_IPFS_CONFIG, BASE_URL } from './config/settings';
+import { BASE_URL, DEFAULT_IPFS_CONFIG } from './config/settings';
 
-const bootstrap = async function bootstrap(serviceProvider, gS, logger) {
+const bootstrap = async function bootstrap (serviceProvider, gS, logger) {
   core.init();
   const common = commonModule.init(serviceProvider, gS);
   const auth = authModule.init(serviceProvider, gS);

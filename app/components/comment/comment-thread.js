@@ -5,8 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Comment, CommentEditor, OptimisticComment } from '../';
 import { actionAdd } from '../../local-flux/actions/action-actions';
 import { commentsIterator } from '../../local-flux/actions/comments-actions';
-import { commentSelectors, entrySelectors,
-    profileSelectors } from '../../local-flux/selectors';
+import { commentSelectors, entrySelectors, profileSelectors } from '../../local-flux/selectors';
 import { entryMessages } from '../../locale-data/messages';
 import { getDisplayName } from '../../utils/dataModule';
 import withRequest from '../high-order-components/with-request';
@@ -14,7 +13,7 @@ import withRequest from '../high-order-components/with-request';
 class CommentThread extends Component {
     componentDidUpdate (prevProps) {
         if (this.props.replyTo && prevProps.replyTo !== this.props.replyTo &&
-                this.commentEditorRef) {
+            this.commentEditorRef) {
             this.commentEditorRef.baseNodeRef.scrollIntoViewIfNeeded(false);
         }
     }
@@ -50,102 +49,109 @@ class CommentThread extends Component {
         return optimisticComments
             .toArray()
             .map(commAction => (
-              <OptimisticComment
-                comment={commAction}
-                containerRef={containerRef}
-                key={commAction.id}
-                loggedProfileData={loggedProfileData}
-              />
+                <OptimisticComment
+                    comment={ commAction }
+                    containerRef={ containerRef }
+                    key={ commAction.id }
+                    loggedProfileData={ loggedProfileData }
+                />
             ));
     };
 
     renderReplies = () => {
-        const { containerRef, context, entryId, entryTitle, ethAddress, highlightComment, onlyReply,
-            replies } = this.props;
+        const {
+            containerRef, context, entryId, entryTitle, ethAddress, highlightComment, onlyReply,
+            replies
+        } = this.props;
         if (onlyReply) {
             const comment = replies.find(comm => comm.commentId === onlyReply);
             return comment && (
-              <Comment
-                commentId={comment.commentId}
-                containerRef={containerRef}
-                context={context}
-                entryId={entryId}
-                entryTitle={entryTitle}
-                ethAddress={ethAddress}
-                isHighlighted={comment.commentId === highlightComment}
-                key={comment.commentId}
-              />
+                <Comment
+                    commentId={ comment.commentId }
+                    containerRef={ containerRef }
+                    context={ context }
+                    entryId={ entryId }
+                    entryTitle={ entryTitle }
+                    ethAddress={ ethAddress }
+                    isHighlighted={ comment.commentId === highlightComment }
+                    key={ comment.commentId }
+                />
             );
         }
         return replies.map(comment => (
-          <Comment
-            commentId={comment.commentId}
-            containerRef={containerRef}
-            context={context}            
-            entryId={entryId}
-            entryTitle={entryTitle}
-            ethAddress={ethAddress}
-            isHighlighted={comment.commentId === highlightComment}
-            key={comment.commentId}
-          />
+            <Comment
+                commentId={ comment.commentId }
+                containerRef={ containerRef }
+                context={ context }
+                entryId={ entryId }
+                entryTitle={ entryTitle }
+                ethAddress={ ethAddress }
+                isHighlighted={ comment.commentId === highlightComment }
+                key={ comment.commentId }
+            />
         ));
     };
 
     renderEditor = () => {
-        const { author, containerRef, comment, entryId, entryTitle, ethAddress, intl, loggedProfileData,
-            onReplyClose } = this.props;
+        const {
+            author, containerRef, comment, entryId, entryTitle, ethAddress, intl, loggedProfileData,
+            onReplyClose
+        } = this.props;
         const name = getDisplayName({
             akashaId: author.get('akashaId'),
             ethAddress: author.get('ethAddress')
         });
         return (
-          <div>
-            <CommentEditor
-              actionAdd={this.props.actionAdd}
-              containerRef={containerRef}
-              entryId={entryId}
-              entryTitle={entryTitle}
-              ethAddress={ethAddress}
-              intl={intl}
-              isReply
-              loggedProfileData={loggedProfileData}
-              onClose={onReplyClose}
-              parent={comment.commentId}
-              placeholder={intl.formatMessage(entryMessages.writeReplyTo, { name })}
-              ref={this.getEditorRef}
-            />
-          </div>
+            <div>
+                <CommentEditor
+                    actionAdd={ this.props.actionAdd }
+                    containerRef={ containerRef }
+                    entryId={ entryId }
+                    entryTitle={ entryTitle }
+                    ethAddress={ ethAddress }
+                    intl={ intl }
+                    isReply
+                    loggedProfileData={ loggedProfileData }
+                    onClose={ onReplyClose }
+                    parent={ comment.commentId }
+                    placeholder={ intl.formatMessage(entryMessages.writeReplyTo, { name }) }
+                    ref={ this.getEditorRef }
+                />
+            </div>
         );
     };
 
     render () {
-        const { comment, containerRef, context, entryId, entryTitle, ethAddress, highlightComment, intl,
-            moreReplies, onReply, replies, replyTo } = this.props;
+        const {
+            comment, containerRef, context, entryId, entryTitle, ethAddress, highlightComment, intl,
+            moreReplies, onReply, replies, replyTo
+        } = this.props;
         const isHighlighted = highlightComment && highlightComment === comment.commentId;
         return (
-          <div className="comment-thread">
-            <Comment
-              commentId={comment.commentId}
-              containerRef={containerRef}
-              context={context}
-              entryId={entryId}
-              entryTitle={entryTitle}
-              ethAddress={ethAddress}              
-              isHighlighted={isHighlighted}
-              key={comment.commentId}
-              onReply={onReply}
-              showReplyButton
-            >
-              {!!replies.size && this.renderReplies()}
-              {this.renderOptimisticComments()}
-              {moreReplies &&
-                <div className="content-link comment-thread__replies-button" onClick={this.loadMoreReplies}>
-                  {intl.formatMessage(entryMessages.loadMoreReplies)}
-                </div>
-              }
-              {replyTo === comment.commentId && this.renderEditor()}
-            </Comment>
-          </div>
+            <div className="comment-thread">
+                <Comment
+                    commentId={ comment.commentId }
+                    containerRef={ containerRef }
+                    context={ context }
+                    entryId={ entryId }
+                    entryTitle={ entryTitle }
+                    ethAddress={ ethAddress }
+                    isHighlighted={ isHighlighted }
+                    key={ comment.commentId }
+                    onReply={ onReply }
+                    showReplyButton
+                >
+                    { !!replies.size && this.renderReplies() }
+                    { this.renderOptimisticComments() }
+                    { moreReplies &&
+                    <div className="content-link comment-thread__replies-button"
+                         onClick={ this.loadMoreReplies }>
+                        { intl.formatMessage(entryMessages.loadMoreReplies) }
+                    </div>
+                    }
+                    { replyTo === comment.commentId && this.renderEditor() }
+                </Comment>
+            </div>
         );
     }
 }

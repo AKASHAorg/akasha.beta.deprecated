@@ -1,10 +1,12 @@
-import React from "react";
+import React from 'react';
 
 const Community = React.forwardRef((props, ref) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props} ref={ref}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" { ...props }
+         ref={ ref }>
         <g fill="none" fillRule="evenodd" strokeWidth="1.5" transform="translate(3 3)">
-            <circle cx="9" cy="9" r="9" />
-            <path d="M9,0.45 C12,1.95 13.5,4.83530761 13.5,9.10592283 C13.5,13.376538 12,16.2618457 9,17.7618457" />
+            <circle cx="9" cy="9" r="9"/>
+            <path
+                d="M9,0.45 C12,1.95 13.5,4.83530761 13.5,9.10592283 C13.5,13.376538 12,16.2618457 9,17.7618457"/>
             <path
                 d="M4.5,0.45 C7.5,1.95 9,4.83530761 9,9.10592283 C9,13.376538 7.5,16.2618457 4.5,17.7618457"
                 transform="matrix(-1 0 0 1 13.5 0)"
@@ -20,5 +22,5 @@ const Community = React.forwardRef((props, ref) => (
         </g>
     </svg>
 ));
-Community.displayName = "Community";
+Community.displayName = 'Community';
 export default Community;

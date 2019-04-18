@@ -20,7 +20,7 @@ const getItemStyles = (initialOffset, currentOffset) => {
         };
     }
     const { x, y } = currentOffset;
-    const transform = `translate(${x}px, ${y}px)`;
+    const transform = `translate(${ x }px, ${ y }px)`;
     return {
         transform,
         WebkitTransform: transform
@@ -32,24 +32,26 @@ class CustomDragLayer extends Component {
         switch (type) {
             case itemTypes.COLUMN:
                 return (
-                  <div
-                    style={{ opacity: 1 }}
-                    className="custom-drag-layer__column-preview"
-                  >
-                    <ColumnHeader
-                      readOnly
-                      onRefresh={() => {}}
-                      iconType={item.iconType}
-                      title={item.title}
-                      draggable={false}
+                    <div
+                        style={ { opacity: 1 } }
+                        className="custom-drag-layer__column-preview"
                     >
-                      <div className="custom-drag-layer__column-placeholder" />
-                    </ColumnHeader>
-                  </div>);
+                        <ColumnHeader
+                            readOnly
+                            onRefresh={ () => {
+                            } }
+                            iconType={ item.iconType }
+                            title={ item.title }
+                            draggable={ false }
+                        >
+                            <div className="custom-drag-layer__column-placeholder"/>
+                        </ColumnHeader>
+                    </div>);
             default:
                 break;
         }
     }
+
     render () {
         const {
             item, itemType, isDragging, initialOffset, currentOffset
@@ -58,15 +60,15 @@ class CustomDragLayer extends Component {
             return null;
         }
         return (
-          <div
-            className="custom-drag-layer"
-            style={{
-                ...getItemStyles(initialOffset, currentOffset),
-                maxWidth: item.colWidth || ''
-            }}
-          >
-            {this.renderItem(itemType, item)}
-          </div>
+            <div
+                className="custom-drag-layer"
+                style={ {
+                    ...getItemStyles(initialOffset, currentOffset),
+                    maxWidth: item.colWidth || ''
+                } }
+            >
+                { this.renderItem(itemType, item) }
+            </div>
         );
     }
 }

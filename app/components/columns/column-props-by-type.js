@@ -19,7 +19,7 @@ const getLatestColumnProps = props => ({
     fetching: props.column.getIn(['flags', 'fetchingEntries']),
     readOnly: true,
     noMenu: false,
-    onNewItemsResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
+    onNewItemsResolveRequest: data => props.entryGetShort({ ...data, includeVotes: true }),
 });
 
 const getListColumnProps = props => {
@@ -57,7 +57,7 @@ const getTagColumnProps = props => ({
     onItemPooling: col => props.entryTagIterator({ ...col, reversed: true }),
     dataSource: props.tagSearchResults,
     onSearch: props.searchTags,
-    onNewItemsResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
+    onNewItemsResolveRequest: data => props.entryGetShort({ ...data, includeVotes: true }),
 });
 
 const getStreamColumnProps = props => ({
@@ -74,7 +74,7 @@ const getStreamColumnProps = props => ({
     },
     onItemPooling: col => props.entryStreamIterator({ ...col, reversed: true }),
     readOnly: true,
-    onNewItemsResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
+    onNewItemsResolveRequest: data => props.entryGetShort({ ...data, includeVotes: true }),
 });
 
 const getProfileColumnProps = props => ({
@@ -82,7 +82,7 @@ const getProfileColumnProps = props => ({
     ethAddress: props.ethAddress,
     isVisible: props.isVisible,
     pendingEntries: props.pendingEntries,
-    title: props.column ? `@${props.column.value}` : props.intl.formatMessage(profileMessages.entries),
+    title: props.column ? `@${ props.column.value }` : props.intl.formatMessage(profileMessages.entries),
     iconType: 'user',
     onItemRequest: (column) => props.entryProfileIterator(column, true),
     onItemMoreRequest: (column) => props.entryMoreProfileIterator(column, true),
@@ -93,7 +93,7 @@ const getProfileColumnProps = props => ({
     onItemPooling: col => props.entryProfileIterator({ ...col, reversed: true }),
     dataSource: props.profileSearchResults,
     onSearch: props.searchProfiles,
-    onNewItemsResolveRequest: data => props.entryGetShort({...data, includeVotes: true}),
+    onNewItemsResolveRequest: data => props.entryGetShort({ ...data, includeVotes: true }),
 });
 
 const getProfileCommentsColumnProps = (props) => ({
@@ -111,7 +111,7 @@ const getProfileCommentsColumnProps = (props) => ({
     },
     readOnly: true,
     noMenu: true,
-    itemCard: <CommentCard />,
+    itemCard: <CommentCard/>,
 });
 
 const getProfileEntriesColumnProps = props => ({
@@ -139,9 +139,9 @@ const getProfileFollowersColumnProps = props => ({
     onItemMoreRequest: (column) => props.profileMoreFollowersIterator({ column, batching: true }),
     onColumnRefresh: (column) => {
         props.dashboardResetColumnEntries(column.id);
-        props.profileFollowersIterator({ column, batching: true});
+        props.profileFollowersIterator({ column, batching: true });
     },
-    itemCard: <ProfileCard />,
+    itemCard: <ProfileCard/>,
     noMenu: true,
     readOnly: true,
 });
@@ -157,7 +157,7 @@ const getProfileFollowingsColumnProps = props => ({
         props.dashboardResetColumnEntries(column.id);
         props.profileFollowingsIterator({ column, batching: true });
     },
-    itemCard: <ProfileCard />,
+    itemCard: <ProfileCard/>,
     noMenu: true,
     readOnly: true,
 });

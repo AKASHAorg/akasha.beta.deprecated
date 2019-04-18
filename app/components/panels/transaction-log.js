@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { Tooltip } from 'antd';
 import { Icon } from '../';
 import * as actionTypes from '../../constants/action-types';
@@ -32,37 +32,37 @@ class TransactionLog extends Component {
                 loggedEthAddress :
                 payload.ethAddress || '0x0';
             return (
-              <Link
-                className="unstyled-link"
-                to={{
-                    pathname: `/${ethAddress}/${payload.entryId}`,
-                    state: { overlay: true }
-                }}
-              >
+                <Link
+                    className="unstyled-link"
+                    to={ {
+                        pathname: `/${ ethAddress }/${ payload.entryId }`,
+                        state: { overlay: true }
+                    } }
+                >
                 <span className="content-link transaction-log__highlight">
-                  {entryTitle || intl.formatMessage(generalMessages.anEntry)}
+                  { entryTitle || intl.formatMessage(generalMessages.anEntry) }
                 </span>
-              </Link>
+                </Link>
             );
         }
         if (profileActions.includes(action.get('type'))) {
             const displayName = getDisplayName(payload);
             if (!payload.ethAddress) {
                 return (
-                  <span className="transaction-log__highlight">
-                    {displayName}
+                    <span className="transaction-log__highlight">
+                    { displayName }
                   </span>
                 );
             }
             return (
-              <Link
-                className="unstyled-link"
-                to={`/${payload.ethAddress}`}
-              >
+                <Link
+                    className="unstyled-link"
+                    to={ `/${ payload.ethAddress }` }
+                >
                 <span className="content-link transaction-log__highlight">
-                  {displayName}
+                  { displayName }
                 </span>
-              </Link>
+                </Link>
             );
         }
         return null;
@@ -76,12 +76,12 @@ class TransactionLog extends Component {
         const isPending = action.get('status') === 'publishing';
         const isFailed = !action.get('success');
         const description = (
-          <div>
-            {intl.formatMessage(actionMessages[action.get('type')], payload)}
-            {extraInfo}
-          </div>
+            <div>
+                { intl.formatMessage(actionMessages[action.get('type')], payload) }
+                { extraInfo }
+            </div>
         );
-        const url = `https://rinkeby.etherscan.io/tx/${action.get('tx')}`;
+        const url = `https://rinkeby.etherscan.io/tx/${ action.get('tx') }`;
         let linkText;
         if (isPending) {
             linkText = intl.formatMessage(generalMessages.pendingConfirmation);
@@ -92,23 +92,23 @@ class TransactionLog extends Component {
         }
 
         return (
-          <div className="transaction-log">
-            <div className="transaction-log__description">
-              {description}
+            <div className="transaction-log">
+                <div className="transaction-log__description">
+                    { description }
+                </div>
+                <div>
+                    <Tooltip title={ intl.formatMessage(generalMessages.seeOnEtherscan) }>
+                        <a
+                            className="unstyled-link has-hidden-action flex-center-y transaction-log__link"
+                            href={ url }
+                            target="_blank"
+                        >
+                            { linkText }
+                            <Icon className="hidden-action transaction-log__link-icon" type="link"/>
+                        </a>
+                    </Tooltip>
+                </div>
             </div>
-            <div>
-              <Tooltip title={intl.formatMessage(generalMessages.seeOnEtherscan)}>
-                <a
-                  className="unstyled-link has-hidden-action flex-center-y transaction-log__link"
-                  href={url}
-                  target="_blank"
-                >
-                  {linkText}
-                  <Icon className="hidden-action transaction-log__link-icon" type="link" />
-                </a>
-              </Tooltip>
-            </div>
-          </div>
         );
     }
 }

@@ -57,55 +57,55 @@ class NewDashboardForm extends Component {
         const nameError = isFieldTouched('name') && getFieldError('name');
 
         return (
-          <Form className="new-dashboard-form" hideRequiredMark onSubmit={this.onSubmit}>
-            <div className="new-dashboard-form__title">
-              {intl.formatMessage(dashboardMessages.addToNewDashboard)}
-            </div>
-            <FormItem
-              className="new-dashboard-form__form-item"
-              colon={false}
-              label={
-                <span className="uppercase">
-                  {intl.formatMessage(dashboardMessages.dashboardName)}
+            <Form className="new-dashboard-form" hideRequiredMark onSubmit={ this.onSubmit }>
+                <div className="new-dashboard-form__title">
+                    { intl.formatMessage(dashboardMessages.addToNewDashboard) }
+                </div>
+                <FormItem
+                    className="new-dashboard-form__form-item"
+                    colon={ false }
+                    label={
+                        <span className="uppercase">
+                  { intl.formatMessage(dashboardMessages.dashboardName) }
                 </span>
-              }
-              validateStatus={nameError ? 'error' : ''}
-              help={nameError || ''}
-            >
-              {getFieldDecorator('name', {
-                  rules: [{
-                      required: true,
-                      message: intl.formatMessage(dashboardMessages.dashboardNameRequired)
-                  }, {
-                      validator: this.validateName,
-                  }]
-              })(
-                <Input
-                  autoFocus
-                  onKeyDown={this.onKeyDown}
-                  placeholder={intl.formatMessage(dashboardMessages.namePlaceholder)}
-                />
-              )}
-            </FormItem>
-            <div className="new-dashboard-form__actions">
-              <Button className="new-dashboard-form__button" onClick={onCancel}>
+                    }
+                    validateStatus={ nameError ? 'error' : '' }
+                    help={ nameError || '' }
+                >
+                    { getFieldDecorator('name', {
+                        rules: [{
+                            required: true,
+                            message: intl.formatMessage(dashboardMessages.dashboardNameRequired)
+                        }, {
+                            validator: this.validateName,
+                        }]
+                    })(
+                        <Input
+                            autoFocus
+                            onKeyDown={ this.onKeyDown }
+                            placeholder={ intl.formatMessage(dashboardMessages.namePlaceholder) }
+                        />
+                    ) }
+                </FormItem>
+                <div className="new-dashboard-form__actions">
+                    <Button className="new-dashboard-form__button" onClick={ onCancel }>
                 <span className="new-dashboard-form__button-label">
-                  {intl.formatMessage(generalMessages.cancel)}
+                  { intl.formatMessage(generalMessages.cancel) }
                 </span>
-              </Button>
-              <Button
-                className="new-dashboard-form__button"
-                disabled={hasErrors(getFieldsError())}
-                htmlType="submit"
-                onClick={this.onSubmit}
-                type="primary"
-              >
+                    </Button>
+                    <Button
+                        className="new-dashboard-form__button"
+                        disabled={ hasErrors(getFieldsError()) }
+                        htmlType="submit"
+                        onClick={ this.onSubmit }
+                        type="primary"
+                    >
                 <span className="new-dashboard-form__button-label">
-                  {intl.formatMessage(generalMessages.create)}
+                  { intl.formatMessage(generalMessages.create) }
                 </span>
-              </Button>
-            </div>
-          </Form>
+                    </Button>
+                </div>
+            </Form>
         );
     }
 }

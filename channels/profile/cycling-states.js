@@ -17,7 +17,7 @@ export default function init(sp, getService) {
             .profileAddress(data);
         const web3Api = getService(CORE_MODULE.WEB3_API);
         const contracts = getService(CORE_MODULE.CONTRACTS);
-        console.log("contracts", contracts);
+        console.log('contracts', contracts);
         const collection = [];
         let finished = false;
         let currentIndex = 0;
@@ -39,16 +39,20 @@ export default function init(sp, getService) {
         const available = filter(rule, sorted);
         const totalAvailable = available.reduce((acc, curr) => {
             return acc.plus(curr.amount);
-        }, new web3Api.instance.BigNumber(0));
+        }, new web3Api.instance.utils.toBN(0));
         const pending = difference(sorted, available);
         const totalPending = pending.reduce((acc, curr) => {
             return acc.plus(curr.amount);
         }, new web3Api.instance.utils.toBN(0));
         return {
-            available: { collection: available, total: (web3Api.instance.utils
-                    .toBN(totalAvailable)).toNumber() },
-            pending: { collection: pending, total: (web3Api.instance.utils
-                    .toBN(totalPending)).toNumber() },
+            available: {
+                collection: available, total: (web3Api.instance.utils
+                    .toBN(totalAvailable)).toNumber(),
+            },
+            pending: {
+                collection: pending, total: (web3Api.instance.utils
+                    .toBN(totalPending)).toNumber(),
+            },
         };
     });
     const cyclingStates = { execute, name: 'cyclingStates' };

@@ -17,44 +17,44 @@ class ShareLinkModal extends Component {
     render () {
         const { intl, url, withLabel } = this.props;
         return (
-          <div className="flex-center-y share-link-modal__container">
-            <div className="flex-center-y" onClick={this.toggleModal}>
-              <Tooltip
-                mouseEnterDelay={0.3}
-                title={withLabel ? undefined : intl.formatMessage(generalMessages.share)}
-              >
-                <Icon
-                  className="share-link-modal__share-icon"
-                  type="shareLarge"
-                />
-              </Tooltip>
-              {withLabel &&
-                <span className="share-link-modal__share-text">
-                  {intl.formatMessage(generalMessages.share)}
+            <div className="flex-center-y share-link-modal__container">
+                <div className="flex-center-y" onClick={ this.toggleModal }>
+                    <Tooltip
+                        mouseEnterDelay={ 0.3 }
+                        title={ withLabel ? undefined : intl.formatMessage(generalMessages.share) }
+                    >
+                        <Icon
+                            className="share-link-modal__share-icon"
+                            type="shareLarge"
+                        />
+                    </Tooltip>
+                    { withLabel &&
+                    <span className="share-link-modal__share-text">
+                  { intl.formatMessage(generalMessages.share) }
                 </span>
-              }
+                    }
+                </div>
+                <Modal
+                    footer={ null }
+                    onCancel={ this.toggleModal }
+                    visible={ this.state.visible }
+                >
+                    <div className="share-link-modal">
+                        <div className="flex-center-x share-link-modal__title">
+                            { intl.formatMessage(formMessages.shareLinkTitle) }
+                        </div>
+                        <div className="flex-center-x share-link-modal__subtitle">
+                            { intl.formatMessage(formMessages.shareLinkSubtitle) }
+                        </div>
+                        <UrlInput
+                            onSubmit={ this.toggleModal }
+                            readOnly
+                            showNotification={ this.props.showNotification }
+                            value={ url }
+                        />
+                    </div>
+                </Modal>
             </div>
-            <Modal
-              footer={null}
-              onCancel={this.toggleModal}
-              visible={this.state.visible}
-            >
-              <div className="share-link-modal">
-                <div className="flex-center-x share-link-modal__title">
-                  {intl.formatMessage(formMessages.shareLinkTitle)}
-                </div>
-                <div className="flex-center-x share-link-modal__subtitle">
-                  {intl.formatMessage(formMessages.shareLinkSubtitle)}
-                </div>
-                <UrlInput
-                  onSubmit={this.toggleModal}
-                  readOnly
-                  showNotification={this.props.showNotification}
-                  value={url}
-                />
-              </div>
-            </Modal>
-          </div>
         );
     }
 }

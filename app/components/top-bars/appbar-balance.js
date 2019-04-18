@@ -4,13 +4,12 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Fill } from 'react-slot-fill';
 import { profileGetBalance } from '../../local-flux/actions/profile-actions';
-import { Balance } from '../';
+import { AethWallet, Balance, EthWallet } from '../';
 import { profileActions } from '../../local-flux/actions';
 import { profileSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 import { useTogglerWithClickAway } from '../../utils/clickAway';
 import { APPBAR_SLOTS } from '../layouts/slot-names';
-import { EthWallet, AethWallet } from '../';
 
 /*::
     type Props = {|
@@ -49,36 +48,37 @@ function AppbarBalance (props /* : Props */) {
         <>
             <div className="appbar-balance">
                 <Balance
-                    elRef={ethBalanceToggler}
-                    balance={balance.get('balance')}
+                    elRef={ ethBalanceToggler }
+                    balance={ balance.get('balance') }
                     short
-                    type={`${balance.get('unit')}_symbol`}
+                    type={ `${ balance.get('unit') }_symbol` }
                 />
                 <Balance
-                    elRef={aethBalanceToggler}
-                    balance={balance.getIn(['aeth', 'free'])}
+                    elRef={ aethBalanceToggler }
+                    balance={ balance.getIn(['aeth', 'free']) }
                     short
                     type="aeth"
                 />
             </div>
-            {ethPanelOpen && (
-                <Fill name={APPBAR_SLOTS.RIGHT_PANEL}>
-                    <div ref={ethPanelRef} className="eth-panel">
-                        <EthWallet />
+            { ethPanelOpen && (
+                <Fill name={ APPBAR_SLOTS.RIGHT_PANEL }>
+                    <div ref={ ethPanelRef } className="eth-panel">
+                        <EthWallet/>
                     </div>
                 </Fill>
-            )}
+            ) }
 
-            {aethPanelOpen && (
-                <Fill name={APPBAR_SLOTS.RIGHT_PANEL}>
-                    <div ref={aethPanelRef} className="eth-panel">
-                        <AethWallet />
+            { aethPanelOpen && (
+                <Fill name={ APPBAR_SLOTS.RIGHT_PANEL }>
+                    <div ref={ aethPanelRef } className="eth-panel">
+                        <AethWallet/>
                     </div>
                 </Fill>
-            )}
+            ) }
         </>
     );
 }
+
 const mapStateToProps = state => ({
     balance: profileSelectors.selectBalance(state),
     loggedEthAddress: profileSelectors.selectLoggedEthAddress(state)

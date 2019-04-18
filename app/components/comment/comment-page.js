@@ -1,24 +1,31 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Link from 'react-router-dom/Link';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { Card } from 'antd';
 import { commentsGetComment } from '../../local-flux/actions/comments-actions';
 import { entryGetShort } from '../../local-flux/actions/entry-actions';
 import { profileGetData } from '../../local-flux/actions/profile-actions';
-import { actionSelectors, commentSelectors, entrySelectors,
-  profileSelectors } from '../../local-flux/selectors';
+import {
+    actionSelectors,
+    commentSelectors,
+    entrySelectors,
+    profileSelectors
+} from '../../local-flux/selectors';
 import { generalMessages } from '../../locale-data/messages';
 import { CommentThread, EntryCardHeader } from '../';
 import withRequest from '../high-order-components/with-request';
 
 const ContentPlaceholder = () => (
-  <div>
-    <div className="content-placeholder entry-card__title_placeholder" style={{ width: '80%' }} />
-    <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '16px' }} />
-    <div className="content-placeholder entry-card__content-placeholder" style={{ marginTop: '8px' }} />
-  </div>
+    <div>
+        <div className="content-placeholder entry-card__title_placeholder"
+             style={ { width: '80%' } }/>
+        <div className="content-placeholder entry-card__content-placeholder"
+             style={ { marginTop: '16px' } }/>
+        <div className="content-placeholder entry-card__content-placeholder"
+             style={ { marginTop: '8px' } }/>
+    </div>
 );
 
 class CommentPage extends Component {
@@ -28,7 +35,7 @@ class CommentPage extends Component {
 
     componentDidMount () {
         const { entryId, commentId } = this.props.match.params;
-        const ethAddress = `0x${this.props.match.params.ethAddress}`;
+        const ethAddress = `0x${ this.props.match.params.ethAddress }`;
         const author = { ethAddress };
         const context = 'commentPage';
         this.props.dispatchAction(commentsGetComment({ context, entryId, commentId, author }));
@@ -42,12 +49,14 @@ class CommentPage extends Component {
         }
         const newEthAddress = entry && entry.getIn(['author', 'ethAddress']);
         if (newEthAddress && !entryAuthor.ethAddress) {
-            const context = 'commentPage';            
-            this.props.dispatchAction(profileGetData({ ethAddress: newEthAddress, context }));                    
+            const context = 'commentPage';
+            this.props.dispatchAction(profileGetData({ ethAddress: newEthAddress, context }));
         }
     }
 
-    getContainerRef = (el) => { this.containerRef = el; };
+    getContainerRef = (el) => {
+        this.containerRef = el;
+    };
 
     handleReply = (parentCommentId) => {
         this.setState({
@@ -73,52 +82,55 @@ class CommentPage extends Component {
         const { entry } = this.props;
 
         return (
-          <div>
-            <div className="entry-card__title">
-              <Link
-                className="unstyled-link"
-                to={{
-                    pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.entryId}`,
-                    state: { overlay: true }
-                }}
-              >
-                <span className="content-link">{entry.getIn(['content', 'title'])}</span>
-              </Link>
+            <div>
+                <div className="entry-card__title">
+                    <Link
+                        className="unstyled-link"
+                        to={ {
+                            pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entry.entryId }`,
+                            state: { overlay: true }
+                        } }
+                    >
+                        <span className="content-link">{ entry.getIn(['content', 'title']) }</span>
+                    </Link>
+                </div>
+                <Link
+                    className="unstyled-link"
+                    to={ {
+                        pathname: `/${ entry.getIn(['author', 'ethAddress']) || '0x0' }/${ entry.entryId }`,
+                        state: { overlay: true }
+                    } }
+                >
+                    <div className="entry-card__excerpt">
+                        <span
+                            className="content-link">{ entry.getIn(['content', 'excerpt']) }</span>
+                    </div>
+                </Link>
             </div>
-            <Link
-              className="unstyled-link"
-              to={{
-                  pathname: `/${entry.getIn(['author', 'ethAddress']) || '0x0'}/${entry.entryId}`,
-                  state: { overlay: true }
-              }}
-            >
-              <div className="entry-card__excerpt">
-                <span className="content-link">{entry.getIn(['content', 'excerpt'])}</span>
-              </div>
-            </Link>            
-          </div>
         );
     };
 
     renderUnresolvedPlaceholder = () => (
-      <div style={{ position: 'relative' }}>
-        <ContentPlaceholder />
-        <div className="entry-card__unresolved">
-          <div className="heading flex-center">
-            {this.props.intl.formatMessage(generalMessages.noPeersAvailable)}
-          </div>
-          <div className="flex-center">
-            <span className="content-link entry-card__retry-button" onClick={this.onRetry}>
-              {this.props.intl.formatMessage(generalMessages.retry)}
+        <div style={ { position: 'relative' } }>
+            <ContentPlaceholder/>
+            <div className="entry-card__unresolved">
+                <div className="heading flex-center">
+                    { this.props.intl.formatMessage(generalMessages.noPeersAvailable) }
+                </div>
+                <div className="flex-center">
+            <span className="content-link entry-card__retry-button" onClick={ this.onRetry }>
+              { this.props.intl.formatMessage(generalMessages.retry) }
             </span>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
 
     render () { // eslint-disable-line complexity
-        const { comment, entry, entryAuthor, history, loggedEthAddress, match, pendingComments,
-            pendingEntries, parentComment } = this.props;
+        const {
+            comment, entry, entryAuthor, history, loggedEthAddress, match, pendingComments,
+            pendingEntries, parentComment
+        } = this.props;
         const { commentId, entryId } = match.params;
         if (!comment) {
             return null;
@@ -128,43 +140,43 @@ class CommentPage extends Component {
         const hasContent = this.hasContent();
 
         return (
-          <div className="comment-page" ref={this.getContainerRef}>
-            <div className="comment-page__inner">
-              <Card
-                className="comment-page__entry-card"
-                title={
-                  <EntryCardHeader
-                    author={entryAuthor}
-                    containerRef={this.containerRef}
-                    entry={entry}
-                    fullWidth
-                    isOwnEntry={isOwnEntry}
-                    onEntryVersionNavigation={history.push}
-                    onDraftNavigation={history.push}
-                    loading={isPending}
-                  />
-                }
-              >
-                {isPending && <ContentPlaceholder />}
-                {!hasContent && !isPending && this.renderUnresolvedPlaceholder()}
-                {hasContent && !isPending && this.renderEntryContent()}
-              </Card>
-              <div className="comment-page__comments">
-                <CommentThread
-                  context="commentPage"
-                  comment={parentComment || comment}
-                  entryId={entryId}
-                  highlightComment={commentId}
-                  containerRef={this.containerRef}
-                  onlyReply={parentComment ? comment.commentId : null}
-                  onReply={this.handleReply}
-                  onReplyClose={this.resetReplies}
-                  pendingComments={pendingComments}
-                  replyTo={this.state.replyTo}
-                />
-              </div>
+            <div className="comment-page" ref={ this.getContainerRef }>
+                <div className="comment-page__inner">
+                    <Card
+                        className="comment-page__entry-card"
+                        title={
+                            <EntryCardHeader
+                                author={ entryAuthor }
+                                containerRef={ this.containerRef }
+                                entry={ entry }
+                                fullWidth
+                                isOwnEntry={ isOwnEntry }
+                                onEntryVersionNavigation={ history.push }
+                                onDraftNavigation={ history.push }
+                                loading={ isPending }
+                            />
+                        }
+                    >
+                        { isPending && <ContentPlaceholder/> }
+                        { !hasContent && !isPending && this.renderUnresolvedPlaceholder() }
+                        { hasContent && !isPending && this.renderEntryContent() }
+                    </Card>
+                    <div className="comment-page__comments">
+                        <CommentThread
+                            context="commentPage"
+                            comment={ parentComment || comment }
+                            entryId={ entryId }
+                            highlightComment={ commentId }
+                            containerRef={ this.containerRef }
+                            onlyReply={ parentComment ? comment.commentId : null }
+                            onReply={ this.handleReply }
+                            onReplyClose={ this.resetReplies }
+                            pendingComments={ pendingComments }
+                            replyTo={ this.state.replyTo }
+                        />
+                    </div>
+                </div>
             </div>
-          </div>
         );
     }
 }
@@ -181,8 +193,8 @@ CommentPage.propTypes = {
     match: PropTypes.shape().isRequired,
     parentComment: PropTypes.shape(),
     pendingComments: PropTypes.shape(),
-    pendingEntries: PropTypes.shape(),    
-    profileGetData: PropTypes.func.isRequired,    
+    pendingEntries: PropTypes.shape(),
+    profileGetData: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {

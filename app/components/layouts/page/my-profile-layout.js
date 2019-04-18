@@ -12,11 +12,11 @@ import { MY_PROFILE_SLOTS } from '../slot-names';
 */
 
 function MyEntriesPageLayout () {
-    return <Slot name={MY_PROFILE_SLOTS.MY_ENTRIES_PAGE} />;
+    return <Slot name={ MY_PROFILE_SLOTS.MY_ENTRIES_PAGE }/>;
 }
 
 function HighlightsPageLayout () {
-    return <Slot name={MY_PROFILE_SLOTS.HIGHLIGHTS_PAGE} />;
+    return <Slot name={ MY_PROFILE_SLOTS.HIGHLIGHTS_PAGE }/>;
 }
 
 function MyProfileLayout (props /* : Props */) {
@@ -24,17 +24,19 @@ function MyProfileLayout (props /* : Props */) {
         <>
             <Route
                 path="/profileoverview"
-                render={() => (
+                render={ () => (
                     <div className="my-profile-layout">
                         <div className="my-profile-layout_sidebar-container">
-                            <Slot name={MY_PROFILE_SLOTS.PAGE_SIDEBAR} />
+                            <Slot name={ MY_PROFILE_SLOTS.PAGE_SIDEBAR }/>
                         </div>
                         <div className="my-profile-layout_page-container">
-                            <Route path="/profileoverview/myentries" render={MyEntriesPageLayout} />
-                            <Route path="/profileoverview/highlights" render={HighlightsPageLayout} />
+                            <Route path="/profileoverview/myentries"
+                                   render={ MyEntriesPageLayout }/>
+                            <Route path="/profileoverview/highlights"
+                                   render={ HighlightsPageLayout }/>
                         </div>
                     </div>
-                )}
+                ) }
             />
         </>
     );

@@ -1,6 +1,6 @@
 const appendZero = (str, length) => {
     do {
-        str = `${str}0`;
+        str = `${ str }0`;
     } while (str.length < length);
     return str;
 };
@@ -16,7 +16,7 @@ export const balanceToNumber = (balance, precision = 0) => {
         decimals = decimals.slice(0, precision);
     }
     if (decimals && decimals.length) {
-        result = `${result}.${decimals}`;
+        result = `${ result }.${ decimals }`;
     }
     return Number(result);
 };
@@ -36,7 +36,7 @@ export const formatBalance = (balance, length = 0) => {
         return balance.slice(0, length);
     }
     if (!parts[1]) {
-        balance = `${balance}.`;
+        balance = `${ balance }.`;
     }
     return appendZero(balance, length);
 };
@@ -50,5 +50,5 @@ export const removeTrailingZeros = (balance) => {
     if (!decimals) {
         return parts[0];
     }
-    return `${parts[0]}.${decimals}`;
+    return `${ parts[0] }.${ decimals }`;
 };

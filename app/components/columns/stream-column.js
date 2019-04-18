@@ -7,8 +7,7 @@ import Waypoint from 'react-waypoint';
 import { ColumnHeader, EntryList } from '../index';
 import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { dashboardResetColumnEntries } from '../../local-flux/actions/dashboard-actions';
-import { entryMoreStreamIterator,
-    entryStreamIterator } from '../../local-flux/actions/entry-actions';
+import { entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { dashboardSelectors } from '../../local-flux/selectors';
 import withRequest from '../high-order-components/with-request';
 
@@ -68,26 +67,26 @@ class StreamColumn extends Component {
         const className = classNames('column', { column_large: column.get('large') });
 
         return (
-          <div className={className}>
-            <ColumnHeader
-              column={column}
-              iconType="entries"
-              onRefresh={this.entryIterator}
-              readOnly
-              title={intl.formatMessage(dashboardMessages.columnStream)}
-            />
-            <Waypoint onEnter={this.firstLoad} horizontal />
-            <EntryList
-              contextId={column.get('id')}
-              entries={entriesList}
-              fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
-              fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreStreamIterator}
-              large={column.get('large')}
-              moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={intl.formatMessage(entryMessages.noEntries)}
-            />
-          </div>
+            <div className={ className }>
+                <ColumnHeader
+                    column={ column }
+                    iconType="entries"
+                    onRefresh={ this.entryIterator }
+                    readOnly
+                    title={ intl.formatMessage(dashboardMessages.columnStream) }
+                />
+                <Waypoint onEnter={ this.firstLoad } horizontal/>
+                <EntryList
+                    contextId={ column.get('id') }
+                    entries={ entriesList }
+                    fetchingEntries={ column.getIn(['flags', 'fetchingEntries']) }
+                    fetchingMoreEntries={ column.getIn(['flags', 'fetchingMoreEntries']) }
+                    fetchMoreEntries={ this.entryMoreStreamIterator }
+                    large={ column.get('large') }
+                    moreEntries={ column.getIn(['flags', 'moreEntries']) }
+                    placeholderMessage={ intl.formatMessage(entryMessages.noEntries) }
+                />
+            </div>
         );
     }
 }

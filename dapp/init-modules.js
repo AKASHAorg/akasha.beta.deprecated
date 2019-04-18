@@ -25,7 +25,7 @@ import searchModule from '@akashaproject/search';
 import { init } from '@akashaproject/search/indexes';
 import tagsModule from '@akashaproject/tags';
 import txModule from '@akashaproject/tx';
-import { DEFAULT_IPFS_CONFIG, BASE_URL } from './config/settings';
+import { BASE_URL, DEFAULT_IPFS_CONFIG } from './config/settings';
 const bootstrap = function bootstrap(serviceProvider, gS, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         core.init();
